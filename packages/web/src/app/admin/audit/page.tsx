@@ -1,41 +1,53 @@
 /**
  * Admin Audit Trail Page
- * 
+ *
  * Audit trail explorer with filters and export preview.
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useAdminAudit } from '@/lib/admin/hooks/use-admin-metrics';
-import { AuditItem } from '@/lib/admin/metrics/types';
-import { exportAuditToCSV, exportAuditToJSON, downloadFile } from '@/lib/admin/utils/export';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Download, Search, FileDown } from 'lucide-react';
-import { NoAuditEmptyState, NoResultsEmptyState } from '@/components/admin/empty-states';
+import { useState } from "react";
+import { useAdminAudit } from "@/lib/admin/hooks/use-admin-metrics";
+import { AuditItem } from "@/lib/admin/metrics/types";
+import { exportAuditToCSV, exportAuditToJSON, downloadFile } from "@/lib/admin/utils/export";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Download, Search, FileDown } from "lucide-react";
+import { NoAuditEmptyState, NoResultsEmptyState } from "@/components/admin/empty-states";
 
 export default function AdminAuditPage() {
-  const [ruleIdFilter, setRuleIdFilter] = useState('');
-  const [sourceFilter, setSourceFilter] = useState('');
-  const [actorFilter, setActorFilter] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [ruleIdFilter, setRuleIdFilter] = useState("");
+  const [sourceFilter, setSourceFilter] = useState("");
+  const [actorFilter, setActorFilter] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: auditData, isLoading } = useAdminAudit({
-    ruleId: ruleIdFilter || undefined,
-    source: sourceFilter || undefined,
-    actor: actorFilter || undefined,
+  const auditParams: { limit: number; ruleId?: string; source?: string; actor?: string } = {
     limit: 100,
-  });
+  };
+  if (ruleIdFilter) {
+    auditParams.ruleId = ruleIdFilter;
+  }
+  if (sourceFilter) {
+    auditParams.source = sourceFilter;
+  }
+  if (actorFilter) {
+    auditParams.actor = actorFilter;
+  }
+  const { data: auditData, isLoading } = useAdminAudit(auditParams);
 
-  const filteredItems = auditData?.items?.filter((item: AuditItem) => {
-    if (searchQuery && !item.action.toLowerCase().includes(searchQuery.toLowerCase()) && !item.auditType.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false;
-    }
-    return true;
-  }) || [];
+  const filteredItems =
+    auditData?.items?.filter((item: AuditItem) => {
+      if (
+        searchQuery &&
+        !item.action.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        !item.auditType.toLowerCase().includes(searchQuery.toLowerCase())
+      ) {
+        return false;
+      }
+      return true;
+    }) || [];
 
   return (
     <div className="p-8 space-y-6 bg-slate-50 dark:bg-slate-900 min-h-screen">
@@ -58,7 +70,7 @@ export default function AdminAuditPage() {
                 onClick={() => {
                   if (filteredItems.length > 0) {
                     const csv = exportAuditToCSV(filteredItems);
-                    downloadFile(csv, `audit-${new Date().toISOString().split('T')[0]}.csv`);
+                    downloadFile(csv, `audit-${new Date().toISOString().split("T")[0]}.csv`);
                   }
                 }}
                 className="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded flex items-center gap-2"
@@ -117,9 +129,7 @@ export default function AdminAuditPage() {
       {/* Audit List */}
       <Card>
         <CardHeader>
-          <CardTitle>
-            Audit Entries ({filteredItems.length})
-          </CardTitle>
+          <CardTitle>Audit Entries ({filteredItems.length})</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -152,20 +162,21 @@ function AuditRow({ item }: { item: AuditItem }) {
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <Badge variant="outline">{item.auditType}</Badge>
-            <span className="font-medium text-slate-900 dark:text-white">
-              {item.action}
-            </span>
+            <span className="font-medium text-slate-900 dark:text-white">{item.action}</span>
           </div>
           <div className="text-sm text-slate-500 dark:text-slate-400 space-y-1">
             {item.entityType && (
               <div>
                 <span className="font-medium">Entity:</span> {item.entityType}
-                {item.entityId && <span className="ml-2 font-mono text-xs">{item.entityId.slice(0, 8)}</span>}
+                {item.entityId && (
+                  <span className="ml-2 font-mono text-xs">{item.entityId.slice(0, 8)}</span>
+                )}
               </div>
             )}
             {item.userId && (
               <div>
-                <span className="font-medium">Actor:</span> <span className="font-mono text-xs">{item.userId.slice(0, 8)}</span>
+                <span className="font-medium">Actor:</span>{" "}
+                <span className="font-mono text-xs">{item.userId.slice(0, 8)}</span>
               </div>
             )}
             <div>

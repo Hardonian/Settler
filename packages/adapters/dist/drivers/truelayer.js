@@ -28,7 +28,7 @@ class TrueLayerDriver {
             sandbox: "https://api.truelayer-sandbox.com",
             production: "https://api.truelayer.com",
         };
-        return urls[env] || urls.sandbox;
+        return (urls[env] || urls.sandbox);
     }
     async getAuthUrl(options) {
         const config = options;

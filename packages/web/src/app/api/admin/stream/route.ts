@@ -171,7 +171,7 @@ export const GET = withSecurity(
               if (recentExceptions.length > 0 && recentExceptions[0]) {
                 lastExceptionsTimestamp = recentExceptions[0].createdAt;
 
-                const added = recentExceptions.map((ex) => ({
+                const added = recentExceptions.map((ex: (typeof recentExceptions)[0]) => ({
                   id: ex.id,
                   runId: ex.reconJobId || null,
                   matchId: null,

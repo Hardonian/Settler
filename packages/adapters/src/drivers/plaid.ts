@@ -42,7 +42,7 @@ export class PlaidDriver implements ConnectorDriver {
       development: "https://development.plaid.com",
       production: "https://production.plaid.com",
     };
-    return urls[env] ?? urls.sandbox;
+    return (urls[env] ?? urls.sandbox) as string;
   }
 
   async getAuthUrl(options: AuthUrlOptions): Promise<string> {

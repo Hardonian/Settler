@@ -115,12 +115,15 @@ export async function signUpUser(
     });
 
     // 5. Emit lifecycle event: user signed up
+    const eventProperties: { source: string; email?: string } = {
+      source: "web_signup",
+    };
+    if (authData.user.email) {
+      eventProperties.email = authData.user.email;
+    }
     await emitLifecycleEventSafe(LifecycleEventType.USER_SIGNED_UP, {
       userId: authData.user.id,
-      properties: {
-        source: "web_signup",
-        email: authData.user.email,
-      },
+      properties: eventProperties,
     });
 
     // 6. Revalidate relevant paths

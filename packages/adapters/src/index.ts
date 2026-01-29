@@ -25,12 +25,12 @@ export * from "./woocommerce";
 
 // New connector framework - use connector-driver exports (preferred)
 export {
-  ConnectorDriver,
-  ConnectorMetadata as DriverConnectorMetadata,
   ConnectorError as DriverConnectorError,
   ValidationError as DriverValidationError,
 } from "./connector-driver";
 export type {
+  ConnectorDriver,
+  ConnectorMetadata as DriverConnectorMetadata,
   NormalizedAccount,
   NormalizedTransaction,
   NormalizedBalance,

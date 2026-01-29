@@ -28,7 +28,7 @@ class EbayDriver {
             sandbox: "https://api.sandbox.ebay.com",
             production: "https://api.ebay.com",
         };
-        return urls[env] ?? urls.sandbox;
+        return (urls[env] ?? urls.sandbox);
     }
     // eslint-disable-next-line @typescript-eslint/require-await
     async getAuthUrl(options) {

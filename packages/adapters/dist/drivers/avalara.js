@@ -28,7 +28,7 @@ class AvalaraDriver {
             sandbox: "https://sandbox-rest.avatax.com",
             production: "https://rest.avatax.com",
         };
-        return urls[env] ?? urls.sandbox;
+        return (urls[env] ?? urls.sandbox);
     }
     async testConnection(options) {
         const { credentials, config } = options;

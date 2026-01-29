@@ -1,50 +1,60 @@
 /**
  * Admin Exceptions Page
- * 
+ *
  * Exception queue management with workflow states and batch actions.
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useAdminExceptions, useAdminStream } from '@/lib/admin/hooks/use-admin-metrics';
-import { ExceptionItem } from '@/lib/admin/metrics/types';
-import { exportExceptionsToCSV, exportExceptionsToJSON, downloadFile } from '@/lib/admin/utils/export';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Search, Download, FileDown } from 'lucide-react';
-import { NoExceptionsEmptyState, NoResultsEmptyState } from '@/components/admin/empty-states';
-import Link from 'next/link';
+import { useState } from "react";
+import { useAdminExceptions, useAdminStream } from "@/lib/admin/hooks/use-admin-metrics";
+import { ExceptionItem } from "@/lib/admin/metrics/types";
+import {
+  exportExceptionsToCSV,
+  exportExceptionsToJSON,
+  downloadFile,
+} from "@/lib/admin/utils/export";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search, Download, FileDown } from "lucide-react";
+import { NoExceptionsEmptyState, NoResultsEmptyState } from "@/components/admin/empty-states";
+import Link from "next/link";
 
 export default function AdminExceptionsPage() {
   const [selectedExceptions, setSelectedExceptions] = useState<Set<string>>(new Set());
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [severityFilter, setSeverityFilter] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [severityFilter, setSeverityFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: exceptionsData, isLoading } = useAdminExceptions({
-    status: statusFilter !== 'all' ? statusFilter : undefined,
-    severity: severityFilter !== 'all' ? severityFilter : undefined,
+  const exceptionsParams: { limit: number; status?: string; severity?: string } = {
     limit: 100,
-  });
+  };
+  if (statusFilter !== "all") {
+    exceptionsParams.status = statusFilter;
+  }
+  if (severityFilter !== "all") {
+    exceptionsParams.severity = severityFilter;
+  }
+  const { data: exceptionsData, isLoading } = useAdminExceptions(exceptionsParams);
 
-  const { connectionState } = useAdminStream(['exceptions'], undefined, true);
+  const { connectionState } = useAdminStream(["exceptions"], undefined, true);
 
-  const filteredExceptions = exceptionsData?.items?.filter((ex: ExceptionItem) => {
-    if (searchQuery && !ex.reason.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-    return true;
-  }) || [];
+  const filteredExceptions =
+    exceptionsData?.items?.filter((ex: ExceptionItem) => {
+      if (searchQuery && !ex.reason.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+      return true;
+    }) || [];
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'critical':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
-      case 'warn':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
+      case "critical":
+        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
+      case "warn":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
       default:
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
     }
   };
 
@@ -70,10 +80,15 @@ export default function AdminExceptionsPage() {
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${
-              connectionState === 'connected' ? 'bg-green-500' :
-              connectionState === 'reconnecting' ? 'bg-yellow-500' : 'bg-red-500'
-            }`} />
+            <div
+              className={`w-2 h-2 rounded-full ${
+                connectionState === "connected"
+                  ? "bg-green-500"
+                  : connectionState === "reconnecting"
+                    ? "bg-yellow-500"
+                    : "bg-red-500"
+              }`}
+            />
             <span className="text-sm text-slate-600 dark:text-slate-400">{connectionState}</span>
           </div>
           {selectedExceptions.size > 0 && (
@@ -91,7 +106,7 @@ export default function AdminExceptionsPage() {
                 onClick={() => {
                   if (filteredExceptions.length > 0) {
                     const csv = exportExceptionsToCSV(filteredExceptions);
-                    downloadFile(csv, `exceptions-${new Date().toISOString().split('T')[0]}.csv`);
+                    downloadFile(csv, `exceptions-${new Date().toISOString().split("T")[0]}.csv`);
                   }
                 }}
                 className="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded flex items-center gap-2"
@@ -156,9 +171,7 @@ export default function AdminExceptionsPage() {
       {/* Exception List */}
       <Card>
         <CardHeader>
-          <CardTitle>
-            Exception Queue ({filteredExceptions.length})
-          </CardTitle>
+          <CardTitle>Exception Queue ({filteredExceptions.length})</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -166,7 +179,7 @@ export default function AdminExceptionsPage() {
               Loading exceptions...
             </div>
           ) : filteredExceptions.length === 0 ? (
-            searchQuery || statusFilter !== 'all' || severityFilter !== 'all' ? (
+            searchQuery || statusFilter !== "all" || severityFilter !== "all" ? (
               <NoResultsEmptyState searchQuery={searchQuery} />
             ) : (
               <NoExceptionsEmptyState />
@@ -204,7 +217,7 @@ function ExceptionRow({
   return (
     <div
       className={`p-4 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
-        selected ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700' : ''
+        selected ? "bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700" : ""
       }`}
       onClick={onSelect}
     >
@@ -218,15 +231,9 @@ function ExceptionRow({
               onClick={(e) => e.stopPropagation()}
               className="rounded"
             />
-            <span className="font-medium text-slate-900 dark:text-white">
-              {exception.reason}
-            </span>
-            <Badge className={severityColor}>
-              {exception.severity}
-            </Badge>
-            <Badge variant="outline">
-              {exception.status}
-            </Badge>
+            <span className="font-medium text-slate-900 dark:text-white">{exception.reason}</span>
+            <Badge className={severityColor}>{exception.severity}</Badge>
+            <Badge variant="outline">{exception.status}</Badge>
           </div>
           <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
             <span>Source: {exception.source}</span>

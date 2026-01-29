@@ -98,9 +98,11 @@ export const GET = withUniversalBillingGate(
           encrypted_credentials: {}, // Should encrypt
           access_token_encrypted: authResult.accessToken, // Should encrypt
           refresh_token_encrypted: authResult.refreshToken, // Should encrypt
-          token_expires_at: authResult.expiresIn
-            ? new Date(Date.now() + authResult.expiresIn * 1000).toISOString()
-            : null,
+          ...(authResult.expiresIn
+            ? {
+                token_expires_at: new Date(Date.now() + authResult.expiresIn * 1000).toISOString(),
+              }
+            : {}),
         },
         {
           onConflict: "connector_id",
@@ -151,7 +153,7 @@ export const GET = withUniversalBillingGate(
           select: { billingAccountId: true },
         });
 
-        await emitLifecycleEventSafe(LifecycleEventType.PROVIDER_CONNECTED, {
+        await emitLifecycleEventSafe(LifecycleEventType.PROVIDER_CONNECTED!, {
           userId: user.id,
           tenantId,
           ...(tenant?.billingAccountId ? { billingAccountId: tenant.billingAccountId } : {}),
@@ -159,6 +161,11 @@ export const GET = withUniversalBillingGate(
             provider_id: providerId,
             is_first_connection: isFirstConnection,
           },
+        } as {
+          userId: string;
+          tenantId: string;
+          billingAccountId?: string;
+          properties: Record<string, unknown>;
         });
       } catch (eventError) {
         // Don't fail the connection if event emission fails

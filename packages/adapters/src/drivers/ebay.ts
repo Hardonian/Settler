@@ -40,7 +40,7 @@ export class EbayDriver implements ConnectorDriver {
       sandbox: "https://api.sandbox.ebay.com",
       production: "https://api.ebay.com",
     };
-    return urls[env] ?? urls.sandbox;
+    return (urls[env] ?? urls.sandbox) as string;
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await

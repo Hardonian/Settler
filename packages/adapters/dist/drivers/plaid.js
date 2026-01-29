@@ -29,7 +29,7 @@ class PlaidDriver {
             development: "https://development.plaid.com",
             production: "https://production.plaid.com",
         };
-        return urls[env] ?? urls.sandbox;
+        return (urls[env] ?? urls.sandbox);
     }
     async getAuthUrl(options) {
         // Plaid uses Link SDK on frontend, but we can generate a link token

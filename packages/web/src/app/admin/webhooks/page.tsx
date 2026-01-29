@@ -44,16 +44,27 @@ async function getWebhookEvents(limit: number = 50): Promise<WebhookEvent[]> {
       },
     });
 
-    return events.map((e: (typeof events)[0]) => ({
-      id: e.id,
-      eventId: e.eventId,
-      type: e.type,
-      status: e.status as "received" | "processed" | "failed",
-      receivedAt: e.receivedAt,
-      processedAt: e.processedAt,
-      error: e.error,
-      billingAccountId: e.billingAccountId,
-    }));
+    return events.map(
+      (e: {
+        id: string;
+        eventId: string;
+        type: string;
+        status: string;
+        receivedAt: Date;
+        processedAt: Date | null;
+        error: string | null;
+        billingAccountId: string | null;
+      }) => ({
+        id: e.id,
+        eventId: e.eventId,
+        type: e.type,
+        status: e.status as "received" | "processed" | "failed",
+        receivedAt: e.receivedAt,
+        processedAt: e.processedAt,
+        error: e.error,
+        billingAccountId: e.billingAccountId,
+      })
+    );
   } catch (error) {
     adminLogger.error("Error fetching webhook events", error);
     return [];
