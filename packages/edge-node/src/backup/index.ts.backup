@@ -124,13 +124,12 @@ program
 
       const status = service.getStatus();
 
-      // Use logger instead of console.log for consistency
-      logger.info("Edge Node Status:");
-      logger.info(`  Node ID: ${status.nodeId || "Not enrolled"}`);
-      logger.info(`  Status: ${status.status || "Unknown"}`);
-      logger.info(`  Last Heartbeat: ${status.lastHeartbeat || "Never"}`);
-      logger.info(`  Jobs Processed: ${status.jobsProcessed || 0}`);
-      logger.info(`  Local Storage: ${status.localStorageUsed || 0} MB`);
+      console.log(chalk.bold("Edge Node Status:"));
+      console.log(`  Node ID: ${status.nodeId || "Not enrolled"}`);
+      console.log(`  Status: ${status.status || "Unknown"}`);
+      console.log(`  Last Heartbeat: ${status.lastHeartbeat || "Never"}`);
+      console.log(`  Jobs Processed: ${status.jobsProcessed || 0}`);
+      console.log(`  Local Storage: ${status.localStorageUsed || 0} MB`);
     } catch (error) {
       logger.error("Failed to get status", error);
       process.exit(1);

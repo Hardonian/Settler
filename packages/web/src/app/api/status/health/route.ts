@@ -33,7 +33,7 @@ export const GET = withSecurity(
       const result = await supabase.rpc('get_kpi_health_status').single();
       data = result.data;
       error = result.error;
-    } catch (error) {
+    } catch (err) {
       error = err as Error;
     }
     

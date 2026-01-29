@@ -70,8 +70,8 @@ export class EnhancedQuickBooksAdapter implements Adapter {
         },
         body: new URLSearchParams({
           grant_type: "refresh_token",
-          refresh_token: refreshToken,
-        }),
+          refresh_token: refreshToken ?? '',
+        } as Record<string, string>),
       });
     });
 

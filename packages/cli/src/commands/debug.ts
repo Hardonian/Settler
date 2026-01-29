@@ -82,7 +82,7 @@ debugCommand
       const content = await fs.readFile(filePath, "utf-8");
       const ext = path.extname(filePath).toLowerCase();
 
-      let config: any;
+      let config: unknown;
       if (ext === ".yaml" || ext === ".yml") {
         const yaml = await import("yaml");
         config = yaml.parse(content);
@@ -98,19 +98,26 @@ debugCommand
       // Basic validation
       const errors: string[] = [];
 
-      if (!config.name) {
+      if (typeof config !== 'object' || config === null) {
+        console.error(chalk.red("❌ Validation failed: Config must be an object"));
+        process.exit(1);
+      }
+
+      const configObj = config as Record<string, unknown>;
+
+      if (!configObj.name) {
         errors.push("Missing required field: name");
       }
 
-      if (!config.source || !config.source.adapter) {
+      if (!configObj.source || typeof configObj.source !== 'object' || !(configObj.source as Record<string, unknown>).adapter) {
         errors.push("Missing required field: source.adapter");
       }
 
-      if (!config.target || !config.target.adapter) {
+      if (!configObj.target || typeof configObj.target !== 'object' || !(configObj.target as Record<string, unknown>).adapter) {
         errors.push("Missing required field: target.adapter");
       }
 
-      if (!config.rules || !config.rules.matching || !Array.isArray(config.rules.matching)) {
+      if (!configObj.rules || typeof configObj.rules !== 'object' || !Array.isArray((configObj.rules as Partial<{ matching: unknown[] }>).matching)) {
         errors.push("Missing required field: rules.matching (must be an array)");
       }
 
@@ -121,10 +128,11 @@ debugCommand
       }
 
       console.log(chalk.green("✅ Config file is valid!"));
-      console.log(chalk.gray(`   Name: ${config.name}`));
-      console.log(chalk.gray(`   Source: ${config.source.adapter}`));
-      console.log(chalk.gray(`   Target: ${config.target.adapter}`));
-      console.log(chalk.gray(`   Matching rules: ${config.rules.matching.length}`));
+      console.log(chalk.gray(`   Name: ${configObj.name}`));
+      console.log(chalk.gray(`   Source: ${(configObj.source as Record<string, unknown>).adapter}`));
+      console.log(chalk.gray(`   Target: ${(configObj.target as Record<string, unknown>).adapter}`));
+      const rules = configObj.rules as Partial<{ matching: unknown[] }>;
+      console.log(chalk.gray(`   Matching rules: ${rules.matching?.length || 0}`));
     } catch (error) {
       console.error(
         chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
@@ -187,7 +195,7 @@ debugCommand
       });
 
       const body = await response.text();
-      let parsedBody: any;
+      let parsedBody: unknown;
       try {
         parsedBody = JSON.parse(body);
         console.log(chalk.gray(`   Response body:`));
