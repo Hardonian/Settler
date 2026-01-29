@@ -292,8 +292,8 @@ export async function recordReceiptProcessed(
   // Estimate time saved: 2 minutes per receipt
   await recordValueEvent({
     billingAccountId,
-    tenantId: options.tenantId,
-    userId: options.userId,
+    ...(options.tenantId ? { tenantId: options.tenantId } : {}),
+    ...(options.userId ? { userId: options.userId } : {}),
     eventType: "time_saved_hours",
     quantity: 2 / 60, // 2 minutes = 0.033 hours
     unit: "hour",
@@ -319,8 +319,8 @@ export async function recordExportGenerated(
 ): Promise<void> {
   await recordValueEvent({
     billingAccountId,
-    tenantId: options.tenantId,
-    userId: options.userId,
+    ...(options.tenantId ? { tenantId: options.tenantId } : {}),
+    ...(options.userId ? { userId: options.userId } : {}),
     eventType: "export_generated",
     quantity: 1,
     unit: "export",
