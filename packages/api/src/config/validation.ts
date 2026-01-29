@@ -82,8 +82,8 @@ export const env = cleanEnv(process.env, {
   // Redis Configuration
   REDIS_HOST: host({ default: "localhost" }),
   REDIS_PORT: port({ default: 6379 }),
-  REDIS_URL: url({}),
-  REDIS_PASSWORD: str({}),
+  REDIS_URL: url({ default: undefined } as const),
+  REDIS_PASSWORD: str({ default: undefined } as const),
   REDIS_TLS: bool({ default: false }),
 
   // JWT Configuration
