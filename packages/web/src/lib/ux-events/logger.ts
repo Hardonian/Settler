@@ -5,7 +5,7 @@
  * No PII, no secrets.
  */
 
-import type { UXEventType } from "./types";
+import type { UXEventType, ErrorOccurredEvent } from "./types";
 
 /**
  * Maximum events to store locally
@@ -197,14 +197,25 @@ export function logError(
   stepId?: string,
   recovered?: boolean
 ): void {
-  logUXEvent({
+  const event: Omit<ErrorOccurredEvent, "id" | "timestamp" | "route"> = {
     type: "error_occurred",
     errorMessage,
-    ...(errorType !== undefined && { errorType }),
-    ...(flowId !== undefined && { flowId }),
-    ...(stepId !== undefined && { stepId }),
-    ...(recovered !== undefined && { recovered }),
-  });
+  };
+
+  if (errorType !== undefined) {
+    event.errorType = errorType;
+  }
+  if (flowId !== undefined) {
+    event.flowId = flowId;
+  }
+  if (stepId !== undefined) {
+    event.stepId = stepId;
+  }
+  if (recovered !== undefined) {
+    event.recovered = recovered;
+  }
+
+  logUXEvent(event);
 }
 
 /**

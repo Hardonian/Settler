@@ -90,8 +90,11 @@ export function validateTicketInput(input: {
     errors.push(`Category must be one of: ${validCategories.join(", ")}`);
   }
 
-  return {
+  const result: { valid: boolean; errors?: string[] } = {
     valid: errors.length === 0,
-    ...(errors.length > 0 ? { errors } : {}),
   };
+  if (errors.length > 0) {
+    result.errors = errors;
+  }
+  return result;
 }

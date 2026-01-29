@@ -67,7 +67,11 @@ class ToastManager {
    * Show success toast
    */
   success(message: string, duration?: number): string {
-    return this.show({ type: "success", message, ...(duration !== undefined ? { duration } : {}) });
+    const toast: Omit<Toast, "id"> = { type: "success", message };
+    if (duration !== undefined) {
+      toast.duration = duration;
+    }
+    return this.show(toast);
   }
 
   /**
@@ -81,14 +85,22 @@ class ToastManager {
    * Show warning toast
    */
   warning(message: string, duration?: number): string {
-    return this.show({ type: "warning", message, ...(duration !== undefined ? { duration } : {}) });
+    const toast: Omit<Toast, "id"> = { type: "warning", message };
+    if (duration !== undefined) {
+      toast.duration = duration;
+    }
+    return this.show(toast);
   }
 
   /**
    * Show info toast
    */
   info(message: string, duration?: number): string {
-    return this.show({ type: "info", message, ...(duration !== undefined ? { duration } : {}) });
+    const toast: Omit<Toast, "id"> = { type: "info", message };
+    if (duration !== undefined) {
+      toast.duration = duration;
+    }
+    return this.show(toast);
   }
 
   /**

@@ -38,12 +38,15 @@ export class LoadingStateManager {
    * Set loading state
    */
   setLoading(isLoading: boolean, message?: string): void {
-    this.state = {
+    const newState: LoadingState = {
       ...this.state,
       isLoading,
       error: null,
-      ...(message !== undefined ? { message } : {}),
     };
+    if (message !== undefined) {
+      newState.message = message;
+    }
+    this.state = newState;
     this.notify();
   }
 
@@ -51,13 +54,16 @@ export class LoadingStateManager {
    * Set progress
    */
   setProgress(progress: number, message?: string): void {
-    this.state = {
+    const newState: LoadingState = {
       ...this.state,
       isLoading: true,
       progress: Math.max(0, Math.min(100, progress)),
       error: null,
-      ...(message !== undefined ? { message } : {}),
     };
+    if (message !== undefined) {
+      newState.message = message;
+    }
+    this.state = newState;
     this.notify();
   }
 
