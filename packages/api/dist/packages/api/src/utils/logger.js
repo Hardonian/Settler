@@ -1,25 +1,6 @@
 "use strict";
 /**
  * Production-Grade Structured Logging
- *
- * Features:
- * - JSON structured logs for production parsing
- * - OpenTelemetry trace and span IDs for distributed tracing
- * - Request ID for client-server correlation
- * - Automatic secret redaction
- * - Log sampling for high-volume endpoints
- * - Tenant/user context propagation
- *
- * Integration:
- * - OpenTelemetry for distributed tracing
- * - Winston for structured logging
- * - Request ID middleware for correlation
- *
- * Critical for:
- * - Production debugging at 02:13 AM
- * - Error investigation with full context
- * - Performance monitoring and profiling
- * - Security audit trails
  */
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -37,9 +18,7 @@ const redaction_1 = require("./redaction");
 const api_1 = require("@opentelemetry/api");
 const config_1 = require("../config");
 const async_hooks_1 = require("async_hooks");
-// AsyncLocalStorage for request-scoped data (requestId, tenantId, userId)
 exports.requestContext = new async_hooks_1.AsyncLocalStorage();
-// Get current trace and span IDs from OpenTelemetry context
 function getTraceContext() {
     const span = api_1.trace.getActiveSpan();
     if (!span) {
@@ -51,7 +30,6 @@ function getTraceContext() {
         span_id: spanContext.spanId,
     };
 }
-// Get request context (requestId, tenantId, userId) from AsyncLocalStorage
 function getRequestContext() {
     const context = exports.requestContext.getStore();
     if (!context) {
@@ -63,7 +41,6 @@ function getRequestContext() {
         user_id: context.userId || undefined,
     };
 }
-// Custom format that adds trace context and request context
 const contextFormat = winston_1.default.format((info) => {
     const traceContext = getTraceContext();
     const reqContext = getRequestContext();
@@ -72,8 +49,30 @@ const contextFormat = winston_1.default.format((info) => {
         ...traceContext,
         ...reqContext,
     };
-})();
-const logFormat = winston_1.default.format.combine(contextFormat, winston_1.default.format.timestamp(), winston_1.default.format.errors({ stack: true }), winston_1.default.format.json());
+});
+function createPrintfFormat() {
+    return winston_1.default.format.printf((info) => {
+        const timestamp = info.timestamp;
+        const level = info.level;
+        const message = info.message;
+        const request_id = info.request_id;
+        const trace_id = info.trace_id;
+        const span_id = info.span_id;
+        const tenant_id = info.tenant_id;
+        const user_id = info.user_id;
+        const { timestamp: _ts, level: _lvl, message: _msg, request_id: _req, trace_id: _trace, span_id: _span, tenant_id: _tenant, user_id: _user, ...meta } = info;
+        const metaStr = Object.keys(meta).length ? JSON.stringify((0, redaction_1.redact)(meta)) : "";
+        const requestInfo = request_id && typeof request_id === "string" ? `[req=${request_id.substring(0, 8)}]` : "";
+        const traceInfo = trace_id && typeof trace_id === "string" ? `[trace=${trace_id.substring(0, 8)}]` : "";
+        const spanInfo = span_id && typeof span_id === "string" ? `[span=${span_id.substring(0, 8)}]` : "";
+        const tenantInfo = tenant_id && typeof tenant_id === "string" ? `[tenant=${tenant_id}]` : "";
+        const userInfo = user_id && typeof user_id === "string" ? `[user=${user_id}]` : "";
+        const timestampStr = typeof timestamp === "string" ? timestamp : String(timestamp);
+        const messageStr = typeof message === "string" ? message : String(message);
+        return `${timestampStr} [${level}]${requestInfo}${traceInfo}${spanInfo}${tenantInfo}${userInfo}: ${messageStr} ${metaStr}`;
+    });
+}
+const logFormat = winston_1.default.format.combine(contextFormat(), winston_1.default.format.timestamp(), winston_1.default.format.errors({ stack: true }), winston_1.default.format.json());
 exports.logger = winston_1.default.createLogger({
     level: config_1.config.logging.level,
     format: logFormat,
@@ -83,24 +82,10 @@ exports.logger = winston_1.default.createLogger({
     },
     transports: [
         new winston_1.default.transports.Console({
-            format: winston_1.default.format.combine(winston_1.default.format.colorize(), winston_1.default.format.printf(({ timestamp, level, message, request_id, trace_id, span_id, tenant_id, user_id, ...meta }) => {
-                const metaStr = Object.keys(meta).length ? JSON.stringify((0, redaction_1.redact)(meta)) : "";
-                const requestInfo = request_id && typeof request_id === "string"
-                    ? `[req=${request_id.substring(0, 8)}]`
-                    : "";
-                const traceInfo = trace_id && typeof trace_id === "string" ? `[trace=${trace_id.substring(0, 8)}]` : "";
-                const spanInfo = span_id && typeof span_id === "string" ? `[span=${span_id.substring(0, 8)}]` : "";
-                const tenantInfo = tenant_id && typeof tenant_id === "string" ? `[tenant=${tenant_id}]` : "";
-                const userInfo = user_id && typeof user_id === "string" ? `[user=${user_id}]` : "";
-                const timestampStr = typeof timestamp === "string" ? timestamp : String(timestamp);
-                const messageStr = typeof message === "string" ? message : String(message);
-                const levelStr = level;
-                return `${timestampStr} [${levelStr}]${requestInfo}${traceInfo}${spanInfo}${tenantInfo}${userInfo}: ${messageStr} ${metaStr}`;
-            })),
+            format: winston_1.default.format.combine(winston_1.default.format.colorize(), createPrintfFormat()),
         }),
     ],
 });
-// Log sampling configuration
 function shouldLog() {
     const samplingRate = config_1.config.logging.samplingRate;
     if (samplingRate >= 1.0) {
@@ -108,7 +93,6 @@ function shouldLog() {
     }
     return Math.random() < samplingRate;
 }
-// Helper to log with automatic redaction and trace context
 function logInfo(message, meta) {
     if (!shouldLog()) {
         return;
@@ -116,7 +100,6 @@ function logInfo(message, meta) {
     exports.logger.info(message, (0, redaction_1.redact)(meta));
 }
 function logError(message, error, meta) {
-    // Always log errors (no sampling)
     exports.logger.error(message, {
         ...(0, redaction_1.redact)(meta),
         ...(error instanceof Error
@@ -136,14 +119,12 @@ function logDebug(message, meta) {
     }
     exports.logger.debug(message, (0, redaction_1.redact)(meta));
 }
-// Business event logging
 function logBusinessEvent(event, meta) {
     exports.logger.info(`business_event:${event}`, {
         event_type: event,
         ...(0, redaction_1.redact)(meta),
     });
 }
-// Performance logging
 function logPerformance(operation, durationMs, meta) {
     exports.logger.info(`performance:${operation}`, {
         operation,
