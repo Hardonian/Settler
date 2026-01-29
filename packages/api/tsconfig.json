@@ -5,7 +5,7 @@
     "composite": false,
     "declaration": false,
     "declarationMap": false,
-    "exactOptionalPropertyTypes": false,
+    "exactOptionalPropertyTypes": true,
     "skipLibCheck": true,
     "paths": {}
   },

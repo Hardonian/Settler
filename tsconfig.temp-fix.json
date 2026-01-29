@@ -1,6 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "exactOptionalPropertyTypes": false,
+    "noEmit": true,
+    "skipLibCheck": true
+  },
   "include": [
     "packages/api/**/*.ts",
     "packages/api/**/*.tsx",
@@ -10,9 +15,6 @@
     "config/**/*.ts",
     "ops/**/*.ts"
   ],
-  "compilerOptions": {
-    "noEmit": true
-  },
   "exclude": [
     "node_modules",
     "dist",
