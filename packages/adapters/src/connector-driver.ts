@@ -86,112 +86,110 @@ export interface SyncResult {
 export interface NormalizedAccount {
   providerAccountId: string;
   accountName: string;
-  accountType?: string | undefined;
+  accountType?: string;
   currency: string;
-  institutionName?: string | undefined;
-  institutionId?: string | undefined;
-  metadata?: Record<string, unknown> | undefined;
+  institutionName?: string;
+  institutionId?: string;
+  metadata?: Record<string, unknown>;
 }
 
 export interface NormalizedTransaction {
   externalId: string;
-  accountId?: string | undefined;
+  accountId?: string;
   transactionType: "debit" | "credit" | "transfer" | "fee" | "refund";
   amountCents: number;
   currency: string;
   occurredAt: Date;
-  description?: string | undefined;
-  referenceId?: string | undefined;
-  referenceType?: string | undefined;
-  providerMetadata?: Record<string, unknown> | undefined;
-  rawPayload?: unknown | undefined;
+  description?: string;
+  referenceId?: string;
+  referenceType?: string;
+  providerMetadata?: Record<string, unknown>;
+  rawPayload?: unknown;
   idempotencyKey: string;
 }
 
 export interface NormalizedBalance {
   accountId: string;
   balanceCents: number;
-  availableBalanceCents?: number | undefined;
+  availableBalanceCents?: number;
   currency: string;
   snapshotAt: Date;
-  providerMetadata?: Record<string, unknown> | undefined;
-  rawPayload?: unknown | undefined;
+  providerMetadata?: Record<string, unknown>;
+  rawPayload?: unknown;
 }
 
 export interface NormalizedPayout {
   externalId: string;
-  accountId?: string | undefined;
+  accountId?: string;
   amountCents: number;
   currency: string;
   status: string;
   initiatedAt: Date;
-  completedAt?: Date | undefined;
-  feeCents?: number | undefined;
-  netAmountCents?: number | undefined;
-  destinationType?: string | undefined;
-  destinationId?: string | undefined;
-  description?: string | undefined;
-  providerMetadata?: Record<string, unknown> | undefined;
-  rawPayload?: unknown | undefined;
+  completedAt?: Date;
+  feeCents?: number;
+  netAmountCents?: number;
+  destinationType?: string;
+  destinationId?: string;
+  description?: string;
+  providerMetadata?: Record<string, unknown>;
+  rawPayload?: unknown;
   idempotencyKey: string;
 }
 
 export interface NormalizedInvoice {
   externalId: string;
-  invoiceNumber?: string | undefined;
-  customerId?: string | undefined;
-  customerName?: string | undefined;
+  invoiceNumber?: string;
+  customerId?: string;
+  customerName?: string;
   amountCents: number;
   currency: string;
   status: string;
-  issueDate?: Date | undefined;
-  dueDate?: Date | undefined;
-  paidAt?: Date | undefined;
-  lineItems?:
-    | Array<{
-        description: string;
-        quantity: number;
-        unitPriceCents: number;
-        totalCents: number;
-      }>
-    | undefined;
-  providerMetadata?: Record<string, unknown> | undefined;
-  rawPayload?: unknown | undefined;
+  issueDate?: Date;
+  dueDate?: Date;
+  paidAt?: Date;
+  lineItems?: Array<{
+    description: string;
+    quantity: number;
+    unitPriceCents: number;
+    totalCents: number;
+  }>;
+  providerMetadata?: Record<string, unknown>;
+  rawPayload?: unknown;
   idempotencyKey: string;
 }
 
 export interface NormalizedSubscription {
   externalId: string;
   customerId: string;
-  customerName?: string | undefined;
-  planId?: string | undefined;
-  planName?: string | undefined;
+  customerName?: string;
+  planId?: string;
+  planName?: string;
   status: string;
-  billingCycle?: string | undefined;
+  billingCycle?: string;
   amountCents: number;
   currency: string;
-  currentPeriodStart?: Date | undefined;
-  currentPeriodEnd?: Date | undefined;
-  cancelAtPeriodEnd?: boolean | undefined;
-  cancelledAt?: Date | undefined;
-  providerMetadata?: Record<string, unknown> | undefined;
-  rawPayload?: unknown | undefined;
+  currentPeriodStart?: Date;
+  currentPeriodEnd?: Date;
+  cancelAtPeriodEnd?: boolean;
+  cancelledAt?: Date;
+  providerMetadata?: Record<string, unknown>;
+  rawPayload?: unknown;
   idempotencyKey: string;
 }
 
 export interface NormalizedTaxEstimate {
   externalId: string;
-  transactionId?: string | undefined;
-  transactionType?: string | undefined;
+  transactionId?: string;
+  transactionType?: string;
   amountCents: number;
   currency: string;
   taxAmountCents: number;
-  taxRate?: number | undefined;
-  jurisdiction?: string | undefined;
-  taxType?: string | undefined;
+  taxRate?: number;
+  jurisdiction?: string;
+  taxType?: string;
   occurredAt: Date;
-  providerMetadata?: Record<string, unknown> | undefined;
-  rawPayload?: unknown | undefined;
+  providerMetadata?: Record<string, unknown>;
+  rawPayload?: unknown;
   idempotencyKey: string;
 }
 
@@ -252,35 +250,23 @@ export interface ConnectorDriver {
   handleWebhook?(
     payload: WebhookPayload,
     credentials?: Record<string, unknown>
-  ): Promise<{
-    success: boolean;
-    error?: string;
-    data?: unknown;
-  }>;
-
-  /**
-   * Handle webhook payload (for connectors that support webhooks and auth)
-   */
-  handleWebhook?(
-    payload: WebhookPayload,
-    credentials: Record<string, unknown>
-  ): Promise<{
-    success: boolean;
-    error?: string;
-    data?: unknown;
-  }>;
-
-  /**
-   * Handle webhook payload (for connectors that support webhooks and auth)
-   */
-  handleWebhook?(
-    payload: WebhookPayload,
-    credentials: Record<string, unknown>
-  ): Promise<{
-    success: boolean;
-    error?: string;
-    data?: unknown;
-  }>;
+  ): Promise<
+    | {
+        accounts?: NormalizedAccount[];
+        transactions?: NormalizedTransaction[];
+        balances?: NormalizedBalance[];
+        payouts?: NormalizedPayout[];
+        invoices?: NormalizedInvoice[];
+        subscriptions?: NormalizedSubscription[];
+        taxEstimates?: NormalizedTaxEstimate[];
+        rawPayloads?: Array<{ type: string; payload: unknown }>;
+      }
+    | {
+        success: boolean;
+        error?: string;
+        data?: unknown;
+      }
+  >;
 
   /**
    * Sync data from the external system

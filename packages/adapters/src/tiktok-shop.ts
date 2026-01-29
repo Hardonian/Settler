@@ -71,8 +71,12 @@ export class TikTokShopAdapter implements Adapter {
       });
 
       if (dateRange?.start && dateRange?.end) {
-        adsParams.append("start_date", dateRange.start.toISOString().split("T")[0]);
-        adsParams.append("end_date", dateRange.end.toISOString().split("T")[0]);
+        // Cast to Date to satisfy strict optional property types during compile
+        adsParams.append(
+          "start_date",
+          (dateRange.start as Date).toISOString().split("T")[0] as string
+        );
+        adsParams.append("end_date", (dateRange.end as Date).toISOString().split("T")[0] as string);
       }
 
       const adsResponse = await fetch(`${adsUrl}?${adsParams.toString()}`);

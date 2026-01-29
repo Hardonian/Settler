@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.json",
+  "include": [
+    "packages/api/**/*.ts",
+    "packages/api/**/*.tsx",
+    "packages/adapters/src/**/*.ts",
+    "packages/adapters/src/**/*.tsx"
+  ],
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    ".next",
+    "packages/api/src/__tests__/**",
+    "packages/api/src/**/__tests__/**",
+    "packages/adapters/src/**/__tests__/**"
+  ]
+}
