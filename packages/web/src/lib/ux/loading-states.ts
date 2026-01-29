@@ -1,6 +1,6 @@
 /**
  * Loading State Management
- * 
+ *
  * Provides utilities for managing loading states and progress indicators
  */
 
@@ -41,8 +41,8 @@ export class LoadingStateManager {
     this.state = {
       ...this.state,
       isLoading,
-      message,
       error: null,
+      ...(message !== undefined ? { message } : {}),
     };
     this.notify();
   }
@@ -55,8 +55,8 @@ export class LoadingStateManager {
       ...this.state,
       isLoading: true,
       progress: Math.max(0, Math.min(100, progress)),
-      message,
       error: null,
+      ...(message !== undefined ? { message } : {}),
     };
     this.notify();
   }

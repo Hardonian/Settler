@@ -449,7 +449,7 @@ async function checkAndIncrementUsageDatabase(
   tier: SubscriptionTier
 ): Promise<UsageCheckResult> {
   // Use database transaction for atomicity
-  const result = await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx: typeof prisma) => {
     const counter = await tx.usageCounter.upsert({
       where: {
         billingAccountId_service_period_periodStart: {

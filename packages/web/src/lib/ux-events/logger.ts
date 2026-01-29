@@ -1,11 +1,11 @@
 /**
  * UX Event Logger
- * 
+ *
  * Logs UX events locally in dev, stubs for backend in production.
  * No PII, no secrets.
  */
 
-import type { UXEventType } from './types';
+import type { UXEventType } from "./types";
 
 /**
  * Maximum events to store locally
@@ -24,7 +24,7 @@ let localEvents: UXEventType[] = [];
 //   }
 //
 //   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-//   
+//
 //   let screenSize: 'mobile' | 'tablet' | 'desktop' = 'desktop';
 //   if (window.innerWidth < 768) {
 //     screenSize = 'mobile';
@@ -50,8 +50,8 @@ function generateEventId(): string {
  * Get current route
  */
 function getCurrentRoute(): string {
-  if (typeof window === 'undefined') {
-    return 'unknown';
+  if (typeof window === "undefined") {
+    return "unknown";
   }
   return window.location.pathname;
 }
@@ -59,7 +59,11 @@ function getCurrentRoute(): string {
 /**
  * Log a UX event
  */
-export function logUXEvent(event: Omit<UXEventType, 'id' | 'timestamp' | 'route'> | Partial<UXEventType> & { type: UXEventType['type'] }): void {
+export function logUXEvent(
+  event:
+    | Omit<UXEventType, "id" | "timestamp" | "route">
+    | (Partial<UXEventType> & { type: UXEventType["type"] })
+): void {
   const fullEvent: UXEventType = {
     ...event,
     id: generateEventId(),
@@ -68,17 +72,17 @@ export function logUXEvent(event: Omit<UXEventType, 'id' | 'timestamp' | 'route'
   } as UXEventType;
 
   // Store locally (dev only, or for dev view)
-  if (process.env.NODE_ENV === 'development' || typeof window !== 'undefined') {
+  if (process.env.NODE_ENV === "development" || typeof window !== "undefined") {
     localEvents.push(fullEvent);
-    
+
     // Keep only recent events
     if (localEvents.length > MAX_LOCAL_EVENTS) {
       localEvents = localEvents.slice(-MAX_LOCAL_EVENTS);
     }
 
     // Log to console in dev
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[UX Event]', fullEvent);
+    if (process.env.NODE_ENV === "development") {
+      console.log("[UX Event]", fullEvent);
     }
   }
 
@@ -110,7 +114,7 @@ export function getEventStats(): {
   recent: UXEventType[];
 } {
   const byType: Record<string, number> = {};
-  
+
   localEvents.forEach((event) => {
     byType[event.type] = (byType[event.type] || 0) + 1;
   });
@@ -125,13 +129,9 @@ export function getEventStats(): {
 /**
  * Helper: Log step viewed
  */
-export function logStepViewed(
-  flowId: string,
-  stepId: string,
-  stepName: string
-): void {
+export function logStepViewed(flowId: string, stepId: string, stepName: string): void {
   logUXEvent({
-    type: 'step_viewed',
+    type: "step_viewed",
     flowId,
     stepId,
     stepName,
@@ -148,7 +148,7 @@ export function logStepCompleted(
   duration?: number
 ): void {
   logUXEvent({
-    type: 'step_completed',
+    type: "step_completed",
     flowId,
     stepId,
     stepName,
@@ -161,7 +161,7 @@ export function logStepCompleted(
  */
 export function logFlowStarted(flowId: string, flowName: string): void {
   logUXEvent({
-    type: 'flow_started',
+    type: "flow_started",
     flowId,
     flowName,
   });
@@ -178,7 +178,7 @@ export function logFlowCompleted(
   stepsSkipped?: number
 ): void {
   logUXEvent({
-    type: 'flow_completed',
+    type: "flow_completed",
     flowId,
     flowName,
     duration,
@@ -198,25 +198,21 @@ export function logError(
   recovered?: boolean
 ): void {
   logUXEvent({
-    type: 'error_occurred',
+    type: "error_occurred",
     errorMessage,
-    errorType,
-    flowId,
-    stepId,
-    recovered,
+    ...(errorType !== undefined && { errorType }),
+    ...(flowId !== undefined && { flowId }),
+    ...(stepId !== undefined && { stepId }),
+    ...(recovered !== undefined && { recovered }),
   });
 }
 
 /**
  * Helper: Log retry
  */
-export function logRetry(
-  flowId: string,
-  stepId: string,
-  retryCount: number
-): void {
+export function logRetry(flowId: string, stepId: string, retryCount: number): void {
   logUXEvent({
-    type: 'retry_attempted',
+    type: "retry_attempted",
     flowId,
     stepId,
     retryCount,
@@ -233,7 +229,7 @@ export function logFlowAbandoned(
   progress: number
 ): void {
   logUXEvent({
-    type: 'flow_abandoned',
+    type: "flow_abandoned",
     flowId,
     flowName,
     lastStepId,

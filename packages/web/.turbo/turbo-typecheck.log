@@ -1424,26 +1424,6 @@ src/lib/typed-env.ts(228,3): error TS2322: Type '{ NODE_ENV?: "development" | "p
   Types of property 'NODE_ENV' are incompatible.
     Type '"development" | "production" | "test" | undefined' is not assignable to type '"development" | "production" | "test"'.
       Type 'undefined' is not assignable to type '"development" | "production" | "test"'.
-src/lib/usage/tracking.ts(230,5): error TS2375: Type '{ allowed: boolean; current: number; limit: number; remaining: number; resetAt: Date; tier: "free" | "enterprise" | "pro"; reason: string | undefined; }' is not assignable to type 'UsageCheckResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'reason' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/usage/tracking.ts(426,51): error TS7006: Parameter 'tx' implicitly has an 'any' type.
-src/lib/ux-events/logger.ts(200,14): error TS2379: Argument of type '{ type: "error_occurred"; errorMessage: string; errorType: string | undefined; flowId: string | undefined; stepId: string | undefined; recovered: boolean | undefined; }' is not assignable to parameter of type 'Omit<UXEventType, "id" | "timestamp" | "route"> | (Partial<UXEventType> & { type: "step_viewed" | "step_completed" | "flow_started" | ... 4 more ... | "success_feedback_shown"; })' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Type '{ type: "error_occurred"; errorMessage: string; errorType: string | undefined; flowId: string | undefined; stepId: string | undefined; recovered: boolean | undefined; }' is not assignable to type 'Omit<UXEventType, "id" | "timestamp" | "route"> | (Partial<ErrorOccurredEvent> & { type: "step_viewed" | "step_completed" | ... 5 more ... | "success_feedback_shown"; })' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Type '{ type: "error_occurred"; errorMessage: string; errorType: string | undefined; flowId: string | undefined; stepId: string | undefined; recovered: boolean | undefined; }' is not assignable to type 'Partial<ErrorOccurredEvent> & { type: "step_viewed" | "step_completed" | "flow_started" | "flow_completed" | "flow_abandoned" | "error_occurred" | "retry_attempted" | "success_feedback_shown"; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-      Type '{ type: "error_occurred"; errorMessage: string; errorType: string | undefined; flowId: string | undefined; stepId: string | undefined; recovered: boolean | undefined; }' is not assignable to type 'Partial<ErrorOccurredEvent>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-        Types of property 'errorType' are incompatible.
-          Type 'string | undefined' is not assignable to type 'string'.
-            Type 'undefined' is not assignable to type 'string'.
-src/lib/ux/loading-states.ts(41,5): error TS2375: Type '{ isLoading: boolean; message: string | undefined; error: null; progress?: number; }' is not assignable to type 'LoadingState' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'message' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/ux/loading-states.ts(54,5): error TS2375: Type '{ isLoading: true; progress: number; message: string | undefined; error: null; }' is not assignable to type 'LoadingState' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'message' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/lib/ux/toast.ts(70,22): error TS2379: Argument of type '{ type: "success"; message: string; duration: number | undefined; }' is not assignable to parameter of type 'Omit<Toast, "id">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'duration' are incompatible.
     Type 'number | undefined' is not assignable to type 'number'.
@@ -1464,13 +1444,5 @@ src/lib/validation/component-validation.ts(93,3): error TS2375: Type '{ valid: b
   Types of property 'errors' are incompatible.
     Type 'string[] | undefined' is not assignable to type 'string[]'.
       Type 'undefined' is not assignable to type 'string[]'.
-src/lib/vercel/blob.ts(62,7): error TS2375: Type '{ url: string; downloadUrl: string; pathname: string; contentType: string | undefined; size: number | undefined; }' is not assignable to type '{ url: string; downloadUrl: string; pathname: string; contentType?: string; size?: number; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'contentType' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/lib/verify.ts(17,67): error TS2307: Cannot find module '/wasm/settler_verify_wasm.js' or its corresponding type declarations.
-src/middleware/api-logger.ts(175,22): error TS2379: Argument of type '{ method: string; path: string; statusCode: number; responseTime: number; headers: Record<string, string>; query: Record<string, string>; body: unknown; responseBody: unknown; error: string | undefined; ... 4 more ...; tenantId: string; }' is not assignable to parameter of type 'Omit<ApiCallLog, "id" | "timestamp">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'error' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
  ELIFECYCLE  Command failed with exit code 2.

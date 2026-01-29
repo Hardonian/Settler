@@ -185,8 +185,8 @@ export async function logApiRequest(
       body,
       responseBody,
       ...(error ? { error } : {}),
-      userAgent,
-      ipAddress: ipAddress !== "unknown" ? ipAddress : undefined,
+      ...(userAgent ? { userAgent } : {}),
+      ...(ipAddress !== "unknown" ? { ipAddress } : {}),
     });
   } catch (error) {
     // Don't let logging errors break the request
