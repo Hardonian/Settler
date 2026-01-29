@@ -3,12 +3,12 @@
  * Centralized environment variable validation and access
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 const envSchema = z.object({
   // Site
-  NEXT_PUBLIC_SITE_URL: z.string().url().default('https://settler.dev'),
-  NEXT_PUBLIC_APP_URL: z.string().url().default('https://settler.dev'),
+  NEXT_PUBLIC_SITE_URL: z.string().url().default("https://settler.dev"),
+  NEXT_PUBLIC_APP_URL: z.string().url().default("https://settler.dev"),
 
   // Database
   DATABASE_URL: z.string().url(),
@@ -20,7 +20,7 @@ const envSchema = z.object({
 
   // OpenAI
   OPENAI_API_KEY: z.string().optional(),
-  OPENAI_MODEL: z.string().default('gpt-3.5-turbo'),
+  OPENAI_MODEL: z.string().default("gpt-3.5-turbo"),
 
   // Resend
   RESEND_API_KEY: z.string().optional(),
@@ -36,13 +36,29 @@ const envSchema = z.object({
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
 
   // Feature Flags
-  ENABLE_CHATBOT: z.string().default('true').transform((val) => val === 'true').optional(),
-  ENABLE_ANALYTICS: z.string().default('true').transform((val) => val === 'true').optional(),
-  ENABLE_NEWSLETTER: z.string().default('true').transform((val) => val === 'true').optional(),
-  ENABLE_IMAGE_OPTIMIZATION: z.string().default('true').transform((val) => val === 'true').optional(),
+  ENABLE_CHATBOT: z
+    .string()
+    .default("true")
+    .transform((val) => val === "true")
+    .optional(),
+  ENABLE_ANALYTICS: z
+    .string()
+    .default("true")
+    .transform((val) => val === "true")
+    .optional(),
+  ENABLE_NEWSLETTER: z
+    .string()
+    .default("true")
+    .transform((val) => val === "true")
+    .optional(),
+  ENABLE_IMAGE_OPTIMIZATION: z
+    .string()
+    .default("true")
+    .transform((val) => val === "true")
+    .optional(),
 
   // Node
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  NODE_ENV: z.enum(["development", "production", "test"] as const).default("development"),
 });
 
 type Env = z.infer<typeof envSchema>;

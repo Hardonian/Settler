@@ -252,7 +252,7 @@ export async function getCurrentUsage(
       remaining,
       resetAt: getPeriodEnd(period),
       tier,
-      ...(!allowed && { reason: `Usage limit exceeded: ${current}/${limit}` }),
+      ...(allowed ? {} : { reason: `Usage limit exceeded: ${current}/${limit}` }),
     };
   } catch (error) {
     console.error("[Usage Tracking] Error getting current usage:", error);
@@ -355,7 +355,9 @@ export async function checkAndIncrementUsage(
             remaining: 0,
             resetAt: getPeriodEnd(period),
             tier,
-            reason: `Usage limit exceeded: ${newCount - quantity}/${limit}`,
+            ...(newCount - quantity > limit
+              ? { reason: `Usage limit exceeded: ${newCount - quantity}/${limit}` }
+              : {}),
           };
         }
 
