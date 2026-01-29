@@ -160,14 +160,14 @@ export function validateServerEnv(
     try {
       // Attempt to allow runtime-optional keys during build via partial
       schema = serverEnvSchema.partial(runtimeOptionalKeys);
-    } catch {
+    } catch (err) {
       // Fallback to full schema if partial() is not supported due to refinements
       schema = serverEnvSchema;
     }
   } else {
     schema = serverEnvSchema;
   }
-  const result = schema.safeParse(pickEnv(input, SERVER_ENV_KEYS));
+  const result = (schema as any).safeParse(pickEnv(input, SERVER_ENV_KEYS));
 
   if (!result.success) {
     return {
@@ -240,7 +240,7 @@ export function parseServerEnv(
   if (mode === "build") {
     try {
       schema = serverEnvSchema.partial(runtimeOptionalKeys);
-    } catch {
+    } catch (err) {
       schema = serverEnvSchema;
     }
   } else {
