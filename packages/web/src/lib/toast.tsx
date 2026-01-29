@@ -79,7 +79,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const warning = useCallback(
     (title: string, message?: string) => {
-      showToast({ type: "warning", title, message: message });
+      if (message !== undefined) {
+        showToast({ type: "warning", title, message });
+      }
     },
     [showToast]
   );

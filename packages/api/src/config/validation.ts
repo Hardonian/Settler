@@ -92,7 +92,7 @@ export const env = cleanEnv(process.env, {
     ...(isBuild ? { default: BUILD_PLACEHOLDER } : {}),
     devDefault: "dev-secret-change-in-production",
     desc: "Secret key for JWT token signing",
-  } as const),
+  }),
   JWT_ACCESS_EXPIRY: str({ default: "15m" }),
   JWT_REFRESH_EXPIRY: str({ default: "7d" }),
   JWT_REFRESH_SECRET: str({
