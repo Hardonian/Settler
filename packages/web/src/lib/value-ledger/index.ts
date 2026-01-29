@@ -250,8 +250,8 @@ export async function recordReconciliationCompleted(
   if (options.totalAmount && options.totalAmount > 0) {
     await recordValueEvent({
       billingAccountId,
-      tenantId: options.tenantId,
-      userId: options.userId,
+      ...(options.tenantId ? { tenantId: options.tenantId } : {}),
+      ...(options.userId ? { userId: options.userId } : {}),
       eventType: "dollars_reconciled",
       quantity: options.totalAmount,
       unit: "dollar",
@@ -278,11 +278,11 @@ export async function recordReceiptProcessed(
 ): Promise<void> {
   await recordValueEvent({
     billingAccountId,
-    tenantId: options.tenantId,
-    userId: options.userId,
-    eventType: "receipt_processed",
+    ...(options.tenantId ? { tenantId: options.tenantId } : {}),
+    ...(options.userId ? { userId: options.userId } : {}),
+    eventType: 'receipt_processed',
     quantity: 1,
-    unit: "receipt",
+    unit: 'receipt',
     metadata: {
       receiptId: options.receiptId,
       totalAmount: options.totalAmount,
