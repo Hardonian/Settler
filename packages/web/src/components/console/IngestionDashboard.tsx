@@ -85,8 +85,8 @@ export function IngestionDashboard({ ingestionId }: { ingestionId: string }) {
 
       // Load reconciliation runs (if any)
       // TODO: Implement endpoint: GET /api/v1/reconciliation/runs?ingestionId=...
-    } catch {
-      setError(err instanceof Error ? err.message : "Failed to load data");
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Failed to load data");
     } finally {
       setLoading(false);
     }

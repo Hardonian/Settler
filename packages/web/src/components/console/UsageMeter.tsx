@@ -1,19 +1,19 @@
 /**
  * Usage Meter Component
- * 
+ *
  * Displays current usage vs limits for key features.
  * Shows upgrade CTA when approaching limits.
  */
 
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle } from 'lucide-react';
-import Link from 'next/link';
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
+import Link from "next/link";
 
 interface UsageData {
   feature: string;
@@ -30,13 +30,13 @@ export function UsageMeter() {
   useEffect(() => {
     async function fetchUsage() {
       try {
-        const response = await fetch('/api/console/usage');
+        const response = await fetch("/api/console/usage");
         if (response.ok) {
           const data = await response.json();
           setUsage(data.usage || []);
         }
-      } catch {
-        console.error('[UsageMeter] Failed to fetch usage:', error);
+      } catch (error: unknown) {
+        console.error("[UsageMeter] Failed to fetch usage:", error);
       } finally {
         setLoading(false);
       }
@@ -85,12 +85,10 @@ export function UsageMeter() {
           return (
             <div key={item.feature} className="space-y-2">
               <div className="flex justify-between items-center text-sm">
-                <span className="font-medium capitalize">
-                  {item.feature.replace(/_/g, ' ')}
-                </span>
+                <span className="font-medium capitalize">{item.feature.replace(/_/g, " ")}</span>
                 <span className="text-slate-600">
                   {isUnlimited ? (
-                    'Unlimited'
+                    "Unlimited"
                   ) : (
                     <>
                       {item.current.toLocaleString()} / {item.limit.toLocaleString()}
@@ -98,9 +96,7 @@ export function UsageMeter() {
                   )}
                 </span>
               </div>
-              {!isUnlimited && (
-                <Progress value={Math.min(item.percentage, 100)} className="h-2" />
-              )}
+              {!isUnlimited && <Progress value={Math.min(item.percentage, 100)} className="h-2" />}
               {isAtLimit && item.upgradeUrl && (
                 <Alert variant="destructive">
                   <AlertTriangle className="h-4 w-4" />

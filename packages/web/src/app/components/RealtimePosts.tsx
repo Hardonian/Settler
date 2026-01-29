@@ -91,11 +91,14 @@ export function RealtimePosts() {
           try {
             supabase.removeChannel(channel);
           } catch (err) {
-            supabase.removeChannel(channel);
-          } catch (err) {
+            console.error("Error removing channel:", err);
+          }
+        };
+      } catch (err) {
+        console.error("Error setting up realtime subscription:", err);
         return () => {};
       }
-    } catch {
+    } catch (err) {
       console.error("Error initializing Supabase client:", err);
       setIsLoading(false);
       return () => {};

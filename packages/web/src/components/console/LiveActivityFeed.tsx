@@ -1,12 +1,29 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { RefreshCw, FileText, Flag, CheckCircle2, Clock, Key, CreditCard, BarChart3 } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  RefreshCw,
+  FileText,
+  Flag,
+  CheckCircle2,
+  Clock,
+  Key,
+  CreditCard,
+  BarChart3,
+} from "lucide-react";
 
-type ActivityType = 'reconcile' | 'receipt' | 'flag' | 'api_key' | 'usage' | 'billing' | 'site' | 'experiment';
-type ActivityStatus = 'success' | 'processing' | 'failed';
+type ActivityType =
+  | "reconcile"
+  | "receipt"
+  | "flag"
+  | "api_key"
+  | "usage"
+  | "billing"
+  | "site"
+  | "experiment";
+type ActivityStatus = "success" | "processing" | "failed";
 
 interface ActivityItem {
   id: string;
@@ -23,7 +40,7 @@ export function LiveActivityFeed() {
 
   const fetchActivities = async () => {
     try {
-      const res = await fetch('/api/console/activities');
+      const res = await fetch("/api/console/activities");
       if (res.ok) {
         const data = await res.json();
         interface ActivityResponse {
@@ -34,19 +51,21 @@ export function LiveActivityFeed() {
           created_at: string;
           metadata?: Record<string, unknown>;
         }
-        
-        const mappedActivities: ActivityItem[] = (data.activities || []).map((activity: ActivityResponse) => ({
-          id: activity.id,
-          type: activity.activity_type,
-          status: activity.status,
-          title: activity.title,
-          timestamp: new Date(activity.created_at),
-          meta: activity.metadata?.meta || activity.metadata?.description || '',
-        }));
+
+        const mappedActivities: ActivityItem[] = (data.activities || []).map(
+          (activity: ActivityResponse) => ({
+            id: activity.id,
+            type: activity.activity_type,
+            status: activity.status,
+            title: activity.title,
+            timestamp: new Date(activity.created_at),
+            meta: activity.metadata?.meta || activity.metadata?.description || "",
+          })
+        );
         setActivities(mappedActivities);
       }
-    } catch {
-      console.error('Failed to fetch activities:', error);
+    } catch (error: unknown) {
+      console.error("Failed to fetch activities:", error);
     } finally {
       setLoading(false);
     }
@@ -65,9 +84,7 @@ export function LiveActivityFeed() {
   return (
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-lg font-medium">
-          Live Activity
-        </CardTitle>
+        <CardTitle className="text-lg font-medium">Live Activity</CardTitle>
         <Badge variant="outline" className="animate-pulse text-green-600 border-green-600">
           ● Live
         </Badge>
@@ -84,45 +101,58 @@ export function LiveActivityFeed() {
         ) : (
           <div className="space-y-4">
             {activities.map((item) => (
-            <div key={item.id} className="flex items-start gap-3 border-b border-slate-100 dark:border-slate-800 pb-3 last:border-0 last:pb-0 animate-in slide-in-from-left-2 fade-in duration-300">
-              <div className={`mt-1 p-1.5 rounded-full ${
-                item.type === 'reconcile' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30' :
-                item.type === 'receipt' ? 'bg-green-100 text-green-600 dark:bg-green-900/30' :
-                item.type === 'flag' ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/30' :
-                item.type === 'api_key' ? 'bg-orange-100 text-orange-600 dark:bg-orange-900/30' :
-                item.type === 'usage' ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30' :
-                item.type === 'billing' ? 'bg-pink-100 text-pink-600 dark:bg-pink-900/30' :
-                'bg-slate-100 text-slate-600 dark:bg-slate-900/30'
-              }`}>
-                {item.type === 'reconcile' && <RefreshCw className="w-3 h-3" />}
-                {item.type === 'receipt' && <FileText className="w-3 h-3" />}
-                {item.type === 'flag' && <Flag className="w-3 h-3" />}
-                {item.type === 'api_key' && <Key className="w-3 h-3" />}
-                {item.type === 'usage' && <BarChart3 className="w-3 h-3" />}
-                {item.type === 'billing' && <CreditCard className="w-3 h-3" />}
-                {(item.type === 'site' || item.type === 'experiment') && <FileText className="w-3 h-3" />}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
-                  {item.title}
-                </p>
-                <div className="flex items-center gap-2 text-xs text-slate-500">
-                  <span>{item.meta}</span>
-                  <span>•</span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {item.timestamp.toLocaleTimeString()}
-                  </span>
+              <div
+                key={item.id}
+                className="flex items-start gap-3 border-b border-slate-100 dark:border-slate-800 pb-3 last:border-0 last:pb-0 animate-in slide-in-from-left-2 fade-in duration-300"
+              >
+                <div
+                  className={`mt-1 p-1.5 rounded-full ${
+                    item.type === "reconcile"
+                      ? "bg-blue-100 text-blue-600 dark:bg-blue-900/30"
+                      : item.type === "receipt"
+                        ? "bg-green-100 text-green-600 dark:bg-green-900/30"
+                        : item.type === "flag"
+                          ? "bg-purple-100 text-purple-600 dark:bg-purple-900/30"
+                          : item.type === "api_key"
+                            ? "bg-orange-100 text-orange-600 dark:bg-orange-900/30"
+                            : item.type === "usage"
+                              ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30"
+                              : item.type === "billing"
+                                ? "bg-pink-100 text-pink-600 dark:bg-pink-900/30"
+                                : "bg-slate-100 text-slate-600 dark:bg-slate-900/30"
+                  }`}
+                >
+                  {item.type === "reconcile" && <RefreshCw className="w-3 h-3" />}
+                  {item.type === "receipt" && <FileText className="w-3 h-3" />}
+                  {item.type === "flag" && <Flag className="w-3 h-3" />}
+                  {item.type === "api_key" && <Key className="w-3 h-3" />}
+                  {item.type === "usage" && <BarChart3 className="w-3 h-3" />}
+                  {item.type === "billing" && <CreditCard className="w-3 h-3" />}
+                  {(item.type === "site" || item.type === "experiment") && (
+                    <FileText className="w-3 h-3" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+                    {item.title}
+                  </p>
+                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                    <span>{item.meta}</span>
+                    <span>•</span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {item.timestamp.toLocaleTimeString()}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  {item.status === "success" ? (
+                    <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <div className="w-4 h-4 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
+                  )}
                 </div>
               </div>
-              <div>
-                {item.status === 'success' ? (
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
-                ) : (
-                  <div className="w-4 h-4 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
-                )}
-              </div>
-            </div>
             ))}
           </div>
         )}

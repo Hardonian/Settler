@@ -73,8 +73,8 @@ export function AdvancedAuditTrail() {
 
       const data = await res.json();
       setLogs(data.data || []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load logs");
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Failed to load logs");
     } finally {
       setLoading(false);
     }
@@ -98,8 +98,8 @@ export function AdvancedAuditTrail() {
       const data = await res.json();
       // In a real implementation, you'd download the file
       alert(`Export created: ${data.id}`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to export");
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Failed to export");
     } finally {
       setLoading(false);
     }

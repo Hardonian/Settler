@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { ConsoleLayout } from '@/components/console/ConsoleLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, CreditCard, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from "react";
+import { ConsoleLayout } from "@/components/console/ConsoleLayout";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, CreditCard, AlertCircle, CheckCircle2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface BillingData {
   billingAccount: {
@@ -44,14 +44,14 @@ export default function BillingPage() {
   const fetchBillingData = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/console/billing');
+      const response = await fetch("/api/console/billing");
       if (!response.ok) {
-        throw new Error('Failed to load billing data');
+        throw new Error("Failed to load billing data");
       }
       const result = await response.json();
       setData(result);
-    } catch {
-      setError(err instanceof Error ? err.message : 'Failed to load billing data');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load billing data");
     } finally {
       setIsLoading(false);
     }
@@ -60,20 +60,20 @@ export default function BillingPage() {
   const handleManageBilling = async () => {
     try {
       setIsCreatingPortal(true);
-      const response = await fetch('/api/stripe/portal', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/stripe/portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           returnUrl: `${window.location.origin}/console/billing`,
         }),
       });
       if (!response.ok) {
-        throw new Error('Failed to create portal session');
+        throw new Error("Failed to create portal session");
       }
       const { url } = await response.json();
       window.location.href = url;
-    } catch {
-      setError(err instanceof Error ? err.message : 'Failed to open billing portal');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to open billing portal");
       setIsCreatingPortal(false);
     }
   };
@@ -81,9 +81,9 @@ export default function BillingPage() {
   const handleUpgrade = async (planCode: string) => {
     try {
       setIsCreatingCheckout(planCode);
-      const response = await fetch('/api/stripe/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           planCode,
           successUrl: `${window.location.origin}/console/billing?success=true`,
@@ -91,12 +91,12 @@ export default function BillingPage() {
         }),
       });
       if (!response.ok) {
-        throw new Error('Failed to create checkout session');
+        throw new Error("Failed to create checkout session");
       }
       const { url } = await response.json();
       window.location.href = url;
-    } catch {
-      setError(err instanceof Error ? err.message : 'Failed to start checkout');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to start checkout");
       setIsCreatingCheckout(null);
     }
   };
@@ -118,7 +118,7 @@ export default function BillingPage() {
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 text-red-600">
               <AlertCircle className="h-5 w-5" />
-              <p>{error || 'Failed to load billing data'}</p>
+              <p>{error || "Failed to load billing data"}</p>
             </div>
           </CardContent>
         </Card>
@@ -126,11 +126,11 @@ export default function BillingPage() {
     );
   }
 
-  const planCode = data.subscription?.planCode || 'starter';
-  const isStarter = planCode === 'starter';
-  const isGrowth = planCode === 'growth';
-  const isScale = planCode === 'scale';
-  const isEnterprise = planCode === 'enterprise';
+  const planCode = data.subscription?.planCode || "starter";
+  const isStarter = planCode === "starter";
+  const isGrowth = planCode === "growth";
+  const isScale = planCode === "scale";
+  const isEnterprise = planCode === "enterprise";
 
   // Calculate exception threshold based on reconciliation volume
   const reconciliationVolume = data.usage.reconcile.current;
@@ -139,18 +139,24 @@ export default function BillingPage() {
 
   const usageBars = [
     {
-      service: 'Reconciliations',
+      service: "Reconciliations",
       current: data.usage.reconcile.current,
       limit: data.usage.reconcile.limit,
-      percentage: Math.min(100, (data.usage.reconcile.current / Math.max(1, data.usage.reconcile.limit)) * 100),
-      unit: 'reconciliations',
+      percentage: Math.min(
+        100,
+        (data.usage.reconcile.current / Math.max(1, data.usage.reconcile.limit)) * 100
+      ),
+      unit: "reconciliations",
     },
     {
-      service: 'Exceptions Requiring Review',
+      service: "Exceptions Requiring Review",
       current: data.usage.exceptions.current,
       limit: exceptionThreshold,
-      percentage: Math.min(100, (data.usage.exceptions.current / Math.max(1, exceptionThreshold)) * 100),
-      unit: 'exceptions',
+      percentage: Math.min(
+        100,
+        (data.usage.exceptions.current / Math.max(1, exceptionThreshold)) * 100
+      ),
+      unit: "exceptions",
       overage: exceptionsOverThreshold,
     },
   ];
@@ -166,11 +172,7 @@ export default function BillingPage() {
             </p>
           </div>
           {data.subscription && (
-            <Button
-              onClick={handleManageBilling}
-              disabled={isCreatingPortal}
-              variant="outline"
-            >
+            <Button onClick={handleManageBilling} disabled={isCreatingPortal} variant="outline">
               {isCreatingPortal ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -195,13 +197,11 @@ export default function BillingPage() {
                 <CardDescription>
                   {data.subscription
                     ? `Active subscription - ${data.subscription.planName}`
-                    : 'Starter plan - First 10,000 reconciliations free'}
+                    : "Starter plan - First 10,000 reconciliations free"}
                 </CardDescription>
               </div>
-              <Badge
-                variant={data.subscription?.status === 'active' ? 'default' : 'secondary'}
-              >
-                {data.subscription?.status || 'Starter'}
+              <Badge variant={data.subscription?.status === "active" ? "default" : "secondary"}>
+                {data.subscription?.status || "Starter"}
               </Badge>
             </div>
           </CardHeader>
@@ -215,7 +215,7 @@ export default function BillingPage() {
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-400">Period:</span>
                   <span className="font-medium">
-                    {new Date(data.subscription.currentPeriodStart).toLocaleDateString()} -{' '}
+                    {new Date(data.subscription.currentPeriodStart).toLocaleDateString()} -{" "}
                     {new Date(data.subscription.currentPeriodEnd).toLocaleDateString()}
                   </span>
                 </div>
@@ -249,22 +249,26 @@ export default function BillingPage() {
                   <div
                     className={`h-2 rounded-full transition-all ${
                       bar.percentage >= 90
-                        ? 'bg-red-500'
+                        ? "bg-red-500"
                         : bar.percentage >= 75
-                        ? 'bg-amber-500'
-                        : 'bg-blue-500'
+                          ? "bg-amber-500"
+                          : "bg-blue-500"
                     }`}
                     style={{ width: `${bar.percentage}%` }}
                   />
                 </div>
-                {bar.service === 'Exceptions Requiring Review' && bar.overage && bar.overage > 0 && (
+                {bar.service === "Exceptions Requiring Review" &&
+                  bar.overage &&
+                  bar.overage > 0 && (
+                    <p className="text-xs text-amber-600 dark:text-amber-400">
+                      {bar.overage.toLocaleString()} exceptions over threshold. Overage: $
+                      {(bar.overage * 0.1).toFixed(2)}
+                    </p>
+                  )}
+                {bar.service === "Reconciliations" && bar.percentage >= 90 && (
                   <p className="text-xs text-amber-600 dark:text-amber-400">
-                    {bar.overage.toLocaleString()} exceptions over threshold. Overage: ${(bar.overage * 0.10).toFixed(2)}
-                  </p>
-                )}
-                {bar.service === 'Reconciliations' && bar.percentage >= 90 && (
-                  <p className="text-xs text-amber-600 dark:text-amber-400">
-                    Approaching limit. Overage: ${((bar.current - bar.limit) * 0.01).toFixed(2)}/month
+                    Approaching limit. Overage: ${((bar.current - bar.limit) * 0.01).toFixed(2)}
+                    /month
                   </p>
                 )}
               </div>
@@ -283,7 +287,7 @@ export default function BillingPage() {
               {/* Starter Plan */}
               <div
                 className={`p-4 border rounded-lg ${
-                  isStarter ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : ''
+                  isStarter ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" : ""
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -295,9 +299,7 @@ export default function BillingPage() {
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  $0/month
-                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">$0/month</p>
                 <ul className="text-sm space-y-1 mb-4">
                   <li>• 10,000 reconciliations/month</li>
                   <li>• 1% exception rate included</li>
@@ -308,7 +310,7 @@ export default function BillingPage() {
                     variant="outline"
                     size="sm"
                     className="w-full"
-                    onClick={() => router.push('/pricing')}
+                    onClick={() => router.push("/pricing")}
                   >
                     View Details
                   </Button>
@@ -318,7 +320,7 @@ export default function BillingPage() {
               {/* Growth Plan */}
               <div
                 className={`p-4 border rounded-lg ${
-                  isGrowth ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : ''
+                  isGrowth ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" : ""
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -330,9 +332,7 @@ export default function BillingPage() {
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  $900/month
-                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">$900/month</p>
                 <ul className="text-sm space-y-1 mb-4">
                   <li>• 100,000 reconciliations/month</li>
                   <li>• 1% exception rate included</li>
@@ -344,16 +344,16 @@ export default function BillingPage() {
                   <Button
                     size="sm"
                     className="w-full"
-                    onClick={() => handleUpgrade('growth')}
-                    disabled={isCreatingCheckout === 'growth'}
+                    onClick={() => handleUpgrade("growth")}
+                    disabled={isCreatingCheckout === "growth"}
                   >
-                    {isCreatingCheckout === 'growth' ? (
+                    {isCreatingCheckout === "growth" ? (
                       <>
                         <Loader2 className="mr-2 h-3 w-3 animate-spin" />
                         Processing...
                       </>
                     ) : (
-                      'Upgrade to Growth'
+                      "Upgrade to Growth"
                     )}
                   </Button>
                 )}
@@ -362,7 +362,7 @@ export default function BillingPage() {
               {/* Scale Plan */}
               <div
                 className={`p-4 border rounded-lg ${
-                  isScale ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : ''
+                  isScale ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" : ""
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -374,9 +374,7 @@ export default function BillingPage() {
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  $9,900/month
-                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">$9,900/month</p>
                 <ul className="text-sm space-y-1 mb-4">
                   <li>• 1,000,000 reconciliations/month</li>
                   <li>• 1% exception rate included</li>
@@ -388,16 +386,16 @@ export default function BillingPage() {
                   <Button
                     size="sm"
                     className="w-full"
-                    onClick={() => handleUpgrade('scale')}
-                    disabled={isCreatingCheckout === 'scale'}
+                    onClick={() => handleUpgrade("scale")}
+                    disabled={isCreatingCheckout === "scale"}
                   >
-                    {isCreatingCheckout === 'scale' ? (
+                    {isCreatingCheckout === "scale" ? (
                       <>
                         <Loader2 className="mr-2 h-3 w-3 animate-spin" />
                         Processing...
                       </>
                     ) : (
-                      'Upgrade to Scale'
+                      "Upgrade to Scale"
                     )}
                   </Button>
                 )}
@@ -406,7 +404,7 @@ export default function BillingPage() {
               {/* Enterprise Plan */}
               <div
                 className={`p-4 border rounded-lg ${
-                  isEnterprise ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : ''
+                  isEnterprise ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" : ""
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -418,9 +416,7 @@ export default function BillingPage() {
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  Custom
-                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Custom</p>
                 <ul className="text-sm space-y-1 mb-4">
                   <li>• Custom volume</li>
                   <li>• Custom exception thresholds</li>
@@ -432,16 +428,15 @@ export default function BillingPage() {
                     variant="outline"
                     size="sm"
                     className="w-full"
-                    onClick={() => router.push('/enterprise')}
+                    onClick={() => router.push("/enterprise")}
                   >
                     Contact Sales
                   </Button>
                 )}
               </div>
             </div>
-            </CardContent>
+          </CardContent>
         </Card>
-
       </div>
     </ConsoleLayout>
   );

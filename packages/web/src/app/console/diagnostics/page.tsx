@@ -1,19 +1,19 @@
 /**
  * Diagnostics Page
- * 
+ *
  * Gated admin/console page showing system health and diagnostics.
  */
 
-import { createClient } from '@/lib/supabase/server';
-import { prisma } from '@/shared/db/prismaClient';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
-import { redirect } from 'next/navigation';
+import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/shared/db/prismaClient";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { redirect } from "next/navigation";
 
 interface DiagnosticItem {
   name: string;
-  status: 'ok' | 'warning' | 'error';
+  status: "ok" | "warning" | "error";
   message: string;
   value?: string | number;
 }
@@ -24,27 +24,27 @@ async function getDiagnostics(): Promise<DiagnosticItem[]> {
   // Check Supabase connection
   try {
     const supabase = await createClient();
-    const { error } = await supabase.from('tenants').select('id').limit(1);
+    const { error } = await supabase.from("tenants").select("id").limit(1);
     if (error) {
       // Log error but don't throw - graceful degradation
       diagnostics.push({
-        name: 'Supabase Connection',
-        status: 'error',
-        message: error.message || 'Connection failed',
+        name: "Supabase Connection",
+        status: "error",
+        message: error.message || "Connection failed",
       });
       // Continue to next check instead of throwing
     } else {
       diagnostics.push({
-        name: 'Supabase Connection',
-        status: 'ok',
-        message: 'Connected successfully',
+        name: "Supabase Connection",
+        status: "ok",
+        message: "Connected successfully",
       });
     }
-  } catch {
+  } catch (err) {
     diagnostics.push({
-      name: 'Supabase Connection',
-      status: 'error',
-      message: error instanceof Error ? error.message : 'Connection failed',
+      name: "Supabase Connection",
+      status: "error",
+      message: err instanceof Error ? err.message : "Connection failed",
     });
   }
 
@@ -52,15 +52,15 @@ async function getDiagnostics(): Promise<DiagnosticItem[]> {
   try {
     await prisma.$queryRaw`SELECT 1`;
     diagnostics.push({
-      name: 'Database Connection',
-      status: 'ok',
-      message: 'Connected successfully',
+      name: "Database Connection",
+      status: "ok",
+      message: "Connected successfully",
     });
-  } catch {
+  } catch (err) {
     diagnostics.push({
-      name: 'Database Connection',
-      status: 'error',
-      message: error instanceof Error ? error.message : 'Connection failed',
+      name: "Database Connection",
+      status: "error",
+      message: err instanceof Error ? err.message : "Connection failed",
     });
   }
 
@@ -69,95 +69,96 @@ async function getDiagnostics(): Promise<DiagnosticItem[]> {
   const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (stripeSecret && stripeWebhookSecret) {
     diagnostics.push({
-      name: 'Stripe Configuration',
-      status: 'ok',
-      message: 'Stripe keys configured',
+      name: "Stripe Configuration",
+      status: "ok",
+      message: "Stripe keys configured",
     });
   } else {
     diagnostics.push({
-      name: 'Stripe Configuration',
-      status: 'warning',
-      message: 'Stripe keys not configured',
+      name: "Stripe Configuration",
+      status: "warning",
+      message: "Stripe keys not configured",
     });
   }
 
   // Get last webhook received
   try {
     const lastWebhook = await prisma.stripeEvent.findFirst({
-      orderBy: { receivedAt: 'desc' },
+      orderBy: { receivedAt: "desc" },
       select: { receivedAt: true, type: true, status: true },
     });
     if (lastWebhook) {
       diagnostics.push({
-        name: 'Last Stripe Webhook',
-        status: lastWebhook.status === 'processed' ? 'ok' : 'warning',
+        name: "Last Stripe Webhook",
+        status: lastWebhook.status === "processed" ? "ok" : "warning",
         message: `${lastWebhook.type} - ${lastWebhook.status}`,
         value: lastWebhook.receivedAt.toISOString(),
       });
     } else {
       diagnostics.push({
-        name: 'Last Stripe Webhook',
-        status: 'warning',
-        message: 'No webhooks received yet',
+        name: "Last Stripe Webhook",
+        status: "warning",
+        message: "No webhooks received yet",
       });
     }
-  } catch {
+  } catch (err) {
     diagnostics.push({
-      name: 'Last Stripe Webhook',
-      status: 'error',
-      message: 'Failed to query webhooks',
+      name: "Last Stripe Webhook",
+      status: "error",
+      message: "Failed to query webhooks",
     });
   }
 
   // Get last reconciliation run
   try {
     const lastRun = await prisma.reconciliationRun.findFirst({
-      orderBy: { startedAt: 'desc' },
+      orderBy: { startedAt: "desc" },
       select: { id: true, status: true, startedAt: true, matchedCount: true },
     });
     if (lastRun) {
       diagnostics.push({
-        name: 'Last Reconciliation Run',
-        status: lastRun.status === 'completed' ? 'ok' : lastRun.status === 'failed' ? 'error' : 'warning',
+        name: "Last Reconciliation Run",
+        status:
+          lastRun.status === "completed" ? "ok" : lastRun.status === "failed" ? "error" : "warning",
         message: `Status: ${lastRun.status}, Matched: ${lastRun.matchedCount || 0}`,
         value: lastRun.startedAt.toISOString(),
       });
     } else {
       diagnostics.push({
-        name: 'Last Reconciliation Run',
-        status: 'warning',
-        message: 'No reconciliation runs yet',
+        name: "Last Reconciliation Run",
+        status: "warning",
+        message: "No reconciliation runs yet",
       });
     }
-  } catch {
+  } catch (err) {
     diagnostics.push({
-      name: 'Last Reconciliation Run',
-      status: 'error',
-      message: 'Failed to query reconciliation runs',
+      name: "Last Reconciliation Run",
+      status: "error",
+      message: "Failed to query reconciliation runs",
     });
   }
 
   // Check environment variables
   const requiredEnvVars = [
-    'SUPABASE_URL',
-    'SUPABASE_ANON_KEY',
-    'NEXT_PUBLIC_SUPABASE_URL',
-    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+    "SUPABASE_URL",
+    "SUPABASE_ANON_KEY",
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
   ];
   const missingEnvVars = requiredEnvVars.filter(
     (key) => !process.env[key] && !process.env[`NEXT_PUBLIC_${key}`]
   );
   if (missingEnvVars.length === 0) {
     diagnostics.push({
-      name: 'Environment Variables',
-      status: 'ok',
-      message: 'All required env vars present',
+      name: "Environment Variables",
+      status: "ok",
+      message: "All required env vars present",
     });
   } else {
     diagnostics.push({
-      name: 'Environment Variables',
-      status: 'warning',
-      message: `Missing: ${missingEnvVars.join(', ')}`,
+      name: "Environment Variables",
+      status: "warning",
+      message: `Missing: ${missingEnvVars.join(", ")}`,
     });
   }
 
@@ -167,33 +168,47 @@ async function getDiagnostics(): Promise<DiagnosticItem[]> {
 export default async function DiagnosticsPage() {
   // Verify user is authenticated
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect('/auth/login');
+    redirect("/auth/login");
   }
 
   const diagnostics = await getDiagnostics();
 
-  const getStatusIcon = (status: DiagnosticItem['status']) => {
+  const getStatusIcon = (status: DiagnosticItem["status"]) => {
     switch (status) {
-      case 'ok':
+      case "ok":
         return <CheckCircle2 className="h-5 w-5 text-green-600" />;
-      case 'warning':
+      case "warning":
         return <AlertCircle className="h-5 w-5 text-yellow-600" />;
-      case 'error':
+      case "error":
         return <XCircle className="h-5 w-5 text-red-600" />;
     }
   };
 
-  const getStatusBadge = (status: DiagnosticItem['status']) => {
+  const getStatusBadge = (status: DiagnosticItem["status"]) => {
     switch (status) {
-      case 'ok':
-        return <Badge variant="default" className="bg-green-100 text-green-800">OK</Badge>;
-      case 'warning':
-        return <Badge variant="default" className="bg-yellow-100 text-yellow-800">Warning</Badge>;
-      case 'error':
-        return <Badge variant="default" className="bg-red-100 text-red-800">Error</Badge>;
+      case "ok":
+        return (
+          <Badge variant="default" className="bg-green-100 text-green-800">
+            OK
+          </Badge>
+        );
+      case "warning":
+        return (
+          <Badge variant="default" className="bg-yellow-100 text-yellow-800">
+            Warning
+          </Badge>
+        );
+      case "error":
+        return (
+          <Badge variant="default" className="bg-red-100 text-red-800">
+            Error
+          </Badge>
+        );
     }
   };
 
@@ -220,9 +235,7 @@ export default async function DiagnosticsPage() {
               <div className="flex items-center justify-between">
                 {getStatusBadge(item.status)}
                 {item.value && (
-                  <span className="text-sm text-gray-500 font-mono">
-                    {item.value}
-                  </span>
+                  <span className="text-sm text-gray-500 font-mono">{item.value}</span>
                 )}
               </div>
             </CardContent>
@@ -238,15 +251,15 @@ export default async function DiagnosticsPage() {
         <CardContent>
           <div className="space-y-2 font-mono text-sm">
             <div>
-              <span className="text-gray-500">Node Version:</span>{' '}
-              <span>{process.env.NODE_VERSION || 'Unknown'}</span>
+              <span className="text-gray-500">Node Version:</span>{" "}
+              <span>{process.env.NODE_VERSION || "Unknown"}</span>
             </div>
             <div>
-              <span className="text-gray-500">Environment:</span>{' '}
-              <span>{process.env.NODE_ENV || 'development'}</span>
+              <span className="text-gray-500">Environment:</span>{" "}
+              <span>{process.env.NODE_ENV || "development"}</span>
             </div>
             <div>
-              <span className="text-gray-500">Timestamp:</span>{' '}
+              <span className="text-gray-500">Timestamp:</span>{" "}
               <span>{new Date().toISOString()}</span>
             </div>
           </div>

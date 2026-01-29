@@ -1,15 +1,15 @@
 /**
  * Activation Funnel Dashboard
- * 
+ *
  * Admin panel for tracking activation funnel metrics and conversion rates.
  */
 
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { TrendingUp, Users, Link2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { TrendingUp, Users, Link2, CheckCircle2, AlertCircle } from "lucide-react";
 
 interface ActivationMetrics {
   signups: number;
@@ -45,9 +45,9 @@ export default function ActivationFunnelPage() {
 
         const now = new Date();
         const periods = [
-          { label: '24h', days: 1 },
-          { label: '7d', days: 7 },
-          { label: '30d', days: 30 },
+          { label: "24h", days: 1 },
+          { label: "7d", days: 7 },
+          { label: "30d", days: 30 },
         ];
 
         const results = await Promise.all(
@@ -61,15 +61,15 @@ export default function ActivationFunnelPage() {
               throw new Error(`Failed to fetch ${days}d metrics`);
             }
             const data = await response.json();
-            return { label: days === 1 ? '24h' : days === 7 ? '7d' : '30d', metrics: data.metrics };
+            return { label: days === 1 ? "24h" : days === 7 ? "7d" : "30d", metrics: data.metrics };
           })
         );
 
-        setMetrics24h(results.find((r) => r.label === '24h')?.metrics || null);
-        setMetrics7d(results.find((r) => r.label === '7d')?.metrics || null);
-        setMetrics30d(results.find((r) => r.label === '30d')?.metrics || null);
-      } catch {
-        setError(err instanceof Error ? err.message : 'Failed to load activation metrics');
+        setMetrics24h(results.find((r) => r.label === "24h")?.metrics || null);
+        setMetrics7d(results.find((r) => r.label === "7d")?.metrics || null);
+        setMetrics30d(results.find((r) => r.label === "30d")?.metrics || null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load activation metrics");
       } finally {
         setLoading(false);
       }
@@ -153,20 +153,20 @@ export default function ActivationFunnelPage() {
       {/* Period Selector */}
       <div className="mb-6 flex gap-2">
         {[
-          { label: '24h', data: metrics24h },
-          { label: '7d', data: metrics7d },
-          { label: '30d', data: metrics30d },
+          { label: "24h", data: metrics24h },
+          { label: "7d", data: metrics7d },
+          { label: "30d", data: metrics30d },
         ].map(({ label, data }) => (
           <button
             key={label}
             className={`px-4 py-2 rounded-lg border ${
               data === metrics
-                ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700'
+                ? "bg-blue-600 text-white border-blue-600"
+                : "bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700"
             }`}
             onClick={() => {
-              if (label === '24h') setMetrics24h(data);
-              else if (label === '7d') setMetrics7d(data);
+              if (label === "24h") setMetrics24h(data);
+              else if (label === "7d") setMetrics7d(data);
               else setMetrics30d(data);
             }}
           >
@@ -183,11 +183,7 @@ export default function ActivationFunnelPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <FunnelStep
-              label="Signups"
-              count={metrics.signups}
-              icon={Users}
-            />
+            <FunnelStep label="Signups" count={metrics.signups} icon={Users} />
             <div className="ml-8 text-xs text-slate-500">
               ↓ {metrics.conversionRates.signupToConnect.toFixed(1)}% →
             </div>
@@ -245,7 +241,9 @@ export default function ActivationFunnelPage() {
             <CardTitle className="text-sm">Payments Failed</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{metrics.paymentsFailed.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-red-600">
+              {metrics.paymentsFailed.toLocaleString()}
+            </div>
           </CardContent>
         </Card>
         <Card>

@@ -1,15 +1,15 @@
 /**
  * Cost Visibility Dashboard Page
- * 
+ *
  * Shows cost breakdown and infrastructure costs per billing account.
  */
 
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { DollarSign, TrendingUp, AlertCircle } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { DollarSign, TrendingUp, AlertCircle } from "lucide-react";
 
 interface CostBreakdown {
   billingAccountId: string;
@@ -47,14 +47,14 @@ export default function CostsPage() {
   useEffect(() => {
     async function fetchCosts() {
       try {
-        const response = await fetch('/api/console/costs');
+        const response = await fetch("/api/console/costs");
         if (!response.ok) {
-          throw new Error('Failed to fetch costs');
+          throw new Error("Failed to fetch costs");
         }
         const data = await response.json();
         setCosts(data);
-      } catch {
-        setError(err instanceof Error ? err.message : 'Unknown error');
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unknown error");
       } finally {
         setLoading(false);
       }
@@ -95,7 +95,7 @@ export default function CostsPage() {
         </CardHeader>
         <CardContent>
           <p className="text-slate-600 dark:text-slate-400">
-            {error || 'Failed to load cost data'}
+            {error || "Failed to load cost data"}
           </p>
         </CardContent>
       </Card>
@@ -103,24 +103,22 @@ export default function CostsPage() {
   }
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(value);
   };
 
   const formatNumber = (value: number) => {
-    return new Intl.NumberFormat('en-US').format(value);
+    return new Intl.NumberFormat("en-US").format(value);
   };
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-          Cost Visibility
-        </h1>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Cost Visibility</h1>
         <p className="text-slate-600 dark:text-slate-400">
           Infrastructure costs and usage breakdown
         </p>
@@ -134,7 +132,8 @@ export default function CostsPage() {
             Current Period Cost
           </CardTitle>
           <CardDescription>
-            {new Date(costs.period.start).toLocaleDateString()} - {new Date(costs.period.end).toLocaleDateString()}
+            {new Date(costs.period.start).toLocaleDateString()} -{" "}
+            {new Date(costs.period.end).toLocaleDateString()}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -161,20 +160,28 @@ export default function CostsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-medium">Reconciliations</CardTitle>
-            <CardDescription>{formatNumber(costs.services.reconciliation.jobs)} jobs</CardDescription>
+            <CardDescription>
+              {formatNumber(costs.services.reconciliation.jobs)} jobs
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(costs.services.reconciliation.cost)}</div>
+            <div className="text-2xl font-bold">
+              {formatCurrency(costs.services.reconciliation.cost)}
+            </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-medium">Receipt Parsing</CardTitle>
-            <CardDescription>{formatNumber(costs.services.receiptParsing.receipts)} receipts</CardDescription>
+            <CardDescription>
+              {formatNumber(costs.services.receiptParsing.receipts)} receipts
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(costs.services.receiptParsing.cost)}</div>
+            <div className="text-2xl font-bold">
+              {formatCurrency(costs.services.receiptParsing.cost)}
+            </div>
           </CardContent>
         </Card>
 

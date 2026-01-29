@@ -1,27 +1,27 @@
 /**
  * Console API Keys Page
- * 
+ *
  * Manage API keys: list, create, revoke.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { EmptyState } from '@/components/ui/empty-state';
-import { Key, Plus, Trash2, Copy, Check, CheckCircle2 } from 'lucide-react';
-import { format } from 'date-fns';
-import { MilestoneCelebration, MilestoneType } from '@/components/milestones/MilestoneCelebration';
+} from "@/components/ui/dialog";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Key, Plus, Trash2, Copy, Check, CheckCircle2 } from "lucide-react";
+import { format } from "date-fns";
+import { MilestoneCelebration, MilestoneType } from "@/components/milestones/MilestoneCelebration";
 
 interface ApiKey {
   id: string;
@@ -40,7 +40,7 @@ export default function ApiKeysPage() {
   const [newKey, setNewKey] = useState<{ key: string; id: string } | null>(null);
   const [copied, setCopied] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [keyName, setKeyName] = useState('');
+  const [keyName, setKeyName] = useState("");
   const [milestone, setMilestone] = useState<MilestoneType | null>(null);
 
   useEffect(() => {
@@ -49,13 +49,13 @@ export default function ApiKeysPage() {
 
   const fetchKeys = async () => {
     try {
-      const res = await fetch('/api/console/api-keys');
+      const res = await fetch("/api/console/api-keys");
       if (res.ok) {
         const data = await res.json();
         setKeys(data.keys || []);
       }
-    } catch {
-      console.error('Failed to fetch API keys:', error);
+    } catch (err) {
+      console.error("Failed to fetch API keys:", err);
     } finally {
       setLoading(false);
     }
@@ -63,40 +63,40 @@ export default function ApiKeysPage() {
 
   const handleCreateKey = async () => {
     try {
-      const res = await fetch('/api/console/api-keys', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/console/api-keys", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: keyName || undefined }),
       });
       if (res.ok) {
         const data = await res.json();
         setNewKey({ key: data.key, id: data.id });
-        setKeyName('');
+        setKeyName("");
         await fetchKeys();
-        
+
         // Check if this is the first API key (milestone)
         if (keys.length === 0) {
-          setMilestone('first_api_key');
+          setMilestone("first_api_key");
         }
       }
     } catch {
-      console.error('Failed to create API key:', error);
+      console.error("Failed to create API key:", error);
     }
   };
 
   const handleRevokeKey = async (keyId: string) => {
-    if (!confirm('Are you sure you want to revoke this API key? This action cannot be undone.')) {
+    if (!confirm("Are you sure you want to revoke this API key? This action cannot be undone.")) {
       return;
     }
     try {
       const res = await fetch(`/api/console/api-keys/${keyId}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
       if (res.ok) {
         await fetchKeys();
       }
     } catch {
-      console.error('Failed to revoke API key:', error);
+      console.error("Failed to revoke API key:", error);
     }
   };
 
@@ -106,7 +106,7 @@ export default function ApiKeysPage() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      console.error('Failed to copy:', error);
+      console.error("Failed to copy:", error);
     }
   };
 
@@ -122,9 +122,7 @@ export default function ApiKeysPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            API Keys
-          </h1>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">API Keys</h1>
           <p className="text-slate-600 dark:text-slate-400">
             Manage your API keys for authenticating requests to Settler APIs.
           </p>
@@ -161,10 +159,7 @@ export default function ApiKeysPage() {
 
       {/* Milestone Celebration */}
       {milestone && (
-        <MilestoneCelebration
-          milestone={milestone}
-          onDismiss={() => setMilestone(null)}
-        />
+        <MilestoneCelebration milestone={milestone} onDismiss={() => setMilestone(null)} />
       )}
 
       {/* New Key Display */}
@@ -203,14 +198,11 @@ export default function ApiKeysPage() {
             </div>
             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
               <p className="text-sm text-blue-800 dark:text-blue-200">
-                <strong>Next steps:</strong> Add this key to your environment variables or use it in your SDK initialization.
+                <strong>Next steps:</strong> Add this key to your environment variables or use it in
+                your SDK initialization.
               </p>
             </div>
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => setNewKey(null)}
-            >
+            <Button variant="outline" className="w-full" onClick={() => setNewKey(null)}>
               I've copied the key
             </Button>
           </CardContent>
@@ -227,7 +219,7 @@ export default function ApiKeysPage() {
               description="Create your first API key to start using Settler APIs."
               action={{
                 label: "Create API Key",
-                onClick: () => setCreateDialogOpen(true)
+                onClick: () => setCreateDialogOpen(true),
               }}
             />
           </CardContent>
@@ -241,9 +233,7 @@ export default function ApiKeysPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <Key className="w-5 h-5 text-slate-400" />
-                      <h3 className="font-semibold">
-                        {key.name || 'Unnamed Key'}
-                      </h3>
+                      <h3 className="font-semibold">{key.name || "Unnamed Key"}</h3>
                       {key.revokedAt && (
                         <span className="px-2 py-1 text-xs rounded bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
                           Revoked
@@ -254,21 +244,15 @@ export default function ApiKeysPage() {
                       <p>
                         <code className="font-mono">{key.keyPrefix}...</code>
                       </p>
-                      <p>Created: {format(new Date(key.createdAt), 'PPp')}</p>
+                      <p>Created: {format(new Date(key.createdAt), "PPp")}</p>
                       {key.lastUsedAt && (
-                        <p>Last used: {format(new Date(key.lastUsedAt), 'PPp')}</p>
+                        <p>Last used: {format(new Date(key.lastUsedAt), "PPp")}</p>
                       )}
-                      {key.scopes.length > 0 && (
-                        <p>Scopes: {key.scopes.join(', ')}</p>
-                      )}
+                      {key.scopes.length > 0 && <p>Scopes: {key.scopes.join(", ")}</p>}
                     </div>
                   </div>
                   {!key.revokedAt && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleRevokeKey(key.id)}
-                    >
+                    <Button variant="outline" size="sm" onClick={() => handleRevokeKey(key.id)}>
                       <Trash2 className="w-4 h-4 mr-2" />
                       Revoke
                     </Button>
