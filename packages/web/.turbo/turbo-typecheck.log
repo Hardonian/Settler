@@ -20,35 +20,39 @@
   Types of property 'transactions' are incompatible.
     Type 'number | undefined' is not assignable to type 'number'.
       Type 'undefined' is not assignable to type 'number'.
-../api/src/config/validation.ts(172,24): error TS2339: Property 'length' does not exist on type '{}'.
-../api/src/config/validation.ts(251,19): error TS18046: 'env.ALLOWED_ORIGINS' is of type 'unknown'.
-../api/src/config/validation.ts(251,55): error TS7006: Parameter 'o' implicitly has an 'any' type.
+../api/src/config/validation.ts(85,18): error TS2379: Argument of type '{ readonly default: undefined; }' is not assignable to parameter of type '{ default?: string; desc?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'default' are incompatible.
+    Type 'undefined' is not assignable to type 'string'.
+../api/src/config/validation.ts(86,23): error TS2379: Argument of type '{ readonly default: undefined; }' is not assignable to parameter of type '{ choices?: string[]; default?: string; devDefault?: string; desc?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'default' are incompatible.
+    Type 'undefined' is not assignable to type 'string'.
+../api/src/config/validation.ts(137,22): error TS2379: Argument of type '{ readonly default: undefined; }' is not assignable to parameter of type '{ default?: string; desc?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'default' are incompatible.
+    Type 'undefined' is not assignable to type 'string'.
+../api/src/config/validation.ts(138,24): error TS2379: Argument of type '{ readonly default: undefined; }' is not assignable to parameter of type '{ default?: string; desc?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'default' are incompatible.
+    Type 'undefined' is not assignable to type 'string'.
+../api/src/config/validation.ts(141,19): error TS2379: Argument of type '{ readonly default: undefined; }' is not assignable to parameter of type '{ default?: string; desc?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'default' are incompatible.
+    Type 'undefined' is not assignable to type 'string'.
+../api/src/config/validation.ts(142,27): error TS2379: Argument of type '{ readonly default: undefined; }' is not assignable to parameter of type '{ choices?: string[]; default?: string; devDefault?: string; desc?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'default' are incompatible.
+    Type 'undefined' is not assignable to type 'string'.
 ../api/src/utils/logger.ts(62,3): error TS2375: Type '{ request_id: string | undefined; tenant_id: string | undefined; user_id: string | undefined; }' is not assignable to type '{ request_id?: string; tenant_id?: string; user_id?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'request_id' are incompatible.
     Type 'string | undefined' is not assignable to type 'string'.
       Type 'undefined' is not assignable to type 'string'.
 ../api/src/utils/logger.ts(70,31): error TS2349: This expression is not callable.
   Type 'Format' has no call signatures.
-../api/src/utils/logger.ts(70,39): error TS7006: Parameter 'info' implicitly has an 'any' type.
+../api/src/utils/logger.ts(70,53): error TS2694: Namespace '"winston"' has no exported member 'Logform'.
 ../api/src/utils/logger.ts(88,3): error TS2322: Type 'unknown' is not assignable to type 'string'.
 ../api/src/utils/logger.ts(95,5): error TS7009: 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type.
+../api/src/utils/logger.ts(109,22): error TS2694: Namespace '"winston"' has no exported member 'Logform'.
 ../api/src/utils/logger.ts(135,7): error TS18046: 'config.logging.samplingRate' is of type 'unknown'.
 ../api/src/utils/logger.ts(138,26): error TS18046: 'config.logging.samplingRate' is of type 'unknown'.
 src/app/actions/auth.ts(124,34): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
 src/app/api/connectors/webhook/[providerId]/route.ts(19,28): error TS2339: Property 'handleWebhook' does not exist on type 'ConnectorDriver'.
-src/app/api/console/api-logs/route.ts(35,41): error TS2379: Argument of type '{ limit: string | undefined; offset: string | undefined; }' is not assignable to parameter of type '{ limit?: string; offset?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'limit' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/app/api/console/api-logs/route.ts(73,43): error TS2379: Argument of type '{ tenantId: string | undefined; userId: string | undefined; method: string | undefined; path: string | undefined; statusCode: number | undefined; startDate: Date | undefined; endDate: Date | undefined; limit: number; offset: number; }' is not assignable to parameter of type 'ApiLogFilters' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/app/api/console/api-logs/route.ts(77,39): error TS2379: Argument of type '{ tenantId: string | undefined; userId: string | undefined; method: string | undefined; path: string | undefined; statusCode: number | undefined; startDate: Date | undefined; endDate: Date | undefined; limit: number; offset: number; }' is not assignable to parameter of type 'ApiLogFilters' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/app/api/console/receipts-v2/route.ts(54,51): error TS2379: Argument of type '{ canonicalJson: Record<string, unknown>; evidenceRefs: { type: "hash" | "transaction_id" | "source_ref" | "receipt_id"; value: string; description?: string | undefined; }[]; narrative: { ...; }; sourceId?: string | undefined; }' is not assignable to parameter of type '{ sourceId?: string; canonicalJson: Record<string, unknown>; evidenceRefs: Evidence[]; narrative: { summary: string; whyItMatters: string; nextSteps?: string; }; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'sourceId' are incompatible.
     Type 'string | undefined' is not assignable to type 'string'.
@@ -67,23 +71,23 @@ src/app/api/console/tenants/route.ts(40,41): error TS2379: Argument of type '{ l
 src/app/api/console/usage/export/route.ts(74,24): error TS7006: Parameter 'event' implicitly has an 'any' type.
 src/app/api/console/usage/export/route.ts(91,21): error TS7006: Parameter 'event' implicitly has an 'any' type.
 src/app/api/console/usage/route.ts(111,25): error TS18046: 'usageEvents' is of type 'unknown'.
-src/app/api/cron/email-lifecycle/route.ts(79,17): error TS2375: Type '{ email: string; firstName: string | undefined; industry: string | undefined; companyName: string | undefined; planType: "free" | "enterprise" | "trial" | "commercial"; }' is not assignable to type 'LifecycleUser' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+src/app/api/cron/email-lifecycle/route.ts(79,17): error TS2375: Type '{ email: string; firstName: string | undefined; industry: string | undefined; companyName: string | undefined; planType: "trial" | "free" | "commercial" | "enterprise"; }' is not assignable to type 'LifecycleUser' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'firstName' are incompatible.
     Type 'string | undefined' is not assignable to type 'string'.
       Type 'undefined' is not assignable to type 'string'.
-src/app/api/cron/email-lifecycle/route.ts(125,17): error TS2375: Type '{ email: string; firstName: string | undefined; industry: string | undefined; companyName: string | undefined; planType: "free" | "enterprise" | "trial" | "commercial"; }' is not assignable to type 'LifecycleUser' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+src/app/api/cron/email-lifecycle/route.ts(125,17): error TS2375: Type '{ email: string; firstName: string | undefined; industry: string | undefined; companyName: string | undefined; planType: "trial" | "free" | "commercial" | "enterprise"; }' is not assignable to type 'LifecycleUser' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'firstName' are incompatible.
     Type 'string | undefined' is not assignable to type 'string'.
       Type 'undefined' is not assignable to type 'string'.
-src/app/api/cron/email-lifecycle/route.ts(173,17): error TS2375: Type '{ email: string; firstName: string | undefined; industry: string | undefined; companyName: string | undefined; planType: "free" | "enterprise" | "trial" | "commercial"; }' is not assignable to type 'LifecycleUser' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+src/app/api/cron/email-lifecycle/route.ts(173,17): error TS2375: Type '{ email: string; firstName: string | undefined; industry: string | undefined; companyName: string | undefined; planType: "trial" | "free" | "commercial" | "enterprise"; }' is not assignable to type 'LifecycleUser' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'firstName' are incompatible.
     Type 'string | undefined' is not assignable to type 'string'.
       Type 'undefined' is not assignable to type 'string'.
-src/app/api/cron/email-lifecycle/route.ts(221,19): error TS2375: Type '{ email: string; firstName: string | undefined; industry: string | undefined; companyName: string | undefined; planType: "free" | "enterprise" | "trial" | "commercial"; }' is not assignable to type 'LifecycleUser' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+src/app/api/cron/email-lifecycle/route.ts(221,19): error TS2375: Type '{ email: string; firstName: string | undefined; industry: string | undefined; companyName: string | undefined; planType: "trial" | "free" | "commercial" | "enterprise"; }' is not assignable to type 'LifecycleUser' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'firstName' are incompatible.
     Type 'string | undefined' is not assignable to type 'string'.
       Type 'undefined' is not assignable to type 'string'.
-src/app/api/cron/email-lifecycle/route.ts(256,17): error TS2375: Type '{ email: string; firstName: string | undefined; industry: string | undefined; companyName: string | undefined; planType: "free" | "enterprise" | "trial" | "commercial"; }' is not assignable to type 'LifecycleUser' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+src/app/api/cron/email-lifecycle/route.ts(256,17): error TS2375: Type '{ email: string; firstName: string | undefined; industry: string | undefined; companyName: string | undefined; planType: "trial" | "free" | "commercial" | "enterprise"; }' is not assignable to type 'LifecycleUser' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'firstName' are incompatible.
     Type 'string | undefined' is not assignable to type 'string'.
       Type 'undefined' is not assignable to type 'string'.

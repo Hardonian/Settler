@@ -1,6 +1,6 @@
 /**
  * Value Ledger
- * 
+ *
  * Tracks measurable outcomes that prove Settler's value:
  * - Reconciliations completed
  * - Receipts processed
@@ -8,21 +8,21 @@
  * - Time saved (estimated)
  * - Dollars reconciled
  * - Errors prevented
- * 
+ *
  * This is investor ammo and retention glue.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
+import { prisma } from "@/shared/db/prismaClient";
 
 export type ValueEventType =
-  | 'reconciliation_completed'
-  | 'receipt_processed'
-  | 'export_generated'
-  | 'exception_resolved'
-  | 'time_saved_hours'
-  | 'dollars_reconciled'
-  | 'errors_prevented'
-  | 'connector_synced';
+  | "reconciliation_completed"
+  | "receipt_processed"
+  | "export_generated"
+  | "exception_resolved"
+  | "time_saved_hours"
+  | "dollars_reconciled"
+  | "errors_prevented"
+  | "connector_synced";
 
 export interface ValueEvent {
   billingAccountId: string;
@@ -93,7 +93,7 @@ export async function recordValueEvent(event: ValueEvent): Promise<void> {
     `;
   } catch (error) {
     // Log but don't throw - value tracking should never break user flows
-    console.error('[recordValueEvent] Failed to record value event:', error);
+    console.error("[recordValueEvent] Failed to record value event:", error);
   }
 }
 
@@ -105,7 +105,7 @@ export interface ValueMetrics {
   timeSavedHours: number;
   dollarsReconciled: number;
   errorsPrevented: number;
-  period: '7d' | '30d' | 'lifetime';
+  period: "7d" | "30d" | "lifetime";
 }
 
 /**
@@ -113,14 +113,15 @@ export interface ValueMetrics {
  */
 export async function getValueMetrics(
   billingAccountId: string,
-  period: '7d' | '30d' | 'lifetime' = '30d'
+  period: "7d" | "30d" | "lifetime" = "30d"
 ): Promise<ValueMetrics> {
   try {
-    const startDate = period === 'lifetime' 
-      ? new Date(0) 
-      : period === '7d'
-      ? new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-      : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const startDate =
+      period === "lifetime"
+        ? new Date(0)
+        : period === "7d"
+          ? new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+          : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
     // Query daily aggregates for performance
     const aggregates = (await prisma.$queryRaw`
@@ -154,25 +155,25 @@ export async function getValueMetrics(
       const count = Number(agg.event_count) || 0;
 
       switch (agg.event_type) {
-        case 'reconciliation_completed':
+        case "reconciliation_completed":
           metrics.reconciliationsCompleted = count;
           break;
-        case 'receipt_processed':
+        case "receipt_processed":
           metrics.receiptsProcessed = count;
           break;
-        case 'export_generated':
+        case "export_generated":
           metrics.exportsGenerated = count;
           break;
-        case 'exception_resolved':
+        case "exception_resolved":
           metrics.exceptionsResolved = count;
           break;
-        case 'time_saved_hours':
+        case "time_saved_hours":
           metrics.timeSavedHours = quantity;
           break;
-        case 'dollars_reconciled':
+        case "dollars_reconciled":
           metrics.dollarsReconciled = quantity;
           break;
-        case 'errors_prevented':
+        case "errors_prevented":
           metrics.errorsPrevented = count;
           break;
       }
@@ -180,7 +181,7 @@ export async function getValueMetrics(
 
     return metrics;
   } catch (error) {
-    console.error('[getValueMetrics] Failed to get value metrics:', error);
+    console.error("[getValueMetrics] Failed to get value metrics:", error);
     // Return zero metrics on error
     return {
       reconciliationsCompleted: 0,
@@ -213,11 +214,11 @@ export async function recordReconciliationCompleted(
 ): Promise<void> {
   await recordValueEvent({
     billingAccountId,
-    tenantId: options.tenantId,
-    userId: options.userId,
-    eventType: 'reconciliation_completed',
+    ...(options.tenantId ? { tenantId: options.tenantId } : {}),
+    ...(options.userId ? { userId: options.userId } : {}),
+    eventType: "reconciliation_completed",
     quantity: 1,
-    unit: 'reconciliation',
+    unit: "reconciliation",
     metadata: {
       matchedCount: options.matchedCount,
       unmatchedCount: options.unmatchedCount,
@@ -232,13 +233,13 @@ export async function recordReconciliationCompleted(
   if (timeSavedHours > 0) {
     await recordValueEvent({
       billingAccountId,
-      tenantId: options.tenantId,
-      userId: options.userId,
-      eventType: 'time_saved_hours',
+      ...(options.tenantId ? { tenantId: options.tenantId } : {}),
+      ...(options.userId ? { userId: options.userId } : {}),
+      eventType: "time_saved_hours",
       quantity: timeSavedHours,
-      unit: 'hour',
+      unit: "hour",
       metadata: {
-        source: 'reconciliation_completed',
+        source: "reconciliation_completed",
         jobId: options.jobId,
         runId: options.runId,
       },
@@ -251,9 +252,9 @@ export async function recordReconciliationCompleted(
       billingAccountId,
       tenantId: options.tenantId,
       userId: options.userId,
-      eventType: 'dollars_reconciled',
+      eventType: "dollars_reconciled",
       quantity: options.totalAmount,
-      unit: 'dollar',
+      unit: "dollar",
       metadata: {
         jobId: options.jobId,
         runId: options.runId,
@@ -279,9 +280,9 @@ export async function recordReceiptProcessed(
     billingAccountId,
     tenantId: options.tenantId,
     userId: options.userId,
-    eventType: 'receipt_processed',
+    eventType: "receipt_processed",
     quantity: 1,
-    unit: 'receipt',
+    unit: "receipt",
     metadata: {
       receiptId: options.receiptId,
       totalAmount: options.totalAmount,
@@ -293,11 +294,11 @@ export async function recordReceiptProcessed(
     billingAccountId,
     tenantId: options.tenantId,
     userId: options.userId,
-    eventType: 'time_saved_hours',
+    eventType: "time_saved_hours",
     quantity: 2 / 60, // 2 minutes = 0.033 hours
-    unit: 'hour',
+    unit: "hour",
     metadata: {
-      source: 'receipt_processed',
+      source: "receipt_processed",
       receiptId: options.receiptId,
     },
   });
@@ -320,9 +321,9 @@ export async function recordExportGenerated(
     billingAccountId,
     tenantId: options.tenantId,
     userId: options.userId,
-    eventType: 'export_generated',
+    eventType: "export_generated",
     quantity: 1,
-    unit: 'export',
+    unit: "export",
     metadata: {
       exportId: options.exportId,
       rowCount: options.rowCount,
