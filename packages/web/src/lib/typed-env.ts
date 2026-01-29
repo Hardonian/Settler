@@ -5,41 +5,38 @@
  * Use build/runtime modes to avoid failing builds on runtime-only variables.
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 export const CLIENT_ENV_KEYS = [
-  'NEXT_PUBLIC_SITE_URL',
-  'NEXT_PUBLIC_APP_URL',
-  'NEXT_PUBLIC_SUPABASE_URL',
-  'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-  'NEXT_PUBLIC_SENTRY_DSN',
+  "NEXT_PUBLIC_SITE_URL",
+  "NEXT_PUBLIC_APP_URL",
+  "NEXT_PUBLIC_SUPABASE_URL",
+  "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+  "NEXT_PUBLIC_SENTRY_DSN",
 ] as const;
 
 export const SERVER_ENV_KEYS = [
-  'NODE_ENV',
-  'SUPABASE_URL',
-  'SUPABASE_ANON_KEY',
-  'SUPABASE_SERVICE_ROLE_KEY',
-  'DATABASE_URL',
-  'SUPABASE_DATABASE_URL',
-  'DIRECT_URL',
-  'JWT_SECRET',
-  'ENCRYPTION_KEY',
-  'STRIPE_SECRET_KEY',
-  'STRIPE_WEBHOOK_SECRET',
-  'RESEND_API_KEY',
-  'RESEND_FROM_EMAIL',
+  "NODE_ENV",
+  "SUPABASE_URL",
+  "SUPABASE_ANON_KEY",
+  "SUPABASE_SERVICE_ROLE_KEY",
+  "DATABASE_URL",
+  "SUPABASE_DATABASE_URL",
+  "DIRECT_URL",
+  "JWT_SECRET",
+  "ENCRYPTION_KEY",
+  "STRIPE_SECRET_KEY",
+  "STRIPE_WEBHOOK_SECRET",
+  "RESEND_API_KEY",
+  "RESEND_FROM_EMAIL",
 ] as const;
 
-export const BUILD_REQUIRED_SERVER_KEYS = [
-  'SUPABASE_URL',
-  'SUPABASE_ANON_KEY',
-] as const;
+export const BUILD_REQUIRED_SERVER_KEYS = ["SUPABASE_URL", "SUPABASE_ANON_KEY"] as const;
 
 export const RUNTIME_REQUIRED_SERVER_KEYS = [
-  'SUPABASE_SERVICE_ROLE_KEY',
-  'JWT_SECRET',
-  'ENCRYPTION_KEY',
+  "SUPABASE_SERVICE_ROLE_KEY",
+  "JWT_SECRET",
+  "ENCRYPTION_KEY",
 ] as const;
 
 export type ClientEnvKey = (typeof CLIENT_ENV_KEYS)[number];
@@ -57,7 +54,7 @@ const clientEnvSchema = z
 
 const serverEnvSchema = z
   .object({
-    NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+    NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
     SUPABASE_URL: z.string().url(),
     SUPABASE_ANON_KEY: z.string().min(1),
     SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
@@ -65,9 +62,11 @@ const serverEnvSchema = z
     SUPABASE_DATABASE_URL: z.string().url().optional(),
     DIRECT_URL: z.string().url().optional(),
     JWT_SECRET: z.string().min(32),
-    ENCRYPTION_KEY: z.string().refine((value: string) => value.length === 32 || value.length === 64, {
-      message: 'ENCRYPTION_KEY must be 32 or 64 characters',
-    }),
+    ENCRYPTION_KEY: z
+      .string()
+      .refine((value: string) => value.length === 32 || value.length === 64, {
+        message: "ENCRYPTION_KEY must be 32 or 64 characters",
+      }),
     STRIPE_SECRET_KEY: z.string().optional(),
     STRIPE_WEBHOOK_SECRET: z.string().optional(),
     RESEND_API_KEY: z.string().optional(),
@@ -78,8 +77,8 @@ const serverEnvSchema = z
     if (!value.DATABASE_URL && !value.SUPABASE_DATABASE_URL && !value.DIRECT_URL) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ['DATABASE_URL'],
-        message: 'One of DATABASE_URL, SUPABASE_DATABASE_URL, or DIRECT_URL must be set',
+        path: ["DATABASE_URL"],
+        message: "One of DATABASE_URL, SUPABASE_DATABASE_URL, or DIRECT_URL must be set",
       });
     }
   });
@@ -95,7 +94,7 @@ export interface EnvValidationResult {
 
 function formatZodErrors(error: z.ZodError): string[] {
   return error.issues.map((issue: z.ZodIssue) => {
-    const path = issue.path.length > 0 ? issue.path.join('.') : 'env';
+    const path = issue.path.length > 0 ? issue.path.join(".") : "env";
     return `${path}: ${issue.message}`;
   });
 }
@@ -116,9 +115,7 @@ function pickEnv(
 /**
  * Validate client environment variables.
  */
-export function validateClientEnv(
-  input: NodeJS.ProcessEnv = process.env
-): EnvValidationResult {
+export function validateClientEnv(input: NodeJS.ProcessEnv = process.env): EnvValidationResult {
   const result = clientEnvSchema.safeParse(pickEnv(input, CLIENT_ENV_KEYS));
   if (!result.success) {
     return {
@@ -139,7 +136,7 @@ export function validateClientEnv(
  * Validate server environment variables.
  */
 export function validateServerEnv(
-  mode: 'build' | 'runtime',
+  mode: "build" | "runtime",
   input: NodeJS.ProcessEnv = process.env
 ): EnvValidationResult {
   const runtimeOptionalKeys: Partial<Record<ServerEnvKey, true>> = {
@@ -155,7 +152,7 @@ export function validateServerEnv(
     DIRECT_URL: true,
   };
 
-  const schema = mode === 'build' ? serverEnvSchema.partial(runtimeOptionalKeys) : serverEnvSchema;
+  const schema = mode === "build" ? serverEnvSchema.partial(runtimeOptionalKeys) : serverEnvSchema;
   const result = schema.safeParse(pickEnv(input, SERVER_ENV_KEYS));
 
   if (!result.success) {
@@ -166,7 +163,7 @@ export function validateServerEnv(
     };
   }
 
-  if (mode === 'build') {
+  if (mode === "build") {
     const missingBuildKeys = BUILD_REQUIRED_SERVER_KEYS.filter(
       (key: (typeof BUILD_REQUIRED_SERVER_KEYS)[number]) => !input[key]
     );
@@ -208,7 +205,7 @@ export function parseClientEnv(input: NodeJS.ProcessEnv = process.env): ClientEn
  * Parse and return server environment variables.
  */
 export function parseServerEnv(
-  mode: 'build' | 'runtime',
+  mode: "build" | "runtime",
   input: NodeJS.ProcessEnv = process.env
 ): ServerEnv {
   const runtimeOptionalKeys: Partial<Record<ServerEnvKey, true>> = {
@@ -224,8 +221,10 @@ export function parseServerEnv(
     DIRECT_URL: true,
   };
 
-  const schema = mode === 'build' ? serverEnvSchema.partial(runtimeOptionalKeys) : serverEnvSchema;
-  return schema.parse(pickEnv(input, SERVER_ENV_KEYS));
+  const schema = mode === "build" ? serverEnvSchema.partial(runtimeOptionalKeys) : serverEnvSchema;
+  const result = schema.parse(pickEnv(input, SERVER_ENV_KEYS));
+  // Cast to ServerEnv - in runtime mode all required fields are validated
+  return result as ServerEnv;
 }
 
 /**
@@ -235,13 +234,13 @@ export function validateEnvScopes(): EnvValidationResult {
   const errors: string[] = [];
 
   for (const key of CLIENT_ENV_KEYS) {
-    if (!key.startsWith('NEXT_PUBLIC_')) {
+    if (!key.startsWith("NEXT_PUBLIC_")) {
       errors.push(`Client env var ${key} must start with NEXT_PUBLIC_`);
     }
   }
 
   for (const key of SERVER_ENV_KEYS) {
-    if (key.startsWith('NEXT_PUBLIC_')) {
+    if (key.startsWith("NEXT_PUBLIC_")) {
       errors.push(`Server env var ${key} must not start with NEXT_PUBLIC_`);
     }
   }
