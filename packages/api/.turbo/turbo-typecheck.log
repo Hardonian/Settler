@@ -6,6 +6,7 @@ npm warn config optional Use `--omit=optional` to exclude optional dependencies,
 npm warn config `--include=optional` to include them.
 npm warn config
 npm warn config       Default value does install optional deps unless otherwise omitted.
+npm warn Unknown env config "store-dir". This will stop working in the next major version of npm.
 npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
 npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm.
 npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
@@ -22,15 +23,10 @@ npm warn config optional Use `--omit=optional` to exclude optional dependencies,
 npm warn config `--include=optional` to include them.
 npm warn config
 npm warn config       Default value does install optional deps unless otherwise omitted.
+npm warn Unknown env config "store-dir". This will stop working in the next major version of npm.
 npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
 npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm.
 npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
 npm warn config `--include=optional` to include them.
 npm warn config
 npm warn config       Default value does install optional deps unless otherwise omitted.
-The system cannot find the path specified.
-'Warning: Prisma generate may have failed'
-
-> @settler/api@1.0.0 typecheck C:\Users\scott\Documents\GitHub\Settler\packages\api
-> tsc --noEmit
-
