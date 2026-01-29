@@ -1062,11 +1062,11 @@ src/lib/api/auth-gate.ts(144,5): error TS2375: Type '{ isAdmin: true; user: { id
   Types of property 'user' are incompatible.
     Type '{ id: string; email?: string; } | undefined' is not assignable to type '{ id: string; email?: string; }'.
       Type 'undefined' is not assignable to type '{ id: string; email?: string; }'.
-src/lib/api/client.ts(56,34): error TS2379: Argument of type '{ method: string; body: string | undefined; headers: { 'Content-Type': string; } | { append(name: string, value: string): void; delete(name: string): void; get(name: string): string | null; ... 11 more ...; 'Content-Type': string; } | { ...; } | { ...; }; ... 11 more ...; next?: NextFetchRequestConfig | undefined; }' is not assignable to parameter of type 'RequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+src/lib/api/client.ts(56,34): error TS2379: Argument of type '{ method: string; body: string | undefined; headers: { 'Content-Type': string; } | { length: number; toString(): string; toLocaleString(): string; toLocaleString(locales: string | string[], options?: Intl.NumberFormatOptions & Intl.DateTimeFormatOptions): string; ... 38 more ...; 'Content-Type': string; } | { ...; }...' is not assignable to parameter of type 'RequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'body' are incompatible.
     Type 'string | undefined' is not assignable to type 'BodyInit | null'.
       Type 'undefined' is not assignable to type 'BodyInit | null'.
-src/lib/api/client.ts(71,34): error TS2379: Argument of type '{ method: string; body: string | undefined; headers: { 'Content-Type': string; } | { append(name: string, value: string): void; delete(name: string): void; get(name: string): string | null; ... 11 more ...; 'Content-Type': string; } | { ...; } | { ...; }; ... 11 more ...; next?: NextFetchRequestConfig | undefined; }' is not assignable to parameter of type 'RequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+src/lib/api/client.ts(71,34): error TS2379: Argument of type '{ method: string; body: string | undefined; headers: { 'Content-Type': string; } | { length: number; toString(): string; toLocaleString(): string; toLocaleString(locales: string | string[], options?: Intl.NumberFormatOptions & Intl.DateTimeFormatOptions): string; ... 38 more ...; 'Content-Type': string; } | { ...; }...' is not assignable to parameter of type 'RequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'body' are incompatible.
     Type 'string | undefined' is not assignable to type 'BodyInit | null'.
       Type 'undefined' is not assignable to type 'BodyInit | null'.
@@ -1420,29 +1420,5 @@ src/lib/toast.tsx(76,17): error TS2379: Argument of type '{ type: "warning"; tit
   Types of property 'message' are incompatible.
     Type 'string | undefined' is not assignable to type 'string'.
       Type 'undefined' is not assignable to type 'string'.
-src/lib/typed-env.ts(228,3): error TS2322: Type '{ NODE_ENV?: "development" | "production" | "test" | undefined; SUPABASE_URL?: string | undefined; SUPABASE_ANON_KEY?: string | undefined; SUPABASE_SERVICE_ROLE_KEY?: string | undefined; ... 8 more ...; RESEND_FROM_EMAIL?: string | undefined; }' is not assignable to type '{ NODE_ENV: "development" | "production" | "test"; SUPABASE_URL: string; SUPABASE_ANON_KEY: string; SUPABASE_SERVICE_ROLE_KEY: string; JWT_SECRET: string; ENCRYPTION_KEY: string; DATABASE_URL?: string | undefined; ... 5 more ...; RESEND_FROM_EMAIL?: string | undefined; }'.
-  Types of property 'NODE_ENV' are incompatible.
-    Type '"development" | "production" | "test" | undefined' is not assignable to type '"development" | "production" | "test"'.
-      Type 'undefined' is not assignable to type '"development" | "production" | "test"'.
-src/lib/ux/toast.ts(70,22): error TS2379: Argument of type '{ type: "success"; message: string; duration: number | undefined; }' is not assignable to parameter of type 'Omit<Toast, "id">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'duration' are incompatible.
-    Type 'number | undefined' is not assignable to type 'number'.
-      Type 'undefined' is not assignable to type 'number'.
-src/lib/ux/toast.ts(84,22): error TS2379: Argument of type '{ type: "warning"; message: string; duration: number | undefined; }' is not assignable to parameter of type 'Omit<Toast, "id">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'duration' are incompatible.
-    Type 'number | undefined' is not assignable to type 'number'.
-      Type 'undefined' is not assignable to type 'number'.
-src/lib/ux/toast.ts(91,22): error TS2379: Argument of type '{ type: "info"; message: string; duration: number | undefined; }' is not assignable to parameter of type 'Omit<Toast, "id">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'duration' are incompatible.
-    Type 'number | undefined' is not assignable to type 'number'.
-      Type 'undefined' is not assignable to type 'number'.
-src/lib/validation/api-validation.ts(49,5): error TS2375: Type '{ expiresAt: Date | undefined; name: string | undefined; scopes?: string[] | undefined; }' is not assignable to type '{ name?: string; scopes?: string[]; expiresAt?: Date; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'name' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/validation/component-validation.ts(93,3): error TS2375: Type '{ valid: boolean; errors: string[] | undefined; }' is not assignable to type '{ valid: boolean; errors?: string[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'errors' are incompatible.
-    Type 'string[] | undefined' is not assignable to type 'string[]'.
-      Type 'undefined' is not assignable to type 'string[]'.
-src/lib/verify.ts(17,67): error TS2307: Cannot find module '/wasm/settler_verify_wasm.js' or its corresponding type declarations.
- ELIFECYCLE  Command failed with exit code 2.
+src/lib/verify.ts(18,67): error TS2307: Cannot find module '/wasm/settler_verify_wasm.js' or its corresponding type declarations.
+ ELIFECYCLE  Command failed with exit code 1.

@@ -3,13 +3,13 @@
  * Provides consistent toast notifications across the application
  */
 
-'use client';
+"use client";
 
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { X, CheckCircle2, AlertCircle, Info, AlertTriangle } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import { X, CheckCircle2, AlertCircle, Info, AlertTriangle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-type ToastType = 'success' | 'error' | 'info' | 'warning';
+type ToastType = "success" | "error" | "info" | "warning";
 
 interface Toast {
   id: string;
@@ -21,7 +21,7 @@ interface Toast {
 
 interface ToastContextType {
   toasts: Toast[];
-  showToast: (toast: Omit<Toast, 'id'>) => void;
+  showToast: (toast: Omit<Toast, "id">) => void;
   hideToast: (id: string) => void;
   success: (title: string, message?: string) => void;
   error: (title: string, message?: string) => void;
@@ -34,7 +34,7 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const showToast = useCallback((toast: Omit<Toast, 'id'>) => {
+  const showToast = useCallback((toast: Omit<Toast, "id">) => {
     const id = Math.random().toString(36).substr(2, 9);
     const newToast = { ...toast, id };
 
@@ -52,28 +52,28 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const success = useCallback(
     (title: string, message?: string) => {
-      showToast({ type: 'success', title, message });
+      showToast({ type: "success", title, message: message || undefined });
     },
     [showToast]
   );
 
   const error = useCallback(
     (title: string, message?: string) => {
-      showToast({ type: 'error', title, message, duration: 7000 }); // Longer for errors
+      showToast({ type: "error", title, message: message || undefined, duration: 7000 }); // Longer for errors
     },
     [showToast]
   );
 
   const info = useCallback(
     (title: string, message?: string) => {
-      showToast({ type: 'info', title, message });
+      showToast({ type: "info", title, message });
     },
     [showToast]
   );
 
   const warning = useCallback(
     (title: string, message?: string) => {
-      showToast({ type: 'warning', title, message });
+      showToast({ type: "warning", title, message });
     },
     [showToast]
   );
@@ -89,12 +89,18 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 export function useToast() {
   const context = useContext(ToastContext);
   if (!context) {
-    throw new Error('useToast must be used within ToastProvider');
+    throw new Error("useToast must be used within ToastProvider");
   }
   return context;
 }
 
-function ToastContainer({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: string) => void }) {
+function ToastContainer({
+  toasts,
+  onDismiss,
+}: {
+  toasts: Toast[];
+  onDismiss: (id: string) => void;
+}) {
   return (
     <div
       className="fixed top-0 right-0 z-50 flex flex-col gap-2 p-4 pointer-events-none"
@@ -117,11 +123,11 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string)
   };
 
   const styles = {
-    success: 'bg-green-50 dark:bg-green-950 border-green-500 text-green-900 dark:text-green-100',
-    error: 'bg-red-50 dark:bg-red-950 border-red-500 text-red-900 dark:text-red-100',
-    info: 'bg-blue-50 dark:bg-blue-950 border-blue-500 text-blue-900 dark:text-blue-100',
+    success: "bg-green-50 dark:bg-green-950 border-green-500 text-green-900 dark:text-green-100",
+    error: "bg-red-50 dark:bg-red-950 border-red-500 text-red-900 dark:text-red-100",
+    info: "bg-blue-50 dark:bg-blue-950 border-blue-500 text-blue-900 dark:text-blue-100",
     warning:
-      'bg-yellow-50 dark:bg-yellow-950 border-yellow-500 text-yellow-900 dark:text-yellow-100',
+      "bg-yellow-50 dark:bg-yellow-950 border-yellow-500 text-yellow-900 dark:text-yellow-100",
   };
 
   const Icon = icons[toast.type];
@@ -129,9 +135,9 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string)
   return (
     <div
       className={cn(
-        'pointer-events-auto flex items-start gap-3 p-4 rounded-lg border-l-4 shadow-lg',
-        'animate-in slide-in-from-right-full duration-300',
-        'backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95',
+        "pointer-events-auto flex items-start gap-3 p-4 rounded-lg border-l-4 shadow-lg",
+        "animate-in slide-in-from-right-full duration-300",
+        "backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95",
         styles[toast.type]
       )}
       role="alert"
