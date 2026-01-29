@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "private": true,
   "scripts": {
-    "prebuild": "npm run typecheck",
+    "prebuild": "pnpm run typecheck",
     "build": "tsc",
     "dev": "tsx watch src/index.ts",
     "test": "jest --passWithNoTests",

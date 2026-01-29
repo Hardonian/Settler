@@ -1779,4 +1779,4 @@ src/shared/usage/usageEvent.ts(58,26): error TS2379: Argument of type '{ billing
   Types of property 'metadata' are incompatible.
     Type 'Record<string, unknown> | undefined' is not assignable to type 'Record<string, unknown>'.
       Type 'undefined' is not assignable to type 'Record<string, unknown>'.
- ELIFECYCLE  Command failed with exit code 2.
+ ELIFECYCLE  Command failed with exit code 1.

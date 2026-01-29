@@ -11,9 +11,10 @@ C:\Users\scott\Documents\GitHub\Settler\packages\adapters\src\concurrency-protec
 
 C:\Users\scott\Documents\GitHub\Settler\packages\adapters\src\connector-runtime.ts
    94:16  warning  '_error' is defined but never used   @typescript-eslint/no-unused-vars
-  107:16  warning  '_error' is defined but never used   @typescript-eslint/no-unused-vars
-  119:16  warning  '_error' is defined but never used   @typescript-eslint/no-unused-vars
-  647:11  warning  Unsafe assignment of an `any` value  @typescript-eslint/no-unsafe-assignment
+   94:16  warning  '_error' is defined but never used                                                 @typescript-eslint/no-unused-vars
+  107:16  warning  '_error' is defined but never used                                                 @typescript-eslint/no-unused-vars
+  119:16  warning  '_error' is defined but never used                                                 @typescript-eslint/no-unused-vars
+  641:22  warning  This assertion is unnecessary since it does not change the type of the expression  @typescript-eslint/no-unnecessary-type-assertion
 
 C:\Users\scott\Documents\GitHub\Settler\packages\adapters\src\credential-encryption.ts
    25:13  warning  Unsafe object destructuring of a property with an `any` value  @typescript-eslint/no-unsafe-assignment
@@ -1233,4 +1234,5 @@ C:\Users\scott\Documents\GitHub\Settler\packages\adapters\src\xero.ts
   105:3  warning  Async method 'getAccessToken' has no 'await' expression  @typescript-eslint/require-await
 
 ✖ 1157 problems (0 errors, 1157 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
 

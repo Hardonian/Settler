@@ -75,27 +75,25 @@ C:\Users\scott\Documents\GitHub\Settler\packages\cli\src\commands\debug.ts
    55:11  warning  Unexpected console statement                                                           no-console
    82:41  warning  Unsafe argument of type `any` assigned to a parameter of type `PathLike | FileHandle`  @typescript-eslint/no-unsafe-argument
    83:32  warning  Unsafe argument of type `any` assigned to a parameter of type `string`                 @typescript-eslint/no-unsafe-argument
-   85:19  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
    96:7   warning  Unexpected console statement                                                           no-console
-  123:7   warning  Unexpected console statement                                                           no-console
-  124:7   warning  Unexpected console statement                                                           no-console
-  125:7   warning  Unexpected console statement                                                           no-console
-  126:7   warning  Unexpected console statement                                                           no-console
-  127:7   warning  Unexpected console statement                                                           no-console
-  154:7   warning  Unexpected console statement                                                           no-console
-  155:7   warning  Unexpected console statement                                                           no-console
-  156:7   warning  Unexpected console statement                                                           no-console
-  170:9   warning  Unexpected console statement                                                           no-console
-  176:7   warning  Unexpected console statement                                                           no-console
-  177:7   warning  Unexpected console statement                                                           no-console
+  130:7   warning  Unexpected console statement                                                           no-console
+  131:7   warning  Unexpected console statement                                                           no-console
+  132:7   warning  Unexpected console statement                                                           no-console
+  133:7   warning  Unexpected console statement                                                           no-console
+  135:7   warning  Unexpected console statement                                                           no-console
+  162:7   warning  Unexpected console statement                                                           no-console
+  163:7   warning  Unexpected console statement                                                           no-console
+  164:7   warning  Unexpected console statement                                                           no-console
+  178:9   warning  Unexpected console statement                                                           no-console
   184:7   warning  Unexpected console statement                                                           no-console
-  186:9   warning  Unexpected console statement                                                           no-console
-  190:23  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
-  193:9   warning  Unexpected console statement                                                           no-console
+  185:7   warning  Unexpected console statement                                                           no-console
+  192:7   warning  Unexpected console statement                                                           no-console
   194:9   warning  Unexpected console statement                                                           no-console
-  196:9   warning  Unexpected console statement                                                           no-console
-  200:9   warning  Unexpected console statement                                                           no-console
+  201:9   warning  Unexpected console statement                                                           no-console
   202:9   warning  Unexpected console statement                                                           no-console
+  204:9   warning  Unexpected console statement                                                           no-console
+  208:9   warning  Unexpected console statement                                                           no-console
+  210:9   warning  Unexpected console statement                                                           no-console
 
 C:\Users\scott\Documents\GitHub\Settler\packages\cli\src\commands\jobs.ts
    40:9   warning  Unexpected console statement  no-console
@@ -158,5 +156,5 @@ C:\Users\scott\Documents\GitHub\Settler\packages\cli\src\commands\webhooks.ts
   47:9  warning  Unexpected console statement  no-console
   48:9  warning  Unexpected console statement  no-console
 
-✖ 139 problems (0 errors, 139 warnings)
+✖ 137 problems (0 errors, 137 warnings)
 
