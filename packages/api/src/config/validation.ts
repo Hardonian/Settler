@@ -139,7 +139,7 @@ export const env = cleanEnv(process.env, {
 
   // Sentry Configuration
   SENTRY_DSN: url({ default: undefined }),
-  SENTRY_ENVIRONMENT: str({ default: undefined } as const),
+  SENTRY_ENVIRONMENT: str({ default: undefined }),
   SENTRY_TRACES_SAMPLE_RATE: num({ default: 0.1 }),
 
   // Feature Flags

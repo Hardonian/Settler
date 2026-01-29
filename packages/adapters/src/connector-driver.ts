@@ -247,6 +247,18 @@ export interface ConnectorDriver {
   testConnection(options: TestConnectionOptions): Promise<TestConnectionResult>;
 
   /**
+   * Handle webhook payload (for connectors that support webhooks)
+   */
+  handleWebhook?(
+    payload: WebhookPayload,
+    credentials: Record<string, unknown>
+  ): Promise<{
+    success: boolean;
+    error?: string;
+    data?: unknown;
+  }>;
+
+  /**
    * Sync data from the external system
    */
   sync(

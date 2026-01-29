@@ -60,21 +60,21 @@ function getRequestContext(): {
   }
 
   return {
-    request_id: context.requestId,
-    tenant_id: context.tenantId,
-    user_id: context.userId,
+    request_id: context.requestId || undefined,
+    tenant_id: context.tenantId || undefined,
+    user_id: context.userId || undefined,
   };
 }
 
 // Custom format that adds trace context and request context
-const contextFormat = winston.format((info: winston.Logform.TransformableInfo) => {
+const contextFormat = winston.format((info) => {
   const traceContext = getTraceContext();
   const reqContext = getRequestContext();
   return {
     ...info,
     ...traceContext,
     ...reqContext,
-  };
+  } as winston.Logform.TransformableInfo;
 })();
 
 const logFormat = winston.format.combine(
@@ -121,7 +121,7 @@ export const logger: winston.Logger = winston.createLogger({
             const userInfo = user_id && typeof user_id === "string" ? `[user=${user_id}]` : "";
             const timestampStr = typeof timestamp === "string" ? timestamp : String(timestamp);
             const messageStr = typeof message === "string" ? message : String(message);
-            const levelStr = typeof level === "string" ? level : String(level);
+            const levelStr = level as string;
             return `${timestampStr} [${levelStr}]${requestInfo}${traceInfo}${spanInfo}${tenantInfo}${userInfo}: ${messageStr} ${metaStr}`;
           }
         )
@@ -132,10 +132,11 @@ export const logger: winston.Logger = winston.createLogger({
 
 // Log sampling configuration
 function shouldLog(): boolean {
-  if (config.logging.samplingRate >= 1.0) {
+  const samplingRate = config.logging.samplingRate as number;
+  if (samplingRate >= 1.0) {
     return true;
   }
-  return Math.random() < config.logging.samplingRate;
+  return Math.random() < samplingRate;
 }
 
 // Helper to log with automatic redaction and trace context
@@ -148,14 +149,11 @@ export function logInfo(message: string, meta?: Record<string, unknown>) {
 
 export function logError(message: string, error?: unknown, meta?: Record<string, unknown>) {
   // Always log errors (no sampling)
-  const errorObj = error instanceof Error ? error : { message: String(error) };
   logger.error(message, {
     ...redact(meta),
-    error: errorObj.message,
-    stack:
-      error instanceof Error && "stack" in errorObj && errorObj.stack
-        ? String(errorObj.stack)
-        : undefined,
+    ...(error instanceof Error
+      ? { message: String(error), stack: error.stack }
+      : { message: String(error) }),
   });
 }
 

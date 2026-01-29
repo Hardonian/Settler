@@ -2,12 +2,17 @@
 export * from "./connector-contract";
 
 // Base interfaces and types - export types only to avoid conflicts
-export type { ValidationResult as BaseValidationResult } from "./base";
-export type { WebhookVerificationResult as EnhancedWebhookVerificationResult } from "./enhanced-base";
+export { ValidationResult as BaseValidationResult } from "./base";
+export { WebhookVerificationResult as EnhancedWebhookVerificationResult } from "./enhanced-base";
 
 // Re-export non-conflicting items
-export type { NormalizedData, FetchOptions, Adapter } from "./base";
-export type { AdapterConfig, DateRange, NormalizedEvent, EnhancedAdapter } from "./enhanced-base";
+export { type NormalizedData, type FetchOptions, type Adapter } from "./base";
+export {
+  type AdapterConfig,
+  type DateRange,
+  type NormalizedEvent,
+  type EnhancedAdapter,
+} from "./enhanced-base";
 
 // Built-in connectors (reference implementations)
 export * from "./stripe";
