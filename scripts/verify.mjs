@@ -31,6 +31,12 @@ const changedOnly = args.includes('--changed');
 
 const results = [];
 
+/**
+ * @param {string} name
+ * @param {string} command
+ * @param {boolean} required
+ * @returns {boolean}
+ */
 function runStep(name, command, required = true) {
   console.log(`\n${'='.repeat(80)}`);
   console.log(`⚙️  ${name}`);
@@ -59,6 +65,45 @@ function runStep(name, command, required = true) {
   }
 }
 
+/**
+ * @param {{ staged: boolean }} options
+ * @returns {string[]}
+ */
+function getChangedFiles(options) {
+  const diffArgs = options.staged ? '--cached' : 'HEAD';
+  const output = execSync(`git diff --name-only ${diffArgs} --diff-filter=ACMRTUXB`, {
+    encoding: 'utf-8',
+  });
+
+  return output
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+}
+
+/**
+ * @param {string[]} files
+ * @returns {string[]}
+ */
+function getWorkspaceFilters(files) {
+  const filters = new Set();
+
+  for (const file of files) {
+    if (!file.startsWith('packages/')) {
+      continue;
+    }
+
+    const segments = file.split('/');
+    const workspacePath = segments.length > 1 ? `./packages/${segments[1]}` : null;
+
+    if (workspacePath) {
+      filters.add(`--filter=${workspacePath}`);
+    }
+  }
+
+  return Array.from(filters);
+}
+
 console.log('🔍 Settler Verify - Running Quality Pipeline\n');
 console.log(`Working directory: ${rootDir}`);
 const modeLabel = changedOnly ? 'CHANGED' : fast ? 'FAST' : 'FULL';
@@ -66,10 +111,28 @@ const modeLabel = changedOnly ? 'CHANGED' : fast ? 'FAST' : 'FULL';
 console.log(`Mode: ${modeLabel}`);
 console.log('');
 
-if (changedOnly) {
+if (fast) {
   runStep('Typed Env Validation (Build)', 'pnpm run verify:env:typed -- --mode=build', true);
   runStep('App Router Validation (Changed)', 'pnpm run verify:app-router -- --changed', true);
-  runStep('Lint Staged Files', 'pnpm exec lint-staged', true);
+
+  if (changedOnly) {
+    runStep('Lint Staged Files', 'pnpm exec lint-staged', true);
+  } else {
+    runStep('Lint Changed Files', 'pnpm exec lint-staged --diff=HEAD', true);
+  }
+
+  const changedFiles = getChangedFiles({ staged: changedOnly });
+  const workspaceFilters = getWorkspaceFilters(changedFiles);
+
+  if (workspaceFilters.length > 0) {
+    runStep(
+      'Type Check (TypeScript, Fast)',
+      `pnpm run typecheck -- --no-cache ${workspaceFilters.join(' ')}`,
+      true
+    );
+  } else {
+    console.log('ℹ️  No workspace changes detected. Skipping fast typecheck.');
+  }
 } else {
   runStep('Typed Env Validation (Build)', 'pnpm run verify:env:typed -- --mode=build', true);
   runStep('App Router Validation', 'pnpm run verify:app-router', true);
