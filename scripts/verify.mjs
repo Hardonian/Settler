@@ -70,15 +70,25 @@ function runStep(name, command, required = true) {
  * @returns {string[]}
  */
 function getChangedFiles(options) {
-  const diffArgs = options.staged ? '--cached' : 'HEAD';
-  const output = execSync(`git diff --name-only ${diffArgs} --diff-filter=ACMRTUXB`, {
-    encoding: 'utf-8',
-  });
+  try {
+    const diffArgs = options.staged ? '--cached' : 'HEAD';
+    const output = execSync(`git diff --name-only ${diffArgs} --diff-filter=ACMRTUXB`, {
+      encoding: 'utf-8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+    });
 
-  return output
-    .split('\n')
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0);
+    return output
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+  } catch (error) {
+    // Handle cases where:
+    // - Script is run outside a git repository
+    // - Repository has no commits yet (HEAD doesn't exist)
+    // - Other git errors occur
+    console.warn('⚠️  Could not determine changed files:', error.message.split('\n')[0]);
+    return [];
+  }
 }
 
 /**
