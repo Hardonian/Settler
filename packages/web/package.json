@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "next dev",
     "clean:build": "rm -rf .next dist out .next/tsconfig.tsbuildinfo",
-    "prebuild": "npm run validate:prebuild",
+    "prebuild": "pnpm run validate:prebuild",
     "validate:api-routes": "test -f ../../scripts/validate-api-routes.ts && tsx ../../scripts/validate-api-routes.ts || echo '⚠️  API route validation skipped (script not found)'",
     "build": "next build",
     "build:vercel": "next build",
@@ -18,7 +18,7 @@
     "lint:fix": "next lint --fix",
     "typecheck": "tsc --noEmit",
     "typecheck:ci": "tsc --noEmit",
-    "validate:prebuild": "npm run typecheck:ci",
+    "validate:prebuild": "pnpm run typecheck:ci",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "analyze": "ANALYZE=true next build",
