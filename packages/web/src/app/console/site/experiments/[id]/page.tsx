@@ -1,17 +1,17 @@
 /**
  * Experiment Detail Page
- * 
+ *
  * View experiment details, results, and manage variants.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Play } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Play } from "lucide-react";
 
 interface ExperimentResult {
   key: string;
@@ -26,7 +26,7 @@ export default function ExperimentDetailPage() {
   const params = useParams();
   const router = useRouter();
   const experimentId = params.id as string;
-  
+
   const [experiment, setExperiment] = useState<any>(null);
   const [results, setResults] = useState<ExperimentResult[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,11 +39,11 @@ export default function ExperimentDetailPage() {
   async function loadExperiment() {
     try {
       const response = await fetch(`/api/console/site/experiments/${experimentId}`);
-      if (!response.ok) throw new Error('Failed to load experiment');
+      if (!response.ok) throw new Error("Failed to load experiment");
       const data = await response.json();
       setExperiment(data.experiment);
-    } catch {
-      console.error('Error loading experiment:', error);
+    } catch (err) {
+      console.error("Error loading experiment:", err);
     } finally {
       setLoading(false);
     }
@@ -55,8 +55,8 @@ export default function ExperimentDetailPage() {
       if (!response.ok) return;
       const data = await response.json();
       setResults(data.results || []);
-    } catch {
-      console.error('Error loading results:', error);
+    } catch (err) {
+      console.error('Error loading results:', err);
     }
   }
 
@@ -67,22 +67,36 @@ export default function ExperimentDetailPage() {
       });
       if (!response.ok) throw new Error('Failed to start experiment');
       await loadExperiment();
-    } catch {
-      console.error('Error starting experiment:', error);
+    } catch (err) {
+      console.error('Error starting experiment:', err);
       alert('Failed to start experiment');
+    }
+  }
+  }
+
+  async function handleStart() {
+    try {
+      const response = await fetch(`/api/console/site/experiments/${experimentId}/start`, {
+        method: "POST",
+      });
+      if (!response.ok) throw new Error("Failed to start experiment");
+      await loadExperiment();
+    } catch {
+      console.error("Error starting experiment:", error);
+      alert("Failed to start experiment");
     }
   }
 
   function getStatusColor(status: string) {
     switch (status) {
-      case 'running':
-        return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
-      case 'paused':
-        return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300';
-      case 'completed':
-        return 'bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300';
+      case "running":
+        return "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300";
+      case "paused":
+        return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300";
+      case "completed":
+        return "bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300";
       default:
-        return 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300';
+        return "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300";
     }
   }
 
@@ -101,7 +115,7 @@ export default function ExperimentDetailPage() {
     return (
       <div className="text-center py-12">
         <p className="text-slate-600 dark:text-slate-400 mb-4">Experiment not found</p>
-        <Button variant="outline" onClick={() => router.push('/console/site/experiments')}>
+        <Button variant="outline" onClick={() => router.push("/console/site/experiments")}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Experiments
         </Button>
@@ -113,23 +127,19 @@ export default function ExperimentDetailPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => router.push('/console/site/experiments')}>
+          <Button variant="ghost" onClick={() => router.push("/console/site/experiments")}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-              {experiment.name}
-            </h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{experiment.name}</h1>
             <p className="text-sm text-slate-600 dark:text-slate-400">
               {experiment.targetPage?.seoTitle || experiment.targetPage?.slug}
             </p>
           </div>
-          <Badge className={getStatusColor(experiment.status)}>
-            {experiment.status}
-          </Badge>
+          <Badge className={getStatusColor(experiment.status)}>{experiment.status}</Badge>
         </div>
-        {experiment.status === 'draft' && (
+        {experiment.status === "draft" && (
           <Button onClick={handleStart}>
             <Play className="w-4 h-4 mr-2" />
             Start Experiment
@@ -138,7 +148,7 @@ export default function ExperimentDetailPage() {
       </div>
 
       {/* Results */}
-      {experiment.status === 'running' && results.length > 0 && (
+      {experiment.status === "running" && results.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Results</CardTitle>
@@ -186,7 +196,10 @@ export default function ExperimentDetailPage() {
         <CardContent>
           <div className="space-y-2">
             {experiment.variants?.map((variant: any) => (
-              <div key={variant.id} className="p-3 border rounded-lg flex items-center justify-between">
+              <div
+                key={variant.id}
+                className="p-3 border rounded-lg flex items-center justify-between"
+              >
                 <div>
                   <div className="font-medium">{variant.label}</div>
                   <div className="text-sm text-slate-500">{variant.key}</div>

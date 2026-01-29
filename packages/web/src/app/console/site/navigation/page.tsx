@@ -1,26 +1,26 @@
 /**
  * Navigation Editor
- * 
+ *
  * Edit tenant navigation: header and footer items.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { ArrowLeft, Save, Plus, Trash2, GripVertical } from 'lucide-react';
-import { TenantNavigationItem } from '@/shared/tenant/types';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ArrowLeft, Save, Plus, Trash2, GripVertical } from "lucide-react";
+import { TenantNavigationItem } from "@/shared/tenant/types";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 
 export default function NavigationEditorPage() {
   const router = useRouter();
@@ -35,13 +35,13 @@ export default function NavigationEditorPage() {
 
   async function loadNavigation() {
     try {
-      const response = await fetch('/api/console/site/navigation');
-      if (!response.ok) throw new Error('Failed to load navigation');
+      const response = await fetch("/api/console/site/navigation");
+      if (!response.ok) throw new Error("Failed to load navigation");
       const data = await response.json();
       setNavItems(data.navigation?.navItems || []);
       setFooterItems(data.navigation?.footerItems || []);
-    } catch {
-      console.error('Error loading navigation:', error);
+    } catch (err) {
+      console.error("Error loading navigation:", err);
     } finally {
       setLoading(false);
     }
@@ -50,9 +50,9 @@ export default function NavigationEditorPage() {
   async function handleSave() {
     setSaving(true);
     try {
-      const response = await fetch('/api/console/site/navigation', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/console/site/navigation", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           navItems,
           footerItems,
@@ -61,26 +61,26 @@ export default function NavigationEditorPage() {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to save navigation');
+        throw new Error(error.error || "Failed to save navigation");
       }
 
-      alert('Navigation saved successfully');
+      alert("Navigation saved successfully");
     } catch {
-      console.error('Error saving navigation:', error);
-      alert(error instanceof Error ? error.message : 'Failed to save navigation');
+      console.error("Error saving navigation:", error);
+      alert(error instanceof Error ? error.message : "Failed to save navigation");
     } finally {
       setSaving(false);
     }
   }
 
-  function handleAddItem(type: 'nav' | 'footer') {
+  function handleAddItem(type: "nav" | "footer") {
     const newItem: TenantNavigationItem = {
-      label: 'New Item',
-      href: '/',
-      type: 'internal',
+      label: "New Item",
+      href: "/",
+      type: "internal",
     };
-    
-    if (type === 'nav') {
+
+    if (type === "nav") {
       setNavItems([...navItems, newItem]);
     } else {
       setFooterItems([...footerItems, newItem]);
@@ -88,11 +88,11 @@ export default function NavigationEditorPage() {
   }
 
   function handleUpdateItem(
-    type: 'nav' | 'footer',
+    type: "nav" | "footer",
     index: number,
     updates: Partial<TenantNavigationItem>
   ) {
-    if (type === 'nav') {
+    if (type === "nav") {
       const updated = [...navItems];
       const existing = updated[index];
       if (existing) {
@@ -109,8 +109,8 @@ export default function NavigationEditorPage() {
     }
   }
 
-  function handleDeleteItem(type: 'nav' | 'footer', index: number) {
-    if (type === 'nav') {
+  function handleDeleteItem(type: "nav" | "footer", index: number) {
+    if (type === "nav") {
       setNavItems(navItems.filter((_, i) => i !== index));
     } else {
       setFooterItems(footerItems.filter((_, i) => i !== index));
@@ -119,11 +119,7 @@ export default function NavigationEditorPage() {
 
   // Removed unused function _handleMoveItem
 
-  function renderItemEditor(
-    item: TenantNavigationItem,
-    index: number,
-    type: 'nav' | 'footer'
-  ) {
+  function renderItemEditor(item: TenantNavigationItem, index: number, type: "nav" | "footer") {
     return (
       <Card key={index} className="mb-4">
         <CardContent className="pt-6">
@@ -151,7 +147,7 @@ export default function NavigationEditorPage() {
                 <Select
                   value={item.type}
                   onValueChange={(value: string) =>
-                    handleUpdateItem(type, index, { type: value as 'internal' | 'external' })
+                    handleUpdateItem(type, index, { type: value as "internal" | "external" })
                   }
                 >
                   <SelectTrigger className="mt-1">
@@ -164,11 +160,7 @@ export default function NavigationEditorPage() {
                 </Select>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleDeleteItem(type, index)}
-            >
+            <Button variant="ghost" size="sm" onClick={() => handleDeleteItem(type, index)}>
               <Trash2 className="w-4 h-4" />
             </Button>
           </div>
@@ -192,14 +184,12 @@ export default function NavigationEditorPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => router.push('/console/site')}>
+          <Button variant="ghost" onClick={() => router.push("/console/site")}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-              Navigation
-            </h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Navigation</h1>
             <p className="text-sm text-slate-600 dark:text-slate-400">
               Manage header and footer navigation items
             </p>
@@ -207,7 +197,7 @@ export default function NavigationEditorPage() {
         </div>
         <Button onClick={handleSave} disabled={saving}>
           <Save className="w-4 h-4 mr-2" />
-          {saving ? 'Saving...' : 'Save Changes'}
+          {saving ? "Saving..." : "Save Changes"}
         </Button>
       </div>
 
@@ -220,11 +210,7 @@ export default function NavigationEditorPage() {
                 <CardTitle>Header Navigation</CardTitle>
                 <CardDescription>Main navigation menu items</CardDescription>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleAddItem('nav')}
-              >
+              <Button variant="outline" size="sm" onClick={() => handleAddItem("nav")}>
                 <Plus className="w-4 h-4 mr-2" />
                 Add Item
               </Button>
@@ -236,7 +222,7 @@ export default function NavigationEditorPage() {
                 No navigation items. Add one to get started.
               </p>
             ) : (
-              navItems.map((item, index) => renderItemEditor(item, index, 'nav'))
+              navItems.map((item, index) => renderItemEditor(item, index, "nav"))
             )}
           </CardContent>
         </Card>
@@ -249,11 +235,7 @@ export default function NavigationEditorPage() {
                 <CardTitle>Footer Navigation</CardTitle>
                 <CardDescription>Footer link items</CardDescription>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleAddItem('footer')}
-              >
+              <Button variant="outline" size="sm" onClick={() => handleAddItem("footer")}>
                 <Plus className="w-4 h-4 mr-2" />
                 Add Item
               </Button>
@@ -265,7 +247,7 @@ export default function NavigationEditorPage() {
                 No footer items. Add one to get started.
               </p>
             ) : (
-              footerItems.map((item, index) => renderItemEditor(item, index, 'footer'))
+              footerItems.map((item, index) => renderItemEditor(item, index, "footer"))
             )}
           </CardContent>
         </Card>

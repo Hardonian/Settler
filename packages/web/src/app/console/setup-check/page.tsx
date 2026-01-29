@@ -1,23 +1,23 @@
 /**
  * Console Setup Check Page
- * 
+ *
  * Diagnostic page to check what's missing for the console to work.
  */
 
-import { Suspense } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
-import { createClient } from '@/lib/supabase/server';
-import { prisma } from '@/shared/db/prismaClient';
+import { Suspense } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/shared/db/prismaClient";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 interface CheckResult {
   name: string;
-  status: 'pass' | 'fail' | 'warning';
+  status: "pass" | "fail" | "warning";
   message: string;
 }
 
@@ -26,32 +26,37 @@ async function SetupChecks() {
 
   // Check 1: Environment Variables
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+  const supabaseAnonKey =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const databaseUrl = process.env.DATABASE_URL;
 
   checks.push({
-    name: 'Supabase URL',
-    status: supabaseUrl ? 'pass' : 'fail',
-    message: supabaseUrl ? 'Configured' : 'Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL',
+    name: "Supabase URL",
+    status: supabaseUrl ? "pass" : "fail",
+    message: supabaseUrl ? "Configured" : "Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL",
   });
 
   checks.push({
-    name: 'Supabase Anon Key',
-    status: supabaseAnonKey ? 'pass' : 'fail',
-    message: supabaseAnonKey ? 'Configured' : 'Missing NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY',
+    name: "Supabase Anon Key",
+    status: supabaseAnonKey ? "pass" : "fail",
+    message: supabaseAnonKey
+      ? "Configured"
+      : "Missing NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY",
   });
 
   checks.push({
-    name: 'Supabase Service Role Key',
-    status: supabaseServiceKey ? 'pass' : 'warning',
-    message: supabaseServiceKey ? 'Configured' : 'Missing SUPABASE_SERVICE_ROLE_KEY (needed for admin operations)',
+    name: "Supabase Service Role Key",
+    status: supabaseServiceKey ? "pass" : "warning",
+    message: supabaseServiceKey
+      ? "Configured"
+      : "Missing SUPABASE_SERVICE_ROLE_KEY (needed for admin operations)",
   });
 
   checks.push({
-    name: 'Database URL',
-    status: databaseUrl ? 'pass' : 'fail',
-    message: databaseUrl ? 'Configured' : 'Missing DATABASE_URL',
+    name: "Database URL",
+    status: databaseUrl ? "pass" : "fail",
+    message: databaseUrl ? "Configured" : "Missing DATABASE_URL",
   });
 
   // Check 2: Supabase Connection
@@ -60,69 +65,75 @@ async function SetupChecks() {
       const supabase = await createClient();
       const { error } = await supabase.auth.getUser();
       checks.push({
-        name: 'Supabase Connection',
-        status: error ? 'warning' : 'pass',
-        message: error ? `Connection works but auth error: ${error.message}` : 'Connected successfully',
+        name: "Supabase Connection",
+        status: error ? "warning" : "pass",
+        message: error
+          ? `Connection works but auth error: ${error.message}`
+          : "Connected successfully",
       });
     } else {
       checks.push({
-        name: 'Supabase Connection',
-        status: 'fail',
-        message: 'Cannot test - missing environment variables',
+        name: "Supabase Connection",
+        status: "fail",
+        message: "Cannot test - missing environment variables",
       });
     }
-  } catch {
+  } catch (err) {
     checks.push({
-      name: 'Supabase Connection',
-      status: 'fail',
-      message: `Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      name: "Supabase Connection",
+      status: "fail",
+      message: `Connection failed: ${err instanceof Error ? err.message : "Unknown error"}`,
     });
   }
 
   // Check 3: Prisma Client
   try {
-    if (prisma && typeof prisma.billingAccount !== 'undefined') {
+    if (prisma && typeof prisma.billingAccount !== "undefined") {
       checks.push({
-        name: 'Prisma Client',
-        status: 'pass',
-        message: 'Prisma client initialized',
+        name: "Prisma Client",
+        status: "pass",
+        message: "Prisma client initialized",
       });
     } else {
       checks.push({
-        name: 'Prisma Client',
-        status: 'fail',
-        message: 'Prisma client not properly initialized',
+        name: "Prisma Client",
+        status: "fail",
+        message: "Prisma client not properly initialized",
       });
     }
-  } catch {
+  } catch (err) {
     checks.push({
-      name: 'Prisma Client',
-      status: 'fail',
-      message: `Prisma error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      name: "Prisma Client",
+      status: "fail",
+      message: `Prisma error: ${err instanceof Error ? err.message : "Unknown error"}`,
     });
   }
 
   // Check 4: Database Tables (if Prisma is available)
-  if (prisma && typeof prisma.billingAccount !== 'undefined') {
+  if (prisma && typeof prisma.billingAccount !== "undefined") {
     try {
       await prisma.billingAccount.findFirst({ take: 1 });
       checks.push({
-        name: 'billingAccount Table',
-        status: 'pass',
-        message: 'Table exists and accessible',
+        name: "billingAccount Table",
+        status: "pass",
+        message: "Table exists and accessible",
       });
     } catch {
-      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-      if (errorMsg.includes('does not exist') || errorMsg.includes('relation') || errorMsg.includes('table')) {
+      const errorMsg = error instanceof Error ? error.message : "Unknown error";
+      if (
+        errorMsg.includes("does not exist") ||
+        errorMsg.includes("relation") ||
+        errorMsg.includes("table")
+      ) {
         checks.push({
-          name: 'billingAccount Table',
-          status: 'fail',
-          message: 'Table does not exist - run migrations',
+          name: "billingAccount Table",
+          status: "fail",
+          message: "Table does not exist - run migrations",
         });
       } else {
         checks.push({
-          name: 'billingAccount Table',
-          status: 'warning',
+          name: "billingAccount Table",
+          status: "warning",
           message: `Access issue: ${errorMsg}`,
         });
       }
@@ -132,49 +143,49 @@ async function SetupChecks() {
   // Check 5: Supabase Tables
   try {
     if (supabaseUrl && supabaseServiceKey) {
-      const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
+      const { createClient: createSupabaseClient } = await import("@supabase/supabase-js");
       const adminClient = createSupabaseClient(supabaseUrl, supabaseServiceKey);
-      
-      const { error } = await adminClient.from('api_keys').select('id').limit(1);
+
+      const { error } = await adminClient.from("api_keys").select("id").limit(1);
       if (error) {
-        if (error.code === '42P01' || error.message.includes('does not exist')) {
+        if (error.code === "42P01" || error.message.includes("does not exist")) {
           checks.push({
-            name: 'api_keys Table (Supabase)',
-            status: 'fail',
-            message: 'Table does not exist - create migration',
+            name: "api_keys Table (Supabase)",
+            status: "fail",
+            message: "Table does not exist - create migration",
           });
         } else {
           checks.push({
-            name: 'api_keys Table (Supabase)',
-            status: 'warning',
+            name: "api_keys Table (Supabase)",
+            status: "warning",
             message: `Access issue: ${error.message}`,
           });
         }
       } else {
         checks.push({
-          name: 'api_keys Table (Supabase)',
-          status: 'pass',
-          message: 'Table exists and accessible',
+          name: "api_keys Table (Supabase)",
+          status: "pass",
+          message: "Table exists and accessible",
         });
       }
     } else {
       checks.push({
-        name: 'api_keys Table (Supabase)',
-        status: 'warning',
-        message: 'Cannot test - missing Supabase credentials',
+        name: "api_keys Table (Supabase)",
+        status: "warning",
+        message: "Cannot test - missing Supabase credentials",
       });
     }
-  } catch {
+  } catch (err) {
     checks.push({
-      name: 'api_keys Table (Supabase)',
-      status: 'fail',
-      message: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      name: "api_keys Table (Supabase)",
+      status: "fail",
+      message: `Error: ${err instanceof Error ? err.message : "Unknown error"}`,
     });
   }
 
-  const passCount = checks.filter(c => c.status === 'pass').length;
-  const failCount = checks.filter(c => c.status === 'fail').length;
-  const warnCount = checks.filter(c => c.status === 'warning').length;
+  const passCount = checks.filter((c) => c.status === "pass").length;
+  const failCount = checks.filter((c) => c.status === "fail").length;
+  const warnCount = checks.filter((c) => c.status === "warning").length;
 
   return (
     <div className="space-y-6">
@@ -213,22 +224,20 @@ async function SetupChecks() {
           <Card key={index}>
             <CardContent className="pt-6">
               <div className="flex items-start gap-4">
-                {check.status === 'pass' && (
+                {check.status === "pass" && (
                   <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
                 )}
-                {check.status === 'fail' && (
+                {check.status === "fail" && (
                   <XCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
                 )}
-                {check.status === 'warning' && (
+                {check.status === "warning" && (
                   <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
                 )}
                 <div className="flex-1">
                   <h3 className="font-semibold text-slate-900 dark:text-white mb-1">
                     {check.name}
                   </h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    {check.message}
-                  </p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">{check.message}</p>
                 </div>
               </div>
             </CardContent>

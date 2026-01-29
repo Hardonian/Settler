@@ -1,17 +1,17 @@
 /**
  * Experiments Management Page
- * 
+ *
  * List, create, and manage A/B tests.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Plus, Play, BarChart3, Eye } from 'lucide-react';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Play, BarChart3, Eye } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -19,13 +19,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 
 interface Experiment {
   id: string;
   name: string;
   slug: string;
-  status: 'draft' | 'running' | 'paused' | 'completed';
+  status: "draft" | "running" | "paused" | "completed";
   primaryMetric: string;
   targetPage: {
     id: string;
@@ -53,12 +53,12 @@ export default function ExperimentsPage() {
 
   async function loadExperiments() {
     try {
-      const response = await fetch('/api/console/site/experiments');
-      if (!response.ok) throw new Error('Failed to load experiments');
+      const response = await fetch("/api/console/site/experiments");
+      if (!response.ok) throw new Error("Failed to load experiments");
       const data = await response.json();
       setExperiments(data.experiments || []);
-    } catch {
-      console.error('Error loading experiments:', error);
+    } catch (err) {
+      console.error("Error loading experiments:", err);
     } finally {
       setLoading(false);
     }
@@ -67,26 +67,27 @@ export default function ExperimentsPage() {
   async function handleStartExperiment(id: string) {
     try {
       const response = await fetch(`/api/console/site/experiments/${id}/start`, {
-        method: 'POST',
+        method: "POST",
       });
-      if (!response.ok) throw new Error('Failed to start experiment');
+      if (!response.ok) throw new Error("Failed to start experiment");
       await loadExperiments();
-    } catch {
-      console.error('Error starting experiment:', error);
+    } catch (err) {
+      console.error('Error starting experiment:', err);
       alert('Failed to start experiment');
     }
+  }
   }
 
   function getStatusColor(status: string) {
     switch (status) {
-      case 'running':
-        return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
-      case 'paused':
-        return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300';
-      case 'completed':
-        return 'bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300';
+      case "running":
+        return "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300";
+      case "paused":
+        return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300";
+      case "completed":
+        return "bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300";
       default:
-        return 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300';
+        return "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300";
     }
   }
 
@@ -154,7 +155,7 @@ export default function ExperimentsPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {experiment.status === 'draft' && (
+                    {experiment.status === "draft" && (
                       <Button
                         variant="outline"
                         size="sm"
@@ -191,8 +192,9 @@ export default function ExperimentsPage() {
                 Feature Unavailable
               </p>
               <p className="text-sm text-blue-700 dark:text-blue-300">
-                Experiment creation is currently unavailable. This feature is being prepared for release. 
-                For now, you can manage experiments via the API or contact support for assistance.
+                Experiment creation is currently unavailable. This feature is being prepared for
+                release. For now, you can manage experiments via the API or contact support for
+                assistance.
               </p>
             </div>
           </div>
