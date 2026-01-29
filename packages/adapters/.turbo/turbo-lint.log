@@ -10,7 +10,6 @@ C:\Users\scott\Documents\GitHub\Settler\packages\adapters\src\concurrency-protec
   33:13  warning  Unsafe object destructuring of a property with an `any` value  @typescript-eslint/no-unsafe-assignment
 
 C:\Users\scott\Documents\GitHub\Settler\packages\adapters\src\connector-runtime.ts
-   94:16  warning  '_error' is defined but never used   @typescript-eslint/no-unused-vars
    94:16  warning  '_error' is defined but never used                                                 @typescript-eslint/no-unused-vars
   107:16  warning  '_error' is defined but never used                                                 @typescript-eslint/no-unused-vars
   119:16  warning  '_error' is defined but never used                                                 @typescript-eslint/no-unused-vars
