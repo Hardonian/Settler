@@ -66,29 +66,7 @@ src/app/api/v1/recon/jobs/route.ts(302,32): error TS7006: Parameter 'job' implic
 src/app/api/workspaces/route.ts(174,36): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
 src/app/api/workspaces/route.ts(276,47): error TS7006: Parameter 'ws' implicitly has an 'any' type.
-src/app/console/api-keys/page.tsx(83,50): error TS2304: Cannot find name 'error'.
-src/app/console/api-keys/page.tsx(99,50): error TS2304: Cannot find name 'error'.
-src/app/console/api-keys/page.tsx(109,40): error TS2304: Cannot find name 'error'.
-src/app/console/site/page.tsx(63,45): error TS2304: Cannot find name 'error'.
-src/app/console/site/page.tsx(95,45): error TS2304: Cannot find name 'error'.
-src/app/console/site/page.tsx(96,13): error TS2304: Cannot find name 'error'.
-src/app/console/site/page.tsx(96,38): error TS2304: Cannot find name 'error'.
-src/app/console/site/page.tsx(115,45): error TS2304: Cannot find name 'error'.
-src/app/console/site/pages/[id]/page.tsx(56,44): error TS2304: Cannot find name 'error'.
-src/app/console/site/pages/[id]/page.tsx(82,43): error TS2304: Cannot find name 'error'.
-src/app/console/site/pages/[id]/page.tsx(83,13): error TS2304: Cannot find name 'error'.
-src/app/console/site/pages/[id]/page.tsx(83,38): error TS2304: Cannot find name 'error'.
-src/app/console/site/pages/[id]/page.tsx(102,47): error TS2304: Cannot find name 'error'.
-src/app/console/site/ui-config/page.tsx(66,21): error TS2304: Cannot find name 'e'.
-src/app/console/site/ui-config/page.tsx(112,21): error TS2304: Cannot find name 'e'.
-src/app/console/site/ui-config/page.tsx(113,13): error TS2304: Cannot find name 'e'.
-src/app/console/site/ui-config/page.tsx(113,34): error TS2304: Cannot find name 'e'.
 src/app/console/tables/[table]/page.tsx(90,53): error TS2304: Cannot find name 'err'.
-src/app/console/usage/page.tsx(85,52): error TS2304: Cannot find name 'error'.
-src/app/console/webhooks/page.tsx(57,50): error TS2304: Cannot find name 'error'.
-src/app/console/webhooks/page.tsx(99,50): error TS2304: Cannot find name 'error'.
-src/app/console/webhooks/page.tsx(118,50): error TS2304: Cannot find name 'error'.
-src/app/console/webhooks/page.tsx(137,50): error TS2304: Cannot find name 'error'.
 src/app/dashboard/addons/page.tsx(61,59): error TS2304: Cannot find name 'error'.
 src/app/dashboard/addons/page.tsx(151,49): error TS2304: Cannot find name 'error'.
 src/app/dashboard/addons/page.tsx(168,41): error TS2304: Cannot find name 'error'.

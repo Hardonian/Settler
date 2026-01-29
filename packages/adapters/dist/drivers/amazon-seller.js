@@ -8,6 +8,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AmazonSellerDriver = void 0;
 const connector_driver_1 = require("../connector-driver");
+const api_responses_1 = require("../types/api-responses");
 class AmazonSellerDriver {
     metadata = {
         id: "amazon-seller",
@@ -32,6 +33,16 @@ class AmazonSellerDriver {
         // If SP-API credentials provided, test API connection
         if (credentials.sp_api_client_id && credentials.sp_api_client_secret) {
             try {
+                const clientId = (0, api_responses_1.extractStringField)(credentials, "sp_api_client_id");
+                const clientSecret = (0, api_responses_1.extractStringField)(credentials, "sp_api_client_secret");
+                const refreshToken = (0, api_responses_1.extractStringField)(credentials, "sp_api_refresh_token");
+                if (!clientId || !clientSecret || !refreshToken) {
+                    return {
+                        success: false,
+                        error: "Missing required SP-API credentials",
+                        message: "SP-API client_id, client_secret, and refresh_token are required",
+                    };
+                }
                 // Test SP-API connection
                 const tokenResponse = await fetch("https://api.amazon.com/auth/o2/token", {
                     method: "POST",
@@ -40,9 +51,9 @@ class AmazonSellerDriver {
                     },
                     body: new URLSearchParams({
                         grant_type: "refresh_token",
-                        refresh_token: credentials.sp_api_refresh_token,
-                        client_id: credentials.sp_api_client_id,
-                        client_secret: credentials.sp_api_client_secret,
+                        refresh_token: refreshToken,
+                        client_id: clientId,
+                        client_secret: clientSecret,
                     }),
                 });
                 if (!tokenResponse.ok) {
