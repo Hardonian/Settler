@@ -1,11 +1,11 @@
 /**
  * Webhook Management
- * 
+ *
  * Self-service webhook configuration and management.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
-import crypto from 'crypto';
+import { prisma } from "@/shared/db/prismaClient";
+import crypto from "crypto";
 
 export interface Webhook {
   id: string;
@@ -30,7 +30,7 @@ export interface CreateWebhookInput {
  * Generate webhook secret
  */
 function generateWebhookSecret(): string {
-  return `whsec_${crypto.randomBytes(32).toString('base64url')}`;
+  return `whsec_${crypto.randomBytes(32).toString("base64url")}`;
 }
 
 /**
@@ -45,53 +45,55 @@ export async function createWebhook(
   try {
     const url = new URL(input.url);
     // Only allow HTTPS in production
-    if (process.env.NODE_ENV === 'production' && url.protocol !== 'https:') {
-      throw new Error('Webhook URLs must use HTTPS in production');
+    if (process.env.NODE_ENV === "production" && url.protocol !== "https:") {
+      throw new Error("Webhook URLs must use HTTPS in production");
     }
   } catch (error) {
-    if (error instanceof Error && error.message.includes('HTTPS')) {
+    if (error instanceof Error && error.message.includes("HTTPS")) {
       throw error;
     }
-    throw new Error('Invalid webhook URL format');
+    throw new Error("Invalid webhook URL format");
   }
 
   // Validate URL length
   if (input.url.length > 2048) {
-    throw new Error('Webhook URL is too long (max 2048 characters)');
+    throw new Error("Webhook URL is too long (max 2048 characters)");
   }
 
   // Validate events
   const validEvents = [
-    'reconciliation.completed',
-    'reconciliation.failed',
-    'receipt.parsed',
-    'receipt.failed',
-    'feature_flag.updated',
-    'usage.limit_exceeded',
-    'billing.subscription_updated',
+    "reconciliation.completed",
+    "reconciliation.failed",
+    "receipt.parsed",
+    "receipt.failed",
+    "feature_flag.updated",
+    "usage.limit_exceeded",
+    "billing.subscription_updated",
   ];
 
   // Validate events array
   if (!Array.isArray(input.events)) {
-    throw new Error('Events must be an array');
+    throw new Error("Events must be an array");
   }
 
   if (input.events.length === 0) {
-    throw new Error('At least one event must be specified');
+    throw new Error("At least one event must be specified");
   }
 
   if (input.events.length > 20) {
-    throw new Error('Maximum 20 events allowed per webhook');
+    throw new Error("Maximum 20 events allowed per webhook");
   }
 
   // Validate each event
   const invalidEvents = input.events.filter((e) => {
-    if (typeof e !== 'string') return true;
+    if (typeof e !== "string") return true;
     return !validEvents.includes(e);
   });
 
   if (invalidEvents.length > 0) {
-    throw new Error(`Invalid events: ${invalidEvents.join(', ')}. Valid events: ${validEvents.join(', ')}`);
+    throw new Error(
+      `Invalid events: ${invalidEvents.join(", ")}. Valid events: ${validEvents.join(", ")}`
+    );
   }
 
   const secret = input.secret || generateWebhookSecret();
@@ -103,7 +105,7 @@ export async function createWebhook(
       url: input.url,
       events: input.events,
       secret,
-      status: 'active',
+      status: "active",
     },
   });
 
@@ -131,10 +133,10 @@ export async function listWebhooks(userId: string, tenantId: string): Promise<We
       tenantId: tenantId || userId, // Fallback to userId if tenantId is null
       deletedAt: null,
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
   });
 
-  return webhooks.map((w) => ({
+  return webhooks.map((w: (typeof webhooks)[0]) => ({
     id: w.id,
     userId: w.userId,
     tenantId: w.tenantId,
@@ -155,7 +157,7 @@ export async function updateWebhook(
   webhookId: string,
   userId: string,
   tenantId: string,
-  updates: Partial<Pick<Webhook, 'url' | 'events' | 'status'>>
+  updates: Partial<Pick<Webhook, "url" | "events" | "status">>
 ): Promise<Webhook> {
   const existing = await prisma.webhook.findFirst({
     where: {
@@ -167,7 +169,7 @@ export async function updateWebhook(
   });
 
   if (!existing) {
-    throw new Error('Webhook not found');
+    throw new Error("Webhook not found");
   }
 
   // Validate URL if provided
@@ -175,7 +177,7 @@ export async function updateWebhook(
     try {
       new URL(updates.url);
     } catch (error) {
-      throw new Error('Invalid webhook URL');
+      throw new Error("Invalid webhook URL");
     }
   }
 
@@ -220,13 +222,13 @@ export async function deleteWebhook(
   });
 
   if (!existing) {
-    throw new Error('Webhook not found');
+    throw new Error("Webhook not found");
   }
 
   await prisma.webhook.update({
     where: { id: webhookId },
     data: {
-      status: 'deleted',
+      status: "deleted",
       deletedAt: new Date(),
     },
   });
@@ -250,7 +252,7 @@ export async function rotateWebhookSecret(
   });
 
   if (!existing) {
-    throw new Error('Webhook not found');
+    throw new Error("Webhook not found");
   }
 
   const newSecret = generateWebhookSecret();
@@ -271,14 +273,16 @@ export async function getWebhookDeliveries(
   userId: string,
   tenantId: string,
   _limit = 50
-): Promise<Array<{
-  id: string;
-  webhookId: string;
-  status: 'success' | 'failed';
-  responseCode?: number;
-  responseBody?: string;
-  attemptedAt: Date;
-}>> {
+): Promise<
+  Array<{
+    id: string;
+    webhookId: string;
+    status: "success" | "failed";
+    responseCode?: number;
+    responseBody?: string;
+    attemptedAt: Date;
+  }>
+> {
   const existing = await prisma.webhook.findFirst({
     where: {
       id: webhookId,
@@ -289,19 +293,19 @@ export async function getWebhookDeliveries(
   });
 
   if (!existing) {
-    throw new Error('Webhook not found');
+    throw new Error("Webhook not found");
   }
 
   const deliveries = await prisma.webhookDelivery.findMany({
     where: { webhookId },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
     take: _limit,
   });
 
-  return deliveries.map((d) => ({
+  return deliveries.map((d: (typeof deliveries)[0]) => ({
     id: d.id,
     webhookId: d.webhookId,
-    status: d.status === 'delivered' ? 'success' : 'failed',
+    status: d.status === "delivered" ? "success" : "failed",
     responseCode: d.statusCode || undefined,
     responseBody: d.responseBody || undefined,
     attemptedAt: d.createdAt,

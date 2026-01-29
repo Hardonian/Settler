@@ -1,12 +1,12 @@
 /**
  * XState Hooks
- * 
+ *
  * Ergonomic hooks for consuming state machines in React
  */
 
-import { useMachine, useSelector } from '@xstate/react';
-import { ActorRefFrom, AnyStateMachine } from 'xstate';
-import { isPendingState, isSuccessState, isErrorState, isIdleState } from './types';
+import { useMachine, useSelector } from "@xstate/react";
+import { ActorRefFrom, AnyStateMachine } from "xstate";
+import { isPendingState, isSuccessState, isErrorState, isIdleState } from "./types";
 
 /**
  * Hook to use a state machine with common selectors
@@ -15,7 +15,10 @@ export function useMachineState<TMachine extends AnyStateMachine>(
   machine: TMachine,
   options?: Parameters<typeof useMachine>[1]
 ) {
-  const [state, send, actor] = useMachine(machine, options);
+  const [state, send, actor] = useMachine(
+    machine,
+    ...((options ? [options] : []) as [Exclude<typeof options, undefined>])
+  );
 
   const isPending = useSelector(actor, (s: any) => isPendingState(s.value as string));
   const isSuccess = useSelector(actor, (s: any) => isSuccessState(s.value as string));
@@ -36,9 +39,7 @@ export function useMachineState<TMachine extends AnyStateMachine>(
 /**
  * Hook to select specific state value
  */
-export function useStateValue<TMachine extends AnyStateMachine>(
-  actor: ActorRefFrom<TMachine>
-) {
+export function useStateValue<TMachine extends AnyStateMachine>(actor: ActorRefFrom<TMachine>) {
   return useSelector(actor, (state) => (state as any).value);
 }
 
@@ -63,6 +64,8 @@ export function useCanReceiveEvent<TMachine extends AnyStateMachine>(
   eventType: string
 ) {
   return useSelector(actor, (state: any) => {
-    return (state.can && typeof state.can === 'function') ? state.can({ type: eventType } as any) : false;
+    return state.can && typeof state.can === "function"
+      ? state.can({ type: eventType } as any)
+      : false;
   });
 }
