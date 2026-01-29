@@ -104,11 +104,11 @@ export async function getExecutiveMetrics(
     });
 
     const mrr = billingAccounts
-      .filter(ba => {
+      .filter((ba: typeof billingAccounts[0]) => {
         const planId = ba.subscriptions[0]?.planId?.toLowerCase() || '';
         return planId.includes('pro') || planId.includes('enterprise');
       })
-      .reduce((sum, ba) => {
+      .reduce((sum: number, ba: typeof billingAccounts[0]) => {
         // Simplified: pro = $49/month, enterprise = $299/month
         const planId = ba.subscriptions[0]?.planId?.toLowerCase() || '';
         const monthlyPrice = planId.includes('enterprise') ? 299 : 49;
@@ -134,16 +134,16 @@ export async function getExecutiveMetrics(
     });
 
     const totalApiCalls = usageCounters
-      .filter(uc => uc.service === 'api')
-      .reduce((sum, uc) => sum + uc.count, 0);
+      .filter((uc: typeof usageCounters[0]) => uc.service === 'api')
+      .reduce((sum: number, uc: typeof usageCounters[0]) => sum + uc.count, 0);
     
     const totalReconciliations = usageCounters
-      .filter(uc => uc.service === 'reconciliation')
-      .reduce((sum, uc) => sum + uc.count, 0);
+      .filter((uc: typeof usageCounters[0]) => uc.service === 'reconciliation')
+      .reduce((sum: number, uc: typeof usageCounters[0]) => sum + uc.count, 0);
     
     const totalReceiptsParsed = usageCounters
-      .filter(uc => uc.service === 'receipt_parsing')
-      .reduce((sum, uc) => sum + uc.count, 0);
+      .filter((uc: typeof usageCounters[0]) => uc.service === 'receipt_parsing')
+      .reduce((sum: number, uc: typeof usageCounters[0]) => sum + uc.count, 0);
 
     // Growth metrics
     const lastPeriodUsers = await prisma.billingAccount.count({
