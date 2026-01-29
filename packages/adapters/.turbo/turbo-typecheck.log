@@ -64,4 +64,4 @@ src/tiktok-shop.ts(74,40): error TS2345: Argument of type 'string | undefined' i
   Type 'undefined' is not assignable to type 'string'.
 src/tiktok-shop.ts(75,38): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
- ELIFECYCLE  Command failed with exit code 2.
+ ELIFECYCLE  Command failed with exit code 1.
