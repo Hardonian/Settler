@@ -263,7 +263,6 @@ export class EbayDriver implements ConnectorDriver {
       }
 
       return {
-        nextCursor: undefined,
         hasMore: false,
         counts: {
           payouts: payouts.length,

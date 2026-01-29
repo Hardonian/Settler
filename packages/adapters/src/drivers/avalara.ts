@@ -143,7 +143,6 @@ export class AvalaraDriver implements ConnectorDriver {
       }
 
       return {
-        nextCursor: undefined,
         hasMore: false,
         counts: {
           taxEstimates: taxEstimates.length,

@@ -25,8 +25,9 @@ export class StripeAdapter implements Adapter {
       createdParams.lte = Math.floor(dateRange.end.getTime() / 1000);
     }
 
+    const hasCreatedParams = Object.keys(createdParams).length > 0;
     const charges = await stripe.charges.list({
-      created: Object.keys(createdParams).length > 0 ? createdParams : undefined,
+      ...(hasCreatedParams ? { created: createdParams } : {}),
       limit: 100,
     });
 

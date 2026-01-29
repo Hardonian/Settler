@@ -171,7 +171,6 @@ export class AmazonSellerDriver implements ConnectorDriver {
     } else {
       // Manual upload mode - return empty, data should be uploaded via UI
       return {
-        nextCursor: undefined,
         hasMore: false,
         counts: {
           payouts: 0,
@@ -185,7 +184,6 @@ export class AmazonSellerDriver implements ConnectorDriver {
     }
 
     return {
-      nextCursor: undefined,
       hasMore: false,
       counts: {
         payouts: payouts.length,

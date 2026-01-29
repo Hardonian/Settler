@@ -70,7 +70,7 @@ export class EnhancedQuickBooksAdapter implements Adapter {
         },
         body: new URLSearchParams({
           grant_type: "refresh_token",
-          refresh_token: refreshToken ?? '',
+          refresh_token: refreshToken ?? "",
         } as Record<string, string>),
       });
     });
@@ -215,9 +215,14 @@ export class EnhancedQuickBooksAdapter implements Adapter {
       errors.push("Invalid date");
     }
 
-    return {
+    const result: ValidationResult = {
       valid: errors.length === 0,
-      errors: errors.length > 0 ? errors : undefined,
     };
+
+    if (errors.length > 0) {
+      result.errors = errors;
+    }
+
+    return result;
   }
 }

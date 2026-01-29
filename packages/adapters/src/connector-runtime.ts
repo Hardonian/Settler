@@ -636,7 +636,7 @@ export class ConnectorRuntime {
 
     // Process transactions in batches
     if (data.transactions && data.transactions.length > 0) {
-      const batches: typeof data.transactions[] = [];
+      const batches: (typeof data.transactions)[] = [];
       for (let i = 0; i < data.transactions.length; i += batchSize) {
         batches.push(data.transactions.slice(i, i + batchSize) as typeof data.transactions);
       }
@@ -649,11 +649,9 @@ export class ConnectorRuntime {
       }
     }
 
-    // Process other data types similarly
-    const remainingData = {
-      ...data,
-      transactions: undefined,
-    };
+    // Process other data types similarly - exclude transactions from remaining data
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { transactions: _, ...remainingData } = data;
 
     if (
       (data.accounts?.length || 0) +
@@ -828,9 +826,10 @@ export class ConnectorRuntime {
         options.accountId
       );
 
+      const cursorValue = options.cursor || lastCursor;
       const syncOptions: SyncOptions = {
         ...options,
-        cursor: options.cursor || lastCursor || undefined,
+        ...(cursorValue ? { cursor: cursorValue } : {}),
       };
 
       // Create sync run
@@ -904,14 +903,14 @@ export class ConnectorRuntime {
         }));
 
         const dataToSave = {
-          accounts: result.accounts,
-          transactions: transactionsWithIdempotency,
-          balances: balancesWithAccountId,
-          payouts: payoutsWithIdempotency,
-          invoices: invoicesWithIdempotency,
-          subscriptions: subscriptionsWithIdempotency,
-          taxEstimates: taxEstimatesWithIdempotency,
-          rawPayloads: result.rawPayloads,
+          ...(result.accounts ? { accounts: result.accounts } : {}),
+          ...(transactionsWithIdempotency ? { transactions: transactionsWithIdempotency } : {}),
+          ...(balancesWithAccountId ? { balances: balancesWithAccountId } : {}),
+          ...(payoutsWithIdempotency ? { payouts: payoutsWithIdempotency } : {}),
+          ...(invoicesWithIdempotency ? { invoices: invoicesWithIdempotency } : {}),
+          ...(subscriptionsWithIdempotency ? { subscriptions: subscriptionsWithIdempotency } : {}),
+          ...(taxEstimatesWithIdempotency ? { taxEstimates: taxEstimatesWithIdempotency } : {}),
+          ...(result.rawPayloads ? { rawPayloads: result.rawPayloads } : {}),
         };
 
         // Save in batches if large dataset
@@ -955,7 +954,7 @@ export class ConnectorRuntime {
           subscriptionsSynced: result.counts.subscriptions || 0,
           errorsCount: result.errors?.length || 0,
           warningsCount: result.warnings?.length || 0,
-          cursor: result.nextCursor,
+          ...(result.nextCursor ? { cursor: result.nextCursor } : {}),
         });
 
         // Update connector last sync

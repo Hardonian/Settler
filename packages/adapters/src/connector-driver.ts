@@ -1,21 +1,21 @@
 /**
  * Enhanced Connector Driver Interface
- * 
+ *
  * This is the canonical interface that all connector drivers must implement.
  * Supports OAuth2, API keys, manual uploads, and token-based auth.
  */
 
-export type AuthType = 'oauth2' | 'api_key' | 'manual_upload' | 'token_based';
+export type AuthType = "oauth2" | "api_key" | "manual_upload" | "token_based";
 
-export type ConnectorCategory = 
-  | 'bank_feed' 
-  | 'accounting' 
-  | 'subscription_billing' 
-  | 'marketplace' 
-  | 'erp' 
-  | 'tax' 
-  | 'payment_processor'
-  | 'ecommerce';
+export type ConnectorCategory =
+  | "bank_feed"
+  | "accounting"
+  | "subscription_billing"
+  | "marketplace"
+  | "erp"
+  | "tax"
+  | "payment_processor"
+  | "ecommerce";
 
 export interface ConnectorMetadata {
   id: string;
@@ -23,8 +23,8 @@ export interface ConnectorMetadata {
   category: ConnectorCategory;
   authType: AuthType;
   description: string;
-  icon?: string;
-  documentationUrl?: string;
+  icon?: string | undefined;
+  documentationUrl?: string | undefined;
   supportsWebhooks: boolean;
   supportsPolling: boolean;
   requiredConfig: string[];
@@ -34,162 +34,164 @@ export interface ConnectorMetadata {
 export interface AuthUrlOptions {
   tenantId: string;
   redirectUri: string;
-  state?: string;
-  scopes?: string[];
+  state?: string | undefined;
+  scopes?: string[] | undefined;
 }
 
 export interface AuthCallbackResult {
   accessToken: string;
-  refreshToken?: string;
-  expiresIn?: number;
-  tokenType?: string;
-  scope?: string;
-  metadata?: Record<string, unknown>;
+  refreshToken?: string | undefined;
+  expiresIn?: number | undefined;
+  tokenType?: string | undefined;
+  scope?: string | undefined;
+  metadata?: Record<string, unknown> | undefined;
 }
 
 export interface TestConnectionOptions {
   credentials: Record<string, unknown>;
-  config?: Record<string, unknown>;
+  config?: Record<string, unknown> | undefined;
 }
 
 export interface TestConnectionResult {
   success: boolean;
-  message?: string;
-  error?: string;
-  metadata?: Record<string, unknown>;
+  message?: string | undefined;
+  error?: string | undefined;
+  metadata?: Record<string, unknown> | undefined;
 }
 
 export interface SyncOptions {
-  since?: Date;
-  until?: Date;
-  cursor?: string;
-  accountId?: string;
-  limit?: number;
+  since?: Date | undefined;
+  until?: Date | undefined;
+  cursor?: string | undefined;
+  accountId?: string | undefined;
+  limit?: number | undefined;
 }
 
 export interface SyncResult {
-  nextCursor?: string;
+  nextCursor?: string | undefined;
   hasMore: boolean;
   counts: {
-    accounts?: number;
-    transactions?: number;
-    balances?: number;
-    payouts?: number;
-    invoices?: number;
-    subscriptions?: number;
-    taxEstimates?: number;
+    accounts?: number | undefined;
+    transactions?: number | undefined;
+    balances?: number | undefined;
+    payouts?: number | undefined;
+    invoices?: number | undefined;
+    subscriptions?: number | undefined;
+    taxEstimates?: number | undefined;
   };
-  warnings?: string[];
-  errors?: string[];
+  warnings?: string[] | undefined;
+  errors?: string[] | undefined;
 }
 
 export interface NormalizedAccount {
   providerAccountId: string;
   accountName: string;
-  accountType?: string;
+  accountType?: string | undefined;
   currency: string;
-  institutionName?: string;
-  institutionId?: string;
-  metadata?: Record<string, unknown>;
+  institutionName?: string | undefined;
+  institutionId?: string | undefined;
+  metadata?: Record<string, unknown> | undefined;
 }
 
 export interface NormalizedTransaction {
   externalId: string;
-  accountId?: string;
-  transactionType: 'debit' | 'credit' | 'transfer' | 'fee' | 'refund';
+  accountId?: string | undefined;
+  transactionType: "debit" | "credit" | "transfer" | "fee" | "refund";
   amountCents: number;
   currency: string;
   occurredAt: Date;
-  description?: string;
-  referenceId?: string;
-  referenceType?: string;
-  providerMetadata?: Record<string, unknown>;
-  rawPayload?: unknown;
+  description?: string | undefined;
+  referenceId?: string | undefined;
+  referenceType?: string | undefined;
+  providerMetadata?: Record<string, unknown> | undefined;
+  rawPayload?: unknown | undefined;
   idempotencyKey: string;
 }
 
 export interface NormalizedBalance {
   accountId: string;
   balanceCents: number;
-  availableBalanceCents?: number;
+  availableBalanceCents?: number | undefined;
   currency: string;
   snapshotAt: Date;
-  providerMetadata?: Record<string, unknown>;
-  rawPayload?: unknown;
+  providerMetadata?: Record<string, unknown> | undefined;
+  rawPayload?: unknown | undefined;
 }
 
 export interface NormalizedPayout {
   externalId: string;
-  accountId?: string;
+  accountId?: string | undefined;
   amountCents: number;
   currency: string;
   status: string;
   initiatedAt: Date;
-  completedAt?: Date;
-  feeCents?: number;
-  netAmountCents?: number;
-  destinationType?: string;
-  destinationId?: string;
-  description?: string;
-  providerMetadata?: Record<string, unknown>;
-  rawPayload?: unknown;
+  completedAt?: Date | undefined;
+  feeCents?: number | undefined;
+  netAmountCents?: number | undefined;
+  destinationType?: string | undefined;
+  destinationId?: string | undefined;
+  description?: string | undefined;
+  providerMetadata?: Record<string, unknown> | undefined;
+  rawPayload?: unknown | undefined;
   idempotencyKey: string;
 }
 
 export interface NormalizedInvoice {
   externalId: string;
-  invoiceNumber?: string;
-  customerId?: string;
-  customerName?: string;
+  invoiceNumber?: string | undefined;
+  customerId?: string | undefined;
+  customerName?: string | undefined;
   amountCents: number;
   currency: string;
   status: string;
-  issueDate?: Date;
-  dueDate?: Date;
-  paidAt?: Date;
-  lineItems?: Array<{
-    description: string;
-    quantity: number;
-    unitPriceCents: number;
-    totalCents: number;
-  }>;
-  providerMetadata?: Record<string, unknown>;
-  rawPayload?: unknown;
+  issueDate?: Date | undefined;
+  dueDate?: Date | undefined;
+  paidAt?: Date | undefined;
+  lineItems?:
+    | Array<{
+        description: string;
+        quantity: number;
+        unitPriceCents: number;
+        totalCents: number;
+      }>
+    | undefined;
+  providerMetadata?: Record<string, unknown> | undefined;
+  rawPayload?: unknown | undefined;
   idempotencyKey: string;
 }
 
 export interface NormalizedSubscription {
   externalId: string;
   customerId: string;
-  customerName?: string;
-  planId?: string;
-  planName?: string;
+  customerName?: string | undefined;
+  planId?: string | undefined;
+  planName?: string | undefined;
   status: string;
-  billingCycle?: string;
+  billingCycle?: string | undefined;
   amountCents: number;
   currency: string;
-  currentPeriodStart?: Date;
-  currentPeriodEnd?: Date;
-  cancelAtPeriodEnd?: boolean;
-  cancelledAt?: Date;
-  providerMetadata?: Record<string, unknown>;
-  rawPayload?: unknown;
+  currentPeriodStart?: Date | undefined;
+  currentPeriodEnd?: Date | undefined;
+  cancelAtPeriodEnd?: boolean | undefined;
+  cancelledAt?: Date | undefined;
+  providerMetadata?: Record<string, unknown> | undefined;
+  rawPayload?: unknown | undefined;
   idempotencyKey: string;
 }
 
 export interface NormalizedTaxEstimate {
   externalId: string;
-  transactionId?: string;
-  transactionType?: string;
+  transactionId?: string | undefined;
+  transactionType?: string | undefined;
   amountCents: number;
   currency: string;
   taxAmountCents: number;
-  taxRate?: number;
-  jurisdiction?: string;
-  taxType?: string;
+  taxRate?: number | undefined;
+  jurisdiction?: string | undefined;
+  taxType?: string | undefined;
   occurredAt: Date;
-  providerMetadata?: Record<string, unknown>;
-  rawPayload?: unknown;
+  providerMetadata?: Record<string, unknown> | undefined;
+  rawPayload?: unknown | undefined;
   idempotencyKey: string;
 }
 
@@ -197,13 +199,13 @@ export interface WebhookPayload {
   eventId: string;
   eventType: string;
   payload: unknown;
-  signature?: string;
-  timestamp?: Date;
+  signature?: string | undefined;
+  timestamp?: Date | undefined;
 }
 
 /**
  * Connector Driver Interface
- * 
+ *
  * All connector implementations must implement this interface.
  */
 export interface ConnectorDriver {
@@ -250,32 +252,18 @@ export interface ConnectorDriver {
   sync(
     credentials: Record<string, unknown>,
     options: SyncOptions
-  ): Promise<SyncResult & {
-    accounts?: NormalizedAccount[];
-    transactions?: NormalizedTransaction[];
-    balances?: NormalizedBalance[];
-    payouts?: NormalizedPayout[];
-    invoices?: NormalizedInvoice[];
-    subscriptions?: NormalizedSubscription[];
-    taxEstimates?: NormalizedTaxEstimate[];
-    rawPayloads?: Array<{ type: string; payload: unknown }>;
-  }>;
-
-  /**
-   * Handle webhook payload (optional)
-   */
-  handleWebhook?(
-    payload: WebhookPayload,
-    credentials: Record<string, unknown>
-  ): Promise<{
-    accounts?: NormalizedAccount[];
-    transactions?: NormalizedTransaction[];
-    balances?: NormalizedBalance[];
-    payouts?: NormalizedPayout[];
-    invoices?: NormalizedInvoice[];
-    subscriptions?: NormalizedSubscription[];
-    taxEstimates?: NormalizedTaxEstimate[];
-  }>;
+  ): Promise<
+    SyncResult & {
+      accounts?: NormalizedAccount[] | undefined;
+      transactions?: NormalizedTransaction[] | undefined;
+      balances?: NormalizedBalance[] | undefined;
+      payouts?: NormalizedPayout[] | undefined;
+      invoices?: NormalizedInvoice[] | undefined;
+      subscriptions?: NormalizedSubscription[] | undefined;
+      taxEstimates?: NormalizedTaxEstimate[] | undefined;
+      rawPayloads?: Array<{ type: string; payload: unknown }> | undefined;
+    }
+  >;
 }
 
 /**
@@ -289,7 +277,7 @@ export class ConnectorError extends Error {
     public override readonly cause?: Error
   ) {
     super(message);
-    this.name = 'ConnectorError';
+    this.name = "ConnectorError";
     Object.setPrototypeOf(this, ConnectorError.prototype);
   }
 }
@@ -304,6 +292,6 @@ export class ValidationError extends Error {
     public readonly value?: unknown
   ) {
     super(message);
-    this.name = 'ValidationError';
+    this.name = "ValidationError";
   }
 }

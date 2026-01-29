@@ -1,6 +1,6 @@
 /**
  * Wave Connector Driver
- * 
+ *
  * Accounting system integration
  * Supports OAuth2 flow (if available) or manual upload
  */
@@ -14,24 +14,24 @@ import {
   SyncResult,
   NormalizedInvoice,
   ConnectorError,
-} from '../connector-driver';
+} from "../connector-driver";
 
 export class WaveDriver implements ConnectorDriver {
   readonly metadata: ConnectorMetadata = {
-    id: 'wave',
-    displayName: 'Wave Accounting',
-    category: 'accounting',
-    authType: 'api_key', // Wave uses API key or manual CSV upload
-    description: 'Sync invoices and transactions from Wave Accounting via API or CSV import',
-    icon: '📊',
-    documentationUrl: 'https://developer.waveapps.com',
+    id: "wave",
+    displayName: "Wave Accounting",
+    category: "accounting",
+    authType: "api_key", // Wave uses API key or manual CSV upload
+    description: "Sync invoices and transactions from Wave Accounting via API or CSV import",
+    icon: "📊",
+    documentationUrl: "https://developer.waveapps.com",
     supportsWebhooks: false,
     supportsPolling: true,
-    requiredConfig: ['api_key', 'business_id'],
+    requiredConfig: ["api_key", "business_id"],
     optionalConfig: [],
   };
 
-  private readonly apiUrl = 'https://api.waveapps.com';
+  private readonly apiUrl = "https://api.waveapps.com";
 
   async testConnection(options: TestConnectionOptions): Promise<TestConnectionResult> {
     const { credentials } = options;
@@ -40,7 +40,7 @@ export class WaveDriver implements ConnectorDriver {
 
     try {
       const response = await fetch(`${this.apiUrl}/businesses/${businessId}`, {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: `Bearer ${apiKey}`,
         },
@@ -57,7 +57,7 @@ export class WaveDriver implements ConnectorDriver {
 
       return {
         success: true,
-        message: 'Connection successful',
+        message: "Connection successful",
       };
     } catch (error) {
       return {
@@ -71,10 +71,12 @@ export class WaveDriver implements ConnectorDriver {
   async sync(
     credentials: Record<string, unknown>,
     _options: SyncOptions
-  ): Promise<SyncResult & {
-    invoices?: NormalizedInvoice[];
-    rawPayloads?: Array<{ type: string; payload: unknown }>;
-  }> {
+  ): Promise<
+    SyncResult & {
+      invoices?: NormalizedInvoice[];
+      rawPayloads?: Array<{ type: string; payload: unknown }>;
+    }
+  > {
     const apiKey = credentials.api_key as string;
     const businessId = credentials.business_id as string;
 
@@ -83,27 +85,24 @@ export class WaveDriver implements ConnectorDriver {
 
     try {
       // Fetch invoices
-      const invoicesResponse = await fetch(
-        `${this.apiUrl}/businesses/${businessId}/invoices`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-          },
-        }
-      );
+      const invoicesResponse = await fetch(`${this.apiUrl}/businesses/${businessId}/invoices`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+      });
 
       if (!invoicesResponse.ok) {
         const error = await invoicesResponse.json();
         throw new ConnectorError(
           `Failed to fetch invoices: ${error.error || error.message}`,
-          'WAVE_INVOICES_FAILED',
-          'wave'
+          "WAVE_INVOICES_FAILED",
+          "wave"
         );
       }
 
       const invoicesData = await invoicesResponse.json();
-      rawPayloads.push({ type: 'invoices', payload: invoicesData });
+      rawPayloads.push({ type: "invoices", payload: invoicesData });
 
       // Normalize invoices
       for (const invoice of invoicesData.invoices || []) {
@@ -113,11 +112,13 @@ export class WaveDriver implements ConnectorDriver {
           customerId: invoice.customer?.id,
           customerName: invoice.customer?.name,
           amountCents: Math.round((invoice.total?.value || 0) * 100),
-          currency: invoice.total?.currency || 'USD',
+          currency: invoice.total?.currency || "USD",
           status: invoice.status,
-          issueDate: invoice.invoice_date ? new Date(invoice.invoice_date) : undefined,
-          dueDate: invoice.due_date ? new Date(invoice.due_date) : undefined,
-          paidAt: invoice.modified_at && invoice.status === 'PAID' ? new Date(invoice.modified_at) : undefined,
+          ...(invoice.invoice_date ? { issueDate: new Date(invoice.invoice_date) } : {}),
+          ...(invoice.due_date ? { dueDate: new Date(invoice.due_date) } : {}),
+          ...(invoice.modified_at && invoice.status === "PAID"
+            ? { paidAt: new Date(invoice.modified_at) }
+            : {}),
           lineItems: invoice.items?.map((item: any) => ({
             description: item.description,
             quantity: item.quantity || 1,
@@ -133,7 +134,6 @@ export class WaveDriver implements ConnectorDriver {
       }
 
       return {
-        nextCursor: undefined,
         hasMore: false,
         counts: {
           invoices: invoices.length,
@@ -147,8 +147,8 @@ export class WaveDriver implements ConnectorDriver {
       }
       throw new ConnectorError(
         `Wave sync failed: ${error instanceof Error ? error.message : String(error)}`,
-        'WAVE_SYNC_FAILED',
-        'wave',
+        "WAVE_SYNC_FAILED",
+        "wave",
         error instanceof Error ? error : undefined
       );
     }

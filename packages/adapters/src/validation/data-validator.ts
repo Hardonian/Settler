@@ -1,6 +1,6 @@
 /**
  * Enhanced Data Validation
- * 
+ *
  * Validates normalized data before storage
  */
 
@@ -12,7 +12,7 @@ import {
   NormalizedInvoice,
   NormalizedSubscription,
   NormalizedTaxEstimate,
-} from '../connector-driver';
+} from "../connector-driver";
 
 export interface ValidationResult {
   valid: boolean;
@@ -29,45 +29,45 @@ export class DataValidator {
     const warnings: string[] = [];
 
     // Required fields
-    if (!tx.externalId || tx.externalId.trim() === '') {
-      errors.push('Transaction externalId is required');
+    if (!tx.externalId || tx.externalId.trim() === "") {
+      errors.push("Transaction externalId is required");
     }
 
     if (!tx.transactionType) {
-      errors.push('Transaction type is required');
-    } else if (!['debit', 'credit', 'transfer', 'fee', 'refund'].includes(tx.transactionType)) {
+      errors.push("Transaction type is required");
+    } else if (!["debit", "credit", "transfer", "fee", "refund"].includes(tx.transactionType)) {
       errors.push(`Invalid transaction type: ${tx.transactionType}`);
     }
 
     if (tx.amountCents === undefined || tx.amountCents === null) {
-      errors.push('Transaction amount is required');
+      errors.push("Transaction amount is required");
     } else if (tx.amountCents < 0) {
-      errors.push('Transaction amount cannot be negative');
+      errors.push("Transaction amount cannot be negative");
     } else if (tx.amountCents > 1000000000000) {
-      warnings.push('Transaction amount is unusually large (>$10M)');
+      warnings.push("Transaction amount is unusually large (>$10M)");
     }
 
     if (!tx.currency || tx.currency.length !== 3) {
-      errors.push('Transaction currency must be a valid 3-letter ISO code');
+      errors.push("Transaction currency must be a valid 3-letter ISO code");
     }
 
     if (!tx.occurredAt || !(tx.occurredAt instanceof Date)) {
-      errors.push('Transaction occurredAt must be a valid Date');
+      errors.push("Transaction occurredAt must be a valid Date");
     } else {
       const now = new Date();
       const futureDate = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 1 year from now
       if (tx.occurredAt > futureDate) {
-        warnings.push('Transaction date is in the future');
+        warnings.push("Transaction date is in the future");
       }
       const oldDate = new Date(now.getTime() - 10 * 365 * 24 * 60 * 60 * 1000); // 10 years ago
       if (tx.occurredAt < oldDate) {
-        warnings.push('Transaction date is very old (>10 years)');
+        warnings.push("Transaction date is very old (>10 years)");
       }
     }
 
     // Sanity checks
     if (tx.description && tx.description.length > 1000) {
-      warnings.push('Transaction description is very long (>1000 chars)');
+      warnings.push("Transaction description is very long (>1000 chars)");
     }
 
     return {
@@ -84,16 +84,16 @@ export class DataValidator {
     const errors: string[] = [];
     const warnings: string[] = [];
 
-    if (!account.providerAccountId || account.providerAccountId.trim() === '') {
-      errors.push('Account providerAccountId is required');
+    if (!account.providerAccountId || account.providerAccountId.trim() === "") {
+      errors.push("Account providerAccountId is required");
     }
 
-    if (!account.accountName || account.accountName.trim() === '') {
-      errors.push('Account name is required');
+    if (!account.accountName || account.accountName.trim() === "") {
+      errors.push("Account name is required");
     }
 
     if (!account.currency || account.currency.length !== 3) {
-      errors.push('Account currency must be a valid 3-letter ISO code');
+      errors.push("Account currency must be a valid 3-letter ISO code");
     }
 
     return {
@@ -111,26 +111,26 @@ export class DataValidator {
     const warnings: string[] = [];
 
     if (balance.balanceCents === undefined || balance.balanceCents === null) {
-      errors.push('Balance amount is required');
+      errors.push("Balance amount is required");
     }
 
     if (balance.availableBalanceCents !== undefined && balance.availableBalanceCents < 0) {
-      warnings.push('Available balance is negative');
+      warnings.push("Available balance is negative");
     }
 
     if (
       balance.availableBalanceCents !== undefined &&
       balance.availableBalanceCents > balance.balanceCents
     ) {
-      warnings.push('Available balance exceeds total balance');
+      warnings.push("Available balance exceeds total balance");
     }
 
     if (!balance.currency || balance.currency.length !== 3) {
-      errors.push('Balance currency must be a valid 3-letter ISO code');
+      errors.push("Balance currency must be a valid 3-letter ISO code");
     }
 
     if (!balance.snapshotAt || !(balance.snapshotAt instanceof Date)) {
-      errors.push('Balance snapshotAt must be a valid Date');
+      errors.push("Balance snapshotAt must be a valid Date");
     }
 
     return {
@@ -147,42 +147,42 @@ export class DataValidator {
     const errors: string[] = [];
     const warnings: string[] = [];
 
-    if (!payout.externalId || payout.externalId.trim() === '') {
-      errors.push('Payout externalId is required');
+    if (!payout.externalId || payout.externalId.trim() === "") {
+      errors.push("Payout externalId is required");
     }
 
     if (payout.amountCents === undefined || payout.amountCents === null) {
-      errors.push('Payout amount is required');
+      errors.push("Payout amount is required");
     } else if (payout.amountCents <= 0) {
-      errors.push('Payout amount must be positive');
+      errors.push("Payout amount must be positive");
     }
 
     if (!payout.currency || payout.currency.length !== 3) {
-      errors.push('Payout currency must be a valid 3-letter ISO code');
+      errors.push("Payout currency must be a valid 3-letter ISO code");
     }
 
     if (!payout.status) {
-      errors.push('Payout status is required');
+      errors.push("Payout status is required");
     } else if (
-      !['pending', 'processing', 'completed', 'failed', 'cancelled'].includes(payout.status)
+      !["pending", "processing", "completed", "failed", "cancelled"].includes(payout.status)
     ) {
       warnings.push(`Unusual payout status: ${payout.status}`);
     }
 
     if (!payout.initiatedAt || !(payout.initiatedAt instanceof Date)) {
-      errors.push('Payout initiatedAt must be a valid Date');
+      errors.push("Payout initiatedAt must be a valid Date");
     }
 
     if (payout.completedAt && payout.completedAt < payout.initiatedAt) {
-      errors.push('Payout completedAt cannot be before initiatedAt');
+      errors.push("Payout completedAt cannot be before initiatedAt");
     }
 
     if (payout.feeCents && payout.feeCents < 0) {
-      warnings.push('Payout fee is negative');
+      warnings.push("Payout fee is negative");
     }
 
     if (payout.netAmountCents && payout.netAmountCents > payout.amountCents) {
-      errors.push('Payout net amount cannot exceed gross amount');
+      errors.push("Payout net amount cannot exceed gross amount");
     }
 
     return {
@@ -199,26 +199,26 @@ export class DataValidator {
     const errors: string[] = [];
     const warnings: string[] = [];
 
-    if (!invoice.externalId || invoice.externalId.trim() === '') {
-      errors.push('Invoice externalId is required');
+    if (!invoice.externalId || invoice.externalId.trim() === "") {
+      errors.push("Invoice externalId is required");
     }
 
     if (invoice.amountCents === undefined || invoice.amountCents === null) {
-      errors.push('Invoice amount is required');
+      errors.push("Invoice amount is required");
     } else if (invoice.amountCents < 0) {
-      errors.push('Invoice amount cannot be negative');
+      errors.push("Invoice amount cannot be negative");
     }
 
     if (!invoice.currency || invoice.currency.length !== 3) {
-      errors.push('Invoice currency must be a valid 3-letter ISO code');
+      errors.push("Invoice currency must be a valid 3-letter ISO code");
     }
 
     if (!invoice.status) {
-      errors.push('Invoice status is required');
+      errors.push("Invoice status is required");
     }
 
     if (invoice.dueDate && invoice.issueDate && invoice.dueDate < invoice.issueDate) {
-      errors.push('Invoice dueDate cannot be before issueDate');
+      errors.push("Invoice dueDate cannot be before issueDate");
     }
 
     // Validate line items
@@ -226,10 +226,10 @@ export class DataValidator {
       let lineItemsTotal = 0;
       for (const item of invoice.lineItems) {
         if (item.quantity <= 0) {
-          warnings.push('Line item has non-positive quantity');
+          warnings.push("Line item has non-positive quantity");
         }
         if (item.unitPriceCents < 0) {
-          warnings.push('Line item has negative unit price');
+          warnings.push("Line item has negative unit price");
         }
         lineItemsTotal += item.totalCents || 0;
       }
@@ -256,26 +256,26 @@ export class DataValidator {
     const errors: string[] = [];
     const warnings: string[] = [];
 
-    if (!subscription.externalId || subscription.externalId.trim() === '') {
-      errors.push('Subscription externalId is required');
+    if (!subscription.externalId || subscription.externalId.trim() === "") {
+      errors.push("Subscription externalId is required");
     }
 
-    if (!subscription.customerId || subscription.customerId.trim() === '') {
-      errors.push('Subscription customerId is required');
+    if (!subscription.customerId || subscription.customerId.trim() === "") {
+      errors.push("Subscription customerId is required");
     }
 
     if (subscription.amountCents === undefined || subscription.amountCents === null) {
-      errors.push('Subscription amount is required');
+      errors.push("Subscription amount is required");
     } else if (subscription.amountCents < 0) {
-      errors.push('Subscription amount cannot be negative');
+      errors.push("Subscription amount cannot be negative");
     }
 
     if (!subscription.currency || subscription.currency.length !== 3) {
-      errors.push('Subscription currency must be a valid 3-letter ISO code');
+      errors.push("Subscription currency must be a valid 3-letter ISO code");
     }
 
     if (!subscription.status) {
-      errors.push('Subscription status is required');
+      errors.push("Subscription status is required");
     }
 
     if (
@@ -283,7 +283,7 @@ export class DataValidator {
       subscription.currentPeriodStart &&
       subscription.currentPeriodEnd < subscription.currentPeriodStart
     ) {
-      errors.push('Subscription period end cannot be before period start');
+      errors.push("Subscription period end cannot be before period start");
     }
 
     return {
@@ -300,36 +300,36 @@ export class DataValidator {
     const errors: string[] = [];
     const warnings: string[] = [];
 
-    if (!tax.externalId || tax.externalId.trim() === '') {
-      errors.push('Tax estimate externalId is required');
+    if (!tax.externalId || tax.externalId.trim() === "") {
+      errors.push("Tax estimate externalId is required");
     }
 
     if (tax.amountCents === undefined || tax.amountCents === null) {
-      errors.push('Tax estimate amount is required');
+      errors.push("Tax estimate amount is required");
     } else if (tax.amountCents < 0) {
-      errors.push('Tax estimate amount cannot be negative');
+      errors.push("Tax estimate amount cannot be negative");
     }
 
     if (tax.taxAmountCents === undefined || tax.taxAmountCents === null) {
-      errors.push('Tax estimate taxAmount is required');
+      errors.push("Tax estimate taxAmount is required");
     } else if (tax.taxAmountCents < 0) {
-      errors.push('Tax estimate taxAmount cannot be negative');
+      errors.push("Tax estimate taxAmount cannot be negative");
     }
 
     if (tax.taxAmountCents > tax.amountCents) {
-      warnings.push('Tax amount exceeds transaction amount');
+      warnings.push("Tax amount exceeds transaction amount");
     }
 
     if (tax.taxRate !== undefined && (tax.taxRate < 0 || tax.taxRate > 1)) {
-      warnings.push('Tax rate is outside normal range (0-100%)');
+      warnings.push("Tax rate is outside normal range (0-100%)");
     }
 
     if (!tax.currency || tax.currency.length !== 3) {
-      errors.push('Tax estimate currency must be a valid 3-letter ISO code');
+      errors.push("Tax estimate currency must be a valid 3-letter ISO code");
     }
 
     if (!tax.occurredAt || !(tax.occurredAt instanceof Date)) {
-      errors.push('Tax estimate occurredAt must be a valid Date');
+      errors.push("Tax estimate occurredAt must be a valid Date");
     }
 
     return {
@@ -343,13 +343,13 @@ export class DataValidator {
    * Validate all data types
    */
   validateAll(data: {
-    transactions?: NormalizedTransaction[];
-    accounts?: NormalizedAccount[];
-    balances?: NormalizedBalance[];
-    payouts?: NormalizedPayout[];
-    invoices?: NormalizedInvoice[];
-    subscriptions?: NormalizedSubscription[];
-    taxEstimates?: NormalizedTaxEstimate[];
+    transactions?: NormalizedTransaction[] | undefined;
+    accounts?: NormalizedAccount[] | undefined;
+    balances?: NormalizedBalance[] | undefined;
+    payouts?: NormalizedPayout[] | undefined;
+    invoices?: NormalizedInvoice[] | undefined;
+    subscriptions?: NormalizedSubscription[] | undefined;
+    taxEstimates?: NormalizedTaxEstimate[] | undefined;
   }): {
     valid: boolean;
     errors: string[];
@@ -409,7 +409,7 @@ export class DataValidator {
           counts.balances.valid++;
         } else {
           counts.balances.invalid++;
-          allErrors.push('Balance validation error');
+          allErrors.push("Balance validation error");
         }
         allWarnings.push(...result.warnings);
       }

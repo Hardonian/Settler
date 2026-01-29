@@ -1,6 +1,6 @@
 /**
  * Prometheus Metrics
- * 
+ *
  * Exports metrics for monitoring connector performance
  */
 
@@ -40,7 +40,10 @@ export class PrometheusMetrics {
     if (!this.histograms.has(key)) {
       this.histograms.set(key, []);
     }
-    this.histograms.get(key).push(value);
+    const histogram = this.histograms.get(key);
+    if (histogram) {
+      histogram.push(value);
+    }
   }
 
   /**
@@ -51,7 +54,7 @@ export class PrometheusMetrics {
     const labelParts = Object.entries(labels)
       .filter(([_, value]) => value !== undefined)
       .map(([key, value]) => `${key}="${value}"`)
-      .join(',');
+      .join(",");
     return labelParts ? `${name}{${labelParts}}` : name;
   }
 
@@ -60,7 +63,7 @@ export class PrometheusMetrics {
    */
   export(): string {
     const lines: string[] = [];
-    
+
     // Export counters and gauges
     for (const [key, value] of this.metrics.entries()) {
       lines.push(`${key} ${value}`);
@@ -69,12 +72,12 @@ export class PrometheusMetrics {
     // Export histograms
     for (const [key, values] of this.histograms.entries()) {
       if (values.length === 0) continue;
-      
+
       const sorted = [...values].sort((a, b) => a - b);
       const sum = sorted.reduce((a, b) => a + b, 0);
       const count = sorted.length;
       const buckets = this.calculateBuckets(sorted);
-      
+
       lines.push(`${key}_bucket{le="+Inf"} ${count}`);
       for (const [le, bucketCount] of buckets.entries()) {
         lines.push(`${key}_bucket{le="${le}"} ${bucketCount}`);
@@ -83,21 +86,23 @@ export class PrometheusMetrics {
       lines.push(`${key}_count ${count}`);
     }
 
-    return lines.join('\n') + '\n';
+    return lines.join("\n") + "\n";
   }
 
   /**
    * Calculate histogram buckets
    */
   private calculateBuckets(values: number[]): Map<string, number> {
-    const buckets = [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60, 120, 300, 600];
+    const buckets = [
+      0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60, 120, 300, 600,
+    ];
     const result = new Map<string, number>();
-    
+
     for (const bucket of buckets) {
       const count = values.filter((v) => v <= bucket).length;
       result.set(bucket.toString(), count);
     }
-    
+
     return result;
   }
 
@@ -119,8 +124,14 @@ export const metrics = new PrometheusMetrics();
  * Track sync start
  */
 export function trackSyncStart(connectorId: string, tenantId: string): void {
-  metrics.incrementCounter('settler_sync_started_total', { connector_id: connectorId, tenant_id: tenantId });
-  metrics.setGauge('settler_sync_in_progress', 1, { connector_id: connectorId, tenant_id: tenantId });
+  metrics.incrementCounter("settler_sync_started_total", {
+    connector_id: connectorId,
+    tenant_id: tenantId,
+  });
+  metrics.setGauge("settler_sync_in_progress", 1, {
+    connector_id: connectorId,
+    tenant_id: tenantId,
+  });
 }
 
 /**
@@ -132,15 +143,32 @@ export function trackSyncComplete(
   duration: number,
   counts: { transactions?: number; accounts?: number; errors?: number }
 ): void {
-  metrics.incrementCounter('settler_sync_completed_total', { connector_id: connectorId, tenant_id: tenantId, status: 'success' });
-  metrics.recordHistogram('settler_sync_duration_seconds', duration / 1000, { connector_id: connectorId });
-  metrics.setGauge('settler_sync_in_progress', 0, { connector_id: connectorId, tenant_id: tenantId });
-  
+  metrics.incrementCounter("settler_sync_completed_total", {
+    connector_id: connectorId,
+    tenant_id: tenantId,
+    status: "success",
+  });
+  metrics.recordHistogram("settler_sync_duration_seconds", duration / 1000, {
+    connector_id: connectorId,
+  });
+  metrics.setGauge("settler_sync_in_progress", 0, {
+    connector_id: connectorId,
+    tenant_id: tenantId,
+  });
+
   if (counts.transactions) {
-    metrics.incrementCounter('settler_transactions_synced_total', { connector_id: connectorId }, counts.transactions);
+    metrics.incrementCounter(
+      "settler_transactions_synced_total",
+      { connector_id: connectorId },
+      counts.transactions
+    );
   }
   if (counts.accounts) {
-    metrics.incrementCounter('settler_accounts_synced_total', { connector_id: connectorId }, counts.accounts);
+    metrics.incrementCounter(
+      "settler_accounts_synced_total",
+      { connector_id: connectorId },
+      counts.accounts
+    );
   }
 }
 
@@ -153,48 +181,56 @@ export function trackSyncFailure(
   duration: number,
   errorType: string
 ): void {
-  metrics.incrementCounter('settler_sync_failed_total', { 
-    connector_id: connectorId, 
-    tenant_id: tenantId, 
-    error_type: errorType 
+  metrics.incrementCounter("settler_sync_failed_total", {
+    connector_id: connectorId,
+    tenant_id: tenantId,
+    error_type: errorType,
   });
-  metrics.recordHistogram('settler_sync_duration_seconds', duration / 1000, { 
-    connector_id: connectorId, 
-    status: 'failed' 
+  metrics.recordHistogram("settler_sync_duration_seconds", duration / 1000, {
+    connector_id: connectorId,
+    status: "failed",
   });
-  metrics.setGauge('settler_sync_in_progress', 0, { connector_id: connectorId, tenant_id: tenantId });
+  metrics.setGauge("settler_sync_in_progress", 0, {
+    connector_id: connectorId,
+    tenant_id: tenantId,
+  });
 }
 
 /**
  * Track API call
  */
 export function trackApiCall(connectorId: string, statusCode: number, duration: number): void {
-  metrics.incrementCounter('settler_api_calls_total', { 
-    connector_id: connectorId, 
-    status: statusCode >= 200 && statusCode < 300 ? 'success' : 'error' 
+  metrics.incrementCounter("settler_api_calls_total", {
+    connector_id: connectorId,
+    status: statusCode >= 200 && statusCode < 300 ? "success" : "error",
   });
-  metrics.recordHistogram('settler_api_call_duration_seconds', duration / 1000, { connector_id: connectorId });
+  metrics.recordHistogram("settler_api_call_duration_seconds", duration / 1000, {
+    connector_id: connectorId,
+  });
 }
 
 /**
  * Track rate limit hit
  */
 export function trackRateLimit(connectorId: string, tenantId: string): void {
-  metrics.incrementCounter('settler_rate_limit_hits_total', { connector_id: connectorId, tenant_id: tenantId });
+  metrics.incrementCounter("settler_rate_limit_hits_total", {
+    connector_id: connectorId,
+    tenant_id: tenantId,
+  });
 }
 
 /**
  * Track webhook received
  */
 export function trackWebhook(connectorId: string, eventType: string, processed: boolean): void {
-  metrics.incrementCounter('settler_webhooks_received_total', { 
-    connector_id: connectorId, 
-    event_type: eventType 
+  metrics.incrementCounter("settler_webhooks_received_total", {
+    connector_id: connectorId,
+    event_type: eventType,
   });
   if (processed) {
-    metrics.incrementCounter('settler_webhooks_processed_total', { connector_id: connectorId });
+    metrics.incrementCounter("settler_webhooks_processed_total", { connector_id: connectorId });
   } else {
-    metrics.incrementCounter('settler_webhooks_failed_total', { connector_id: connectorId });
+    metrics.incrementCounter("settler_webhooks_failed_total", { connector_id: connectorId });
   }
 }
 
@@ -202,8 +238,8 @@ export function trackWebhook(connectorId: string, eventType: string, processed: 
  * Track token refresh
  */
 export function trackTokenRefresh(connectorId: string, success: boolean): void {
-  metrics.incrementCounter('settler_token_refreshes_total', { 
-    connector_id: connectorId, 
-    status: success ? 'success' : 'failed' 
+  metrics.incrementCounter("settler_token_refreshes_total", {
+    connector_id: connectorId,
+    status: success ? "success" : "failed",
   });
 }

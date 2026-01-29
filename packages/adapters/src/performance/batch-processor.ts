@@ -91,7 +91,9 @@ class Semaphore {
   release(): void {
     if (this.waiters.length > 0) {
       const resolve = this.waiters.shift();
-      resolve();
+      if (resolve) {
+        resolve();
+      }
     } else {
       this.available++;
     }
