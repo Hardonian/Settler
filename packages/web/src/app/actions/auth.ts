@@ -122,7 +122,7 @@ export async function signUpUser(
       eventProperties.email = authData.user.email;
     }
     await emitLifecycleEventSafe(LifecycleEventType.USER_SIGNED_UP, {
-      userId: authData.user.id,
+      userId: authData.user?.id,
       properties: eventProperties,
     });
 
@@ -132,7 +132,7 @@ export async function signUpUser(
 
     return {
       success: true,
-      userId: authData.user.id,
+      userId: authData.user?.id,
     };
   } catch (error: unknown) {
     console.error("Sign-up error:", error);

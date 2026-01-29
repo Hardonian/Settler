@@ -17,6 +17,10 @@ npm warn config       Default value does install optional deps unless otherwise 
 ./src/app/actions/playground.ts
 120:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
 
+./src/app/admin/database/page.tsx
+47:16  Warning: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+58:16  Warning: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+
 ./src/app/api/ai/support-assistant/route.ts
 80:16  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
 
@@ -254,6 +258,9 @@ npm warn config       Default value does install optional deps unless otherwise 
 
 ./src/lib/tenant/permissions.ts
 21:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/typed-env.ts
+163:14  Warning: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
 
 ./src/lib/validation/component-validation.ts
 58:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
