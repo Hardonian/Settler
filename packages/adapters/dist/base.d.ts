@@ -16,7 +16,7 @@ export interface FetchOptions {
 }
 export interface ValidationResult {
     valid: boolean;
-    errors?: string[];
+    errors?: string[] | undefined;
 }
 export interface Adapter {
     name: string;

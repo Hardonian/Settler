@@ -10,38 +10,38 @@ exports.StripeConnectDriver = void 0;
 const connector_driver_1 = require("../connector-driver");
 class StripeConnectDriver {
     metadata = {
-        id: 'stripe-connect',
-        displayName: 'Stripe Connect',
-        category: 'marketplace',
-        authType: 'oauth2',
-        description: 'Sync payouts and balances from Stripe Connect connected accounts',
-        icon: '💳',
-        documentationUrl: 'https://stripe.com/docs/connect',
+        id: "stripe-connect",
+        displayName: "Stripe Connect",
+        category: "marketplace",
+        authType: "oauth2",
+        description: "Sync payouts and balances from Stripe Connect connected accounts",
+        icon: "💳",
+        documentationUrl: "https://stripe.com/docs/connect",
         supportsWebhooks: true,
         supportsPolling: true,
-        requiredConfig: ['client_id', 'client_secret'],
-        optionalConfig: ['redirect_uri', 'webhook_secret'],
+        requiredConfig: ["client_id", "client_secret"],
+        optionalConfig: ["redirect_uri", "webhook_secret"],
     };
     async getAuthUrl(options) {
         const config = options;
         const params = new URLSearchParams({
-            response_type: 'code',
+            response_type: "code",
             client_id: config.clientId,
             redirect_uri: config.redirectUri || options.redirectUri,
-            scope: options.scopes?.join(' ') || 'read_write',
-            state: options.state || '',
+            scope: options.scopes?.join(" ") || "read_write",
+            state: options.state || "",
         });
         return `https://connect.stripe.com/oauth/authorize?${params.toString()}`;
     }
     async handleCallback(code, _state, options) {
         const config = options;
-        const response = await fetch('https://connect.stripe.com/oauth/token', {
-            method: 'POST',
+        const response = await fetch("https://connect.stripe.com/oauth/token", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                "Content-Type": "application/x-www-form-urlencoded",
             },
             body: new URLSearchParams({
-                grant_type: 'authorization_code',
+                grant_type: "authorization_code",
                 client_id: config.clientId,
                 client_secret: config.clientSecret,
                 code: code,
@@ -50,7 +50,7 @@ class StripeConnectDriver {
         });
         if (!response.ok) {
             const error = await response.json();
-            throw new connector_driver_1.ConnectorError(`Failed to exchange Stripe Connect token: ${error.error || error.error_description}`, 'STRIPE_CONNECT_TOKEN_EXCHANGE_FAILED', 'stripe-connect');
+            throw new connector_driver_1.ConnectorError(`Failed to exchange Stripe Connect token: ${error.error || error.error_description}`, "STRIPE_CONNECT_TOKEN_EXCHANGE_FAILED", "stripe-connect");
         }
         const data = await response.json();
         return {
@@ -66,13 +66,13 @@ class StripeConnectDriver {
     async refreshToken(refreshToken, config) {
         const clientId = config?.client_id;
         const clientSecret = config?.client_secret;
-        const response = await fetch('https://connect.stripe.com/oauth/token', {
-            method: 'POST',
+        const response = await fetch("https://connect.stripe.com/oauth/token", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                "Content-Type": "application/x-www-form-urlencoded",
             },
             body: new URLSearchParams({
-                grant_type: 'refresh_token',
+                grant_type: "refresh_token",
                 client_id: clientId,
                 client_secret: clientSecret,
                 refresh_token: refreshToken,
@@ -80,7 +80,7 @@ class StripeConnectDriver {
         });
         if (!response.ok) {
             const error = await response.json();
-            throw new connector_driver_1.ConnectorError(`Failed to refresh Stripe Connect token: ${error.error || error.error_description}`, 'STRIPE_CONNECT_REFRESH_FAILED', 'stripe-connect');
+            throw new connector_driver_1.ConnectorError(`Failed to refresh Stripe Connect token: ${error.error || error.error_description}`, "STRIPE_CONNECT_REFRESH_FAILED", "stripe-connect");
         }
         const data = await response.json();
         return {
@@ -97,8 +97,8 @@ class StripeConnectDriver {
         const { credentials } = options;
         const accessToken = credentials.access_token;
         try {
-            const response = await fetch('https://api.stripe.com/v1/account', {
-                method: 'GET',
+            const response = await fetch("https://api.stripe.com/v1/account", {
+                method: "GET",
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
@@ -107,13 +107,13 @@ class StripeConnectDriver {
                 const error = await response.json();
                 return {
                     success: false,
-                    error: error.error?.message || 'Connection test failed',
+                    error: error.error?.message || "Connection test failed",
                     message: `Connection test failed: ${error.error?.message}`,
                 };
             }
             return {
                 success: true,
-                message: 'Connection successful',
+                message: "Connection successful",
             };
         }
         catch (error) {
@@ -132,40 +132,40 @@ class StripeConnectDriver {
         const rawPayloads = [];
         try {
             // Get account info
-            const accountResponse = await fetch('https://api.stripe.com/v1/account', {
-                method: 'GET',
+            const accountResponse = await fetch("https://api.stripe.com/v1/account", {
+                method: "GET",
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
             if (!accountResponse.ok) {
                 const error = await accountResponse.json();
-                throw new connector_driver_1.ConnectorError(`Failed to fetch account: ${error.error?.message}`, 'STRIPE_CONNECT_ACCOUNT_FAILED', 'stripe-connect');
+                throw new connector_driver_1.ConnectorError(`Failed to fetch account: ${error.error?.message}`, "STRIPE_CONNECT_ACCOUNT_FAILED", "stripe-connect");
             }
             const accountData = await accountResponse.json();
-            rawPayloads.push({ type: 'account', payload: accountData });
+            rawPayloads.push({ type: "account", payload: accountData });
             accounts.push({
                 providerAccountId: accountData.id,
-                accountName: accountData.business_profile?.name || accountData.email || 'Stripe Account',
-                accountType: 'connected_account',
-                currency: accountData.default_currency || 'USD',
-                institutionName: 'Stripe',
-                institutionId: 'stripe',
+                accountName: accountData.business_profile?.name || accountData.email || "Stripe Account",
+                accountType: "connected_account",
+                currency: accountData.default_currency || "USD",
+                institutionName: "Stripe",
+                institutionId: "stripe",
                 metadata: {
                     country: accountData.country,
                     type: accountData.type,
                 },
             });
             // Get balance
-            const balanceResponse = await fetch('https://api.stripe.com/v1/balance', {
-                method: 'GET',
+            const balanceResponse = await fetch("https://api.stripe.com/v1/balance", {
+                method: "GET",
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
             if (balanceResponse.ok) {
                 const balanceData = await balanceResponse.json();
-                rawPayloads.push({ type: 'balance', payload: balanceData });
+                rawPayloads.push({ type: "balance", payload: balanceData });
                 for (const balance of balanceData.available || []) {
                     balances.push({
                         accountId: accountData.id,
@@ -182,20 +182,20 @@ class StripeConnectDriver {
             // Get payouts
             const payoutsParams = new URLSearchParams();
             if (options.since) {
-                payoutsParams.append('created[gte]', Math.floor(options.since.getTime() / 1000).toString());
+                payoutsParams.append("created[gte]", Math.floor(options.since.getTime() / 1000).toString());
             }
             if (options.limit) {
-                payoutsParams.append('limit', options.limit.toString());
+                payoutsParams.append("limit", options.limit.toString());
             }
             const payoutsResponse = await fetch(`https://api.stripe.com/v1/payouts?${payoutsParams.toString()}`, {
-                method: 'GET',
+                method: "GET",
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
             if (payoutsResponse.ok) {
                 const payoutsData = await payoutsResponse.json();
-                rawPayloads.push({ type: 'payouts', payload: payoutsData });
+                rawPayloads.push({ type: "payouts", payload: payoutsData });
                 for (const payout of payoutsData.data || []) {
                     payouts.push({
                         externalId: payout.id,
@@ -203,7 +203,7 @@ class StripeConnectDriver {
                         currency: payout.currency.toUpperCase(),
                         status: payout.status,
                         initiatedAt: new Date(payout.created * 1000),
-                        completedAt: payout.arrival_date ? new Date(payout.arrival_date * 1000) : undefined,
+                        ...(payout.arrival_date ? { completedAt: new Date(payout.arrival_date * 1000) } : {}),
                         feeCents: payout.fees || 0,
                         netAmountCents: payout.amount - (payout.fees || 0),
                         destinationType: payout.destination?.object,
@@ -218,7 +218,6 @@ class StripeConnectDriver {
                 }
             }
             return {
-                nextCursor: undefined,
                 hasMore: false,
                 counts: {
                     accounts: accounts.length,
@@ -235,7 +234,7 @@ class StripeConnectDriver {
             if (error instanceof connector_driver_1.ConnectorError) {
                 throw error;
             }
-            throw new connector_driver_1.ConnectorError(`Stripe Connect sync failed: ${error instanceof Error ? error.message : String(error)}`, 'STRIPE_CONNECT_SYNC_FAILED', 'stripe-connect', error instanceof Error ? error : undefined);
+            throw new connector_driver_1.ConnectorError(`Stripe Connect sync failed: ${error instanceof Error ? error.message : String(error)}`, "STRIPE_CONNECT_SYNC_FAILED", "stripe-connect", error instanceof Error ? error : undefined);
         }
     }
     async handleWebhook(_payload, _credentials) {

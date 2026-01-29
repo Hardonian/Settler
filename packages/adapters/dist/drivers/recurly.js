@@ -10,17 +10,17 @@ exports.RecurlyDriver = void 0;
 const connector_driver_1 = require("../connector-driver");
 class RecurlyDriver {
     metadata = {
-        id: 'recurly',
-        displayName: 'Recurly',
-        category: 'subscription_billing',
-        authType: 'api_key',
-        description: 'Sync subscriptions, invoices, and customers from Recurly',
-        icon: '💳',
-        documentationUrl: 'https://developers.recurly.com/api',
+        id: "recurly",
+        displayName: "Recurly",
+        category: "subscription_billing",
+        authType: "api_key",
+        description: "Sync subscriptions, invoices, and customers from Recurly",
+        icon: "💳",
+        documentationUrl: "https://developers.recurly.com/api",
         supportsWebhooks: true,
         supportsPolling: true,
-        requiredConfig: ['api_key', 'subdomain'],
-        optionalConfig: ['webhook_secret'],
+        requiredConfig: ["api_key", "subdomain"],
+        optionalConfig: ["webhook_secret"],
     };
     getApiUrl(subdomain) {
         return `https://${subdomain}.recurly.com/v3`;
@@ -32,23 +32,23 @@ class RecurlyDriver {
         const apiUrl = this.getApiUrl(subdomain);
         try {
             const response = await fetch(`${apiUrl}/accounts`, {
-                method: 'GET',
+                method: "GET",
                 headers: {
-                    Authorization: `Basic ${Buffer.from(`${apiKey}:`).toString('base64')}`,
-                    'Content-Type': 'application/json',
+                    Authorization: `Basic ${Buffer.from(`${apiKey}:`).toString("base64")}`,
+                    "Content-Type": "application/json",
                 },
                 // Limit to 1 for test
             });
             if (!response.ok) {
                 return {
                     success: false,
-                    error: 'Invalid API key or subdomain',
-                    message: 'Connection test failed: Invalid credentials',
+                    error: "Invalid API key or subdomain",
+                    message: "Connection test failed: Invalid credentials",
                 };
             }
             return {
                 success: true,
-                message: 'Connection successful',
+                message: "Connection successful",
             };
         }
         catch (error) {
@@ -66,30 +66,30 @@ class RecurlyDriver {
         const subscriptions = [];
         const invoices = [];
         const rawPayloads = [];
-        const authHeader = `Basic ${Buffer.from(`${apiKey}:`).toString('base64')}`;
+        const authHeader = `Basic ${Buffer.from(`${apiKey}:`).toString("base64")}`;
         try {
             // Fetch subscriptions
             let subscriptionsUrl = `${apiUrl}/subscriptions`;
             const subscriptionParams = new URLSearchParams();
             if (options.limit) {
-                subscriptionParams.append('limit', options.limit.toString());
+                subscriptionParams.append("limit", options.limit.toString());
             }
             if (subscriptionParams.toString()) {
                 subscriptionsUrl += `?${subscriptionParams.toString()}`;
             }
             const subscriptionsResponse = await fetch(subscriptionsUrl, {
-                method: 'GET',
+                method: "GET",
                 headers: {
                     Authorization: authHeader,
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
             });
             if (!subscriptionsResponse.ok) {
                 const error = await subscriptionsResponse.json();
-                throw new connector_driver_1.ConnectorError(`Failed to fetch subscriptions: ${error.error?.message || error.message}`, 'RECURLY_SUBSCRIPTIONS_FAILED', 'recurly');
+                throw new connector_driver_1.ConnectorError(`Failed to fetch subscriptions: ${error.error?.message || error.message}`, "RECURLY_SUBSCRIPTIONS_FAILED", "recurly");
             }
             const subscriptionsData = await subscriptionsResponse.json();
-            rawPayloads.push({ type: 'subscriptions', payload: subscriptionsData });
+            rawPayloads.push({ type: "subscriptions", payload: subscriptionsData });
             // Normalize subscriptions
             for (const sub of subscriptionsData.data || []) {
                 subscriptions.push({
@@ -100,15 +100,15 @@ class RecurlyDriver {
                     status: sub.state,
                     billingCycle: sub.plan?.interval_unit,
                     amountCents: Math.round((sub.unit_amount || 0) * 100),
-                    currency: sub.currency || 'USD',
-                    currentPeriodStart: sub.current_period_started_at
-                        ? new Date(sub.current_period_started_at)
-                        : undefined,
-                    currentPeriodEnd: sub.current_period_ends_at
-                        ? new Date(sub.current_period_ends_at)
-                        : undefined,
+                    currency: sub.currency || "USD",
+                    ...(sub.current_period_started_at
+                        ? { currentPeriodStart: new Date(sub.current_period_started_at) }
+                        : {}),
+                    ...(sub.current_period_ends_at
+                        ? { currentPeriodEnd: new Date(sub.current_period_ends_at) }
+                        : {}),
                     cancelAtPeriodEnd: sub.cancel_at || false,
-                    cancelledAt: sub.canceled_at ? new Date(sub.canceled_at) : undefined,
+                    ...(sub.canceled_at ? { cancelledAt: new Date(sub.canceled_at) } : {}),
                     providerMetadata: {
                         subscription_id: sub.id,
                         plan_code: sub.plan_code,
@@ -120,24 +120,24 @@ class RecurlyDriver {
             let invoicesUrl = `${apiUrl}/invoices`;
             const invoiceParams = new URLSearchParams();
             if (options.since) {
-                invoiceParams.append('begin_time', options.since.toISOString());
+                invoiceParams.append("begin_time", options.since.toISOString());
             }
             if (options.limit) {
-                invoiceParams.append('limit', options.limit.toString());
+                invoiceParams.append("limit", options.limit.toString());
             }
             if (invoiceParams.toString()) {
                 invoicesUrl += `?${invoiceParams.toString()}`;
             }
             const invoicesResponse = await fetch(invoicesUrl, {
-                method: 'GET',
+                method: "GET",
                 headers: {
                     Authorization: authHeader,
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
             });
             if (invoicesResponse.ok) {
                 const invoicesData = await invoicesResponse.json();
-                rawPayloads.push({ type: 'invoices', payload: invoicesData });
+                rawPayloads.push({ type: "invoices", payload: invoicesData });
                 // Normalize invoices
                 for (const inv of invoicesData.data || []) {
                     invoices.push({
@@ -145,10 +145,10 @@ class RecurlyDriver {
                         invoiceNumber: inv.number,
                         customerId: inv.account?.id || inv.account_id,
                         amountCents: Math.round((inv.total || 0) * 100),
-                        currency: inv.currency || 'USD',
+                        currency: inv.currency || "USD",
                         status: inv.state,
-                        issueDate: inv.created_at ? new Date(inv.created_at) : undefined,
-                        paidAt: inv.paid_at ? new Date(inv.paid_at) : undefined,
+                        ...(inv.created_at ? { issueDate: new Date(inv.created_at) } : {}),
+                        ...(inv.paid_at ? { paidAt: new Date(inv.paid_at) } : {}),
                         providerMetadata: {
                             invoice_id: inv.id,
                             subscription_id: inv.subscription_id,
@@ -158,7 +158,6 @@ class RecurlyDriver {
                 }
             }
             return {
-                nextCursor: undefined, // Recurly uses pagination headers
                 hasMore: false,
                 counts: {
                     subscriptions: subscriptions.length,
@@ -173,7 +172,7 @@ class RecurlyDriver {
             if (error instanceof connector_driver_1.ConnectorError) {
                 throw error;
             }
-            throw new connector_driver_1.ConnectorError(`Recurly sync failed: ${error instanceof Error ? error.message : String(error)}`, 'RECURLY_SYNC_FAILED', 'recurly', error instanceof Error ? error : undefined);
+            throw new connector_driver_1.ConnectorError(`Recurly sync failed: ${error instanceof Error ? error.message : String(error)}`, "RECURLY_SYNC_FAILED", "recurly", error instanceof Error ? error : undefined);
         }
     }
     async handleWebhook(_payload, _credentials) {

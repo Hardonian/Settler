@@ -161,7 +161,6 @@ class ChargebeeDriver {
                 }
             }
             return {
-                nextCursor: undefined, // Chargebee uses offset-based pagination
                 hasMore: false,
                 counts: {
                     subscriptions: subscriptions.length,

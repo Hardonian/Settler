@@ -24,8 +24,9 @@ class StripeAdapter {
         if (dateRange?.end) {
             createdParams.lte = Math.floor(dateRange.end.getTime() / 1000);
         }
+        const hasCreatedParams = Object.keys(createdParams).length > 0;
         const charges = await stripe.charges.list({
-            created: Object.keys(createdParams).length > 0 ? createdParams : undefined,
+            ...(hasCreatedParams ? { created: createdParams } : {}),
             limit: 100,
         });
         return charges.data.map((charge) => this.normalize(charge));

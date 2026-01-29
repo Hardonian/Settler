@@ -4,7 +4,7 @@
  * Stripe Connect integration for connected accounts
  * Supports OAuth2 flow for connected accounts
  */
-import { ConnectorDriver, ConnectorMetadata, AuthUrlOptions, AuthCallbackResult, TestConnectionOptions, TestConnectionResult, SyncOptions, SyncResult, NormalizedAccount, NormalizedPayout, NormalizedBalance } from '../connector-driver';
+import { ConnectorDriver, ConnectorMetadata, AuthUrlOptions, AuthCallbackResult, TestConnectionOptions, TestConnectionResult, SyncOptions, SyncResult, NormalizedAccount, NormalizedPayout, NormalizedBalance } from "../connector-driver";
 export declare class StripeConnectDriver implements ConnectorDriver {
     readonly metadata: ConnectorMetadata;
     getAuthUrl(options: AuthUrlOptions): Promise<string>;

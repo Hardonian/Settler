@@ -91,7 +91,7 @@ function validateConnector(connector, rules = exports.DEFAULT_VALIDATION_RULES) 
     }
     return {
         valid: errors.length === 0,
-        errors: errors.length > 0 ? errors : undefined,
+        ...(errors.length > 0 ? { errors } : {}),
     };
 }
 //# sourceMappingURL=connector-contract.js.map

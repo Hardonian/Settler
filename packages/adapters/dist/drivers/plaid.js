@@ -10,35 +10,35 @@ exports.PlaidDriver = void 0;
 const connector_driver_1 = require("../connector-driver");
 class PlaidDriver {
     metadata = {
-        id: 'plaid',
-        displayName: 'Plaid',
-        category: 'bank_feed',
-        authType: 'oauth2',
-        description: 'Connect your bank accounts via Plaid for automatic transaction and balance sync',
-        icon: '🏦',
-        documentationUrl: 'https://plaid.com/docs',
+        id: "plaid",
+        displayName: "Plaid",
+        category: "bank_feed",
+        authType: "oauth2",
+        description: "Connect your bank accounts via Plaid for automatic transaction and balance sync",
+        icon: "🏦",
+        documentationUrl: "https://plaid.com/docs",
         supportsWebhooks: true,
         supportsPolling: true,
-        requiredConfig: ['client_id', 'secret', 'environment'],
-        optionalConfig: ['webhook_url'],
+        requiredConfig: ["client_id", "secret", "environment"],
+        optionalConfig: ["webhook_url"],
     };
     getApiUrl(environment) {
-        const env = environment || 'sandbox';
+        const env = environment || "sandbox";
         const urls = {
-            sandbox: 'https://sandbox.plaid.com',
-            development: 'https://development.plaid.com',
-            production: 'https://production.plaid.com',
+            sandbox: "https://sandbox.plaid.com",
+            development: "https://development.plaid.com",
+            production: "https://production.plaid.com",
         };
-        return (urls[env] ?? urls.sandbox);
+        return urls[env] ?? urls.sandbox;
     }
     async getAuthUrl(options) {
         // Plaid uses Link SDK on frontend, but we can generate a link token
         const config = options;
         const apiUrl = this.getApiUrl(config.environment);
         const response = await fetch(`${apiUrl}/link/token/create`, {
-            method: 'POST',
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 client_id: config.clientId,
@@ -46,19 +46,19 @@ class PlaidDriver {
                 user: {
                     client_user_id: options.tenantId,
                 },
-                client_name: 'Settler',
-                products: ['transactions', 'auth', 'identity'],
-                country_codes: ['US', 'CA'],
-                language: 'en',
+                client_name: "Settler",
+                products: ["transactions", "auth", "identity"],
+                country_codes: ["US", "CA"],
+                language: "en",
                 redirect_uri: options.redirectUri,
                 ...(config.webhook_url && { webhook: config.webhook_url }),
             }),
         });
         if (!response.ok) {
             const error = await response.json();
-            throw new connector_driver_1.ConnectorError(`Failed to create Plaid link token: ${error.error_message}`, 'PLAID_LINK_TOKEN_FAILED', 'plaid');
+            throw new connector_driver_1.ConnectorError(`Failed to create Plaid link token: ${error.error_message}`, "PLAID_LINK_TOKEN_FAILED", "plaid");
         }
-        const data = await response.json();
+        const data = (await response.json());
         // Return link token - frontend will use Plaid Link SDK
         return data.link_token;
     }
@@ -67,9 +67,9 @@ class PlaidDriver {
         const apiUrl = this.getApiUrl(config.environment);
         // Exchange public token for access token
         const response = await fetch(`${apiUrl}/item/public_token/exchange`, {
-            method: 'POST',
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 client_id: config.clientId,
@@ -79,7 +79,7 @@ class PlaidDriver {
         });
         if (!response.ok) {
             const error = await response.json();
-            throw new connector_driver_1.ConnectorError(`Failed to exchange Plaid token: ${error.error_message}`, 'PLAID_TOKEN_EXCHANGE_FAILED', 'plaid');
+            throw new connector_driver_1.ConnectorError(`Failed to exchange Plaid token: ${error.error_message}`, "PLAID_TOKEN_EXCHANGE_FAILED", "plaid");
         }
         const data = await response.json();
         return {
@@ -94,15 +94,15 @@ class PlaidDriver {
     async refreshToken(_refreshToken, _config) {
         // Plaid doesn't use refresh tokens in the traditional sense
         // Access tokens are long-lived, but we can refresh via item/get
-        throw new connector_driver_1.ConnectorError('Plaid does not support token refresh', 'PLAID_REFRESH_NOT_SUPPORTED', 'plaid');
+        throw new connector_driver_1.ConnectorError("Plaid does not support token refresh", "PLAID_REFRESH_NOT_SUPPORTED", "plaid");
     }
     async revoke(accessToken, config) {
-        const env = config?.environment || 'sandbox';
+        const env = config?.environment || "sandbox";
         const apiUrl = this.getApiUrl(env);
         const response = await fetch(`${apiUrl}/item/remove`, {
-            method: 'POST',
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 client_id: config?.client_id,
@@ -112,20 +112,20 @@ class PlaidDriver {
         });
         if (!response.ok) {
             const error = await response.json();
-            throw new connector_driver_1.ConnectorError(`Failed to revoke Plaid access: ${error.error_message}`, 'PLAID_REVOKE_FAILED', 'plaid');
+            throw new connector_driver_1.ConnectorError(`Failed to revoke Plaid access: ${error.error_message}`, "PLAID_REVOKE_FAILED", "plaid");
         }
     }
     async testConnection(options) {
         const { credentials, config } = options;
         const accessToken = credentials.access_token;
-        const env = config?.environment || 'sandbox';
+        const env = config?.environment || "sandbox";
         const apiUrl = this.getApiUrl(env);
         try {
             // Test by fetching accounts
             const response = await fetch(`${apiUrl}/accounts/get`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     client_id: config?.client_id,
@@ -143,7 +143,7 @@ class PlaidDriver {
             }
             return {
                 success: true,
-                message: 'Connection successful',
+                message: "Connection successful",
             };
         }
         catch (error) {
@@ -157,7 +157,7 @@ class PlaidDriver {
     async sync(credentials, options) {
         const accessToken = credentials.access_token;
         const config = credentials.config || {};
-        const env = config.environment || 'sandbox';
+        const env = config.environment || "sandbox";
         const apiUrl = this.getApiUrl(env);
         const clientId = config.client_id;
         const secret = config.secret;
@@ -168,9 +168,9 @@ class PlaidDriver {
         try {
             // Fetch accounts
             const accountsResponse = await fetch(`${apiUrl}/accounts/get`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     client_id: clientId,
@@ -180,17 +180,17 @@ class PlaidDriver {
             });
             if (!accountsResponse.ok) {
                 const error = await accountsResponse.json();
-                throw new connector_driver_1.ConnectorError(`Failed to fetch accounts: ${error.error_message}`, 'PLAID_ACCOUNTS_FAILED', 'plaid');
+                throw new connector_driver_1.ConnectorError(`Failed to fetch accounts: ${error.error_message}`, "PLAID_ACCOUNTS_FAILED", "plaid");
             }
             const accountsData = await accountsResponse.json();
-            rawPayloads.push({ type: 'accounts', payload: accountsData });
+            rawPayloads.push({ type: "accounts", payload: accountsData });
             // Normalize accounts
             for (const account of accountsData.accounts || []) {
                 accounts.push({
                     providerAccountId: account.account_id,
                     accountName: account.name,
                     accountType: account.type,
-                    currency: account.balances.iso_currency_code || 'USD',
+                    currency: account.balances.iso_currency_code || "USD",
                     institutionName: accountsData.item?.institution_id,
                     institutionId: accountsData.item?.institution_id,
                     metadata: {
@@ -202,10 +202,10 @@ class PlaidDriver {
                 balances.push({
                     balanceCents: Math.round((account.balances.current || 0) * 100),
                     accountId: account.account_id,
-                    availableBalanceCents: account.balances.available
-                        ? Math.round(account.balances.available * 100)
-                        : undefined,
-                    currency: account.balances.iso_currency_code || 'USD',
+                    ...(account.balances.available
+                        ? { availableBalanceCents: Math.round(account.balances.available * 100) }
+                        : {}),
+                    currency: account.balances.iso_currency_code || "USD",
                     snapshotAt: new Date(),
                     providerMetadata: {
                         account_id: account.account_id,
@@ -214,37 +214,37 @@ class PlaidDriver {
             }
             // Fetch transactions
             const transactionsResponse = await fetch(`${apiUrl}/transactions/sync`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     client_id: clientId,
                     secret: secret,
                     access_token: accessToken,
-                    cursor: options.cursor || undefined,
+                    ...(options.cursor ? { cursor: options.cursor } : {}),
                     count: options.limit || 500,
                 }),
             });
             if (!transactionsResponse.ok) {
                 const error = await transactionsResponse.json();
-                throw new connector_driver_1.ConnectorError(`Failed to fetch transactions: ${error.error_message}`, 'PLAID_TRANSACTIONS_FAILED', 'plaid');
+                throw new connector_driver_1.ConnectorError(`Failed to fetch transactions: ${error.error_message}`, "PLAID_TRANSACTIONS_FAILED", "plaid");
             }
             const transactionsData = await transactionsResponse.json();
-            rawPayloads.push({ type: 'transactions', payload: transactionsData });
+            rawPayloads.push({ type: "transactions", payload: transactionsData });
             // Normalize transactions
             for (const tx of transactionsData.added || []) {
                 const amountCents = Math.round((tx.amount || 0) * 100);
                 transactions.push({
                     externalId: tx.transaction_id,
                     accountId: tx.account_id,
-                    transactionType: amountCents >= 0 ? 'credit' : 'debit',
+                    transactionType: amountCents >= 0 ? "credit" : "debit",
                     amountCents: Math.abs(amountCents),
-                    currency: tx.iso_currency_code || 'USD',
+                    currency: tx.iso_currency_code || "USD",
                     occurredAt: new Date(tx.date),
                     description: tx.name || tx.merchant_name,
-                    referenceId: tx.pending_transaction_id,
-                    referenceType: tx.pending ? 'pending_transaction' : undefined,
+                    ...(tx.pending_transaction_id ? { referenceId: tx.pending_transaction_id } : {}),
+                    ...(tx.pending ? { referenceType: "pending_transaction" } : {}),
                     providerMetadata: {
                         category: tx.category,
                         merchant_name: tx.merchant_name,
@@ -272,7 +272,7 @@ class PlaidDriver {
             if (error instanceof connector_driver_1.ConnectorError) {
                 throw error;
             }
-            throw new connector_driver_1.ConnectorError(`Plaid sync failed: ${error instanceof Error ? error.message : String(error)}`, 'PLAID_SYNC_FAILED', 'plaid', error instanceof Error ? error : undefined);
+            throw new connector_driver_1.ConnectorError(`Plaid sync failed: ${error instanceof Error ? error.message : String(error)}`, "PLAID_SYNC_FAILED", "plaid", error instanceof Error ? error : undefined);
         }
     }
     async handleWebhook(_payload, _credentials) {

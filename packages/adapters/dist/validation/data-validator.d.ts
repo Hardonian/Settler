@@ -3,7 +3,7 @@
  *
  * Validates normalized data before storage
  */
-import { NormalizedTransaction, NormalizedAccount, NormalizedBalance, NormalizedPayout, NormalizedInvoice, NormalizedSubscription, NormalizedTaxEstimate } from '../connector-driver';
+import { NormalizedTransaction, NormalizedAccount, NormalizedBalance, NormalizedPayout, NormalizedInvoice, NormalizedSubscription, NormalizedTaxEstimate } from "../connector-driver";
 export interface ValidationResult {
     valid: boolean;
     errors: string[];
@@ -42,13 +42,13 @@ export declare class DataValidator {
      * Validate all data types
      */
     validateAll(data: {
-        transactions?: NormalizedTransaction[];
-        accounts?: NormalizedAccount[];
-        balances?: NormalizedBalance[];
-        payouts?: NormalizedPayout[];
-        invoices?: NormalizedInvoice[];
-        subscriptions?: NormalizedSubscription[];
-        taxEstimates?: NormalizedTaxEstimate[];
+        transactions?: NormalizedTransaction[] | undefined;
+        accounts?: NormalizedAccount[] | undefined;
+        balances?: NormalizedBalance[] | undefined;
+        payouts?: NormalizedPayout[] | undefined;
+        invoices?: NormalizedInvoice[] | undefined;
+        subscriptions?: NormalizedSubscription[] | undefined;
+        taxEstimates?: NormalizedTaxEstimate[] | undefined;
     }): {
         valid: boolean;
         errors: string[];

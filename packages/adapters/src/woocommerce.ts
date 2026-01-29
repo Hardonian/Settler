@@ -174,9 +174,14 @@ export class WooCommerceAdapter implements Adapter {
       errors.push("Invalid date");
     }
 
-    return {
+    const result: ValidationResult = {
       valid: errors.length === 0,
-      errors: errors.length > 0 ? errors : undefined,
     };
+
+    if (errors.length > 0) {
+      result.errors = errors;
+    }
+
+    return result;
   }
 }

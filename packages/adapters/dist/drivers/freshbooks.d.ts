@@ -4,7 +4,7 @@
  * Accounting system integration
  * Supports OAuth2 flow
  */
-import { ConnectorDriver, ConnectorMetadata, AuthUrlOptions, AuthCallbackResult, TestConnectionOptions, TestConnectionResult, SyncOptions, SyncResult, NormalizedInvoice } from '../connector-driver';
+import { ConnectorDriver, ConnectorMetadata, AuthUrlOptions, AuthCallbackResult, TestConnectionOptions, TestConnectionResult, SyncOptions, SyncResult, NormalizedInvoice } from "../connector-driver";
 export declare class FreshBooksDriver implements ConnectorDriver {
     readonly metadata: ConnectorMetadata;
     private readonly apiUrl;

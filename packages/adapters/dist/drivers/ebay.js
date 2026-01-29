@@ -195,7 +195,6 @@ class EbayDriver {
                 }
             }
             return {
-                nextCursor: undefined,
                 hasMore: false,
                 counts: {
                     payouts: payouts.length,

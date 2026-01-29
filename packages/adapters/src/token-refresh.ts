@@ -102,12 +102,19 @@ export async function refreshTokenIfNeeded(
       return { refreshed: false, error: updateError.message };
     }
 
-    return {
+    const result: TokenRefreshResult = {
       refreshed: true,
       accessToken: refreshResult.accessToken,
-      refreshToken: refreshResult.refreshToken,
-      expiresIn: refreshResult.expiresIn,
     };
+
+    if (refreshResult.refreshToken) {
+      result.refreshToken = refreshResult.refreshToken;
+    }
+    if (refreshResult.expiresIn) {
+      result.expiresIn = refreshResult.expiresIn;
+    }
+
+    return result;
   } catch (error) {
     return {
       refreshed: false,

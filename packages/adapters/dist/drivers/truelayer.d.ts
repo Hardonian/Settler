@@ -4,7 +4,7 @@
  * Bank aggregation for EU/UK (PSD2)
  * Supports OAuth2 flow
  */
-import { ConnectorDriver, ConnectorMetadata, AuthUrlOptions, AuthCallbackResult, TestConnectionOptions, TestConnectionResult, SyncOptions, SyncResult, NormalizedAccount, NormalizedTransaction, NormalizedBalance } from '../connector-driver';
+import { ConnectorDriver, ConnectorMetadata, AuthUrlOptions, AuthCallbackResult, TestConnectionOptions, TestConnectionResult, SyncOptions, SyncResult, NormalizedAccount, NormalizedTransaction, NormalizedBalance } from "../connector-driver";
 export declare class TrueLayerDriver implements ConnectorDriver {
     readonly metadata: ConnectorMetadata;
     private getApiUrl;

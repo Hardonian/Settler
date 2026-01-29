@@ -4,7 +4,7 @@
  * Accounting system integration
  * Supports OAuth2 flow (if available) or manual upload
  */
-import { ConnectorDriver, ConnectorMetadata, TestConnectionOptions, TestConnectionResult, SyncOptions, SyncResult, NormalizedInvoice } from '../connector-driver';
+import { ConnectorDriver, ConnectorMetadata, TestConnectionOptions, TestConnectionResult, SyncOptions, SyncResult, NormalizedInvoice } from "../connector-driver";
 export declare class WaveDriver implements ConnectorDriver {
     readonly metadata: ConnectorMetadata;
     private readonly apiUrl;

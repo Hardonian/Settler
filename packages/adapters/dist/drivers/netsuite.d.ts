@@ -4,7 +4,7 @@
  * NetSuite ERP integration
  * Supports Token-Based Authentication or OAuth 2.0
  */
-import { ConnectorDriver, ConnectorMetadata, TestConnectionOptions, TestConnectionResult, SyncOptions, SyncResult, NormalizedInvoice, NormalizedTransaction } from '../connector-driver';
+import { ConnectorDriver, ConnectorMetadata, TestConnectionOptions, TestConnectionResult, SyncOptions, SyncResult, NormalizedInvoice, NormalizedTransaction } from "../connector-driver";
 export declare class NetSuiteDriver implements ConnectorDriver {
     readonly metadata: ConnectorMetadata;
     private getApiUrl;

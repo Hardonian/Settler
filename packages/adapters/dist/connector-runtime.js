@@ -424,11 +424,9 @@ class ConnectorRuntime {
                 });
             }
         }
-        // Process other data types similarly
-        const remainingData = {
-            ...data,
-            transactions: undefined,
-        };
+        // Process other data types similarly - exclude transactions from remaining data
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { transactions: _, ...remainingData } = data;
         if ((data.accounts?.length || 0) +
             (data.balances?.length || 0) +
             (data.payouts?.length || 0) +
@@ -521,9 +519,10 @@ class ConnectorRuntime {
             await (0, rate_limiting_1.recordApiCall)(connectorId, tenantId, this.config.supabaseUrl, this.config.supabaseServiceKey);
             // Get last cursor if exists
             const lastCursor = await this.getSyncCursor(tenantId, connectorId, "default", options.accountId);
+            const cursorValue = options.cursor || lastCursor;
             const syncOptions = {
                 ...options,
-                cursor: options.cursor || lastCursor || undefined,
+                ...(cursorValue ? { cursor: cursorValue } : {}),
             };
             // Create sync run
             const syncRunId = await this.createSyncRun(tenantId, connectorId, syncOptions);
@@ -583,14 +582,14 @@ class ConnectorRuntime {
                     idempotencyKey: tax.idempotencyKey || `${tax.externalId}-${tax.occurredAt.toISOString()}`,
                 }));
                 const dataToSave = {
-                    accounts: result.accounts,
-                    transactions: transactionsWithIdempotency,
-                    balances: balancesWithAccountId,
-                    payouts: payoutsWithIdempotency,
-                    invoices: invoicesWithIdempotency,
-                    subscriptions: subscriptionsWithIdempotency,
-                    taxEstimates: taxEstimatesWithIdempotency,
-                    rawPayloads: result.rawPayloads,
+                    ...(result.accounts ? { accounts: result.accounts } : {}),
+                    ...(transactionsWithIdempotency ? { transactions: transactionsWithIdempotency } : {}),
+                    ...(balancesWithAccountId ? { balances: balancesWithAccountId } : {}),
+                    ...(payoutsWithIdempotency ? { payouts: payoutsWithIdempotency } : {}),
+                    ...(invoicesWithIdempotency ? { invoices: invoicesWithIdempotency } : {}),
+                    ...(subscriptionsWithIdempotency ? { subscriptions: subscriptionsWithIdempotency } : {}),
+                    ...(taxEstimatesWithIdempotency ? { taxEstimates: taxEstimatesWithIdempotency } : {}),
+                    ...(result.rawPayloads ? { rawPayloads: result.rawPayloads } : {}),
                 };
                 // Save in batches if large dataset
                 const totalItems = (result.transactions?.length || 0) +
@@ -624,7 +623,7 @@ class ConnectorRuntime {
                     subscriptionsSynced: result.counts.subscriptions || 0,
                     errorsCount: result.errors?.length || 0,
                     warningsCount: result.warnings?.length || 0,
-                    cursor: result.nextCursor,
+                    ...(result.nextCursor ? { cursor: result.nextCursor } : {}),
                 });
                 // Update connector last sync
                 const { data: connector } = await this.supabase

@@ -134,7 +134,6 @@ class AmazonSellerDriver {
         else {
             // Manual upload mode - return empty, data should be uploaded via UI
             return {
-                nextCursor: undefined,
                 hasMore: false,
                 counts: {
                     payouts: 0,
@@ -147,7 +146,6 @@ class AmazonSellerDriver {
             };
         }
         return {
-            nextCursor: undefined,
             hasMore: false,
             counts: {
                 payouts: payouts.length,

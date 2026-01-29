@@ -19,7 +19,7 @@ class ConnectorError extends Error {
         this.code = code;
         this.connectorId = connectorId;
         this.cause = cause;
-        this.name = 'ConnectorError';
+        this.name = "ConnectorError";
         Object.setPrototypeOf(this, ConnectorError.prototype);
     }
 }
@@ -34,7 +34,7 @@ class ValidationError extends Error {
         super(message);
         this.field = field;
         this.value = value;
-        this.name = 'ValidationError';
+        this.name = "ValidationError";
     }
 }
 exports.ValidationError = ValidationError;

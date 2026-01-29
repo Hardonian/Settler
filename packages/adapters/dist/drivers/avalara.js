@@ -115,7 +115,6 @@ class AvalaraDriver {
                 }
             }
             return {
-                nextCursor: undefined,
                 hasMore: false,
                 counts: {
                     taxEstimates: taxEstimates.length,

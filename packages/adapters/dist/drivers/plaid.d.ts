@@ -4,7 +4,7 @@
  * Bank aggregation for North America
  * Supports OAuth2 flow via Plaid Link
  */
-import { ConnectorDriver, ConnectorMetadata, AuthUrlOptions, AuthCallbackResult, TestConnectionOptions, TestConnectionResult, SyncOptions, SyncResult, NormalizedAccount, NormalizedTransaction, NormalizedBalance } from '../connector-driver';
+import { ConnectorDriver, ConnectorMetadata, AuthUrlOptions, AuthCallbackResult, TestConnectionOptions, TestConnectionResult, SyncOptions, SyncResult, NormalizedAccount, NormalizedTransaction, NormalizedBalance } from "../connector-driver";
 export declare class PlaidDriver implements ConnectorDriver {
     readonly metadata: ConnectorMetadata;
     private getApiUrl;

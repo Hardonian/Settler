@@ -10,17 +10,17 @@ exports.SapDriver = void 0;
 const connector_driver_1 = require("../connector-driver");
 class SapDriver {
     metadata = {
-        id: 'sap',
-        displayName: 'SAP',
-        category: 'erp',
-        authType: 'oauth2',
-        description: 'Sync invoices, payments, and journal entries from SAP via OData endpoints (read-only)',
-        icon: '🏢',
-        documentationUrl: 'https://help.sap.com/docs/SAP_S4HANA_ON_PREMISE',
+        id: "sap",
+        displayName: "SAP",
+        category: "erp",
+        authType: "oauth2",
+        description: "Sync invoices, payments, and journal entries from SAP via OData endpoints (read-only)",
+        icon: "🏢",
+        documentationUrl: "https://help.sap.com/docs/SAP_S4HANA_ON_PREMISE",
         supportsWebhooks: false,
         supportsPolling: true,
-        requiredConfig: ['odata_url', 'username', 'password'],
-        optionalConfig: ['client', 'system_number', 'application_server'],
+        requiredConfig: ["odata_url", "username", "password"],
+        optionalConfig: ["client", "system_number", "application_server"],
     };
     async testConnection(options) {
         const { credentials, config: _config } = options;
@@ -30,30 +30,30 @@ class SapDriver {
         if (!odataUrl || !username || !password) {
             return {
                 success: false,
-                error: 'Missing required configuration',
-                message: 'OData URL, username, and password are required',
+                error: "Missing required configuration",
+                message: "OData URL, username, and password are required",
             };
         }
         try {
             // Test connection by fetching service document
-            const authHeader = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
+            const authHeader = `Basic ${Buffer.from(`${username}:${password}`).toString("base64")}`;
             const response = await fetch(`${odataUrl}/$metadata`, {
-                method: 'GET',
+                method: "GET",
                 headers: {
                     Authorization: authHeader,
-                    'Content-Type': 'application/xml',
+                    "Content-Type": "application/xml",
                 },
             });
             if (!response.ok) {
                 return {
                     success: false,
-                    error: 'Authentication failed',
-                    message: 'Please check your SAP credentials',
+                    error: "Authentication failed",
+                    message: "Please check your SAP credentials",
                 };
             }
             return {
                 success: true,
-                message: 'Connection successful',
+                message: "Connection successful",
             };
         }
         catch (error) {
@@ -72,22 +72,22 @@ class SapDriver {
         const invoices = [];
         const transactions = [];
         const rawPayloads = [];
-        const authHeader = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
+        const authHeader = `Basic ${Buffer.from(`${username}:${password}`).toString("base64")}`;
         try {
             // Map endpoints from config (connector wizard should set these)
-            const invoiceEndpoint = config.invoice_endpoint || 'InvoiceSet';
-            const transactionEndpoint = config.transaction_endpoint || 'TransactionSet';
+            const invoiceEndpoint = config.invoice_endpoint || "InvoiceSet";
+            const transactionEndpoint = config.transaction_endpoint || "TransactionSet";
             // Fetch invoices
             const invoicesResponse = await fetch(`${odataUrl}/${invoiceEndpoint}`, {
-                method: 'GET',
+                method: "GET",
                 headers: {
                     Authorization: authHeader,
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
             });
             if (invoicesResponse.ok) {
                 const invoicesData = await invoicesResponse.json();
-                rawPayloads.push({ type: 'invoices', payload: invoicesData });
+                rawPayloads.push({ type: "invoices", payload: invoicesData });
                 for (const invoice of invoicesData.value || []) {
                     invoices.push({
                         externalId: invoice.InvoiceNumber || invoice.Id,
@@ -95,10 +95,10 @@ class SapDriver {
                         customerId: invoice.CustomerId,
                         customerName: invoice.CustomerName,
                         amountCents: Math.round((invoice.Amount || 0) * 100),
-                        currency: invoice.Currency || 'USD',
+                        currency: invoice.Currency || "USD",
                         status: invoice.Status,
-                        issueDate: invoice.InvoiceDate ? new Date(invoice.InvoiceDate) : undefined,
-                        dueDate: invoice.DueDate ? new Date(invoice.DueDate) : undefined,
+                        ...(invoice.InvoiceDate ? { issueDate: new Date(invoice.InvoiceDate) } : {}),
+                        ...(invoice.DueDate ? { dueDate: new Date(invoice.DueDate) } : {}),
                         providerMetadata: {
                             invoice_id: invoice.Id,
                         },
@@ -108,21 +108,21 @@ class SapDriver {
             }
             // Fetch transactions
             const transactionsResponse = await fetch(`${odataUrl}/${transactionEndpoint}`, {
-                method: 'GET',
+                method: "GET",
                 headers: {
                     Authorization: authHeader,
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
             });
             if (transactionsResponse.ok) {
                 const transactionsData = await transactionsResponse.json();
-                rawPayloads.push({ type: 'transactions', payload: transactionsData });
+                rawPayloads.push({ type: "transactions", payload: transactionsData });
                 for (const tx of transactionsData.value || []) {
                     transactions.push({
                         externalId: tx.TransactionId || tx.Id,
-                        transactionType: tx.Amount >= 0 ? 'credit' : 'debit',
+                        transactionType: tx.Amount >= 0 ? "credit" : "debit",
                         amountCents: Math.round(Math.abs(tx.Amount || 0) * 100),
-                        currency: tx.Currency || 'USD',
+                        currency: tx.Currency || "USD",
                         occurredAt: tx.TransactionDate ? new Date(tx.TransactionDate) : new Date(),
                         description: tx.Description || `SAP transaction ${tx.TransactionId}`,
                         providerMetadata: {
@@ -133,7 +133,6 @@ class SapDriver {
                 }
             }
             return {
-                nextCursor: undefined,
                 hasMore: false,
                 counts: {
                     invoices: invoices.length,
@@ -148,7 +147,7 @@ class SapDriver {
             if (error instanceof connector_driver_1.ConnectorError) {
                 throw error;
             }
-            throw new connector_driver_1.ConnectorError(`SAP sync failed: ${error instanceof Error ? error.message : String(error)}`, 'SAP_SYNC_FAILED', 'sap', error instanceof Error ? error : undefined);
+            throw new connector_driver_1.ConnectorError(`SAP sync failed: ${error instanceof Error ? error.message : String(error)}`, "SAP_SYNC_FAILED", "sap", error instanceof Error ? error : undefined);
         }
     }
 }
