@@ -63,10 +63,10 @@ class MetricsCollector {
     }
 
     const durations = this.metrics.map((m) => m.duration_ms).sort((a, b) => a - b);
-    const errors = this.metrics.filter((m) => m.status >= 400).length;
-    const slowRequests = this.metrics.filter((m) => m.duration_ms > 1000).length;
+    const errors = this.metrics.filter((m: any) => m.status >= 400).length;
+    const slowRequests = this.metrics.filter((m: any) => m.duration_ms > 1000).length;
 
-    const avgDuration = durations.reduce((a, b) => a + b, 0) / durations.length;
+    const avgDuration = durations.reduce((a: number, b: any) => a + b, 0) / durations.length;
     const p95Index = Math.floor(durations.length * 0.95);
     const p99Index = Math.floor(durations.length * 0.99);
 

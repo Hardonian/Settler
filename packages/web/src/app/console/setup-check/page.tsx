@@ -183,9 +183,9 @@ async function SetupChecks() {
     });
   }
 
-  const passCount = checks.filter((c) => c.status === "pass").length;
-  const failCount = checks.filter((c) => c.status === "fail").length;
-  const warnCount = checks.filter((c) => c.status === "warning").length;
+  const passCount = checks.filter((c: any) => c.status === "pass").length;
+  const failCount = checks.filter((c: any) => c.status === "fail").length;
+  const warnCount = checks.filter((c: any) => c.status === "warning").length;
 
   return (
     <div className="space-y-6">

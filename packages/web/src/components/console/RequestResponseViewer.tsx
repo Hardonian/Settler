@@ -38,7 +38,7 @@ interface RequestResponseViewerProps {
 const formatJSON = (obj: unknown): string => {
   try {
     return JSON.stringify(obj, null, 2);
-  } catch (error: unknown) {
+  } catch {
     return String(obj);
   }
 };

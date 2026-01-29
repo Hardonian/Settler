@@ -50,7 +50,7 @@ export function parseReceiptFromText(text: string): ReceiptParseResult {
           confidenceScore += 0.1;
           break;
         }
-      } catch (error) {
+      } catch {
         // Invalid date, continue
       }
     }

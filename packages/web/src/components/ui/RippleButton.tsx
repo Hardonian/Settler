@@ -53,7 +53,7 @@ export function RippleButton({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
             onAnimationComplete={() => {
-              setRipples((prev) => prev.filter((r) => r.id !== ripple.id));
+              setRipples((prev) => prev.filter((r: any) => r.id !== ripple.id));
             }}
           />
         ))}

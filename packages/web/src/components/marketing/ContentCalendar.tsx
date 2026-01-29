@@ -22,7 +22,7 @@ export function ContentCalendar() {
   }, []);
 
   const filteredCalendar =
-    selectedType === "all" ? calendar : calendar.filter((item) => item.type === selectedType);
+    selectedType === "all" ? calendar : calendar.filter((item: any) => item.type === selectedType);
 
   const handleExport = () => {
     const csv = exportCalendarAsCSV(filteredCalendar);

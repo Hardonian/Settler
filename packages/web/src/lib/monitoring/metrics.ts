@@ -36,7 +36,7 @@ export async function trackMetric(event: MetricEvent): Promise<void> {
           tags: event.tags,
           unit: 'none',
         });
-      } catch (error) {
+      } catch {
         // Sentry not available, skip
       }
     }
@@ -86,7 +86,7 @@ export async function trackError(event: ErrorEvent): Promise<void> {
           level: event.severity === 'critical' ? 'error' : 'warning',
           tags,
         });
-      } catch (error) {
+      } catch {
         // Sentry not available, skip
       }
     }
@@ -111,7 +111,7 @@ export async function trackError(event: ErrorEvent): Promise<void> {
             })),
           },
         });
-      } catch (error) {
+      } catch {
         // Audit log failed, non-critical
       }
     }

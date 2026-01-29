@@ -192,7 +192,7 @@ export default function BrandingEditorPage() {
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {COLOR_PRESETS.filter((p) => p.category === "primary").map((preset) => (
+                  {COLOR_PRESETS.filter((p: any) => p.category === "primary").map((preset) => (
                     <button
                       key={preset.value}
                       onClick={() => handlePresetSelect(preset, "primaryColor")}
@@ -224,7 +224,7 @@ export default function BrandingEditorPage() {
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {COLOR_PRESETS.filter((p) => p.category === "secondary").map((preset) => (
+                  {COLOR_PRESETS.filter((p: any) => p.category === "secondary").map((preset) => (
                     <button
                       key={preset.value}
                       onClick={() => handlePresetSelect(preset, "secondaryColor")}
@@ -256,7 +256,7 @@ export default function BrandingEditorPage() {
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {COLOR_PRESETS.filter((p) => p.category === "accent").map((preset) => (
+                  {COLOR_PRESETS.filter((p: any) => p.category === "accent").map((preset) => (
                     <button
                       key={preset.value}
                       onClick={() => handlePresetSelect(preset, "accentColor")}

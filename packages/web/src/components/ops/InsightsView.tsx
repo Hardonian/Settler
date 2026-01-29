@@ -144,9 +144,9 @@ export function InsightsView({ userId: _userId }: InsightsViewProps) {
       setInsights(insightsData);
       setTotalPages(paginationData.totalPages || 1);
     } catch (error: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load insights';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load insights';
       setError(errorMessage);
-      console.error('Error loading insights:', err);
+      console.error('Error loading insights:', error);
     } finally {
       setLoading(false);
     }
@@ -218,9 +218,9 @@ export function InsightsView({ userId: _userId }: InsightsViewProps) {
       setRecommendations(data.recommendations || []);
       setActions(data.actions || []);
     } catch (error: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load insight details';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load insight details';
       setError(errorMessage);
-      console.error('Error loading insight detail:', err);
+      console.error('Error loading insight detail:', error);
     } finally {
       setLoadingDetail(false);
     }
@@ -257,9 +257,9 @@ export function InsightsView({ userId: _userId }: InsightsViewProps) {
         await loadInsightDetail(selectedInsight.id);
       }
     } catch (error: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to execute recommendation';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to execute recommendation';
       setError(errorMessage);
-      console.error('Error executing recommendation:', err);
+      console.error('Error executing recommendation:', error);
     } finally {
       setExecutingAction(null);
     }

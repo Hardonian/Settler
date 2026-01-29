@@ -205,7 +205,7 @@ export async function getLatestInsights(limit: number = 5): Promise<UsageInsight
             return insight;
           }
           return null;
-        } catch (error) {
+        } catch {
           return null;
         }
       })

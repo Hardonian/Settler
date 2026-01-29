@@ -56,7 +56,7 @@ export function getVariant(
   }
 
   const assignment = assignVariant(test.id, userId);
-  const totalWeight = test.variants.reduce((sum, v) => sum + v.weight, 0);
+  const totalWeight = test.variants.reduce((sum: number, v: any) => sum + v.weight, 0);
   const normalizedAssignment = (assignment % totalWeight) + 1;
 
   let cumulativeWeight = 0;

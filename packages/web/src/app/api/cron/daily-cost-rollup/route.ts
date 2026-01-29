@@ -87,18 +87,18 @@ export async function POST(request: NextRequest) {
     const eventRows = (events || []) as EventRow[];
     const activeOrgs = new Set(eventRows.map((e) => e.organization_id).filter(Boolean) || []);
     const activeUsers = new Set(eventRows.map((e) => e.user_id).filter(Boolean) || []);
-    const requests = eventRows.filter((e) => e.event_type === 'api_request').length || 0;
-    const jobs = eventRows.filter((e) => e.event_type === 'job_execution').length || 0;
-    const webhooks = eventRows.filter((e) => e.event_type === 'webhook_delivery').length || 0;
-    const errors = eventRows.filter((e) => e.event_type === 'error').length || 0;
+    const requests = eventRows.filter((e: any) => e.event_type === 'api_request').length || 0;
+    const jobs = eventRows.filter((e: any) => e.event_type === 'job_execution').length || 0;
+    const webhooks = eventRows.filter((e: any) => e.event_type === 'webhook_delivery').length || 0;
+    const errors = eventRows.filter((e: any) => e.event_type === 'error').length || 0;
 
     const responseTimes = eventRows
-      .filter((e) => e.duration_ms)
+      .filter((e: any) => e.duration_ms)
       .map((e) => e.duration_ms!)
       .sort((a, b) => a - b) || [];
     const avgResponseTime =
       responseTimes.length > 0
-        ? responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length
+        ? responseTimes.reduce((a: number, b: any) => a + b, 0) / responseTimes.length
         : 0;
     const p95ResponseTime =
       responseTimes.length > 0

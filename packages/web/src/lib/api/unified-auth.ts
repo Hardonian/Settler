@@ -63,7 +63,7 @@ export async function authenticateRequest(
         };
       }
       // API key invalid, try session auth (graceful degradation)
-    } catch (error) {
+    } catch {
       // API key validation failed, try session auth
       // Don't log here to avoid noise - graceful degradation
     }

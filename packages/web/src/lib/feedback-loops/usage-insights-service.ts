@@ -176,7 +176,7 @@ export async function generateUIEmphasis(
 
   // Feature popularity insights → UI emphasis
   const popularFeatures = insights
-    .filter((i) => i.type === 'feature_popularity')
+    .filter((i: any) => i.type === 'feature_popularity')
     .sort((a, b) => b.frequency - a.frequency)
     .slice(0, 3);
 
@@ -191,7 +191,7 @@ export async function generateUIEmphasis(
   });
 
   // Common errors → Hide or de-emphasize problematic features
-  const commonErrors = insights.filter((i) => i.type === 'common_error' && i.priority === 'high');
+  const commonErrors = insights.filter((i: any) => i.type === 'common_error' && i.priority === 'high');
   commonErrors.forEach((insight) => {
     if (insight.error) {
       emphasis.push({

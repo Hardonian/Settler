@@ -28,7 +28,7 @@ class VercelAnalyticsProvider implements AnalyticsProvider {
             ...properties,
           },
         });
-      } catch (error) {
+      } catch {
         // Silently fail if va is not available
       }
     }

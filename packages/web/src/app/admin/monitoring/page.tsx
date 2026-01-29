@@ -214,7 +214,7 @@ export default function MonitoringDashboard() {
   }
 
   const overallSlaPercentage = sla && sla.accounts && sla.accounts.length > 0
-    ? sla.accounts.reduce((sum, a) => sum + (a.sla_percentage || 0), 0) / sla.accounts.length
+    ? sla.accounts.reduce((sum: number, a: any) => sum + (a.sla_percentage || 0), 0) / sla.accounts.length
     : 0;
 
   return (

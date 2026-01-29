@@ -84,21 +84,21 @@ export function loadReceipts(): Receipt[] {
  * Get transactions by source
  */
 export function getTransactionsBySource(source: string): Transaction[] {
-  return loadTransactions().filter((t) => t.source === source);
+  return loadTransactions().filter((t: any) => t.source === source);
 }
 
 /**
  * Get all source transactions (Stripe, Shopify)
  */
 export function getSourceTransactions(): Transaction[] {
-  return loadTransactions().filter((t) => t.source === "stripe" || t.source === "shopify");
+  return loadTransactions().filter((t: any) => t.source === "stripe" || t.source === "shopify");
 }
 
 /**
  * Get all target transactions (QuickBooks, Bank payouts)
  */
 export function getTargetTransactions(): Transaction[] {
-  return loadTransactions().filter((t) => t.source === "quickbooks" || t.source === "bank_payout");
+  return loadTransactions().filter((t: any) => t.source === "quickbooks" || t.source === "bank_payout");
 }
 
 /**

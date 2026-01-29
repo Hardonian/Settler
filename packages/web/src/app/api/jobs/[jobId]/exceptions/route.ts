@@ -226,7 +226,7 @@ export const GET = withSecurity(
       select: { id: true },
     });
 
-    const runIds = runs.map((r) => r.id);
+    const runIds = runs.map((r: { id: string }) => r.id);
 
     if (runIds.length === 0) {
       return NextResponse.json({
@@ -337,7 +337,7 @@ export const GET = withSecurity(
 
     // Fetch target transactions for matches that have them
     const targetTransactionIds = matches
-      .map((m) => m.targetTransactionId)
+      .map((m: { targetTransactionId: string | null }) => m.targetTransactionId)
       .filter((id): id is string => id !== null);
 
     const targetTransactions = targetTransactionIds.length > 0
@@ -358,11 +358,11 @@ export const GET = withSecurity(
       : [];
 
     const targetTransactionMap = new Map(
-      targetTransactions.map((t) => [t.id, t])
+      targetTransactions.map((t: { id: string }) => [t.id, t])
     );
 
     // Transform response
-    const exceptions = matches.map((match) => ({
+    const exceptions = matches.map((match: typeof matches[number]) => ({
       id: match.id,
       runId: match.runId,
       sourceTransactionId: match.sourceTransactionId,

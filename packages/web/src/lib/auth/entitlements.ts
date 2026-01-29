@@ -138,7 +138,7 @@ export async function getEntitlements(): Promise<Entitlements> {
               }
             }
           }
-        } catch (error) {
+        } catch {
           // Supabase query failed - use defaults
           console.warn('[Entitlements] Failed to query Supabase subscription:', supabaseError);
         }

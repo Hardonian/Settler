@@ -175,13 +175,13 @@ export function getQueryMetricsSummary(limit: number = 100): {
 
   return {
     total: recentMetrics.length,
-    errors: recentMetrics.filter((m) => m.error).length,
-    cacheHits: recentMetrics.filter((m) => m.cacheHit).length,
-    avgDuration: Math.round(durations.reduce((a, b) => a + b, 0) / durations.length),
+    errors: recentMetrics.filter((m: any) => m.error).length,
+    cacheHits: recentMetrics.filter((m: any) => m.cacheHit).length,
+    avgDuration: Math.round(durations.reduce((a: number, b: any) => a + b, 0) / durations.length),
     p50Duration: durations[p50Index] || 0,
     p95Duration: durations[p95Index] || 0,
     p99Duration: durations[p99Index] || 0,
-    slowQueries: recentMetrics.filter((m) => m.duration > SLOW_QUERY_THRESHOLD_MS).length,
+    slowQueries: recentMetrics.filter((m: any) => m.duration > SLOW_QUERY_THRESHOLD_MS).length,
     byQuery: byQuerySummary,
   };
 }

@@ -101,7 +101,7 @@ async function getDiagnostics(): Promise<DiagnosticItem[]> {
         message: "No webhooks received yet",
       });
     }
-  } catch (err) {
+  } catch {
     diagnostics.push({
       name: "Last Stripe Webhook",
       status: "error",
@@ -130,7 +130,7 @@ async function getDiagnostics(): Promise<DiagnosticItem[]> {
         message: "No reconciliation runs yet",
       });
     }
-  } catch (err) {
+  } catch {
     diagnostics.push({
       name: "Last Reconciliation Run",
       status: "error",

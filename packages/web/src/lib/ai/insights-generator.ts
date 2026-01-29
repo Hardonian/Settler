@@ -251,7 +251,7 @@ async function generateUsagePatternInsights(
 
     const dailyValues = Object.values(dailyUsage);
     if (dailyValues.length > 7) {
-      const avgDaily = dailyValues.reduce((a, b) => a + b, 0) / dailyValues.length;
+      const avgDaily = dailyValues.reduce((a: number, b: any) => a + b, 0) / dailyValues.length;
       const maxDaily = Math.max(...dailyValues);
 
       if (maxDaily > avgDaily * 3) {

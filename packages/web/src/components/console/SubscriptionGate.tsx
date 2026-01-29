@@ -30,7 +30,7 @@ export function SubscriptionGate({ requiredTier, feature, children }: Subscripti
       const data = await response.json();
       setSubscription(data);
     } catch (error: unknown) {
-      console.error('Failed to load subscription:', err);
+      console.error('Failed to load subscription:', error);
     } finally {
       setLoading(false);
     }

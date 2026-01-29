@@ -29,7 +29,7 @@ export async function getFeatureFlags(tenantId: TenantId): Promise<FlagValue[]> 
     // Set tenant context for RLS
     try {
       await (supabase.rpc as any)("set_tenant_context", { tenant_id: tenantId });
-    } catch (error) {
+    } catch {
       // RPC might not exist, continue anyway
     }
 
@@ -46,7 +46,7 @@ export async function getFeatureFlags(tenantId: TenantId): Promise<FlagValue[]> 
       });
       // Return defaults from registry
       return Object.values(FLAG_REGISTRY)
-        .filter((flag) => flag.scope === "tenant")
+        .filter((flag: any) => flag.scope === "tenant")
         .map((flag) => ({
           key: flag.key,
           value: flag.default,
@@ -91,7 +91,7 @@ export async function getFeatureFlags(tenantId: TenantId): Promise<FlagValue[]> 
     });
     // Return defaults on error
     return Object.values(FLAG_REGISTRY)
-      .filter((flag) => flag.scope === "tenant")
+      .filter((flag: any) => flag.scope === "tenant")
       .map((flag) => ({
         key: flag.key,
         value: flag.default,
@@ -157,7 +157,7 @@ export async function setFeatureFlag(
     // Set tenant context for RLS
     try {
       await (supabase.rpc as any)("set_tenant_context", { tenant_id: tenantId });
-    } catch (error) {
+    } catch {
       // RPC might not exist, continue anyway
     }
 

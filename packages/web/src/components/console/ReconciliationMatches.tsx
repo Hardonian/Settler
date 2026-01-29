@@ -131,9 +131,9 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
     return "text-red-600";
   };
 
-  const matchedCount = matches.filter((m) => m.target !== null).length;
-  const unmatchedCount = matches.filter((m) => m.target === null).length;
-  const reviewedCount = matches.filter((m) => m.reviewed).length;
+  const matchedCount = matches.filter((m: any) => m.target !== null).length;
+  const unmatchedCount = matches.filter((m: any) => m.target === null).length;
+  const reviewedCount = matches.filter((m: any) => m.reviewed).length;
 
   return (
     <Card>

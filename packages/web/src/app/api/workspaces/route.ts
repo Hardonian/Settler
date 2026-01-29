@@ -124,7 +124,7 @@ export const POST = withSecurity(
         p_trace_id: traceId,
         p_properties: JSON.stringify({ workspace_name: validated.name, workspace_slug: validated.slug }),
       });
-    } catch (error) {
+    } catch {
       // Fallback: insert directly
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (supabase.from('onboarding_events') as any).insert({
@@ -146,7 +146,7 @@ export const POST = withSecurity(
         p_step_id: 'create_workspace',
         p_trace_id: traceId,
       });
-    } catch (error) {
+    } catch {
       // Fallback: update directly
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (supabase.from('tenant_onboarding_progress') as any).upsert({

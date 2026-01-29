@@ -182,7 +182,7 @@ export async function reconcileAllActiveSubscriptions(): Promise<{
     results.push(result);
   }
 
-  const succeeded = results.filter((r) => r.success).length;
+  const succeeded = results.filter((r: any) => r.success).length;
   const failed = results.filter((r) => !r.success).length;
 
   return {

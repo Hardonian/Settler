@@ -25,7 +25,7 @@ async function getBillingHardening(): Promise<BillingHardeningModule> {
       getBillingStatus: mod.getBillingStatus,
     };
     return cachedBilling;
-  } catch (error) {
+  } catch {
     cachedBilling = {
       checkEntitlements: async (billingAccountId: string, _options?: any) => {
         const prisma = new PrismaClient();

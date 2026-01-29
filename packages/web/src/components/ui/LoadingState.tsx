@@ -12,7 +12,7 @@ interface LoadingStateProps {
   className?: string;
 }
 
-export function LoadingSpinner({ size = 'md', className }: { size?: 'sm' | 'md' | 'lg'; className?: string }) {
+function LoadingSpinner({ size = 'md', className }: { size?: 'sm' | 'md' | 'lg'; className?: string }) {
   const sizeClasses = {
     sm: 'w-4 h-4 border-2',
     md: 'w-8 h-8 border-3',
@@ -34,7 +34,7 @@ export function LoadingSpinner({ size = 'md', className }: { size?: 'sm' | 'md' 
   );
 }
 
-export function LoadingSkeleton({
+function LoadingSkeleton({
   className,
   lines = 3,
 }: {
@@ -57,7 +57,7 @@ export function LoadingSkeleton({
   );
 }
 
-export function LoadingDots({ className }: { className?: string }) {
+function LoadingDots({ className }: { className?: string }) {
   return (
     <div className={cn('flex gap-1', className)} role="status" aria-label="Loading">
       {[0, 1, 2].map((i) => (
@@ -72,7 +72,7 @@ export function LoadingDots({ className }: { className?: string }) {
   );
 }
 
-export default function LoadingState({
+function LoadingState({
   variant = 'spinner',
   size = 'md',
   message,
@@ -115,3 +115,4 @@ export default function LoadingState({
 
 // Export all variants for convenience
 export { LoadingState, LoadingSpinner, LoadingSkeleton, LoadingDots };
+export default LoadingState;

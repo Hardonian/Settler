@@ -44,7 +44,7 @@ export default function AdminDatabasePage() {
           setLoading(false);
           return;
         }
-      } catch (err) {
+      } catch {
         // Fall through to fallback
       }
 
@@ -55,7 +55,7 @@ export default function AdminDatabasePage() {
         if (result.tables) {
           setTables(result.tables);
         }
-      } catch (err) {
+      } catch {
         // Use empty list
         setTables([]);
       }
@@ -66,8 +66,7 @@ export default function AdminDatabasePage() {
     }
   }
 
-  const filteredTables = tables.filter((t) =>
-    t.table_name.toLowerCase().includes(search.toLowerCase())
+  const filteredTables = tables.filter((t: any) => t.table_name.toLowerCase().includes(search.toLowerCase())
   );
 
   if (loading) {

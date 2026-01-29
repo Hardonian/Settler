@@ -57,7 +57,7 @@ export function ApprovalWorkflows() {
       const data = await res.json();
       setRequests(data.data || []);
     } catch (error: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to load requests');
+      setError(error instanceof Error ? error.message : 'Failed to load requests');
     } finally {
       setLoading(false);
     }
@@ -91,7 +91,7 @@ export function ApprovalWorkflows() {
       setNewRequest({ requestType: '', reconciliationRunId: '', approverId: '', comments: '' });
       await fetchRequests();
     } catch (error: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create request');
+      setError(error instanceof Error ? error.message : 'Failed to create request');
     } finally {
       setLoading(false);
     }
@@ -108,7 +108,7 @@ export function ApprovalWorkflows() {
       if (!res.ok) throw new Error('Failed to approve');
       await fetchRequests();
     } catch (error: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to approve');
+      setError(error instanceof Error ? error.message : 'Failed to approve');
     }
   };
 
@@ -123,7 +123,7 @@ export function ApprovalWorkflows() {
       if (!res.ok) throw new Error('Failed to reject');
       await fetchRequests();
     } catch (error: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to reject');
+      setError(error instanceof Error ? error.message : 'Failed to reject');
     }
   };
 

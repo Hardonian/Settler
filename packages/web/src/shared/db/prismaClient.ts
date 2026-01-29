@@ -130,7 +130,7 @@ function getOptimizedDatabaseUrl(): string | undefined {
     }
     
     return url.toString();
-  } catch (error) {
+  } catch {
     // If URL parsing fails, return original
     return dbUrl;
   }

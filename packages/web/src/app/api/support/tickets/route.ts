@@ -61,7 +61,7 @@ export const GET = withSecurity(
         if (user?.email) {
           userMap.set(userId, user.email);
         }
-      } catch (error) {
+      } catch {
         // Skip if user not found
       }
     }

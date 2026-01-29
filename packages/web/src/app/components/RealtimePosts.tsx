@@ -81,7 +81,7 @@ export function RealtimePosts() {
                   prev.map((post) => (post.id === payload.new.id ? (payload.new as Post) : post))
                 );
               } else if (payload.eventType === "DELETE") {
-                setPosts((prev) => prev.filter((post) => post.id !== payload.old.id));
+                setPosts((prev) => prev.filter((post: any) => post.id !== payload.old.id));
               }
             }
           )

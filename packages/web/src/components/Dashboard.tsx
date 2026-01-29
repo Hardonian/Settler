@@ -72,17 +72,17 @@ export default function Dashboard({ apiKey }: DashboardProps) {
           <StatCard title="Total Jobs" value={jobs.length} icon="📊" />
           <StatCard
             title="Active Jobs"
-            value={jobs.filter((j) => j.status === "active").length}
+            value={jobs.filter((j: any) => j.status === "active").length}
             icon="✅"
           />
           <StatCard
             title="Archived Jobs"
-            value={jobs.filter((j) => j.status === "archived").length}
+            value={jobs.filter((j: any) => j.status === "archived").length}
             icon="📦"
           />
           <StatCard
             title="Total Matched"
-            value={jobs.reduce((sum, j) => sum + (j.summary?.matched || 0), 0)}
+            value={jobs.reduce((sum: number, j: any) => sum + (j.summary?.matched || 0), 0)}
             icon="🎯"
           />
         </div>

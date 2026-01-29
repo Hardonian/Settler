@@ -163,7 +163,7 @@ export function validateReceiptTotals(receipt: {
 
   // If we have items, sum of line totals should approximately equal subtotal
   if (receipt.items && receipt.items.length > 0 && receipt.subtotal !== null && receipt.subtotal !== undefined) {
-    const itemsTotal = receipt.items.reduce((sum, item) => {
+    const itemsTotal = receipt.items.reduce((sum: number, item: any) => {
       return sum + (item.lineTotal || 0);
     }, 0);
 

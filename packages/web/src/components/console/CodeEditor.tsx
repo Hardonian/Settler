@@ -157,7 +157,7 @@ export function CodeEditor({
               try {
                 JSON.parse(e.target.value);
                 // Valid JSON - could add visual indicator
-              } catch (error: unknown) {
+              } catch {
                 // Invalid JSON - could add visual indicator
               }
             }

@@ -73,7 +73,7 @@ async function getUserId(_request: NextRequest): Promise<string | undefined> {
       data: { user },
     } = await supabase.auth.getUser();
     return user?.id;
-  } catch (error) {
+  } catch {
     return undefined;
   }
 }
@@ -97,7 +97,7 @@ async function sanitizeRequestBody(request: NextRequest): Promise<unknown> {
     }
 
     return undefined;
-  } catch (error) {
+  } catch {
     // If body parsing fails, return undefined
     return undefined;
   }
@@ -152,7 +152,7 @@ export async function logApiRequest(
           responseBody = sanitizeApiData({ body: data }).body;
         }
       }
-    } catch (error) {
+    } catch {
       // Ignore response body parsing errors
     }
 
@@ -236,10 +236,10 @@ export function withApiLogging(handler: (request: NextRequest) => Promise<NextRe
     }
 
     // Log the API call (async, don't wait)
-    logApiRequest(request, response, context).catch(async (err) => {
+    logApiRequest(request, response, context).catch(async (error) => {
       await safeLogger.error("[api-logger] Failed to log request", {
-        error: err instanceof Error ? err.message : String(err),
-        stack: err instanceof Error ? err.stack : undefined,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
       });
     });
 

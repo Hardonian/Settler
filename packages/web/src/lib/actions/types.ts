@@ -45,7 +45,7 @@ export async function withErrorHandling<T>(
     const data = await fn();
     return success(data);
   } catch (error) {
-    const errorMsg = err instanceof Error ? err.message : String(err);
+    const errorMsg = error instanceof Error ? error.message : String(error);
     return error(errorMessage, errorMsg) as ActionResult<T>;
   }
 }

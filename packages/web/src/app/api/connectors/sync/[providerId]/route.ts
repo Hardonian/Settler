@@ -147,7 +147,7 @@ export const POST = withSecurity(
           await failIdempotencyKey(idempotencyKey);
         }
       }
-    } catch (error) {
+    } catch {
       // Ignore errors marking idempotency as failed
     }
 

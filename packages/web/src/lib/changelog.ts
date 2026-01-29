@@ -22,7 +22,7 @@ export function getAllChangelogPosts(): ChangelogPost[] {
 
   const fileNames = fs.readdirSync(contentDirectory);
   const allPostsData = fileNames
-    .filter((fileName) => fileName.endsWith('.mdx'))
+    .filter((fileName: any) => fileName.endsWith('.mdx'))
     .map((fileName) => {
       const slug = fileName.replace(/\.mdx$/, '');
       const fullPath = path.join(contentDirectory, fileName);
@@ -57,7 +57,7 @@ export function getChangelogPost(slug: string): ChangelogPost | null {
       content,
       ...(data as any),
     } as ChangelogPost;
-  } catch (error) {
+  } catch {
     return null;
   }
 }

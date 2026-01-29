@@ -54,8 +54,8 @@ export function ReceiptsHashView({ limit = 50 }: ReceiptsHashViewProps) {
       const data = await res.json();
       setReceipts(data.receipts || []);
     } catch (error: unknown) {
-      console.error('Failed to fetch receipts:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load receipts');
+      console.error('Failed to fetch receipts:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load receipts');
       setReceipts([]);
     } finally {
       setLoading(false);
@@ -76,10 +76,10 @@ export function ReceiptsHashView({ limit = 50 }: ReceiptsHashViewProps) {
       const data = await res.json();
       setVerificationResult(data.verification);
     } catch (error: unknown) {
-      console.error('Failed to verify receipt:', err);
+      console.error('Failed to verify receipt:', error);
       setVerificationResult({
         valid: false,
-        issues: [err instanceof Error ? err.message : 'Verification failed'],
+        issues: [error instanceof Error ? error.message : 'Verification failed'],
       });
     } finally {
       setVerifying(null);

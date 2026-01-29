@@ -117,7 +117,7 @@ export default function WebhooksPage() {
       });
 
       if (res.ok) {
-        setWebhooks(webhooks.filter((w) => w.id !== id));
+        setWebhooks(webhooks.filter((w: any) => w.id !== id));
       } else {
         alert("Failed to delete webhook");
       }

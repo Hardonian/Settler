@@ -111,8 +111,8 @@ export async function runReconciliation(
     );
 
     // Calculate totals for return value
-    const totalAmountSource = sourceTransactions.reduce((sum, t) => sum + Number(t.amount), 0);
-    const totalAmountTarget = targetTransactions.reduce((sum, t) => sum + Number(t.amount), 0);
+    const totalAmountSource = sourceTransactions.reduce((sum: number, t: any) => sum + Number(t.amount), 0);
+    const totalAmountTarget = targetTransactions.reduce((sum: number, t: any) => sum + Number(t.amount), 0);
 
     // Update reconciliation run with results
     await prisma.reconciliationRun.update({
@@ -126,7 +126,7 @@ export async function runReconciliation(
         unmatchedSourceCount: matchResult.unmatchedCount,
         unmatchedTargetCount: targetTransactions.length - matchResult.matchedCount,
         confidenceAvg: matchResult.matches.length > 0
-          ? matchResult.matches.reduce((sum, m) => sum + m.confidence, 0) / matchResult.matches.length
+          ? matchResult.matches.reduce((sum: number, m: any) => sum + m.confidence, 0) / matchResult.matches.length
           : null,
       },
     });

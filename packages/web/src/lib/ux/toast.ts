@@ -107,7 +107,7 @@ class ToastManager {
    * Dismiss toast
    */
   dismiss(id: string): void {
-    this.toasts = this.toasts.filter((t) => t.id !== id);
+    this.toasts = this.toasts.filter((t: any) => t.id !== id);
     this.notify();
   }
 

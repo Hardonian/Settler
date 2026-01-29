@@ -147,7 +147,7 @@ export const GET = withSecurity(
           existing.errors += quantity;
         }
         dailyMap.set(date, existing);
-      } catch (error) {
+      } catch {
         // Skip invalid events
       }
     }
@@ -160,9 +160,9 @@ export const GET = withSecurity(
     let avgDaily = 0;
     try {
       avgDaily = daily.length > 0
-        ? daily.reduce((sum, d) => sum + d.calls, 0) / daily.length
+        ? daily.reduce((sum: number, d: any) => sum + d.calls, 0) / daily.length
         : 0;
-    } catch (error) {
+    } catch {
       avgDaily = 0;
     }
 
@@ -177,7 +177,7 @@ export const GET = withSecurity(
       const planCode = await getAccountPlanCode(billingAccount.id).catch(() => 'starter');
       const planConfig = getPlanConfig(planCode);
       costEstimate = planCode === 'starter' ? 0 : (planConfig?.monthlyPrice || 0);
-    } catch (error) {
+    } catch {
       costEstimate = 0;
     }
 

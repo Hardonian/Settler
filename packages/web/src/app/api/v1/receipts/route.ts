@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
     let body;
     try {
         body = await request.json();
-    } catch (error) {
+    } catch {
         const response = createErrorResponse("BAD_REQUEST", "Invalid JSON", 400);
         return addCorrelationHeaders(response, correlationId);
     }
@@ -350,7 +350,7 @@ export async function POST(request: NextRequest) {
           })).catch(() => {
             // Ignore errors updating failed status
           });
-        } catch (error) {
+        } catch {
           // Ignore errors updating failed status
         }
       }

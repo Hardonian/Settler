@@ -182,7 +182,7 @@ export async function fetchWithFallback<T>(
 ): Promise<T> {
   try {
     return await apiClient.get<T>(url, options);
-  } catch (error) {
+  } catch {
     if (typeof fallback === 'function') {
       return await (fallback as () => T | Promise<T>)();
     }

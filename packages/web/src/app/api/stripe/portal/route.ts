@@ -27,7 +27,7 @@ function isValidOriginUrl(url: unknown): boolean {
     const parsed = new URL(url);
     const origin = process.env.NEXT_PUBLIC_APP_URL || 'https://settler.dev';
     return (parsed.protocol === 'http:' || parsed.protocol === 'https:') && url.startsWith(origin);
-  } catch (error) {
+  } catch {
     return false;
   }
 }

@@ -33,7 +33,7 @@ export default function CreateRunPackPage() {
     try {
       const parsed = JSON.parse(rulesetTemplate);
       return parsed?.name ?? "OSS Default Ruleset";
-    } catch (err) {
+    } catch {
       return "OSS Default Ruleset";
     }
   }, [rulesetTemplate]);

@@ -47,7 +47,7 @@ async function verifyBillingAccountAccess(
       select: { id: true },
     });
     return !!billingAccount;
-  } catch (error) {
+  } catch {
     return false;
   }
 }

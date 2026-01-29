@@ -59,7 +59,7 @@ export function ShareButton({
 
       const data = await response.json();
       setShareUrl(data.shareUrl);
-    } catch (error: unknown) {
+    } catch {
       setError("Failed to create shareable link. Please try again.");
     } finally {
       setLoading(false);

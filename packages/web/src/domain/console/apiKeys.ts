@@ -179,7 +179,7 @@ export async function createApiKey(
       select: { tenantId: true },
     });
     tenantId = billingAccount?.tenantId || null;
-  } catch (error) {
+  } catch {
     console.warn('[createApiKey] Could not fetch tenant_id, RLS will handle isolation');
   }
   

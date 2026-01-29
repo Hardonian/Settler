@@ -110,7 +110,7 @@ export function ActivationChecklist({
   //       onItemComplete?.(itemId);
 
   //       // Check if all required items are complete
-  //       const requiredItems = items.filter((item) => item.required);
+  //       const requiredItems = items.filter((item: any) => item.required);
   //       const allRequiredComplete = requiredItems.every((item) =>
   //         [...completedItems, itemId].includes(item.id)
   //       );
@@ -126,7 +126,7 @@ export function ActivationChecklist({
 
   const completedCount = completedItems.size;
   const totalCount = items.length;
-  const requiredCount = items.filter((item) => item.required).length;
+  const requiredCount = items.filter((item: any) => item.required).length;
   const completedRequiredCount = items.filter(
     (item) => item.required && completedItems.has(item.id)
   ).length;

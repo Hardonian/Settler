@@ -42,7 +42,7 @@ export function sanitizeUrl(url: string): string | null {
       return null;
     }
     return parsed.toString();
-  } catch (error) {
+  } catch {
     return null;
   }
 }

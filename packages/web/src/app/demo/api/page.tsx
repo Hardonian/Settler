@@ -44,7 +44,7 @@ export default function ApiPlaygroundPage() {
 
     switch (endpoint) {
       case "reconcile": {
-        const sources = transactions.filter((t) => t.source === "stripe" || t.source === "shopify");
+        const sources = transactions.filter((t: any) => t.source === "stripe" || t.source === "shopify");
         const targets = transactions.filter(
           (t) => t.source === "quickbooks" || t.source === "bank_payout"
         );
@@ -70,10 +70,10 @@ export default function ApiPlaygroundPage() {
           matched_count: matchedCount,
           unmatched_count: unmatchedCount,
           confidence_breakdown: {
-            exact: matches.filter((m) => m.confidence === "exact").length,
-            high: matches.filter((m) => m.confidence === "high").length,
-            medium: matches.filter((m) => m.confidence === "medium").length,
-            low: matches.filter((m) => m.confidence === "low").length,
+            exact: matches.filter((m: any) => m.confidence === "exact").length,
+            high: matches.filter((m: any) => m.confidence === "high").length,
+            medium: matches.filter((m: any) => m.confidence === "medium").length,
+            low: matches.filter((m: any) => m.confidence === "low").length,
           },
           audit_trail_id: `audit_${endpoint}_${deterministicTimestamp.replace(/[^0-9]/g, "")}`,
           ...(planTier === "enterprise" && {

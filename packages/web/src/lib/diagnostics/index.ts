@@ -128,7 +128,7 @@ class Diagnostics {
    */
   getEvents(type?: DiagnosticEvent['type']): DiagnosticEvent[] {
     if (type) {
-      return this.events.filter((e) => e.type === type);
+      return this.events.filter((e: any) => e.type === type);
     }
     return [...this.events];
   }
@@ -191,7 +191,7 @@ if (typeof window !== 'undefined') {
     });
 
     observer.observe({ type: 'layout-shift', buffered: true });
-  } catch (error) {
+  } catch {
     // PerformanceObserver not supported
   }
 }

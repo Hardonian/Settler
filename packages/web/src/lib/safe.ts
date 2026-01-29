@@ -30,11 +30,11 @@ export async function safeAsync<T>(
       return await fn();
     }
   } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+    const error = error instanceof Error ? error : new Error(String(error));
     if (onError) {
-      onError(err);
+      onError(error);
     } else {
-      console.warn('[safeAsync] Operation failed:', err.message);
+      console.warn('[safeAsync] Operation failed:', error.message);
     }
     return defaultValue;
   }
@@ -66,11 +66,11 @@ export async function safeResult<T>(
     }
     return { success: true, data };
   } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+    const error = error instanceof Error ? error : new Error(String(error));
     if (onError) {
-      onError(err);
+      onError(error);
     }
-    return { success: false, error: err };
+    return { success: false, error: error };
   }
 }
 

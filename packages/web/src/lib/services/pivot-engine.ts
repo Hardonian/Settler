@@ -283,11 +283,11 @@ function aggregate(rows: any[], measure: string, agg: Aggregation): number {
 
   switch (agg) {
     case 'sum':
-      return values.reduce((a, b) => a + b, 0);
+      return values.reduce((a: number, b: any) => a + b, 0);
     case 'count':
       return values.length;
     case 'avg':
-      return values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+      return values.length > 0 ? values.reduce((a: number, b: any) => a + b, 0) / values.length : 0;
     case 'min':
       return Math.min(...values);
     case 'max':

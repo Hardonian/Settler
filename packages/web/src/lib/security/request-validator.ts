@@ -224,7 +224,7 @@ export async function getTenantIdFromRequest(request: NextRequest): Promise<{
         }
       }
     }
-  } catch (error) {
+  } catch {
     // Ignore errors, return null
   }
   

@@ -36,7 +36,7 @@ export async function getTokenUsage(tenantId: TenantId): Promise<TokenUsage | nu
     // Set tenant context for RLS (optional, RLS policies handle tenant isolation)
     try {
       await (supabase.rpc as any)("set_tenant_context", { tenant_id: tenantId });
-    } catch (error) {
+    } catch {
       // RPC may not exist, RLS policies handle isolation
     }
 
@@ -165,7 +165,7 @@ export async function consumeTokens(tenantId: TenantId, tokens: number): Promise
     // Set tenant context for RLS (optional, RLS policies handle tenant isolation)
     try {
       await (supabase.rpc as any)("set_tenant_context", { tenant_id: tenantId });
-    } catch (error) {
+    } catch {
       // RPC may not exist, RLS policies handle isolation
     }
 

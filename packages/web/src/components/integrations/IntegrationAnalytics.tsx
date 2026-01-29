@@ -39,9 +39,9 @@ export function IntegrationAnalytics() {
     }
   };
 
-  const totalRevenue = revenue.reduce((sum, r) => sum + r.totalRevenue, 0);
-  const totalMRR = revenue.reduce((sum, r) => sum + r.monthlyRecurringRevenue, 0);
-  const totalCustomers = revenue.reduce((sum, r) => sum + r.customerCount, 0);
+  const totalRevenue = revenue.reduce((sum: number, r: any) => sum + r.totalRevenue, 0);
+  const totalMRR = revenue.reduce((sum: number, r: any) => sum + r.monthlyRecurringRevenue, 0);
+  const totalCustomers = revenue.reduce((sum: number, r: any) => sum + r.customerCount, 0);
 
   return (
     <div className="space-y-6">

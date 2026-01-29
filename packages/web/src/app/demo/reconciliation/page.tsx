@@ -433,7 +433,7 @@ export default function ReconciliationDemoPage() {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded border">
                           <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                            {matches.filter((m) => m.confidence === "exact").length}
+                            {matches.filter((m: any) => m.confidence === "exact").length}
                           </div>
                           <div className="text-sm text-slate-600 dark:text-slate-400">
                             Exact Matches
@@ -441,7 +441,7 @@ export default function ReconciliationDemoPage() {
                         </div>
                         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded border">
                           <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                            {matches.filter((m) => m.confidence === "high").length}
+                            {matches.filter((m: any) => m.confidence === "high").length}
                           </div>
                           <div className="text-sm text-slate-600 dark:text-slate-400">
                             High Confidence
@@ -449,7 +449,7 @@ export default function ReconciliationDemoPage() {
                         </div>
                         <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded border">
                           <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-                            {matches.filter((m) => m.confidence === "medium" || m.confidence === "low").length}
+                            {matches.filter((m: any) => m.confidence === "medium" || m.confidence === "low").length}
                           </div>
                           <div className="text-sm text-slate-600 dark:text-slate-400">
                             Review Needed

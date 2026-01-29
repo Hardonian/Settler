@@ -42,7 +42,7 @@ export function StatusIndicator() {
             // Map status page status to our status
             const pageStatus = data?.status?.indicator || 'operational';
             setStatus(pageStatus === 'none' ? 'operational' : pageStatus === 'minor' ? 'degraded' : 'down');
-          } catch (error: unknown) {
+          } catch {
             // Invalid JSON response - default to operational
             setStatus('operational');
           }

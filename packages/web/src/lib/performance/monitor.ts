@@ -106,7 +106,7 @@ export async function calculatePerformanceMetrics(
       ([endpoint, data]) => {
         const [method, path] = endpoint.split('-');
         const latencies = data.latencies.length > 0 ? data.latencies : [0];
-        const avg = latencies.reduce((a, b) => a + b, 0) / latencies.length;
+        const avg = latencies.reduce((a: number, b: any) => a + b, 0) / latencies.length;
 
         return {
           endpoint: path || endpoint,
@@ -129,11 +129,11 @@ export async function calculatePerformanceMetrics(
       return endpointData?.latencies || [];
     });
 
-    const totalRequests = byEndpoint.reduce((sum, m) => sum + m.requests, 0);
-    const totalErrors = byEndpoint.reduce((sum, m) => sum + m.errors, 0);
+    const totalRequests = byEndpoint.reduce((sum: number, m: any) => sum + m.requests, 0);
+    const totalErrors = byEndpoint.reduce((sum: number, m: any) => sum + m.errors, 0);
     const overallAvgLatency =
       allLatencies.length > 0
-        ? allLatencies.reduce((a, b) => a + b, 0) / allLatencies.length
+        ? allLatencies.reduce((a: number, b: any) => a + b, 0) / allLatencies.length
         : 0;
 
     // Calculate trends (simplified - would need more data)

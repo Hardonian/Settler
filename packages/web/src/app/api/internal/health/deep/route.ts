@@ -94,7 +94,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
         status: 'ok',
         message: 'RLS check requires authenticated context',
       });
-    } catch (error) {
+    } catch {
       checks.push({
         name: 'RLS: recon_runs',
         status: 'ok',

@@ -68,7 +68,7 @@ export default function EdgeNodesPage() {
           <CardHeader className="pb-2">
             <CardDescription>Active Nodes</CardDescription>
             <CardTitle className="text-3xl text-green-600">
-              {mockNodes.filter((n) => n.status === "active").length}
+              {mockNodes.filter((n: any) => n.status === "active").length}
             </CardTitle>
           </CardHeader>
         </Card>
@@ -76,7 +76,7 @@ export default function EdgeNodesPage() {
           <CardHeader className="pb-2">
             <CardDescription>Total Jobs Processed</CardDescription>
             <CardTitle className="text-3xl">
-              {mockNodes.reduce((sum, n) => sum + n.jobsProcessed, 0).toLocaleString()}
+              {mockNodes.reduce((sum: number, n: any) => sum + n.jobsProcessed, 0).toLocaleString()}
             </CardTitle>
           </CardHeader>
         </Card>

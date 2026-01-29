@@ -73,7 +73,7 @@ export function EnhancedPlayground() {
       if (['POST', 'PUT', 'PATCH'].includes(method)) {
         try {
           body = JSON.stringify(JSON.parse(requestBody));
-        } catch (error: unknown) {
+        } catch {
           setError('Invalid JSON in request body');
           setLoading(false);
           return;
@@ -93,7 +93,7 @@ export function EnhancedPlayground() {
         data,
       });
     } catch (error: unknown) {
-      setError(err instanceof Error ? err.message : 'Request failed');
+      setError(error instanceof Error ? error.message : 'Request failed');
     } finally {
       setLoading(false);
     }

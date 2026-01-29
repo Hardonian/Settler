@@ -20,7 +20,7 @@ interface ErrorStateProps {
   className?: string;
 }
 
-export default function ErrorState({
+function ErrorState({
   title = 'Something went wrong',
   message = 'An unexpected error occurred. Please try again.',
   error,
@@ -150,7 +150,7 @@ export default function ErrorState({
 }
 
 // Minimal inline error for form fields
-export function InlineError({ message, className }: { message: string; className?: string }) {
+function InlineError({ message, className }: { message: string; className?: string }) {
   return (
     <div
       className={cn('flex items-center gap-1 text-sm text-destructive', className)}
@@ -164,3 +164,4 @@ export function InlineError({ message, className }: { message: string; className
 
 // Export all variants
 export { ErrorState, InlineError };
+export default ErrorState;

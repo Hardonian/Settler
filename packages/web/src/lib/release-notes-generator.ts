@@ -101,7 +101,7 @@ export function formatReleaseNotes(release: ReturnType<typeof generateReleaseNot
     markdown += `\n`;
   }
 
-  const features = release.notes.filter((n) => n.type === "feature");
+  const features = release.notes.filter((n: any) => n.type === "feature");
   if (features.length > 0) {
     markdown += `## ✨ New Features\n\n`;
     for (const note of features) {
@@ -110,7 +110,7 @@ export function formatReleaseNotes(release: ReturnType<typeof generateReleaseNot
     markdown += `\n`;
   }
 
-  const fixes = release.notes.filter((n) => n.type === "fix");
+  const fixes = release.notes.filter((n: any) => n.type === "fix");
   if (fixes.length > 0) {
     markdown += `## 🐛 Bug Fixes\n\n`;
     for (const note of fixes) {
@@ -119,7 +119,7 @@ export function formatReleaseNotes(release: ReturnType<typeof generateReleaseNot
     markdown += `\n`;
   }
 
-  const improvements = release.notes.filter((n) => n.type === "improvement");
+  const improvements = release.notes.filter((n: any) => n.type === "improvement");
   if (improvements.length > 0) {
     markdown += `## 🔧 Improvements\n\n`;
     for (const note of improvements) {

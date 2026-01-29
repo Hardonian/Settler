@@ -42,7 +42,7 @@ export async function safeFetch<T = unknown>(
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorData.error || errorMessage;
-      } catch (error) {
+      } catch {
         // Ignore JSON parse errors
       }
 

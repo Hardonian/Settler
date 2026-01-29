@@ -65,7 +65,7 @@ async function getRequestMetadata(): Promise<{ ipAddress?: string; userAgent?: s
     const userAgent = headersList.get('user-agent') || undefined;
     
     return { ipAddress, userAgent };
-  } catch (error) {
+  } catch {
     // Headers not available (e.g., in background job)
     return {};
   }

@@ -39,7 +39,7 @@ export default function PaymentMethodsPage() {
       }
       // Fallback: Empty state if API fails
       setPaymentMethods([]);
-    } catch {
+    } catch (error) {
       console.error("Failed to fetch payment methods:", error);
     } finally {
       setIsLoading(false);
@@ -48,7 +48,7 @@ export default function PaymentMethodsPage() {
 
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to remove this payment method?")) {
-      setPaymentMethods((prev) => prev.filter((method) => method.id !== id));
+      setPaymentMethods((prev) => prev.filter((method: any) => method.id !== id));
     }
   };
 
