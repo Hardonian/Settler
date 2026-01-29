@@ -1,10 +1,10 @@
 /**
  * Toast Notification System
- * 
+ *
  * Provides user feedback through toast notifications
  */
 
-export type ToastType = 'success' | 'error' | 'warning' | 'info';
+export type ToastType = "success" | "error" | "warning" | "info";
 
 export interface Toast {
   id: string;
@@ -42,24 +42,24 @@ class ToastManager {
   /**
    * Show toast
    */
-  show(toast: Omit<Toast, 'id'>): string {
+  show(toast: Omit<Toast, "id">): string {
     const id = `toast-${this.nextId++}`;
     const newToast: Toast = {
       ...toast,
       id,
       duration: toast.duration ?? 5000, // Default 5 seconds
     };
-    
+
     this.toasts.push(newToast);
     this.notify();
-    
+
     // Auto-dismiss if duration is set
     if (newToast.duration && newToast.duration > 0) {
       setTimeout(() => {
         this.dismiss(id);
       }, newToast.duration);
     }
-    
+
     return id;
   }
 
@@ -67,28 +67,28 @@ class ToastManager {
    * Show success toast
    */
   success(message: string, duration?: number): string {
-    return this.show({ type: 'success', message, duration });
+    return this.show({ type: "success", message, ...(duration !== undefined ? { duration } : {}) });
   }
 
   /**
    * Show error toast
    */
   error(message: string, duration?: number): string {
-    return this.show({ type: 'error', message, duration: duration ?? 0 }); // Don't auto-dismiss errors
+    return this.show({ type: "error", message, duration: duration ?? 0 }); // Don't auto-dismiss errors
   }
 
   /**
    * Show warning toast
    */
   warning(message: string, duration?: number): string {
-    return this.show({ type: 'warning', message, duration });
+    return this.show({ type: "warning", message, ...(duration !== undefined ? { duration } : {}) });
   }
 
   /**
    * Show info toast
    */
   info(message: string, duration?: number): string {
-    return this.show({ type: 'info', message, duration });
+    return this.show({ type: "info", message, ...(duration !== undefined ? { duration } : {}) });
   }
 
   /**
