@@ -52,21 +52,27 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const success = useCallback(
     (title: string, message?: string) => {
-      showToast({ type: "success", title, message });
+      if (message !== undefined) {
+        showToast({ type: "success", title, message });
+      }
     },
     [showToast]
   );
 
   const error = useCallback(
     (title: string, message?: string) => {
-      showToast({ type: "error", title, message, duration: 7000 }); // Longer for errors
+      if (message !== undefined) {
+        showToast({ type: "error", title, message, duration: 7000 }); // Longer for errors
+      }
     },
     [showToast]
   );
 
   const info = useCallback(
     (title: string, message?: string) => {
-      showToast({ type: "info", title, message });
+      if (message !== undefined) {
+        showToast({ type: "info", title, message });
+      }
     },
     [showToast]
   );
