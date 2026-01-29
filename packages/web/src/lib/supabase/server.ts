@@ -95,7 +95,7 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
       get(name: string) {
         try {
           return cookieStore.get(name)?.value;
-        } catch (error) {
+        } catch {
           // Silently fail - cookie access is optional
           return undefined;
         }
@@ -103,7 +103,7 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
       set(name: string, value: string, options: CookieOptions) {
         try {
           cookieStore.set({ name, value, ...options });
-        } catch (error) {
+        } catch {
           // The `set` method was called from a Server Component.
           // This can be ignored if you have middleware refreshing
           // user sessions.
@@ -112,7 +112,7 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
       remove(name: string, options: CookieOptions) {
         try {
           cookieStore.set({ name, value: "", ...options });
-        } catch (error) {
+        } catch {
           // The `delete` method was called from a Server Component.
           // This can be ignored if you have middleware refreshing
           // user sessions.

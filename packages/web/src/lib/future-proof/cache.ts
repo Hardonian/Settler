@@ -83,7 +83,7 @@ export async function cacheGet<T>(
         () => memoryCache.get<T>(key)
       );
     }
-  } catch (error) {
+  } catch {
     // Redis not available, fall back to memory
   }
 
@@ -113,7 +113,7 @@ export async function cacheSet<T>(
       );
       return;
     }
-  } catch (error) {
+  } catch {
     // Redis not available, fall back to memory
   }
 
@@ -138,7 +138,7 @@ export async function cacheDelete(key: string): Promise<void> {
       );
       return;
     }
-  } catch (error) {
+  } catch {
     // Redis not available, fall back to memory
   }
 

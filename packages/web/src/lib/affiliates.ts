@@ -79,7 +79,7 @@ export async function processAffiliatePayout(affiliateId: string, amount: number
 
   type Conversion = { id: string; commission_amount?: number };
   const typedConversions = (conversions || []) as Conversion[];
-  const totalCommission = typedConversions.reduce((sum, c) => sum + (c.commission_amount || 0), 0);
+  const totalCommission = typedConversions.reduce((sum: number, c: any) => sum + (c.commission_amount || 0), 0);
 
   if (totalCommission < amount) {
     throw new Error("Insufficient commission balance");
@@ -144,12 +144,12 @@ export async function getAffiliateStats(affiliateId: string): Promise<{
   
   const totalRevenue = affiliateData.total_revenue || 0;
   const totalCommissions =
-    typedConversions.reduce((sum, c) => sum + (c.commission_amount || 0), 0);
+    typedConversions.reduce((sum: number, c: any) => sum + (c.commission_amount || 0), 0);
   const totalPayouts = affiliateData.total_payouts || 0;
   const pendingCommissions =
     typedConversions
-      .filter((c) => c.status === "pending")
-      .reduce((sum, c) => sum + (c.commission_amount || 0), 0);
+      .filter((c: any) => c.status === "pending")
+      .reduce((sum: number, c: any) => sum + (c.commission_amount || 0), 0);
   const conversionCount = conversions?.length || 0;
 
   return {

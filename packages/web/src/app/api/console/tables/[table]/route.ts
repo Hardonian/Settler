@@ -83,7 +83,7 @@ export const GET = withSecurity(
           offset,
         });
       }
-    } catch (error) {
+    } catch {
       // Fall back to direct query
     }
     
@@ -103,7 +103,7 @@ export const GET = withSecurity(
             query = query.eq(key, value);
           }
         }
-      } catch (error) {
+      } catch {
         // Invalid filters JSON, ignore
       }
     }
@@ -195,7 +195,7 @@ export const POST = withSecurity(
       if (!rpcError && rpcData) {
         return NextResponse.json({ data: rpcData }, { status: 201 });
       }
-    } catch (error) {
+    } catch {
       // Fall back to direct insert
     }
     
@@ -273,7 +273,7 @@ export const PATCH = withSecurity(
       if (!rpcError && rpcData) {
         return NextResponse.json({ data: rpcData });
       }
-    } catch (error) {
+    } catch {
       // Fall back to direct update
     }
     
@@ -356,7 +356,7 @@ export const DELETE = withSecurity(
       if (!rpcError) {
         return NextResponse.json({ success: true });
       }
-    } catch (error) {
+    } catch {
       // Fall back to direct delete
     }
     

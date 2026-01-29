@@ -137,7 +137,7 @@ export function useFeatureGate() {
         tier: status.tier,
         upgradeUrl: status.tier === 'unsubscribed' ? '/pricing' : '/console/billing',
       };
-    } catch (error) {
+    } catch {
       return {
         canAccess: false,
         tier: 'unsubscribed' as SubscriptionTier,

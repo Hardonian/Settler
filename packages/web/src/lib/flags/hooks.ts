@@ -78,7 +78,7 @@ export function useFeatureFlag(key: FlagKey): boolean {
             });
           }
         }
-      } catch (error) {
+      } catch {
         // Fallback to synchronous check
         if (mounted) {
           const fallbackValue = isFeatureEnabled(key, userContext);
@@ -145,7 +145,7 @@ export function useExperimentVariant(experimentKey: FlagKey): string {
             });
           }
         }
-      } catch (error) {
+      } catch {
         // Fallback to synchronous check
         if (mounted) {
           const fallbackVariant = getExperimentVariant(experimentKey, userContext);
@@ -214,10 +214,10 @@ export function useFeatureFlags(keys: FlagKey[]): Record<FlagKey, boolean> {
           setFlags(flagsMap);
           setLoading(false);
         }
-      } catch (error) {
+      } catch {
         // Fallback to synchronous checks
         if (mounted) {
-          const flagsMap = keys.reduce((acc, flagKey) => {
+          const flagsMap = keys.reduce((acc: number, flagKey: any) => {
             acc[flagKey] = isFeatureEnabled(flagKey, userContext);
             return acc;
           }, {} as Record<FlagKey, boolean>);
@@ -237,7 +237,7 @@ export function useFeatureFlags(keys: FlagKey[]): Record<FlagKey, boolean> {
 
   // Fallback to synchronous checks if still loading
   if (loading) {
-    return keys.reduce((acc, key) => {
+    return keys.reduce((acc: number, key: any) => {
       acc[key] = isFeatureEnabled(key, userContext);
       return acc;
     }, {} as Record<FlagKey, boolean>);

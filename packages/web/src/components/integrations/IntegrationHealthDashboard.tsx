@@ -61,7 +61,7 @@ export function IntegrationHealthDashboard() {
 
   const overallHealth =
     integrations.length > 0
-      ? integrations.filter((i) => i.status === "healthy").length / integrations.length
+      ? integrations.filter((i: any) => i.status === "healthy").length / integrations.length
       : 0;
 
   if (loading) {
@@ -101,25 +101,25 @@ export function IntegrationHealthDashboard() {
             <div className="grid grid-cols-4 gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                  {integrations.filter((i) => i.status === "healthy").length}
+                  {integrations.filter((i: any) => i.status === "healthy").length}
                 </div>
                 <div className="text-xs text-slate-500 dark:text-slate-400">Healthy</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">
-                  {integrations.filter((i) => i.status === "degraded").length}
+                  {integrations.filter((i: any) => i.status === "degraded").length}
                 </div>
                 <div className="text-xs text-slate-500 dark:text-slate-400">Degraded</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-red-600 dark:text-red-400">
-                  {integrations.filter((i) => i.status === "down").length}
+                  {integrations.filter((i: any) => i.status === "down").length}
                 </div>
                 <div className="text-xs text-slate-500 dark:text-slate-400">Down</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-slate-600 dark:text-slate-400">
-                  {integrations.filter((i) => i.status === "unknown").length}
+                  {integrations.filter((i: any) => i.status === "unknown").length}
                 </div>
                 <div className="text-xs text-slate-500 dark:text-slate-400">Unknown</div>
               </div>

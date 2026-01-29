@@ -128,7 +128,7 @@ export function searchKnowledgeBase(
   
   // Sort by score and return top results
   return scored
-    .filter((item) => item.score > 0)
+    .filter((item: any) => item.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
     .map((item) => item.entry);

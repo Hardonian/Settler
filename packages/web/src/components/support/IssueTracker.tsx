@@ -35,14 +35,14 @@ export function IssueTracker() {
         setTickets(data.tickets || []);
       }
     } catch (error) {
-      console.error("Failed to fetch tickets:", err);
+      console.error("Failed to fetch tickets:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const filteredTickets =
-    selectedStatus === "all" ? tickets : tickets.filter((t) => t.status === selectedStatus);
+    selectedStatus === "all" ? tickets : tickets.filter((t: any) => t.status === selectedStatus);
 
   const severityConfig = {
     critical: { color: "text-red-600", bg: "bg-red-100 dark:bg-red-900/30", icon: AlertCircle },

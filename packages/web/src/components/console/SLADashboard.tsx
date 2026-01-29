@@ -54,7 +54,7 @@ export function SLADashboard() {
       const data = await res.json();
       setViolations(data.data || []);
     } catch (error: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to load violations');
+      setError(error instanceof Error ? error.message : 'Failed to load violations');
     } finally {
       setLoading(false);
     }
@@ -84,7 +84,7 @@ export function SLADashboard() {
       setNewAgreement({ slaType: '', targetValue: '', measurementPeriod: 'monthly' });
       await fetchViolations();
     } catch (error: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create agreement');
+      setError(error instanceof Error ? error.message : 'Failed to create agreement');
     } finally {
       setLoading(false);
     }
@@ -99,7 +99,7 @@ export function SLADashboard() {
       if (!res.ok) throw new Error('Failed to acknowledge');
       await fetchViolations();
     } catch (error: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to acknowledge violation');
+      setError(error instanceof Error ? error.message : 'Failed to acknowledge violation');
     }
   };
 

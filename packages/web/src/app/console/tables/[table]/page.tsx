@@ -86,7 +86,7 @@ export default function TablePage() {
       const response = await fetch('/api/console/subscription-status');
       const data = await response.json();
       setSubscription(data);
-    } catch {
+    } catch (err) {
       console.error('Failed to load subscription:', err);
     }
   }

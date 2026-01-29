@@ -53,8 +53,8 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
       const data = await res.json();
       setAlerts(data.alerts || []);
     } catch (error: unknown) {
-      console.error('Failed to fetch alerts:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load alerts');
+      console.error('Failed to fetch alerts:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load alerts');
       setAlerts([]);
     } finally {
       setLoading(false);
@@ -76,7 +76,7 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
       // Refresh alerts
       await fetchAlerts();
     } catch (error: unknown) {
-      console.error('Failed to acknowledge alert:', err);
+      console.error('Failed to acknowledge alert:', error);
     } finally {
       setAcknowledging(null);
     }
@@ -128,7 +128,7 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
   }
 
   const unacknowledgedAlerts = alerts.filter((a) => !a.acknowledged);
-  const criticalAlerts = alerts.filter((a) => a.severity === 'critical' && !a.acknowledged);
+  const criticalAlerts = alerts.filter((a: any) => a.severity === 'critical' && !a.acknowledged);
 
   return (
     <div className="space-y-6">

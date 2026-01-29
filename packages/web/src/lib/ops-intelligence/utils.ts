@@ -164,7 +164,7 @@ export async function retryWithBackoff<T>(
 export function safeJsonParse<T>(json: string, defaultValue: T): T {
   try {
     return JSON.parse(json) as T;
-  } catch (error) {
+  } catch {
     return defaultValue;
   }
 }

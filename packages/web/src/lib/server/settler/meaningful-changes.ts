@@ -46,7 +46,7 @@ export async function listMeaningfulChanges(
     // Set tenant context for RLS
     try {
       await (supabase.rpc as any)("set_tenant_context", { tenant_id: tenantId });
-    } catch (error) {
+    } catch {
       // RPC might not exist, continue anyway
     }
 

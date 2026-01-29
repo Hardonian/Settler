@@ -181,5 +181,5 @@ export function getAllFlagDefinitions(): FlagDefinition[] {
  * Get flags by scope
  */
 export function getFlagsByScope(scope: 'tenant' | 'global'): FlagDefinition[] {
-  return Object.values(FLAG_REGISTRY).filter((flag) => flag.scope === scope);
+  return Object.values(FLAG_REGISTRY).filter((flag: any) => flag.scope === scope);
 }

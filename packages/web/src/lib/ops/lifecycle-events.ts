@@ -41,7 +41,7 @@ async function getActivationFunnel(): Promise<ActivationFunnelModule> {
     }
     cachedModule = { emitLifecycleEvent: mod.emitLifecycleEvent };
     return cachedModule;
-  } catch (error) {
+  } catch {
     // Fallback: implement inline if import fails
     cachedModule = {
       emitLifecycleEvent: async function emitLifecycleEventFallback(

@@ -160,7 +160,7 @@ export function validateServerEnv(
     try {
       // Attempt to allow runtime-optional keys during build via partial
       schema = serverEnvSchema.partial(runtimeOptionalKeys);
-    } catch (err) {
+    } catch {
       // Fallback to full schema if partial() is not supported due to refinements
       schema = serverEnvSchema;
     }

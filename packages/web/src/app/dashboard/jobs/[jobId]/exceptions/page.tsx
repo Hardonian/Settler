@@ -107,7 +107,7 @@ export default function ExceptionsPage() {
       const data: ExceptionsResponse = await response.json();
       setExceptions(data.exceptions);
       setSummary(data.summary);
-    } catch {
+    } catch (error) {
       logger.error("Failed to fetch exceptions", error instanceof Error ? error : new Error(String(error)), { jobId });
       setExceptions([]);
     } finally {
@@ -134,7 +134,7 @@ export default function ExceptionsPage() {
 
       // Refresh exceptions
       await fetchExceptions();
-    } catch {
+    } catch (error) {
       logger.error("Failed to review exception", error instanceof Error ? error : new Error(String(error)), { exceptionId });
       alert("Failed to update exception. Please try again.");
     }
@@ -158,7 +158,7 @@ export default function ExceptionsPage() {
       await Promise.all(promises);
       setSelectedExceptions(new Set());
       await fetchExceptions();
-    } catch {
+    } catch (error) {
       logger.error("Failed to bulk review exceptions", error instanceof Error ? error : new Error(String(error)));
       alert("Failed to update exceptions. Please try again.");
     }

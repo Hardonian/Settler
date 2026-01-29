@@ -99,8 +99,8 @@ export default function ExperimentDashboardClient({ experiment }: ExperimentDash
                         ))}
                         <div className="pt-4 border-t text-sm text-slate-500 flex justify-between">
                             <span>Total:</span>
-                            <span className={Object.values(split).reduce((a, b) => a + b, 0) !== 100 ? "text-red-500 font-bold" : "text-green-600 font-bold"}>
-                                {Object.values(split).reduce((a, b) => a + b, 0)}%
+                            <span className={Object.values(split).reduce((a: number, b: any) => a + b, 0) !== 100 ? "text-red-500 font-bold" : "text-green-600 font-bold"}>
+                                {Object.values(split).reduce((a: number, b: any) => a + b, 0)}%
                             </span>
                         </div>
                     </CardContent>

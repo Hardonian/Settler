@@ -112,7 +112,7 @@ export async function createReceipt(
     // Set tenant context for RLS
     try {
       await (supabase.rpc as any)("set_tenant_context", { tenant_id: tenantId });
-    } catch (error) {
+    } catch {
       // RPC might not exist, continue anyway
     }
 
@@ -199,7 +199,7 @@ export async function verifyReceiptChain(
     // Set tenant context for RLS
     try {
       await (supabase.rpc as any)("set_tenant_context", { tenant_id: tenantId });
-    } catch (error) {
+    } catch {
       // RPC might not exist, continue anyway
     }
 
@@ -272,7 +272,7 @@ export async function listReceipts(tenantId: TenantId, limit: number = 50): Prom
     // Set tenant context for RLS
     try {
       await (supabase.rpc as any)("set_tenant_context", { tenant_id: tenantId });
-    } catch (error) {
+    } catch {
       // RPC might not exist, continue anyway
     }
 

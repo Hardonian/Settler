@@ -94,7 +94,7 @@ async function checkDatabaseHealth(): Promise<boolean> {
     const { prisma } = await import('@/shared/db/prismaClient');
     await prisma.$queryRaw`SELECT 1`;
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
@@ -108,7 +108,7 @@ async function checkSupabaseHealth(): Promise<boolean> {
     const supabase = await createClient();
     const { error } = await supabase.from('users').select('id').limit(1);
     return !error;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
@@ -124,7 +124,7 @@ async function checkAPIHealth(): Promise<boolean> {
       signal: AbortSignal.timeout(5000),
     });
     return response.ok;
-  } catch (error) {
+  } catch {
     // If we can't check ourselves, assume operational
     return true;
   }

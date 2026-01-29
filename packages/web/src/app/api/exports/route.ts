@@ -238,7 +238,7 @@ export const GET = withSecurity(
               });
               tenantId = billingAccount?.tenantId || null;
             }
-          } catch (error) {
+          } catch {
             // Supabase auth failed - will return 401 below
           }
         }

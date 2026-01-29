@@ -48,7 +48,7 @@ export const GET = withSecurity(
 
       if (receipts && receipts.length > 0) {
         const typedReceipts = receipts as Array<{ total: string | number; merchant_name: string | null; created_at: string }>;
-        const totalSpent = typedReceipts.reduce((sum, r) => sum + (parseFloat(String(r.total)) || 0), 0);
+        const totalSpent = typedReceipts.reduce((sum: number, r: any) => sum + (parseFloat(String(r.total)) || 0), 0);
         const avgSpent = totalSpent / typedReceipts.length;
         const merchants = new Map<string, number>();
         typedReceipts.forEach((r) => {
@@ -107,7 +107,7 @@ export const GET = withSecurity(
           usageByType.set(type, (usageByType.get(type) || 0) + (u.quantity || 0));
         });
 
-        const totalUsage = Array.from(usageByType.values()).reduce((sum, v) => sum + v, 0);
+        const totalUsage = Array.from(usageByType.values()).reduce((sum: number, v: any) => sum + v, 0);
 
         insights = {
           summary: `You've made ${totalUsage} API calls across ${usageByType.size} different service${usageByType.size !== 1 ? "s" : ""}. Your most used service is ${Array.from(usageByType.entries()).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A"}.`,

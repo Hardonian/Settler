@@ -153,7 +153,7 @@ export default function IntegrationsPage() {
 
       setIntegrations([...integrationList, ...existingIntegrations]);
       setFilteredIntegrations([...integrationList, ...existingIntegrations]);
-    } catch {
+    } catch (error) {
       console.error("Failed to fetch integrations:", error);
     } finally {
       setIsLoading(false);
@@ -186,7 +186,7 @@ export default function IntegrationsPage() {
         // API key flow - redirect to configuration page
         router.push(`/dashboard/integrations/${integrationId}`);
       }
-    } catch {
+    } catch (error) {
       console.error("Connection failed:", error);
       alert("Failed to connect. Please try again.");
     } finally {
@@ -220,7 +220,7 @@ export default function IntegrationsPage() {
         const error = await response.json();
         alert(`Disconnect failed: ${error.message || 'Unknown error'}`);
       }
-    } catch {
+    } catch (error) {
       console.error("Disconnection failed:", error);
       alert("Failed to disconnect. Please try again.");
     } finally {
@@ -254,7 +254,7 @@ export default function IntegrationsPage() {
         const error = await response.json();
         alert(`Sync failed: ${error.message || 'Unknown error'}`);
       }
-    } catch {
+    } catch (error) {
       console.error("Sync failed:", error);
       alert("Failed to start sync. Please try again.");
     } finally {
@@ -292,7 +292,7 @@ export default function IntegrationsPage() {
         const error = await response.json();
         alert(`Backfill failed: ${error.message || 'Unknown error'}`);
       }
-    } catch {
+    } catch (error) {
       console.error("Backfill failed:", error);
       alert("Failed to start backfill. Please try again.");
     } finally {
@@ -309,10 +309,10 @@ export default function IntegrationsPage() {
   }
 
   // Group by category
-  const bankFeeds = filteredIntegrations.filter((i) => i.category === 'bank_feed');
-  const accounting = filteredIntegrations.filter((i) => i.category === 'accounting');
-  const subscriptions = filteredIntegrations.filter((i) => i.category === 'subscription_billing');
-  const standard = filteredIntegrations.filter((i) => i.is_standard && !i.category);
+  const bankFeeds = filteredIntegrations.filter((i: any) => i.category === 'bank_feed');
+  const accounting = filteredIntegrations.filter((i: any) => i.category === 'accounting');
+  const subscriptions = filteredIntegrations.filter((i: any) => i.category === 'subscription_billing');
+  const standard = filteredIntegrations.filter((i: any) => i.is_standard && !i.category);
   const addOns = filteredIntegrations.filter((i) => !i.is_standard && !i.category);
 
   return (

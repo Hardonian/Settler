@@ -95,7 +95,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
         const parsed = JSON.parse(saved) as Array<Omit<RequestHistory, 'timestamp'> & { timestamp: string }>;
         // Validate and filter invalid entries
         const validHistory = parsed
-          .filter((h) => h.id && h.method && h.url && h.timestamp)
+          .filter((h: any) => h.id && h.method && h.url && h.timestamp)
           .map((h) => ({
             ...h,
             timestamp: new Date(h.timestamp),
@@ -111,7 +111,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
       // Clear corrupted data
       try {
         localStorage.removeItem('settler-cli-history');
-      } catch (error: unknown) {
+      } catch {
         // Ignore cleanup errors
       }
     }
@@ -133,7 +133,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
           const recentHistory = newHistory.slice(0, 10);
           localStorage.setItem('settler-cli-history', JSON.stringify(recentHistory));
           setHistory(recentHistory);
-        } catch (error: unknown) {
+        } catch {
           // If still fails, clear history
           localStorage.removeItem('settler-cli-history');
           setHistory([]);
@@ -193,7 +193,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
     let parsedBody: unknown;
     try {
       parsedBody = body && body.trim() ? JSON.parse(body) : undefined;
-    } catch (error: unknown) {
+    } catch {
       setError({
         message: 'Invalid JSON in request body. Please check your syntax.',
         code: 'INVALID_JSON'
@@ -214,7 +214,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
           apiKey = `rk_${activeKey.keyPrefix}...`;
         }
       }
-    } catch (error: unknown) {
+    } catch {
       // Use default if can't fetch keys
     }
 
@@ -285,7 +285,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
     } catch (error: unknown) {
       const duration = Date.now() - startTime;
       setError({
-        message: err instanceof Error ? err.message : 'Unknown error occurred',
+        message: error instanceof Error ? error.message : 'Unknown error occurred',
         code: 'NETWORK_ERROR',
       });
       setResponse({
@@ -305,7 +305,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
   }, []);
 
   const deleteHistoryItem = useCallback((id: string) => {
-    saveHistory(history.filter((h) => h.id !== id));
+    saveHistory(history.filter((h: any) => h.id !== id));
   }, [history, saveHistory]);
 
   return (

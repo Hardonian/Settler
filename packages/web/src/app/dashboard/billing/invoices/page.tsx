@@ -42,7 +42,7 @@ export default function InvoicesPage() {
       }
       // Fallback: Empty state if API fails
       setInvoices([]);
-    } catch {
+    } catch (error) {
       console.error("Failed to fetch invoices:", error);
     } finally {
       setIsLoading(false);

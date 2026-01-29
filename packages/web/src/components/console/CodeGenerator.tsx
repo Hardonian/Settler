@@ -38,7 +38,7 @@ export function CodeGenerator({ apiCall, apiKey }: CodeGeneratorProps) {
   let snippets;
   try {
     snippets = generateAllCodeSnippets(apiCall, apiKey);
-  } catch (error: unknown) {
+  } catch {
     return (
       <Card>
         <CardContent className="py-8">

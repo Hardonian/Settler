@@ -49,7 +49,7 @@ export function SupportAssistant({ context }: { context?: { page?: string; actio
 
       const data = await res.json();
       setResponse(data);
-    } catch (error: unknown) {
+    } catch {
       setError("Failed to get response. Please try again.");
     } finally {
       setLoading(false);

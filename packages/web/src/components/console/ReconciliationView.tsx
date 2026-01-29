@@ -52,8 +52,8 @@ export function ReconciliationView({ reconciliationId, onRunReconciliation }: Re
       setSummary(data.reconciliation);
       setItems(data.items || []);
     } catch (error: unknown) {
-      console.error('Failed to fetch reconciliation:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load reconciliation');
+      console.error('Failed to fetch reconciliation:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load reconciliation');
     } finally {
       setLoading(false);
     }
@@ -89,8 +89,8 @@ export function ReconciliationView({ reconciliationId, onRunReconciliation }: Re
         onRunReconciliation();
       }
     } catch (error: unknown) {
-      console.error('Failed to run reconciliation:', err);
-      setError(err instanceof Error ? err.message : 'Failed to run reconciliation');
+      console.error('Failed to run reconciliation:', error);
+      setError(error instanceof Error ? error.message : 'Failed to run reconciliation');
     } finally {
       setRunning(false);
     }

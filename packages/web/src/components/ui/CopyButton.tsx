@@ -21,7 +21,7 @@ export function CopyButton({ text, className, size = "md" }: CopyButtonProps) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error("Failed to copy:", err);
+      console.error("Failed to copy:", error);
     }
   };
 

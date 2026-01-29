@@ -131,7 +131,7 @@ export async function deriveCostInputsFromEvents(
         const { totalCost, confidence } = calculateCost(unitCount, baseline);
         
         // Estimate execution time from duration_ms
-        const totalDurationMs = groupEvents.reduce((sum, e) => sum + ((e as EventRow).duration_ms || 0), 0);
+        const totalDurationMs = groupEvents.reduce((sum: number, e: any) => sum + ((e as EventRow).duration_ms || 0), 0);
         const execBaseline = getCostBaseline('vercel', 'functionExecutionMs');
         let execCost = 0;
         if (execBaseline) {

@@ -27,9 +27,9 @@ async function DashboardMetrics() {
     let externalMetrics;
     try {
       externalMetrics = await getExternalMetrics();
-    } catch {
+    } catch (error) {
       const logger = (await import('@/lib/logging/logger')).logger;
-      logger.warn('Failed to fetch external metrics', { error: err });
+      logger.warn('Failed to fetch external metrics', { error });
       externalMetrics = {
         github: { stars: 0, forks: 0, watchers: 0, openIssues: 0, lastUpdated: new Date().toISOString() },
         npm: { downloads: 0, version: '0.0.0', lastUpdated: new Date().toISOString() },
@@ -51,8 +51,8 @@ async function DashboardMetrics() {
         const logger = (await import('@/lib/logging/logger')).logger;
         logger.warn('RPC function error', { error: result.error });
       }
-    } catch {
-      appLogger.warn('RPC function not available, using fallback queries', { error: err });
+    } catch (error) {
+      appLogger.warn('RPC function not available, using fallback queries', { error: error });
     }
 
     // Fetch recent activity count
@@ -63,8 +63,8 @@ async function DashboardMetrics() {
         .select('*', { count: 'exact', head: true })
         .gte('created_at', new Date(Date.now() - 60 * 60 * 1000).toISOString());
       recentActivityCount = count || 0;
-    } catch {
-      appLogger.warn('Error fetching activity count', { error: err });
+    } catch (error) {
+      appLogger.warn('Error fetching activity count', { error: error });
     }
 
     // Fetch new users this week
@@ -75,8 +75,8 @@ async function DashboardMetrics() {
         .select('*', { count: 'exact', head: true })
         .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
       newUsersCount = count || 0;
-    } catch {
-      appLogger.warn('Error fetching new users count', { error: err });
+    } catch (error) {
+      appLogger.warn('Error fetching new users count', { error: error });
     }
 
     // Fetch most engaged post (using raw SQL calculation)
@@ -104,8 +104,8 @@ async function DashboardMetrics() {
           topPost = result;
         }
       }
-    } catch {
-      appLogger.warn('Error fetching posts', { error: err });
+    } catch (error) {
+      appLogger.warn('Error fetching posts', { error: error });
     }
 
     // Fetch total posts count
@@ -116,8 +116,8 @@ async function DashboardMetrics() {
         .select('*', { count: 'exact', head: true })
         .eq('status', 'published');
       totalPosts = count || 0;
-    } catch {
-      appLogger.warn('Error fetching total posts', { error: err });
+    } catch (error) {
+      appLogger.warn('Error fetching total posts', { error: error });
     }
 
     // Fetch total profiles count
@@ -127,8 +127,8 @@ async function DashboardMetrics() {
         .from('profiles')
         .select('*', { count: 'exact', head: true });
       totalProfiles = count || 0;
-    } catch {
-      appLogger.warn('Error fetching total profiles', { error: err });
+    } catch (error) {
+      appLogger.warn('Error fetching total profiles', { error: error });
     }
 
     const metrics = {
@@ -326,7 +326,7 @@ async function DashboardMetrics() {
       <Footer />
       </div>
     );
-  } catch {
+  } catch (error) {
     appLogger.error('Error in DashboardMetrics', error);
     return (
       <div className="min-h-screen flex items-center justify-center">

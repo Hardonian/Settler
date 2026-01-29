@@ -80,7 +80,7 @@ export async function impersonateUser(
       sessionToken: `impersonation_${targetUserId}_${Date.now()}`,
     }, 'Impersonation session created');
   } catch (error) {
-    const errorMessage = err instanceof Error ? err.message : 'Failed to impersonate user';
+    const errorMessage = error instanceof Error ? error.message : 'Failed to impersonate user';
     return error(errorMessage) as ActionResult<{ sessionToken: string }>;
   }
 }
@@ -104,7 +104,7 @@ export async function stopImpersonation(
     
     return success(null, 'Impersonation ended');
   } catch (error) {
-    const errorMessage = err instanceof Error ? err.message : 'Failed to stop impersonation';
+    const errorMessage = error instanceof Error ? error.message : 'Failed to stop impersonation';
     return error(errorMessage);
   }
 }

@@ -80,7 +80,7 @@ export function MultiSourceReconciliation() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          sourceAdapters: sourceAdapters.filter((s) => s.adapter),
+          sourceAdapters: sourceAdapters.filter((s: any) => s.adapter),
           targetAdapter,
           conflictResolutionStrategy: conflictStrategy,
           duplicateDetectionEnabled: true,
@@ -95,7 +95,7 @@ export function MultiSourceReconciliation() {
       const data = await res.json();
       setJob(data);
     } catch (error: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create job');
+      setError(error instanceof Error ? error.message : 'Failed to create job');
     } finally {
       setLoading(false);
     }
@@ -140,7 +140,7 @@ export function MultiSourceReconciliation() {
       const data = await res.json();
       setJob({ ...job, conflicts: data.conflicts });
     } catch (error: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to run reconciliation');
+      setError(error instanceof Error ? error.message : 'Failed to run reconciliation');
     } finally {
       setRunning(false);
     }
@@ -169,7 +169,7 @@ export function MultiSourceReconciliation() {
         setJob(jobData);
       }
     } catch (error: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to resolve conflict');
+      setError(error instanceof Error ? error.message : 'Failed to resolve conflict');
     }
   };
 

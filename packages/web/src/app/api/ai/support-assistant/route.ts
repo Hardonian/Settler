@@ -77,7 +77,7 @@ export const POST = withSecurity(
           ai_response: aiResponse.answer,
           helpful: null, // User can rate later
         } as never);
-      } catch (error) {
+      } catch {
         // Table might not exist, that's okay
       }
     }

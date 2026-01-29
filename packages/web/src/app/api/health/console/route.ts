@@ -153,7 +153,7 @@ export const GET = withSecurity(
         if (tableError && (tableError.code === '42P01' || tableError.message.includes('does not exist'))) {
           missingTables.push(table);
         }
-      } catch (error) {
+      } catch {
         // Table check failed - might be RLS blocking, that's ok
       }
     }

@@ -30,7 +30,7 @@ export function CodeBlock({ code, language, className, showCopy = true }: CodeBl
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error("Failed to copy code:", err);
+      console.error("Failed to copy code:", error);
     }
   };
 

@@ -185,7 +185,7 @@ export const GET = withSecurity(
           ]);
 
           tableChecks[table] = !error || error.code === 'PGRST116'; // PGRST116 = no rows, which is fine
-        } catch (error) {
+        } catch {
           tableChecks[table] = false;
         }
       }

@@ -176,7 +176,7 @@ export async function updateWebhook(
   if (updates.url) {
     try {
       new URL(updates.url);
-    } catch (error) {
+    } catch {
       throw new Error("Invalid webhook URL");
     }
   }

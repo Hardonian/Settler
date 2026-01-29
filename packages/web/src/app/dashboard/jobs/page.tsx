@@ -50,7 +50,7 @@ export default function JobsPage() {
     }
 
     if (statusFilter !== "all") {
-      filtered = filtered.filter((job) => job.status === statusFilter);
+      filtered = filtered.filter((job: any) => job.status === statusFilter);
     }
 
     setFilteredJobs(filtered);
@@ -118,7 +118,7 @@ export default function JobsPage() {
 
       setJobs(jobsList);
       setFilteredJobs(jobsList);
-    } catch {
+    } catch (error) {
       logger.error("Failed to fetch jobs", error instanceof Error ? error : new Error(String(error)));
       setJobs([]);
       setFilteredJobs([]);

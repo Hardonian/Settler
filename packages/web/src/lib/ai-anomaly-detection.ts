@@ -44,7 +44,7 @@ export async function detectBillingAnomalies(userId: string): Promise<Anomaly[]>
   // Check for unusual spending spikes
   const recentUsage = usage.slice(0, 7) as UsageRow[];
   const avgUsage =
-    recentUsage.reduce((sum, u) => sum + (u.amount || 0), 0) / recentUsage.length;
+    recentUsage.reduce((sum: number, u: any) => sum + (u.amount || 0), 0) / recentUsage.length;
   const currentUsage = (usage[0] as UsageRow | undefined)?.amount || 0;
 
   if (currentUsage > avgUsage * 2) {
@@ -104,9 +104,9 @@ export async function detectUsageAnomalies(userId: string): Promise<Anomaly[]> {
   
   // Detect sudden drops (potential churn indicator)
   const recentAvg =
-    typedUsage.slice(0, 7).reduce((sum, u) => sum + (u.amount || 0), 0) / 7;
+    typedUsage.slice(0, 7).reduce((sum: number, u: any) => sum + (u.amount || 0), 0) / 7;
   const previousAvg =
-    typedUsage.slice(7, 14).reduce((sum, u) => sum + (u.amount || 0), 0) / 7;
+    typedUsage.slice(7, 14).reduce((sum: number, u: any) => sum + (u.amount || 0), 0) / 7;
 
   if (recentAvg < previousAvg * 0.5) {
     anomalies.push({

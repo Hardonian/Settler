@@ -45,7 +45,7 @@ export async function checkInvestorAuth(request: NextRequest): Promise<AuthResul
   //       };
   //     }
   //   }
-  // } catch (error) {
+  // } catch {
   //   // Session check failed, continue to API key check
   // }
 

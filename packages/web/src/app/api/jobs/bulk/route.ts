@@ -188,7 +188,7 @@ export const POST = withSecurity(
       }
     }
 
-    const successCount = results.filter((r) => r.success).length;
+    const successCount = results.filter((r: any) => r.success).length;
     const failureCount = results.filter((r) => !r.success).length;
 
     // Log successful request

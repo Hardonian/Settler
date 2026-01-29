@@ -115,7 +115,7 @@ export default function PageEditorPage() {
   }
 
   function handleDeleteBlock(blockId: string) {
-    setBlocks(blocks.filter((b) => b.id !== blockId));
+    setBlocks(blocks.filter((b: any) => b.id !== blockId));
     if (selectedBlockId === blockId) {
       setSelectedBlockId(null);
     }

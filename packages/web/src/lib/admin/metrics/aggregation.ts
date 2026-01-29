@@ -66,9 +66,9 @@ export async function aggregateKPIMetrics(
   });
 
   // Aggregate metrics
-  const totalMatched = runs.reduce((sum, r) => sum + (r.matchedCount || 0), 0);
-  const totalUnmatched = runs.reduce((sum, r) => sum + (r.unmatchedSourceCount || 0) + (r.unmatchedTargetCount || 0), 0);
-  const totalVolume = runs.reduce((sum, r) => sum + (r.sourceCount || 0) + (r.targetCount || 0), 0);
+  const totalMatched = runs.reduce((sum: number, r: any) => sum + (r.matchedCount || 0), 0);
+  const totalUnmatched = runs.reduce((sum: number, r: any) => sum + (r.unmatchedSourceCount || 0) + (r.unmatchedTargetCount || 0), 0);
+  const totalVolume = runs.reduce((sum: number, r: any) => sum + (r.sourceCount || 0) + (r.targetCount || 0), 0);
   const matchedPercent = totalVolume > 0 ? (totalMatched / totalVolume) * 100 : 0;
 
   // Get confidence stats
@@ -77,7 +77,7 @@ export async function aggregateKPIMetrics(
     .filter((c): c is NonNullable<typeof c> => c !== null && c !== undefined)
     .map(c => Number(c));
   const confidenceAvg = confidences.length > 0
-    ? confidences.reduce((sum, c) => sum + c, 0) / confidences.length
+    ? confidences.reduce((sum: number, c: any) => sum + c, 0) / confidences.length
     : null;
   const confidenceMin = confidences.length > 0 ? Math.min(...confidences) : null;
   const confidenceMax = confidences.length > 0 ? Math.max(...confidences) : null;
@@ -135,7 +135,7 @@ export async function aggregateKPIMetrics(
     })
     .filter((t): t is number => t !== null);
   const avgTimeToResolve = resolveTimes.length > 0
-    ? resolveTimes.reduce((sum, t) => sum + t, 0) / resolveTimes.length
+    ? resolveTimes.reduce((sum: number, t: any) => sum + t, 0) / resolveTimes.length
     : 0;
 
   return {
@@ -189,8 +189,8 @@ export async function aggregateTrendData(
       },
     });
 
-    const totalMatched = runs.reduce((sum, r) => sum + (r.matchedCount || 0), 0);
-    const totalVolume = runs.reduce((sum, r) => sum + (r.sourceCount || 0) + (r.targetCount || 0), 0);
+    const totalMatched = runs.reduce((sum: number, r: any) => sum + (r.matchedCount || 0), 0);
+    const totalVolume = runs.reduce((sum: number, r: any) => sum + (r.sourceCount || 0) + (r.targetCount || 0), 0);
     const matchedPercent = totalVolume > 0 ? (totalMatched / totalVolume) * 100 : 0;
 
     buckets.push({

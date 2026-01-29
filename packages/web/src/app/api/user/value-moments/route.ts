@@ -62,7 +62,7 @@ export const GET = withSecurity(
 
     if (usage) {
       const typedUsage = usage as Array<{ quantity: number | null }>;
-      const totalUsage = typedUsage.reduce((sum, u) => sum + (u.quantity || 0), 0);
+      const totalUsage = typedUsage.reduce((sum: number, u: any) => sum + (u.quantity || 0), 0);
       const limit = typedProfile?.plan_type === "free" ? 1000 : 100000;
       const percentage = (totalUsage / limit) * 100;
 

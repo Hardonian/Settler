@@ -66,8 +66,8 @@ export function UsageInsightsPanel() {
     );
   }
 
-  const highlightInsights = insights.filter((i) => i.emphasis === 'highlight');
-  const promoteInsights = insights.filter((i) => i.emphasis === 'promote');
+  const highlightInsights = insights.filter((i: any) => i.emphasis === 'highlight');
+  const promoteInsights = insights.filter((i: any) => i.emphasis === 'promote');
 
   return (
     <Card>

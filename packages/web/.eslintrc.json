@@ -1,6 +1,7 @@
 {
   "root": true,
   "extends": ["next/core-web-vitals", "next/typescript"],
+  "ignorePatterns": ["src/stitch_export/**"],
   "parserOptions": {
     "project": "./tsconfig.json"
   },

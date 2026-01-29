@@ -49,8 +49,8 @@ export function FeatureFlagsPolicy() {
       const data = await res.json();
       setFlags(data.flags || []);
     } catch (error: unknown) {
-      console.error('Failed to fetch feature flags:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load feature flags');
+      console.error('Failed to fetch feature flags:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load feature flags');
       setFlags([]);
     } finally {
       setLoading(false);
@@ -89,8 +89,8 @@ export function FeatureFlagsPolicy() {
       // Refresh flags
       await fetchFlags();
     } catch (error: unknown) {
-      console.error('Failed to save feature flag:', err);
-      setError(err instanceof Error ? err.message : 'Failed to save feature flag');
+      console.error('Failed to save feature flag:', error);
+      setError(error instanceof Error ? error.message : 'Failed to save feature flag');
     } finally {
       setSaving(null);
     }

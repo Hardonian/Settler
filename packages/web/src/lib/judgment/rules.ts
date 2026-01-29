@@ -51,7 +51,7 @@ function detectRepeatedDrift(
   const sameSign = last7Days.every((h) => Math.sign(h.delta) === Math.sign(delta));
   if (!sameSign) return null;
   
-  const totalDelta = last7Days.reduce((sum, h) => sum + Math.abs(h.delta), 0) + Math.abs(delta);
+  const totalDelta = last7Days.reduce((sum: number, h: any) => sum + Math.abs(h.delta), 0) + Math.abs(delta);
   
   return {
     count: last7Days.length + 1,

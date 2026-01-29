@@ -89,7 +89,7 @@ export function TenantsObservabilityDashboard() {
   }
   
   // Calculate aggregate metrics
-  const aggregateMetrics = tenants.reduce((acc, tenant) => {
+  const aggregateMetrics = tenants.reduce((acc: number, tenant: any) => {
     acc.totalTenants++;
     if (tenant.status === 'active') acc.activeTenants++;
     if (tenant.metrics) {

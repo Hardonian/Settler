@@ -197,7 +197,7 @@ export function withUsageTracking<
     const startTime = Date.now();
 
     // Call handler
-    const response = await handler.apply(null, args);
+    const response = await handler(...args);
 
     // Track usage after successful request
     if (response.status < 400) {

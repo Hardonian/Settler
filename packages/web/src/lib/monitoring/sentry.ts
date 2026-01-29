@@ -198,7 +198,7 @@ class SentryClient {
       }).catch(() => {
         // Sentry not available, silently fail
       });
-    } catch (error) {
+    } catch {
       // Silently fail if Sentry not available
     }
   }
@@ -226,7 +226,7 @@ class SentryClient {
       }).catch(() => {
         // Sentry not available, silently fail
       });
-    } catch (error) {
+    } catch {
       // Silently fail if Sentry not available
     }
   }

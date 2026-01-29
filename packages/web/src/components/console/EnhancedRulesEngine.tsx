@@ -70,7 +70,7 @@ export function EnhancedRulesEngine() {
       const data = await res.json();
       setRules(data.data || []);
     } catch (error: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to load rules');
+      setError(error instanceof Error ? error.message : 'Failed to load rules');
     } finally {
       setLoading(false);
     }
@@ -113,7 +113,7 @@ export function EnhancedRulesEngine() {
       await fetchRules();
       setSelectedRule(null);
     } catch (error: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to save rule');
+      setError(error instanceof Error ? error.message : 'Failed to save rule');
     } finally {
       setLoading(false);
     }
@@ -154,7 +154,7 @@ export function EnhancedRulesEngine() {
       const data = await res.json();
       setTestResult(data);
     } catch (error: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to test rule');
+      setError(error instanceof Error ? error.message : 'Failed to test rule');
     } finally {
       setLoading(false);
     }

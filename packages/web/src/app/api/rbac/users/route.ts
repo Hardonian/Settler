@@ -60,7 +60,7 @@ export const GET = withSecurity(
             assignedAt: tenantUserTyped?.joined_at || new Date().toISOString(),
           });
         }
-      } catch (error) {
+      } catch {
         // Skip if user not found
       }
     }

@@ -76,7 +76,7 @@ export function isBoolean(value: unknown): value is boolean {
 /**
  * Type guard to check if value is a function
  */
-export function isFunction(value: unknown): value is Function {
+export function isFunction(value: unknown): value is (...args: any[]) => any {
   return typeof value === "function";
 }
 

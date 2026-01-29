@@ -72,7 +72,7 @@ export function validateOrigin(req: NextRequest): boolean {
             originUrl.hostname === allowedUrl.hostname &&
             originUrl.port === allowedUrl.port
           );
-        } catch (error) {
+        } catch {
           return origin === allowed; // Fallback to string comparison
         }
       });
@@ -80,7 +80,7 @@ export function validateOrigin(req: NextRequest): boolean {
       if (!isAllowed) {
         return false;
       }
-    } catch (error) {
+    } catch {
       return false; // Invalid origin URL
     }
   }

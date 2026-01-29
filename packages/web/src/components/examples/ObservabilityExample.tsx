@@ -53,7 +53,7 @@ export function ObservabilityExample() {
       submit(true, { success: true });
       logger.info('Form submitted successfully', { form: 'example_form' });
     } catch (error: unknown) {
-      const error = err instanceof Error ? err : new Error(String(err));
+      const error = error instanceof Error ? error : new Error(String(error));
       setError(error);
       submit(false, { error: error.message });
       trackError(error, { component: 'ObservabilityExample', form: 'example_form' });
@@ -73,7 +73,7 @@ export function ObservabilityExample() {
       setData(result);
       logger.info('Data fetched with fallback', { hasFallback: true });
     } catch (error: unknown) {
-      trackError(err instanceof Error ? err : new Error(String(err)));
+      trackError(error instanceof Error ? error : new Error(String(error)));
     }
   };
 

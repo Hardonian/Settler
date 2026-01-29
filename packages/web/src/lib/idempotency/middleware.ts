@@ -93,7 +93,7 @@ export function withIdempotency<T extends unknown[]>(
           if (responseBody) {
             await completeIdempotencyKey(idempotencyKey, responseBody);
           }
-        } catch (error) {
+        } catch {
           // Ignore errors caching response
         }
       } else {

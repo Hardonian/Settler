@@ -55,7 +55,7 @@ export default function ActivityPage() {
         // No mock data - show empty state if API fails
         setEvents([]);
       }
-    } catch {
+    } catch (error) {
       // No mock data - show empty state on error
       setEvents([]);
     } finally {

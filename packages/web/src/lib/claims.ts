@@ -75,14 +75,14 @@ export function getClaim(id: string): Claim | undefined {
  * Get all proven claims
  */
 export function getProvenClaims(): Claim[] {
-  return CLAIMS.filter((c) => c.status === 'proven');
+  return CLAIMS.filter((c: any) => c.status === 'proven');
 }
 
 /**
  * Get all planned claims
  */
 export function getPlannedClaims(): Claim[] {
-  return CLAIMS.filter((c) => c.status === 'planned');
+  return CLAIMS.filter((c: any) => c.status === 'planned');
 }
 
 /**

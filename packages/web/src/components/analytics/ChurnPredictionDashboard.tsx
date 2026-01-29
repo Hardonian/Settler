@@ -41,7 +41,7 @@ export function ChurnPredictionDashboard() {
     }
   };
 
-  const highRiskUsers = atRiskUsers.filter((u) => u.churnRiskScore >= 0.7);
+  const highRiskUsers = atRiskUsers.filter((u: any) => u.churnRiskScore >= 0.7);
   const mediumRiskUsers = atRiskUsers.filter(
     (u) => u.churnRiskScore >= 0.4 && u.churnRiskScore < 0.7
   );
@@ -112,7 +112,7 @@ export function ChurnPredictionDashboard() {
             <CardTitle className="text-3xl">
               {atRiskUsers.length > 0
                 ? (
-                    atRiskUsers.reduce((sum, u) => sum + u.churnRiskScore, 0) / atRiskUsers.length
+                    atRiskUsers.reduce((sum: number, u: any) => sum + u.churnRiskScore, 0) / atRiskUsers.length
                   ).toFixed(2)
                 : "0.00"}
             </CardTitle>

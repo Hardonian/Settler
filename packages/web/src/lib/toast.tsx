@@ -47,7 +47,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const hideToast = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id));
+    setToasts((prev) => prev.filter((toast: any) => toast.id !== id));
   }, []);
 
   const success = useCallback(

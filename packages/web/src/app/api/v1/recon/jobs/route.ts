@@ -239,7 +239,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
           });
           tenantId = billingAccount?.tenantId || null;
         }
-      } catch (error) {
+      } catch {
         // Unauthenticated access allowed for playground
       }
     }
