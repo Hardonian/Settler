@@ -1,25 +1,25 @@
 /**
  * Console Feature Flags Page
- * 
+ *
  * Manage feature flags: list, toggle, edit.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { ToggleLeft, Plus, Edit } from 'lucide-react';
-import { format } from 'date-fns';
+} from "@/components/ui/dialog";
+import { ToggleLeft, Plus, Edit } from "lucide-react";
+import { format } from "date-fns";
 
 interface FeatureFlag {
   id: string;
@@ -43,7 +43,7 @@ export default function FeatureFlagsPage() {
   const [loading, setLoading] = useState(true);
   const [editingFlag, setEditingFlag] = useState<FeatureFlag | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [selectedEnvironment, setSelectedEnvironment] = useState<string>('production');
+  const [selectedEnvironment, setSelectedEnvironment] = useState<string>("production");
 
   useEffect(() => {
     fetchFlags();
@@ -52,13 +52,13 @@ export default function FeatureFlagsPage() {
   const fetchFlags = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/console/feature-flags');
+      const res = await fetch("/api/console/feature-flags");
       if (res.ok) {
         const data = await res.json();
         setFlags(data.flags || []);
       }
-    } catch {
-      console.error('Failed to fetch feature flags:', error);
+    } catch (err) {
+      console.error("Failed to fetch feature flags:", err);
     } finally {
       setLoading(false);
     }
@@ -67,15 +67,15 @@ export default function FeatureFlagsPage() {
   const handleToggleFlag = async (flagId: string, environment: string, enabled: boolean) => {
     try {
       const res = await fetch(`/api/console/feature-flags/${flagId}/environments/${environment}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ enabled }),
       });
       if (res.ok) {
         await fetchFlags();
       }
-    } catch {
-      console.error('Failed to toggle flag:', error);
+    } catch (err) {
+      console.error("Failed to toggle flag:", err);
     }
   };
 
@@ -96,9 +96,7 @@ export default function FeatureFlagsPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            Feature Flags
-          </h1>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Feature Flags</h1>
           <p className="text-slate-600 dark:text-slate-400">
             Manage feature flags for your applications.
           </p>
@@ -127,9 +125,7 @@ export default function FeatureFlagsPage() {
       ) : (
         <div className="space-y-4">
           {flags.map((flag) => {
-            const envSetting = flag.environments.find(
-              (e) => e.environment === selectedEnvironment
-            );
+            const envSetting = flag.environments.find((e) => e.environment === selectedEnvironment);
             const isEnabled = envSetting?.enabled ?? false;
 
             return (
@@ -148,14 +144,10 @@ export default function FeatureFlagsPage() {
                         )}
                       </CardTitle>
                       <CardDescription className="mt-2">
-                        {flag.description || 'No description'}
+                        {flag.description || "No description"}
                       </CardDescription>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => openEditDialog(flag)}
-                    >
+                    <Button variant="outline" size="sm" onClick={() => openEditDialog(flag)}>
                       <Edit className="w-4 h-4 mr-1" />
                       Edit
                     </Button>
@@ -166,7 +158,9 @@ export default function FeatureFlagsPage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <Label className="text-sm font-medium">
-                          {selectedEnvironment.charAt(0).toUpperCase() + selectedEnvironment.slice(1)} Environment
+                          {selectedEnvironment.charAt(0).toUpperCase() +
+                            selectedEnvironment.slice(1)}{" "}
+                          Environment
                         </Label>
                         <p className="text-xs text-slate-500 mt-1">
                           Type: {flag.type} | Default: {String(flag.defaultValue)}
@@ -174,7 +168,7 @@ export default function FeatureFlagsPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-slate-600 dark:text-slate-400">
-                          {isEnabled ? 'Enabled' : 'Disabled'}
+                          {isEnabled ? "Enabled" : "Disabled"}
                         </span>
                         <Switch
                           checked={isEnabled}
@@ -185,7 +179,7 @@ export default function FeatureFlagsPage() {
                       </div>
                     </div>
                     <div className="text-xs text-slate-500">
-                      Created: {format(new Date(flag.createdAt), 'PPp')}
+                      Created: {format(new Date(flag.createdAt), "PPp")}
                     </div>
                   </div>
                 </CardContent>
@@ -200,9 +194,7 @@ export default function FeatureFlagsPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit Feature Flag</DialogTitle>
-            <DialogDescription>
-              Update flag settings for {editingFlag?.key}
-            </DialogDescription>
+            <DialogDescription>Update flag settings for {editingFlag?.key}</DialogDescription>
           </DialogHeader>
           {editingFlag && (
             <div className="space-y-4">
@@ -223,9 +215,8 @@ export default function FeatureFlagsPage() {
                 <Label>Enabled</Label>
                 <Switch
                   checked={
-                    editingFlag.environments.find(
-                      (e) => e.environment === selectedEnvironment
-                    )?.enabled ?? false
+                    editingFlag.environments.find((e) => e.environment === selectedEnvironment)
+                      ?.enabled ?? false
                   }
                   onCheckedChange={(checked) =>
                     handleToggleFlag(editingFlag.id, selectedEnvironment, checked)

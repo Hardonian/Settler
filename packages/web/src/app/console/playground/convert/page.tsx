@@ -147,7 +147,7 @@ export default function ConvertPlayground() {
         body: resultData,
         duration: Date.now() - startTime,
       });
-    } catch {
+    } catch (err) {
       const errorMessage =
         err instanceof Error
           ? err.name === "AbortError"
