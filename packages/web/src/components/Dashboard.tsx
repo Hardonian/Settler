@@ -35,7 +35,7 @@ export default function Dashboard({ apiKey }: DashboardProps) {
       setLoading(true);
       const response = await client.jobs.list({ limit: 100 });
       setJobs(response.data || []);
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to load jobs:", error);
     } finally {
       setLoading(false);
@@ -46,7 +46,7 @@ export default function Dashboard({ apiKey }: DashboardProps) {
     try {
       await client.jobs.run(jobId);
       await loadJobs();
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to run job:", error);
     }
   }
@@ -64,18 +64,12 @@ export default function Dashboard({ apiKey }: DashboardProps) {
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Reconciliation Dashboard</h1>
-          <p className="text-gray-600 mt-2">
-            Monitor and manage your reconciliation jobs
-          </p>
+          <p className="text-gray-600 mt-2">Monitor and manage your reconciliation jobs</p>
         </div>
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <StatCard
-            title="Total Jobs"
-            value={jobs.length}
-            icon="📊"
-          />
+          <StatCard title="Total Jobs" value={jobs.length} icon="📊" />
           <StatCard
             title="Active Jobs"
             value={jobs.filter((j) => j.status === "active").length}
@@ -118,26 +112,14 @@ export default function Dashboard({ apiKey }: DashboardProps) {
 
         {/* Job Detail Modal */}
         {selectedJob && (
-          <JobDetailModal
-            job={selectedJob}
-            client={client}
-            onClose={() => setSelectedJob(null)}
-          />
+          <JobDetailModal job={selectedJob} client={client} onClose={() => setSelectedJob(null)} />
         )}
       </div>
     </div>
   );
 }
 
-function StatCard({
-  title,
-  value,
-  icon,
-}: {
-  title: string;
-  value: number;
-  icon: string;
-}) {
+function StatCard({ title, value, icon }: { title: string; value: number; icon: string }) {
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <div className="flex items-center justify-between">
@@ -151,15 +133,7 @@ function StatCard({
   );
 }
 
-function JobRow({
-  job,
-  onSelect,
-  onRun,
-}: {
-  job: Job;
-  onSelect: () => void;
-  onRun: () => void;
-}) {
+function JobRow({ job, onSelect, onRun }: { job: Job; onSelect: () => void; onRun: () => void }) {
   const statusColors = {
     active: "bg-green-100 text-green-800",
     paused: "bg-yellow-100 text-yellow-800",
@@ -177,9 +151,7 @@ function JobRow({
             >
               {job.name}
             </h3>
-            <span
-              className={`px-2 py-1 text-xs font-semibold rounded ${statusColors[job.status]}`}
-            >
+            <span className={`px-2 py-1 text-xs font-semibold rounded ${statusColors[job.status]}`}>
               {job.status}
             </span>
           </div>
@@ -247,7 +219,7 @@ function JobDetailModal({
       setLoading(true);
       const response = await client.reports.get(job.id);
       setReport(response.data);
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to load report:", error);
     } finally {
       setLoading(false);
@@ -259,10 +231,7 @@ function JobDetailModal({
       <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <h2 className="text-xl font-semibold">{job.name}</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
             ✕
           </button>
         </div>
@@ -329,9 +298,7 @@ function JobDetailModal({
               )}
             </div>
           ) : (
-            <div className="text-center py-8 text-gray-500">
-              No report data available
-            </div>
+            <div className="text-center py-8 text-gray-500">No report data available</div>
           )}
         </div>
       </div>
