@@ -63,12 +63,17 @@ async function refreshTokenIfNeeded(driver, connectorId, tenantId, credentials, 
         if (updateError) {
             return { refreshed: false, error: updateError.message };
         }
-        return {
+        const result = {
             refreshed: true,
             accessToken: refreshResult.accessToken,
-            refreshToken: refreshResult.refreshToken,
-            expiresIn: refreshResult.expiresIn,
         };
+        if (refreshResult.refreshToken) {
+            result.refreshToken = refreshResult.refreshToken;
+        }
+        if (refreshResult.expiresIn) {
+            result.expiresIn = refreshResult.expiresIn;
+        }
+        return result;
     }
     catch (error) {
         return {

@@ -1,11 +1,11 @@
-'use server';
+"use server";
 
-import type { Prisma } from '@prisma/client';
-import { revalidatePath } from 'next/cache';
+import type { Prisma } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
-import type { PageBlock } from '@/domain/siteBuilder/pageSchema';
-import { getTenantContext } from '@/lib/tenant/server';
-import { prisma } from '@/shared/db/prismaClient';
+import type { PageBlock } from "@/domain/siteBuilder/pageSchema";
+import { getTenantContext } from "@/lib/tenant/server";
+import { prisma } from "@/shared/db/prismaClient";
 
 export type ActionState<T = unknown> = {
   success?: boolean;
@@ -19,7 +19,7 @@ type FormattedPage = {
   id: string;
   title: string;
   slug: string;
-  status: 'draft' | 'published';
+  status: "draft" | "published";
   lastUpdated: string;
 };
 
@@ -36,10 +36,10 @@ type TenantPageRecord = {
 };
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
+  typeof value === "object" && value !== null && !Array.isArray(value);
 
 const getString = (value: unknown): string | undefined =>
-  typeof value === 'string' ? value : undefined;
+  typeof value === "string" ? value : undefined;
 
 /**
  * Ensure we have a valid tenant context.
@@ -47,7 +47,7 @@ const getString = (value: unknown): string | undefined =>
  */
 async function getAuthenticatedTenantId(): Promise<string> {
   const context = await getTenantContext();
-  
+
   if (context.tenantId) {
     return context.tenantId;
   }
@@ -55,43 +55,44 @@ async function getAuthenticatedTenantId(): Promise<string> {
   // Fallback for development/initial setup if no tenant resolved from headers
   // We try to find the 'default' tenant
   const defaultTenant = await prisma.tenant.findUnique({
-    where: { slug: 'default' },
+    where: { slug: "default" },
   });
 
   if (defaultTenant) {
     return defaultTenant.id;
   }
 
-  throw new Error('No tenant context found and no default tenant available.');
+  throw new Error("No tenant context found and no default tenant available.");
 }
 
 export async function getPages(): Promise<ActionState<FormattedPage[]>> {
   try {
     const tenantId = await getAuthenticatedTenantId();
-    
+
     const pages = await prisma.tenantPage.findMany({
       where: { tenantId },
-      orderBy: { updatedAt: 'desc' },
+      orderBy: { updatedAt: "desc" },
       select: {
         id: true,
         slug: true,
         isDraft: true,
         updatedAt: true,
         metadata: true,
-      }
+      },
     });
 
     // Map to a friendlier format
-    const formattedPages = pages.map((page) => {
+    const formattedPages = pages.map((page: (typeof pages)[0]) => {
       const meta = isRecord(page.metadata) ? (page.metadata as PageMetadata) : {};
       const metaTitle = getString(meta.title);
 
-      const status: FormattedPage['status'] = page.isDraft ? 'draft' : 'published';
-      const updatedAt = page.updatedAt instanceof Date ? page.updatedAt : new Date(page.updatedAt as any);
+      const status: FormattedPage["status"] = page.isDraft ? "draft" : "published";
+      const updatedAt =
+        page.updatedAt instanceof Date ? page.updatedAt : new Date(String(page.updatedAt));
 
       return {
         id: page.id as string,
-        title: (metaTitle || page.slug || 'Untitled Page') as string,
+        title: (metaTitle || page.slug || "Untitled Page") as string,
         slug: page.slug as string,
         status,
         lastUpdated: updatedAt.toISOString(),
@@ -101,10 +102,10 @@ export async function getPages(): Promise<ActionState<FormattedPage[]>> {
     return { success: true, data: formattedPages };
   } catch (error) {
     console.error(
-      'Failed to fetch pages:',
-      error instanceof Error ? error.message : 'Unknown error'
+      "Failed to fetch pages:",
+      error instanceof Error ? error.message : "Unknown error"
     );
-    return { success: false, error: 'Failed to load pages' };
+    return { success: false, error: "Failed to load pages" };
   }
 }
 
@@ -117,61 +118,61 @@ export async function getPage(id: string): Promise<ActionState<TenantPageRecord>
     });
 
     if (!page || page.tenantId !== tenantId) {
-      return { success: false, error: 'Page not found' };
+      return { success: false, error: "Page not found" };
     }
 
     return { success: true, data: page as TenantPageRecord };
   } catch (error) {
     console.error(
-      'Failed to fetch page:',
-      error instanceof Error ? error.message : 'Unknown error'
+      "Failed to fetch page:",
+      error instanceof Error ? error.message : "Unknown error"
     );
-    return { success: false, error: 'Failed to fetch page' };
+    return { success: false, error: "Failed to fetch page" };
   }
 }
 
 export async function createPage(formData: FormData): Promise<ActionState<TenantPageRecord>> {
   try {
     const tenantId = await getAuthenticatedTenantId();
-    const title = formData.get('title');
-    const slug = formData.get('slug');
+    const title = formData.get("title");
+    const slug = formData.get("slug");
 
-    if (typeof title !== 'string' || typeof slug !== 'string' || !title || !slug) {
-      return { success: false, error: 'Title and Slug are required' };
+    if (typeof title !== "string" || typeof slug !== "string" || !title || !slug) {
+      return { success: false, error: "Title and Slug are required" };
     }
 
     // Basic slug validation
-    const cleanSlug = slug.toLowerCase().replace(/[^a-z0-9-/]/g, '-');
+    const cleanSlug = slug.toLowerCase().replace(/[^a-z0-9-/]/g, "-");
 
     const newPage = await prisma.tenantPage.create({
       data: {
         tenantId,
         slug: cleanSlug,
-        pageType: 'custom',
+        pageType: "custom",
         isDraft: true,
         metadata: { title }, // Store title in metadata as per schema
         blocks: [
           {
-            id: 'hero-1',
-            type: 'hero',
+            id: "hero-1",
+            type: "hero",
             visible: true,
             title,
-            subtitle: 'New page subtitle',
-            description: 'Add your content here.',
-            alignment: 'center',
+            subtitle: "New page subtitle",
+            description: "Add your content here.",
+            alignment: "center",
           },
         ],
       },
     });
 
-    revalidatePath('/admin/pages');
+    revalidatePath("/admin/pages");
     return { success: true, data: newPage as TenantPageRecord };
   } catch (error) {
     console.error(
-      'Failed to create page:',
-      error instanceof Error ? error.message : 'Unknown error'
+      "Failed to create page:",
+      error instanceof Error ? error.message : "Unknown error"
     );
-    return { success: false, error: 'Failed to create page' };
+    return { success: false, error: "Failed to create page" };
   }
 }
 
@@ -189,7 +190,7 @@ export async function updatePageBlocks(
     });
 
     if (!existingPage || existingPage.tenantId !== tenantId) {
-      return { success: false, error: 'Page not found or unauthorized' };
+      return { success: false, error: "Page not found or unauthorized" };
     }
 
     const existingMetadata = isRecord(existingPage.metadata)
@@ -213,10 +214,10 @@ export async function updatePageBlocks(
     return { success: true };
   } catch (error) {
     console.error(
-      'Failed to update page:',
-      error instanceof Error ? error.message : 'Unknown error'
+      "Failed to update page:",
+      error instanceof Error ? error.message : "Unknown error"
     );
-    return { success: false, error: 'Failed to update page' };
+    return { success: false, error: "Failed to update page" };
   }
 }
 
@@ -229,20 +230,20 @@ export async function deletePage(id: string): Promise<ActionState> {
     });
 
     if (!existingPage || existingPage.tenantId !== tenantId) {
-      return { success: false, error: 'Page not found' };
+      return { success: false, error: "Page not found" };
     }
 
     await prisma.tenantPage.delete({
       where: { id },
     });
 
-    revalidatePath('/admin/pages');
+    revalidatePath("/admin/pages");
     return { success: true };
   } catch (error) {
     console.error(
-      'Failed to delete page:',
-      error instanceof Error ? error.message : 'Unknown error'
+      "Failed to delete page:",
+      error instanceof Error ? error.message : "Unknown error"
     );
-    return { success: false, error: 'Failed to delete page' };
+    return { success: false, error: "Failed to delete page" };
   }
 }

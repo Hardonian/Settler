@@ -1,48 +1,53 @@
 /**
  * Admin Runs Page
- * 
+ *
  * Reconciliation runs history, status, and drilldown.
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useAdminRuns, useAdminStream } from '@/lib/admin/hooks/use-admin-metrics';
-import type { ReconciliationRun } from '@/lib/admin/metrics/types';
-import { exportRunsToCSV, exportRunsToJSON, downloadFile } from '@/lib/admin/utils/export';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { PlayCircle, CheckCircle2, XCircle, Clock, Search, Download, FileDown } from 'lucide-react';
-import Link from 'next/link';
-import { NoRunsEmptyState, NoResultsEmptyState } from '@/components/admin/empty-states';
+import { useState } from "react";
+import { useAdminRuns, useAdminStream } from "@/lib/admin/hooks/use-admin-metrics";
+import type { ReconciliationRun } from "@/lib/admin/metrics/types";
+import { exportRunsToCSV, exportRunsToJSON, downloadFile } from "@/lib/admin/utils/export";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { PlayCircle, CheckCircle2, XCircle, Clock, Search, Download, FileDown } from "lucide-react";
+import Link from "next/link";
+import { NoRunsEmptyState, NoResultsEmptyState } from "@/components/admin/empty-states";
 
 export default function AdminRunsPage() {
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data: runsData, isLoading } = useAdminRuns({
-    status: statusFilter !== 'all' ? statusFilter : undefined,
+    ...(statusFilter !== "all" ? { status: statusFilter } : {}),
     limit: 100,
   });
 
-  const { connectionState } = useAdminStream(['runs'], undefined, true);
+  const { connectionState } = useAdminStream(["runs"], undefined, true);
 
-  const filteredRuns = runsData?.items?.filter((run: ReconciliationRun) => {
-    if (searchQuery && !run.name?.toLowerCase().includes(searchQuery.toLowerCase()) && !run.id.includes(searchQuery)) {
-      return false;
-    }
-    return true;
-  }) || [];
+  const filteredRuns =
+    runsData?.items?.filter((run: ReconciliationRun) => {
+      if (
+        searchQuery &&
+        !run.name?.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        !run.id.includes(searchQuery)
+      ) {
+        return false;
+      }
+      return true;
+    }) || [];
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed':
+      case "completed":
         return <CheckCircle2 className="w-5 h-5 text-green-600" />;
-      case 'failed':
+      case "failed":
         return <XCircle className="w-5 h-5 text-red-600" />;
-      case 'running':
+      case "running":
         return <Clock className="w-5 h-5 text-blue-600 animate-spin" />;
       default:
         return <PlayCircle className="w-5 h-5 text-slate-400" />;
@@ -51,14 +56,14 @@ export default function AdminRunsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
-      case 'failed':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
-      case 'running':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+      case "completed":
+        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
+      case "failed":
+        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
+      case "running":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
       default:
-        return 'bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-300';
+        return "bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-300";
     }
   };
 
@@ -68,16 +73,19 @@ export default function AdminRunsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Reconciliation Runs</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">
-            History, status, and drilldown
-          </p>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">History, status, and drilldown</p>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${
-              connectionState === 'connected' ? 'bg-green-500' :
-              connectionState === 'reconnecting' ? 'bg-yellow-500' : 'bg-red-500'
-            }`} />
+            <div
+              className={`w-2 h-2 rounded-full ${
+                connectionState === "connected"
+                  ? "bg-green-500"
+                  : connectionState === "reconnecting"
+                    ? "bg-yellow-500"
+                    : "bg-red-500"
+              }`}
+            />
             <span className="text-sm text-slate-600 dark:text-slate-400">{connectionState}</span>
           </div>
           <div className="flex gap-2">
@@ -91,7 +99,7 @@ export default function AdminRunsPage() {
                   onClick={() => {
                     if (filteredRuns.length > 0) {
                       const csv = exportRunsToCSV(filteredRuns);
-                      downloadFile(csv, `runs-${new Date().toISOString().split('T')[0]}.csv`);
+                      downloadFile(csv, `runs-${new Date().toISOString().split("T")[0]}.csv`);
                     }
                   }}
                   className="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded flex items-center gap-2"
@@ -112,9 +120,7 @@ export default function AdminRunsPage() {
                 </button>
               </div>
             </div>
-            <Button>
-              Run Reconcile Now
-            </Button>
+            <Button>Run Reconcile Now</Button>
           </div>
         </div>
       </div>
@@ -150,9 +156,7 @@ export default function AdminRunsPage() {
       {/* Runs List */}
       <Card>
         <CardHeader>
-          <CardTitle>
-            Runs ({filteredRuns.length})
-          </CardTitle>
+          <CardTitle>Runs ({filteredRuns.length})</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -160,7 +164,7 @@ export default function AdminRunsPage() {
               Loading runs...
             </div>
           ) : filteredRuns.length === 0 ? (
-            searchQuery || statusFilter !== 'all' ? (
+            searchQuery || statusFilter !== "all" ? (
               <NoResultsEmptyState searchQuery={searchQuery} />
             ) : (
               <NoRunsEmptyState />
@@ -192,9 +196,10 @@ function RunRow({
   statusIcon: React.ReactNode;
   statusColor: string;
 }) {
-  const matchedPercent = run.sourceCount + run.targetCount > 0
-    ? ((run.matchedCount || 0) / (run.sourceCount + run.targetCount)) * 100
-    : 0;
+  const matchedPercent =
+    run.sourceCount + run.targetCount > 0
+      ? ((run.matchedCount || 0) / (run.sourceCount + run.targetCount)) * 100
+      : 0;
 
   return (
     <Link href={`/admin/runs/${run.id}`}>
@@ -206,9 +211,7 @@ function RunRow({
               <span className="font-medium text-slate-900 dark:text-white">
                 {run.name || `Run ${run.id.slice(0, 8)}`}
               </span>
-              <Badge className={statusColor}>
-                {run.status}
-              </Badge>
+              <Badge className={statusColor}>{run.status}</Badge>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
@@ -226,7 +229,7 @@ function RunRow({
               <div>
                 <span className="text-slate-500 dark:text-slate-400">Confidence:</span>
                 <span className="ml-2 font-semibold text-slate-900 dark:text-white">
-                  {run.confidenceAvg ? (Number(run.confidenceAvg) * 100).toFixed(1) + '%' : 'N/A'}
+                  {run.confidenceAvg ? (Number(run.confidenceAvg) * 100).toFixed(1) + "%" : "N/A"}
                 </span>
               </div>
               <div>

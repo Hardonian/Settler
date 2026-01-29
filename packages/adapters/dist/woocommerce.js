@@ -123,10 +123,13 @@ class WooCommerceAdapter {
         if (!(data.date instanceof Date) || isNaN(data.date.getTime())) {
             errors.push("Invalid date");
         }
-        return {
+        const result = {
             valid: errors.length === 0,
-            errors: errors.length > 0 ? errors : undefined,
         };
+        if (errors.length > 0) {
+            result.errors = errors;
+        }
+        return result;
     }
 }
 exports.WooCommerceAdapter = WooCommerceAdapter;

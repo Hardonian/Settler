@@ -1,26 +1,26 @@
 /**
  * Admin Webhook Inbox
- * 
+ *
  * View and monitor Stripe webhook events for debugging and observability.
  */
 
-import { Suspense } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { createClient } from '@/lib/supabase/server';
-import { prisma } from '@/shared/db/prismaClient';
-import { redirect } from 'next/navigation';
-import { CheckCircle2, XCircle, Clock, AlertCircle } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { adminLogger } from '@/lib/admin/utils/logger';
+import { Suspense } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/shared/db/prismaClient";
+import { redirect } from "next/navigation";
+import { CheckCircle2, XCircle, Clock, AlertCircle } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { adminLogger } from "@/lib/admin/utils/logger";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 interface WebhookEvent {
   id: string;
   eventId: string;
   type: string;
-  status: 'received' | 'processed' | 'failed';
+  status: "received" | "processed" | "failed";
   receivedAt: Date;
   processedAt: Date | null;
   error: string | null;
@@ -31,7 +31,7 @@ async function getWebhookEvents(limit: number = 50): Promise<WebhookEvent[]> {
   try {
     const events = await prisma.stripeEvent.findMany({
       take: limit,
-      orderBy: { receivedAt: 'desc' },
+      orderBy: { receivedAt: "desc" },
       select: {
         id: true,
         eventId: true,
@@ -44,18 +44,18 @@ async function getWebhookEvents(limit: number = 50): Promise<WebhookEvent[]> {
       },
     });
 
-    return events.map(e => ({
+    return events.map((e: (typeof events)[0]) => ({
       id: e.id,
       eventId: e.eventId,
       type: e.type,
-      status: e.status as 'received' | 'processed' | 'failed',
+      status: e.status as "received" | "processed" | "failed",
       receivedAt: e.receivedAt,
       processedAt: e.processedAt,
       error: e.error,
       billingAccountId: e.billingAccountId,
     }));
   } catch (error) {
-    adminLogger.error('Error fetching webhook events', error);
+    adminLogger.error("Error fetching webhook events", error);
     return [];
   }
 }
@@ -64,14 +64,14 @@ async function getWebhookStats() {
   try {
     const [total, processed, failed, pending] = await Promise.all([
       prisma.stripeEvent.count(),
-      prisma.stripeEvent.count({ where: { status: 'processed' } }),
-      prisma.stripeEvent.count({ where: { status: 'failed' } }),
-      prisma.stripeEvent.count({ where: { status: 'received' } }),
+      prisma.stripeEvent.count({ where: { status: "processed" } }),
+      prisma.stripeEvent.count({ where: { status: "failed" } }),
+      prisma.stripeEvent.count({ where: { status: "received" } }),
     ]);
 
     return { total, processed, failed, pending };
   } catch (error) {
-    adminLogger.error('Error fetching webhook stats', error);
+    adminLogger.error("Error fetching webhook stats", error);
     return { total: 0, processed: 0, failed: 0, pending: 0 };
   }
 }
@@ -80,64 +80,62 @@ async function WebhookInboxContent() {
   try {
     // Check admin access
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      redirect('/signup');
+      redirect("/signup");
     }
 
     // Use proper super admin check
-    const { isSuperAdmin } = await import('@/lib/auth/super-admin');
+    const { isSuperAdmin } = await import("@/lib/auth/super-admin");
     const isAdmin = await isSuperAdmin();
 
     if (!isAdmin) {
-      redirect('/signup?next=' + encodeURIComponent('/admin/webhooks'));
+      redirect("/signup?next=" + encodeURIComponent("/admin/webhooks"));
     }
   } catch (error) {
-    adminLogger.error('Auth check error in webhooks page', error);
-    redirect('/signup');
+    adminLogger.error("Auth check error in webhooks page", error);
+    redirect("/signup");
   }
 
   let events: WebhookEvent[] = [];
   let stats = { total: 0, processed: 0, failed: 0, pending: 0 };
 
   try {
-    [events, stats] = await Promise.all([
-      getWebhookEvents(50),
-      getWebhookStats(),
-    ]);
+    [events, stats] = await Promise.all([getWebhookEvents(50), getWebhookStats()]);
   } catch (error) {
-    adminLogger.error('Error loading webhooks data', error);
+    adminLogger.error("Error loading webhooks data", error);
     // Continue with empty data - error already logged
   }
 
   const statusConfig = {
     processed: {
-      color: 'text-green-600',
-      bg: 'bg-green-100 dark:bg-green-900/30',
+      color: "text-green-600",
+      bg: "bg-green-100 dark:bg-green-900/30",
       icon: CheckCircle2,
-      label: 'Processed',
+      label: "Processed",
     },
     failed: {
-      color: 'text-red-600',
-      bg: 'bg-red-100 dark:bg-red-900/30',
+      color: "text-red-600",
+      bg: "bg-red-100 dark:bg-red-900/30",
       icon: XCircle,
-      label: 'Failed',
+      label: "Failed",
     },
     received: {
-      color: 'text-amber-600',
-      bg: 'bg-amber-100 dark:bg-amber-900/30',
+      color: "text-amber-600",
+      bg: "bg-amber-100 dark:bg-amber-900/30",
       icon: Clock,
-      label: 'Pending',
+      label: "Pending",
     },
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-          Webhook Inbox
-        </h1>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Webhook Inbox</h1>
         <p className="text-slate-600 dark:text-slate-400">
           Monitor Stripe webhook events and debug issues
         </p>
@@ -168,9 +166,7 @@ async function WebhookInboxContent() {
             <CardDescription>Failed</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">
-              {stats.failed.toLocaleString()}
-            </div>
+            <div className="text-2xl font-bold text-red-600">{stats.failed.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
@@ -194,9 +190,7 @@ async function WebhookInboxContent() {
         <CardContent>
           {events.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-slate-500 dark:text-slate-400 mb-2">
-                No webhook events found
-              </p>
+              <p className="text-slate-500 dark:text-slate-400 mb-2">No webhook events found</p>
               <p className="text-sm text-slate-400 dark:text-slate-500">
                 Webhook events will appear here once Stripe sends events to your endpoint.
               </p>
@@ -212,7 +206,9 @@ async function WebhookInboxContent() {
                     className="flex items-center justify-between p-4 border rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
                   >
                     <div className="flex items-center gap-4 flex-1">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${config.bg}`}>
+                      <div
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${config.bg}`}
+                      >
                         <Icon className={`w-5 h-5 ${config.color}`} />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -225,12 +221,19 @@ async function WebhookInboxContent() {
                           </Badge>
                         </div>
                         <div className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
-                          <div>Event ID: <code className="text-xs">{event.eventId}</code></div>
+                          <div>
+                            Event ID: <code className="text-xs">{event.eventId}</code>
+                          </div>
                           <div>
                             Received {formatDistanceToNow(event.receivedAt, { addSuffix: true })}
                           </div>
                           {event.billingAccountId && (
-                            <div>Account: <code className="text-xs">{event.billingAccountId.substring(0, 8)}...</code></div>
+                            <div>
+                              Account:{" "}
+                              <code className="text-xs">
+                                {event.billingAccountId.substring(0, 8)}...
+                              </code>
+                            </div>
                           )}
                         </div>
                         {event.error && (

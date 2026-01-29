@@ -46,8 +46,8 @@ export class NetSuiteAdapter implements Adapter {
    */
   async fetch(options: FetchOptions): Promise<NormalizedData[]> {
     // Ensure dates are strings (toISOString().split('T')[0] always returns a string)
-    const startDate: string = options.dateRange.start.toISOString().split("T")[0];
-    const endDate: string = options.dateRange.end.toISOString().split("T")[0];
+    const startDate = options.dateRange.start.toISOString().split("T")[0]!;
+    const endDate = options.dateRange.end.toISOString().split("T")[0]!;
 
     // NetSuite RESTlet or SuiteScript 2.0 REST API
     // This is a simplified implementation - in production, use NetSuite's REST API

@@ -6,10 +6,10 @@
 import { ConnectorDriver } from "./connector-driver";
 export interface TokenRefreshResult {
     refreshed: boolean;
-    accessToken?: string;
-    refreshToken?: string;
-    expiresIn?: number;
-    error?: string;
+    accessToken?: string | undefined;
+    refreshToken?: string | undefined;
+    expiresIn?: number | undefined;
+    error?: string | undefined;
 }
 /**
  * Refresh token for a connector if needed

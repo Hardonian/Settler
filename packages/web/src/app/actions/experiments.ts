@@ -85,15 +85,23 @@ export async function getExperiments(): Promise<ActionState<ExperimentWithTarget
       include: { targetPage: { select: { slug: true } } },
       orderBy: { createdAt: "desc" },
     });
-    const formattedExperiments: ExperimentWithTargetPage[] = experiments.map((experiment) => ({
-      id: experiment.id,
-      name: experiment.name,
-      slug: experiment.slug,
-      status: experiment.status,
-      targetPage: experiment.targetPage ? { slug: experiment.targetPage.slug } : null,
-    }));
+    const formattedExperiments: ExperimentWithTargetPage[] = experiments.map(
+      (experiment: {
+        id: string;
+        name: string;
+        slug: string;
+        status: string;
+        targetPage: { slug: string | null } | null;
+      }) => ({
+        id: experiment.id,
+        name: experiment.name,
+        slug: experiment.slug,
+        status: experiment.status,
+        targetPage: experiment.targetPage ? { slug: experiment.targetPage.slug } : null,
+      })
+    );
     return { success: true, data: formattedExperiments };
-  } catch (err) {
+  } catch (err: unknown) {
     console.error(err);
     return { success: false, error: "Failed to fetch experiments" };
   }
@@ -131,9 +139,7 @@ export async function getExperiment(id: string): Promise<ActionState<ExperimentW
   }
 }
 
-export async function createExperiment(
-  formData: FormData
-): Promise<ActionState<{ id: string }>> {
+export async function createExperiment(formData: FormData): Promise<ActionState<{ id: string }>> {
   try {
     const tenantId = await getAuthenticatedTenantId();
     const name = formData.get("name");

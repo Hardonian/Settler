@@ -5,7 +5,7 @@
  */
 export interface WebhookVerificationResult {
     valid: boolean;
-    error?: string;
+    error?: string | undefined;
 }
 /**
  * Verify Stripe webhook signature

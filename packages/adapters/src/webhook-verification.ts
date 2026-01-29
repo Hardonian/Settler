@@ -8,7 +8,7 @@ import { createHmac } from "crypto";
 
 export interface WebhookVerificationResult {
   valid: boolean;
-  error?: string;
+  error?: string | undefined;
 }
 
 /**

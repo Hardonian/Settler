@@ -1,17 +1,17 @@
 /**
  * Server Actions for Authentication
- * 
+ *
  * Interdependence Manifesto: These actions are the ONLY channels for client-side writes,
  * ensuring all data flows through Supabase with proper RLS checks.
  */
 
-'use server';
+"use server";
 
-import { createClient } from '@/lib/supabase/server';
-import { revalidatePath } from 'next/cache';
-import type { Database } from '@/types/database.types';
-import { trackSignupComplete } from '@/lib/analytics/conversion';
-import { emitLifecycleEventSafe, LifecycleEventType } from '@/lib/ops/lifecycle-events';
+import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
+import type { Database } from "@/types/database.types";
+import { trackSignupComplete } from "@/lib/analytics/conversion";
+import { emitLifecycleEventSafe, LifecycleEventType } from "@/lib/ops/lifecycle-events";
 
 export interface SignUpResult {
   success: boolean;
@@ -21,7 +21,7 @@ export interface SignUpResult {
 
 /**
  * Server Action: User Sign-up
- * 
+ *
  * Data Flow: Vercel Form → Next.js Server Action → Supabase profiles table (RLS Check) → Profile Page Reload
  */
 export async function signUpUser(
@@ -35,7 +35,7 @@ export async function signUpUser(
     if (acceptTerms !== true) {
       return {
         success: false,
-        error: 'You must accept the Terms of Service and Privacy Policy to create an account.',
+        error: "You must accept the Terms of Service and Privacy Policy to create an account.",
       };
     }
 
@@ -47,7 +47,7 @@ export async function signUpUser(
       password,
       options: {
         data: {
-          name: name || email.split('@')[0],
+          name: name || email.split("@")[0],
         },
       },
     });
@@ -62,7 +62,7 @@ export async function signUpUser(
     if (!authData.user) {
       return {
         success: false,
-        error: 'Failed to create user',
+        error: "Failed to create user",
       };
     }
 
@@ -70,46 +70,42 @@ export async function signUpUser(
     if (!authData.user.email) {
       return {
         success: false,
-        error: 'User email is required',
+        error: "User email is required",
       };
     }
 
-    const profileData: Database['public']['Tables']['profiles']['Insert'] = {
+    const profileData: Database["public"]["Tables"]["profiles"]["Insert"] = {
       id: authData.user.id,
       user_id: authData.user.id,
       email: authData.user.email,
-      name: name || (authData.user.email.split('@')[0] ?? null),
+      name: name || (authData.user.email.split("@")[0] ?? null),
       impact_score: 0,
     };
 
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .insert(profileData);
+    const { error: profileError } = await supabase.from("profiles").insert(profileData);
 
     if (profileError) {
       // If profile creation fails, we should handle it gracefully
       // The user is created in auth, but profile might already exist
-      console.error('Profile creation error:', profileError);
+      console.error("Profile creation error:", profileError);
     }
 
     // 3. Log sign-up activity
-    const activityData: Database['public']['Tables']['activity_log']['Insert'] = {
+    const activityData: Database["public"]["Tables"]["activity_log"]["Insert"] = {
       user_id: authData.user.id,
-      activity_type: 'signup',
-      entity_type: 'profile',
+      activity_type: "signup",
+      entity_type: "profile",
       entity_id: authData.user.id,
       metadata: {
-        source: 'web_signup',
+        source: "web_signup",
         timestamp: new Date().toISOString(),
       },
     };
 
-    const { error: activityError } = await supabase
-      .from('activity_log')
-      .insert(activityData);
+    const { error: activityError } = await supabase.from("activity_log").insert(activityData);
 
     if (activityError) {
-      console.error('Activity log error:', activityError);
+      console.error("Activity log error:", activityError);
       // Don't fail the sign-up if activity logging fails
     }
 
@@ -122,44 +118,46 @@ export async function signUpUser(
     await emitLifecycleEventSafe(LifecycleEventType.USER_SIGNED_UP, {
       userId: authData.user.id,
       properties: {
-        source: 'web_signup',
+        source: "web_signup",
         email: authData.user.email,
       },
     });
 
     // 6. Revalidate relevant paths
-    revalidatePath('/');
-    revalidatePath('/dashboard');
+    revalidatePath("/");
+    revalidatePath("/dashboard");
 
     return {
       success: true,
       userId: authData.user.id,
     };
   } catch (error: unknown) {
-    console.error('Sign-up error:', error);
+    console.error("Sign-up error:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'An unexpected error occurred',
+      error: error instanceof Error ? error.message : "An unexpected error occurred",
     };
   }
 }
 
 /**
  * Server Action: Log Activity
- * 
+ *
  * Tracks user engagement (clicks, scrolls, views) for community metrics
  */
 export async function logActivity(
   activityType: string,
   entityType?: string,
   entityId?: string,
-  metadata?: Database['public']['Tables']['activity_log']['Row']['metadata']
+  metadata?: Database["public"]["Tables"]["activity_log"]["Row"]["metadata"]
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const supabase = (await createClient()) as any;
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    const activityData: Database['public']['Tables']['activity_log']['Insert'] = {
+    const activityData: Database["public"]["Tables"]["activity_log"]["Insert"] = {
       user_id: user?.id ?? null, // Allow anonymous activity
       activity_type: activityType,
       entity_type: entityType ?? null,
@@ -167,21 +165,19 @@ export async function logActivity(
       metadata: metadata ?? {},
     };
 
-    const { error } = await supabase
-      .from('activity_log')
-      .insert(activityData);
+    const { error } = await supabase.from("activity_log").insert(activityData);
 
     if (error) {
-      console.error('Activity log error:', error);
+      console.error("Activity log error:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true };
   } catch (error: unknown) {
-    console.error('Log activity error:', error);
+    console.error("Log activity error:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to log activity',
+      error: error instanceof Error ? error.message : "Failed to log activity",
     };
   }
 }

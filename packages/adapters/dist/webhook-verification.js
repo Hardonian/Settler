@@ -16,28 +16,30 @@ const crypto_1 = require("crypto");
  */
 function verifyStripeWebhook(payload, signature, secret) {
     try {
-        const elements = signature.split(',');
-        const timestamp = elements.find((e) => e.startsWith('t='))?.split('=')[1];
-        const signatures = elements.filter((e) => e.startsWith('v1=')).map((e) => e.split('=')[1]);
+        const elements = signature.split(",");
+        const timestamp = elements.find((e) => e.startsWith("t="))?.split("=")[1];
+        const signatures = elements.filter((e) => e.startsWith("v1=")).map((e) => e.split("=")[1]);
         if (!timestamp || signatures.length === 0) {
-            return { valid: false, error: 'Invalid signature format' };
+            return { valid: false, error: "Invalid signature format" };
         }
         const signedPayload = `${timestamp}.${payload}`;
-        const expectedSignature = (0, crypto_1.createHmac)('sha256', secret)
-            .update(signedPayload)
-            .digest('hex');
+        const expectedSignature = (0, crypto_1.createHmac)("sha256", secret).update(signedPayload).digest("hex");
         const isValid = signatures.some((sig) => {
             if (!sig)
                 return false;
-            const expected = Buffer.from(expectedSignature, 'hex');
-            const received = Buffer.from(sig, 'hex');
-            return expected.length === received.length &&
-                (0, crypto_1.createHmac)('sha256', secret).update(signedPayload).digest('hex') === sig;
+            const expected = Buffer.from(expectedSignature, "hex");
+            const received = Buffer.from(sig, "hex");
+            return (expected.length === received.length &&
+                (0, crypto_1.createHmac)("sha256", secret).update(signedPayload).digest("hex") === sig);
         });
-        return { valid: isValid, error: isValid ? undefined : 'Invalid signature' };
+        const result = { valid: isValid };
+        if (!isValid) {
+            result.error = "Invalid signature";
+        }
+        return result;
     }
     catch (error) {
-        return { valid: false, error: error instanceof Error ? error.message : 'Verification failed' };
+        return { valid: false, error: error instanceof Error ? error.message : "Verification failed" };
     }
 }
 /**
@@ -45,14 +47,16 @@ function verifyStripeWebhook(payload, signature, secret) {
  */
 function verifyPlaidWebhook(payload, signature, secret) {
     try {
-        const expectedSignature = (0, crypto_1.createHmac)('sha256', secret)
-            .update(payload)
-            .digest('hex');
+        const expectedSignature = (0, crypto_1.createHmac)("sha256", secret).update(payload).digest("hex");
         const isValid = signature === expectedSignature;
-        return { valid: isValid, error: isValid ? undefined : 'Invalid signature' };
+        const result = { valid: isValid };
+        if (!isValid) {
+            result.error = "Invalid signature";
+        }
+        return result;
     }
     catch (error) {
-        return { valid: false, error: error instanceof Error ? error.message : 'Verification failed' };
+        return { valid: false, error: error instanceof Error ? error.message : "Verification failed" };
     }
 }
 /**
@@ -60,14 +64,16 @@ function verifyPlaidWebhook(payload, signature, secret) {
  */
 function verifyChargebeeWebhook(payload, signature, secret) {
     try {
-        const expectedSignature = (0, crypto_1.createHmac)('sha256', secret)
-            .update(payload)
-            .digest('hex');
+        const expectedSignature = (0, crypto_1.createHmac)("sha256", secret).update(payload).digest("hex");
         const isValid = signature === expectedSignature;
-        return { valid: isValid, error: isValid ? undefined : 'Invalid signature' };
+        const result = { valid: isValid };
+        if (!isValid) {
+            result.error = "Invalid signature";
+        }
+        return result;
     }
     catch (error) {
-        return { valid: false, error: error instanceof Error ? error.message : 'Verification failed' };
+        return { valid: false, error: error instanceof Error ? error.message : "Verification failed" };
     }
 }
 /**
@@ -75,14 +81,16 @@ function verifyChargebeeWebhook(payload, signature, secret) {
  */
 function verifyRecurlyWebhook(payload, signature, secret) {
     try {
-        const expectedSignature = (0, crypto_1.createHmac)('sha1', secret)
-            .update(payload)
-            .digest('hex');
+        const expectedSignature = (0, crypto_1.createHmac)("sha1", secret).update(payload).digest("hex");
         const isValid = signature === expectedSignature;
-        return { valid: isValid, error: isValid ? undefined : 'Invalid signature' };
+        const result = { valid: isValid };
+        if (!isValid) {
+            result.error = "Invalid signature";
+        }
+        return result;
     }
     catch (error) {
-        return { valid: false, error: error instanceof Error ? error.message : 'Verification failed' };
+        return { valid: false, error: error instanceof Error ? error.message : "Verification failed" };
     }
 }
 /**
@@ -90,14 +98,14 @@ function verifyRecurlyWebhook(payload, signature, secret) {
  */
 function verifyWebhook(providerId, payload, signature, secret) {
     switch (providerId.toLowerCase()) {
-        case 'stripe':
-        case 'stripe-connect':
+        case "stripe":
+        case "stripe-connect":
             return verifyStripeWebhook(payload, signature, secret);
-        case 'plaid':
+        case "plaid":
             return verifyPlaidWebhook(payload, signature, secret);
-        case 'chargebee':
+        case "chargebee":
             return verifyChargebeeWebhook(payload, signature, secret);
-        case 'recurly':
+        case "recurly":
             return verifyRecurlyWebhook(payload, signature, secret);
         default:
             // For providers without signature verification, return valid

@@ -10,10 +10,10 @@ import { encryptToken, decryptToken } from "./credential-encryption";
 
 export interface TokenRefreshResult {
   refreshed: boolean;
-  accessToken?: string;
-  refreshToken?: string;
-  expiresIn?: number;
-  error?: string;
+  accessToken?: string | undefined;
+  refreshToken?: string | undefined;
+  expiresIn?: number | undefined;
+  error?: string | undefined;
 }
 
 /**
