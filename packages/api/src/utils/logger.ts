@@ -67,7 +67,7 @@ function getRequestContext(): {
 }
 
 // Custom format that adds trace context and request context
-const contextFormat = winston.format((info) => {
+const contextFormat = format((info: winston.Logform.TransformableInfo) => {
   const traceContext = getTraceContext();
   const reqContext = getRequestContext();
   return {
@@ -77,14 +77,14 @@ const contextFormat = winston.format((info) => {
   };
 })();
 
-const logFormat = winston.format.combine(
+const logFormat = format.combine(
   contextFormat,
-  winston.format.timestamp(),
-  winston.format.errors({ stack: true }),
-  winston.format.json()
+  format.timestamp(),
+  format.errors({ stack: true }),
+  format.json()
 );
 
-export const logger = winston.createLogger({
+export const logger: winston.Logger = winston.createLogger({
   level: config.logging.level,
   format: logFormat,
   defaultMeta: {
@@ -92,10 +92,10 @@ export const logger = winston.createLogger({
     environment: config.nodeEnv,
   },
   transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.printf(
+    new transports.Console({
+      format: format.combine(
+        format.colorize(),
+        format.printf(
           ({
             timestamp,
             level,

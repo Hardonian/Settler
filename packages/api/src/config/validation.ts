@@ -72,7 +72,7 @@ export const env = cleanEnv(process.env, {
   DB_PASSWORD: str({
     ...(isBuild ? { default: BUILD_PLACEHOLDER } : {}),
     devDefault: "postgres",
-  }),
+  } as const),
   DB_SSL: bool({ default: false }),
   DB_POOL_MIN: num({ default: 5 }),
   DB_POOL_MAX: num({ default: 20 }),
@@ -92,12 +92,12 @@ export const env = cleanEnv(process.env, {
     ...(isBuild ? { default: BUILD_PLACEHOLDER } : {}),
     devDefault: "dev-secret-change-in-production",
     desc: "Secret key for JWT token signing",
-  }),
+  } as const),
   JWT_ACCESS_EXPIRY: str({ default: "15m" }),
   JWT_REFRESH_EXPIRY: str({ default: "7d" }),
   JWT_REFRESH_SECRET: str({
     desc: "Optional separate secret for refresh tokens",
-  }),
+  } as const),
 
   // Encryption Configuration
   // Runtime-only: provide default during build, will be validated at runtime
@@ -105,7 +105,7 @@ export const env = cleanEnv(process.env, {
     ...(isBuild ? { default: BUILD_PLACEHOLDER } : {}),
     devDefault: "dev-encryption-key-32-chars-long!!",
     desc: "32-byte key for AES-256-GCM encryption",
-  }),
+  } as const),
 
   // Rate Limiting
   RATE_LIMIT_DEFAULT: num({ default: 1000 }),
@@ -134,12 +134,12 @@ export const env = cleanEnv(process.env, {
 
   // Observability Configuration
   SERVICE_NAME: str({ default: "settler-api" }),
-  OTLP_ENDPOINT: url({}),
-  JAEGER_ENDPOINT: url({}),
+  OTLP_ENDPOINT: url({ default: undefined } as const),
+  JAEGER_ENDPOINT: url({ default: undefined } as const),
 
   // Sentry Configuration
-  SENTRY_DSN: url({}),
-  SENTRY_ENVIRONMENT: str({}),
+  SENTRY_DSN: url({ default: undefined } as const),
+  SENTRY_ENVIRONMENT: str({ default: undefined } as const),
   SENTRY_TRACES_SAMPLE_RATE: num({ default: 0.1 }),
 
   // Feature Flags
@@ -169,7 +169,7 @@ if (!isBuild && (env.NODE_ENV === "production" || env.NODE_ENV === "preview")) {
   if (
     env.ENCRYPTION_KEY === BUILD_PLACEHOLDER ||
     !env.ENCRYPTION_KEY ||
-    env.ENCRYPTION_KEY.length !== 32
+    (env.ENCRYPTION_KEY as string).length !== 32
   ) {
     throw new Error(
       `ENCRYPTION_KEY must be exactly 32 characters in ${env.NODE_ENV}. Current value: ${env.ENCRYPTION_KEY === BUILD_PLACEHOLDER ? "build placeholder (not set)" : "invalid length"}`
@@ -234,7 +234,7 @@ export const validatedConfig = {
     refreshSecret: env.JWT_REFRESH_SECRET || env.JWT_SECRET,
   },
   encryption: {
-    key: env.ENCRYPTION_KEY,
+    key: env.ENCRYPTION_KEY as string,
   },
   rateLimiting: {
     defaultLimit: env.RATE_LIMIT_DEFAULT,
@@ -248,7 +248,7 @@ export const validatedConfig = {
   dataRetention: {
     defaultDays: env.DATA_RETENTION_DAYS,
   },
-  allowedOrigins: env.ALLOWED_ORIGINS.split(",").map((o) => o.trim()),
+  allowedOrigins: (env.ALLOWED_ORIGINS as string).split(",").map((o) => o.trim()),
   logging: {
     level: env.LOG_LEVEL,
     samplingRate: env.LOG_SAMPLING_RATE,
