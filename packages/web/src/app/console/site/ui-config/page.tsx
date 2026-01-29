@@ -46,7 +46,9 @@ export default function RuntimeUiConfigPage() {
   async function load() {
     setLoading(true);
     try {
-      const res = await fetch(`/api/console/site/ui-config?environment=${encodeURIComponent(environment)}`);
+      const res = await fetch(
+        `/api/console/site/ui-config?environment=${encodeURIComponent(environment)}`
+      );
       if (!res.ok) throw new Error("Failed to load UI config");
       const data = await res.json();
       const resolved = data?.resolved;
@@ -62,8 +64,8 @@ export default function RuntimeUiConfigPage() {
         setChatbot(resolved.features?.chatbot ?? true);
         setFloatingHelp(resolved.features?.floatingHelp ?? true);
       }
-    } catch {
-      console.error(e);
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -108,9 +110,9 @@ export default function RuntimeUiConfigPage() {
       }
       await load();
       alert("Saved");
-    } catch {
-      console.error(e);
-      alert(e instanceof Error ? e.message : "Failed to save");
+    } catch (err) {
+      console.error(err);
+      alert(err instanceof Error ? err.message : "Failed to save");
     } finally {
       setSaving(false);
     }
@@ -190,7 +192,11 @@ export default function RuntimeUiConfigPage() {
           </div>
           <div className="space-y-2">
             <Label>Radius scale</Label>
-            <Input value={radiusScale} onChange={(e) => setRadiusScale(e.target.value)} inputMode="decimal" />
+            <Input
+              value={radiusScale}
+              onChange={(e) => setRadiusScale(e.target.value)}
+              inputMode="decimal"
+            />
           </div>
           <div className="space-y-2">
             <Label>Card elevation</Label>
@@ -279,4 +285,3 @@ export default function RuntimeUiConfigPage() {
     </div>
   );
 }
-

@@ -1,17 +1,17 @@
 /**
  * Site Designer Main Page
- * 
+ *
  * Lists all pages and provides navigation to editors.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, FileText, Palette } from 'lucide-react';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Edit, Trash2, FileText, Palette } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -19,16 +19,16 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 
 interface TenantPage {
   id: string;
@@ -44,8 +44,8 @@ export default function SiteDesignerPage() {
   const [pages, setPages] = useState<TenantPage[]>([]);
   const [loading, setLoading] = useState(true);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [newPageSlug, setNewPageSlug] = useState('');
-  const [newPageType, setNewPageType] = useState('marketing');
+  const [newPageSlug, setNewPageSlug] = useState("");
+  const [newPageType, setNewPageType] = useState("marketing");
   const [creating, setCreating] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -55,12 +55,12 @@ export default function SiteDesignerPage() {
 
   async function loadPages() {
     try {
-      const response = await fetch('/api/console/site/pages');
-      if (!response.ok) throw new Error('Failed to load pages');
+      const response = await fetch("/api/console/site/pages");
+      if (!response.ok) throw new Error("Failed to load pages");
       const data = await response.json();
       setPages(data.pages || []);
-    } catch {
-      console.error('Error loading pages:', error);
+    } catch (err) {
+      console.error("Error loading pages:", err);
     } finally {
       setLoading(false);
     }
@@ -68,12 +68,12 @@ export default function SiteDesignerPage() {
 
   async function handleCreatePage() {
     if (!newPageSlug.trim()) return;
-    
+
     setCreating(true);
     try {
-      const response = await fetch('/api/console/site/pages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/console/site/pages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           slug: newPageSlug.trim(),
           pageType: newPageType,
@@ -81,41 +81,37 @@ export default function SiteDesignerPage() {
           isDraft: true,
         }),
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to create page');
+        throw new Error(error.error || "Failed to create page");
       }
-      
+
       setCreateDialogOpen(false);
-      setNewPageSlug('');
-      setNewPageType('marketing');
+      setNewPageSlug("");
+      setNewPageType("marketing");
       await loadPages();
-    } catch {
-      console.error('Error creating page:', error);
-      alert(error instanceof Error ? error.message : 'Failed to create page');
-    } finally {
-      setCreating(false);
+    } catch (err) {
+      console.error("Error creating page:", err);
+      alert(err instanceof Error ? err.message : "Failed to create page");
     }
   }
 
   async function handleDeletePage(id: string) {
-    if (!confirm('Are you sure you want to delete this page?')) return;
-    
+    if (!confirm("Are you sure you want to delete this page?")) return;
+
     setDeletingId(id);
     try {
       const response = await fetch(`/api/console/site/pages/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
-      
-      if (!response.ok) throw new Error('Failed to delete page');
-      
+
+      if (!response.ok) throw new Error("Failed to delete page");
+
       await loadPages();
-    } catch {
-      console.error('Error deleting page:', error);
-      alert('Failed to delete page');
-    } finally {
-      setDeletingId(null);
+    } catch (err) {
+      console.error("Error deleting page:", err);
+      alert("Failed to delete page");
     }
   }
 
@@ -134,9 +130,7 @@ export default function SiteDesignerPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            Site Designer
-          </h1>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Site Designer</h1>
           <p className="text-slate-600 dark:text-slate-400">
             Manage your site pages, branding, and navigation.
           </p>
@@ -169,22 +163,14 @@ export default function SiteDesignerPage() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <CardTitle>{page.seoTitle || page.slug || 'Untitled'}</CardTitle>
-                      {page.isDraft && (
-                        <Badge variant="secondary">Draft</Badge>
-                      )}
+                      <CardTitle>{page.seoTitle || page.slug || "Untitled"}</CardTitle>
+                      {page.isDraft && <Badge variant="secondary">Draft</Badge>}
                       <Badge variant="outline">{page.pageType}</Badge>
                     </div>
-                    <CardDescription>
-                      /{page.slug || 'home'}
-                    </CardDescription>
+                    <CardDescription>/{page.slug || "home"}</CardDescription>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      asChild
-                    >
+                    <Button variant="ghost" size="sm" asChild>
                       <Link href={`/console/site/pages/${page.id}`}>
                         <Edit className="w-4 h-4" />
                       </Link>
@@ -277,9 +263,7 @@ export default function SiteDesignerPage() {
                 placeholder="pricing"
                 className="mt-1"
               />
-              <p className="text-xs text-slate-500 mt-1">
-                URL path (e.g., "pricing" for /pricing)
-              </p>
+              <p className="text-xs text-slate-500 mt-1">URL path (e.g., "pricing" for /pricing)</p>
             </div>
             <div>
               <Label htmlFor="pageType">Page Type</Label>
@@ -297,14 +281,11 @@ export default function SiteDesignerPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setCreateDialogOpen(false)}
-            >
+            <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>
               Cancel
             </Button>
             <Button onClick={handleCreatePage} disabled={creating || !newPageSlug.trim()}>
-              {creating ? 'Creating...' : 'Create Page'}
+              {creating ? "Creating..." : "Create Page"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -1,0 +1,4 @@
+
+> @settler/edge-node@1.0.0 lint C:\Users\scott\Documents\GitHub\Settler\packages\edge-node
+> eslint src --ext .ts
+

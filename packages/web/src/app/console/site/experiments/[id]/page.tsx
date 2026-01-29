@@ -56,22 +56,8 @@ export default function ExperimentDetailPage() {
       const data = await response.json();
       setResults(data.results || []);
     } catch (err) {
-      console.error('Error loading results:', err);
+      console.error("Error loading results:", err);
     }
-  }
-
-  async function handleStart() {
-    try {
-      const response = await fetch(`/api/console/site/experiments/${experimentId}/start`, {
-        method: 'POST',
-      });
-      if (!response.ok) throw new Error('Failed to start experiment');
-      await loadExperiment();
-    } catch (err) {
-      console.error('Error starting experiment:', err);
-      alert('Failed to start experiment');
-    }
-  }
   }
 
   async function handleStart() {
@@ -81,8 +67,8 @@ export default function ExperimentDetailPage() {
       });
       if (!response.ok) throw new Error("Failed to start experiment");
       await loadExperiment();
-    } catch {
-      console.error("Error starting experiment:", error);
+    } catch (err) {
+      console.error("Error starting experiment:", err);
       alert("Failed to start experiment");
     }
   }

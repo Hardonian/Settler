@@ -186,7 +186,7 @@ export default function FlagsPlayground() {
         body: data,
         duration,
       });
-    } catch {
+    } catch (err) {
       const duration = Date.now() - startTime;
       if (err instanceof Error && err.name === "AbortError") {
         setError({

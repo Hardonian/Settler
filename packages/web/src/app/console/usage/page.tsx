@@ -1,17 +1,24 @@
 /**
  * Console Usage & Metrics Page
- * 
+ *
  * Shows usage statistics and metrics across all services.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Activity, TrendingUp, AlertCircle } from 'lucide-react';
-import { format } from 'date-fns';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Activity, TrendingUp, AlertCircle } from "lucide-react";
+import { format } from "date-fns";
 
 interface UsageEvent {
   id: string;
@@ -43,7 +50,7 @@ export default function UsagePage() {
   const [summary, setSummary] = useState<UsageSummary | null>(null);
   const [events, setEvents] = useState<UsageEvent[]>([]);
   const [loading, setLoading] = useState(true);
-  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('7d');
+  const [timeRange, setTimeRange] = useState<"7d" | "30d" | "90d">("7d");
 
   useEffect(() => {
     fetchUsageData();
@@ -52,7 +59,7 @@ export default function UsagePage() {
   const fetchUsageData = async () => {
     try {
       setLoading(true);
-      const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90;
+      const days = timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : 90;
       // Fetch usage data with real-time tracking
       const res = await fetch(`/api/console/usage?days=${days}`);
       if (res.ok) {
@@ -81,8 +88,8 @@ export default function UsagePage() {
         });
         setEvents([]);
       }
-    } catch {
-      console.error('Failed to fetch usage data:', error);
+    } catch (err) {
+      console.error("Failed to fetch usage data:", err);
       // Set empty state on error
       setSummary({
         totalCalls: 0,
@@ -119,7 +126,7 @@ export default function UsagePage() {
         </div>
         <select
           value={timeRange}
-          onChange={(e) => setTimeRange(e.target.value as '7d' | '30d' | '90d')}
+          onChange={(e) => setTimeRange(e.target.value as "7d" | "30d" | "90d")}
           className="w-32 px-3 py-2 border rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
         >
           <option value="7d">Last 7 days</option>
@@ -133,9 +140,7 @@ export default function UsagePage() {
         <Card>
           <CardHeader className="pb-3">
             <CardDescription>Total API Calls</CardDescription>
-            <CardTitle className="text-3xl">
-              {summary?.totalCalls.toLocaleString() || 0}
-            </CardTitle>
+            <CardTitle className="text-3xl">{summary?.totalCalls.toLocaleString() || 0}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
@@ -148,9 +153,7 @@ export default function UsagePage() {
         <Card>
           <CardHeader className="pb-3">
             <CardDescription>Error Rate</CardDescription>
-            <CardTitle className="text-3xl">
-              {(summary?.errorRate || 0).toFixed(2)}%
-            </CardTitle>
+            <CardTitle className="text-3xl">{(summary?.errorRate || 0).toFixed(2)}%</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2 text-sm">
@@ -177,9 +180,7 @@ export default function UsagePage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-slate-600 dark:text-slate-400">
-              Services with usage
-            </div>
+            <div className="text-sm text-slate-600 dark:text-slate-400">Services with usage</div>
           </CardContent>
         </Card>
       </div>
@@ -199,60 +200,70 @@ export default function UsagePage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {summary && Object.entries(summary.byService).map(([service, count]) => {
-                  const serviceKey = service.replace('settler-', '') as 'reconcile' | 'receipts' | 'featureFlags' | 'playground';
-                  const limit = summary.limits?.[serviceKey];
-                  const hasLimit = limit && limit.limit > 0;
-                  const usagePercent = hasLimit ? (limit.current / limit.limit) * 100 : (count / (summary.totalCalls || 1)) * 100;
-                  
-                  return (
-                    <div key={service} className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium capitalize">
-                          {service.replace('settler-', '').replace('-', ' ')}
-                        </span>
-                        <div className="flex items-center gap-4">
-                          {hasLimit ? (
-                            <>
-                              <span className="text-sm text-slate-600 dark:text-slate-400">
-                                {limit.current.toLocaleString()} / {limit.limit === -1 ? '∞' : limit.limit.toLocaleString()}
-                              </span>
-                              {limit.remaining !== -1 && (
-                                <span className={`text-xs px-2 py-1 rounded ${
-                                  limit.remaining < limit.limit * 0.1 
-                                    ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                                    : limit.remaining < limit.limit * 0.25
-                                    ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
-                                    : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                }`}>
-                                  {limit.remaining.toLocaleString()} remaining
+                {summary &&
+                  Object.entries(summary.byService).map(([service, count]) => {
+                    const serviceKey = service.replace("settler-", "") as
+                      | "reconcile"
+                      | "receipts"
+                      | "featureFlags"
+                      | "playground";
+                    const limit = summary.limits?.[serviceKey];
+                    const hasLimit = limit && limit.limit > 0;
+                    const usagePercent = hasLimit
+                      ? (limit.current / limit.limit) * 100
+                      : (count / (summary.totalCalls || 1)) * 100;
+
+                    return (
+                      <div key={service} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium capitalize">
+                            {service.replace("settler-", "").replace("-", " ")}
+                          </span>
+                          <div className="flex items-center gap-4">
+                            {hasLimit ? (
+                              <>
+                                <span className="text-sm text-slate-600 dark:text-slate-400">
+                                  {limit.current.toLocaleString()} /{" "}
+                                  {limit.limit === -1 ? "∞" : limit.limit.toLocaleString()}
                                 </span>
-                              )}
-                            </>
-                          ) : (
-                            <span className="text-slate-600 dark:text-slate-400">
-                              {count.toLocaleString()} calls
-                            </span>
-                          )}
+                                {limit.remaining !== -1 && (
+                                  <span
+                                    className={`text-xs px-2 py-1 rounded ${
+                                      limit.remaining < limit.limit * 0.1
+                                        ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                                        : limit.remaining < limit.limit * 0.25
+                                          ? "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200"
+                                          : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                                    }`}
+                                  >
+                                    {limit.remaining.toLocaleString()} remaining
+                                  </span>
+                                )}
+                              </>
+                            ) : (
+                              <span className="text-slate-600 dark:text-slate-400">
+                                {count.toLocaleString()} calls
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full ${
+                              hasLimit && usagePercent > 90
+                                ? "bg-red-600"
+                                : hasLimit && usagePercent > 75
+                                  ? "bg-amber-600"
+                                  : "bg-blue-600"
+                            }`}
+                            style={{
+                              width: `${Math.min(usagePercent, 100)}%`,
+                            }}
+                          />
                         </div>
                       </div>
-                      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                        <div
-                          className={`h-2 rounded-full ${
-                            hasLimit && usagePercent > 90
-                              ? 'bg-red-600'
-                              : hasLimit && usagePercent > 75
-                              ? 'bg-amber-600'
-                              : 'bg-blue-600'
-                          }`}
-                          style={{
-                            width: `${Math.min(usagePercent, 100)}%`,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
                 {(!summary || Object.keys(summary.byService).length === 0) && (
                   <div className="text-center py-8 text-slate-500 dark:text-slate-400">
                     No usage data available for this period.
@@ -271,17 +282,18 @@ export default function UsagePage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {summary && Object.entries(summary.byOperation)
-                  .sort(([, a], [, b]) => b - a)
-                  .slice(0, 10)
-                  .map(([operation, count]) => (
-                    <div key={operation} className="flex items-center justify-between py-2">
-                      <code className="text-sm">{operation}</code>
-                      <span className="text-slate-600 dark:text-slate-400">
-                        {count.toLocaleString()}
-                      </span>
-                    </div>
-                  ))}
+                {summary &&
+                  Object.entries(summary.byOperation)
+                    .sort(([, a], [, b]) => b - a)
+                    .slice(0, 10)
+                    .map(([operation, count]) => (
+                      <div key={operation} className="flex items-center justify-between py-2">
+                        <code className="text-sm">{operation}</code>
+                        <span className="text-slate-600 dark:text-slate-400">
+                          {count.toLocaleString()}
+                        </span>
+                      </div>
+                    ))}
               </div>
             </CardContent>
           </Card>
@@ -307,10 +319,10 @@ export default function UsagePage() {
                   {events.map((event) => (
                     <TableRow key={event.id}>
                       <TableCell className="text-sm">
-                        {format(new Date(event.timestamp), 'PPp')}
+                        {format(new Date(event.timestamp), "PPp")}
                       </TableCell>
                       <TableCell className="capitalize">
-                        {event.service.replace('settler-', '').replace('-', ' ')}
+                        {event.service.replace("settler-", "").replace("-", " ")}
                       </TableCell>
                       <TableCell>
                         <code className="text-xs">{event.operation}</code>

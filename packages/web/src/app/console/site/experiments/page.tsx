@@ -72,10 +72,9 @@ export default function ExperimentsPage() {
       if (!response.ok) throw new Error("Failed to start experiment");
       await loadExperiments();
     } catch (err) {
-      console.error('Error starting experiment:', err);
-      alert('Failed to start experiment');
+      console.error("Error starting experiment:", err);
+      alert("Failed to start experiment");
     }
-  }
   }
 
   function getStatusColor(status: string) {

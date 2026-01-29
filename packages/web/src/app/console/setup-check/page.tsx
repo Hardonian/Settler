@@ -118,8 +118,8 @@ async function SetupChecks() {
         status: "pass",
         message: "Table exists and accessible",
       });
-    } catch {
-      const errorMsg = error instanceof Error ? error.message : "Unknown error";
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : "Unknown error";
       if (
         errorMsg.includes("does not exist") ||
         errorMsg.includes("relation") ||

@@ -65,9 +65,9 @@ export default function NavigationEditorPage() {
       }
 
       alert("Navigation saved successfully");
-    } catch {
-      console.error("Error saving navigation:", error);
-      alert(error instanceof Error ? error.message : "Failed to save navigation");
+    } catch (err) {
+      console.error("Error saving navigation:", err);
+      alert(err instanceof Error ? err.message : "Failed to save navigation");
     } finally {
       setSaving(false);
     }

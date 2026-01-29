@@ -15,6 +15,7 @@ import {
   NormalizedPayout,
   ConnectorError,
 } from "../connector-driver";
+import { extractStringField } from "../types/api-responses";
 
 export class AmazonSellerDriver implements ConnectorDriver {
   readonly metadata: ConnectorMetadata = {
@@ -42,6 +43,18 @@ export class AmazonSellerDriver implements ConnectorDriver {
     // If SP-API credentials provided, test API connection
     if (credentials.sp_api_client_id && credentials.sp_api_client_secret) {
       try {
+        const clientId = extractStringField(credentials, "sp_api_client_id");
+        const clientSecret = extractStringField(credentials, "sp_api_client_secret");
+        const refreshToken = extractStringField(credentials, "sp_api_refresh_token");
+
+        if (!clientId || !clientSecret || !refreshToken) {
+          return {
+            success: false,
+            error: "Missing required SP-API credentials",
+            message: "SP-API client_id, client_secret, and refresh_token are required",
+          };
+        }
+
         // Test SP-API connection
         const tokenResponse = await fetch("https://api.amazon.com/auth/o2/token", {
           method: "POST",
@@ -50,9 +63,9 @@ export class AmazonSellerDriver implements ConnectorDriver {
           },
           body: new URLSearchParams({
             grant_type: "refresh_token",
-            refresh_token: credentials.sp_api_refresh_token as string,
-            client_id: credentials.sp_api_client_id as string,
-            client_secret: credentials.sp_api_client_secret as string,
+            refresh_token: refreshToken,
+            client_id: clientId,
+            client_secret: clientSecret,
           }),
         });
 
