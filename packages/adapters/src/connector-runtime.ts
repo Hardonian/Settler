@@ -636,9 +636,9 @@ export class ConnectorRuntime {
 
     // Process transactions in batches
     if (data.transactions && data.transactions.length > 0) {
-      const batches = [];
+      const batches: typeof data.transactions[] = [];
       for (let i = 0; i < data.transactions.length; i += batchSize) {
-        batches.push(data.transactions.slice(i, i + batchSize));
+        batches.push(data.transactions.slice(i, i + batchSize) as typeof data.transactions);
       }
 
       for (const batch of batches) {

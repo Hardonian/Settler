@@ -2,14 +2,3 @@
 > @settler/edge-node@1.0.0 typecheck C:\Users\scott\Documents\GitHub\Settler\packages\edge-node
 > tsc --noEmit
 
-src/index.ts(8,25): error TS2307: Cannot find module 'commander' or its corresponding type declarations.
-src/index.ts(9,19): error TS2307: Cannot find module 'chalk' or its corresponding type declarations.
-src/services/AnomalyDetectionService.ts(6,22): error TS2307: Cannot find module 'better-sqlite3' or its corresponding type declarations.
-src/services/EdgeNodeService.ts(6,38): error TS2307: Cannot find module 'axios' or its corresponding type declarations.
-src/services/EdgeNodeService.ts(7,22): error TS2307: Cannot find module 'better-sqlite3' or its corresponding type declarations.
-src/services/EdgeNodeService.ts(16,30): error TS2307: Cannot find module 'uuid' or its corresponding type declarations.
-src/services/IngestionService.ts(6,22): error TS2307: Cannot find module 'better-sqlite3' or its corresponding type declarations.
-src/services/MatchingService.ts(6,22): error TS2307: Cannot find module 'better-sqlite3' or its corresponding type declarations.
-src/services/SyncService.ts(6,31): error TS2307: Cannot find module 'axios' or its corresponding type declarations.
-src/services/SyncService.ts(7,22): error TS2307: Cannot find module 'better-sqlite3' or its corresponding type declarations.
-src/utils/logger.ts(1,21): error TS2307: Cannot find module 'winston' or its corresponding type declarations.

@@ -224,7 +224,7 @@ export async function POST(request: NextRequest) {
   try {
     // Verify signature using RAW body
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-  } catch (error) {
+  } catch (err) {
     const error = err as Error;
     await safeLogger.error('[Stripe Webhook] Signature verification failed', {
       error: error.message,

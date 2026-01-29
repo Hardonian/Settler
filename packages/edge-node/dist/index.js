@@ -99,12 +99,13 @@ program
             dataDir: config_1.config.dataDir,
         });
         const status = service.getStatus();
-        console.log(chalk_1.default.bold("Edge Node Status:"));
-        console.log(`  Node ID: ${status.nodeId || "Not enrolled"}`);
-        console.log(`  Status: ${status.status || "Unknown"}`);
-        console.log(`  Last Heartbeat: ${status.lastHeartbeat || "Never"}`);
-        console.log(`  Jobs Processed: ${status.jobsProcessed || 0}`);
-        console.log(`  Local Storage: ${status.localStorageUsed || 0} MB`);
+        // Use logger instead of console.log for consistency
+        logger_1.logger.info("Edge Node Status:");
+        logger_1.logger.info(`  Node ID: ${status.nodeId || "Not enrolled"}`);
+        logger_1.logger.info(`  Status: ${status.status || "Unknown"}`);
+        logger_1.logger.info(`  Last Heartbeat: ${status.lastHeartbeat || "Never"}`);
+        logger_1.logger.info(`  Jobs Processed: ${status.jobsProcessed || 0}`);
+        logger_1.logger.info(`  Local Storage: ${status.localStorageUsed || 0} MB`);
     }
     catch (error) {
         logger_1.logger.error("Failed to get status", error);
