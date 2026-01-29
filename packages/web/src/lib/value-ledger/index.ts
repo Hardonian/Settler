@@ -280,9 +280,9 @@ export async function recordReceiptProcessed(
     billingAccountId,
     ...(options.tenantId ? { tenantId: options.tenantId } : {}),
     ...(options.userId ? { userId: options.userId } : {}),
-    eventType: 'receipt_processed',
+    eventType: "receipt_processed",
     quantity: 1,
-    unit: 'receipt',
+    unit: "receipt",
     metadata: {
       receiptId: options.receiptId,
       totalAmount: options.totalAmount,
