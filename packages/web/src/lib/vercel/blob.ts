@@ -63,8 +63,8 @@ export const blob = {
         url: result.url,
         downloadUrl: result.downloadUrl ?? result.url,
         pathname: result.pathname,
-        contentType: result.contentType,
-        size: "size" in result ? (result.size as number) : undefined,
+        ...(result.contentType ? { contentType: result.contentType } : {}),
+        ...("size" in result && result.size !== undefined ? { size: result.size as number } : {}),
       };
     } catch (error) {
       console.error(`[Blob] Error uploading file "${pathname}":`, error);

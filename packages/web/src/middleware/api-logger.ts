@@ -184,7 +184,7 @@ export async function logApiRequest(
       query,
       body,
       responseBody,
-      error,
+      ...(error ? { error } : {}),
       userAgent,
       ipAddress: ipAddress !== "unknown" ? ipAddress : undefined,
     });
