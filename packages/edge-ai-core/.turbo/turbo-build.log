@@ -1,27 +1,12 @@
 
 > @settler/edge-ai-core@1.0.0 prebuild C:\Users\scott\Documents\GitHub\Settler\packages\edge-ai-core
-> npm run typecheck
+> pnpm run typecheck
 
-npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
-npm warn config `--include=optional` to include them.
-npm warn config
-npm warn config       Default value does install optional deps unless otherwise omitted.
-npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
-npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm.
-npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
-npm warn config `--include=optional` to include them.
-npm warn config
-npm warn config       Default value does install optional deps unless otherwise omitted.
 
-> @settler/edge-ai-core@1.0.0 typecheck
+> @settler/edge-ai-core@1.0.0 typecheck C:\Users\scott\Documents\GitHub\Settler\packages\edge-ai-core
 > tsc --noEmit
 
-The system cannot find the path specified.
-npm error Lifecycle script `typecheck` failed with error:
-npm error code 1
-npm error path C:\Users\scott\Documents\GitHub\Settler\packages\edge-ai-core
-npm error workspace @settler/edge-ai-core@1.0.0
-npm error location C:\Users\scott\Documents\GitHub\Settler\packages\edge-ai-core
-npm error command failed
-npm error command C:\WINDOWS\system32\cmd.exe /d /s /c tsc --noEmit
- ELIFECYCLE  Command failed with exit code 1.
+
+> @settler/edge-ai-core@1.0.0 build C:\Users\scott\Documents\GitHub\Settler\packages\edge-ai-core
+> tsc
+

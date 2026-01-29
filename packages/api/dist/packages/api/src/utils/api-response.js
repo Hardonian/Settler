@@ -56,7 +56,7 @@ function sendError(res, statusCode, code, message, details, traceId) {
         response.details = details;
     }
     // Extract traceId from request if available
-    const requestTraceId = res.req.traceId;
+    const requestTraceId = res.req ? res.req.traceId : undefined;
     const finalTraceId = traceId || requestTraceId;
     if (finalTraceId) {
         response.traceId = finalTraceId;
