@@ -97,7 +97,7 @@ export const env = cleanEnv(process.env, {
   JWT_REFRESH_EXPIRY: str({ default: "7d" }),
   JWT_REFRESH_SECRET: str({
     desc: "Optional separate secret for refresh tokens",
-  } as const),
+  }),
 
   // Encryption Configuration
   // Runtime-only: provide default during build, will be validated at runtime
@@ -105,7 +105,7 @@ export const env = cleanEnv(process.env, {
     ...(isBuild ? { default: BUILD_PLACEHOLDER } : {}),
     devDefault: "dev-encryption-key-32-chars-long!!",
     desc: "32-byte key for AES-256-GCM encryption",
-  } as const),
+  }),
 
   // Rate Limiting
   RATE_LIMIT_DEFAULT: num({ default: 1000 }),
