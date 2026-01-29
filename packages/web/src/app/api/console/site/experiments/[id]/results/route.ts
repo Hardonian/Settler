@@ -64,19 +64,21 @@ export const GET = withSecurity(
         byVariant.set(e.variantKey, v);
       }
 
-      const results: VariantResult[] = experiment.variants.map((v) => {
-        const counts = byVariant.get(v.key) ?? { views: 0, clicks: 0, conversions: 0 };
-        const conversionRate =
-          counts.views > 0 ? Math.round((counts.conversions / counts.views) * 10000) / 100 : 0;
-        return {
-          key: v.key,
-          label: v.label,
-          views: counts.views,
-          clicks: counts.clicks,
-          conversions: counts.conversions,
-          conversionRate,
-        };
-      });
+      const results: VariantResult[] = experiment.variants.map(
+        (v: { key: string; label: string }) => {
+          const counts = byVariant.get(v.key) ?? { views: 0, clicks: 0, conversions: 0 };
+          const conversionRate =
+            counts.views > 0 ? Math.round((counts.conversions / counts.views) * 10000) / 100 : 0;
+          return {
+            key: v.key,
+            label: v.label,
+            views: counts.views,
+            clicks: counts.clicks,
+            conversions: counts.conversions,
+            conversionRate,
+          };
+        }
+      );
 
       return NextResponse.json({ results }, { status: 200 });
     } catch (error) {
@@ -85,4 +87,3 @@ export const GET = withSecurity(
   },
   { rateLimit: { windowMs: 60_000, maxRequests: 60 }, requireAuth: true }
 );
-
