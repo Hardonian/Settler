@@ -21,7 +21,7 @@ interface Toast {
 
 interface ToastContextType {
   toasts: Toast[];
-  showToast: (toast: Omit<Toast, "id">) => void;
+  showToast: (toast: Toast) => void;
   hideToast: (id: string) => void;
   success: (title: string, message?: string) => void;
   error: (title: string, message?: string) => void;
