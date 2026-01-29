@@ -38,20 +38,24 @@ export function validateApiKeyInput(input: unknown): {
     };
   }
 
-  // Sanitize string inputs
-  const sanitized = {
-    ...result.data,
-    name: result.data.name ? sanitizeString(result.data.name, 100) : undefined,
-  };
+  // Sanitize string inputs and build result with conditional spreading
+  const data: { name?: string; scopes?: string[]; expiresAt?: Date } = {};
+
+  if (result.data.name !== undefined) {
+    data.name = sanitizeString(result.data.name, 100);
+  }
+
+  if (result.data.scopes !== undefined) {
+    data.scopes = result.data.scopes;
+  }
+
+  if (result.data.expiresAt !== undefined) {
+    data.expiresAt = new Date(result.data.expiresAt);
+  }
 
   return {
     valid: true,
-    data: {
-      ...sanitized,
-      ...(result.data.expiresAt !== undefined
-        ? { expiresAt: new Date(result.data.expiresAt) }
-        : {}),
-    },
+    data,
   };
 }
 
