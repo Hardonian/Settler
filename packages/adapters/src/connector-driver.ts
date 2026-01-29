@@ -249,6 +249,27 @@ export interface ConnectorDriver {
   /**
    * Handle webhook payload (for connectors that support webhooks)
    */
+  handleWebhook?(payload: WebhookPayload): Promise<{
+    success: boolean;
+    error?: string;
+    data?: unknown;
+  }>;
+
+  /**
+   * Handle webhook payload (for connectors that support webhooks and auth)
+   */
+  handleWebhook?(
+    payload: WebhookPayload,
+    credentials: Record<string, unknown>
+  ): Promise<{
+    success: boolean;
+    error?: string;
+    data?: unknown;
+  }>;
+
+  /**
+   * Handle webhook payload (for connectors that support webhooks and auth)
+   */
   handleWebhook?(
     payload: WebhookPayload,
     credentials: Record<string, unknown>
