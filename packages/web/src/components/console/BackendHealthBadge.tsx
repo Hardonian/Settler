@@ -76,7 +76,7 @@ export function BackendHealthBadge() {
             });
           }
         }
-      } catch {
+      } catch (error: unknown) {
         // Top-level error - log but don't crash
         console.error('[BackendHealthBadge] Health check failed:', error);
         if (mounted) {

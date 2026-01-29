@@ -58,7 +58,7 @@ export function ExceptionQueue({ jobId }: { jobId?: string }) {
       const response = await fetch(`/api/v1/exceptions?${params.toString()}`);
       const data = await response.json();
       setExceptions(data.data || []);
-    } catch {
+    } catch (error: unknown) {
       console.error('Failed to load exceptions:', error);
     } finally {
       setLoading(false);
@@ -73,7 +73,7 @@ export function ExceptionQueue({ jobId }: { jobId?: string }) {
       const response = await fetch(`/api/v1/exceptions/stats?${params.toString()}`);
       const data = await response.json();
       setStats(data.data || { total: 0, open: 0, resolved: 0, high: 0 });
-    } catch {
+    } catch (error: unknown) {
       console.error('Failed to load stats:', error);
     }
   };
@@ -87,7 +87,7 @@ export function ExceptionQueue({ jobId }: { jobId?: string }) {
       });
       loadExceptions();
       loadStats();
-    } catch {
+    } catch (error: unknown) {
       console.error('Failed to resolve exception:', error);
     }
   };
@@ -107,7 +107,7 @@ export function ExceptionQueue({ jobId }: { jobId?: string }) {
       setSelectedExceptions(new Set());
       loadExceptions();
       loadStats();
-    } catch {
+    } catch (error: unknown) {
       console.error('Failed to bulk resolve:', error);
     }
   };

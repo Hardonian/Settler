@@ -31,7 +31,7 @@ export function OpsCustomers() {
         if (!response.ok) throw new Error('Failed to fetch');
         const data = await response.json();
         setCustomers(data.customers || []);
-      } catch {
+      } catch (error: unknown) {
         console.error('Failed to fetch customers:', error);
         setCustomers([]);
       } finally {

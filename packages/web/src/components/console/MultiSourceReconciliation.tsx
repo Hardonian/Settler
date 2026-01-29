@@ -94,7 +94,7 @@ export function MultiSourceReconciliation() {
 
       const data = await res.json();
       setJob(data);
-    } catch {
+    } catch (error: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to create job');
     } finally {
       setLoading(false);
@@ -139,7 +139,7 @@ export function MultiSourceReconciliation() {
 
       const data = await res.json();
       setJob({ ...job, conflicts: data.conflicts });
-    } catch {
+    } catch (error: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to run reconciliation');
     } finally {
       setRunning(false);
@@ -168,7 +168,7 @@ export function MultiSourceReconciliation() {
         const jobData = await jobRes.json();
         setJob(jobData);
       }
-    } catch {
+    } catch (error: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to resolve conflict');
     }
   };

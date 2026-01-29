@@ -28,7 +28,7 @@ export function PerformanceMonitor() {
           return () => {
             observer.disconnect();
           };
-        } catch {
+        } catch (error: unknown) {
           // PerformanceObserver not supported or error
           return undefined;
         }

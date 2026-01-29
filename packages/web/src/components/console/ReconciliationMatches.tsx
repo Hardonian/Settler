@@ -84,7 +84,7 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
 
       const data = await response.json();
       setMatches(data.matches || []);
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to load matches:", error);
     } finally {
       setLoading(false);
@@ -107,7 +107,7 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
           prev.map((m) => (m.id === matchId ? { ...m, reviewed: !reviewed } : m))
         );
       }
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to update match:", error);
     }
   };

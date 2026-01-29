@@ -41,7 +41,7 @@ export default function AuditTrail({ client: _client, apiKey, jobId }: AuditTrai
       );
       const data = await response.json();
       setLogs(data.data || []);
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to load audit logs:", error);
     } finally {
       setLoading(false);

@@ -48,7 +48,7 @@ export function SupportInbox({ userId: _userId }: SupportInboxProps) {
         if (!response.ok) throw new Error("Failed to fetch");
         const data = await response.json();
         setTickets(data.tickets || []);
-      } catch (err) {
+      } catch (error) {
         console.error("Failed to fetch tickets:", err);
         setTickets([]);
       } finally {

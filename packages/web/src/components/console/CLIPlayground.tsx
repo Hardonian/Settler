@@ -106,12 +106,12 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
           setHistory(validHistory);
         }
       }
-    } catch {
+    } catch (error: unknown) {
       console.warn('Failed to load history from localStorage:', error);
       // Clear corrupted data
       try {
         localStorage.removeItem('settler-cli-history');
-      } catch {
+      } catch (error: unknown) {
         // Ignore cleanup errors
       }
     }
@@ -124,7 +124,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
       const limitedHistory = newHistory.slice(0, 50);
       localStorage.setItem('settler-cli-history', JSON.stringify(limitedHistory));
       setHistory(limitedHistory);
-    } catch {
+    } catch (error: unknown) {
       // Handle quota exceeded or other storage errors
       if (error instanceof Error && error.name === 'QuotaExceededError') {
         console.warn('localStorage quota exceeded, clearing old history');
@@ -133,7 +133,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
           const recentHistory = newHistory.slice(0, 10);
           localStorage.setItem('settler-cli-history', JSON.stringify(recentHistory));
           setHistory(recentHistory);
-        } catch {
+        } catch (error: unknown) {
           // If still fails, clear history
           localStorage.removeItem('settler-cli-history');
           setHistory([]);
@@ -193,7 +193,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
     let parsedBody: unknown;
     try {
       parsedBody = body && body.trim() ? JSON.parse(body) : undefined;
-    } catch {
+    } catch (error: unknown) {
       setError({
         message: 'Invalid JSON in request body. Please check your syntax.',
         code: 'INVALID_JSON'
@@ -214,7 +214,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
           apiKey = `rk_${activeKey.keyPrefix}...`;
         }
       }
-    } catch {
+    } catch (error: unknown) {
       // Use default if can't fetch keys
     }
 
@@ -282,7 +282,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
       
       // Increment request count
       setRequestCount(prev => prev + 1);
-    } catch {
+    } catch (error: unknown) {
       const duration = Date.now() - startTime;
       setError({
         message: err instanceof Error ? err.message : 'Unknown error occurred',

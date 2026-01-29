@@ -50,7 +50,7 @@ export function MeaningfulChangesFeed({ limit = 50 }: MeaningfulChangesFeedProps
 
       const data = await res.json();
       setChanges(data.changes || []);
-    } catch {
+    } catch (error: unknown) {
       console.error('Failed to fetch meaningful changes:', err);
       setError(err instanceof Error ? err.message : 'Failed to load changes');
       setChanges([]);

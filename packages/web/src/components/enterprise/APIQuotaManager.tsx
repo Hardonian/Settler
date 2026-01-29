@@ -29,7 +29,7 @@ export function APIQuotaManager() {
         const data = await response.json();
         setQuotas(data.quotas || []);
       }
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to fetch quotas:", error);
     } finally {
       setLoading(false);

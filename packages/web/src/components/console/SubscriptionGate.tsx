@@ -29,7 +29,7 @@ export function SubscriptionGate({ requiredTier, feature, children }: Subscripti
       const response = await fetch('/api/console/subscription-status');
       const data = await response.json();
       setSubscription(data);
-    } catch {
+    } catch (error: unknown) {
       console.error('Failed to load subscription:', err);
     } finally {
       setLoading(false);

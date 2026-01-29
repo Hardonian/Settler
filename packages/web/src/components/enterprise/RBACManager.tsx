@@ -46,7 +46,7 @@ export function RBACManager() {
         const usersData = await usersRes.json();
         setUserRoles(usersData.users || []);
       }
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to fetch RBAC data:", error);
     } finally {
       setLoading(false);

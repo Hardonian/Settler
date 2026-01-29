@@ -69,7 +69,7 @@ export function OperationsDashboard() {
         const queuesData = await queuesRes.json();
         setRetryQueues(queuesData.queues || []);
       }
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to fetch ops data:", error);
     } finally {
       setLoading(false);

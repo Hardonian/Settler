@@ -31,7 +31,7 @@ export function PricingExperimentEngine() {
         const data = await response.json();
         setExperiments(data.experiments || []);
       }
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to fetch experiments:", error);
     } finally {
       setLoading(false);

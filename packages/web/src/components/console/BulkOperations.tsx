@@ -77,7 +77,7 @@ export function BulkOperations() {
       const data = await res.json();
       setOperations([...operations, data]);
       setSelectedItems([]);
-    } catch {
+    } catch (error: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to create operation');
     } finally {
       setLoading(false);
@@ -93,7 +93,7 @@ export function BulkOperations() {
       setOperations(
         operations.map((op) => (op.id === operationId ? { ...op, ...data } : op))
       );
-    } catch {
+    } catch (error: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to fetch status');
     }
   };

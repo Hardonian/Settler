@@ -55,7 +55,7 @@ export function CodeEditor({
       await navigator.clipboard.writeText(value);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {
+    } catch (error: unknown) {
       console.error('Failed to copy:', error);
     }
   };
@@ -157,7 +157,7 @@ export function CodeEditor({
               try {
                 JSON.parse(e.target.value);
                 // Valid JSON - could add visual indicator
-              } catch {
+              } catch (error: unknown) {
                 // Invalid JSON - could add visual indicator
               }
             }

@@ -43,7 +43,7 @@ export function ReceiptMatching() {
 
       const data = await res.json();
       setMatches(data.data || []);
-    } catch {
+    } catch (error: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to load matches');
     } finally {
       setLoading(false);
@@ -78,7 +78,7 @@ export function ReceiptMatching() {
       }
 
       await fetchMatches();
-    } catch {
+    } catch (error: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to match receipts');
     } finally {
       setMatching(false);
@@ -93,7 +93,7 @@ export function ReceiptMatching() {
 
       if (!res.ok) throw new Error('Failed to verify link');
       await fetchMatches();
-    } catch {
+    } catch (error: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to verify link');
     }
   };

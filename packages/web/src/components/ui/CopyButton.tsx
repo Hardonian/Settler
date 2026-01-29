@@ -20,7 +20,7 @@ export function CopyButton({ text, className, size = "md" }: CopyButtonProps) {
       await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
+    } catch (error) {
       console.error("Failed to copy:", err);
     }
   };

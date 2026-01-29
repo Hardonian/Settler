@@ -29,7 +29,7 @@ export function MultiProjectManager() {
         const data = await response.json();
         setProjects(data.projects || []);
       }
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to fetch projects:", error);
     } finally {
       setLoading(false);

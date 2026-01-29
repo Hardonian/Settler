@@ -34,7 +34,7 @@ export function BillingDisputeFlow() {
       if (response.ok) {
         setSubmitted(true);
       }
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to submit dispute:", error);
     } finally {
       setSubmitting(false);

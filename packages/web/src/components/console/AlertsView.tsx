@@ -52,7 +52,7 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
 
       const data = await res.json();
       setAlerts(data.alerts || []);
-    } catch {
+    } catch (error: unknown) {
       console.error('Failed to fetch alerts:', err);
       setError(err instanceof Error ? err.message : 'Failed to load alerts');
       setAlerts([]);
@@ -75,7 +75,7 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
 
       // Refresh alerts
       await fetchAlerts();
-    } catch {
+    } catch (error: unknown) {
       console.error('Failed to acknowledge alert:', err);
     } finally {
       setAcknowledging(null);

@@ -34,7 +34,7 @@ export function IssueTracker() {
         const data = await response.json();
         setTickets(data.tickets || []);
       }
-    } catch (err) {
+    } catch (error) {
       console.error("Failed to fetch tickets:", err);
     } finally {
       setLoading(false);

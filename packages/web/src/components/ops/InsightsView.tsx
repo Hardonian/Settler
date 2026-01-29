@@ -143,7 +143,7 @@ export function InsightsView({ userId: _userId }: InsightsViewProps) {
 
       setInsights(insightsData);
       setTotalPages(paginationData.totalPages || 1);
-    } catch {
+    } catch (error: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load insights';
       setError(errorMessage);
       console.error('Error loading insights:', err);
@@ -217,7 +217,7 @@ export function InsightsView({ userId: _userId }: InsightsViewProps) {
       setSelectedInsight(data.insight);
       setRecommendations(data.recommendations || []);
       setActions(data.actions || []);
-    } catch {
+    } catch (error: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load insight details';
       setError(errorMessage);
       console.error('Error loading insight detail:', err);
@@ -256,7 +256,7 @@ export function InsightsView({ userId: _userId }: InsightsViewProps) {
       if (selectedInsight) {
         await loadInsightDetail(selectedInsight.id);
       }
-    } catch {
+    } catch (error: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to execute recommendation';
       setError(errorMessage);
       console.error('Error executing recommendation:', err);

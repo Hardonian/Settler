@@ -38,7 +38,7 @@ export function ProjectSnapshotManager({ projectId, projectType }: ProjectSnapsh
         const data = await response.json();
         setSnapshots(data.snapshots || []);
       }
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to fetch snapshots:", error);
     } finally {
       setLoading(false);
@@ -62,7 +62,7 @@ export function ProjectSnapshotManager({ projectId, projectType }: ProjectSnapsh
       if (response.ok) {
         await fetchSnapshots();
       }
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to create snapshot:", error);
     } finally {
       setCreating(false);
@@ -83,7 +83,7 @@ export function ProjectSnapshotManager({ projectId, projectType }: ProjectSnapsh
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
       }
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to export snapshot:", error);
     }
   };
@@ -104,7 +104,7 @@ export function ProjectSnapshotManager({ projectId, projectType }: ProjectSnapsh
         alert("Project rolled back successfully!");
         window.location.reload();
       }
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to rollback:", error);
       alert("Failed to rollback. Please try again.");
     }
@@ -136,7 +136,7 @@ export function ProjectSnapshotManager({ projectId, projectType }: ProjectSnapsh
           alert("Project imported successfully!");
           window.location.reload();
         }
-      } catch {
+      } catch (error: unknown) {
         console.error("Failed to import:", error);
         alert("Failed to import. Please check the file format.");
       }

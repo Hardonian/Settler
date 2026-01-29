@@ -116,7 +116,7 @@ export function BriefingsView({ userId: _userId }: BriefingsViewProps) {
       if (briefingsData.length > 0 && !selectedBriefing && briefingsData[0]) {
         setSelectedBriefing(briefingsData[0]);
       }
-    } catch {
+    } catch (error: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load briefings';
       setError(errorMessage);
       console.error('Error loading briefings:', err);
@@ -156,7 +156,7 @@ export function BriefingsView({ userId: _userId }: BriefingsViewProps) {
 
       cache.set(cacheKey, data, CACHE_TTL_BRIEFINGS);
       setSelectedBriefing(data);
-    } catch {
+    } catch (error: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load briefing';
       setError(errorMessage);
       console.error('Error loading briefing detail:', err);

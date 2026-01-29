@@ -71,7 +71,7 @@ export function AITroubleshootingWizard() {
 
       const data = await response.json();
       setSolution(data.solution);
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to generate solution:", error);
       setSolution(
         "I'm having trouble generating a solution. Please contact support for assistance."

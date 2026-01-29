@@ -39,7 +39,7 @@ export function IntegrationDebugger({ integrationId }: IntegrationDebuggerProps)
         const result = await response.json();
         setDebugResult(result);
       }
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to debug:", error);
     } finally {
       setSearching(false);

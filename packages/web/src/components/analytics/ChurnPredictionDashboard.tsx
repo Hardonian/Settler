@@ -34,7 +34,7 @@ export function ChurnPredictionDashboard() {
         const data = await response.json();
         setAtRiskUsers(data.users || []);
       }
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to fetch churn risk users:", error);
     } finally {
       setLoading(false);

@@ -80,7 +80,7 @@ export function SupportWidget() {
         const errorMessage = errorData.error || BrandMessages.errors.generic;
         alert(errorMessage);
       }
-    } catch {
+    } catch (error: unknown) {
       console.error('Failed to create ticket:', error);
       alert(BrandMessages.errors.network);
     } finally {

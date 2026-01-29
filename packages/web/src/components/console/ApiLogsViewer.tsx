@@ -82,7 +82,7 @@ export function ApiLogsViewer() {
       if (statsData.stats) {
         setStats(statsData.stats);
       }
-    } catch {
+    } catch (error: unknown) {
       console.error('Failed to load API logs:', error);
     } finally {
       setLoading(false);

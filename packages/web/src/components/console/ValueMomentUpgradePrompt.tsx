@@ -73,7 +73,7 @@ export function ValueMomentUpgradePrompt() {
           }
         }
       }
-    } catch {
+    } catch (error: unknown) {
       // Silently fail
     }
   };

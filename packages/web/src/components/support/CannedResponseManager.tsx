@@ -34,7 +34,7 @@ export function CannedResponseManager() {
         const data = await response.json();
         setResponses(data.responses || []);
       }
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to fetch canned responses:", error);
     }
   };

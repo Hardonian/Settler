@@ -147,7 +147,7 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
 
       const result = await res.json();
       setPivotResult(result);
-    } catch {
+    } catch (error: unknown) {
       console.error('Query error:', err);
       setError(err instanceof Error ? err.message : 'Failed to execute query');
     } finally {
@@ -186,7 +186,7 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
       } else {
         throw new Error('Failed to save view');
       }
-    } catch {
+    } catch (error: unknown) {
       console.error('Save error:', err);
       setError(err instanceof Error ? err.message : 'Failed to save view');
     }

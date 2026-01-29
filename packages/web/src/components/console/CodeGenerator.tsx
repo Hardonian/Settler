@@ -38,7 +38,7 @@ export function CodeGenerator({ apiCall, apiKey }: CodeGeneratorProps) {
   let snippets;
   try {
     snippets = generateAllCodeSnippets(apiCall, apiKey);
-  } catch {
+  } catch (error: unknown) {
     return (
       <Card>
         <CardContent className="py-8">
@@ -56,7 +56,7 @@ export function CodeGenerator({ apiCall, apiKey }: CodeGeneratorProps) {
       await navigator.clipboard.writeText(code);
       setCopied(language);
       setTimeout(() => setCopied(null), 2000);
-    } catch {
+    } catch (error: unknown) {
       console.error('Failed to copy:', error);
     }
   };

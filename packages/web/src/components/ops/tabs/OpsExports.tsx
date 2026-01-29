@@ -24,7 +24,7 @@ export function OpsExports() {
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
-    } catch {
+    } catch (error: unknown) {
       console.error('Export failed:', error);
       alert('Export failed. Please try again.');
     }

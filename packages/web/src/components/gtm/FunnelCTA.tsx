@@ -40,7 +40,7 @@ export function FunnelCTA({ userId, variant = 'card', className }: FunnelCTAProp
           const data = await response.json();
           setStage(data.stage);
         }
-      } catch {
+      } catch (error: unknown) {
         console.error('[FunnelCTA] Failed to load stage:', error);
       } finally {
         setLoading(false);

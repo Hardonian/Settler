@@ -63,7 +63,7 @@ export function AIOnboardingAssistant() {
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to get AI response:", error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),

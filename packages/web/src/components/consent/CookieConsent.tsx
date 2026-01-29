@@ -50,7 +50,7 @@ export function CookieConsent() {
           applyPreferences(parsed);
           return; // Don't show banner if valid consent exists
         }
-      } catch {
+      } catch (error: unknown) {
         console.warn('[CookieConsent] Failed to parse stored preferences:', error);
       }
     }
@@ -80,7 +80,7 @@ export function CookieConsent() {
   const savePreferences = (prefs: ConsentPreferences) => {
     try {
       localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(prefs));
-    } catch {
+    } catch (error: unknown) {
       console.warn('[CookieConsent] Failed to save preferences:', error);
     }
   };

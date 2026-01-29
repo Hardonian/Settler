@@ -47,7 +47,7 @@ export function ExecutiveDashboard() {
         }
         const data = await response.json();
         setMetrics(data);
-      } catch {
+      } catch (error: unknown) {
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
         setLoading(false);

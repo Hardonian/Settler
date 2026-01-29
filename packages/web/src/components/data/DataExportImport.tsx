@@ -26,7 +26,7 @@ export function DataExportImport() {
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
       }
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to export:", error);
     } finally {
       setExporting(false);
@@ -49,7 +49,7 @@ export function DataExportImport() {
         alert("Data imported successfully!");
         window.location.reload();
       }
-    } catch {
+    } catch (error: unknown) {
       console.error("Failed to import:", error);
       alert("Failed to import data. Please check the file format.");
     } finally {
