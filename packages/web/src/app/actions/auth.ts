@@ -12,6 +12,7 @@ import { revalidatePath } from "next/cache";
 import type { Database } from "@/types/database.types";
 import { trackSignupComplete } from "@/lib/analytics/conversion";
 import { emitLifecycleEventSafe, LifecycleEventType } from "@/lib/ops/lifecycle-events";
+import { getString } from "@settler/api/utils/type-guards";
 
 export interface SignUpResult {
   success: boolean;
