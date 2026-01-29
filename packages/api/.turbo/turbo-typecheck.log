@@ -30,16 +30,3 @@ npm warn config optional Use `--omit=optional` to exclude optional dependencies,
 npm warn config `--include=optional` to include them.
 npm warn config
 npm warn config       Default value does install optional deps unless otherwise omitted.
-Loaded Prisma config from prisma.config.ts.
-
-Prisma schema loaded from prisma\schema.prisma.
-
-✔ Generated Prisma Client (v7.3.0) to .\node_modules\.pnpm\@prisma+client@7.3.0_prisma_efc9348d8c027de17c7e00b84b73d1eb\node_modules\@prisma\client in 296ms
-
-Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
-
-
-
-> @settler/api@1.0.0 typecheck C:\Users\scott\Documents\GitHub\Settler\packages\api
-> tsc --noEmit
-

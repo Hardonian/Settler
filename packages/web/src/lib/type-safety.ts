@@ -151,7 +151,7 @@ export class ExternalServiceError extends Error {
 // ==================== ERROR HANDLERS ====================
 
 /**
- * Standardized error response type
+ * Standardized error context type
  */
 export interface ErrorContext {
   field?: string;
@@ -224,7 +224,7 @@ export async function handleAsyncError<T>(
  */
 export function safeJsonParse<T = unknown>(
   jsonString: string,
-  fallback: T = {} as T
+  fallbackValue: T = {} as T
 ): { data?: T; error?: Error } {
   try {
     const data = JSON.parse(jsonString) as T;
@@ -434,90 +434,31 @@ export function validateRequestBody<T>(
   schema: {
     [K in keyof T]: {
       required?: boolean;
-      type: 'string' | 'number' | 'boolean' | 'object' | 'array';
+      type: "string" | "number" | "boolean" | "object" | "array";
       validate?: (value: unknown) => void;
     };
   }
 ): T {
   const result = {} as T;
-  const schemaRules = schema as Record<string, {
-    required?: boolean;
-    type: 'string' | 'number' | 'boolean' | 'object' | 'array';
-    validate?: (value: unknown) => void;
-  }>;
+  const schemaRules = schema as Record<
+    string,
+    {
+      required?: boolean;
+      type: "string" | "number" | "boolean" | "object" | "array";
+      validate?: (value: unknown) => void;
+    }
+  >;
 
-  for (const [key, rules] of Object.entries(schemaRules)) {
+  for (const [key, fieldRules] of Object.entries(schemaRules)) {
     const fieldKey = key as keyof T;
     let value = (body as any)?.[key];
 
-    if (rules.required && (value == null || value === '')) {
-      throw new ValidationError(
-        `Field ${key} is required`,
-        key,
-        'REQUIRED'
-      );
+    if (fieldRules.required && (value == null || value === "")) {
+      throw new ValidationError(`Field ${key} is required`, key, "REQUIRED");
     }
 
     if (value != null) {
-      switch (rules.type) {
-        case 'string':
-          value = validateString(value, key);
-          break;
-        case 'number':
-          value = validateNumber(value, key);
-          break;
-        case 'boolean':
-          if (!isBoolean(value)) {
-            throw new ValidationError(
-              `Field ${key} must be a boolean`,
-              key,
-              'INVALID_TYPE'
-            );
-          }
-          break;
-        case 'object':
-          if (!isNonNullObject(value)) {
-            throw new ValidationError(
-              `Field ${key} must be an object`,
-              key,
-              'INVALID_TYPE'
-            );
-          }
-          break;
-        case 'array':
-          if (!Array.isArray(value)) {
-            throw new ValidationError(
-              `Field ${key} must be an array`,
-              key,
-              'INVALID_TYPE'
-            );
-          }
-          break;
-      }
-
-      if (rules.validate) {
-        rules.validate(value);
-      }
-    }
-
-    (result as any)[fieldKey] = value;
-  }
-
-  return result;
-}
-): T {
-  const result = {} as T;
-
-  for (const [key, schemaRules] of Object.entries(schema)) {
-    const fieldKey = key as keyof T;
-    let value = (body as any)?.[key];
-
-    if (schemaRules.required && (value == null || value === "")) {
-      throw new ValidationError(`Field ${key} is required`, key as string, "REQUIRED");
-    }
-
-    if (value != null) {
-      switch (schemaRules.type) {
+      switch (fieldRules.type) {
         case "string":
           value = validateString(value, key);
           break;
@@ -541,8 +482,8 @@ export function validateRequestBody<T>(
           break;
       }
 
-      if (rules.validate) {
-        rules.validate(value);
+      if (fieldRules.validate) {
+        fieldRules.validate(value);
       }
     }
 
@@ -665,16 +606,16 @@ export function createUpdate<T extends Record<string, unknown>>(
 /**
  * Get nested property safely
  */
-export function getSafe<T>(obj: unknown, path: string[], fallback: T): T {
+export function getSafe<T>(obj: unknown, path: string[], fallbackValue: T): T {
   try {
     return path.reduce((current: unknown, key: string) => {
       if (current && typeof current === "object" && key in current) {
         return (current as any)[key];
       }
-      return fallback;
+      return fallbackValue;
     }, obj) as T;
   } catch {
-    return fallback;
+    return fallbackValue;
   }
 }
 
