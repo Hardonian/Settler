@@ -1,4 +1,4 @@
 
-> @settler/protocol@0.1.0 typecheck C:\Users\scott\Documents\GitHub\Settler\packages\protocol
+> @settler/protocol@0.1.0 typecheck /home/user/Settler/packages/protocol
 > tsc --noEmit
 

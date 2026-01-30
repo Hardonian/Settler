@@ -1,4 +1,4 @@
 
-> @settler/adapters@1.0.0 typecheck C:\Users\scott\Documents\GitHub\Settler\packages\adapters
+> @settler/adapters@1.0.0 typecheck /home/user/Settler/packages/adapters
 > tsc --noEmit
 

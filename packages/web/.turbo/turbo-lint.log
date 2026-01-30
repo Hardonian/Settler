@@ -1,93 +1,12 @@
 
-> @settler/web@1.0.0 lint C:\Users\scott\Documents\GitHub\Settler\packages\web
+> @settler/web@1.0.0 lint /home/user/Settler/packages/web
 > npx next lint
 
-npm warn Unknown env config "lockfile". This will stop working in the next major version of npm.
 npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
 npm warn config `--include=optional` to include them.
 npm warn config
 npm warn config       Default value does install optional deps unless otherwise omitted.
-npm warn Unknown env config "package-manager". This will stop working in the next major version of npm.
-npm warn Unknown env config "prefer-frozen-lockfile". This will stop working in the next major version of npm.
-npm warn Unknown env config "store-dir". This will stop working in the next major version of npm.
-npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
-npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm.
-npm warn Unknown project config "package-manager". This will stop working in the next major version of npm.
-npm warn Unknown project config "lockfile". This will stop working in the next major version of npm.
-npm warn Unknown project config "prefer-frozen-lockfile". This will stop working in the next major version of npm.
 npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
 npm warn config `--include=optional` to include them.
 npm warn config
 npm warn config       Default value does install optional deps unless otherwise omitted.
-
-./src/app/api/exports/route.ts
-69:22  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-79:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-275:16  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-
-./src/app/api/jobs/bulk/route.ts
-67:22  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-77:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-
-./src/app/api/jobs/[jobId]/exceptions/route.ts
-166:22  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-176:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-
-./src/app/api/jobs/[jobId]/exceptions/[exceptionId]/route.ts
-115:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-125:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-
-./src/app/api/jobs/[jobId]/progress/route.ts
-96:16  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-
-./src/app/api/jobs/[jobId]/route.ts
-145:22  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-156:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-
-./src/app/api/v1/recon/jobs/route.ts
-38:16  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-
-./src/app/api/vercel-example/route.ts
-39:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-
-./src/app/components/PositioningFeedbackForm.tsx
-63:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-
-./src/app/console/activity/page.tsx
-58:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-
-./src/app/console/inspector/page.tsx
-62:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-
-./src/components/monitoring/PerformanceMonitor.tsx
-31:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-
-./src/lib/ai/insights-generator.ts
-60:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-
-./src/lib/db/cache.ts
-65:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-92:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-122:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-
-./src/lib/monitoring/sentry.ts
-184:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-
-./src/lib/stubs/activation-funnel.ts
-4:44  Warning: 'event' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
-4:59  Warning: 'userId' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
-8:43  Warning: 'userId' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
-
-./src/lib/stubs/billing-hardening.ts
-4:41  Warning: 'userId' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
-4:57  Warning: 'feature' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
-9:41  Warning: 'event' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
-9:56  Warning: 'data' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
-
-./src/lib/stubs/email-lifecycle.ts
-23:20  Warning: 'args' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
-
-./src/lib/validation/component-validation.ts
-58:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-
-info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules

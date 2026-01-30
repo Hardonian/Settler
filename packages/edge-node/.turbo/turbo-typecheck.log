@@ -1,4 +1,4 @@
 
-> @settler/edge-node@1.0.0 typecheck C:\Users\scott\Documents\GitHub\Settler\packages\edge-node
+> @settler/edge-node@1.0.0 typecheck /home/user/Settler/packages/edge-node
 > tsc --noEmit
 
