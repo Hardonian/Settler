@@ -1,6 +1,6 @@
 {
   "buildCommand": "cd ../.. && pnpm --filter @settler/web build",
-  "installCommand": "cd ../.. && npm i -g pnpm@10.13.1 && pnpm install --frozen-lockfile",
+  "installCommand": "cd ../.. && npx pnpm@10.13.1 install --frozen-lockfile",
   "framework": "nextjs",
   "regions": ["iad1"],
   "build": {
