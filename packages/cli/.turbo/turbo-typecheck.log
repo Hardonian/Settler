@@ -1,4 +1,6 @@
 
 > @settler/cli@1.0.0 typecheck C:\Users\scott\Documents\GitHub\Settler\packages\cli
-> tsc --noEmit
+> tsc --noEmit "--no-cache"
 
+error TS5023: Unknown compiler option '--no-cache'.
+ ELIFECYCLE  Command failed with exit code 1.

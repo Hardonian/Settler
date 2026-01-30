@@ -67,19 +67,7 @@ npm warn config       Default value does install optional deps unless otherwise 
 ./src/lib/monitoring/sentry.ts
 184:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
 
-./src/lib/ops/exception-events.ts
-53:5  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
-102:5  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
-
 ./src/lib/validation/component-validation.ts
 58:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
 
-./src/lib/verify.ts
-18:5  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
-
-./src/middleware/billing-gate-universal.ts
-60:9  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
-80:5  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
-
 info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
- ELIFECYCLE  Command failed with exit code 1.

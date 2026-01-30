@@ -93,7 +93,7 @@ async function getActivationFunnel(): Promise<ActivationFunnelModule> {
  * Handles errors gracefully - never throws
  */
 export async function emitLifecycleEventSafe(
-  eventType: keyof typeof LifecycleEventType,
+  eventType: string,
   params: {
     userId?: string;
     tenantId?: string;

@@ -50,9 +50,8 @@ export async function emitExceptionCreatedEvent(params: {
     });
 
     const userId = params.userId || billingAccount?.userId;
-    // @ts-ignore - params object type mismatch
-    await emitLifecycleEventSafe(LifecycleEventType.RECON_EXCEPTION_CREATED, {
-      userId,
+    await emitLifecycleEventSafe(LifecycleEventType.RECON_EXCEPTION_CREATED!, {
+      userId: userId ?? undefined,
       tenantId: matchTenantId,
       billingAccountId: billingAccount?.id,
       properties: {
@@ -99,8 +98,7 @@ export async function emitExceptionResolvedEvent(params: {
       select: { id: true },
     });
 
-    // @ts-ignore - params object type mismatch
-    await emitLifecycleEventSafe(LifecycleEventType.RECON_EXCEPTION_RESOLVED, {
+    await emitLifecycleEventSafe(LifecycleEventType.RECON_EXCEPTION_RESOLVED!, {
       userId: params.userId,
       tenantId: params.tenantId,
       billingAccountId: billingAccount?.id,

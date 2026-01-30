@@ -26,8 +26,10 @@ export interface UniversalBillingGateOptions {
  * This is the DEFAULT behavior. Routes must opt-out if they're free.
  */
 export function withUniversalBillingGate<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   T extends (request: NextRequest, ...args: any[]) => Promise<NextResponse>,
 >(handler: T, options: UniversalBillingGateOptions = {}): T {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (async (request: NextRequest, ...args: any[]) => {
     const { allowPublic = false, allowFree = false, feature = "This feature" } = options;
 
@@ -57,7 +59,6 @@ export function withUniversalBillingGate<
             )
           );
         }
-        // @ts-ignore - spread args type mismatch
         return handler(request, ...args);
       }
 
@@ -77,7 +78,6 @@ export function withUniversalBillingGate<
     }
 
     // All checks passed, call handler
-    // @ts-ignore - spread args type mismatch
     return handler(request, ...args);
   }) as T;
 }
@@ -86,6 +86,7 @@ export function withUniversalBillingGate<
  * Helper to mark routes as public (no billing required)
  */
 export function publicRoute<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   T extends (request: NextRequest, ...args: any[]) => Promise<NextResponse>,
 >(handler: T): T {
   return withUniversalBillingGate(handler, { allowPublic: true });
@@ -95,6 +96,7 @@ export function publicRoute<
  * Helper to mark routes as free tier (no subscription, but usage limits apply)
  */
 export function freeRoute<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   T extends (request: NextRequest, ...args: any[]) => Promise<NextResponse>,
 >(handler: T): T {
   return withUniversalBillingGate(handler, { allowFree: true });

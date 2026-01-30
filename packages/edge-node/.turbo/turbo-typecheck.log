@@ -1,4 +1,5 @@
 
 > @settler/edge-node@1.0.0 typecheck C:\Users\scott\Documents\GitHub\Settler\packages\edge-node
-> tsc --noEmit
+> tsc --noEmit "--no-cache"
 
+error TS5023: Unknown compiler option '--no-cache'.
