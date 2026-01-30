@@ -73,7 +73,7 @@ export const spacing = {
 // Typography Scale
 export const typography = {
   fontFamily: {
-    sans: ['var(--font-inter)', 'system-ui', '-apple-system', 'sans-serif'],
+    sans: ['system-ui', '-apple-system', '"Segoe UI"', '"Roboto"', '"Helvetica Neue"', 'sans-serif'],
     mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
   },
   
