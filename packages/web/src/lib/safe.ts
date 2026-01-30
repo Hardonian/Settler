@@ -1,6 +1,6 @@
 /**
  * Safe utility functions for error handling
- * 
+ *
  * Provides utilities to safely execute async operations with timeouts
  * and graceful error handling.
  */
@@ -29,12 +29,12 @@ export async function safeAsync<T>(
     } else {
       return await fn();
     }
-  } catch (error) {
-    const error = error instanceof Error ? error : new Error(String(error));
+  } catch (err) {
+    const error = err instanceof Error ? err : new Error(String(err));
     if (onError) {
       onError(error);
     } else {
-      console.warn('[safeAsync] Operation failed:', error.message);
+      console.warn("[safeAsync] Operation failed:", error.message);
     }
     return defaultValue;
   }
@@ -65,8 +65,8 @@ export async function safeResult<T>(
       data = await fn();
     }
     return { success: true, data };
-  } catch (error) {
-    const error = error instanceof Error ? error : new Error(String(error));
+  } catch (err) {
+    const error = err instanceof Error ? err : new Error(String(err));
     if (onError) {
       onError(error);
     }
@@ -78,23 +78,20 @@ export async function safeResult<T>(
  * Check if SAFE_MODE is enabled
  */
 export function isSafeMode(): boolean {
-  return process.env.SAFE_MODE === '1' || process.env.SAFE_MODE === 'true';
+  return process.env.SAFE_MODE === "1" || process.env.SAFE_MODE === "true";
 }
 
 /**
  * Execute a function only if safe mode is disabled, otherwise return default
  */
-export async function safeModeGuard<T>(
-  fn: () => Promise<T>,
-  defaultValue: T
-): Promise<T> {
+export async function safeModeGuard<T>(fn: () => Promise<T>, defaultValue: T): Promise<T> {
   if (isSafeMode()) {
     return defaultValue;
   }
   try {
     return await fn();
   } catch (error) {
-    console.warn('[safeModeGuard] Operation failed, using default:', error);
+    console.warn("[safeModeGuard] Operation failed, using default:", error);
     return defaultValue;
   }
 }

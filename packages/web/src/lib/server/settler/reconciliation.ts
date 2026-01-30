@@ -45,14 +45,14 @@ export async function runReconciliation(
 
     // Get user ID for reconciliation run
     const userId = user.id;
-    
+
     // Create reconciliation run using Prisma
     const result = await prisma.reconciliationRun.create({
       data: {
         tenantId,
         userId,
         name: `Reconciliation for ${params.sourceId}`,
-        status: 'running',
+        status: "running",
         startedAt: new Date(),
         sourceCount: 0,
         targetCount: 0,
@@ -61,14 +61,14 @@ export async function runReconciliation(
         unmatchedTargetCount: 0,
       },
     });
-    
+
     // Get source transactions (from the ingestion source)
     const sourceTransactions = await prisma.normalizedTransaction.findMany({
       where: {
         tenantId,
         sourceId: params.sourceId,
       },
-      orderBy: { date: 'asc' },
+      orderBy: { date: "asc" },
     });
 
     // Get target transactions (receipts - from different source or same source with different type)
@@ -79,23 +79,23 @@ export async function runReconciliation(
         tenantId,
         sourceId: { not: params.sourceId }, // Different source (e.g., receipts)
       },
-      orderBy: { date: 'asc' },
+      orderBy: { date: "asc" },
     });
 
     // Run deterministic matching
     const { runDeterministicMatching } = await import("@/lib/reconciliation/deterministic-matcher");
-    
+
     const matchResult = await runDeterministicMatching(
       tenantId,
       result.id,
-      sourceTransactions.map(t => ({
+      sourceTransactions.map((t) => ({
         id: t.id,
         amount: Number(t.amount),
         date: t.date,
         description: t.description,
         currency: t.currency,
       })),
-      targetTransactions.map(t => ({
+      targetTransactions.map((t) => ({
         id: t.id,
         amount: Number(t.amount),
         date: t.date,
@@ -103,31 +103,40 @@ export async function runReconciliation(
         currency: t.currency,
       })),
       {
-        amountTolerance: params.rules?.find(r => r.field === 'amount')?.tolerance || 0.01,
-        dateWindowDays: params.rules?.find(r => r.field === 'date')?.window ? 
-          parseInt(params.rules.find(r => r.field === 'date')!.window!.replace('days', '')) : 3,
+        amountTolerance: params.rules?.find((r) => r.field === "amount")?.tolerance || 0.01,
+        dateWindowDays: params.rules?.find((r) => r.field === "date")?.window
+          ? parseInt(params.rules.find((r) => r.field === "date")!.window!.replace("days", ""))
+          : 3,
         requireExactMerchant: true,
       }
     );
 
     // Calculate totals for return value
-    const totalAmountSource = sourceTransactions.reduce((sum: number, t: any) => sum + Number(t.amount), 0);
-    const totalAmountTarget = targetTransactions.reduce((sum: number, t: any) => sum + Number(t.amount), 0);
+    const totalAmountSource = sourceTransactions.reduce(
+      (sum: number, t: { amount: number }) => sum + Number(t.amount),
+      0
+    );
+    const totalAmountTarget = targetTransactions.reduce(
+      (sum: number, t: { amount: number }) => sum + Number(t.amount),
+      0
+    );
 
     // Update reconciliation run with results
     await prisma.reconciliationRun.update({
       where: { id: result.id },
       data: {
-        status: 'completed',
+        status: "completed",
         completedAt: new Date(),
         sourceCount: sourceTransactions.length,
         targetCount: targetTransactions.length,
         matchedCount: matchResult.matchedCount,
         unmatchedSourceCount: matchResult.unmatchedCount,
         unmatchedTargetCount: targetTransactions.length - matchResult.matchedCount,
-        confidenceAvg: matchResult.matches.length > 0
-          ? matchResult.matches.reduce((sum: number, m: any) => sum + m.confidence, 0) / matchResult.matches.length
-          : null,
+        confidenceAvg:
+          matchResult.matches.length > 0
+            ? matchResult.matches.reduce((sum: number, m: any) => sum + m.confidence, 0) /
+              matchResult.matches.length
+            : null,
       },
     });
 
@@ -142,7 +151,7 @@ export async function runReconciliation(
         .eq("status", "active")
         .is("deleted_at", null)
         .single() as any);
-      
+
       if (billingAccount) {
         await trackReconciliationTransaction(
           billingAccount.id,
@@ -275,11 +284,11 @@ export async function listReconciliationItems(
         runId: reconciliationId,
         tenantId,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
-    
+
     // Get source transactions for matches
-    const sourceTransactionIds = matches.map(m => m.sourceTransactionId);
+    const sourceTransactionIds = matches.map((m) => m.sourceTransactionId);
     const sourceTransactions = (await prisma.normalizedTransaction.findMany({
       where: {
         id: { in: sourceTransactionIds },
@@ -289,11 +298,11 @@ export async function listReconciliationItems(
       id: string;
       amount: number;
       currency: string;
-      date: string;
+      date: Date;
       description: string | null;
     }>;
-    
-    const sourceTransactionMap = new Map(sourceTransactions.map(t => [t.id, t]));
+
+    const sourceTransactionMap = new Map(sourceTransactions.map((t) => [t.id, t]));
 
     if (!matches || matches.length === 0) {
       return [];
@@ -309,16 +318,12 @@ export async function listReconciliationItems(
       }
 
       const sourceAmount = Number(sourceTransaction.amount);
-      const targetAmount = match.targetTransactionId 
+      const targetAmount = match.targetTransactionId
         ? sourceAmount - (match.amountDiff ? Number(match.amountDiff) : 0) // Use amountDiff if available
         : 0;
       const delta = sourceAmount - targetAmount;
 
-      const impact = calculateImpact(
-        delta,
-        sourceTransaction.currency,
-        Number(match.confidence)
-      );
+      const impact = calculateImpact(delta, sourceTransaction.currency, Number(match.confidence));
       const explanation = generateExplanation(
         {
           type: "reconciliation_item",
@@ -341,7 +346,8 @@ export async function listReconciliationItems(
         targetAmount,
         targetCurrency: sourceTransaction.currency,
         delta,
-        status: match.matchType === "exact" || match.matchType === "fuzzy" ? "matched" : "unmatched",
+        status:
+          match.matchType === "exact" || match.matchType === "fuzzy" ? "matched" : "unmatched",
         impact,
         explanation,
         urgency: impact.riskScore > 0.7 ? "high" : impact.riskScore > 0.5 ? "medium" : "low",
