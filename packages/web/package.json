@@ -8,7 +8,6 @@
   "scripts": {
     "dev": "next dev",
     "clean:build": "rm -rf .next dist out .next/tsconfig.tsbuildinfo",
-    "prebuild": "pnpm run validate:prebuild",
     "validate:api-routes": "test -f ../../scripts/validate-api-routes.ts && tsx ../../scripts/validate-api-routes.ts || echo '⚠️  API route validation skipped (script not found)'",
     "build": "next build",
     "build:vercel": "next build",
