@@ -41,6 +41,7 @@
       "@/*": ["./src/*"],
       "@settler/api": ["../api/dist"],
       "@settler/api/*": ["../api/dist/*"],
+      "@settler/api/lib/*": ["../api/dist/lib/*"],
       "@settler/api/dist/ops/*": ["../api/dist/ops/*"],
       "@settler/adapters": ["../adapters/dist"],
       "@settler/adapters/*": ["../adapters/dist/*"],
