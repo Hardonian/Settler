@@ -76,15 +76,15 @@ const nextConfig = {
         "@": require("path").resolve(__dirname, "src"),
         "@settler/api/lib/email-lifecycle": require("path").resolve(
           __dirname,
-          "../api/dist/lib/email-lifecycle.js"
+          "../api/dist/lib/email-lifecycle"
         ),
         "@settler/api/dist/ops/activation-funnel": require("path").resolve(
           __dirname,
-          "../api/dist/ops/activation-funnel.js"
+          "../api/dist/ops/activation-funnel"
         ),
         "@settler/api/dist/ops/billing-hardening": require("path").resolve(
           __dirname,
-          "../api/dist/ops/billing-hardening.js"
+          "../api/dist/ops/billing-hardening"
         ),
       },
       extensions: [...(originalResolve.extensions || []), ".ts", ".tsx", ".js", ".jsx"],
