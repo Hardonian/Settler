@@ -8,7 +8,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
-export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase admin client
+export const runtime = "nodejs"; // Ensure Node.js runtime for Supabase admin client
 import { createAdminClient } from "@/lib/supabase/server";
 import {
   sendTrialGatedFeaturesEmail,
@@ -18,15 +18,15 @@ import {
   sendTrialEndedEmail,
   LifecycleUser,
   TrialData,
-} from "@settler/api/lib/email-lifecycle";
+} from "../../../../../api/dist/lib/email-lifecycle";
 import { safeRpcCall } from "@/types/api";
 
 import { logger } from "@/lib/logging/logger";
-import { getEnv } from '@/lib/env';
+import { getEnv } from "@/lib/env";
 
 // Verify cron secret (if using Vercel Cron)
 
-const CRON_SECRET = getEnv('CRON_SECRET', false) || '';
+const CRON_SECRET = getEnv("CRON_SECRET", false) || "";
 
 export async function GET(request: NextRequest) {
   try {
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
       days_remaining?: number | null;
       [key: string]: unknown;
     }
-    
+
     const day7Result = await safeRpcCall<{ p_days_remaining: number }, TrialUserRow[]>(
       supabase,
       "get_trial_users_for_email",
@@ -66,7 +66,12 @@ export async function GET(request: NextRequest) {
       for (const user of day7Result.data) {
         try {
           // Skip if required fields are missing
-          if (!user.trial_start_date || !user.trial_end_date || user.days_remaining === null || user.days_remaining === undefined) {
+          if (
+            !user.trial_start_date ||
+            !user.trial_end_date ||
+            user.days_remaining === null ||
+            user.days_remaining === undefined
+          ) {
             continue;
           }
 
@@ -81,7 +86,8 @@ export async function GET(request: NextRequest) {
             firstName: user.name?.split(" ")[0] ?? undefined,
             industry: user.industry ?? undefined,
             companyName: user.company_name ?? undefined,
-            planType: (user.plan_type as "free" | "trial" | "commercial" | "enterprise") ?? undefined,
+            planType:
+              (user.plan_type as "free" | "trial" | "commercial" | "enterprise") ?? undefined,
           };
 
           await sendTrialGatedFeaturesEmail(lifecycleUser, trialData);
@@ -96,7 +102,11 @@ export async function GET(request: NextRequest) {
           results.processed++;
           results.emails.push(user.email);
         } catch (error) {
-          logger.error("Failed to send Day 7 email", error instanceof Error ? error : new Error(String(error)), { user: user.email });
+          logger.error(
+            "Failed to send Day 7 email",
+            error instanceof Error ? error : new Error(String(error)),
+            { user: user.email }
+          );
           results.errors++;
         }
       }
@@ -112,7 +122,12 @@ export async function GET(request: NextRequest) {
       for (const user of day14Result.data) {
         try {
           // Skip if required fields are missing
-          if (!user.trial_start_date || !user.trial_end_date || user.days_remaining === null || user.days_remaining === undefined) {
+          if (
+            !user.trial_start_date ||
+            !user.trial_end_date ||
+            user.days_remaining === null ||
+            user.days_remaining === undefined
+          ) {
             continue;
           }
 
@@ -127,12 +142,13 @@ export async function GET(request: NextRequest) {
             firstName: user.name?.split(" ")[0] ?? undefined,
             industry: user.industry ?? undefined,
             companyName: user.company_name ?? undefined,
-            planType: (user.plan_type as "free" | "trial" | "commercial" | "enterprise") ?? undefined,
+            planType:
+              (user.plan_type as "free" | "trial" | "commercial" | "enterprise") ?? undefined,
           };
 
           await sendTrialCaseStudyEmail(lifecycleUser, trialData, {
             companyName: "Example Company",
-            caseStudyUrl: `${getEnv('APP_URL', false) || "https://app.settler.dev"}/case-studies/example`,
+            caseStudyUrl: `${getEnv("APP_URL", false) || "https://app.settler.dev"}/case-studies/example`,
           });
 
           await safeRpcCall<{ p_user_id: string; p_email_type: string }, unknown>(
@@ -144,7 +160,11 @@ export async function GET(request: NextRequest) {
           results.processed++;
           results.emails.push(user.email);
         } catch (error) {
-          logger.error("Failed to send Day 14 email", error instanceof Error ? error : new Error(String(error)), { user: user.email });
+          logger.error(
+            "Failed to send Day 14 email",
+            error instanceof Error ? error : new Error(String(error)),
+            { user: user.email }
+          );
           results.errors++;
         }
       }
@@ -160,7 +180,12 @@ export async function GET(request: NextRequest) {
       for (const user of day21Result.data) {
         try {
           // Skip if required fields are missing
-          if (!user.trial_start_date || !user.trial_end_date || user.days_remaining === null || user.days_remaining === undefined) {
+          if (
+            !user.trial_start_date ||
+            !user.trial_end_date ||
+            user.days_remaining === null ||
+            user.days_remaining === undefined
+          ) {
             continue;
           }
 
@@ -175,7 +200,8 @@ export async function GET(request: NextRequest) {
             firstName: user.name?.split(" ")[0] ?? undefined,
             industry: user.industry ?? undefined,
             companyName: user.company_name ?? undefined,
-            planType: (user.plan_type as "free" | "trial" | "commercial" | "enterprise") ?? undefined,
+            planType:
+              (user.plan_type as "free" | "trial" | "commercial" | "enterprise") ?? undefined,
           };
 
           await sendTrialComparisonEmail(lifecycleUser, trialData);
@@ -189,7 +215,11 @@ export async function GET(request: NextRequest) {
           results.processed++;
           results.emails.push(user.email);
         } catch (error) {
-          logger.error("Failed to send Day 21 email", error instanceof Error ? error : new Error(String(error)), { user: user.email });
+          logger.error(
+            "Failed to send Day 21 email",
+            error instanceof Error ? error : new Error(String(error)),
+            { user: user.email }
+          );
           results.errors++;
         }
       }
@@ -208,7 +238,12 @@ export async function GET(request: NextRequest) {
         for (const user of result.data) {
           try {
             // Skip if required fields are missing
-            if (!user.trial_start_date || !user.trial_end_date || user.days_remaining === null || user.days_remaining === undefined) {
+            if (
+              !user.trial_start_date ||
+              !user.trial_end_date ||
+              user.days_remaining === null ||
+              user.days_remaining === undefined
+            ) {
               continue;
             }
 
@@ -223,7 +258,8 @@ export async function GET(request: NextRequest) {
               firstName: user.name?.split(" ")[0] ?? undefined,
               industry: user.industry ?? undefined,
               companyName: user.company_name ?? undefined,
-              planType: (user.plan_type as "free" | "trial" | "commercial" | "enterprise") ?? undefined,
+              planType:
+                (user.plan_type as "free" | "trial" | "commercial" | "enterprise") ?? undefined,
             };
 
             await sendTrialUrgencyEmail(lifecycleUser, trialData, day as 27 | 28 | 29);
@@ -237,7 +273,11 @@ export async function GET(request: NextRequest) {
             results.processed++;
             results.emails.push(user.email);
           } catch (error) {
-            logger.error(`Failed to send Day ${day} email`, error instanceof Error ? error : new Error(String(error)), { user: user.email });
+            logger.error(
+              `Failed to send Day ${day} email`,
+              error instanceof Error ? error : new Error(String(error)),
+              { user: user.email }
+            );
             results.errors++;
           }
         }
@@ -258,7 +298,8 @@ export async function GET(request: NextRequest) {
             firstName: user.name?.split(" ")[0] ?? undefined,
             industry: user.industry ?? undefined,
             companyName: user.company_name ?? undefined,
-            planType: (user.plan_type as "free" | "trial" | "commercial" | "enterprise") ?? undefined,
+            planType:
+              (user.plan_type as "free" | "trial" | "commercial" | "enterprise") ?? undefined,
           };
 
           await sendTrialEndedEmail(lifecycleUser);
@@ -279,7 +320,11 @@ export async function GET(request: NextRequest) {
           results.processed++;
           results.emails.push(user.email);
         } catch (error) {
-          logger.error("Failed to send trial ended email", error instanceof Error ? error : new Error(String(error)), { user: user.email });
+          logger.error(
+            "Failed to send trial ended email",
+            error instanceof Error ? error : new Error(String(error)),
+            { user: user.email }
+          );
           results.errors++;
         }
       }
@@ -298,16 +343,19 @@ export async function GET(request: NextRequest) {
       emails: results.emails,
     });
   } catch (error) {
-    logger.error("Email lifecycle cron job failed", error instanceof Error ? error : new Error(String(error)));
+    logger.error(
+      "Email lifecycle cron job failed",
+      error instanceof Error ? error : new Error(String(error))
+    );
     // Never return 500 - return graceful error response (cron can retry)
     return NextResponse.json(
-      { 
+      {
         success: false,
         processed: 0,
         errors: 1,
         emails: [],
         error: "Failed to process email lifecycle",
-        message: "Cron job will retry on next schedule"
+        message: "Cron job will retry on next schedule",
       },
       { status: 200 }
     );

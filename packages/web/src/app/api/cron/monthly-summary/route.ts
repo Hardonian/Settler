@@ -7,16 +7,18 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
-export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase admin client
+export const runtime = "nodejs"; // Ensure Node.js runtime for Supabase admin client
 import { createAdminClient } from "@/lib/supabase/server";
-import { sendMonthlySummaryEmail, LifecycleUser } from "@settler/api/lib/email-lifecycle";
-
+import {
+  sendMonthlySummaryEmail,
+  LifecycleUser,
+} from "../../../../../api/dist/lib/email-lifecycle";
 
 import { logger } from "@/lib/logging/logger";
 
-import { getEnv } from '@/lib/env';
+import { getEnv } from "@/lib/env";
 
-const CRON_SECRET = getEnv('CRON_SECRET', false) || '';
+const CRON_SECRET = getEnv("CRON_SECRET", false) || "";
 
 export async function GET(request: NextRequest) {
   try {
@@ -32,25 +34,31 @@ export async function GET(request: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: users, error } = (await supabase.rpc(
       "get_paid_users_for_monthly_summary" as any
-    )) as { data: Array<{
-      id: string;
-      email: string;
-      name?: string;
-      industry?: string;
-      company_name?: string;
-      plan_type?: string;
-    }> | null; error: { message?: string } | null };
+    )) as {
+      data: Array<{
+        id: string;
+        email: string;
+        name?: string;
+        industry?: string;
+        company_name?: string;
+        plan_type?: string;
+      }> | null;
+      error: { message?: string } | null;
+    };
 
     if (error) {
-      logger.error("Failed to fetch paid users", error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        "Failed to fetch paid users",
+        error instanceof Error ? error : new Error(String(error))
+      );
       return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to fetch users',
-        message: 'Please try again later or contact support if the issue persists',
-      },
-      { status: 200 }
-    );
+        {
+          success: false,
+          error: "Failed to fetch users",
+          message: "Please try again later or contact support if the issue persists",
+        },
+        { status: 200 }
+      );
     }
 
     const results = {
@@ -97,7 +105,11 @@ export async function GET(request: NextRequest) {
         results.processed++;
         results.emails.push(user.email);
       } catch (error) {
-        logger.error("Failed to send monthly summary", error instanceof Error ? error : new Error(String(error)), { user: user.email });
+        logger.error(
+          "Failed to send monthly summary",
+          error instanceof Error ? error : new Error(String(error)),
+          { user: user.email }
+        );
         results.errors++;
       }
     }
@@ -113,15 +125,18 @@ export async function GET(request: NextRequest) {
       errors: results.errors,
     });
   } catch (error) {
-    logger.error("Monthly summary cron job failed", error instanceof Error ? error : new Error(String(error)));
+    logger.error(
+      "Monthly summary cron job failed",
+      error instanceof Error ? error : new Error(String(error))
+    );
     // Never return 500 - return graceful error response (cron can retry)
     return NextResponse.json(
-      { 
+      {
         success: false,
         processed: 0,
         errors: 1,
         error: "Failed to process monthly summary",
-        message: "Cron job will retry on next schedule"
+        message: "Cron job will retry on next schedule",
       },
       { status: 200 }
     );

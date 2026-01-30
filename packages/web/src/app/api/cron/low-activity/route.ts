@@ -7,16 +7,15 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
-export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase admin client
+export const runtime = "nodejs"; // Ensure Node.js runtime for Supabase admin client
 import { createAdminClient } from "@/lib/supabase/server";
-import { sendLowActivityEmail, LifecycleUser } from "@settler/api/lib/email-lifecycle";
-
+import { sendLowActivityEmail, LifecycleUser } from "../../../../../api/dist/lib/email-lifecycle";
 
 import { logger } from "@/lib/logging/logger";
 
-import { getEnv } from '@/lib/env';
+import { getEnv } from "@/lib/env";
 
-const CRON_SECRET = getEnv('CRON_SECRET', false) || '';
+const CRON_SECRET = getEnv("CRON_SECRET", false) || "";
 
 export async function GET(request: NextRequest) {
   try {
@@ -32,25 +31,31 @@ export async function GET(request: NextRequest) {
     const result = await (supabase.rpc as any)("get_inactive_users", {
       p_days_inactive: 7,
     });
-    const { data: users, error } = result as { data: Array<{
-      id: string;
-      email: string;
-      name?: string;
-      industry?: string;
-      company_name?: string;
-      plan_type?: string;
-    }> | null; error: { message?: string } | null };
+    const { data: users, error } = result as {
+      data: Array<{
+        id: string;
+        email: string;
+        name?: string;
+        industry?: string;
+        company_name?: string;
+        plan_type?: string;
+      }> | null;
+      error: { message?: string } | null;
+    };
 
     if (error) {
-      logger.error("Failed to fetch inactive users", error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        "Failed to fetch inactive users",
+        error instanceof Error ? error : new Error(String(error))
+      );
       return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to fetch users',
-        message: 'Please try again later or contact support if the issue persists',
-      },
-      { status: 200 }
-    );
+        {
+          success: false,
+          error: "Failed to fetch users",
+          message: "Please try again later or contact support if the issue persists",
+        },
+        { status: 200 }
+      );
     }
 
     const results = {
@@ -62,14 +67,16 @@ export async function GET(request: NextRequest) {
     for (const user of (Array.isArray(users) ? users : []) || []) {
       try {
         // Skip if we sent a low activity email in the last 14 days
-        const profileResult = await ((supabase
-          .from("profiles") as any)
+        const profileResult = await ((supabase.from("profiles") as any)
           .select("last_email_sent_at, last_email_type")
           .eq("id", user.id)
-          .single() as Promise<{ data: {
+          .single() as Promise<{
+          data: {
             last_email_sent_at?: string;
             last_email_type?: string;
-          } | null; error: { message?: string } | null }>);
+          } | null;
+          error: { message?: string } | null;
+        }>);
         const { data: profile } = profileResult;
 
         if (profile?.last_email_type === "low_activity" && profile?.last_email_sent_at) {
@@ -99,7 +106,11 @@ export async function GET(request: NextRequest) {
         results.processed++;
         results.emails.push(user.email);
       } catch (error) {
-        logger.error("Failed to send low activity email", error instanceof Error ? error : new Error(String(error)), { user: user.email });
+        logger.error(
+          "Failed to send low activity email",
+          error instanceof Error ? error : new Error(String(error)),
+          { user: user.email }
+        );
         results.errors++;
       }
     }
@@ -115,15 +126,18 @@ export async function GET(request: NextRequest) {
       errors: results.errors,
     });
   } catch (error) {
-    logger.error("Low activity cron job failed", error instanceof Error ? error : new Error(String(error)));
+    logger.error(
+      "Low activity cron job failed",
+      error instanceof Error ? error : new Error(String(error))
+    );
     // Never return 500 - return graceful error response (cron can retry)
     return NextResponse.json(
-      { 
+      {
         success: false,
         processed: 0,
         errors: 1,
         error: "Failed to process low activity check",
-        message: "Cron job will retry on next schedule"
+        message: "Cron job will retry on next schedule",
       },
       { status: 200 }
     );

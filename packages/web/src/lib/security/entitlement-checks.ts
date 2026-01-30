@@ -1,12 +1,12 @@
 /**
  * Entitlement Checks using Billing Hardening
- * 
+ *
  * Uses the new billing hardening functions for granular entitlement checks.
  */
 
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { safeLogger } from '@/lib/observability/safe-logger';
+import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+import { safeLogger } from "@/lib/observability/safe-logger";
 
 type BillingHardeningModule = {
   checkEntitlements: (billingAccountId: string, options?: any) => Promise<EntitlementCheck>;
@@ -19,7 +19,7 @@ async function getBillingHardening(): Promise<BillingHardeningModule> {
   if (cachedBilling) return cachedBilling;
 
   try {
-    const mod: any = await import('@settler/api/dist/ops/billing-hardening');
+    const mod: any = await import("../../../api/dist/ops/billing-hardening");
     cachedBilling = {
       checkEntitlements: mod.checkEntitlements,
       getBillingStatus: mod.getBillingStatus,
@@ -34,7 +34,7 @@ async function getBillingHardening(): Promise<BillingHardeningModule> {
             where: { id: billingAccountId },
             include: {
               subscriptions: {
-                where: { status: { in: ['active', 'trialing'] } },
+                where: { status: { in: ["active", "trialing"] } },
                 take: 1,
               },
             },
@@ -47,21 +47,21 @@ async function getBillingHardening(): Promise<BillingHardeningModule> {
               canExport: true,
               canViewReports: true,
               canUseAPI: false,
-              message: 'Active subscription required',
-              upgradeUrl: '/pricing',
+              message: "Active subscription required",
+              upgradeUrl: "/pricing",
             };
           }
 
           const sub = account.subscriptions[0];
-          if (sub.status === 'past_due' || sub.status === 'unpaid') {
+          if (sub.status === "past_due" || sub.status === "unpaid") {
             return {
               canRunRecon: false,
               canCreateRecon: false,
               canExport: true,
               canViewReports: true,
               canUseAPI: false,
-              message: 'Payment required. Please update your payment method.',
-              upgradeUrl: '/console/billing',
+              message: "Payment required. Please update your payment method.",
+              upgradeUrl: "/console/billing",
             };
           }
 
@@ -83,20 +83,20 @@ async function getBillingHardening(): Promise<BillingHardeningModule> {
             where: { id: billingAccountId },
             include: {
               subscriptions: {
-                where: { status: { in: ['active', 'past_due', 'trialing', 'canceled'] } },
-                orderBy: { createdAt: 'desc' },
+                where: { status: { in: ["active", "past_due", "trialing", "canceled"] } },
+                orderBy: { createdAt: "desc" },
                 take: 1,
               },
             },
           });
 
           if (!account || !account.subscriptions[0]) {
-            return 'free';
+            return "free";
           }
 
           const sub = account.subscriptions[0];
-          if (sub.status === 'past_due' && sub.currentPeriodEnd < new Date()) {
-            return 'unpaid';
+          if (sub.status === "past_due" && sub.currentPeriodEnd < new Date()) {
+            return "unpaid";
           }
           return sub.status as string;
         } finally {
@@ -147,9 +147,9 @@ export async function checkUserEntitlements(
         entitlements,
         error: NextResponse.json(
           {
-            error: 'Access Denied',
-            message: entitlements.message || 'This feature is not available with your current plan',
-            code: 'ENTITLEMENT_CHECK_FAILED',
+            error: "Access Denied",
+            message: entitlements.message || "This feature is not available with your current plan",
+            code: "ENTITLEMENT_CHECK_FAILED",
             upgrade_required: true,
             upgrade_url: entitlements.upgradeUrl,
           },
@@ -163,7 +163,7 @@ export async function checkUserEntitlements(
       entitlements,
     };
   } catch (error) {
-    await safeLogger.error('[Entitlement Checks] Entitlement check failed', {
+    await safeLogger.error("[Entitlement Checks] Entitlement check failed", {
       billingAccountId,
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
@@ -177,13 +177,13 @@ export async function checkUserEntitlements(
         canExport: false,
         canViewReports: false,
         canUseAPI: false,
-        message: 'Unable to verify entitlements',
+        message: "Unable to verify entitlements",
       },
       error: NextResponse.json(
         {
-          error: 'Entitlement Check Failed',
-          message: 'Unable to verify access permissions. Please try again or contact support.',
-          code: 'ENTITLEMENT_CHECK_FAILED',
+          error: "Entitlement Check Failed",
+          message: "Unable to verify access permissions. Please try again or contact support.",
+          code: "ENTITLEMENT_CHECK_FAILED",
           retryable: true,
         },
         { status: 403 }
@@ -201,12 +201,12 @@ export async function getUserBillingStatus(billingAccountId: string): Promise<st
     const billing = await getBillingHardening();
     return await billing.getBillingStatus(billingAccountId);
   } catch (error) {
-    await safeLogger.error('[Entitlement Checks] Billing status check failed', {
+    await safeLogger.error("[Entitlement Checks] Billing status check failed", {
       billingAccountId,
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
     });
-    return 'unknown';
+    return "unknown";
   }
   // Note: Using shared Prisma singleton - don't disconnect
 }

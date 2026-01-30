@@ -35,7 +35,7 @@ async function getActivationFunnel(): Promise<ActivationFunnelModule> {
 
   try {
     // Prefer ESM dynamic import (avoids eslint no-var-requires, works in Next runtime)
-    const mod: any = await import("@settler/api/dist/ops/activation-funnel");
+    const mod: any = await import("../../../api/dist/ops/activation-funnel");
     if (mod?.LifecycleEventType && typeof mod.LifecycleEventType === "object") {
       Object.assign(LifecycleEventType, mod.LifecycleEventType as Record<string, string>);
     }
