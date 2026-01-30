@@ -19,7 +19,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "test": "../api/node_modules/.bin/jest --passWithNoTests",
-    "lint": "eslint src --ext .ts",
+    "lint": "eslint src",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
   },

@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/ui/SmoothScroll";
 import {
@@ -19,12 +18,6 @@ import { getImageUrl, SETTLER_IMAGES } from "@/lib/images/image-config";
 import { RuntimeUiConfigProvider } from "@/lib/runtime-ui-config/client";
 import { AnnouncementBanner } from "@/components/polish/AnnouncementBanner";
 import { RuntimeUiOptionalFeatures } from "@/components/polish/RuntimeUiOptionalFeatures";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://settler.dev"),
@@ -236,7 +229,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <html lang="en" suppressHydrationWarning className={inter.variable}>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="mobile-web-app-capable" content="yes" />

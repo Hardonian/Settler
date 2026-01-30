@@ -2,25 +2,27 @@
 // Re-exports from @settler/api for server-side use only
 
 export type LifecycleUser = {
-  id: string;
+  id?: string;
   email: string;
   name?: string;
   firstName?: string;
   trialEndsAt?: Date;
   industry?: string;
   companyName?: string;
+  planType?: "free" | "trial" | "commercial" | "enterprise";
 };
 
 export type TrialData = {
-  daysLeft: number;
-  featuresUsed: string[];
+  daysLeft?: number;
+  daysRemaining?: number;
+  featuresUsed?: string[];
   trialStartDate?: Date | string;
   trialEndDate?: Date | string;
 };
 
 // Stub implementations that log warnings
 const stubFunction = (name: string) => {
-  return async (...args: any[]) => {
+  return async (..._args: any[]) => {
     console.warn(`[STUB] ${name} called but @settler/api is not available in web build`);
     return { success: false, error: "API package not available" };
   };

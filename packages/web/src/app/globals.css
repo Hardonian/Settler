@@ -88,9 +88,11 @@
   body {
     @apply bg-background text-foreground;
     font-family:
-      var(--font-inter),
       system-ui,
       -apple-system,
+      "Segoe UI",
+      "Roboto",
+      "Helvetica Neue",
       sans-serif;
     font-feature-settings:
       "rlig" 1,
