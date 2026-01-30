@@ -1,12 +1,13 @@
 /**
  * Guest Session Management
- * 
+ *
  * Provides instant access without signup friction.
  * Uses Supabase anonymous auth if available, otherwise falls back to session storage.
  */
 
 import { createClient } from '@/lib/supabase/client';
 import { safeAsync } from '@/lib/safe';
+import { safeJsonParse } from '@/lib/utils/safe-parse';
 
 export interface GuestSession {
   id: string;
@@ -72,16 +73,12 @@ export function getGuestSession(): GuestSession | null {
   if (typeof window === 'undefined') {
     return null;
   }
-  
-  try {
-    const stored = localStorage.getItem(GUEST_SESSION_KEY);
-    if (stored) {
-      return JSON.parse(stored) as GuestSession;
-    }
-  } catch {
-    // Ignore parse errors
+
+  const stored = localStorage.getItem(GUEST_SESSION_KEY);
+  if (stored) {
+    return safeJsonParse<GuestSession>(stored, "guest session from localStorage");
   }
-  
+
   return null;
 }
 

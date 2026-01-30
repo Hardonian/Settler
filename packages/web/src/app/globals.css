@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Responsive text utilities - prevents overflow and layout breaks */
+@import '../styles/responsive-text.css';
+
 /* Shine animation for logo */
 @keyframes shine {
   0% {
