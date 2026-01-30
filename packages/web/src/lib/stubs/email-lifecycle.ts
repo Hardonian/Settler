@@ -7,12 +7,13 @@ export type LifecycleUser = {
   name?: string;
   firstName?: string;
   trialEndsAt?: Date;
+  industry?: string;
 };
 
 export type TrialData = {
   daysLeft: number;
   featuresUsed: string[];
-  trialStartDate?: Date;
+  trialStartDate?: Date | string;
 };
 
 // Stub implementations that log warnings
