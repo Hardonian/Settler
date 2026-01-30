@@ -10,6 +10,8 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 });
 
+const path = require("path");
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
@@ -73,18 +75,18 @@ const nextConfig = {
       ...originalResolve,
       alias: {
         ...originalResolve.alias,
-        "@": require("path").resolve(__dirname, "src"),
-        "@settler/api/lib/email-lifecycle": require("path").resolve(
+        "@": path.resolve(__dirname, "src"),
+        "@settler/api/lib/email-lifecycle": path.resolve(
           __dirname,
-          "../api/dist/lib/email-lifecycle"
+          "../api/dist/lib/email-lifecycle.js"
         ),
-        "@settler/api/dist/ops/activation-funnel": require("path").resolve(
+        "@settler/api/dist/ops/activation-funnel": path.resolve(
           __dirname,
-          "../api/dist/ops/activation-funnel"
+          "../api/dist/ops/activation-funnel.js"
         ),
-        "@settler/api/dist/ops/billing-hardening": require("path").resolve(
+        "@settler/api/dist/ops/billing-hardening": path.resolve(
           __dirname,
-          "../api/dist/ops/billing-hardening"
+          "../api/dist/ops/billing-hardening.js"
         ),
       },
       extensions: [...(originalResolve.extensions || []), ".ts", ".tsx", ".js", ".jsx"],
