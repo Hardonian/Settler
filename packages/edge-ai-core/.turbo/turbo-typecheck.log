@@ -1,6 +1,4 @@
 
 > @settler/edge-ai-core@1.0.0 typecheck C:\Users\scott\Documents\GitHub\Settler\packages\edge-ai-core
-> tsc --noEmit "--no-cache"
+> tsc --noEmit
 
-error TS5023: Unknown compiler option '--no-cache'.
- ELIFECYCLE  Command failed with exit code 1.

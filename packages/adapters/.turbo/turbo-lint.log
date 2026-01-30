@@ -1,6 +1,6 @@
 
 > @settler/adapters@1.0.0 lint C:\Users\scott\Documents\GitHub\Settler\packages\adapters
-> eslint src --ext .ts "--no-cache"
+> eslint src --ext .ts
 
 
 C:\Users\scott\Documents\GitHub\Settler\packages\adapters\src\alerting\alert-manager.ts

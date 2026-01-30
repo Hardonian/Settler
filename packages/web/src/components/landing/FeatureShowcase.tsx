@@ -1,26 +1,19 @@
 /**
  * Feature Showcase Component
- * 
+ *
  * Modern, animated showcase of Settler's core features.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { SafeImage } from '@/components/SafeImage';
-import { 
-  TrendingUp, 
-  Shield, 
-  AlertTriangle, 
-  RefreshCw, 
-  Sparkles,
-  ArrowRight,
-} from 'lucide-react';
-import Link from 'next/link';
-import { motion, useInView, useAnimation } from 'framer-motion';
+import { useState, useEffect, useRef } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { SafeImage } from "@/components/SafeImage";
+import { TrendingUp, Shield, AlertTriangle, RefreshCw, Sparkles, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { motion, useInView, useAnimation } from "framer-motion";
 
 interface Feature {
   id: string;
@@ -36,59 +29,63 @@ interface Feature {
 
 const features: Feature[] = [
   {
-    id: 'meaningful-changes',
+    id: "meaningful-changes",
     icon: <TrendingUp className="w-8 h-8" />,
-    title: 'Meaningful Changes',
-    description: 'See what changed with impact ranking and explanations. Not raw diffs—actual insights.',
-    highlight: 'Ranked by urgency, impact, and confidence',
-    link: '/console/changes',
-    color: 'blue',
-    gradient: 'from-blue-500 to-cyan-500',
-    screenshot: '/assets/marketing/hero-image-1.png',
+    title: "Meaningful Changes",
+    description:
+      "See what changed with impact ranking and explanations. Not raw diffs—actual insights.",
+    highlight: "Ranked by urgency, impact, and confidence",
+    link: "/console/changes",
+    color: "blue",
+    gradient: "from-blue-500 to-cyan-500",
+    screenshot: "/assets/marketing/hero-image-1.png",
   },
   {
-    id: 'reconciliation',
+    id: "reconciliation",
     icon: <RefreshCw className="w-8 h-8" />,
-    title: 'Smart Reconciliation',
-    description: 'Actionable reconciliation ranked by impact. Know what matters, why it matters, and what to do.',
-    highlight: 'Impact-first ranking with risk scoring',
-    link: '/console/reconciliation-view',
-    color: 'green',
-    gradient: 'from-green-500 to-emerald-500',
-    screenshot: '/assets/marketing/hero-image-2.png',
+    title: "Smart Reconciliation",
+    description:
+      "Actionable reconciliation ranked by impact. Know what matters, why it matters, and what to do.",
+    highlight: "Impact-first ranking with risk scoring",
+    link: "/console/reconciliation-view",
+    color: "green",
+    gradient: "from-green-500 to-emerald-500",
+    screenshot: "/assets/marketing/hero-image-2.png",
   },
   {
-    id: 'receipts',
+    id: "receipts",
     icon: <Shield className="w-8 h-8" />,
-    title: 'Tamper-Evident Receipts',
-    description: 'Audit-ready receipts with hash chain integrity. Boring, perfect, immutable.',
-    highlight: 'SHA256 hash chain verification',
-    link: '/console/receipts-hash',
-    color: 'purple',
-    gradient: 'from-purple-500 to-pink-500',
-    screenshot: '/assets/marketing/hero-image-3.png',
+    title: "Tamper-Evident Receipts",
+    description: "Audit-ready receipts with hash chain integrity. Boring, perfect, immutable.",
+    highlight: "SHA256 hash chain verification",
+    link: "/console/receipts-hash",
+    color: "purple",
+    gradient: "from-purple-500 to-pink-500",
+    screenshot: "/assets/marketing/hero-image-3.png",
   },
   {
-    id: 'alerts',
+    id: "alerts",
     icon: <AlertTriangle className="w-8 h-8" />,
-    title: 'Intelligent Alerts',
-    description: 'Rare, relevant, explained. Alerts that tell you why they triggered and what to do next.',
-    highlight: 'Threshold tracking with explanations',
-    link: '/console/alerts-view',
-    color: 'orange',
-    gradient: 'from-orange-500 to-red-500',
-    screenshot: '/assets/marketing/hero-image-1.png',
+    title: "Intelligent Alerts",
+    description:
+      "Rare, relevant, explained. Alerts that tell you why they triggered and what to do next.",
+    highlight: "Threshold tracking with explanations",
+    link: "/console/alerts-view",
+    color: "orange",
+    gradient: "from-orange-500 to-red-500",
+    screenshot: "/assets/marketing/feature-1.svg",
   },
   {
-    id: 'ai-analysis',
+    id: "ai-analysis",
     icon: <Sparkles className="w-8 h-8" />,
-    title: 'AI-Powered Analysis',
-    description: 'Advanced AI analysis for deeper insights. Understand patterns, predict issues, get recommendations.',
-    highlight: 'Growth & Enterprise tiers with token management',
-    link: '/console/ai-analysis',
-    color: 'indigo',
-    gradient: 'from-indigo-500 to-purple-500',
-    screenshot: '/assets/marketing/hero-image-2.png',
+    title: "AI-Powered Analysis",
+    description:
+      "Advanced AI analysis for deeper insights. Understand patterns, predict issues, get recommendations.",
+    highlight: "Growth & Enterprise tiers with token management",
+    link: "/console/ai-analysis",
+    color: "indigo",
+    gradient: "from-indigo-500 to-purple-500",
+    screenshot: "/assets/marketing/feature-2.svg",
   },
 ];
 
@@ -112,7 +109,8 @@ export function FeatureShowcase() {
             Certainty at Decision Speed
           </h2>
           <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Every feature serves: reduce uncertainty, detect change, prescribe action, prove it later.
+            Every feature serves: reduce uncertainty, detect change, prescribe action, prove it
+            later.
           </p>
         </motion.div>
 
@@ -135,7 +133,11 @@ export function FeatureShowcase() {
           transition={{ delay: 0.5, duration: 0.6 }}
           className="text-center mt-12"
         >
-          <Button asChild size="lg" className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700">
+          <Button
+            asChild
+            size="lg"
+            className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
+          >
             <Link href="/console">
               Start Using Settler
               <ArrowRight className="w-5 h-5 ml-2" />
@@ -186,7 +188,9 @@ function FeatureCard({
     >
       <Card
         className={`relative overflow-hidden h-full transition-all duration-300 ${
-          hoveredFeature === feature.id ? "shadow-2xl scale-105 border-2" : "shadow-lg hover:shadow-xl"
+          hoveredFeature === feature.id
+            ? "shadow-2xl scale-105 border-2"
+            : "shadow-lg hover:shadow-xl"
         }`}
       >
         <div

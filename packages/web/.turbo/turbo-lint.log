@@ -1,14 +1,20 @@
 
 > @settler/web@1.0.0 lint C:\Users\scott\Documents\GitHub\Settler\packages\web
-> npx next lint "--no-cache"
+> npx next lint
 
+npm warn Unknown env config "lockfile". This will stop working in the next major version of npm.
 npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
 npm warn config `--include=optional` to include them.
 npm warn config
 npm warn config       Default value does install optional deps unless otherwise omitted.
+npm warn Unknown env config "package-manager". This will stop working in the next major version of npm.
+npm warn Unknown env config "prefer-frozen-lockfile". This will stop working in the next major version of npm.
 npm warn Unknown env config "store-dir". This will stop working in the next major version of npm.
 npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
 npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm.
+npm warn Unknown project config "package-manager". This will stop working in the next major version of npm.
+npm warn Unknown project config "lockfile". This will stop working in the next major version of npm.
+npm warn Unknown project config "prefer-frozen-lockfile". This will stop working in the next major version of npm.
 npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
 npm warn config `--include=optional` to include them.
 npm warn config
@@ -66,6 +72,20 @@ npm warn config       Default value does install optional deps unless otherwise 
 
 ./src/lib/monitoring/sentry.ts
 184:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/stubs/activation-funnel.ts
+4:44  Warning: 'event' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+4:59  Warning: 'userId' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+8:43  Warning: 'userId' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./src/lib/stubs/billing-hardening.ts
+4:41  Warning: 'userId' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+4:57  Warning: 'feature' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+9:41  Warning: 'event' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+9:56  Warning: 'data' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./src/lib/stubs/email-lifecycle.ts
+23:20  Warning: 'args' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
 
 ./src/lib/validation/component-validation.ts
 58:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
