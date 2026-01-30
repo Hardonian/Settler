@@ -224,7 +224,7 @@ export async function handleAsyncError<T>(
  */
 export function safeJsonParse<T = unknown>(
   jsonString: string,
-  fallbackValue: T = {} as T
+  _fallbackValue: T = {} as T
 ): { data?: T; error?: Error } {
   try {
     const data = JSON.parse(jsonString) as T;
@@ -240,7 +240,7 @@ export function safeJsonParse<T = unknown>(
 /**
  * Required field validator
  */
-export function validateRequired(value: unknown, fieldName: string, context?: ErrorContext): void {
+export function validateRequired(value: unknown, fieldName: string, _context?: ErrorContext): void {
   if (value == null || value === "") {
     throw new ValidationError(`${fieldName} is required`, fieldName, "REQUIRED");
   }
@@ -253,7 +253,7 @@ export function validateString(
   value: unknown,
   fieldName: string,
   options: { minLength?: number; maxLength?: number; pattern?: RegExp } = {},
-  context?: ErrorContext
+  _context?: ErrorContext
 ): string {
   if (value == null) {
     throw new ValidationError(`${fieldName} is required`, fieldName, "REQUIRED");
@@ -301,7 +301,7 @@ export function validateNumber(
   value: unknown,
   fieldName: string,
   options: { min?: number; max?: number; integer?: boolean } = {},
-  context?: ErrorContext
+  _context?: ErrorContext
 ): number {
   if (value == null) {
     throw new ValidationError(`${fieldName} is required`, fieldName, "REQUIRED");
