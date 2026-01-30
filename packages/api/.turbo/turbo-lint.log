@@ -1,4 +1,0 @@
-
-> @settler/api@1.0.0 lint /home/user/Settler/packages/api
-> eslint src --ext .ts
-

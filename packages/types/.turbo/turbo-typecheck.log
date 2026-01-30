@@ -1,4 +1,0 @@
-
-> @settler/types@1.0.0 typecheck /home/user/Settler/packages/types
-> tsc --noEmit
-

@@ -1,4 +1,0 @@
-
-> @settler/edge-ai-core@1.0.0 lint /home/user/Settler/packages/edge-ai-core
-> eslint src --ext .ts
-

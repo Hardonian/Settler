@@ -1,7 +1,0 @@
-
-> @settler/adapters@1.0.0 test C:\Users\scott\Documents\GitHub\Settler\packages\adapters
-> ../api/node_modules/.bin/jest --passWithNoTests
-
-'..' is not recognized as an internal or external command,
-operable program or batch file.
- ELIFECYCLE  Test failed. See above for more details.

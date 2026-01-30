@@ -1,4 +1,0 @@
-
-> @settler/adapters@1.0.0 lint /home/user/Settler/packages/adapters
-> eslint src --ext .ts
-
