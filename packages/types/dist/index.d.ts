@@ -4,17 +4,19 @@
  * These types represent the unified, opinionated schema for all payment data,
  * abstracting provider differences as specified in the Product & Technical Specification.
  */
-export type PaymentStatus = 'pending' | 'authorized' | 'captured' | 'refunded' | 'disputed' | 'failed';
-export type TransactionType = 'authorization' | 'capture' | 'refund' | 'chargeback' | 'adjustment';
-export type TransactionStatus = 'pending' | 'succeeded' | 'failed' | 'refunded' | 'disputed';
-export type SettlementStatus = 'pending' | 'completed' | 'failed';
-export type FeeType = 'processing' | 'fx' | 'chargeback' | 'refund' | 'adjustment' | 'other';
-export type RefundDisputeType = 'refund' | 'chargeback' | 'dispute';
-export type RefundDisputeStatus = 'pending' | 'completed' | 'reversed' | 'lost';
-export type MatchType = '1-to-1' | '1-to-many' | 'many-to-1';
-export type ExceptionCategory = 'amount_mismatch' | 'date_mismatch' | 'missing_transaction' | 'missing_settlement' | 'duplicate';
-export type ExceptionSeverity = 'low' | 'medium' | 'high' | 'critical';
-export type ExceptionResolutionStatus = 'open' | 'in_progress' | 'resolved' | 'dismissed';
+export { serverEnvSchema, clientEnvSchema, fullEnvSchema, validateServerEnv, validateClientEnv, validateEnv, safeEnv, type ServerEnv, type ClientEnv, type FullEnv, } from "./env-validation";
+export { logger, RequestCorrelation, AppError, safeAsync, type LogLevel, type LogContext, } from "./logging";
+export type PaymentStatus = "pending" | "authorized" | "captured" | "refunded" | "disputed" | "failed";
+export type TransactionType = "authorization" | "capture" | "refund" | "chargeback" | "adjustment";
+export type TransactionStatus = "pending" | "succeeded" | "failed" | "refunded" | "disputed";
+export type SettlementStatus = "pending" | "completed" | "failed";
+export type FeeType = "processing" | "fx" | "chargeback" | "refund" | "adjustment" | "other";
+export type RefundDisputeType = "refund" | "chargeback" | "dispute";
+export type RefundDisputeStatus = "pending" | "completed" | "reversed" | "lost";
+export type MatchType = "1-to-1" | "1-to-many" | "many-to-1";
+export type ExceptionCategory = "amount_mismatch" | "date_mismatch" | "missing_transaction" | "missing_settlement" | "duplicate";
+export type ExceptionSeverity = "low" | "medium" | "high" | "critical";
+export type ExceptionResolutionStatus = "open" | "in_progress" | "resolved" | "dismissed";
 /**
  * Money type - represents an amount with currency
  */
@@ -180,7 +182,7 @@ export interface Exception {
  */
 export interface MatchingRule {
     field: string;
-    type: 'exact' | 'fuzzy' | 'range';
+    type: "exact" | "fuzzy" | "range";
     tolerance?: {
         amount?: number;
         days?: number;
@@ -189,8 +191,8 @@ export interface MatchingRule {
 }
 export interface MatchingRulesConfig {
     strategies: MatchingRule[];
-    priority: 'exact-first' | 'fuzzy-first' | 'custom';
-    conflictResolution?: 'first-wins' | 'last-wins' | 'manual-review';
+    priority: "exact-first" | "fuzzy-first" | "custom";
+    conflictResolution?: "first-wins" | "last-wins" | "manual-review";
 }
 /**
  * Reconciliation Summary
