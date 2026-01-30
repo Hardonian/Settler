@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { RefreshCw, Download, TrendingUp, Users, Activity } from 'lucide-react';
-import Link from 'next/link';
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { RefreshCw, Download, TrendingUp, Users, Activity } from "lucide-react";
+import Link from "next/link";
 
 interface Tenant {
   id: string;
@@ -30,80 +30,93 @@ export function TenantsObservabilityDashboard() {
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [loading, setLoading] = useState(true);
   const [includeMetrics] = useState(true);
-  
+
   useEffect(() => {
     loadTenants();
   }, [includeMetrics]);
-  
+
   async function loadTenants() {
     setLoading(true);
     try {
       const params = new URLSearchParams();
       if (includeMetrics) {
-        params.set('includeMetrics', 'true');
+        params.set("includeMetrics", "true");
       }
-      
+
       const response = await fetch(`/api/console/tenants?${params}`);
       const data = await response.json();
-      
+
       if (data.tenants) {
         setTenants(data.tenants);
       }
     } catch (error: unknown) {
-      console.error('Failed to load tenants:', error);
+      console.error("Failed to load tenants:", error);
     } finally {
       setLoading(false);
     }
   }
-  
+
   function getStatusColor(status: string): string {
     const colors: Record<string, string> = {
-      active: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-      inactive: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-      suspended: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+      active: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+      inactive: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
+      suspended: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
     };
-    return colors[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+    return colors[status] || "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
   }
-  
+
   function exportTenants() {
     const csv = [
-      ['ID', 'Name', 'Slug', 'Status', 'Created At', 'API Calls', 'Active Users'].join(','),
-      ...tenants.map(tenant => [
-        tenant.id,
-        tenant.name,
-        tenant.slug,
-        tenant.status,
-        tenant.createdAt,
-        tenant.metrics?.apiCalls || 0,
-        tenant.metrics?.activeUsers || 0,
-      ].join(',')),
-    ].join('\n');
-    
-    const blob = new Blob([csv], { type: 'text/csv' });
+      ["ID", "Name", "Slug", "Status", "Created At", "API Calls", "Active Users"].join(","),
+      ...tenants.map((tenant) =>
+        [
+          tenant.id,
+          tenant.name,
+          tenant.slug,
+          tenant.status,
+          tenant.createdAt,
+          tenant.metrics?.apiCalls || 0,
+          tenant.metrics?.activeUsers || 0,
+        ].join(",")
+      ),
+    ].join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `tenants-observability-${new Date().toISOString()}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   }
-  
+
   // Calculate aggregate metrics
-  const aggregateMetrics = tenants.reduce((acc: number, tenant: any) => {
-    acc.totalTenants++;
-    if (tenant.status === 'active') acc.activeTenants++;
-    if (tenant.metrics) {
-      acc.totalApiCalls += tenant.metrics.apiCalls || 0;
-      acc.totalActiveUsers += tenant.metrics.activeUsers || 0;
+  const aggregateMetrics = tenants.reduce(
+    (
+      acc: {
+        totalTenants: number;
+        activeTenants: number;
+        totalApiCalls: number;
+        totalActiveUsers: number;
+      },
+      tenant: Tenant
+    ) => {
+      acc.totalTenants++;
+      if (tenant.status === "active") acc.activeTenants++;
+      if (tenant.metrics) {
+        acc.totalApiCalls += tenant.metrics.apiCalls || 0;
+        acc.totalActiveUsers += tenant.metrics.activeUsers || 0;
+      }
+      return acc;
+    },
+    {
+      totalTenants: 0,
+      activeTenants: 0,
+      totalApiCalls: 0,
+      totalActiveUsers: 0,
     }
-    return acc;
-  }, {
-    totalTenants: 0,
-    activeTenants: 0,
-    totalApiCalls: 0,
-    totalActiveUsers: 0,
-  });
-  
+  );
+
   if (loading && tenants.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -114,7 +127,7 @@ export function TenantsObservabilityDashboard() {
       </div>
     );
   }
-  
+
   return (
     <div className="space-y-6">
       {/* Aggregate Metrics */}
@@ -130,11 +143,13 @@ export function TenantsObservabilityDashboard() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-3">
             <CardDescription>Total API Calls</CardDescription>
-            <CardTitle className="text-3xl">{aggregateMetrics.totalApiCalls.toLocaleString()}</CardTitle>
+            <CardTitle className="text-3xl">
+              {aggregateMetrics.totalApiCalls.toLocaleString()}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
@@ -143,7 +158,7 @@ export function TenantsObservabilityDashboard() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-3">
             <CardDescription>Active Users</CardDescription>
@@ -156,19 +171,21 @@ export function TenantsObservabilityDashboard() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-3">
             <CardDescription>Avg API Calls/Tenant</CardDescription>
             <CardTitle className="text-3xl">
               {aggregateMetrics.totalTenants > 0
-                ? Math.round(aggregateMetrics.totalApiCalls / aggregateMetrics.totalTenants).toLocaleString()
+                ? Math.round(
+                    aggregateMetrics.totalApiCalls / aggregateMetrics.totalTenants
+                  ).toLocaleString()
                 : 0}
             </CardTitle>
           </CardHeader>
         </Card>
       </div>
-      
+
       {/* Controls */}
       <Card>
         <CardHeader>
@@ -192,7 +209,7 @@ export function TenantsObservabilityDashboard() {
           </div>
         </CardHeader>
       </Card>
-      
+
       {/* Tenants Table */}
       <Card>
         <CardContent className="p-0">
@@ -218,13 +235,14 @@ export function TenantsObservabilityDashboard() {
                   </tr>
                 ) : (
                   tenants.map((tenant) => (
-                    <tr key={tenant.id} className="border-b hover:bg-slate-50 dark:hover:bg-slate-900">
+                    <tr
+                      key={tenant.id}
+                      className="border-b hover:bg-slate-50 dark:hover:bg-slate-900"
+                    >
                       <td className="p-4 font-medium">{tenant.name}</td>
                       <td className="p-4 font-mono text-xs">{tenant.slug}</td>
                       <td className="p-4">
-                        <Badge className={getStatusColor(tenant.status)}>
-                          {tenant.status}
-                        </Badge>
+                        <Badge className={getStatusColor(tenant.status)}>{tenant.status}</Badge>
                       </td>
                       <td className="p-4 text-xs text-slate-600 dark:text-slate-400">
                         {new Date(tenant.createdAt).toLocaleDateString()}
@@ -236,7 +254,7 @@ export function TenantsObservabilityDashboard() {
                             {tenant.metrics.apiCalls.toLocaleString()}
                           </div>
                         ) : (
-                          '-'
+                          "-"
                         )}
                       </td>
                       <td className="p-4">
@@ -246,15 +264,13 @@ export function TenantsObservabilityDashboard() {
                             {tenant.metrics.activeUsers}
                           </div>
                         ) : (
-                          '-'
+                          "-"
                         )}
                       </td>
                       <td className="p-4">
                         <div className="flex gap-2">
                           <Button asChild variant="outline" size="sm">
-                            <Link href={`/console/admin/tenants/${tenant.id}`}>
-                              View Details
-                            </Link>
+                            <Link href={`/console/admin/tenants/${tenant.id}`}>View Details</Link>
                           </Button>
                         </div>
                       </td>

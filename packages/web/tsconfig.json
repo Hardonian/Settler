@@ -39,18 +39,18 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@settler/api": ["../api/src"],
-      "@settler/api/*": ["../api/src/*"],
-      "@settler/adapters": ["../adapters/src"],
-      "@settler/adapters/*": ["../adapters/src/*"],
-      "@settler/react-settler": ["../react-settler/src"],
-      "@settler/react-settler/*": ["../react-settler/src/*"],
-      "@settler/protocol": ["../protocol/src"],
-      "@settler/protocol/*": ["../protocol/src/*"],
-      "@settler/sdk": ["../sdk/src"],
-      "@settler/sdk/*": ["../sdk/src/*"],
-      "@settler/types": ["../types/src"],
-      "@settler/types/*": ["../types/src/*"]
+      "@settler/api": ["../api/dist"],
+      "@settler/api/*": ["../api/dist/*"],
+      "@settler/adapters": ["../adapters/dist"],
+      "@settler/adapters/*": ["../adapters/dist/*"],
+      "@settler/react-settler": ["../react-settler/dist"],
+      "@settler/react-settler/*": ["../react-settler/dist/*"],
+      "@settler/protocol": ["../protocol/dist"],
+      "@settler/protocol/*": ["../protocol/dist/*"],
+      "@settler/sdk": ["../sdk/dist"],
+      "@settler/sdk/*": ["../sdk/dist/*"],
+      "@settler/types": ["../types/dist"],
+      "@settler/types/*": ["../types/dist/*"]
     }
   },
   "include": [

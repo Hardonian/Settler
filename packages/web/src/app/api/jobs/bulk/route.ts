@@ -1,6 +1,6 @@
 /**
  * Bulk Operations API - POST /api/jobs/bulk
- * 
+ *
  * Performs bulk actions on multiple reconciliation jobs.
  * Enterprise-ready with:
  * - Type-safe Prisma queries
@@ -10,22 +10,22 @@
  * - Transaction support
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/shared/db/prismaClient';
-import { authenticateApiKey } from '@/shared/auth/apiKey';
-import { createClient } from '@/lib/supabase/server';
-import { z } from 'zod';
-import { logAuditEvent, type AuditAction } from '@/lib/audit/logger';
-import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
-import { appLogger } from '@/lib/utils/logger';
-import { withSecurity } from '@/lib/middleware/api-security';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/shared/db/prismaClient";
+import { authenticateApiKey } from "@/shared/auth/apiKey";
+import { createClient } from "@/lib/supabase/server";
+import { z } from "zod";
+import { logAuditEvent, type AuditAction } from "@/lib/audit/logger";
+import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
+import { appLogger } from "@/lib/utils/logger";
+import { withSecurity } from "@/lib/middleware/api-security";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const BulkActionSchema = z.object({
-  action: z.enum(['pause', 'resume', 'delete', 'execute']),
+  action: z.enum(["pause", "resume", "delete", "execute"]),
   jobIds: z.array(z.string().uuid()).min(1).max(100), // Limit to 100 jobs at a time
 });
 
@@ -34,207 +34,215 @@ const BulkActionSchema = z.object({
  * Perform bulk actions on jobs
  */
 export const POST = withSecurity(
-  withUniversalBillingGate(async function POST(request: NextRequest) {
-  const startTime = Date.now();
-  
-  try {
-    // Authenticate request
-    let auth;
-    let tenantId: string | null = null;
-    let userId: string | null = null;
+  withUniversalBillingGate(
+    async function POST(request: NextRequest) {
+      const startTime = Date.now();
 
-    try {
-      auth = await authenticateApiKey(request);
-      if (auth) {
-        tenantId = auth.tenantId || null;
-        userId = auth.userId || null;
-      } else {
-        // Try Supabase auth as fallback (graceful degradation)
+      try {
+        // Authenticate request
+        let auth;
+        let tenantId: string | null = null;
+        let userId: string | null = null;
+
         try {
-          const supabase = await createClient();
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user) {
-            userId = user.id;
-            const billingAccount = await prisma.billingAccount.findFirst({
-              where: { userId: user.id },
-              select: { tenantId: true },
-            });
-            tenantId = billingAccount?.tenantId || null;
+          auth = await authenticateApiKey(request);
+          if (auth) {
+            tenantId = auth.tenantId || null;
+            userId = auth.userId || null;
+          } else {
+            // Try Supabase auth as fallback (graceful degradation)
+            try {
+              const supabase = await createClient();
+              const {
+                data: { user },
+              } = await supabase.auth.getUser();
+              if (user) {
+                userId = user.id;
+                const billingAccount = await prisma.billingAccount.findFirst({
+                  where: { userId: user.id },
+                  select: { tenantId: true },
+                });
+                tenantId = billingAccount?.tenantId || null;
+              }
+            } catch (error) {
+              return NextResponse.json(
+                {
+                  error: "Unauthorized",
+                  message: "Authentication required",
+                },
+                { status: 401 }
+              );
+            }
           }
         } catch (error) {
           return NextResponse.json(
             {
-              error: 'Unauthorized',
-              message: 'Authentication required',
+              error: "Unauthorized",
+              message: "Authentication required",
             },
             { status: 401 }
           );
         }
-      }
-    } catch (error) {
-      return NextResponse.json(
-        {
-          error: 'Unauthorized',
-          message: 'Authentication required',
-        },
-        { status: 401 }
-      );
-    }
 
-    if (!tenantId || !userId) {
-      return NextResponse.json(
-        {
-          error: 'Unauthorized',
-          message: 'Tenant ID and User ID required',
-        },
-        { status: 401 }
-      );
-    }
-
-    // Parse and validate request body
-    const body = await request.json();
-    const validationResult = BulkActionSchema.safeParse(body);
-    
-    if (!validationResult.success) {
-      return NextResponse.json(
-        {
-          error: 'Invalid request body',
-          message: 'Request body validation failed',
-          details: validationResult.error.issues,
-        },
-        { status: 400 }
-      );
-    }
-
-    const { action, jobIds } = validationResult.data;
-
-    // Verify all jobs belong to tenant
-    const jobs = await prisma.reconJob.findMany({
-      where: {
-        id: { in: jobIds },
-        tenantId: tenantId,
-        deletedAt: null,
-      },
-      select: {
-        id: true,
-        name: true,
-        status: true,
-      },
-    });
-
-    if (jobs.length !== jobIds.length) {
-      return NextResponse.json(
-        {
-          error: 'Invalid request',
-          message: 'Some jobs not found or do not belong to your tenant',
-        },
-        { status: 403 }
-      );
-    }
-
-    // Perform bulk action
-    const results: Array<{ jobId: string; success: boolean; error?: string }> = [];
-
-    for (const jobId of jobIds) {
-      try {
-        if (action === 'pause') {
-          await prisma.reconJob.update({
-            where: { id: jobId },
-            data: { status: 'paused' },
-          });
-        } else if (action === 'resume') {
-          await prisma.reconJob.update({
-            where: { id: jobId },
-            data: { status: 'active' },
-          });
-        } else if (action === 'delete') {
-          await prisma.reconJob.update({
-            where: { id: jobId },
-            data: {
-              status: 'deleted',
-              deletedAt: new Date(),
+        if (!tenantId || !userId) {
+          return NextResponse.json(
+            {
+              error: "Unauthorized",
+              message: "Tenant ID and User ID required",
             },
-          });
-        } else if (action === 'execute') {
-          // Trigger job execution (async)
-          // In production, use job queue
-          const job = jobs.find((j) => j.id === jobId);
-          if (job && job.status === 'active') {
-            // Execute job (this would trigger actual execution in production)
-            // For now, just log
-            appLogger.info(`[Bulk Operations] Executing job ${jobId}`);
+            { status: 401 }
+          );
+        }
+
+        // Parse and validate request body
+        const body = await request.json();
+        const validationResult = BulkActionSchema.safeParse(body);
+
+        if (!validationResult.success) {
+          return NextResponse.json(
+            {
+              error: "Invalid request body",
+              message: "Request body validation failed",
+              details: validationResult.error.issues,
+            },
+            { status: 400 }
+          );
+        }
+
+        const { action, jobIds } = validationResult.data;
+
+        // Verify all jobs belong to tenant
+        const jobs = await prisma.reconJob.findMany({
+          where: {
+            id: { in: jobIds },
+            tenantId: tenantId,
+            deletedAt: null,
+          },
+          select: {
+            id: true,
+            name: true,
+            status: true,
+          },
+        });
+
+        if (jobs.length !== jobIds.length) {
+          return NextResponse.json(
+            {
+              error: "Invalid request",
+              message: "Some jobs not found or do not belong to your tenant",
+            },
+            { status: 403 }
+          );
+        }
+
+        // Perform bulk action
+        const results: Array<{ jobId: string; success: boolean; error?: string }> = [];
+
+        for (const jobId of jobIds) {
+          try {
+            if (action === "pause") {
+              await prisma.reconJob.update({
+                where: { id: jobId },
+                data: { status: "paused" },
+              });
+            } else if (action === "resume") {
+              await prisma.reconJob.update({
+                where: { id: jobId },
+                data: { status: "active" },
+              });
+            } else if (action === "delete") {
+              await prisma.reconJob.update({
+                where: { id: jobId },
+                data: {
+                  status: "deleted",
+                  deletedAt: new Date(),
+                },
+              });
+            } else if (action === "execute") {
+              // Trigger job execution (async)
+              // In production, use job queue
+              const job = jobs.find((j: (typeof jobs)[number]) => j.id === jobId);
+              if (job && job.status === "active") {
+                // Execute job (this would trigger actual execution in production)
+                // For now, just log
+                appLogger.info(`[Bulk Operations] Executing job ${jobId}`);
+              }
+            }
+
+            results.push({ jobId, success: true });
+
+            // Log audit event
+            await logAuditEvent({
+              userId: userId,
+              tenantId: tenantId,
+              action: action as AuditAction,
+              resourceType: "reconciliation_job",
+              resourceId: jobId,
+              metadata: {
+                bulkAction: true,
+                totalJobs: jobIds.length,
+              },
+            }).catch(() => {
+              // Don't fail if audit logging fails
+            });
+          } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : "Unknown error";
+            results.push({ jobId, success: false, error: errorMessage });
           }
         }
 
-        results.push({ jobId, success: true });
+        const successCount = results.filter((r: { success: boolean }) => r.success).length;
+        const failureCount = results.filter((r) => !r.success).length;
 
-        // Log audit event
-        await logAuditEvent({
-          userId: userId,
-          tenantId: tenantId,
-          action: action as AuditAction,
-          resourceType: 'reconciliation_job',
-          resourceId: jobId,
-          metadata: {
-            bulkAction: true,
-            totalJobs: jobIds.length,
-          },
-        }).catch(() => {
-          // Don't fail if audit logging fails
+        // Log successful request
+        const duration = Date.now() - startTime;
+        appLogger.info("[Bulk Operations API] Success", {
+          tenantId,
+          userId,
+          action,
+          jobCount: jobIds.length,
+          successCount,
+          failureCount,
+          duration,
         });
+
+        return NextResponse.json(
+          {
+            action,
+            totalJobs: jobIds.length,
+            successCount,
+            failureCount,
+            results,
+          },
+          { status: 200 }
+        );
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        results.push({ jobId, success: false, error: errorMessage });
+        const duration = Date.now() - startTime;
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        const errorStack = error instanceof Error ? error.stack : undefined;
+
+        appLogger.error("[Bulk Operations API] Error", error, {
+          errorMessage,
+          stack: errorStack,
+          duration,
+        });
+
+        // Never return 500 - return graceful error response
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Failed to perform bulk action",
+            message: "Please try again later or contact support if the issue persists",
+            details: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+            results: [],
+            successCount: 0,
+            failureCount: 0,
+          },
+          { status: 200 }
+        );
       }
-    }
-
-    const successCount = results.filter((r: any) => r.success).length;
-    const failureCount = results.filter((r) => !r.success).length;
-
-    // Log successful request
-    const duration = Date.now() - startTime;
-    appLogger.info('[Bulk Operations API] Success', {
-      tenantId,
-      userId,
-      action,
-      jobCount: jobIds.length,
-      successCount,
-      failureCount,
-      duration,
-    });
-
-    return NextResponse.json({
-      action,
-      totalJobs: jobIds.length,
-      successCount,
-      failureCount,
-      results,
-    }, { status: 200 });
-  } catch (error) {
-    const duration = Date.now() - startTime;
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    const errorStack = error instanceof Error ? error.stack : undefined;
-
-    appLogger.error('[Bulk Operations API] Error', error, {
-      errorMessage,
-      stack: errorStack,
-      duration,
-    });
-
-    // Never return 500 - return graceful error response
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to perform bulk action',
-        message: 'Please try again later or contact support if the issue persists',
-        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
-        results: [],
-        successCount: 0,
-        failureCount: 0,
-      },
-      { status: 200 }
-    );
-  }
-}, { feature: 'POST API' }),
+    },
+    { feature: "POST API" }
+  ),
   { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: false }
 );

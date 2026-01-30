@@ -8,7 +8,7 @@ import { Loader2, Search, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { asExtendedClient } from "@/lib/supabase/types";
-import { getAllConnectorMetadata } from "@settler/adapters/dist/drivers";
+import { getAllConnectorMetadata } from "@settler/adapters/drivers";
 
 interface Integration {
   id: string;
@@ -18,7 +18,14 @@ interface Integration {
   is_standard: boolean;
   is_purchased: boolean;
   is_connected: boolean;
-  status: "active" | "inactive" | "error" | "pending" | "needs_attention" | "connected" | "not_connected";
+  status:
+    | "active"
+    | "inactive"
+    | "error"
+    | "pending"
+    | "needs_attention"
+    | "connected"
+    | "not_connected";
   last_sync?: string;
   category?: string;
 }
@@ -53,9 +60,11 @@ export default function IntegrationsPage() {
     try {
       setIsLoading(true);
       const supabase = createClient();
-      
+
       // Get current user and tenant
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         setIsLoading(false);
         return;
@@ -64,10 +73,10 @@ export default function IntegrationsPage() {
       // Get user's tenants
       const typedSupabase = asExtendedClient(supabase);
       const { data: memberships } = await typedSupabase
-        .from('app_private.memberships')
-        .select('tenant_id')
-        .eq('user_id', user.id)
-        .eq('status', 'active')
+        .from("app_private.memberships")
+        .select("tenant_id")
+        .eq("user_id", user.id)
+        .eq("status", "active")
         .limit(1);
 
       const tenantId = memberships?.[0]?.tenant_id;
@@ -80,17 +89,17 @@ export default function IntegrationsPage() {
 
       // Get all available connectors
       const allConnectors = getAllConnectorMetadata();
-      
+
       // Get connected connectors from database
       const { data: connectedConnectors } = await typedSupabase
-        .from('connectors')
-        .select('id, provider_id, status, last_sync_at, last_successful_sync_at')
-        .eq('tenant_id', tenantId)
+        .from("connectors")
+        .select("id, provider_id, status, last_sync_at, last_successful_sync_at")
+        .eq("tenant_id", tenantId)
         .limit(1000);
 
       const connectedMap = new Map(
         (connectedConnectors || []).map((c) => {
-          const providerId = typeof c.provider_id === 'string' ? c.provider_id : '';
+          const providerId = typeof c.provider_id === "string" ? c.provider_id : "";
           return [providerId, c];
         })
       );
@@ -98,21 +107,23 @@ export default function IntegrationsPage() {
       // Build integration list
       const integrationList: Integration[] = allConnectors.map((metadata) => {
         const connected = connectedMap.get(metadata.id);
-        const connectedStatus = connected && typeof connected.status === 'string' ? connected.status : null;
-        const isConnected = connectedStatus === 'connected';
-        
+        const connectedStatus =
+          connected && typeof connected.status === "string" ? connected.status : null;
+        const isConnected = connectedStatus === "connected";
+
         return {
-          id: (connected && typeof connected.id === 'string' ? connected.id : null) || metadata.id,
+          id: (connected && typeof connected.id === "string" ? connected.id : null) || metadata.id,
           integration_id: metadata.id,
           name: metadata.displayName,
           description: metadata.description,
-          is_standard: ['plaid', 'truelayer', 'freshbooks', 'wave'].includes(metadata.id),
+          is_standard: ["plaid", "truelayer", "freshbooks", "wave"].includes(metadata.id),
           is_purchased: true, // TODO: Check subscription
           is_connected: isConnected || false,
-          status: (connectedStatus as Integration['status']) || 'not_connected',
-          last_sync: (connected && typeof connected.last_successful_sync_at === 'string' 
-            ? connected.last_successful_sync_at 
-            : undefined),
+          status: (connectedStatus as Integration["status"]) || "not_connected",
+          last_sync:
+            connected && typeof connected.last_successful_sync_at === "string"
+              ? connected.last_successful_sync_at
+              : undefined,
           category: metadata.category,
         };
       });
@@ -123,7 +134,8 @@ export default function IntegrationsPage() {
           id: "stripe",
           integration_id: "stripe",
           name: "Stripe",
-          description: "Automatically match Stripe payments with Shopify orders, PayPal transactions, or bank deposits.",
+          description:
+            "Automatically match Stripe payments with Shopify orders, PayPal transactions, or bank deposits.",
           is_standard: true,
           is_purchased: true,
           is_connected: false,
@@ -143,7 +155,8 @@ export default function IntegrationsPage() {
           id: "paypal",
           integration_id: "paypal",
           name: "PayPal",
-          description: "Reconcile PayPal transactions with e-commerce platforms and accounting systems.",
+          description:
+            "Reconcile PayPal transactions with e-commerce platforms and accounting systems.",
           is_standard: true,
           is_purchased: true,
           is_connected: false,
@@ -165,7 +178,7 @@ export default function IntegrationsPage() {
 
     try {
       setIsProcessing(true);
-      
+
       const response = await fetch(`/api/connectors/connect/${integrationId}`, {
         method: "POST",
         headers: {
@@ -197,7 +210,7 @@ export default function IntegrationsPage() {
   const handleDisconnect = async (_id: string, integrationId: string) => {
     if (!currentTenantId) return;
 
-    if (!confirm('Are you sure you want to disconnect this integration?')) {
+    if (!confirm("Are you sure you want to disconnect this integration?")) {
       return;
     }
 
@@ -218,7 +231,7 @@ export default function IntegrationsPage() {
         await fetchIntegrations();
       } else {
         const error = await response.json();
-        alert(`Disconnect failed: ${error.message || 'Unknown error'}`);
+        alert(`Disconnect failed: ${error.message || "Unknown error"}`);
       }
     } catch (error) {
       console.error("Disconnection failed:", error);
@@ -252,7 +265,7 @@ export default function IntegrationsPage() {
         await fetchIntegrations();
       } else {
         const error = await response.json();
-        alert(`Sync failed: ${error.message || 'Unknown error'}`);
+        alert(`Sync failed: ${error.message || "Unknown error"}`);
       }
     } catch (error) {
       console.error("Sync failed:", error);
@@ -269,7 +282,7 @@ export default function IntegrationsPage() {
   const handleBackfill = async (integrationId: string) => {
     if (!currentTenantId) return;
 
-    const sinceDate = prompt('Enter start date (YYYY-MM-DD):');
+    const sinceDate = prompt("Enter start date (YYYY-MM-DD):");
     if (!sinceDate) return;
 
     try {
@@ -290,7 +303,7 @@ export default function IntegrationsPage() {
         await fetchIntegrations();
       } else {
         const error = await response.json();
-        alert(`Backfill failed: ${error.message || 'Unknown error'}`);
+        alert(`Backfill failed: ${error.message || "Unknown error"}`);
       }
     } catch (error) {
       console.error("Backfill failed:", error);
@@ -309,9 +322,11 @@ export default function IntegrationsPage() {
   }
 
   // Group by category
-  const bankFeeds = filteredIntegrations.filter((i: any) => i.category === 'bank_feed');
-  const accounting = filteredIntegrations.filter((i: any) => i.category === 'accounting');
-  const subscriptions = filteredIntegrations.filter((i: any) => i.category === 'subscription_billing');
+  const bankFeeds = filteredIntegrations.filter((i: any) => i.category === "bank_feed");
+  const accounting = filteredIntegrations.filter((i: any) => i.category === "accounting");
+  const subscriptions = filteredIntegrations.filter(
+    (i: any) => i.category === "subscription_billing"
+  );
   const standard = filteredIntegrations.filter((i: any) => i.is_standard && !i.category);
   const addOns = filteredIntegrations.filter((i) => !i.is_standard && !i.category);
 

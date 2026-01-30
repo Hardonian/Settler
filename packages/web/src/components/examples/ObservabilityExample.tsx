@@ -1,25 +1,25 @@
 /**
  * Observability Integration Example
- * 
+ *
  * Example component demonstrating all observability features.
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useTrackCTA, useTrackForm } from '@/lib/telemetry/hooks';
-import { useAnalytics } from '@/hooks/use-analytics';
-import { fetchJSON, fetchWithFallback } from '@/lib/api/client';
-import { logger } from '@/lib/logging/logger';
-import { ErrorFallback, LoadingFallback } from '@/lib/resilience/fallbacks';
-import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTrackCTA, useTrackForm } from "@/lib/telemetry/hooks";
+import { useAnalytics } from "@/hooks/use-analytics";
+import { fetchJSON, fetchWithFallback } from "@/lib/api/client";
+import { logger } from "@/lib/logging/logger";
+import { ErrorFallback, LoadingFallback } from "@/lib/resilience/fallbacks";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 export function ObservabilityExample() {
   const trackCTA = useTrackCTA();
-  const { start, submit } = useTrackForm('example_form');
+  const { start, submit } = useTrackForm("example_form");
   const { trackEvent, trackError } = useAnalytics();
   const [data, setData] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(false);
@@ -27,8 +27,8 @@ export function ObservabilityExample() {
 
   // Track CTA click
   const handleCTAClick = () => {
-    trackCTA('Example CTA', { location: 'example_component' });
-    trackEvent('example_cta_clicked', { component: 'ObservabilityExample' });
+    trackCTA("Example CTA", { location: "example_component" });
+    trackEvent("example_cta_clicked", { component: "ObservabilityExample" });
   };
 
   // Track form submission
@@ -41,23 +41,23 @@ export function ObservabilityExample() {
       setError(null);
 
       // Use defensive fetch
-      const result = await fetchJSON<Record<string, unknown>>('/api/example', {
-        method: 'POST',
+      const result = await fetchJSON<Record<string, unknown>>("/api/example", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ data: 'example' }),
+        body: JSON.stringify({ data: "example" }),
       });
 
       setData(result);
       submit(true, { success: true });
-      logger.info('Form submitted successfully', { form: 'example_form' });
-    } catch (error: unknown) {
-      const error = error instanceof Error ? error : new Error(String(error));
+      logger.info("Form submitted successfully", { form: "example_form" });
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error(String(err));
       setError(error);
       submit(false, { error: error.message });
-      trackError(error, { component: 'ObservabilityExample', form: 'example_form' });
-      logger.error('Form submission failed', error, { form: 'example_form' });
+      trackError(error, { component: "ObservabilityExample", form: "example_form" });
+      logger.error("Form submission failed", error, { form: "example_form" });
     } finally {
       setLoading(false);
     }
@@ -66,12 +66,11 @@ export function ObservabilityExample() {
   // Example with fallback data
   const handleFetchWithFallback = async () => {
     try {
-      const result = await fetchWithFallback<Record<string, unknown>>(
-        '/api/data',
-        { default: 'data' }
-      );
+      const result = await fetchWithFallback<Record<string, unknown>>("/api/data", {
+        default: "data",
+      });
       setData(result);
-      logger.info('Data fetched with fallback', { hasFallback: true });
+      logger.info("Data fetched with fallback", { hasFallback: true });
     } catch (error: unknown) {
       trackError(error instanceof Error ? error : new Error(String(error)));
     }
@@ -86,16 +85,14 @@ export function ObservabilityExample() {
         <CardContent className="space-y-4">
           {/* CTA Tracking */}
           <div>
-            <Button onClick={handleCTAClick}>
-              Track CTA Click
-            </Button>
+            <Button onClick={handleCTAClick}>Track CTA Click</Button>
           </div>
 
           {/* Form Tracking */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input placeholder="Enter data" />
             <Button type="submit" disabled={loading}>
-              {loading ? 'Submitting...' : 'Submit Form'}
+              {loading ? "Submitting..." : "Submit Form"}
             </Button>
           </form>
 
@@ -115,9 +112,9 @@ export function ObservabilityExample() {
               error={error}
               retry={() => {
                 setError(null);
-                const form = document.querySelector('form');
+                const form = document.querySelector("form");
                 if (form) {
-                  const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                  const submitEvent = new Event("submit", { bubbles: true, cancelable: true });
                   form.dispatchEvent(submitEvent);
                 }
               }}
