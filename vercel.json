@@ -1,7 +1,7 @@
 {
   "buildCommand": "pnpm --filter @settler/web... build",
   "devCommand": "pnpm --filter @settler/web dev",
-  "installCommand": "pnpm install --frozen-lockfile",
+  "installCommand": "npm i -g pnpm@10.13.1 && pnpm install --frozen-lockfile",
   "framework": "nextjs",
   "nodeVersion": "24.x",
   "env": {
