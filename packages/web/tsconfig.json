@@ -65,7 +65,8 @@
     "hooks/**/*.tsx",
     "middleware.ts",
     "scripts/**/*.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "src/types/**/*.d.ts"
   ],
   "exclude": [
     "**/__tests__/**",

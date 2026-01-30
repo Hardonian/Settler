@@ -26,9 +26,9 @@ export interface UniversalBillingGateOptions {
  * This is the DEFAULT behavior. Routes must opt-out if they're free.
  */
 export function withUniversalBillingGate<
-  T extends (request: NextRequest, ...args: unknown[]) => Promise<NextResponse>,
+  T extends (request: NextRequest, ...args: any[]) => Promise<NextResponse>,
 >(handler: T, options: UniversalBillingGateOptions = {}): T {
-  return (async (request: NextRequest, ...args: unknown[]) => {
+  return (async (request: NextRequest, ...args: any[]) => {
     const { allowPublic = false, allowFree = false, feature = "This feature" } = options;
 
     // If public access is allowed, skip billing check
@@ -57,7 +57,8 @@ export function withUniversalBillingGate<
             )
           );
         }
-        return handler(...args);
+        // @ts-ignore - spread args type mismatch
+        return handler(request, ...args);
       }
 
       // Otherwise, require subscription
@@ -76,7 +77,8 @@ export function withUniversalBillingGate<
     }
 
     // All checks passed, call handler
-    return handler(...args);
+    // @ts-ignore - spread args type mismatch
+    return handler(request, ...args);
   }) as T;
 }
 

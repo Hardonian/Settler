@@ -10,101 +10,116 @@
 > @settler/web@1.0.0 typecheck:ci C:\Users\scott\Documents\GitHub\Settler\packages\web
 > tsc --noEmit
 
-src/app/engine/import-results/page.tsx(73,31): error TS2345: Argument of type 'Uint8Array<ArrayBufferLike> | undefined' is not assignable to parameter of type 'Uint8Array<ArrayBufferLike>'.
-  Type 'undefined' is not assignable to type 'Uint8Array<ArrayBufferLike>'.
-src/app/react-settler-demo/page.tsx(19,8): error TS2307: Cannot find module '@settler/react-settler' or its corresponding type declarations.
-src/app/react-settler-demo/page.tsx(23,8): error TS2307: Cannot find module '@settler/react-settler' or its corresponding type declarations.
-src/lib/actions/types.ts(49,12): error TS18046: 'error' is of type 'unknown'.
-src/lib/admin/impersonation.ts(84,12): error TS18046: 'error' is of type 'unknown'.
-src/lib/admin/impersonation.ts(108,12): error TS18046: 'error' is of type 'unknown'.
-src/lib/admin/metrics/aggregation.ts(76,10): error TS7006: Parameter 'r' implicitly has an 'any' type.
-src/lib/admin/metrics/aggregation.ts(77,14): error TS7006: Parameter 'c' implicitly has an 'any' type.
-src/lib/admin/metrics/aggregation.ts(78,10): error TS7006: Parameter 'c' implicitly has an 'any' type.
-src/lib/admin/metrics/aggregation.ts(132,10): error TS7006: Parameter 'e' implicitly has an 'any' type.
-src/lib/admin/metrics/aggregation.ts(136,14): error TS7006: Parameter 't' implicitly has an 'any' type.
-src/lib/api/console-route-optimizer.ts(54,47): error TS2339: Property 'userId' does not exist on type '{}'.
-src/lib/auth/entitlements.ts(143,81): error TS2304: Cannot find name 'supabaseError'.
-src/lib/db/observability.ts(156,5): error TS2532: Object is possibly 'undefined'.
-src/lib/db/observability.ts(157,5): error TS2532: Object is possibly 'undefined'.
-src/lib/db/observability.ts(160,7): error TS2532: Object is possibly 'undefined'.
-src/lib/db/write-buffer.ts(246,22): error TS2339: Property 'map' does not exist on type 'string'.
-src/lib/db/write-buffer.ts(246,27): error TS7006: Parameter 'item' implicitly has an 'any' type.
-src/lib/db/write-buffer.ts(300,20): error TS2339: Property 'map' does not exist on type 'string'.
-src/lib/db/write-buffer.ts(300,25): error TS7006: Parameter 'item' implicitly has an 'any' type.
-src/lib/db/write-buffer.ts(357,20): error TS2339: Property 'map' does not exist on type 'string'.
-src/lib/db/write-buffer.ts(357,25): error TS7006: Parameter 'item' implicitly has an 'any' type.
-src/lib/feedback-loops/usage-insights-service.ts(83,21): error TS7006: Parameter 'error' implicitly has an 'any' type.
-src/lib/feedback-loops/usage-insights-service.ts(115,51): error TS7006: Parameter 's' implicitly has an 'any' type.
-src/lib/feedback-loops/usage-insights-service.ts(144,63): error TS7006: Parameter 'r' implicitly has an 'any' type.
-src/lib/flags/hooks.ts(220,33): error TS2769: No overload matches this call.
-  Overload 1 of 3, '(callbackfn: (previousValue: FlagKey, currentValue: FlagKey, currentIndex: number, array: FlagKey[]) => FlagKey, initialValue: FlagKey): FlagKey', gave the following error.
-    Argument of type '(acc: number, flagKey: any) => number' is not assignable to parameter of type '(previousValue: FlagKey, currentValue: FlagKey, currentIndex: number, array: FlagKey[]) => FlagKey'.
-      Types of parameters 'acc' and 'previousValue' are incompatible.
-        Type 'string' is not assignable to type 'number'.
-          Type 'string' is not assignable to type 'number'.
-  Overload 2 of 3, '(callbackfn: (previousValue: number, currentValue: FlagKey, currentIndex: number, array: FlagKey[]) => number, initialValue: number): number', gave the following error.
-    Argument of type 'Record<FlagKey, boolean>' is not assignable to parameter of type 'number'.
-src/lib/flags/hooks.ts(221,13): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Number'.
-src/lib/flags/hooks.ts(225,20): error TS2345: Argument of type 'string' is not assignable to parameter of type 'SetStateAction<Record<FlagKey, boolean>>'.
-  Type 'string' is not assignable to type 'SetStateAction<Record<FlagKey, boolean>>'.
-src/lib/flags/hooks.ts(240,5): error TS2322: Type 'string' is not assignable to type 'Record<FlagKey, boolean>'.
-  Type 'string' is not assignable to type 'Record<FlagKey, boolean>'.
-src/lib/flags/hooks.ts(240,17): error TS2769: No overload matches this call.
-  Overload 1 of 3, '(callbackfn: (previousValue: FlagKey, currentValue: FlagKey, currentIndex: number, array: FlagKey[]) => FlagKey, initialValue: FlagKey): FlagKey', gave the following error.
-    Argument of type '(acc: number, key: any) => number' is not assignable to parameter of type '(previousValue: FlagKey, currentValue: FlagKey, currentIndex: number, array: FlagKey[]) => FlagKey'.
-      Types of parameters 'acc' and 'previousValue' are incompatible.
-        Type 'string' is not assignable to type 'number'.
-          Type 'string' is not assignable to type 'number'.
-  Overload 2 of 3, '(callbackfn: (previousValue: number, currentValue: FlagKey, currentIndex: number, array: FlagKey[]) => number, initialValue: number): number', gave the following error.
-    Argument of type 'Record<FlagKey, boolean>' is not assignable to parameter of type 'number'.
-src/lib/flags/hooks.ts(241,7): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Number'.
-src/lib/ops/exception-events.ts(52,34): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/lib/ops/exception-events.ts(100,34): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/lib/safe.ts(33,11): error TS2492: Cannot redeclare identifier 'error' in catch clause.
-src/lib/safe.ts(33,11): error TS7022: 'error' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
-src/lib/safe.ts(33,19): error TS2448: Block-scoped variable 'error' used before its declaration.
-src/lib/safe.ts(33,44): error TS2448: Block-scoped variable 'error' used before its declaration.
-src/lib/safe.ts(33,69): error TS2448: Block-scoped variable 'error' used before its declaration.
-src/lib/safe.ts(69,11): error TS2492: Cannot redeclare identifier 'error' in catch clause.
-src/lib/safe.ts(69,11): error TS7022: 'error' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
-src/lib/safe.ts(69,19): error TS2448: Block-scoped variable 'error' used before its declaration.
-src/lib/safe.ts(69,44): error TS2448: Block-scoped variable 'error' used before its declaration.
-src/lib/safe.ts(69,69): error TS2448: Block-scoped variable 'error' used before its declaration.
-src/lib/server/settler/reconciliation.ts(91,30): error TS7006: Parameter 't' implicitly has an 'any' type.
-src/lib/server/settler/reconciliation.ts(98,30): error TS7006: Parameter 't' implicitly has an 'any' type.
-src/lib/server/settler/reconciliation.ts(282,46): error TS7006: Parameter 'm' implicitly has an 'any' type.
-src/lib/server/settler/reconciliation.ts(326,11): error TS2322: Type 'string' is not assignable to type 'Date'.
-src/lib/support/ticket-system.ts(105,23): error TS7006: Parameter 'log' implicitly has an 'any' type.
-src/lib/type-safety.ts(227,3): error TS6133: 'fallbackValue' is declared but its value is never read.
-src/lib/type-safety.ts(243,69): error TS6133: 'context' is declared but its value is never read.
-src/lib/type-safety.ts(256,3): error TS6133: 'context' is declared but its value is never read.
-src/lib/type-safety.ts(304,3): error TS6133: 'context' is declared but its value is never read.
-src/lib/type-safety.ts(346,3): error TS6133: 'context' is declared but its value is never read.
-src/lib/vercel/edge-config.ts(48,7): error TS2322: Type 'string' is not assignable to type 'Record<string, T | null>'.
-src/lib/vercel/edge-config.ts(48,19): error TS2769: No overload matches this call.
-  Overload 1 of 3, '(callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string, initialValue: string): string', gave the following error.
-    Argument of type '(acc: number, key: any) => any' is not assignable to parameter of type '(previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string'.
-      Types of parameters 'acc' and 'previousValue' are incompatible.
-        Type 'string' is not assignable to type 'number'.
-  Overload 2 of 3, '(callbackfn: (previousValue: number, currentValue: string, currentIndex: number, array: string[]) => number, initialValue: number): number', gave the following error.
-    Argument of type 'Record<string, T | null>' is not assignable to parameter of type 'number'.
-src/lib/vercel/edge-config.ts(48,56): error TS2698: Spread types may only be created from object types.
-src/lib/vercel/edge-config.ts(59,7): error TS2322: Type 'string' is not assignable to type 'Record<string, T | null>'.
-src/lib/vercel/edge-config.ts(59,19): error TS2769: No overload matches this call.
-  Overload 1 of 3, '(callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string, initialValue: string): string', gave the following error.
-    Argument of type '(acc: number, key: any) => any' is not assignable to parameter of type '(previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string'.
-      Types of parameters 'acc' and 'previousValue' are incompatible.
-        Type 'string' is not assignable to type 'number'.
-  Overload 2 of 3, '(callbackfn: (previousValue: number, currentValue: string, currentIndex: number, array: string[]) => number, initialValue: number): number', gave the following error.
-    Argument of type 'Record<string, T | null>' is not assignable to parameter of type 'number'.
-src/lib/vercel/edge-config.ts(59,56): error TS2698: Spread types may only be created from object types.
-src/lib/verify.ts(18,67): error TS2307: Cannot find module '/wasm/settler_verify_wasm.js' or its corresponding type declarations.
-src/middleware/billing-gate-universal.ts(40,22): error TS2556: A spread argument must either have a tuple type or be passed to a rest parameter.
-src/middleware/billing-gate-universal.ts(64,24): error TS2556: A spread argument must either have a tuple type or be passed to a rest parameter.
-src/middleware/billing-gate-universal.ts(80,20): error TS2556: A spread argument must either have a tuple type or be passed to a rest parameter.
-src/middleware/usage-tracking.ts(200,36): error TS2556: A spread argument must either have a tuple type or be passed to a rest parameter.
- ELIFECYCLE  Command failed with exit code 1.
- ELIFECYCLE  Command failed with exit code 1.
+
+> @settler/web@1.0.0 build C:\Users\scott\Documents\GitHub\Settler\packages\web
+> next build
+
+  ▲ Next.js 14.2.35
+  - Experiments (use with caution):
+    · optimizeCss
+    · instrumentationHook
+
+   Creating an optimized production build ...
+   Using tsconfig file: ./tsconfig.json
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (133kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled successfully
+   Skipping linting
+   Checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/4) ...
+   Generating static pages (1/4) 
+   Generating static pages (2/4) 
+Time 3.7813
+Time 5.0655
+   Generating static pages (3/4) 
+ ✓ Generating static pages (4/4)
+   Finalizing page optimization ...
+   Collecting build traces ...
+ ⚠ Failed to copy traced files for C:\Users\scott\Documents\GitHub\Settler\packages\web\.next\server\pages\_app.js Error: EPERM: operation not permitted, symlink 'C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\react@18.3.1\node_modules\react' -> 'C:\Users\scott\Documents\GitHub\Settler\packages\web\.next\standalone\Documents\GitHub\Settler\packages\web\node_modules\react'
+    at async Object.symlink (node:internal/fs/promises:999:10)
+    at async C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\utils.js:1402:25
+    at async Promise.all (index 10)
+    at async handleTraceFiles (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\utils.js:1390:9)
+    at async copyTracedFiles (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\utils.js:1451:9)
+    at async C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\index.js:224:9
+    at async Span.traceAsyncFn (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\trace\trace.js:154:20)
+    at async writeStandaloneDirectory (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\index.js:223:5)
+    at async C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\index.js:2143:17
+    at async Span.traceAsyncFn (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\trace\trace.js:154:20) {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'symlink',
+  path: 'C:\\Users\\scott\\Documents\\GitHub\\Settler\\node_modules\\.pnpm\\react@18.3.1\\node_modules\\react',
+  dest: 'C:\\Users\\scott\\Documents\\GitHub\\Settler\\packages\\web\\.next\\standalone\\Documents\\GitHub\\Settler\\packages\\web\\node_modules\\react'
+}
+ ⚠ Failed to copy traced files for C:\Users\scott\Documents\GitHub\Settler\packages\web\.next\server\pages\_error.js Error: EPERM: operation not permitted, symlink 'C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\ansi-styles@4.3.0\node_modules\ansi-styles' -> 'C:\Users\scott\Documents\GitHub\Settler\packages\web\.next\standalone\Documents\GitHub\Settler\node_modules\.pnpm\chalk@4.1.2\node_modules\ansi-styles'
+    at async Object.symlink (node:internal/fs/promises:999:10)
+    at async C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\utils.js:1402:25
+    at async Promise.all (index 53)
+    at async handleTraceFiles (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\utils.js:1390:9)
+    at async copyTracedFiles (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\utils.js:1451:9)
+    at async C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\index.js:224:9
+    at async Span.traceAsyncFn (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\trace\trace.js:154:20)
+    at async writeStandaloneDirectory (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\index.js:223:5)
+    at async C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\index.js:2143:17
+    at async Span.traceAsyncFn (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\trace\trace.js:154:20) {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'symlink',
+  path: 'C:\\Users\\scott\\Documents\\GitHub\\Settler\\node_modules\\.pnpm\\ansi-styles@4.3.0\\node_modules\\ansi-styles',
+  dest: 'C:\\Users\\scott\\Documents\\GitHub\\Settler\\packages\\web\\.next\\standalone\\Documents\\GitHub\\Settler\\node_modules\\.pnpm\\chalk@4.1.2\\node_modules\\ansi-styles'
+}
+ ⚠ Failed to copy traced files for C:\Users\scott\Documents\GitHub\Settler\packages\web\.next\server\pages\_document.js Error: EPERM: operation not permitted, symlink 'C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\color-name@1.1.4\node_modules\color-name' -> 'C:\Users\scott\Documents\GitHub\Settler\packages\web\.next\standalone\Documents\GitHub\Settler\node_modules\.pnpm\color-convert@2.0.1\node_modules\color-name'
+    at async Object.symlink (node:internal/fs/promises:999:10)
+    at async C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\utils.js:1402:25
+    at async Promise.all (index 66)
+    at async handleTraceFiles (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\utils.js:1390:9)
+    at async copyTracedFiles (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\utils.js:1451:9)
+    at async C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\index.js:224:9
+    at async Span.traceAsyncFn (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\trace\trace.js:154:20)
+    at async writeStandaloneDirectory (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\index.js:223:5)
+    at async C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\index.js:2143:17
+    at async Span.traceAsyncFn (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\trace\trace.js:154:20) {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'symlink',
+  path: 'C:\\Users\\scott\\Documents\\GitHub\\Settler\\node_modules\\.pnpm\\color-name@1.1.4\\node_modules\\color-name',
+  dest: 'C:\\Users\\scott\\Documents\\GitHub\\Settler\\packages\\web\\.next\\standalone\\Documents\\GitHub\\Settler\\node_modules\\.pnpm\\color-convert@2.0.1\\node_modules\\color-name'
+}
+ ⚠ Failed to copy traced files for C:\Users\scott\Documents\GitHub\Settler\packages\web\.next\server\app\_not-found\page.js Error: EPERM: operation not permitted, symlink 'C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\@opentelemetry+api@1.9.0\node_modules\@opentelemetry\api' -> 'C:\Users\scott\Documents\GitHub\Settler\packages\web\.next\standalone\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\@opentelemetry\api'
+    at async Object.symlink (node:internal/fs/promises:999:10)
+    at async C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\utils.js:1402:25
+    at async Promise.all (index 48)
+    at async handleTraceFiles (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\utils.js:1390:9)
+    at async copyTracedFiles (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\utils.js:1464:13)
+    at async C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\index.js:224:9
+    at async Span.traceAsyncFn (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\trace\trace.js:154:20)
+    at async writeStandaloneDirectory (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\index.js:223:5)
+    at async C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\index.js:2143:17
+    at async Span.traceAsyncFn (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\trace\trace.js:154:20) {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'symlink',
+  path: 'C:\\Users\\scott\\Documents\\GitHub\\Settler\\node_modules\\.pnpm\\@opentelemetry+api@1.9.0\\node_modules\\@opentelemetry\\api',
+  dest: 'C:\\Users\\scott\\Documents\\GitHub\\Settler\\packages\\web\\.next\\standalone\\Documents\\GitHub\\Settler\\node_modules\\.pnpm\\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\\node_modules\\@opentelemetry\\api'
+}
+
+> Build error occurred
+Error: EPERM: operation not permitted, symlink 'C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\react@18.3.1\node_modules\react' -> 'C:\Users\scott\Documents\GitHub\Settler\packages\web\.next\standalone\Documents\GitHub\Settler\node_modules\.pnpm\styled-jsx@5.1.1_@babel+core@7.28.6_react@18.3.1\node_modules\react'
+    at async Object.symlink (node:internal/fs/promises:999:10)
+    at async C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\utils.js:1402:25
+    at async Promise.all (index 6)
+    at async handleTraceFiles (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\utils.js:1390:9)
+    at async copyTracedFiles (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\utils.js:1472:5)
+    at async C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\index.js:224:9
+    at async Span.traceAsyncFn (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\trace\trace.js:154:20)
+    at async writeStandaloneDirectory (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\index.js:223:5)
+    at async C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\build\index.js:2143:17
+    at async Span.traceAsyncFn (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@14.2.35_@babel+core@7._3407c8e1e581e34f8a1ab395bf5e4c8c\node_modules\next\dist\trace\trace.js:154:20) {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'symlink',
+  path: 'C:\\Users\\scott\\Documents\\GitHub\\Settler\\node_modules\\.pnpm\\react@18.3.1\\node_modules\\react',
+  dest: 'C:\\Users\\scott\\Documents\\GitHub\\Settler\\packages\\web\\.next\\standalone\\Documents\\GitHub\\Settler\\node_modules\\.pnpm\\styled-jsx@5.1.1_@babel+core@7.28.6_react@18.3.1\\node_modules\\react'
+}
  ELIFECYCLE  Command failed with exit code 1.

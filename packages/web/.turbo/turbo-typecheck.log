@@ -2,3 +2,109 @@
 > @settler/web@1.0.0 typecheck C:\Users\scott\Documents\GitHub\Settler\packages\web
 > tsc --noEmit
 
+src/app/api/connectors/backfill/[providerId]/route.ts(11,61): error TS2345: Argument of type '(request: NextRequest, { params }: { params: { providerId: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; result: SyncResult; message: string; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { providerId: string; }; }'.
+src/app/api/connectors/callback/[providerId]/route.ts(14,18): error TS2345: Argument of type '(request: NextRequest, { params }: { params: { providerId: string; }; }) => Promise<NextResponse<unknown>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { providerId: string; }; }'.
+src/app/api/connectors/connect/[providerId]/route.ts(11,61): error TS2345: Argument of type '(request: NextRequest, { params }: { params: { providerId: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ authUrl: string; connectorId: unknown; }> | NextResponse<...>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { providerId: string; }; }'.
+src/app/api/connectors/disconnect/[providerId]/route.ts(11,61): error TS2345: Argument of type '(request: NextRequest, { params }: { params: { providerId: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; message: string; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { providerId: string; }; }'.
+src/app/api/connectors/refresh/[providerId]/route.ts(11,61): error TS2345: Argument of type '(request: NextRequest, { params }: { params: { providerId: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; message: string; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { providerId: string; }; }'.
+src/app/api/connectors/sync/[providerId]/route.ts(17,43): error TS2345: Argument of type '(request: NextRequest, { params }: { params: { providerId: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; result: unknown; correlationId: string; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { providerId: string; }; }'.
+src/app/api/connectors/test/[providerId]/route.ts(11,61): error TS2345: Argument of type '(request: NextRequest, { params }: { params: { providerId: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<TestConnectionResult>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { providerId: string; }; }'.
+src/app/api/connectors/webhook/[providerId]/route.ts(11,61): error TS2345: Argument of type '(request: NextRequest, { params }: { params: { providerId: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; message: string; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { providerId: string; }; }'.
+src/app/api/console/alerts/[id]/acknowledge/route.ts(17,43): error TS2345: Argument of type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { id: string; }; }'.
+src/app/api/console/api-keys/[id]/route.ts(22,43): error TS2345: Argument of type '(request: NextRequest, { params }: RouteParams) => Promise<NextResponse<{ success: boolean; }> | NextResponse<{ error: string; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type 'RouteParams'.
+src/app/api/console/receipts/[id]/route.ts(28,20): error TS2345: Argument of type '(request: NextRequest, { params }: RouteParams) => Promise<NextResponse<{ error: string; }> | NextResponse<{ receipt: ReceiptDetail; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type 'RouteParams'.
+src/app/api/console/webhooks/[id]/route.ts(22,43): error TS2345: Argument of type '(request: NextRequest, { params }: RouteParams) => Promise<NextResponse<{ error: string; }> | NextResponse<{ webhook: Webhook; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type 'RouteParams'.
+src/app/api/console/webhooks/[id]/route.ts(54,43): error TS2345: Argument of type '(request: NextRequest, { params }: RouteParams) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type 'RouteParams'.
+src/app/api/enterprise/ip-allowlist/[id]/route.ts(11,43): error TS2345: Argument of type '(_request: NextRequest, { params }: { params: Promise<{ id: string; }>; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: Promise<{ id: string; }>; }'.
+src/app/api/integrations/[integrationId]/debug/route.ts(11,43): error TS2345: Argument of type '(request: NextRequest, { params }: { params: { integrationId: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ error: any; solution: string; documentation: string; relatedErrors: string[]; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { integrationId: string; }; }'.
+src/app/api/integrations/[integrationId]/test/route.ts(11,43): error TS2345: Argument of type '(_request: NextRequest, { params }: { params: { integrationId: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ connection: string; credentials_valid: boolean; api_reachable: boolean; permissions_ok: boolean; test_data: { ...; }; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { integrationId: string; }; }'.
+src/app/api/integrations/[integrationId]/upgrade/route.ts(11,43): error TS2345: Argument of type '(_request: NextRequest, { params }: { params: { integrationId: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; version: string; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { integrationId: string; }; }'.
+src/app/api/integrations/[integrationId]/versions/route.ts(10,43): error TS2345: Argument of type '(request: NextRequest, { params }: { params: { integrationId: string; }; }) => Promise<NextResponse<{ current: string; latest: string; changelog: string[]; breakingChanges: string[]; requiresMigration: boolean; }> | NextResponse<...>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { integrationId: string; }; }'.
+src/app/api/invite/[token]/route.ts(23,43): error TS2345: Argument of type '(request: NextRequest, { params }: { params: { token: string; }; }) => Promise<NextResponse<{ error: string; trace_id: string; }> | NextResponse<{ invite: { email: any; role: any; workspace: any; }; trace_id: string; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { token: string; }; }'.
+src/app/api/invite/[token]/route.ts(94,43): error TS2345: Argument of type '(request: NextRequest, { params }: { params: { token: string; }; }) => Promise<NextResponse<{ error: string; trace_id: string; }> | NextResponse<{ success: boolean; workspaceId: any; trace_id: string; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { token: string; }; }'.
+src/app/api/jobs/[jobId]/exceptions/[exceptionId]/route.ts(48,43): error TS2345: Argument of type '(request: NextRequest, { params }: { params: Promise<{ jobId: string; exceptionId: string; }>; }) => Promise<NextResponse<{ error: string; message: string; }> | NextResponse<...>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: Promise<{ jobId: string; exceptionId: string; }>; }'.
+src/app/api/jobs/[jobId]/exceptions/route.ts(94,20): error TS2345: Argument of type '(request: NextRequest, { params }: { params: Promise<{ jobId: string; }>; }) => Promise<NextResponse<{ error: string; message: string; }> | NextResponse<ExceptionResponse>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: Promise<{ jobId: string; }>; }'.
+src/app/api/jobs/[jobId]/progress/route.ts(54,43): error TS2345: Argument of type '(request: NextRequest, { params }: { params: Promise<{ jobId: string; }>; }) => Promise<NextResponse<{ error: string; message: string; }> | NextResponse<ProgressResponse>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: Promise<{ jobId: string; }>; }'.
+src/app/api/jobs/[jobId]/route.ts(100,20): error TS2345: Argument of type '(request: NextRequest, { params }: { params: Promise<{ jobId: string; }>; }) => Promise<NextResponse<{ error: string; message: string; }> | NextResponse<JobDetailResponse>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: Promise<{ jobId: string; }>; }'.
+src/app/api/projects/snapshots/[snapshotId]/export/route.ts(11,43): error TS2345: Argument of type '(_request: NextRequest, { params }: { params: { snapshotId: string; }; }) => Promise<NextResponse<unknown>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { snapshotId: string; }; }'.
+src/app/api/projects/snapshots/[snapshotId]/rollback/route.ts(11,43): error TS2345: Argument of type '(_request: NextRequest, { params }: { params: { snapshotId: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { snapshotId: string; }; }'.
+src/app/api/runs/[runId]/route.ts(17,43): error TS2345: Argument of type '(_request: NextRequest, { params }: { params: { runId: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ run: { workspace_id: string; }; events: Record<string, unknown>[]; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { runId: string; }; }'.
+src/app/api/share/[id]/route.ts(72,43): error TS2345: Argument of type '(_request: NextRequest, { params }: { params: Promise<{ id: string; }>; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ artifact: Record<string, unknown>; metadata: { ...; }; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: Promise<{ id: string; }>; }'.
+src/app/api/v1/feature-flags/[id]/route.ts(22,43): error TS2345: Argument of type '(request: NextRequest, { params }: RouteParams) => Promise<NextResponse<{ error: string; }> | NextResponse<{ id: any; key: any; name: any; description: any; type: any; isGlobal: any; defaultValue: any; updatedAt: any; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type 'RouteParams'.
+src/app/api/v1/receipts/[id]/route.ts(23,20): error TS2345: Argument of type '(request: NextRequest, { params }: RouteParams) => Promise<NextResponse<{ error: string; }> | NextResponse<{ id: any; uploadId: any; vendor: any; date: any; currency: any; ... 7 more ...; updatedAt: any; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type 'RouteParams'.
+src/app/api/workspaces/[workspaceId]/invites/route.ts(30,43): error TS2345: Argument of type '(request: NextRequest, { params }: { params: { workspaceId: string; }; }) => Promise<NextResponse<{ error: string; trace_id: string; }> | NextResponse<{ invite: { id: any; email: any; role: any; expiresAt: any; }; inviteUrl: string; trace_id: string; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { workspaceId: string; }; }'.
+src/app/api/workspaces/[workspaceId]/invites/route.ts(134,43): error TS2345: Argument of type '(request: NextRequest, { params }: { params: { workspaceId: string; }; }) => Promise<NextResponse<{ error: string; trace_id: string; }> | NextResponse<{ invites: any; trace_id: string; }>>' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { workspaceId: string; }; }'.
+src/app/api/workspaces/[workspaceId]/onboarding/route.ts(28,43): error TS2345: Argument of type '(request: NextRequest, { params }: { params: { workspaceId: string; }; }) => Promise<NextResponse<{ error: string; trace_id: string; }> | NextResponse<{ progress: { currentStep: string; completedSteps: string[]; skippedSteps: string[]; progress: number; completedAt: string | null; }; steps: { ...; }[]; trace_id: str...' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { workspaceId: string; }; }'.
+src/app/api/workspaces/[workspaceId]/onboarding/route.ts(181,43): error TS2345: Argument of type '(request: NextRequest, { params }: { params: { workspaceId: string; }; }) => Promise<NextResponse<{ error: string; trace_id: string; }> | NextResponse<{ progress: { currentStep: string; completedSteps: string[]; progress: number; completedAt: string | null; }; steps: ({ ...; } | ... 2 more ... | { ...; })[]; trace_i...' is not assignable to parameter of type '(request: NextRequest, ...args: unknown[]) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__1' and 'args' are incompatible.
+    Type 'unknown' is not assignable to type '{ params: { workspaceId: string; }; }'.
+src/lib/verify.ts(19,33): error TS2307: Cannot find module '/wasm/settler_verify_wasm.js' or its corresponding type declarations.
+src/middleware/billing-gate-universal.ts(60,24): error TS2556: A spread argument must either have a tuple type or be passed to a rest parameter.
+src/middleware/billing-gate-universal.ts(79,20): error TS2556: A spread argument must either have a tuple type or be passed to a rest parameter.
+ ELIFECYCLE  Command failed with exit code 1.
