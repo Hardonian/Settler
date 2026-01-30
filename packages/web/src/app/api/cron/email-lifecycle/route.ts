@@ -18,7 +18,7 @@ import {
   sendTrialEndedEmail,
   LifecycleUser,
   TrialData,
-} from "../../../../../api/dist/lib/email-lifecycle";
+} from "@/lib/stubs/email-lifecycle";
 import { safeRpcCall } from "@/types/api";
 
 import { logger } from "@/lib/logging/logger";

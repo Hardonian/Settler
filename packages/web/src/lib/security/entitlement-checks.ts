@@ -19,7 +19,7 @@ async function getBillingHardening(): Promise<BillingHardeningModule> {
   if (cachedBilling) return cachedBilling;
 
   try {
-    const mod: any = await import("../../../api/dist/ops/billing-hardening");
+    const mod: any = await import("@/lib/stubs/billing-hardening");
     cachedBilling = {
       checkEntitlements: mod.checkEntitlements,
       getBillingStatus: mod.getBillingStatus,

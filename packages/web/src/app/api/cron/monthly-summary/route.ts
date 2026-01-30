@@ -9,10 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs"; // Ensure Node.js runtime for Supabase admin client
 import { createAdminClient } from "@/lib/supabase/server";
-import {
-  sendMonthlySummaryEmail,
-  LifecycleUser,
-} from "../../../../../api/dist/lib/email-lifecycle";
+import { sendMonthlySummaryEmail, LifecycleUser } from "@/lib/stubs/email-lifecycle";
 
 import { logger } from "@/lib/logging/logger";
 
