@@ -6,4 +6,20 @@
  * abstracting provider differences as specified in the Product & Technical Specification.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.safeAsync = exports.AppError = exports.RequestCorrelation = exports.logger = exports.safeEnv = exports.validateEnv = exports.validateClientEnv = exports.validateServerEnv = exports.fullEnvSchema = exports.clientEnvSchema = exports.serverEnvSchema = void 0;
+// Environment validation utilities (Phase 3: Environment Safety)
+var env_validation_1 = require("./env-validation");
+Object.defineProperty(exports, "serverEnvSchema", { enumerable: true, get: function () { return env_validation_1.serverEnvSchema; } });
+Object.defineProperty(exports, "clientEnvSchema", { enumerable: true, get: function () { return env_validation_1.clientEnvSchema; } });
+Object.defineProperty(exports, "fullEnvSchema", { enumerable: true, get: function () { return env_validation_1.fullEnvSchema; } });
+Object.defineProperty(exports, "validateServerEnv", { enumerable: true, get: function () { return env_validation_1.validateServerEnv; } });
+Object.defineProperty(exports, "validateClientEnv", { enumerable: true, get: function () { return env_validation_1.validateClientEnv; } });
+Object.defineProperty(exports, "validateEnv", { enumerable: true, get: function () { return env_validation_1.validateEnv; } });
+Object.defineProperty(exports, "safeEnv", { enumerable: true, get: function () { return env_validation_1.safeEnv; } });
+// Logging utilities (Phase 5: Observability)
+var logging_1 = require("./logging");
+Object.defineProperty(exports, "logger", { enumerable: true, get: function () { return logging_1.logger; } });
+Object.defineProperty(exports, "RequestCorrelation", { enumerable: true, get: function () { return logging_1.RequestCorrelation; } });
+Object.defineProperty(exports, "AppError", { enumerable: true, get: function () { return logging_1.AppError; } });
+Object.defineProperty(exports, "safeAsync", { enumerable: true, get: function () { return logging_1.safeAsync; } });
 //# sourceMappingURL=index.js.map

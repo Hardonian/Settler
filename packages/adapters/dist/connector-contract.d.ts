@@ -68,16 +68,16 @@ export interface Connector {
 export declare class ConnectorError extends Error {
     readonly code: string;
     readonly connector: string;
-    readonly cause?: Error;
-    constructor(message: string, code: string, connector: string, cause?: Error);
+    readonly cause?: Error | undefined;
+    constructor(message: string, code: string, connector: string, cause?: Error | undefined);
 }
 /**
  * Validation error for data normalization failures
  */
 export declare class ValidationError extends Error {
-    readonly field?: string;
-    readonly value?: unknown;
-    constructor(message: string, field?: string, value?: unknown);
+    readonly field?: string | undefined;
+    readonly value?: unknown | undefined;
+    constructor(message: string, field?: string | undefined, value?: unknown | undefined);
 }
 /**
  * Connector metadata for registration
