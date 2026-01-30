@@ -39,7 +39,7 @@ export async function emitExceptionCreatedEvent(params: {
       return; // Only emit for unmatched/conflict matches
     }
 
-    const matchTenantId = match.tenantId;
+    const matchTenantId: string = match.tenantId ?? "";
     const billingAccount = await prisma.billingAccount.findFirst({
       where: {
         tenant: {
@@ -49,17 +49,18 @@ export async function emitExceptionCreatedEvent(params: {
       select: { id: true, userId: true },
     });
 
+    const userId = params.userId || billingAccount?.userId;
     await emitLifecycleEventSafe(LifecycleEventType.RECON_EXCEPTION_CREATED, {
-      userId: (params.userId || billingAccount?.userId) as string,
+      userId,
       tenantId: matchTenantId,
-      billingAccountId: billingAccount?.id || undefined,
+      billingAccountId: billingAccount?.id,
       properties: {
         match_id: params.reconciliationMatchId,
         match_type: match.matchType,
         run_id: params.runId || match.runId,
         confidence: Number(match.confidence),
       },
-    });
+    } as any);
   } catch (error) {
     // Don't throw - event tracking should never break the main flow
     console.error("Failed to emit exception created event:", error);
@@ -98,15 +99,15 @@ export async function emitExceptionResolvedEvent(params: {
     });
 
     await emitLifecycleEventSafe(LifecycleEventType.RECON_EXCEPTION_RESOLVED, {
-      userId: params.userId as string,
+      userId: params.userId,
       tenantId: params.tenantId,
-      billingAccountId: billingAccount?.id || undefined,
+      billingAccountId: billingAccount?.id,
       properties: {
         match_id: params.reconciliationMatchId,
         match_type: match.matchType,
         reviewed_at: match.reviewedAt?.toISOString(),
       },
-    });
+    } as any);
   } catch (error) {
     // Don't throw - event tracking should never break the main flow
     console.error("Failed to emit exception resolved event:", error);

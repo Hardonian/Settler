@@ -88,20 +88,36 @@ export async function runReconciliation(
     const matchResult = await runDeterministicMatching(
       tenantId,
       result.id,
-      sourceTransactions.map((t) => ({
-        id: t.id,
-        amount: Number(t.amount),
-        date: t.date,
-        description: t.description,
-        currency: t.currency,
-      })),
-      targetTransactions.map((t) => ({
-        id: t.id,
-        amount: Number(t.amount),
-        date: t.date,
-        description: t.description,
-        currency: t.currency,
-      })),
+      sourceTransactions.map(
+        (t: {
+          id: string;
+          amount: number;
+          date: Date;
+          description: string | null;
+          currency: string;
+        }) => ({
+          id: t.id,
+          amount: Number(t.amount),
+          date: t.date,
+          description: t.description,
+          currency: t.currency,
+        })
+      ),
+      targetTransactions.map(
+        (t: {
+          id: string;
+          amount: number;
+          date: Date;
+          description: string | null;
+          currency: string;
+        }) => ({
+          id: t.id,
+          amount: Number(t.amount),
+          date: t.date,
+          description: t.description,
+          currency: t.currency,
+        })
+      ),
       {
         amountTolerance: params.rules?.find((r) => r.field === "amount")?.tolerance || 0.01,
         dateWindowDays: params.rules?.find((r) => r.field === "date")?.window
@@ -134,8 +150,10 @@ export async function runReconciliation(
         unmatchedTargetCount: targetTransactions.length - matchResult.matchedCount,
         confidenceAvg:
           matchResult.matches.length > 0
-            ? matchResult.matches.reduce((sum: number, m: any) => sum + m.confidence, 0) /
-              matchResult.matches.length
+            ? matchResult.matches.reduce(
+                (sum: number, m: { confidence: number }) => sum + m.confidence,
+                0
+              ) / matchResult.matches.length
             : null,
       },
     });
@@ -288,7 +306,9 @@ export async function listReconciliationItems(
     });
 
     // Get source transactions for matches
-    const sourceTransactionIds = matches.map((m) => m.sourceTransactionId);
+    const sourceTransactionIds = matches.map(
+      (m: { sourceTransactionId: string }) => m.sourceTransactionId
+    );
     const sourceTransactions = (await prisma.normalizedTransaction.findMany({
       where: {
         id: { in: sourceTransactionIds },

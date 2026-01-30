@@ -45,7 +45,10 @@ export const edgeConfig = {
    */
   async getAll<T = unknown>(keys: string[]): Promise<Record<string, T | null>> {
     if (!isEdgeConfigConfigured()) {
-      return keys.reduce((acc: number, key: any) => ({ ...acc, [key]: null }), {} as Record<string, T | null>);
+      return keys.reduce(
+        (acc: Record<string, T | null>, key: string) => ({ ...acc, [key]: null }),
+        {} as Record<string, T | null>
+      );
     }
 
     try {
@@ -56,7 +59,10 @@ export const edgeConfig = {
       );
     } catch (error) {
       console.error(`[Edge Config] Error getting multiple keys:`, error);
-      return keys.reduce((acc: number, key: any) => ({ ...acc, [key]: null }), {} as Record<string, T | null>);
+      return keys.reduce(
+        (acc: Record<string, T | null>, key: string) => ({ ...acc, [key]: null }),
+        {} as Record<string, T | null>
+      );
     }
   },
 

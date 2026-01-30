@@ -1,13 +1,13 @@
 /**
  * Usage Tracking Middleware
- * 
+ *
  * Tracks usage events for billing and enforcement.
  * Records every transaction processed for usage-based pricing.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import type { Database } from '@/types/database.types';
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import type { Database } from "@/types/database.types";
 
 export interface UsageEvent {
   billingAccountId: string;
@@ -22,7 +22,7 @@ export interface UsageEvent {
 
 /**
  * Record a usage event
- * 
+ *
  * This should be called for every billable action:
  * - Reconciliation transaction processed
  * - Receipt uploaded
@@ -32,7 +32,7 @@ export async function recordUsageEvent(event: UsageEvent): Promise<void> {
   try {
     const supabase = (await createClient()) as any;
 
-    const insertData: Database['public']['Tables']['usage_events']['Insert'] = {
+    const insertData: Database["public"]["Tables"]["usage_events"]["Insert"] = {
       billing_account_id: event.billingAccountId,
       tenant_id: event.tenantId ?? null,
       user_id: event.userId ?? null,
@@ -45,21 +45,21 @@ export async function recordUsageEvent(event: UsageEvent): Promise<void> {
     };
 
     // Insert usage event
-    const { error } = await supabase.from('usage_events').insert(insertData);
+    const { error } = await supabase.from("usage_events").insert(insertData);
 
     if (error) {
-      console.error('[Usage Tracking] Failed to record event:', error);
+      console.error("[Usage Tracking] Failed to record event:", error);
       // Don't throw - usage tracking should not break the request
     }
   } catch (error) {
-    console.error('[Usage Tracking] Error:', error);
+    console.error("[Usage Tracking] Error:", error);
     // Don't throw - usage tracking should not break the request
   }
 }
 
 /**
  * Track reconciliation transaction usage
- * 
+ *
  * Call this for every transaction processed in a reconciliation job.
  */
 export async function trackReconciliationTransaction(
@@ -73,10 +73,10 @@ export async function trackReconciliationTransaction(
     billingAccountId,
     tenantId,
     userId,
-    eventType: 'reconciliation_transaction',
+    eventType: "reconciliation_transaction",
     ...(integrationId !== undefined && { integrationId }),
     quantity: transactionCount,
-    unit: 'transaction',
+    unit: "transaction",
     metadata: {
       tracked_at: new Date().toISOString(),
     },
@@ -88,7 +88,7 @@ export async function trackReconciliationTransaction(
  */
 export async function getCurrentUsage(
   billingAccountId: string,
-  period: 'daily' | 'monthly' = 'monthly'
+  period: "daily" | "monthly" = "monthly"
 ): Promise<{
   totalTransactions: number;
   totalCost: number;
@@ -98,25 +98,27 @@ export async function getCurrentUsage(
   const supabase = (await createClient()) as any;
 
   const now = new Date();
-  const periodStart = period === 'monthly'
-    ? new Date(now.getFullYear(), now.getMonth(), 1)
-    : new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const periodStart =
+    period === "monthly"
+      ? new Date(now.getFullYear(), now.getMonth(), 1)
+      : new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  const periodEnd = period === 'monthly'
-    ? new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
-    : new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+  const periodEnd =
+    period === "monthly"
+      ? new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
+      : new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
 
   // Get usage from usage_events
   const { data, error } = await supabase
-    .from('usage_events')
-    .select('quantity, event_type')
-    .eq('billing_account_id', billingAccountId)
-    .eq('event_type', 'reconciliation_transaction')
-    .gte('timestamp', periodStart.toISOString())
-    .lte('timestamp', periodEnd.toISOString());
+    .from("usage_events")
+    .select("quantity, event_type")
+    .eq("billing_account_id", billingAccountId)
+    .eq("event_type", "reconciliation_transaction")
+    .gte("timestamp", periodStart.toISOString())
+    .lte("timestamp", periodEnd.toISOString());
 
   if (error) {
-    console.error('[Usage Tracking] Failed to get usage:', error);
+    console.error("[Usage Tracking] Failed to get usage:", error);
     return {
       totalTransactions: 0,
       totalCost: 0,
@@ -125,9 +127,10 @@ export async function getCurrentUsage(
     };
   }
 
-  const totalTransactions = (data ?? []).reduce((sum: number, event: typeof data[0]) => {
-    return sum + Number(event?.quantity || 0);
-  }, 0) || 0;
+  const totalTransactions =
+    (data ?? []).reduce((sum: number, event: (typeof data)[0]) => {
+      return sum + Number(event?.quantity || 0);
+    }, 0) || 0;
 
   // Calculate cost: $0.01 per transaction
   const totalCost = totalTransactions * 0.01;
@@ -153,14 +156,14 @@ export async function checkUsageLimit(
   limit: number;
   wouldExceed: boolean;
 }> {
-  const { getPlan } = await import('@/config/pricing-simple');
+  const { getPlan } = await import("@/config/pricing-simple");
   const plan = getPlan(planId);
 
-  const currentUsage = await getCurrentUsage(billingAccountId, 'monthly');
+  const currentUsage = await getCurrentUsage(billingAccountId, "monthly");
   const totalUsage = currentUsage.totalTransactions + additionalTransactions;
 
   // Free tier has hard limit
-  if (planId === 'free') {
+  if (planId === "free") {
     const allowed = totalUsage <= plan.includedTransactions;
     return {
       allowed,
@@ -183,7 +186,7 @@ export async function checkUsageLimit(
  * Middleware to track usage for API routes
  */
 export function withUsageTracking<
-  T extends (request: NextRequest, ...args: any[]) => Promise<NextResponse>
+  T extends (request: NextRequest, ...args: any[]) => Promise<NextResponse>,
 >(
   handler: T,
   options: {
@@ -192,27 +195,25 @@ export function withUsageTracking<
     getBillingAccountId: (request: NextRequest) => Promise<string | null>;
   }
 ): T {
-  return (async (...args: Parameters<T>) => {
-    const request = args[0] as NextRequest;
+  return (async (request: NextRequest, ...rest: unknown[]) => {
     const startTime = Date.now();
 
-    // Call handler
-    const response = await handler(...args);
+    // Call handler with proper typing
+    type HandlerArgs = Parameters<T> extends [NextRequest, ...infer R] ? R : never;
+    const response = await handler(request, ...(rest as HandlerArgs));
 
     // Track usage after successful request
     if (response.status < 400) {
       try {
         const billingAccountId = await options.getBillingAccountId(request);
         if (billingAccountId) {
-          const quantity = options.getQuantity
-            ? await options.getQuantity(request, response)
-            : 1;
+          const quantity = options.getQuantity ? await options.getQuantity(request, response) : 1;
 
           await recordUsageEvent({
             billingAccountId,
             eventType: options.eventType,
             quantity,
-            unit: 'request',
+            unit: "request",
             metadata: {
               route: request.nextUrl.pathname,
               method: request.method,
@@ -222,7 +223,7 @@ export function withUsageTracking<
         }
       } catch (error) {
         // Don't fail the request if usage tracking fails
-        console.error('[Usage Tracking] Failed to track usage:', error);
+        console.error("[Usage Tracking] Failed to track usage:", error);
       }
     }
 
