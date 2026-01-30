@@ -8,22 +8,62 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
     "./lib/email-lifecycle": {
+      "import": {
+        "types": "./dist/lib/email-lifecycle.d.ts",
+        "default": "./dist/lib/email-lifecycle.js"
+      },
+      "require": {
+        "types": "./dist/lib/email-lifecycle.d.ts",
+        "default": "./dist/lib/email-lifecycle.js"
+      },
       "types": "./dist/lib/email-lifecycle.d.ts",
       "default": "./dist/lib/email-lifecycle.js"
     },
     "./utils/type-guards": {
+      "import": {
+        "types": "./dist/utils/type-guards.d.ts",
+        "default": "./dist/utils/type-guards.js"
+      },
+      "require": {
+        "types": "./dist/utils/type-guards.d.ts",
+        "default": "./dist/utils/type-guards.js"
+      },
       "types": "./dist/utils/type-guards.d.ts",
       "default": "./dist/utils/type-guards.js"
     },
     "./dist/ops/activation-funnel": {
+      "import": {
+        "types": "./dist/ops/activation-funnel.d.ts",
+        "default": "./dist/ops/activation-funnel.js"
+      },
+      "require": {
+        "types": "./dist/ops/activation-funnel.d.ts",
+        "default": "./dist/ops/activation-funnel.js"
+      },
       "types": "./dist/ops/activation-funnel.d.ts",
       "default": "./dist/ops/activation-funnel.js"
     },
     "./dist/ops/billing-hardening": {
+      "import": {
+        "types": "./dist/ops/billing-hardening.d.ts",
+        "default": "./dist/ops/billing-hardening.js"
+      },
+      "require": {
+        "types": "./dist/ops/billing-hardening.d.ts",
+        "default": "./dist/ops/billing-hardening.js"
+      },
       "types": "./dist/ops/billing-hardening.d.ts",
       "default": "./dist/ops/billing-hardening.js"
     },
