@@ -1,0 +1,372 @@
+/**
+ * Responsive Text Utilities
+ *
+ * Prevents text overflow, bleeding, and layout breaks on all screen sizes.
+ * Apply these classes to ensure text is always properly contained.
+ */
+
+/* ============================================
+   CORE TEXT OVERFLOW PREVENTION
+   ============================================ */
+
+/**
+ * Truncate single-line text with ellipsis
+ * Use for: Table cells, tags, single-line headings
+ */
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0; /* Critical for flex children */
+}
+
+/**
+ * Break long words and URLs
+ * Use for: Multi-line text blocks, user-generated content
+ */
+.text-break-words {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+/**
+ * Preserve word boundaries (safer than break-word)
+ * Use for: Prose, articles, descriptions
+ */
+.text-break-normal {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+/**
+ * Force text to stay within container
+ * Use for: Cards, modals, mobile views
+ */
+.text-contained {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================
+   RESPONSIVE HEADINGS
+   ============================================ */
+
+/**
+ * Responsive headings that scale properly
+ * Prevents headings from breaking layout on mobile
+ */
+.heading-responsive {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  line-height: 1.2;
+  text-wrap: balance; /* Balanced multi-line headings */
+  overflow-wrap: break-word;
+}
+
+.heading-responsive-sm {
+  font-size: clamp(1.25rem, 3vw, 1.875rem);
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+.heading-responsive-lg {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+/* ============================================
+   FLEX CONTAINER TEXT FIXES
+   ============================================ */
+
+/**
+ * Fix for text in flex containers
+ * Flex children need min-width: 0 to allow overflow
+ */
+.flex-text-fix {
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+/* Apply to all flex children with text */
+.flex > * {
+  min-width: 0;
+}
+
+/* ============================================
+   TABLE TEXT HANDLING
+   ============================================ */
+
+/**
+ * Prevent table cells from overflowing
+ */
+.table-text-safe td,
+.table-text-safe th {
+  max-width: 0; /* Allows overflow: hidden to work */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/**
+ * Table cells that should wrap
+ */
+.table-text-wrap td,
+.table-text-wrap th {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+/* ============================================
+   MOBILE-SPECIFIC TEXT HANDLING
+   ============================================ */
+
+@media (max-width: 640px) {
+  /**
+   * Force smaller text on very small screens
+   */
+  .text-mobile-sm {
+    font-size: 0.875rem !important;
+  }
+
+  /**
+   * Ensure all headings fit on mobile
+   */
+  h1, h2, h3, h4, h5, h6 {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  /**
+   * Prevent horizontal scroll from text
+   */
+  body {
+    overflow-x: hidden;
+  }
+
+  /**
+   * Fix for long URLs and code blocks
+   */
+  code, pre {
+    word-break: break-all;
+    white-space: pre-wrap;
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/**
+ * Balanced text (experimental)
+ * Distributes text evenly across lines
+ */
+.text-balance {
+  text-wrap: balance;
+}
+
+/**
+ * Prevent text selection on UI elements
+ */
+.text-no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/**
+ * Multiline ellipsis (2 lines)
+ */
+.text-ellipsis-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/**
+ * Multiline ellipsis (3 lines)
+ */
+.text-ellipsis-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================
+   GRID CONTAINER TEXT FIXES
+   ============================================ */
+
+/**
+ * Fix for text in CSS Grid
+ */
+.grid-text-fix {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.grid > * {
+  min-width: 0;
+}
+
+/* ============================================
+   CENTERED TEXT CONTAINERS
+   ============================================ */
+
+/**
+ * Centered text that doesn't overflow
+ */
+.text-center-safe {
+  text-align: center;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/**
+ * Justified text that doesn't overflow
+ */
+.text-justify-safe {
+  text-align: justify;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+/* ============================================
+   CARD TEXT HANDLING
+   ============================================ */
+
+/**
+ * Safe text inside cards
+ */
+.card-text {
+  padding: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.card-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-description {
+  color: #64748b;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* ============================================
+   MONOSPACE TEXT (CODE, IDs, HASHES)
+   ============================================ */
+
+/**
+ * Truncate long code/IDs with copy button
+ */
+.mono-truncate {
+  font-family: monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/**
+ * Wrap long code blocks
+ */
+.mono-wrap {
+  font-family: monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow-wrap: break-word;
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+/**
+ * Ensure text remains readable when zoomed
+ */
+@media (min-width: 1280px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 1536px) {
+  html {
+    font-size: 18px;
+  }
+}
+
+/**
+ * Prevent font-size below 12px (accessibility)
+ */
+* {
+  font-size: max(0.75rem, 12px);
+}
+
+/* ============================================
+   RESET OVERFLOWS
+   ============================================ */
+
+/**
+ * Ensure no element causes horizontal scroll
+ */
+*,
+*::before,
+*::after {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/**
+ * Fix for images and media
+ */
+img,
+video,
+iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ============================================
+   RESPONSIVE SPACING
+   ============================================ */
+
+/**
+ * Responsive padding that prevents overflow
+ */
+.container-safe {
+  width: 100%;
+  max-width: 100vw;
+  padding-left: clamp(1rem, 4vw, 2rem);
+  padding-right: clamp(1rem, 4vw, 2rem);
+  margin-left: auto;
+  margin-right: auto;
+  overflow-x: hidden;
+}
+
+/**
+ * Prevent margin collapse issues
+ */
+.no-margin-collapse > *:first-child {
+  margin-top: 0;
+}
+
+.no-margin-collapse > *:last-child {
+  margin-bottom: 0;
+}

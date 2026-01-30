@@ -1,4 +1,5 @@
 import type { EvidenceManifest, NamedFile, VerificationResult } from "@/types/verification";
+import { safeJsonParse } from "@/lib/utils/safe-parse";
 
 export type WasmVerificationResponse = {
   success: boolean;
@@ -38,7 +39,11 @@ export async function verifyBundle(
     JSON.stringify(manifest),
     JSON.stringify(files)
   );
-  const response = JSON.parse(responseJson) as WasmVerificationResponse;
+  const response = safeJsonParse<WasmVerificationResponse>(responseJson, "WASM verification response");
+
+  if (!response) {
+    throw new Error("Failed to parse WASM verification response");
+  }
 
   if (response.error) {
     throw new Error(response.error);

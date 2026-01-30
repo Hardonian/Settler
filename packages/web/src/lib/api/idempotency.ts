@@ -1,12 +1,13 @@
 /**
  * Request Idempotency
- * 
+ *
  * Ensures operations can be safely retried without side effects.
  * Uses database-backed idempotency keys.
  */
 
 import { prisma } from '@/shared/db/prismaClient';
 import crypto from 'crypto';
+import { safeJsonParse } from '@/lib/utils/safe-parse';
 
 interface IdempotencyRecord {
   id: string;
@@ -86,7 +87,9 @@ export async function recordIdempotency(
   response?: unknown
 ): Promise<void> {
   try {
-    const responseJson = response ? (typeof response === 'string' ? JSON.parse(response) : response) : null;
+    const responseJson = response
+      ? (typeof response === 'string' ? safeJsonParse(response, "idempotency response") : response)
+      : null;
     const expiresAt = new Date(Date.now() + IDEMPOTENCY_TTL);
     
     await prisma.idempotencyKey.upsert({

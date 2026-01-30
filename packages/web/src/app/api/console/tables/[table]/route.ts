@@ -5,6 +5,7 @@ import { hasAccess } from '@/lib/subscription-access';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
 import { withSecurity } from '@/lib/middleware/api-security';
+import { safeJsonParseWithDefault } from '@/lib/utils/safe-parse';
 
 /**
  * Generic CRUD API Route for All Tables
@@ -62,14 +63,14 @@ export const GET = withSecurity(
       const filters = searchParams.get('filters') || '{}';
       const orderBy = searchParams.get('orderBy') || 'created_at';
       const orderAsc = searchParams.get('orderAsc') === 'true';
-      
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: rpcData, error: rpcError } = await supabase.rpc('get_table_records', {
         p_table_schema: schema,
         p_table_name: table,
         p_limit: limit,
         p_offset: offset,
-        p_filters: JSON.parse(filters),
+        p_filters: safeJsonParseWithDefault(filters, {}, "table filters query param"),
         p_order_by: orderBy,
         p_order_asc: orderAsc,
       } as any); // RPC types not fully generated
@@ -96,15 +97,11 @@ export const GET = withSecurity(
     // Apply filters
     const filters = searchParams.get('filters');
     if (filters) {
-      try {
-        const filterObj = JSON.parse(filters);
-        for (const [key, value] of Object.entries(filterObj)) {
-          if (value !== null && value !== undefined) {
-            query = query.eq(key, value);
-          }
+      const filterObj = safeJsonParseWithDefault<Record<string, unknown>>(filters, {}, "table filters fallback");
+      for (const [key, value] of Object.entries(filterObj)) {
+        if (value !== null && value !== undefined) {
+          query = query.eq(key, value);
         }
-      } catch {
-        // Invalid filters JSON, ignore
       }
     }
     

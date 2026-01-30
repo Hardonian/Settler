@@ -1,6 +1,6 @@
 /**
  * Database Query Caching Layer
- * 
+ *
  * Redis-backed caching for database queries with:
  * - TTL-based expiration
  * - Cache invalidation on mutations
@@ -10,6 +10,7 @@
 
 import { safeRedisOperation } from '@/lib/redis/client';
 import { trackMetric } from '@/lib/monitoring/metrics';
+import { safeJsonParse } from '@/lib/utils/safe-parse';
 
 export interface CacheOptions {
   /** Cache TTL in seconds */
@@ -50,7 +51,7 @@ export async function getCached<T>(
     const result = await safeRedisOperation(
       async (client) => {
         const cached = await client.get(key);
-        return cached ? JSON.parse(cached) : null;
+        return cached ? safeJsonParse<T>(cached, `Redis cache key: ${key.substring(0, 50)}`) : null;
       },
       () => null // Fallback to no cache
     );

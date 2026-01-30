@@ -21,6 +21,7 @@ import { getTraceId } from "@/lib/observability/trace";
 import { logger } from "@/lib/observability/logger";
 import { emitLifecycleEventSafe, LifecycleEventType } from "@/lib/ops/lifecycle-events";
 import { safeLogger } from "@/lib/observability/safe-logger";
+import { safeJsonParseWithDefault } from "@/lib/utils/safe-parse";
 // NOTE: Webhooks don't use billing gates - they're authenticated via Stripe signature
 
 export const dynamic = "force-dynamic";
@@ -242,7 +243,7 @@ export async function POST(request: NextRequest) {
 
   // Record event receipt (with idempotency protection)
   try {
-    await recordEventReceived(event.id, event.type, JSON.parse(body));
+    await recordEventReceived(event.id, event.type, safeJsonParseWithDefault(body, {}, "stripe webhook body"));
   } catch (error) {
     await safeLogger.error("[Stripe Webhook] Failed to record event", {
       eventId: event.id,

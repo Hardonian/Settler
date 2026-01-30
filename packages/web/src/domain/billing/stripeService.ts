@@ -1,6 +1,6 @@
 /**
  * Stripe Service
- * 
+ *
  * Handles Stripe integration: customers, subscriptions, checkout, customer portal.
  * Includes proper error handling, input validation, and security measures.
  */
@@ -9,6 +9,7 @@ import Stripe from 'stripe';
 import { prisma } from '@/shared/db/prismaClient';
 import { getPlanConfig, PlanCode } from './planConfig';
 import { generateIdempotencyKey } from '@/lib/stripe/idempotency';
+import { safeJsonStringify, safeJsonParse } from '@/lib/utils/safe-parse';
 
 /**
  * Lazy Stripe client initialization
@@ -370,7 +371,7 @@ export async function syncSubscription(stripeSubscription: Stripe.Subscription):
 
   // Safely serialize metadata for Prisma JSON type
   const metadata = stripeSubscription.metadata
-    ? (JSON.parse(JSON.stringify(stripeSubscription.metadata)) as unknown)
+    ? (safeJsonParse(safeJsonStringify(stripeSubscription.metadata, '{}', 'stripe subscription metadata'), 'stripe subscription metadata') as unknown)
     : null;
 
   // Upsert subscription with transaction for atomicity
