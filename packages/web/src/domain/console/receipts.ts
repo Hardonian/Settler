@@ -1,6 +1,6 @@
 /**
  * Console Receipts Domain - Optimized
- * 
+ *
  * Queries receipts for the Developer Console.
  * Uses Prisma with billing account scoping for tenant isolation.
  * Optimized with:
@@ -10,9 +10,9 @@
  * - Error recovery
  */
 
-import { prisma } from '@/shared/db/prismaClient';
-import { createClient } from '@/lib/supabase/server';
-import { executeWithRetry, withHealthCheck } from '@/lib/db/connection-pool';
+import { prisma } from "@/shared/db/prismaClient";
+import { createClient } from "@/lib/supabase/server";
+import { executeWithRetry, withHealthCheck } from "@/lib/db/connection-pool";
 
 export interface ReceiptListItem {
   id: string;
@@ -43,10 +43,10 @@ export interface ReceiptDetail extends ReceiptListItem {
 
 /**
  * Verify billing account belongs to authenticated user
- * 
+ *
  * CRITICAL: This function enforces tenant isolation when using Prisma (which bypasses RLS).
  * It ensures the billing_account_id belongs to the authenticated user before allowing access.
- * 
+ *
  * This is a defense-in-depth measure. RLS policies should also enforce this at the database level,
  * but since Prisma bypasses RLS, we must verify in application code.
  * Optimized with connection pooling and caching.
@@ -54,38 +54,49 @@ export interface ReceiptDetail extends ReceiptListItem {
 async function verifyBillingAccountAccess(billingAccountId: string): Promise<boolean> {
   try {
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError || !user) {
-      console.warn('[verifyBillingAccountAccess] User not authenticated', {
+      console.warn("[verifyBillingAccountAccess] User not authenticated", {
         error: authError?.message,
         hasUser: !!user,
       });
       return false;
     }
-    
+
     // Validate billingAccountId format (UUID)
-    if (!billingAccountId || typeof billingAccountId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(billingAccountId)) {
-      console.warn('[verifyBillingAccountAccess] Invalid billingAccountId format', {
+    if (
+      !billingAccountId ||
+      typeof billingAccountId !== "string" ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(billingAccountId)
+    ) {
+      console.warn("[verifyBillingAccountAccess] Invalid billingAccountId format", {
         billingAccountId,
         type: typeof billingAccountId,
       });
       return false;
     }
-    
+
     // Check if Prisma is available
-    if (!prisma || typeof prisma.billingAccount === 'undefined') {
-      console.error('[verifyBillingAccountAccess] Prisma client not available', {
+    if (!prisma || typeof prisma.billingAccount === "undefined") {
+      console.error("[verifyBillingAccountAccess] Prisma client not available", {
         hasPrisma: !!prisma,
-        hasBillingAccount: prisma ? typeof prisma.billingAccount !== 'undefined' : false,
+        hasBillingAccount: prisma ? typeof prisma.billingAccount !== "undefined" : false,
       });
       return false;
     }
-    
+
     // CRITICAL: Verify billing account belongs to user (tenant isolation)
     // This check prevents cross-tenant data access when using Prisma (which bypasses RLS)
     // Optimized with connection pooling and retry logic
-    const billingAccount = await executeWithRetry(() =>
+    interface BillingAccountCheck {
+      id: string;
+      userId: string;
+    }
+    const billingAccount = (await executeWithRetry(() =>
       prisma.billingAccount.findFirst({
         where: {
           id: billingAccountId,
@@ -96,30 +107,30 @@ async function verifyBillingAccountAccess(billingAccountId: string): Promise<boo
           userId: true,
         },
       })
-    );
-    
+    )) as BillingAccountCheck | null;
+
     if (!billingAccount) {
-      console.warn('[verifyBillingAccountAccess] Billing account not found or access denied', {
+      console.warn("[verifyBillingAccountAccess] Billing account not found or access denied", {
         billingAccountId,
         userId: user.id,
       });
       return false;
     }
-    
+
     // Double-check user ID matches (defense in depth)
     if (billingAccount.userId !== user.id) {
-      console.error('[verifyBillingAccountAccess] User ID mismatch - potential security issue', {
+      console.error("[verifyBillingAccountAccess] User ID mismatch - potential security issue", {
         billingAccountUserId: billingAccount.userId,
         authenticatedUserId: user.id,
         billingAccountId,
       });
       return false;
     }
-    
+
     return true;
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[verifyBillingAccountAccess] Error', {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    console.error("[verifyBillingAccountAccess] Error", {
       error: errorMessage,
       stack: error instanceof Error ? error.stack : undefined,
       billingAccountId,
@@ -132,10 +143,10 @@ async function verifyBillingAccountAccess(billingAccountId: string): Promise<boo
 /**
  * List receipts for a billing account
  * Verifies the billing account belongs to the authenticated user
- * 
+ *
  * CRITICAL: Tenant isolation enforced via verifyBillingAccountAccess.
  * Prisma bypasses RLS, so we must verify ownership in application code.
- * 
+ *
  * This function:
  * 1. Validates inputs
  * 2. Verifies billing account access (tenant isolation)
@@ -150,39 +161,50 @@ export async function listReceipts(
 ): Promise<ReceiptListItem[]> {
   try {
     // Validate inputs
-    if (!billingAccountId || typeof billingAccountId !== 'string') {
-      console.warn('[listReceipts] Invalid billingAccountId', {
+    if (!billingAccountId || typeof billingAccountId !== "string") {
+      console.warn("[listReceipts] Invalid billingAccountId", {
         billingAccountId,
         type: typeof billingAccountId,
       });
       return [];
     }
-    
+
     const safeLimit = Math.min(Math.max(1, limit), 100); // Clamp between 1-100
     const safeOffset = Math.max(0, offset);
-    
+
     // Verify billing account access (CRITICAL: tenant isolation)
     const hasAccess = await verifyBillingAccountAccess(billingAccountId);
     if (!hasAccess) {
-      console.warn('[listReceipts] Access denied for billing account', {
+      console.warn("[listReceipts] Access denied for billing account", {
         billingAccountId,
       });
       return [];
     }
-    
+
     // Check if Prisma is available
-    if (!prisma || typeof prisma.receipt === 'undefined') {
-      console.warn('[listReceipts] Prisma client not available, returning empty list', {
+    if (!prisma || typeof prisma.receipt === "undefined") {
+      console.warn("[listReceipts] Prisma client not available, returning empty list", {
         hasPrisma: !!prisma,
-        hasReceipt: prisma ? typeof prisma.receipt !== 'undefined' : false,
+        hasReceipt: prisma ? typeof prisma.receipt !== "undefined" : false,
       });
       return [];
     }
-    
+
     // Query receipts with explicit billing account filter
     // Optimized: Use select instead of include, only fetch needed fields
     // Use connection pooling and retry logic
-    const receipts = await withHealthCheck(() =>
+    interface ReceiptWithItems {
+      id: string;
+      uploadId: string;
+      vendor: string | null;
+      date: Date | null;
+      currency: string | null;
+      total: number | null;
+      confidenceScore: number | null;
+      createdAt: Date;
+      items: Array<{ id: string }>;
+    }
+    const receipts = (await withHealthCheck(() =>
       prisma.receipt.findMany({
         where: {
           upload: {
@@ -204,11 +226,11 @@ export async function listReceipts(
             },
           },
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         take: safeLimit,
         skip: safeOffset,
       })
-    );
+    )) as ReceiptWithItems[];
 
     return receipts.map((receipt) => ({
       id: receipt.id,
@@ -222,8 +244,8 @@ export async function listReceipts(
       createdAt: receipt.createdAt,
     }));
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[listReceipts] Error', {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    console.error("[listReceipts] Error", {
       error: errorMessage,
       stack: error instanceof Error ? error.stack : undefined,
       billingAccountId,
@@ -238,10 +260,10 @@ export async function listReceipts(
 /**
  * Get receipt details by ID
  * Verifies the billing account belongs to the authenticated user
- * 
+ *
  * CRITICAL: Tenant isolation enforced via verifyBillingAccountAccess and explicit where clause.
  * Prisma bypasses RLS, so we must verify ownership in application code.
- * 
+ *
  * This function:
  * 1. Validates inputs
  * 2. Verifies billing account access (tenant isolation)
@@ -256,45 +278,70 @@ export async function getReceiptDetail(
 ): Promise<ReceiptDetail | null> {
   try {
     // Validate inputs
-    if (!receiptId || typeof receiptId !== 'string') {
-      console.warn('[getReceiptDetail] Invalid receiptId', {
+    if (!receiptId || typeof receiptId !== "string") {
+      console.warn("[getReceiptDetail] Invalid receiptId", {
         receiptId,
         type: typeof receiptId,
       });
       return null;
     }
-    
-    if (!billingAccountId || typeof billingAccountId !== 'string') {
-      console.warn('[getReceiptDetail] Invalid billingAccountId', {
+
+    if (!billingAccountId || typeof billingAccountId !== "string") {
+      console.warn("[getReceiptDetail] Invalid billingAccountId", {
         billingAccountId,
         type: typeof billingAccountId,
       });
       return null;
     }
-    
+
     // Verify billing account access (CRITICAL: tenant isolation)
     const hasAccess = await verifyBillingAccountAccess(billingAccountId);
     if (!hasAccess) {
-      console.warn('[getReceiptDetail] Access denied for billing account', {
+      console.warn("[getReceiptDetail] Access denied for billing account", {
         billingAccountId,
         receiptId,
       });
       return null;
     }
-    
+
     // Check if Prisma is available
-    if (!prisma || typeof prisma.receipt === 'undefined') {
-      console.warn('[getReceiptDetail] Prisma client not available', {
+    if (!prisma || typeof prisma.receipt === "undefined") {
+      console.warn("[getReceiptDetail] Prisma client not available", {
         hasPrisma: !!prisma,
-        hasReceipt: prisma ? typeof prisma.receipt !== 'undefined' : false,
+        hasReceipt: prisma ? typeof prisma.receipt !== "undefined" : false,
       });
       return null;
     }
-    
+
     // Query receipt with explicit billing account filter
     // Optimized: Use select to only fetch needed fields
     // Use connection pooling and retry logic
-    const receipt = await withHealthCheck(() =>
+    interface ReceiptDetail {
+      id: string;
+      uploadId: string;
+      vendor: string | null;
+      date: Date | null;
+      currency: string | null;
+      total: number | null;
+      subtotal: number | null;
+      tax: number | null;
+      paymentMethod: string | null;
+      confidenceScore: number | null;
+      rawText: string | null;
+      createdAt: Date;
+      items: Array<{
+        id: string;
+        name: string;
+        quantity: number | null;
+        unitPrice: number | null;
+        lineTotal: number | null;
+        category: string | null;
+      }>;
+      upload: {
+        billingAccountId: string;
+      };
+    }
+    const receipt = (await withHealthCheck(() =>
       prisma.receipt.findFirst({
         where: {
           id: receiptId,
@@ -332,11 +379,11 @@ export async function getReceiptDetail(
           },
         },
       })
-    );
+    )) as ReceiptDetail | null;
 
     if (!receipt) {
       // Receipt not found or doesn't belong to this billing account
-      console.info('[getReceiptDetail] Receipt not found', {
+      console.info("[getReceiptDetail] Receipt not found", {
         receiptId,
         billingAccountId,
       });
@@ -344,8 +391,10 @@ export async function getReceiptDetail(
     }
 
     // Double-check billing account matches (defense in depth)
-    if (receipt.upload.billingAccountId !== billingAccountId) {
-      console.error('[getReceiptDetail] Billing account mismatch - potential security issue', {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const uploadBillingAccountId = (receipt as any).upload?.billingAccountId as string | undefined;
+    if (uploadBillingAccountId !== billingAccountId) {
+      console.error("[getReceiptDetail] Billing account mismatch - potential security issue", {
         receiptUploadBillingAccountId: receipt.upload.billingAccountId,
         requestedBillingAccountId: billingAccountId,
         receiptId,
@@ -377,8 +426,8 @@ export async function getReceiptDetail(
       })),
     };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[getReceiptDetail] Error', {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    console.error("[getReceiptDetail] Error", {
       error: errorMessage,
       stack: error instanceof Error ? error.stack : undefined,
       receiptId,

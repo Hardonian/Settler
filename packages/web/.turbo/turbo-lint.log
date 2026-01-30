@@ -6,7 +6,6 @@ npm warn config optional Use `--omit=optional` to exclude optional dependencies,
 npm warn config `--include=optional` to include them.
 npm warn config
 npm warn config       Default value does install optional deps unless otherwise omitted.
-npm warn Unknown env config "store-dir". This will stop working in the next major version of npm.
 npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
 npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm.
 npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
@@ -20,12 +19,12 @@ npm warn config       Default value does install optional deps unless otherwise 
 275:16  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
 
 ./src/app/api/jobs/bulk/route.ts
-64:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-74:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+67:22  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+77:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
 
 ./src/app/api/jobs/[jobId]/exceptions/route.ts
-170:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-180:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+166:22  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+176:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
 
 ./src/app/api/jobs/[jobId]/exceptions/[exceptionId]/route.ts
 115:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
@@ -35,11 +34,11 @@ npm warn config       Default value does install optional deps unless otherwise 
 96:16  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
 
 ./src/app/api/jobs/[jobId]/route.ts
-145:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-156:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+145:22  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+156:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
 
 ./src/app/api/v1/recon/jobs/route.ts
-37:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+38:16  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
 
 ./src/app/api/vercel-example/route.ts
 39:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
@@ -52,9 +51,6 @@ npm warn config       Default value does install optional deps unless otherwise 
 
 ./src/app/console/inspector/page.tsx
 62:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-
-./src/components/examples/ObservabilityExample.tsx
-55:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
 
 ./src/components/monitoring/PerformanceMonitor.tsx
 31:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars

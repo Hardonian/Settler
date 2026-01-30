@@ -78,7 +78,7 @@ export const GET = withSecurity(
         logger.info("Found billing account", { correlationId, billingAccountId });
 
         logger.info("Fetching receipt detail", { correlationId, receiptId: id, billingAccountId });
-        const receipt = await getReceiptDetail(id as string, billingAccountId);
+        const receipt = await getReceiptDetail(id as string, billingAccountId as string);
 
         if (!receipt) {
           // Receipt not found or doesn't belong to user's billing account

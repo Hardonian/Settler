@@ -130,7 +130,7 @@ export async function signUpUser(
     if (authData.user.email) {
       eventProperties.email = authData.user.email;
     }
-    await emitLifecycleEventSafe(LifecycleEventType.USER_SIGNED_UP, {
+    await emitLifecycleEventSafe(LifecycleEventType.USER_SIGNED_UP as string, {
       userId: getString(authData.user?.id),
       properties: eventProperties,
     });

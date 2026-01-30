@@ -1,6 +1,6 @@
 /**
  * Stripe Webhook Handler
- * 
+ *
  * Handles Stripe webhook events for subscription lifecycle.
  * MANDATORY REQUIREMENTS:
  * - Node.js runtime (NOT Edge)
@@ -9,22 +9,22 @@
  * - Bypasses all auth middleware
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { stripe, syncSubscriptionFromWebhook } from '@/domain/billing/stripeService';
-import { reconcileBillingAccount } from '@/domain/billing/reconciliation';
-import { prisma } from '@/shared/db/prismaClient';
-import { headers } from 'next/headers';
-import Stripe from 'stripe';
-import { trackWebhookMetric } from '@/lib/monitoring/metrics';
-import { requestSizeLimits } from '@/middleware/request-size-limit';
-import { getTraceId } from '@/lib/observability/trace';
-import { logger } from '@/lib/observability/logger';
-import { emitLifecycleEventSafe, LifecycleEventType } from '@/lib/ops/lifecycle-events';
-import { safeLogger } from '@/lib/observability/safe-logger';
+import { NextRequest, NextResponse } from "next/server";
+import { stripe, syncSubscriptionFromWebhook } from "@/domain/billing/stripeService";
+import { reconcileBillingAccount } from "@/domain/billing/reconciliation";
+import { prisma } from "@/shared/db/prismaClient";
+import { headers } from "next/headers";
+import Stripe from "stripe";
+import { trackWebhookMetric } from "@/lib/monitoring/metrics";
+import { requestSizeLimits } from "@/middleware/request-size-limit";
+import { getTraceId } from "@/lib/observability/trace";
+import { logger } from "@/lib/observability/logger";
+import { emitLifecycleEventSafe, LifecycleEventType } from "@/lib/ops/lifecycle-events";
+import { safeLogger } from "@/lib/observability/safe-logger";
 // NOTE: Webhooks don't use billing gates - they're authenticated via Stripe signature
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs'; // CRITICAL: Must be Node.js runtime for Prisma
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs"; // CRITICAL: Must be Node.js runtime for Prisma
 
 /**
  * Check if event was already processed (database-backed idempotency)
@@ -35,9 +35,9 @@ async function isEventProcessed(eventId: string): Promise<boolean> {
       where: { eventId },
       select: { id: true, status: true },
     });
-    return existing !== null && existing.status === 'processed';
+    return existing !== null && existing.status === "processed";
   } catch (error) {
-    await safeLogger.error('[Stripe Webhook] Error checking event idempotency', {
+    await safeLogger.error("[Stripe Webhook] Error checking event idempotency", {
       eventId,
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
@@ -60,15 +60,15 @@ async function recordEventReceived(
       data: {
         eventId,
         type: eventType,
-        status: 'received',
+        status: "received",
         rawPayload: rawPayload as never,
       },
     });
   } catch (error: unknown) {
     // If unique violation, event was already received (idempotent)
     const prismaError = error as { code?: string };
-    if (prismaError?.code === 'P2002') {
-      await safeLogger.debug('[Stripe Webhook] Event already received', { eventId });
+    if (prismaError?.code === "P2002") {
+      await safeLogger.debug("[Stripe Webhook] Event already received", { eventId });
       return;
     }
     throw error;
@@ -82,7 +82,7 @@ async function markEventProcessed(eventId: string): Promise<void> {
   await prisma.stripeEvent.update({
     where: { eventId },
     data: {
-      status: 'processed',
+      status: "processed",
       processedAt: new Date(),
     },
   });
@@ -93,22 +93,22 @@ async function markEventProcessed(eventId: string): Promise<void> {
  */
 async function claimEventForProcessing(
   eventId: string
-): Promise<'claimed' | 'processed' | 'processing'> {
+): Promise<"claimed" | "processed" | "processing"> {
   const updateResult = await prisma.stripeEvent.updateMany({
     where: {
       eventId,
       status: {
-        in: ['received', 'failed'],
+        in: ["received", "failed"],
       },
     },
     data: {
-      status: 'processing',
+      status: "processing",
       processedAt: null,
     },
   });
 
   if (updateResult.count === 1) {
-    return 'claimed';
+    return "claimed";
   }
 
   const existing = await prisma.stripeEvent.findUnique({
@@ -116,11 +116,11 @@ async function claimEventForProcessing(
     select: { status: true },
   });
 
-  if (existing?.status === 'processed') {
-    return 'processed';
+  if (existing?.status === "processed") {
+    return "processed";
   }
 
-  return 'processing';
+  return "processing";
 }
 
 /**
@@ -130,7 +130,7 @@ async function markEventFailed(eventId: string, error: string): Promise<void> {
   await prisma.stripeEvent.updateMany({
     where: { eventId },
     data: {
-      status: 'failed',
+      status: "failed",
       error,
       processedAt: new Date(),
     },
@@ -141,38 +141,38 @@ async function markEventFailed(eventId: string, error: string): Promise<void> {
  * Extract billing account ID from event metadata
  */
 function extractBillingAccountId(event: Stripe.Event): string | null {
-  if (event.type === 'checkout.session.completed') {
+  if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     return session.metadata?.billingAccountId || null;
   }
-  
+
   if (
-    event.type === 'customer.subscription.created' ||
-    event.type === 'customer.subscription.updated' ||
-    event.type === 'customer.subscription.deleted'
+    event.type === "customer.subscription.created" ||
+    event.type === "customer.subscription.updated" ||
+    event.type === "customer.subscription.deleted"
   ) {
     const subscription = event.data.object as Stripe.Subscription;
     return subscription.metadata?.billingAccountId || null;
   }
-  
-  if (event.type === 'customer.updated') {
+
+  if (event.type === "customer.updated") {
     const customer = event.data.object as Stripe.Customer;
     return customer.metadata?.billingAccountId || null;
   }
-  
-  if (event.type === 'invoice.paid' || event.type === 'invoice.payment_failed') {
+
+  if (event.type === "invoice.paid" || event.type === "invoice.payment_failed") {
     const invoice = event.data.object as Stripe.Invoice;
     // Invoice.subscription can be string | Stripe.Subscription | null
     // Access via type assertion since TypeScript types may not expose it directly
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const subscription = (invoice as any).subscription as string | Stripe.Subscription | null;
-    if (!subscription || typeof subscription === 'string') {
+    if (!subscription || typeof subscription === "string") {
       // We'd need to fetch the subscription to get metadata, but for now return null
       return null;
     }
     return subscription.metadata?.billingAccountId || null;
   }
-  
+
   return null;
 }
 
@@ -184,37 +184,31 @@ export async function POST(request: NextRequest) {
   // Check request size (max 500KB for webhooks)
   const sizeCheck = requestSizeLimits.webhook(request);
   if (sizeCheck) {
-    sizeCheck.headers.set('x-trace-id', traceId);
+    sizeCheck.headers.set("x-trace-id", traceId);
     return sizeCheck;
   }
 
   // Read RAW body - CRITICAL for signature verification
   const body = await request.text();
-  
+
   // Double-check size after reading
   if (body.length > 500 * 1024) {
-    return NextResponse.json(
-      { error: 'Request body too large' },
-      { status: 413 }
-    );
+    return NextResponse.json({ error: "Request body too large" }, { status: 413 });
   }
   const headersList = await headers();
-  const signature = headersList.get('stripe-signature');
+  const signature = headersList.get("stripe-signature");
 
   if (!signature) {
-    return NextResponse.json(
-      { error: 'Missing stripe-signature header' },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Missing stripe-signature header" }, { status: 400 });
   }
 
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!webhookSecret) {
-    await safeLogger.error('[Stripe Webhook] STRIPE_WEBHOOK_SECRET not configured');
+    await safeLogger.error("[Stripe Webhook] STRIPE_WEBHOOK_SECRET not configured");
     // Configuration error - return 503 (service unavailable) instead of 500
     // This indicates misconfiguration, not a transient error
     return NextResponse.json(
-      { error: 'Webhook secret not configured', message: 'Server configuration error' },
+      { error: "Webhook secret not configured", message: "Server configuration error" },
       { status: 503 }
     );
   }
@@ -226,26 +220,23 @@ export async function POST(request: NextRequest) {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err) {
     const error = err as Error;
-    await safeLogger.error('[Stripe Webhook] Signature verification failed', {
+    await safeLogger.error("[Stripe Webhook] Signature verification failed", {
       error: error.message,
       stack: error.stack,
     });
-    return NextResponse.json(
-      { error: `Webhook Error: ${error.message}` },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: `Webhook Error: ${error.message}` }, { status: 400 });
   }
 
   // Database-backed idempotency check
   const alreadyProcessed = await isEventProcessed(event.id);
   if (alreadyProcessed) {
-    await logger.info('Stripe webhook event already processed', {
+    await logger.info("Stripe webhook event already processed", {
       trace_id: traceId,
       eventId: event.id,
       type: event.type,
     });
     const response = NextResponse.json({ received: true, duplicate: true, trace_id: traceId });
-    response.headers.set('x-trace-id', traceId);
+    response.headers.set("x-trace-id", traceId);
     return response;
   }
 
@@ -253,7 +244,7 @@ export async function POST(request: NextRequest) {
   try {
     await recordEventReceived(event.id, event.type, JSON.parse(body));
   } catch (error) {
-    await safeLogger.error('[Stripe Webhook] Failed to record event', {
+    await safeLogger.error("[Stripe Webhook] Failed to record event", {
       eventId: event.id,
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
@@ -262,25 +253,25 @@ export async function POST(request: NextRequest) {
   }
 
   const claimResult = await claimEventForProcessing(event.id);
-  if (claimResult === 'processed') {
-    await logger.info('Stripe webhook event already processed (post-claim)', {
+  if (claimResult === "processed") {
+    await logger.info("Stripe webhook event already processed (post-claim)", {
       trace_id: traceId,
       eventId: event.id,
       type: event.type,
     });
     const response = NextResponse.json({ received: true, duplicate: true, trace_id: traceId });
-    response.headers.set('x-trace-id', traceId);
+    response.headers.set("x-trace-id", traceId);
     return response;
   }
 
-  if (claimResult === 'processing') {
-    await logger.info('Stripe webhook event already processing', {
+  if (claimResult === "processing") {
+    await logger.info("Stripe webhook event already processing", {
       trace_id: traceId,
       eventId: event.id,
       type: event.type,
     });
     const response = NextResponse.json({ received: true, processing: true, trace_id: traceId });
-    response.headers.set('x-trace-id', traceId);
+    response.headers.set("x-trace-id", traceId);
     return response;
   }
 
@@ -289,9 +280,9 @@ export async function POST(request: NextRequest) {
 
   try {
     // Handle checkout.session.completed - create subscription from checkout
-    if (event.type === 'checkout.session.completed') {
+    if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
-      
+
       // Emit lifecycle event: checkout completed
       if (billingAccountId) {
         try {
@@ -300,7 +291,7 @@ export async function POST(request: NextRequest) {
             select: { userId: true, tenantId: true },
           });
 
-          await emitLifecycleEventSafe(LifecycleEventType.BILLING_CHECKOUT_COMPLETED, {
+          await emitLifecycleEventSafe(LifecycleEventType.BILLING_CHECKOUT_COMPLETED as string, {
             userId: billingAccount?.userId || undefined,
             tenantId: billingAccount?.tenantId || undefined,
             billingAccountId,
@@ -311,35 +302,34 @@ export async function POST(request: NextRequest) {
           });
         } catch (eventError) {
           // Don't fail webhook processing if event emission fails
-          await safeLogger.error('[Stripe Webhook] Failed to emit checkout completed event', {
+          await safeLogger.error("[Stripe Webhook] Failed to emit checkout completed event", {
             eventId: event.id,
             error: eventError instanceof Error ? eventError.message : String(eventError),
             stack: eventError instanceof Error ? eventError.stack : undefined,
           });
         }
       }
-      
-      if (session.mode === 'subscription' && session.subscription) {
+
+      if (session.mode === "subscription" && session.subscription) {
         // Fetch the subscription to sync it
-        const subscriptionId = typeof session.subscription === 'string'
-          ? session.subscription
-          : session.subscription.id;
-        
+        const subscriptionId =
+          typeof session.subscription === "string" ? session.subscription : session.subscription.id;
+
         try {
           // Use safe Stripe call with rate limit handling
-          const { safeStripeCall } = await import('@/lib/stripe/rate-limit-handler');
+          const { safeStripeCall } = await import("@/lib/stripe/rate-limit-handler");
           const result = await safeStripeCall(async (stripe) => {
             return await stripe.subscriptions.retrieve(subscriptionId);
           });
           await syncSubscriptionFromWebhook({
             ...event,
-            type: 'customer.subscription.created',
+            type: "customer.subscription.created",
             data: {
               object: result.data,
             },
           } as Stripe.Event);
         } catch (error) {
-          await safeLogger.error('[Stripe Webhook] Failed to sync subscription from checkout', {
+          await safeLogger.error("[Stripe Webhook] Failed to sync subscription from checkout", {
             eventId: event.id,
             subscriptionId,
             error: error instanceof Error ? error.message : String(error),
@@ -353,14 +343,14 @@ export async function POST(request: NextRequest) {
 
     // Handle subscription events
     if (
-      event.type === 'customer.subscription.created' ||
-      event.type === 'customer.subscription.updated' ||
-      event.type === 'customer.subscription.deleted'
+      event.type === "customer.subscription.created" ||
+      event.type === "customer.subscription.updated" ||
+      event.type === "customer.subscription.deleted"
     ) {
       await syncSubscriptionFromWebhook(event);
 
       // Emit lifecycle event: subscription canceled
-      if (event.type === 'customer.subscription.deleted' && billingAccountId) {
+      if (event.type === "customer.subscription.deleted" && billingAccountId) {
         try {
           const billingAccount = await prisma.billingAccount.findUnique({
             where: { id: billingAccountId },
@@ -369,7 +359,7 @@ export async function POST(request: NextRequest) {
 
           const subscription = event.data.object as Stripe.Subscription;
 
-          await emitLifecycleEventSafe(LifecycleEventType.BILLING_SUBSCRIPTION_CANCELED, {
+          await emitLifecycleEventSafe(LifecycleEventType.BILLING_SUBSCRIPTION_CANCELED as string, {
             userId: billingAccount?.userId || undefined,
             tenantId: billingAccount?.tenantId || undefined,
             billingAccountId,
@@ -379,7 +369,7 @@ export async function POST(request: NextRequest) {
             },
           });
         } catch (eventError) {
-          await safeLogger.error('[Stripe Webhook] Failed to emit subscription canceled event', {
+          await safeLogger.error("[Stripe Webhook] Failed to emit subscription canceled event", {
             eventId: event.id,
             error: eventError instanceof Error ? eventError.message : String(eventError),
             stack: eventError instanceof Error ? eventError.stack : undefined,
@@ -389,9 +379,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Handle customer events (optional - for metadata updates)
-    if (event.type === 'customer.updated') {
+    if (event.type === "customer.updated") {
       const customer = event.data.object as Stripe.Customer;
-      if (customer.metadata?.billingAccountId && typeof customer.metadata.billingAccountId === 'string') {
+      if (
+        customer.metadata?.billingAccountId &&
+        typeof customer.metadata.billingAccountId === "string"
+      ) {
         await prisma.billingAccount.updateMany({
           where: { stripeCustomerId: customer.id },
           data: {
@@ -403,46 +396,44 @@ export async function POST(request: NextRequest) {
     }
 
     // Handle invoice events
-    if (event.type === 'invoice.paid') {
+    if (event.type === "invoice.paid") {
       const invoice = event.data.object as Stripe.Invoice;
       // Access subscription via type assertion since TypeScript types may not expose it directly
       const subscriptionId = (invoice as any).subscription as string | Stripe.Subscription | null;
-      const subscriptionIdString = typeof subscriptionId === 'string' 
-        ? subscriptionId 
-        : subscriptionId?.id || null;
-      
-      await safeLogger.info('[Stripe Webhook] Invoice payment succeeded', {
+      const subscriptionIdString =
+        typeof subscriptionId === "string" ? subscriptionId : subscriptionId?.id || null;
+
+      await safeLogger.info("[Stripe Webhook] Invoice payment succeeded", {
         invoiceId: invoice.id,
         subscriptionId: subscriptionIdString,
       });
-      
+
       // Update subscription status if needed
       if (subscriptionIdString) {
         await prisma.subscription.updateMany({
           where: { stripeSubscriptionId: subscriptionIdString },
-          data: { status: 'active' },
+          data: { status: "active" },
         });
       }
     }
 
-    if (event.type === 'invoice.payment_failed') {
+    if (event.type === "invoice.payment_failed") {
       const invoice = event.data.object as Stripe.Invoice;
       // Access subscription via type assertion since TypeScript types may not expose it directly
       const subscriptionId = (invoice as any).subscription as string | Stripe.Subscription | null;
-      const subscriptionIdString = typeof subscriptionId === 'string' 
-        ? subscriptionId 
-        : subscriptionId?.id || null;
-      
-      await safeLogger.warn('[Stripe Webhook] Invoice payment failed', {
+      const subscriptionIdString =
+        typeof subscriptionId === "string" ? subscriptionId : subscriptionId?.id || null;
+
+      await safeLogger.warn("[Stripe Webhook] Invoice payment failed", {
         invoiceId: invoice.id,
         subscriptionId: subscriptionIdString,
       });
-      
+
       // Update subscription status if needed
       if (subscriptionIdString) {
         await prisma.subscription.updateMany({
           where: { stripeSubscriptionId: subscriptionIdString },
-          data: { status: 'past_due' },
+          data: { status: "past_due" },
         });
 
         // Emit lifecycle event: payment failed
@@ -453,7 +444,7 @@ export async function POST(request: NextRequest) {
               select: { userId: true, tenantId: true },
             });
 
-            await emitLifecycleEventSafe(LifecycleEventType.BILLING_PAYMENT_FAILED, {
+            await emitLifecycleEventSafe(LifecycleEventType.BILLING_PAYMENT_FAILED as string, {
               userId: billingAccount?.userId || undefined,
               tenantId: billingAccount?.tenantId || undefined,
               billingAccountId,
@@ -464,7 +455,7 @@ export async function POST(request: NextRequest) {
               },
             });
           } catch (eventError) {
-            await safeLogger.error('[Stripe Webhook] Failed to emit payment failed event', {
+            await safeLogger.error("[Stripe Webhook] Failed to emit payment failed event", {
               eventId: event.id,
               error: eventError instanceof Error ? eventError.message : String(eventError),
               stack: eventError instanceof Error ? eventError.stack : undefined,
@@ -486,7 +477,7 @@ export async function POST(request: NextRequest) {
         });
       } catch (error) {
         // Non-critical - just log
-        await safeLogger.warn('[Stripe Webhook] Failed to update billing account ID', {
+        await safeLogger.warn("[Stripe Webhook] Failed to update billing account ID", {
           eventId: event.id,
           billingAccountId,
           error: error instanceof Error ? error.message : String(error),
@@ -501,25 +492,25 @@ export async function POST(request: NextRequest) {
     if (
       billingAccountId &&
       [
-        'checkout.session.completed',
-        'customer.subscription.created',
-        'customer.subscription.updated',
-        'customer.subscription.deleted',
-        'invoice.paid',
-        'invoice.payment_failed',
+        "checkout.session.completed",
+        "customer.subscription.created",
+        "customer.subscription.updated",
+        "customer.subscription.deleted",
+        "invoice.paid",
+        "invoice.payment_failed",
       ].includes(event.type)
     ) {
       try {
         const reconciliation = await reconcileBillingAccount(billingAccountId);
         if (!reconciliation.success) {
-          await safeLogger.warn('[Stripe Webhook] Reconciliation reported issues', {
+          await safeLogger.warn("[Stripe Webhook] Reconciliation reported issues", {
             eventId: event.id,
             billingAccountId,
             errors: reconciliation.errors,
           });
         }
       } catch (reconcileError) {
-        await safeLogger.error('[Stripe Webhook] Reconciliation failed', {
+        await safeLogger.error("[Stripe Webhook] Reconciliation failed", {
           eventId: event.id,
           billingAccountId,
           error: reconcileError instanceof Error ? reconcileError.message : String(reconcileError),
@@ -529,23 +520,23 @@ export async function POST(request: NextRequest) {
     }
 
     const response = NextResponse.json({ received: true, trace_id: traceId });
-    response.headers.set('x-trace-id', traceId);
+    response.headers.set("x-trace-id", traceId);
     return response;
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    await logger.error('Stripe webhook processing failed', {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    await logger.error("Stripe webhook processing failed", {
       trace_id: traceId,
       eventId: event.id,
       eventType: event.type,
       error: errorMessage,
       stack: error instanceof Error ? error.stack : undefined,
     });
-    
+
     // Mark as failed in database
     try {
       await markEventFailed(event.id, errorMessage);
     } catch (dbError) {
-      await logger.error('Failed to mark Stripe event as failed', {
+      await logger.error("Failed to mark Stripe event as failed", {
         trace_id: traceId,
         eventId: event.id,
         error: dbError instanceof Error ? dbError.message : String(dbError),
@@ -555,13 +546,13 @@ export async function POST(request: NextRequest) {
     // Track error metrics
     const durationMs = Date.now() - startTime;
     await trackWebhookMetric(event.type, false, durationMs);
-    
+
     // Return 500 so Stripe retries
     const response = NextResponse.json(
-      { error: 'Webhook processing failed', trace_id: traceId },
+      { error: "Webhook processing failed", trace_id: traceId },
       { status: 500 }
     );
-    response.headers.set('x-trace-id', traceId);
+    response.headers.set("x-trace-id", traceId);
     return response;
   }
 }

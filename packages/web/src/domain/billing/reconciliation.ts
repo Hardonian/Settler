@@ -1,20 +1,20 @@
 /**
  * Billing Reconciliation Service
- * 
+ *
  * Reconciles subscription status between Stripe and database.
  * Used when webhooks are missed or status gets out of sync.
  */
 
-import Stripe from 'stripe';
-import { prisma } from '@/shared/db/prismaClient';
-import { getStripeClient } from './stripeService';
-import { syncSubscription as syncSubscriptionFromStripe } from './stripeService';
+import Stripe from "stripe";
+import { prisma } from "@/shared/db/prismaClient";
+import { getStripeClient } from "./stripeService";
+import { syncSubscription as syncSubscriptionFromStripe } from "./stripeService";
 
 // Helper to safely access Stripe subscription period end
 function getStripePeriodEnd(subscription: Stripe.Subscription): number {
-  if (subscription && typeof subscription === 'object' && 'current_period_end' in subscription) {
+  if (subscription && typeof subscription === "object" && "current_period_end" in subscription) {
     const periodEnd = subscription.current_period_end;
-    if (typeof periodEnd === 'number') {
+    if (typeof periodEnd === "number") {
       return periodEnd;
     }
   }
@@ -53,7 +53,7 @@ export async function reconcileBillingAccount(
         success: false,
         billingAccountId,
         changes: [],
-        errors: ['Billing account not found'],
+        errors: ["Billing account not found"],
       };
     }
 
@@ -61,7 +61,7 @@ export async function reconcileBillingAccount(
       return {
         success: true,
         billingAccountId,
-        changes: ['No Stripe customer ID - account is on free plan'],
+        changes: ["No Stripe customer ID - account is on free plan"],
         errors: [],
       };
     }
@@ -79,7 +79,7 @@ export async function reconcileBillingAccount(
     }
     const subscriptions = await stripe.subscriptions.list({
       customer: billingAccount.stripeCustomerId,
-      status: 'all',
+      status: "all",
       limit: 100,
     });
 
@@ -91,7 +91,7 @@ export async function reconcileBillingAccount(
     // Sync each Stripe subscription
     for (const stripeSub of subscriptions.data) {
       const dbSub = dbSubscriptions.find(
-        (s) => s.stripeSubscriptionId === stripeSub.id
+        (s: (typeof dbSubscriptions)[0]) => s.stripeSubscriptionId === stripeSub.id
       );
 
       if (!dbSub) {
@@ -122,21 +122,17 @@ export async function reconcileBillingAccount(
     for (const dbSub of dbSubscriptions) {
       if (!dbSub.stripeSubscriptionId) continue;
 
-      const existsInStripe = subscriptions.data.some(
-        (s) => s.id === dbSub.stripeSubscriptionId
-      );
+      const existsInStripe = subscriptions.data.some((s) => s.id === dbSub.stripeSubscriptionId);
 
-      if (!existsInStripe && dbSub.status !== 'canceled') {
+      if (!existsInStripe && dbSub.status !== "canceled") {
         await prisma.subscription.update({
           where: { id: dbSub.id },
           data: {
-            status: 'canceled',
+            status: "canceled",
             cancelledAt: new Date(),
           },
         });
-        changes.push(
-          `Marked subscription ${dbSub.id} as canceled (not found in Stripe)`
-        );
+        changes.push(`Marked subscription ${dbSub.id} as canceled (not found in Stripe)`);
       }
     }
 
@@ -151,7 +147,7 @@ export async function reconcileBillingAccount(
       success: false,
       billingAccountId,
       changes,
-      errors: [error instanceof Error ? error.message : 'Unknown error'],
+      errors: [error instanceof Error ? error.message : "Unknown error"],
     };
   }
 }
@@ -172,7 +168,7 @@ export async function reconcileAllActiveSubscriptions(): Promise<{
   const billingAccounts = await prisma.billingAccount.findMany({
     where: {
       stripeCustomerId: { not: null },
-      status: 'active',
+      status: "active",
     },
     select: { id: true },
   });
@@ -196,11 +192,13 @@ export async function reconcileAllActiveSubscriptions(): Promise<{
 /**
  * Find subscriptions that are out of sync
  */
-export async function findOutOfSyncSubscriptions(): Promise<{
-  billingAccountId: string;
-  subscriptionId: string;
-  issue: string;
-}[]> {
+export async function findOutOfSyncSubscriptions(): Promise<
+  {
+    billingAccountId: string;
+    subscriptionId: string;
+    issue: string;
+  }[]
+> {
   const issues: {
     billingAccountId: string;
     subscriptionId: string;
@@ -210,7 +208,7 @@ export async function findOutOfSyncSubscriptions(): Promise<{
   const dbSubscriptions = await prisma.subscription.findMany({
     where: {
       stripeSubscriptionId: { not: null },
-      status: { in: ['active', 'trialing', 'past_due'] },
+      status: { in: ["active", "trialing", "past_due"] },
     },
     include: {
       billingAccount: {
@@ -230,9 +228,7 @@ export async function findOutOfSyncSubscriptions(): Promise<{
         // Demo mode: skip Stripe retrieval
         continue;
       }
-      const stripeSub = await stripe.subscriptions.retrieve(
-        dbSub.stripeSubscriptionId
-      );
+      const stripeSub = await stripe.subscriptions.retrieve(dbSub.stripeSubscriptionId);
 
       // Check status mismatch
       if (dbSub.status !== stripeSub.status) {
@@ -254,12 +250,12 @@ export async function findOutOfSyncSubscriptions(): Promise<{
         });
       }
     } catch (error) {
-      if (error instanceof Stripe.errors.StripeError && error.code === 'resource_missing') {
+      if (error instanceof Stripe.errors.StripeError && error.code === "resource_missing") {
         // Subscription doesn't exist in Stripe
         issues.push({
           billingAccountId: dbSub.billingAccountId,
           subscriptionId: dbSub.id,
-          issue: 'Subscription not found in Stripe',
+          issue: "Subscription not found in Stripe",
         });
       }
     }
