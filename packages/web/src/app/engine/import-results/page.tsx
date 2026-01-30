@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useCallback, useMemo, useState } from 'react';
-import Link from 'next/link';
-import { unzipSync, strFromU8 } from 'fflate';
-import { z } from 'zod';
+import { useCallback, useMemo, useState } from "react";
+import Link from "next/link";
+import { unzipSync, strFromU8 } from "fflate";
+import { z } from "zod";
 
 const varianceCountSchema = z.object({
   type: z.string(),
@@ -48,33 +48,40 @@ type VarianceItem = {
 export default function ImportResultsPage() {
   const [engineOutput, setEngineOutput] = useState<EngineOutput | null>(null);
   const [variances, setVariances] = useState<VarianceItem[]>([]);
-  const [status, setStatus] = useState<string>('');
+  const [status, setStatus] = useState<string>("");
 
   const handleEngineOutput = useCallback(async (file: File) => {
     const text = await file.text();
     const parsed = engineOutputSchema.safeParse(JSON.parse(text));
     if (!parsed.success) {
-      setStatus('engine_output.json failed schema validation.');
+      setStatus("engine_output.json failed schema validation.");
       return;
     }
     setEngineOutput(parsed.data);
-    setStatus('engine_output.json loaded.');
-    sessionStorage.setItem('settler-engine-output', JSON.stringify(parsed.data));
+    setStatus("engine_output.json loaded.");
+    sessionStorage.setItem("settler-engine-output", JSON.stringify(parsed.data));
   }, []);
 
   const handleEvidenceBundle = useCallback(async (file: File) => {
     const data = new Uint8Array(await file.arrayBuffer());
     const unzipped = unzipSync(data);
-    const varianceEntry = Object.keys(unzipped).find((key) => key.endsWith('variances.jsonl') || key.endsWith('variances.json'));
+    const varianceEntry = Object.keys(unzipped).find(
+      (key) => key.endsWith("variances.jsonl") || key.endsWith("variances.json")
+    );
     if (!varianceEntry) {
-      setStatus('Evidence bundle missing variances.jsonl.');
+      setStatus("Evidence bundle missing variances.jsonl.");
       return;
     }
-    const content = strFromU8(unzipped[varianceEntry]);
+    const entryData = unzipped[varianceEntry];
+    if (!entryData) {
+      setStatus("Evidence bundle entry is empty.");
+      return;
+    }
+    const content = strFromU8(entryData);
     const items: VarianceItem[] = [];
-    if (varianceEntry.endsWith('.jsonl')) {
+    if (varianceEntry.endsWith(".jsonl")) {
       content
-        .split('\n')
+        .split("\n")
         .filter(Boolean)
         .forEach((line) => {
           items.push(JSON.parse(line));
@@ -86,7 +93,7 @@ export default function ImportResultsPage() {
       }
     }
     setVariances(items);
-    sessionStorage.setItem('settler-engine-variances', JSON.stringify(items));
+    sessionStorage.setItem("settler-engine-variances", JSON.stringify(items));
     setStatus(`Loaded ${items.length} variance items.`);
   }, []);
 
@@ -100,8 +107,8 @@ export default function ImportResultsPage() {
       <div className="space-y-3">
         <h1 className="text-3xl font-semibold">Import Results</h1>
         <p className="text-white/70">
-          Upload the engine_output.json file and optional evidence bundle zip. The UI remains fully local and
-          surfaces discrepancies without any server dependency.
+          Upload the engine_output.json file and optional evidence bundle zip. The UI remains fully
+          local and surfaces discrepancies without any server dependency.
         </p>
         <Link href="/engine" className="text-sm text-blue-200 underline">
           ← Back to Engine overview
@@ -146,11 +153,15 @@ export default function ImportResultsPage() {
           <div className="mt-4 grid gap-4 md:grid-cols-3">
             <div className="rounded-lg bg-black/30 p-3">
               <p className="text-xs text-white/60">Transactions</p>
-              <p className="text-xl font-semibold">{engineOutput.normalization_summary.transactions}</p>
+              <p className="text-xl font-semibold">
+                {engineOutput.normalization_summary.transactions}
+              </p>
             </div>
             <div className="rounded-lg bg-black/30 p-3">
               <p className="text-xs text-white/60">Settlements</p>
-              <p className="text-xl font-semibold">{engineOutput.normalization_summary.settlements}</p>
+              <p className="text-xl font-semibold">
+                {engineOutput.normalization_summary.settlements}
+              </p>
             </div>
             <div className="rounded-lg bg-black/30 p-3">
               <p className="text-xs text-white/60">Variances</p>
@@ -167,8 +178,8 @@ export default function ImportResultsPage() {
           <div className="mt-6 space-y-2 text-sm text-white/70">
             <p>{engineOutput.deterministic_statement}</p>
             <p>
-              Evidence manifest includes {engineOutput.evidence_manifest.input_files.length} input hashes and{' '}
-              {engineOutput.evidence_manifest.outputs.length} output hashes.
+              Evidence manifest includes {engineOutput.evidence_manifest.input_files.length} input
+              hashes and {engineOutput.evidence_manifest.outputs.length} output hashes.
             </p>
           </div>
         </div>
@@ -188,7 +199,10 @@ export default function ImportResultsPage() {
               </li>
             ))}
           </ul>
-          <Link href="/engine/view-variances" className="mt-4 inline-block text-sm text-blue-200 underline">
+          <Link
+            href="/engine/view-variances"
+            className="mt-4 inline-block text-sm text-blue-200 underline"
+          >
             View full variance list →
           </Link>
         </div>

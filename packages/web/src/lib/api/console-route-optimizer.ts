@@ -1,6 +1,6 @@
 /**
  * Console Route Optimizer
- * 
+ *
  * Provides optimized utilities for console API routes:
  * - Billing account caching
  * - Query batching
@@ -8,18 +8,16 @@
  * - Error recovery
  */
 
-import { UnifiedAuthContext } from './unified-auth';
-import { getBillingAccountOptimized } from '@/lib/db/query-optimizer';
-import { executeWithRetry } from '@/lib/db/connection-pool';
-import { prisma } from '@/shared/db/prismaClient';
+import { UnifiedAuthContext } from "./unified-auth";
+import { getBillingAccountOptimized } from "@/lib/db/query-optimizer";
+import { executeWithRetry } from "@/lib/db/connection-pool";
+import { prisma } from "@/shared/db/prismaClient";
 
 /**
  * Get billing account ID from auth context or database
  * Optimized with caching and connection pooling
  */
-export async function getBillingAccountId(
-  authContext: UnifiedAuthContext
-): Promise<string | null> {
+export async function getBillingAccountId(authContext: UnifiedAuthContext): Promise<string | null> {
   // Use cached billing account ID if available
   if (authContext.billingAccountId) {
     return authContext.billingAccountId;
@@ -51,9 +49,9 @@ export async function verifyBillingAccountAccessOptimized(
       })
     );
 
-    return !!billingAccount && billingAccount.userId === userId;
+    return !!billingAccount && (billingAccount as { userId?: string }).userId === userId;
   } catch (error) {
-    console.error('[verifyBillingAccountAccessOptimized] Error:', error);
+    console.error("[verifyBillingAccountAccessOptimized] Error:", error);
     return false;
   }
 }
@@ -61,8 +59,6 @@ export async function verifyBillingAccountAccessOptimized(
 /**
  * Batch multiple database operations
  */
-export async function batchOperations<T>(
-  operations: Array<() => Promise<T>>
-): Promise<T[]> {
+export async function batchOperations<T>(operations: Array<() => Promise<T>>): Promise<T[]> {
   return Promise.all(operations.map((op) => executeWithRetry(op)));
 }

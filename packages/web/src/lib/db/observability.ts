@@ -11,8 +11,8 @@
  * Based on OpenAI's operational observability principles
  */
 
-import { prisma } from '@/shared/db/prismaClient';
-import { appLogger } from '@/lib/utils/logger';
+import { prisma } from "@/shared/db/prismaClient";
+import { appLogger } from "@/lib/utils/logger";
 
 // ============================================================================
 // TYPES
@@ -88,7 +88,7 @@ export function recordQueryMetric(metric: QueryMetrics): void {
     }
 
     // Log slow query
-    appLogger.warn('[DB Observability] Slow query detected', {
+    appLogger.warn("[DB Observability] Slow query detected", {
       query: metric.queryName,
       duration: metric.duration,
       threshold: SLOW_QUERY_THRESHOLD_MS,
@@ -98,7 +98,7 @@ export function recordQueryMetric(metric: QueryMetrics): void {
 
   // Log error queries
   if (metric.error) {
-    appLogger.error('[DB Observability] Query error', {
+    appLogger.error("[DB Observability] Query error", {
       query: metric.queryName,
       duration: metric.duration,
     });
@@ -117,11 +117,14 @@ export function getQueryMetricsSummary(limit: number = 100): {
   p95Duration: number;
   p99Duration: number;
   slowQueries: number;
-  byQuery: Record<string, {
-    count: number;
-    avgDuration: number;
-    errors: number;
-  }>;
+  byQuery: Record<
+    string,
+    {
+      count: number;
+      avgDuration: number;
+      errors: number;
+    }
+  >;
 } {
   const recentMetrics = queryMetricsBuffer.slice(-limit);
 
@@ -153,17 +156,17 @@ export function getQueryMetricsSummary(limit: number = 100): {
       byQuery[metric.queryName] = { count: 0, totalDuration: 0, errors: 0 };
     }
 
-    byQuery[metric.queryName].count++;
-    byQuery[metric.queryName].totalDuration += metric.duration;
+    const entry = byQuery[metric.queryName]!;
+    entry.count++;
+    entry.totalDuration += metric.duration;
 
     if (metric.error) {
-      byQuery[metric.queryName].errors++;
+      entry.errors++;
     }
   }
 
   // Convert to output format
-  const byQuerySummary: Record<string, { count: number; avgDuration: number; errors: number }> =
-    {};
+  const byQuerySummary: Record<string, { count: number; avgDuration: number; errors: number }> = {};
 
   for (const [queryName, stats] of Object.entries(byQuery)) {
     byQuerySummary[queryName] = {
@@ -175,13 +178,16 @@ export function getQueryMetricsSummary(limit: number = 100): {
 
   return {
     total: recentMetrics.length,
-    errors: recentMetrics.filter((m: any) => m.error).length,
-    cacheHits: recentMetrics.filter((m: any) => m.cacheHit).length,
-    avgDuration: Math.round(durations.reduce((a: number, b: any) => a + b, 0) / durations.length),
-    p50Duration: durations[p50Index] || 0,
-    p95Duration: durations[p95Index] || 0,
-    p99Duration: durations[p99Index] || 0,
-    slowQueries: recentMetrics.filter((m: any) => m.duration > SLOW_QUERY_THRESHOLD_MS).length,
+    errors: recentMetrics.filter((m: QueryMetrics) => m.error).length,
+    cacheHits: recentMetrics.filter((m: QueryMetrics) => m.cacheHit).length,
+    avgDuration: Math.round(
+      durations.reduce((a: number, b: number) => a + b, 0) / durations.length
+    ),
+    p50Duration: durations[p50Index] ?? 0,
+    p95Duration: durations[p95Index] ?? 0,
+    p99Duration: durations[p99Index] ?? 0,
+    slowQueries: recentMetrics.filter((m: QueryMetrics) => m.duration > SLOW_QUERY_THRESHOLD_MS)
+      .length,
     byQuery: byQuerySummary,
   };
 }
@@ -233,7 +239,7 @@ export async function getConnectionPoolMetrics(): Promise<ConnectionPoolMetrics>
       timestamp: new Date(),
     };
   } catch (error) {
-    appLogger.error('[DB Observability] Connection pool health check failed', { error });
+    appLogger.error("[DB Observability] Connection pool health check failed", { error });
 
     return {
       totalConnections: 0,
@@ -294,7 +300,7 @@ export async function getTableBloatMetrics(): Promise<TableBloatMetrics[]> {
       lastAutovacuum: row.lastAutovacuum ? new Date(row.lastAutovacuum) : null,
     }));
   } catch (error) {
-    appLogger.error('[DB Observability] Failed to get table bloat metrics', { error });
+    appLogger.error("[DB Observability] Failed to get table bloat metrics", { error });
     return [];
   }
 }
@@ -311,7 +317,7 @@ export interface IndexUsageMetrics {
   rowsRead: number;
   rowsFetched: number;
   indexSize: string;
-  usageCategory: 'UNUSED' | 'LOW_USAGE' | 'ACTIVE';
+  usageCategory: "UNUSED" | "LOW_USAGE" | "ACTIVE";
 }
 
 /**
@@ -350,7 +356,7 @@ export async function getIndexUsageMetrics(): Promise<IndexUsageMetrics[]> {
       usageCategory: row.usageCategory,
     }));
   } catch (error) {
-    appLogger.error('[DB Observability] Failed to get index usage metrics', { error });
+    appLogger.error("[DB Observability] Failed to get index usage metrics", { error });
     return [];
   }
 }

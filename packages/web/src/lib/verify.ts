@@ -15,7 +15,9 @@ export async function loadVerifier(): Promise<typeof wasmModule> {
     return wasmModule;
   }
   try {
-    const importedModule = await import(/* webpackIgnore: true */ "/wasm/settler_verify_wasm.js");
+    const importedModule = (await import(
+      /* webpackIgnore: true */ "/wasm/settler_verify_wasm.js"
+    )) as { verify_manifest: (manifestJson: string, filesJson: string) => string };
     wasmModule = (importedModule as unknown as typeof wasmModule) ?? null;
     return wasmModule;
   } catch (error) {

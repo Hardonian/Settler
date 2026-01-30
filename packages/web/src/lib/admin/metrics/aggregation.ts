@@ -1,35 +1,39 @@
 /**
  * Admin Dashboard Aggregation Utilities
- * 
+ *
  * Server-side aggregation functions for computing metrics from database.
  * Optimized for performance with proper indexing and bounded queries.
  */
 
-import { KPIMetrics, TrendPoint, ExceptionHeatmap, ActivityFeedItem } from './types';
-import { prisma } from '@/shared/db/prismaClient';
+import { KPIMetrics, TrendPoint, ExceptionHeatmap, ActivityFeedItem } from "./types";
+import { prisma } from "@/shared/db/prismaClient";
 
 /**
  * Calculate date range from time range string
  */
-export function getDateRange(range: '24h' | '7d' | '30d' | 'custom', startDate?: Date, endDate?: Date): { start: Date; end: Date } {
+export function getDateRange(
+  range: "24h" | "7d" | "30d" | "custom",
+  startDate?: Date,
+  endDate?: Date
+): { start: Date; end: Date } {
   const end = endDate || new Date();
   let start: Date;
-  
+
   switch (range) {
-    case '24h':
+    case "24h":
       start = new Date(end.getTime() - 24 * 60 * 60 * 1000);
       break;
-    case '7d':
+    case "7d":
       start = new Date(end.getTime() - 7 * 24 * 60 * 60 * 1000);
       break;
-    case '30d':
+    case "30d":
       start = new Date(end.getTime() - 30 * 24 * 60 * 60 * 1000);
       break;
-    case 'custom':
+    case "custom":
       start = startDate || new Date(end.getTime() - 24 * 60 * 60 * 1000);
       break;
   }
-  
+
   return { start, end };
 }
 
@@ -53,7 +57,7 @@ export async function aggregateKPIMetrics(
   const runs = await prisma.reconciliationRun.findMany({
     where: {
       ...whereClause,
-      status: 'completed',
+      status: "completed",
     },
     select: {
       matchedCount: true,
@@ -66,19 +70,33 @@ export async function aggregateKPIMetrics(
   });
 
   // Aggregate metrics
-  const totalMatched = runs.reduce((sum: number, r: any) => sum + (r.matchedCount || 0), 0);
-  const totalUnmatched = runs.reduce((sum: number, r: any) => sum + (r.unmatchedSourceCount || 0) + (r.unmatchedTargetCount || 0), 0);
-  const totalVolume = runs.reduce((sum: number, r: any) => sum + (r.sourceCount || 0) + (r.targetCount || 0), 0);
+  const totalMatched = runs.reduce(
+    (sum: number, r: { matchedCount?: number | null }) => sum + (r.matchedCount || 0),
+    0
+  );
+  const totalUnmatched = runs.reduce(
+    (
+      sum: number,
+      r: { unmatchedSourceCount?: number | null; unmatchedTargetCount?: number | null }
+    ) => sum + (r.unmatchedSourceCount || 0) + (r.unmatchedTargetCount || 0),
+    0
+  );
+  const totalVolume = runs.reduce(
+    (sum: number, r: { sourceCount?: number | null; targetCount?: number | null }) =>
+      sum + (r.sourceCount || 0) + (r.targetCount || 0),
+    0
+  );
   const matchedPercent = totalVolume > 0 ? (totalMatched / totalVolume) * 100 : 0;
 
   // Get confidence stats
   const confidences = runs
-    .map(r => r.confidenceAvg)
-    .filter((c): c is NonNullable<typeof c> => c !== null && c !== undefined)
-    .map(c => Number(c));
-  const confidenceAvg = confidences.length > 0
-    ? confidences.reduce((sum: number, c: any) => sum + c, 0) / confidences.length
-    : null;
+    .map((r: { confidenceAvg?: number | null }) => r.confidenceAvg)
+    .filter((c: number | null | undefined): c is number => c !== null && c !== undefined)
+    .map((c: number) => Number(c));
+  const confidenceAvg =
+    confidences.length > 0
+      ? confidences.reduce((sum: number, c: number) => sum + c, 0) / confidences.length
+      : null;
   const confidenceMin = confidences.length > 0 ? Math.min(...confidences) : null;
   const confidenceMax = confidences.length > 0 ? Math.max(...confidences) : null;
 
@@ -96,9 +114,9 @@ export async function aggregateKPIMetrics(
       run: {
         ...whereClause,
       },
-      matchType: 'unmatched',
+      matchType: "unmatched",
       metadata: {
-        path: ['isRefund'],
+        path: ["isRefund"],
         equals: true,
       },
     },
@@ -110,7 +128,7 @@ export async function aggregateKPIMetrics(
       run: {
         ...whereClause,
       },
-      matchType: 'unmatched',
+      matchType: "unmatched",
       targetTransactionId: null,
     },
   });
@@ -129,14 +147,15 @@ export async function aggregateKPIMetrics(
   });
 
   const resolveTimes = resolvedExceptions
-    .map(e => {
+    .map((e: { acknowledgedAt: Date | null; createdAt: Date }) => {
       if (!e.acknowledgedAt) return null;
       return new Date(e.acknowledgedAt).getTime() - new Date(e.createdAt).getTime();
     })
-    .filter((t): t is number => t !== null);
-  const avgTimeToResolve = resolveTimes.length > 0
-    ? resolveTimes.reduce((sum: number, t: any) => sum + t, 0) / resolveTimes.length
-    : 0;
+    .filter((t: number | null): t is number => t !== null);
+  const avgTimeToResolve =
+    resolveTimes.length > 0
+      ? resolveTimes.reduce((sum: number, t: number) => sum + t, 0) / resolveTimes.length
+      : 0;
 
   return {
     matchedPercent,
@@ -160,16 +179,16 @@ export async function aggregateTrendData(
   tenantId: string | null,
   start: Date,
   end: Date,
-  bucketSize: 'hour' | 'day' = 'hour'
+  bucketSize: "hour" | "day" = "hour"
 ): Promise<TrendPoint[]> {
   // Simplified: return hourly/daily buckets
   const buckets: TrendPoint[] = [];
-  const bucketMs = bucketSize === 'hour' ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
-  
+  const bucketMs = bucketSize === "hour" ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
+
   let current = new Date(start);
   while (current <= end) {
     const bucketEnd = new Date(Math.min(current.getTime() + bucketMs, end.getTime()));
-    
+
     const whereClause: any = {
       createdAt: { gte: current, lt: bucketEnd },
     };
@@ -180,7 +199,7 @@ export async function aggregateTrendData(
     const runs = await prisma.reconciliationRun.findMany({
       where: {
         ...whereClause,
-        status: 'completed',
+        status: "completed",
       },
       select: {
         matchedCount: true,
@@ -190,7 +209,10 @@ export async function aggregateTrendData(
     });
 
     const totalMatched = runs.reduce((sum: number, r: any) => sum + (r.matchedCount || 0), 0);
-    const totalVolume = runs.reduce((sum: number, r: any) => sum + (r.sourceCount || 0) + (r.targetCount || 0), 0);
+    const totalVolume = runs.reduce(
+      (sum: number, r: any) => sum + (r.sourceCount || 0) + (r.targetCount || 0),
+      0
+    );
     const matchedPercent = totalVolume > 0 ? (totalMatched / totalVolume) * 100 : 0;
 
     buckets.push({
@@ -229,11 +251,11 @@ export async function aggregateExceptionHeatmap(
 
   // Group by source (driftType) and severity
   const heatmap = new Map<string, Map<string, number>>();
-  
+
   for (const ex of exceptions) {
-    const source = ex.driftType || 'unknown';
-    const severity = (ex.severity || 'info') as 'info' | 'warn' | 'critical';
-    
+    const source = ex.driftType || "unknown";
+    const severity = (ex.severity || "info") as "info" | "warn" | "critical";
+
     if (!heatmap.has(source)) {
       heatmap.set(source, new Map());
     }
@@ -246,7 +268,7 @@ export async function aggregateExceptionHeatmap(
     for (const [severity, count] of severityMap.entries()) {
       result.push({
         source,
-        severity: severity as 'info' | 'warn' | 'critical',
+        severity: severity as "info" | "warn" | "critical",
         count,
       });
     }
@@ -270,7 +292,7 @@ export async function getRecentActivity(
   // Get recent runs
   const runs = await prisma.reconciliationRun.findMany({
     where: whereClause,
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
     take: limit,
     select: {
       id: true,
@@ -283,7 +305,7 @@ export async function getRecentActivity(
   // Get recent exceptions
   const exceptions = await prisma.driftEvent.findMany({
     where: whereClause,
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
     take: limit,
     select: {
       id: true,
@@ -298,10 +320,10 @@ export async function getRecentActivity(
 
   // Add run activities
   for (const run of runs) {
-    if (run.status === 'completed') {
+    if (run.status === "completed") {
       activities.push({
         id: run.id,
-        type: 'run_completed',
+        type: "run_completed",
         timestamp: run.createdAt.toISOString(),
         message: `Reconciliation run completed`,
         metadata: { runId: run.id },
@@ -314,7 +336,7 @@ export async function getRecentActivity(
     if (!ex.acknowledged) {
       activities.push({
         id: ex.id,
-        type: 'exception_created',
+        type: "exception_created",
         timestamp: ex.createdAt.toISOString(),
         message: `New ${ex.severity} exception detected`,
         metadata: { exceptionId: ex.id, severity: ex.severity },
@@ -322,7 +344,7 @@ export async function getRecentActivity(
     } else {
       activities.push({
         id: ex.id,
-        type: 'exception_resolved',
+        type: "exception_resolved",
         timestamp: ex.createdAt.toISOString(),
         message: `Exception resolved`,
         metadata: { exceptionId: ex.id },

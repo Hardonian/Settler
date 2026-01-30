@@ -1,17 +1,17 @@
 /**
  * Entitlements System
- * 
+ *
  * Provides clear entitlement primitives for unauthenticated, authenticated, and paid users.
  * Used throughout the app to gate features by subscription level.
  */
 
-import { createClient } from '@/lib/supabase/server';
-import { prisma } from '@/shared/db/prismaClient';
+import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/shared/db/prismaClient";
 
 export interface Entitlements {
   isAuthed: boolean;
-  role: 'admin' | 'user';
-  plan: 'free' | 'pro' | 'enterprise';
+  role: "admin" | "user";
+  plan: "free" | "pro" | "enterprise";
   isPaid: boolean;
   userId?: string;
 }
@@ -23,42 +23,45 @@ export interface Entitlements {
 export async function getEntitlements(): Promise<Entitlements> {
   const defaults: Entitlements = {
     isAuthed: false,
-    role: 'user',
-    plan: 'free',
+    role: "user",
+    plan: "free",
     isPaid: false,
   };
 
   try {
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
       return defaults;
     }
 
     // Get user profile and subscription
-    let role: 'admin' | 'user' = 'user';
-    let plan: 'free' | 'pro' | 'enterprise' = 'free';
+    let role: "admin" | "user" = "user";
+    let plan: "free" | "pro" | "enterprise" = "free";
     let isPaid = false;
 
     try {
       // Try to get profile from Supabase (if using Supabase profiles table)
       const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
         .maybeSingle();
 
       if (!profileError && profile) {
         const profileData = profile as { role?: string } | null;
-        if (profileData && profileData.role === 'admin') {
-          role = 'admin';
+        if (profileData && profileData.role === "admin") {
+          role = "admin";
         }
       }
 
       // Try to get subscription from Prisma (if available)
       // Subscriptions are linked via billing_accounts table
-      if (prisma && typeof prisma.billingAccount !== 'undefined') {
+      if (prisma && typeof prisma.billingAccount !== "undefined") {
         try {
           const billingAccount = await prisma.billingAccount.findFirst({
             where: { userId: user.id },
@@ -66,14 +69,14 @@ export async function getEntitlements(): Promise<Entitlements> {
               subscriptions: {
                 where: {
                   status: {
-                    in: ['active', 'trialing'],
+                    in: ["active", "trialing"],
                   },
                   currentPeriodEnd: {
                     gt: new Date(), // Not expired
                   },
                 },
                 orderBy: {
-                  createdAt: 'desc',
+                  createdAt: "desc",
                 },
                 take: 1,
               },
@@ -83,18 +86,18 @@ export async function getEntitlements(): Promise<Entitlements> {
           if (billingAccount?.subscriptions?.[0]) {
             const subscription = billingAccount.subscriptions[0];
             isPaid = true;
-            
+
             // Map subscription planName or planId to entitlement plan
-            const planName = subscription.planName || subscription.planId || '';
-            if (planName.toLowerCase().includes('enterprise')) {
-              plan = 'enterprise';
-            } else if (planName.toLowerCase().includes('pro')) {
-              plan = 'pro';
+            const planName = subscription.planName || subscription.planId || "";
+            if (planName.toLowerCase().includes("enterprise")) {
+              plan = "enterprise";
+            } else if (planName.toLowerCase().includes("pro")) {
+              plan = "pro";
             }
           }
         } catch (dbError) {
           // Database query failed - use defaults
-          console.warn('[Entitlements] Failed to query subscription:', dbError);
+          console.warn("[Entitlements] Failed to query subscription:", dbError);
         }
       }
 
@@ -102,9 +105,9 @@ export async function getEntitlements(): Promise<Entitlements> {
       if (!isPaid) {
         try {
           const { data: billingAccount, error: billingError } = await supabase
-            .from('billing_accounts')
-            .select('id')
-            .eq('user_id', user.id)
+            .from("billing_accounts")
+            .select("id")
+            .eq("user_id", user.id)
             .limit(1)
             .maybeSingle();
 
@@ -113,39 +116,42 @@ export async function getEntitlements(): Promise<Entitlements> {
             if (billingAccountData && billingAccountData.id) {
               const billingAccountId = billingAccountData.id;
               const { data: subscription, error: subError } = await supabase
-                .from('subscriptions')
-                .select('status, plan_name, plan_id, current_period_end')
-                .eq('billing_account_id', billingAccountId)
-                .in('status', ['active', 'trialing'])
-                .gt('current_period_end', new Date().toISOString())
-                .order('created_at', { ascending: false })
+                .from("subscriptions")
+                .select("status, plan_name, plan_id, current_period_end")
+                .eq("billing_account_id", billingAccountId)
+                .in("status", ["active", "trialing"])
+                .gt("current_period_end", new Date().toISOString())
+                .order("created_at", { ascending: false })
                 .limit(1)
                 .maybeSingle();
 
               if (!subError && subscription) {
-                const subscriptionData = subscription as { plan_name?: string | null; plan_id?: string | null } | null;
+                const subscriptionData = subscription as {
+                  plan_name?: string | null;
+                  plan_id?: string | null;
+                } | null;
                 if (subscriptionData) {
-                  const planName = subscriptionData.plan_name || subscriptionData.plan_id || '';
-                  if (planName && typeof planName === 'string') {
+                  const planName = subscriptionData.plan_name || subscriptionData.plan_id || "";
+                  if (planName && typeof planName === "string") {
                     isPaid = true;
-                    if (planName.toLowerCase().includes('enterprise')) {
-                      plan = 'enterprise';
-                    } else if (planName.toLowerCase().includes('pro')) {
-                      plan = 'pro';
+                    if (planName.toLowerCase().includes("enterprise")) {
+                      plan = "enterprise";
+                    } else if (planName.toLowerCase().includes("pro")) {
+                      plan = "pro";
                     }
                   }
                 }
               }
             }
           }
-        } catch {
+        } catch (supabaseError) {
           // Supabase query failed - use defaults
-          console.warn('[Entitlements] Failed to query Supabase subscription:', supabaseError);
+          console.warn("[Entitlements] Failed to query Supabase subscription:", supabaseError);
         }
       }
     } catch (error) {
       // Profile/subscription lookup failed - use defaults
-      console.warn('[Entitlements] Failed to get user profile/subscription:', error);
+      console.warn("[Entitlements] Failed to get user profile/subscription:", error);
     }
 
     return {
@@ -157,7 +163,7 @@ export async function getEntitlements(): Promise<Entitlements> {
     };
   } catch (error) {
     // Auth check failed - return defaults
-    console.warn('[Entitlements] Failed to get entitlements:', error);
+    console.warn("[Entitlements] Failed to get entitlements:", error);
     return defaults;
   }
 }
@@ -165,19 +171,19 @@ export async function getEntitlements(): Promise<Entitlements> {
 /**
  * Check if user has access to a feature
  */
-export async function hasFeatureAccess(feature: 'premium' | 'enterprise'): Promise<boolean> {
+export async function hasFeatureAccess(feature: "premium" | "enterprise"): Promise<boolean> {
   const entitlements = await getEntitlements();
-  
+
   if (!entitlements.isAuthed) {
     return false;
   }
 
-  if (feature === 'enterprise') {
-    return entitlements.plan === 'enterprise';
+  if (feature === "enterprise") {
+    return entitlements.plan === "enterprise";
   }
 
-  if (feature === 'premium') {
-    return entitlements.isPaid || entitlements.plan === 'pro' || entitlements.plan === 'enterprise';
+  if (feature === "premium") {
+    return entitlements.isPaid || entitlements.plan === "pro" || entitlements.plan === "enterprise";
   }
 
   return false;

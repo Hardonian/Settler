@@ -1,12 +1,12 @@
 /**
  * Server Action Response Types
- * 
+ *
  * CTO Mode: Code Standards
  * - All Server Actions must return this format
  * - Never throw raw errors to the client
  */
 
-export type ActionResult<T = unknown> = 
+export type ActionResult<T = unknown> =
   | { success: true; message?: string; data: T }
   | { success: false; message: string; error?: string; data?: T };
 
@@ -39,13 +39,13 @@ export function error(message: string, error?: string, data?: unknown): ActionRe
  */
 export async function withErrorHandling<T>(
   fn: () => Promise<T>,
-  errorMessage = 'An error occurred'
+  errorMessage = "An error occurred"
 ): Promise<ActionResult<T>> {
   try {
     const data = await fn();
     return success(data);
-  } catch (error) {
-    const errorMsg = error instanceof Error ? error.message : String(error);
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
     return error(errorMessage, errorMsg) as ActionResult<T>;
   }
 }
