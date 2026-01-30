@@ -196,6 +196,12 @@ const nextConfig = {
   // Redirects for route consistency
   async redirects() {
     return [
+      // Root redirect to home page
+      {
+        source: "/",
+        destination: "/home",
+        permanent: false,
+      },
       {
         source: "/oss",
         destination: "/open-source",
