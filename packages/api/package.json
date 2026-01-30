@@ -19,6 +19,14 @@
       "types": "./dist/utils/type-guards.d.ts",
       "default": "./dist/utils/type-guards.js"
     },
+    "./dist/ops/activation-funnel": {
+      "types": "./dist/ops/activation-funnel.d.ts",
+      "default": "./dist/ops/activation-funnel.js"
+    },
+    "./dist/ops/billing-hardening": {
+      "types": "./dist/ops/billing-hardening.d.ts",
+      "default": "./dist/ops/billing-hardening.js"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
