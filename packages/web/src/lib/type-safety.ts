@@ -343,7 +343,7 @@ export function validateArray<T>(
   value: unknown,
   fieldName: string,
   options: { minLength?: number; maxLength?: number } = {},
-  context?: ErrorContext
+  _context?: ErrorContext
 ): T[] {
   if (value == null) {
     throw new ValidationError(`${fieldName} is required`, fieldName, "REQUIRED");
