@@ -128,6 +128,30 @@ const nextConfig = {
       }
     }
 
+    // On server, exclude @builder.io/react from the bundle entirely
+    // It uses React features incompatible with SSR (createContext issues)
+    if (isServer) {
+      config.externals = config.externals || [];
+      if (Array.isArray(config.externals)) {
+        config.externals.push("@builder.io/react");
+        config.externals.push("@builder.io/sdk");
+      } else if (typeof config.externals === "function") {
+        const originalExternals = config.externals;
+        config.externals = [
+          originalExternals,
+          ({ request }, callback) => {
+            if (
+              request &&
+              (request.includes("@builder.io/react") || request.includes("@builder.io/sdk"))
+            ) {
+              return callback(null, "commonjs " + request);
+            }
+            callback();
+          },
+        ];
+      }
+    }
+
     return config;
   },
   // Image Optimization
