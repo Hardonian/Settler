@@ -1,11 +1,12 @@
 
 > @settler/web@1.0.0 lint C:\Users\scott\Documents\GitHub\Settler\packages\web
-> npx next lint
+> npx next lint "--no-cache"
 
 npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
 npm warn config `--include=optional` to include them.
 npm warn config
 npm warn config       Default value does install optional deps unless otherwise omitted.
+npm warn Unknown env config "store-dir". This will stop working in the next major version of npm.
 npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
 npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm.
 npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
@@ -66,18 +67,19 @@ npm warn config       Default value does install optional deps unless otherwise 
 ./src/lib/monitoring/sentry.ts
 184:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
 
-./src/lib/safe.ts
-32:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-68:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
-
-./src/lib/type-safety.ts
-227:3  Warning: 'fallbackValue' is assigned a value but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
-243:69  Warning: 'context' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
-256:3  Warning: 'context' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
-304:3  Warning: 'context' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
-346:3  Warning: 'context' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+./src/lib/ops/exception-events.ts
+53:5  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
+102:5  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
 
 ./src/lib/validation/component-validation.ts
 58:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
 
+./src/lib/verify.ts
+18:5  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
+
+./src/middleware/billing-gate-universal.ts
+60:9  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
+80:5  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
+
 info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
+ ELIFECYCLE  Command failed with exit code 1.

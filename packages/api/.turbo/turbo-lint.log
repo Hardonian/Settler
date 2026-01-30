@@ -1,6 +1,6 @@
 
 > @settler/api@1.0.0 lint C:\Users\scott\Documents\GitHub\Settler\packages\api
-> eslint src --ext .ts
+> eslint src --ext .ts "--no-cache"
 
 
 C:\Users\scott\Documents\GitHub\Settler\packages\api\src\__tests__\operator-mode-verification.ts

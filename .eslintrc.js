@@ -1,3 +1,8 @@
+/**
+ * Enhanced ESLint configuration for boundary enforcement
+ * Prevents cross-package source imports in the monorepo
+ */
+
 module.exports = {
   root: true,
   parser: "@typescript-eslint/parser",
@@ -22,6 +27,37 @@ module.exports = {
     "@typescript-eslint/await-thenable": "off",
     "@typescript-eslint/ban-ts-comment": "off",
     "no-console": ["warn", { allow: ["warn", "error"] }],
+
+    // MONOREPO BOUNDARY ENFORCEMENT
+    // Prevent importing from package src directories - use workspace dependencies instead
+    "no-restricted-imports": [
+      "error",
+      {
+        patterns: [
+          {
+            group: ["../**/packages/*/src/**"],
+            message:
+              "Importing from package src directories is not allowed. Use the workspace package (e.g., '@settler/types') instead.",
+          },
+          {
+            group: [
+              "**/packages/api/src/**",
+              "**/packages/web/src/**",
+              "**/packages/sdk/src/**",
+              "**/packages/types/src/**",
+              "**/packages/adapters/src/**",
+              "**/packages/protocol/src/**",
+              "**/packages/react-settler/src/**",
+              "**/packages/cli/src/**",
+              "**/packages/edge-node/src/**",
+              "**/packages/edge-ai-core/src/**",
+            ],
+            message:
+              "Direct imports from package source directories are not allowed. Use workspace:* dependencies and proper exports.",
+          },
+        ],
+      },
+    ],
   },
   ignorePatterns: ["node_modules", "dist", "build", ".next", "coverage"],
 };
