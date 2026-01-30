@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { HeroAnimationWrapper } from "@/components/HeroAnimationWrapper";
-import { TextReveal, TextRevealHeading } from "@/components/ui/TextReveal";
+import { TextRevealHeading } from "@/components/ui/TextReveal";
 import { ParallaxBackground, ParallaxBlobs } from "@/components/ui/ParallaxBackground";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { FeatureShowcase } from "@/components/landing/FeatureShowcase";
@@ -15,22 +15,21 @@ import { ComparisonTable } from "@/components/landing/ComparisonTable";
 import { 
   TestimonialCarousel,
   ROICalculator,
-  ValueProposition,
-  SocialProofCounter,
-  AutomationHighlight
 } from "@/components/marketing";
 import { 
-  Database, 
-  Sliders, 
-  AlertTriangle, 
-  Eye, 
+  Database,
   ArrowRight,
   Shield,
   RefreshCw,
-  Zap,
   CheckCircle2,
-  Clock,
-  Lock
+  Code2,
+  Terminal,
+  GitBranch,
+  Cpu,
+  FileCode,
+  Play,
+  BookOpen,
+  Github
 } from "lucide-react";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import {
@@ -40,68 +39,132 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-// Dynamic imports for heavy components
-const AnimatedCodeBlock = dynamic(() => import("@/components/AnimatedCodeBlock").then(mod => ({ default: mod.AnimatedCodeBlock })), { ssr: false });
+// Dynamic imports for heavy components with loading fallback
+const AnimatedCodeBlock = dynamic(
+  () => import("@/components/AnimatedCodeBlock").then(mod => ({ default: mod.AnimatedCodeBlock })), 
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="bg-slate-900 rounded-xl p-6 min-h-[300px] flex items-center justify-center">
+        <div className="animate-pulse text-slate-400">Loading code editor...</div>
+      </div>
+    )
+  }
+);
 
 export default function HomePage() {
-  const howItWorksSteps = [
+  // OSS/Developer-first workflow steps
+  const devWorkflowSteps = [
     {
       number: 1,
-      title: "Ingest Data",
-      description: "Bring data in through adapters, files, or your own pipelines.",
-      icon: Database,
+      title: "Install SDK",
+      description: "npm install @settler/sdk. No complex setup, no vendor lock-in.",
+      icon: Terminal,
+      code: "npm install @settler/sdk",
     },
     {
       number: 2,
-      title: "Normalize",
-      description: "Map records into a canonical schema with explicit, inspectable transforms.",
-      icon: Sliders,
+      title: "Define Rules",
+      description: "Write deterministic matching rules in code. Version control them.",
+      icon: FileCode,
+      code: "rules: { matching: [{ field: 'amount', tolerance: 0.01 }] }",
     },
     {
       number: 3,
-      title: "Apply Rules",
-      description: "Run deterministic matching rules and tolerances you define.",
-      icon: Eye,
+      title: "Run Reconciliation",
+      description: "Execute via API or CLI. Same inputs always produce same outputs.",
+      icon: Play,
+      code: "await client.reconciliations.create(config)",
     },
     {
       number: 4,
-      title: "Surface Variances",
-      description: "Generate variance sets and evidence for human review.",
-      icon: AlertTriangle,
+      title: "Review Evidence",
+      description: "Inspect variance sets with full audit trail. Export to JSON/CSV.",
+      icon: GitBranch,
+      code: "Evidence: SHA256 hash chain",
+    },
+  ];
+
+  // OSS value drivers
+  const ossBenefits = [
+    { 
+      icon: Code2, 
+      title: "Fully Open Source", 
+      description: "Apache 2.0 licensed. Audit, modify, self-host."
+    },
+    { 
+      icon: Shield, 
+      title: "Deterministic Output", 
+      description: "Same data + same rules = same results. Always."
+    },
+    { 
+      icon: Terminal, 
+      title: "CLI & API First", 
+      description: "Programmatic reconciliation. CI/CD integration ready."
+    },
+    { 
+      icon: Database, 
+      title: "Data Sovereignty", 
+      description: "Your data stays in your infrastructure."
+    },
+    { 
+      icon: Cpu, 
+      title: "Replayable Runs", 
+      description: "Re-run any reconciliation with identical results."
+    },
+    { 
+      icon: GitBranch, 
+      title: "Version Controlled Rules", 
+      description: "Rules as code. Review, test, deploy like software."
     },
   ];
 
   const codeExample = `import { SettlerClient } from "@settler/sdk";
 
-const client = new SettlerClient({ apiKey: "sk_live_..." });
+// Initialize with your API key
+const client = new SettlerClient({ 
+  apiKey: process.env.SETTLER_API_KEY 
+});
 
-// Run a deterministic reconciliation
+// Define deterministic reconciliation rules
 const reconciliation = await client.reconciliations.create({
-  source: { adapter: "stripe" },
-  target: { adapter: "database" },
-  rules: { matching: [{ field: "amount", tolerance: 0.01 }] }
-});`;
+  source: { adapter: "stripe", config: { apiKey: process.env.STRIPE_KEY } },
+  target: { adapter: "postgres", config: { connectionString: process.env.DATABASE_URL } },
+  rules: {
+    matching: [
+      { field: "amount", tolerance: 0.01 },
+      { field: "date", tolerance: "24h" }
+    ],
+    tolerances: {
+      amount: { maxDiff: 0.01 },
+      currency: { requireExact: true }
+    }
+  },
+  output: {
+    format: "json",
+    includeEvidence: true,
+    hashAlgorithm: "sha256"
+  }
+});
 
-  const benefits = [
-    { icon: Clock, title: "Save 20+ hours/week", description: "Automate manual reconciliation tasks" },
-    { icon: Shield, title: "99.9% accuracy", description: "Deterministic matching with full audit trail" },
-    { icon: Lock, title: "SOC 2 ready", description: "Enterprise security & compliance" },
-    { icon: Zap, title: "Real-time sync", description: "Process thousands of transactions per second" },
-  ];
+// Get variance report with full audit trail
+const variances = await client.reconciliations.getVariances(reconciliation.id);
+console.log(\`Found \${variances.count} discrepancies\`);
+console.log(\`Evidence hash: \${variances.evidenceHash}\`);`;
 
   return (
     <ErrorBoundary context="Home Page">
-      <div 
+      <main 
         id="main-content"
-        className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black"
+        className="min-h-screen bg-slate-50 dark:bg-slate-950 antialiased"
         role="main"
         aria-label="Settler homepage"
       >
         <Navigation />
 
-        {/* Hero Section */}
+        {/* Hero Section - OSS First Message */}
         <section 
-          className="relative pt-12 sm:pt-20 lg:pt-24 pb-20 sm:pb-24 lg:pb-32 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[85vh] sm:min-h-[90vh] lg:min-h-[92vh] flex items-center"
+          className="relative pt-20 sm:pt-24 lg:pt-32 pb-16 sm:pb-20 lg:pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden"
           aria-labelledby="hero-heading"
         >
           <ParallaxBackground>
@@ -110,106 +173,135 @@ const reconciliation = await client.reconciliations.create({
           
           {/* Grid pattern background */}
           <div 
-            className="absolute inset-0 bg-grid-slate-200 dark:bg-grid-slate-800 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.3))] -z-10"
+            className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] -z-10"
             aria-hidden="true"
           />
           
-          {/* Subtle gradient overlay for depth */}
-          <div 
-            className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-50/50 dark:to-slate-900/30 -z-10"
-            aria-hidden="true"
-          />
-          
-          <div className="max-w-7xl mx-auto relative z-10 w-full">
+          <div className="max-w-7xl mx-auto relative z-10">
             <HeroAnimationWrapper>
-              <div className="text-center max-w-5xl mx-auto">
-                {/* Badge */}
-                <Badge className="mb-6 bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 border-blue-200 dark:border-blue-800 px-4 py-1.5 text-sm font-medium">
-                  Open Source Reconciliation Engine
-                </Badge>
+              <div className="text-center max-w-4xl mx-auto">
+                {/* OSS Badge */}
+                <div className="mb-6 flex justify-center">
+                  <Badge 
+                    className="bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 text-sm font-medium inline-flex items-center gap-2"
+                  >
+                    <Github className="w-4 h-4" aria-hidden="true" />
+                    Open Source Reconciliation Engine
+                  </Badge>
+                </div>
 
-                {/* Main headline with constrained width for readability */}
-                <div className="mb-6 sm:mb-8 lg:mb-10">
+                {/* Main headline - Dev focused */}
+                <div className="mb-6 sm:mb-8">
                   <TextRevealHeading
                     as="h1"
                     id="hero-heading"
-                    text="Stop Manually Reconciling. Start Automating."
-                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[4.5rem] font-bold mb-4 sm:mb-5 lg:mb-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 dark:from-white dark:via-slate-100 dark:to-white bg-clip-text text-transparent leading-[1.1] tracking-tight px-2"
+                    text="Reconciliation as Code"
+                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 text-slate-900 dark:text-white tracking-tight leading-[1.1]"
                     delay={0}
                     staggerDelay={0.02}
                     splitBy="words"
                   />
                 </div>
                 
-                {/* Subheadline with optimal reading width */}
-                <div className="mb-10 sm:mb-12 lg:mb-14 px-4">
-                  <TextReveal
-                    text="Settler normalizes financial data, applies explicit matching rules, and surfaces variances for review. Deterministic, inspectable, and designed for human-in-the-loop workflows."
-                    className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-slate-700 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed font-normal"
-                    delay={0.2}
-                    staggerDelay={0.01}
-                    splitBy="words"
-                  />
+                {/* Subheadline - OSS/Dev value proposition */}
+                <div className="mb-10 sm:mb-12">
+                  <p className="text-lg sm:text-xl md:text-2xl text-slate-700 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
+                    Deterministic financial reconciliation you can audit, version control, and self-host. 
+                    Built for developers who demand inspectability.
+                  </p>
                 </div>
                 
-                {/* CTA buttons with clear hierarchy */}
-                <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center items-center mb-12 sm:mb-14 lg:mb-16 px-4">
+                {/* CTA buttons - Dev focused */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 sm:mb-16">
                   <Button 
                     size="lg" 
                     asChild 
-                    className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-10 sm:px-12 py-6 sm:py-7 text-lg sm:text-xl font-semibold shadow-2xl hover:shadow-blue-500/40 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-4 focus-visible:ring-offset-background min-h-[56px] sm:min-h-[60px]"
+                    className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 px-8 py-6 text-lg font-semibold shadow-xl transition-all duration-200 min-h-[48px] min-w-[180px]"
                   >
-                    <Link href="/docs/quickstart" className="flex items-center justify-center gap-2">
-                      <span>Get Started Free</span>
-                      <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" aria-hidden="true" />
+                    <Link href="/docs/quickstart" className="flex items-center justify-center gap-3">
+                      <BookOpen className="w-5 h-5" aria-hidden="true" />
+                      <span>Read Quickstart</span>
                     </Link>
                   </Button>
+                  
                   <Button 
                     size="lg" 
                     variant="outline" 
                     asChild 
-                    className="w-full sm:w-auto px-8 sm:px-10 py-6 sm:py-7 text-lg sm:text-xl border-2 border-slate-300 dark:border-slate-700 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-900 hover:border-slate-400 dark:hover:border-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-4 focus-visible:ring-offset-background min-h-[56px] sm:min-h-[60px] font-medium"
+                    className="w-full sm:w-auto px-8 py-6 text-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200 min-h-[48px] min-w-[180px]"
                   >
-                    <Link href="/console">
-                      Try Demo
+                    <Link href="https://github.com/settler-dev/settler" className="flex items-center justify-center gap-3" target="_blank" rel="noopener noreferrer">
+                      <Github className="w-5 h-5" aria-hidden="true" />
+                      <span>View on GitHub</span>
+                    </Link>
+                  </Button>
+                  
+                  <Button 
+                    size="lg" 
+                    variant="ghost" 
+                    asChild 
+                    className="w-full sm:w-auto px-8 py-6 text-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 min-h-[48px] min-w-[160px]"
+                  >
+                    <Link href="/console" className="flex items-center justify-center gap-2">
+                      <Play className="w-5 h-5" aria-hidden="true" />
+                      <span>Live Demo</span>
+                      <ArrowRight className="w-4 h-4" aria-hidden="true" />
                     </Link>
                   </Button>
                 </div>
 
-
+                {/* Social Proof - OSS focused */}
+                <div className="flex flex-wrap justify-center gap-6 sm:gap-8 text-sm text-slate-600 dark:text-slate-400">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600" aria-hidden="true" />
+                    <span>Apache 2.0 Licensed</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600" aria-hidden="true" />
+                    <span>Self-Hostable</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600" aria-hidden="true" />
+                    <span>Deterministic Output</span>
+                  </div>
+                </div>
               </div>
             </HeroAnimationWrapper>
           </div>
         </section>
 
-        {/* Value Proposition */}
-        <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900">
+        {/* OSS Value Drivers */}
+        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900">
           <div className="max-w-7xl mx-auto">
-            <ValueProposition />
-          </div>
-        </section>
-
-        {/* Benefits Grid */}
-        <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">
-                Why Teams Choose Settler
+            <div className="text-center mb-12 sm:mb-16">
+              <Badge className="mb-4 bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 px-3 py-1">
+                Why Developers Choose Settler
+              </Badge>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
+                Reconciliation That Respects Your Workflow
               </h2>
-              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                Built for finance teams who need certainty, not black boxes
+              <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+                No black boxes. No vendor lock-in. Just clean, deterministic code that runs where you want it.
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {benefits.map((benefit, index) => {
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+              {ossBenefits.map((benefit, index) => {
                 const Icon = benefit.icon;
                 return (
-                  <SpotlightCard key={index} className="p-6 text-center">
-                    <div className="w-12 h-12 mx-auto mb-4 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-                      <Icon className="w-6 h-6 text-white" />
+                  <SpotlightCard 
+                    key={index} 
+                    className="p-6 sm:p-8 h-full transition-all duration-300 hover:shadow-xl"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+                      <Icon className="w-6 h-6 text-slate-700 dark:text-slate-300" aria-hidden="true" />
                     </div>
-                    <h3 className="text-lg font-bold mb-2 text-slate-900 dark:text-white">{benefit.title}</h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">{benefit.description}</p>
+                    <h3 className="text-lg sm:text-xl font-semibold mb-2 text-slate-900 dark:text-white">
+                      {benefit.title}
+                    </h3>
+                    <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+                      {benefit.description}
+                    </p>
                   </SpotlightCard>
                 );
               })}
@@ -217,86 +309,45 @@ const reconciliation = await client.reconciliations.create({
           </div>
         </section>
 
-        {/* Social Proof */}
-        <SocialProofCounter />
-
-        {/* Feature Showcase */}
-        <FeatureShowcase />
-
-        {/* How It Works - 4 Steps */}
-        <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900">
+        {/* Developer Workflow */}
+        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12 md:mb-16">
-              <Badge className="mb-4 bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
-                How It Works
+            <div className="text-center mb-12 sm:mb-16">
+              <Badge className="mb-4 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 px-3 py-1">
+                Developer Experience
               </Badge>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-slate-900 dark:text-white">
-                From Messy Data to Clear Insights
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
+                Reconciliation in 4 Lines of Code
               </h2>
-              <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
-                A deterministic pipeline that turns messy financial inputs into traceable variances your team can review.
+              <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+                Install the SDK, define your rules, run reconciliation, review evidence. No complex setup required.
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {howItWorksSteps.map((step, index) => {
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {devWorkflowSteps.map((step, index) => {
                 const Icon = step.icon;
                 return (
-                  <SpotlightCard key={index} className="p-6 sm:p-8 text-center relative">
-                    <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold">
+                  <div 
+                    key={index} 
+                    className="relative p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800"
+                  >
+                    <div className="absolute -top-3 left-6 w-8 h-8 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center text-sm font-bold">
                       {step.number}
                     </div>
-                    <div className="w-14 h-14 md:w-16 md:h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-                      <Icon className="w-7 h-7 md:w-8 md:h-8 text-white" />
-                    </div>
-                    <h3 className="text-lg md:text-xl font-bold mb-2 text-slate-900 dark:text-white">{step.title}</h3>
-                    <p className="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-relaxed">{step.description}</p>
-                  </SpotlightCard>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* Product in Motion - Code Example */}
-        <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900/50">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-10 md:mb-12">
-              <Badge className="mb-4 bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400">
-                Developer First
-              </Badge>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-slate-900 dark:text-white">
-                Deterministic Rules You Can Inspect
-              </h2>
-              <p className="text-base md:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                Every reconciliation run is explainable and replayable. No hidden heuristics, no silent edits.
-              </p>
-            </div>
-            <SpotlightCard className="p-0 overflow-hidden shadow-xl md:shadow-2xl">
-              <AnimatedCodeBlock
-                code={codeExample}
-                title="Rules-First API"
-                description="Explicit rules, deterministic outputs, and inspectable evidence."
-                language="typescript"
-              />
-            </SpotlightCard>
-            
-            {/* Code features */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-              {[
-                { icon: CheckCircle2, title: "Type Safe", desc: "Full TypeScript support" },
-                { icon: RefreshCw, title: "Replayable", desc: "Same inputs, same outputs" },
-                { icon: Shield, title: "Auditable", desc: "Complete evidence chain" },
-              ].map((feature, idx) => {
-                const Icon = feature.icon;
-                return (
-                  <div key={idx} className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-slate-900 dark:text-white">{feature.title}</h4>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">{feature.desc}</p>
+                    <div className="pt-4">
+                      <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+                        <Icon className="w-5 h-5 text-slate-700 dark:text-slate-300" aria-hidden="true" />
+                      </div>
+                      <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">
+                        {step.title}
+                      </h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
+                        {step.description}
+                      </p>
+                      <code className="block text-xs bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded text-slate-700 dark:text-slate-300 font-mono">
+                        {step.code}
+                      </code>
                     </div>
                   </div>
                 );
@@ -305,15 +356,77 @@ const reconciliation = await client.reconciliations.create({
           </div>
         </section>
 
+        {/* Code Example Section */}
+        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-slate-900 text-white">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-10 sm:mb-12">
+              <Badge className="mb-4 bg-slate-800 text-slate-200 px-3 py-1 border border-slate-700">
+                TypeScript SDK
+              </Badge>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 tracking-tight">
+                Inspectable, Testable, Version Controlled
+              </h2>
+              <p className="text-lg sm:text-xl text-slate-400 max-w-3xl mx-auto">
+                Your reconciliation rules are code. Review them in PRs, test them in CI, deploy them with confidence.
+              </p>
+            </div>
+            
+            <div className="rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl">
+              <div className="flex items-center gap-2 px-4 py-3 bg-slate-900 border-b border-slate-800">
+                <div className="w-3 h-3 rounded-full bg-red-500" aria-hidden="true" />
+                <div className="w-3 h-3 rounded-full bg-yellow-500" aria-hidden="true" />
+                <div className="w-3 h-3 rounded-full bg-green-500" aria-hidden="true" />
+                <span className="ml-4 text-sm text-slate-400 font-mono">reconciliation.ts</span>
+              </div>
+              <div className="p-4 sm:p-6 overflow-x-auto">
+                <AnimatedCodeBlock
+                  code={codeExample}
+                  language="typescript"
+                  title="Rules-First API"
+                  description="Explicit rules, deterministic outputs, and inspectable evidence."
+                />
+              </div>
+            </div>
+            
+            {/* Code features */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10">
+              {[
+                { icon: CheckCircle2, title: "Type Safe", desc: "Full TypeScript support with IntelliSense" },
+                { icon: RefreshCw, title: "Deterministic", desc: "Same inputs always produce same outputs" },
+                { icon: Shield, title: "Auditable", desc: "Complete evidence chain with SHA256 hashes" },
+              ].map((feature, idx) => {
+                const Icon = feature.icon;
+                return (
+                  <div key={idx} className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5 text-slate-300" aria-hidden="true" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-white mb-1">{feature.title}</h4>
+                      <p className="text-sm text-slate-400">{feature.desc}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* Feature Showcase - Using the updated component */}
+        <FeatureShowcase />
+
         {/* Comparison Table */}
-        <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900">
+        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">
-                Compare Settler
+              <Badge className="mb-4 bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 px-3 py-1">
+                Comparison
+              </Badge>
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
+                Settler vs. The Alternatives
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400">
-                See how Settler compares to manual processes and other solutions
+                See how Settler compares to manual processes and closed-source solutions
               </p>
             </div>
             <ComparisonTable />
@@ -321,17 +434,17 @@ const reconciliation = await client.reconciliations.create({
         </section>
 
         {/* ROI Calculator */}
-        <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
+        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <Badge className="mb-4 bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+              <Badge className="mb-4 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 px-3 py-1">
                 ROI Calculator
               </Badge>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-slate-900 dark:text-white">
-                Calculate Your Savings
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
+                Calculate Your Time Savings
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                See how much time and money you can save by automating reconciliation
+                See how much engineering time you can reclaim by automating reconciliation
               </p>
             </div>
             <ROICalculator />
@@ -339,116 +452,127 @@ const reconciliation = await client.reconciliations.create({
         </section>
 
         {/* Testimonials */}
-        <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900">
+        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
-              <Badge className="mb-4 bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400">
-                Customer Stories
+              <Badge className="mb-4 bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 px-3 py-1">
+                Developer Stories
               </Badge>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-slate-900 dark:text-white">
-                Loved by Finance Teams
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
+                Trusted by Engineering Teams
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                See what teams are saying about their reconciliation automation
+                See what developers are saying about reconciliation as code
               </p>
             </div>
             <TestimonialCarousel />
           </div>
         </section>
 
-        {/* Automation Highlight */}
-        <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800">
-          <div className="max-w-5xl mx-auto">
-            <AutomationHighlight />
-          </div>
-        </section>
-
-        {/* Details Accordion */}
-        <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">
+        {/* FAQ Accordion */}
+        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-10 sm:mb-12">
+              <Badge className="mb-4 bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 px-3 py-1">
+                FAQ
+              </Badge>
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
                 Common Questions
               </h2>
             </div>
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="features">
-                <AccordionTrigger className="text-base md:text-lg font-semibold">
-                  What does Settler do?
+            <Accordion type="single" collapsible className="w-full space-y-4">
+              <AccordionItem value="what-is" className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6">
+                <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
+                  What is Settler?
                 </AccordionTrigger>
-                <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-300 space-y-2 leading-relaxed">
-                  <p><strong>Surfaces discrepancies:</strong> Outputs variance sets instead of silently resolving them.</p>
-                  <p><strong>Deterministic and inspectable:</strong> Same inputs produce the same outputs, with traceable rule paths.</p>
-                  <p><strong>Provider-agnostic:</strong> Normalize from any adapter or file format into a canonical model.</p>
-                  <p><strong>Human-in-the-loop:</strong> Review and resolve exceptions with evidence attached.</p>
+                <AccordionContent className="text-sm sm:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
+                  Settler is an open-source reconciliation engine that normalizes financial data, applies deterministic matching rules, and surfaces variances for human review. It&apos;s designed for teams who need transparency and auditability in their financial workflows.
                 </AccordionContent>
               </AccordionItem>
-              <AccordionItem value="not">
-                <AccordionTrigger className="text-base md:text-lg font-semibold">
+              
+              <AccordionItem value="oss" className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6">
+                <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
+                  Is it really open source?
+                </AccordionTrigger>
+                <AccordionContent className="text-sm sm:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
+                  Yes. Settler is licensed under Apache 2.0. You can self-host it, modify it, and contribute back. The core reconciliation engine, SDK, and all adapters are fully open source. We also offer managed cloud hosting for teams who prefer it.
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="deterministic" className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6">
+                <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
+                  What does &quot;deterministic&quot; mean?
+                </AccordionTrigger>
+                <AccordionContent className="text-sm sm:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
+                  Deterministic means the same inputs always produce the same outputs. Given the same data sources and matching rules, Settler will always identify the same variances. This makes debugging, testing, and auditing possible.
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="self-host" className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6">
+                <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
+                  Can I self-host Settler?
+                </AccordionTrigger>
+                <AccordionContent className="text-sm sm:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
+                  Absolutely. Self-hosting is a first-class use case. Settler runs on Node.js and connects to your existing Postgres database. Your data never leaves your infrastructure unless you choose to use our managed cloud service.
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="not" className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6">
+                <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
                   What is Settler NOT?
                 </AccordionTrigger>
-                <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-                  <p>Settler is not accounting software, an audit tool, or compliance software. It does not guarantee correctness and does not automate judgment. It surfaces variances for human review.</p>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="security">
-                <AccordionTrigger className="text-base md:text-lg font-semibold">
-                  How secure is Settler?
-                </AccordionTrigger>
-                <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-                  <p>Audit evidence is produced as deterministic outputs. You decide how to review and certify results. See the <Link href="/security-and-audit" className="text-blue-600 dark:text-blue-400 hover:underline">Security & Audit</Link> page for disclosure and limits.</p>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="opensource">
-                <AccordionTrigger className="text-base md:text-lg font-semibold">
-                  Is Settler really open source?
-                </AccordionTrigger>
-                <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-                  <p>Yes! Settler is open source under the Apache 2.0 license. You can self-host it, modify it, and contribute back. The core reconciliation engine is fully open source.</p>
+                <AccordionContent className="text-sm sm:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
+                  Settler is not accounting software, an audit tool, or compliance software. It does not make decisions or automate judgment. It surfaces variances and evidence for human review. You decide how to act on the results.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
           </div>
         </section>
 
-        {/* Final CTA */}
-        <section className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-900 dark:via-indigo-900 dark:to-purple-900">
+        {/* Final CTA - OSS focused */}
+        <section className="py-20 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 bg-slate-900 text-white">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-white">
-              Ready to Automate Reconciliation?
+            <Badge className="mb-6 bg-slate-800 text-slate-200 px-4 py-2 border border-slate-700">
+              Apache 2.0 Licensed
+            </Badge>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-6 tracking-tight">
+              Own Your Reconciliation Logic
             </h2>
-            <p className="text-lg md:text-xl text-blue-100 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Join thousands of teams who have eliminated manual reconciliation. Start free, scale as you grow.
+            <p className="text-lg sm:text-xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+              Stop relying on black boxes. Deploy reconciliation you can audit, test, and version control. Start free, self-host when ready.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button 
                 size="lg" 
                 asChild 
-                className="w-full sm:w-auto bg-white text-blue-600 hover:bg-blue-50 px-10 py-6 sm:py-7 text-lg font-semibold shadow-2xl transition-all transform hover:scale-[1.02]"
+                className="w-full sm:w-auto bg-white text-slate-900 hover:bg-slate-100 px-10 py-7 text-lg font-semibold shadow-2xl transition-all duration-200 min-h-[56px] min-w-[200px]"
               >
-                <Link href="/docs/quickstart" className="flex items-center justify-center gap-2">
-                  Get Started Free <ArrowRight className="w-5 h-5" />
+                <Link href="/docs/quickstart" className="flex items-center justify-center gap-3">
+                  <BookOpen className="w-5 h-5" aria-hidden="true" />
+                  Read Quickstart
                 </Link>
               </Button>
+              
               <Button 
                 size="lg" 
                 variant="outline" 
                 asChild 
-                className="w-full sm:w-auto px-10 py-6 sm:py-7 text-lg border-2 border-white/30 text-white hover:bg-white/10"
+                className="w-full sm:w-auto px-10 py-7 text-lg border-2 border-slate-600 text-white hover:bg-slate-800 transition-all duration-200 min-h-[56px] min-w-[200px]"
               >
-                <Link href="/console">
-                  Try Live Demo
+                <Link href="https://github.com/settler-dev/settler" className="flex items-center justify-center gap-3" target="_blank" rel="noopener noreferrer">
+                  <Github className="w-5 h-5" aria-hidden="true" />
+                  View on GitHub
                 </Link>
               </Button>
             </div>
-            <p className="mt-6 text-sm text-blue-200">
-              No credit card required. Self-host or use our cloud.
+            <p className="mt-8 text-sm text-slate-500">
+              No credit card required. Open source forever.
             </p>
           </div>
         </section>
 
         <Footer />
-      </div>
+      </main>
     </ErrorBoundary>
   );
 }
