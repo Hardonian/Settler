@@ -11,9 +11,8 @@ import BuilderPage from "@/components/BuilderPage";
 import { builderModels } from "@/lib/builder/config";
 import { notFound } from "next/navigation";
 
-// Enable static site generation for Builder pages
-export const dynamic = "force-static";
-export const revalidate = 60; // Revalidate every 60 seconds
+// Use dynamic rendering to avoid React context issues during static generation
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: {
