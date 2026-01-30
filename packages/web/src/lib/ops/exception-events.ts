@@ -1,12 +1,12 @@
 /**
  * Exception Lifecycle Event Helpers
- * 
+ *
  * Emits lifecycle events when reconciliation exceptions are created or resolved.
  * This is called from reconciliation processing logic.
  */
 
-import { emitLifecycleEventSafe, LifecycleEventType } from './lifecycle-events';
-import { prisma } from '@/shared/db/prismaClient';
+import { emitLifecycleEventSafe, LifecycleEventType } from "./lifecycle-events";
+import { prisma } from "@/shared/db/prismaClient";
 
 /**
  * Emit exception created event when unmatched reconciliation match is created
@@ -35,7 +35,7 @@ export async function emitExceptionCreatedEvent(params: {
       },
     });
 
-    if (!match || match.matchType === 'matched') {
+    if (!match || match.matchType === "matched") {
       return; // Only emit for unmatched/conflict matches
     }
 
@@ -50,7 +50,7 @@ export async function emitExceptionCreatedEvent(params: {
     });
 
     await emitLifecycleEventSafe(LifecycleEventType.RECON_EXCEPTION_CREATED, {
-      userId: params.userId || billingAccount?.userId || undefined,
+      userId: (params.userId || billingAccount?.userId) as string,
       tenantId: matchTenantId,
       billingAccountId: billingAccount?.id || undefined,
       properties: {
@@ -62,7 +62,7 @@ export async function emitExceptionCreatedEvent(params: {
     });
   } catch (error) {
     // Don't throw - event tracking should never break the main flow
-    console.error('Failed to emit exception created event:', error);
+    console.error("Failed to emit exception created event:", error);
   }
 }
 
@@ -84,7 +84,7 @@ export async function emitExceptionResolvedEvent(params: {
       where: { id: params.reconciliationMatchId },
     });
 
-    if (!match || match.matchType === 'matched') {
+    if (!match || match.matchType === "matched") {
       return; // Only emit for previously unmatched/conflict matches
     }
 
@@ -98,7 +98,7 @@ export async function emitExceptionResolvedEvent(params: {
     });
 
     await emitLifecycleEventSafe(LifecycleEventType.RECON_EXCEPTION_RESOLVED, {
-      userId: params.userId,
+      userId: params.userId as string,
       tenantId: params.tenantId,
       billingAccountId: billingAccount?.id || undefined,
       properties: {
@@ -109,6 +109,6 @@ export async function emitExceptionResolvedEvent(params: {
     });
   } catch (error) {
     // Don't throw - event tracking should never break the main flow
-    console.error('Failed to emit exception resolved event:', error);
+    console.error("Failed to emit exception resolved event:", error);
   }
 }
