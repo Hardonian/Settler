@@ -21,6 +21,9 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "analyze": "ANALYZE=true next build",
+    "analyze:bundle": "ANALYZE=true next build && echo '\n📦 Bundle analysis complete. Open the generated HTML report to view details.'",
+    "bundle:size": "next build && du -sh .next && du -sh .next/static && du -sh .next/static/chunks",
+    "bundle:check": "echo '⚠️  Run \"pnpm build\" first, then \"pnpm bundle:size\" to check bundle sizes'",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
