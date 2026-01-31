@@ -17,7 +17,7 @@ def test_imports():
     from settler_workhorse.worker import Worker, register_handler
     from settler_workhorse.utils.logging import configure_logging, get_logger
 
-    print(f"✓ All imports successful (version: {__version__})")
+    print(f"OK: All imports successful (version: {__version__})")
     return True
 
 
@@ -37,7 +37,7 @@ def test_configuration():
     assert settings.is_development is False
     assert settings.is_production is False
 
-    print("✓ Configuration works")
+    print("OK: Configuration works")
     return True
 
 
@@ -74,7 +74,7 @@ def test_models():
     assert result.success is True
     assert result.records_processed == 100
 
-    print("✓ Models work")
+    print("OK: Models work")
     return True
 
 
@@ -91,7 +91,7 @@ def test_handler_registration():
 
     assert JobType.CUSTOM in HANDLER_REGISTRY
 
-    print("✓ Handler registration works")
+    print("OK: Handler registration works")
     return True
 
 
@@ -110,7 +110,7 @@ def test_cli_help():
     # Actually, let's just verify the module structure
     from settler_workhorse.cli import cli
 
-    print("✓ CLI module loads")
+    print("OK: CLI module loads")
     return True
 
 
@@ -137,7 +137,7 @@ def main():
             if test():
                 passed += 1
         except Exception as e:
-            print(f"✗ {test.__name__} failed: {e}")
+            print(f"FAIL: {test.__name__} failed: {e}")
             failed += 1
 
     print()
