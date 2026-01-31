@@ -37,6 +37,8 @@ class JobType(str, Enum):
     RECON_RUN = "recon.run"
     ANOMALY_SCORE = "anomaly.score"
     EVAL_RUN = "eval.run"
+    VARIANCE_REPORT = "variance.report"
+    TRANSACTION_MATCH = "transaction.match"
 
 
 class JobPriority(int, Enum):

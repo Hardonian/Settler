@@ -107,6 +107,14 @@ class Worker:
             ]
         )
 
+        # Phase 4 - Real work job types (always enabled)
+        types.extend(
+            [
+                JobType.VARIANCE_REPORT,
+                JobType.TRANSACTION_MATCH,
+            ]
+        )
+
         return types
 
     def _setup_signal_handlers(self) -> None:
