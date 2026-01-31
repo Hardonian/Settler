@@ -15,6 +15,7 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         env_prefix="WORKHORSE_",
         case_sensitive=False,
+        extra="ignore",  # Allow extra env vars from shared .env files
     )
 
     # ==========================================================================

@@ -9,7 +9,10 @@ import asyncio
 import inspect
 import os
 import platform
-import resource
+try:
+    import resource
+except ImportError:
+    resource = None  # Unix-only module
 import sys
 import time
 from abc import ABC, abstractmethod
@@ -698,6 +701,9 @@ class SystemDiagnostics:
     @staticmethod
     def get_resource_limits() -> Dict[str, Any]:
         """Get system resource limits."""
+        if resource is None:
+            return {"error": "Resource limits not available on Windows"}
+        
         try:
             limits = {
                 "max_open_files": resource.getrlimit(resource.RLIMIT_NOFILE),
