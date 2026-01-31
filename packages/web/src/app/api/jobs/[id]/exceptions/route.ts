@@ -1,5 +1,5 @@
 /**
- * Job Exceptions API - GET /api/jobs/[jobId]/exceptions
+ * Job Exceptions API - GET /api/jobs/[id]/exceptions
  *
  * Returns unmatched transactions and conflicts for a reconciliation job.
  * Supports filtering, pagination, and sorting.
@@ -86,18 +86,18 @@ interface ExceptionResponse {
 }
 
 /**
- * GET /api/jobs/[jobId]/exceptions
+ * GET /api/jobs/[id]/exceptions
  * Get exceptions (unmatched transactions and conflicts) for a job
  */
 export const GET = withSecurity(
   withUniversalBillingGate(
-    async function GET(request: NextRequest, { params }: { params: Promise<{ jobId: string }> }) {
+    async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
       const startTime = Date.now();
 
       try {
-        // Parse and validate jobId
-        const { jobId } = await params;
-        const validationResult = JobIdSchema.safeParse(jobId);
+        // Parse and validate id
+        const { id } = await params;
+        const validationResult = JobIdSchema.safeParse(id);
 
         if (!validationResult.success) {
           return NextResponse.json(
@@ -196,7 +196,7 @@ export const GET = withSecurity(
         // Verify job exists and belongs to tenant
         const job = await prisma.reconJob.findFirst({
           where: {
-            id: jobId,
+            id: id,
             tenantId: tenantId,
             deletedAt: null,
           },
@@ -207,7 +207,7 @@ export const GET = withSecurity(
           return NextResponse.json(
             {
               error: "Not found",
-              message: `Reconciliation job ${jobId} not found`,
+              message: `Reconciliation job ${id} not found`,
             },
             { status: 404 }
           );
@@ -428,7 +428,7 @@ export const GET = withSecurity(
         // Log successful request
         const duration = Date.now() - startTime;
         appLogger.info("[Job Exceptions API] Success", {
-          jobId,
+          jobId: id,
           tenantId,
           userId,
           duration,

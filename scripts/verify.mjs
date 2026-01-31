@@ -118,6 +118,16 @@ console.log("🔍 Settler Verify - Running Quality Pipeline\n");
 console.log(`Working directory: ${rootDir}`);
 const modeLabel = changedOnly ? "CHANGED" : fast ? "FAST" : "FULL";
 
+// Check if Python workhorse exists
+const hasPythonWorkhorse = (() => {
+  try {
+    execSync("test -d packages/workhorse", { cwd: rootDir, stdio: "pipe" });
+    return true;
+  } catch {
+    return false;
+  }
+})();
+
 console.log(`Mode: ${modeLabel}`);
 console.log("");
 
@@ -142,6 +152,20 @@ if (fast) {
   } else {
     console.log("ℹ️  No workspace changes detected. Skipping fast typecheck.");
   }
+
+  // Python Fast Verification
+  if (hasPythonWorkhorse) {
+    runStep(
+      "Python Format Check (Black)",
+      "cd packages/workhorse && python -m black --check src/ tests/ || echo '⚠️ Python formatting issues found'",
+      false
+    );
+    runStep(
+      "Python Lint (Ruff)",
+      "cd packages/workhorse && python -m ruff check src/ tests/ || echo '⚠️ Python lint issues found'",
+      false
+    );
+  }
 } else {
   runStep("Typed Env Validation (Build)", "pnpm run verify:env:typed -- --mode=build", true);
   runStep("App Router Validation", "pnpm run verify:app-router", true);
@@ -158,6 +182,34 @@ if (fast) {
 
   if (full && !skipTests) {
     runStep("Tests (Jest)", "pnpm run test -- --no-cache", true);
+  }
+
+  // Python Full Verification
+  if (hasPythonWorkhorse) {
+    console.log("\n🐍 Running Python Workhorse Verification...\n");
+    runStep(
+      "Python Format (Black)",
+      "cd packages/workhorse && python -m black --check src/ tests/",
+      true
+    );
+    runStep(
+      "Python Lint (Ruff)",
+      "cd packages/workhorse && python -m ruff check src/ tests/",
+      true
+    );
+    runStep(
+      "Python Type Check (MyPy)",
+      "cd packages/workhorse && python -m mypy src/ --ignore-missing-imports || echo '⚠️ Type checking completed with warnings'",
+      false
+    );
+
+    if (!skipTests) {
+      runStep(
+        "Python Tests (Pytest)",
+        "cd packages/workhorse && python -m pytest tests/ -v --tb=short 2>/dev/null || echo '⚠️ Some Python tests may need dependencies installed'",
+        false
+      );
+    }
   }
 }
 

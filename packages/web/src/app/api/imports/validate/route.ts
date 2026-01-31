@@ -18,7 +18,7 @@ const validateSchema = z.object({
   import_type: z.enum(["csv", "xlsx"]),
   expected_columns: z.array(z.string()).optional(),
   required_columns: z.array(z.string()).optional(),
-  column_mapping: z.record(z.string()).optional(),
+  column_mapping: z.record(z.string(), z.unknown()).optional(),
   idempotency_key: z.string().optional(),
 });
 
