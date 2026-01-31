@@ -48,6 +48,18 @@ class JobType(str, Enum):
     # Phase 6 - Settler-specific jobs
     AUDIT_TRAIL_EXPORT = "audit.trail.export"
 
+    # Phase 7 - Client-facing import/export jobs
+    EXPORT_CSV = "export.csv"
+    EXPORT_EXCEL = "export.excel"
+    EXPORT_PDF = "export.pdf"
+    IMPORT_VALIDATE = "import.validate"
+    IMPORT_PROCESS = "import.process"
+
+    # Phase 7 - Receipt processing jobs
+    RECEIPT_OCR = "receipt.ocr"
+    RECEIPT_EXTRACT = "receipt.extract"
+    RECEIPT_MATCH = "receipt.match"
+
 
 class JobPriority(int, Enum):
     """Job priority levels (lower = higher priority)."""
