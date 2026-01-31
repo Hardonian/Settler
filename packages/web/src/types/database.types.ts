@@ -1066,6 +1066,32 @@ export interface Database {
         };
         Returns: null;
       };
+      // Python Workhorse Functions
+      enqueue_python_job: {
+        Args: {
+          p_tenant_id: string;
+          p_workspace_id: string | null;
+          p_job_type: string;
+          p_payload: Json;
+          p_priority?: number;
+          p_idempotency_key?: string | null;
+          p_max_attempts?: number;
+          p_delay_seconds?: number;
+        };
+        Returns: string;
+      };
+      get_python_job_stats: {
+        Args: {
+          p_tenant_id: string;
+        };
+        Returns: Array<{ status: string; count: number }>;
+      };
+      release_stale_python_locks: {
+        Args: {
+          p_lock_timeout_seconds: number;
+        };
+        Returns: number;
+      };
       [key: string]: {
         Args: Record<string, unknown>;
         Returns: unknown;
