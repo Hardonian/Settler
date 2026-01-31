@@ -136,7 +136,17 @@
     "mirror:verify": "tsx scripts/mirror-verify.ts",
     "mirror:publish": "tsx scripts/mirror-publish.ts",
     "setup:open-core": "bash scripts/setup-open-core.sh",
-    "settler:run": "node scripts/settler-engine.mjs"
+    "settler:run": "node scripts/settler-engine.mjs",
+    "workhorse:install": "cd packages/workhorse && pip install -e \".[dev]\"",
+    "workhorse:worker": "cd packages/workhorse && python -m settler_workhorse.cli worker",
+    "workhorse:health": "cd packages/workhorse && python -m settler_workhorse.cli health",
+    "workhorse:enqueue": "cd packages/workhorse && python -m settler_workhorse.cli enqueue",
+    "workhorse:maintenance": "cd packages/workhorse && python -m settler_workhorse.cli maintenance",
+    "workhorse:smoke": "cd packages/workhorse && python tests/smoke_test.py",
+    "workhorse:test": "cd packages/workhorse && pytest tests/ -v",
+    "workhorse:lint": "cd packages/workhorse && black --check src/ tests/ && ruff check src/ tests/ && mypy src/",
+    "workhorse:format": "cd packages/workhorse && black src/ tests/ && ruff fix src/ tests/",
+    "workhorse:dev": "cd packages/workhorse && python -m settler_workhorse.cli worker --poll-interval 2"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

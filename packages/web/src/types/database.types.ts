@@ -876,6 +876,116 @@ export interface Database {
           created_at?: string;
         };
       };
+      // Python Workhorse Tables
+      python_jobs: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          workspace_id: string | null;
+          job_type: string;
+          payload: Json;
+          priority: number;
+          idempotency_key: string | null;
+          status: string;
+          attempts: number;
+          max_attempts: number;
+          created_at: string;
+          updated_at: string;
+          available_at: string | null;
+          started_at: string | null;
+          completed_at: string | null;
+          locked_at: string | null;
+          locked_by: string | null;
+          last_error: Json | null;
+          error_message: string | null;
+          result: Json | null;
+          output_location: string | null;
+          records_processed: number | null;
+          records_failed: number | null;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          workspace_id?: string | null;
+          job_type: string;
+          payload?: Json;
+          priority?: number;
+          idempotency_key?: string | null;
+          status?: string;
+          attempts?: number;
+          max_attempts?: number;
+          created_at?: string;
+          updated_at?: string;
+          available_at?: string | null;
+          started_at?: string | null;
+          completed_at?: string | null;
+          locked_at?: string | null;
+          locked_by?: string | null;
+          last_error?: Json | null;
+          error_message?: string | null;
+          result?: Json | null;
+          output_location?: string | null;
+          records_processed?: number | null;
+          records_failed?: number | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["python_jobs"]["Insert"]>;
+      };
+      python_job_attempts: {
+        Row: {
+          id: string;
+          job_id: string;
+          attempt_no: number;
+          started_at: string;
+          finished_at: string | null;
+          ok: boolean | null;
+          error: Json | null;
+          worker_id: string | null;
+          correlation_id: string | null;
+        };
+        Insert: {
+          id?: string;
+          job_id: string;
+          attempt_no: number;
+          started_at?: string;
+          finished_at?: string | null;
+          ok?: boolean | null;
+          error?: Json | null;
+          worker_id?: string | null;
+          correlation_id?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["python_job_attempts"]["Insert"]>;
+      };
+      python_dead_letters: {
+        Row: {
+          id: string;
+          job_id: string;
+          tenant_id: string;
+          workspace_id: string | null;
+          job_type: string;
+          payload: Json;
+          error: Json;
+          created_at: string;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          resolution: string | null;
+          notes: string | null;
+        };
+        Insert: {
+          id?: string;
+          job_id: string;
+          tenant_id: string;
+          workspace_id?: string | null;
+          job_type: string;
+          payload: Json;
+          error: Json;
+          created_at?: string;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          resolution?: string | null;
+          notes?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["python_dead_letters"]["Insert"]>;
+      };
       [key: string]: {
         Row: Record<string, unknown>;
         Insert: Record<string, unknown>;
