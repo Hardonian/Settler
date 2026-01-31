@@ -40,6 +40,14 @@ class JobType(str, Enum):
     VARIANCE_REPORT = "variance.report"
     TRANSACTION_MATCH = "transaction.match"
 
+    # Phase 6 - Shared/core jobs
+    BATCH_BACKFILL = "batch.backfill"
+    REPORT_GENERATE = "report.generate"
+    ML_FEATURES_BUILD = "ml.features.build"
+
+    # Phase 6 - Settler-specific jobs
+    AUDIT_TRAIL_EXPORT = "audit.trail.export"
+
 
 class JobPriority(int, Enum):
     """Job priority levels (lower = higher priority)."""

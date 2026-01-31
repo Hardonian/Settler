@@ -114,6 +114,183 @@ def test_cli_help():
     return True
 
 
+def test_phase6_handlers_import():
+    """Test Phase 6 handler imports."""
+    print("Testing Phase 6 handler imports...")
+
+    # Import all Phase 6 handlers
+    from settler_workhorse.handlers import batch_backfill
+    from settler_workhorse.handlers import report_generate
+    from settler_workhorse.handlers import ml_features_build
+    from settler_workhorse.handlers import audit_trail_export
+
+    print("OK: Phase 6 handlers imported successfully")
+    return True
+
+
+def test_phase6_job_types():
+    """Test Phase 6 job types are registered."""
+    print("Testing Phase 6 job types...")
+
+    from settler_workhorse.models import JobType
+    from settler_workhorse.worker import HANDLER_REGISTRY
+
+    # Check job types exist
+    phase6_types = [
+        JobType.BATCH_BACKFILL,
+        JobType.REPORT_GENERATE,
+        JobType.ML_FEATURES_BUILD,
+        JobType.AUDIT_TRAIL_EXPORT,
+    ]
+
+    for job_type in phase6_types:
+        assert job_type in HANDLER_REGISTRY, f"Handler not registered for {job_type}"
+
+    print("OK: All Phase 6 job types registered")
+    return True
+
+
+def test_batch_backfill_handler():
+    """Test batch.backfill handler with sample payload."""
+    print("Testing batch.backfill handler...")
+
+    from datetime import datetime
+    from uuid import uuid4
+
+    from settler_workhorse.handlers.batch_backfill import handle_batch_backfill
+    from settler_workhorse.models import Job, JobType
+
+    job = Job(
+        id=uuid4(),
+        tenant_id=uuid4(),
+        job_type=JobType.BATCH_BACKFILL,
+        payload={
+            "tenant_id": str(uuid4()),
+            "entity": "transactions",
+            "from": "2024-01-01T00:00:00Z",
+            "to": "2024-01-31T23:59:59Z",
+            "dry_run": True,
+            "limit": 100,
+        },
+        created_at=datetime.utcnow(),
+    )
+
+    result = handle_batch_backfill(job)
+
+    assert result.success is True
+    assert result.data is not None
+    assert result.data["mode"] == "dry_run"
+    assert result.data["entity"] == "transactions"
+
+    print("OK: batch.backfill handler works")
+    return True
+
+
+def test_report_generate_handler():
+    """Test report.generate handler with sample payload."""
+    print("Testing report.generate handler...")
+
+    from datetime import datetime
+    from uuid import uuid4
+
+    from settler_workhorse.handlers.report_generate import handle_report_generate
+    from settler_workhorse.models import Job, JobType
+
+    job = Job(
+        id=uuid4(),
+        tenant_id=uuid4(),
+        job_type=JobType.REPORT_GENERATE,
+        payload={
+            "tenant_id": str(uuid4()),
+            "report_type": "reconciliation_summary",
+            "report_name": "Monthly Reconciliation",
+            "dry_run": True,
+            "format": "json",
+            "filters": {"from": "2024-01-01", "to": "2024-01-31"},
+        },
+        created_at=datetime.utcnow(),
+    )
+
+    result = handle_report_generate(job)
+
+    assert result.success is True
+    assert result.data is not None
+    assert result.data["report_type"] == "reconciliation_summary"
+
+    print("OK: report.generate handler works")
+    return True
+
+
+def test_ml_features_build_handler():
+    """Test ml.features.build handler with sample payload."""
+    print("Testing ml.features.build handler...")
+
+    from datetime import datetime
+    from uuid import uuid4
+
+    from settler_workhorse.handlers.ml_features_build import handle_ml_features_build
+    from settler_workhorse.models import Job, JobType
+
+    job = Job(
+        id=uuid4(),
+        tenant_id=uuid4(),
+        job_type=JobType.ML_FEATURES_BUILD,
+        payload={
+            "tenant_id": str(uuid4()),
+            "feature_set": "risk_v1",
+            "subject_type": "transaction",
+            "subject_ids": ["txn_001", "txn_002"],
+            "dry_run": True,
+            "version": "1.0.0",
+        },
+        created_at=datetime.utcnow(),
+    )
+
+    result = handle_ml_features_build(job)
+
+    assert result.success is True
+    assert result.data is not None
+    assert result.data["feature_set"] == "risk_v1"
+
+    print("OK: ml.features.build handler works")
+    return True
+
+
+def test_audit_trail_export_handler():
+    """Test audit.trail.export handler with sample payload."""
+    print("Testing audit.trail.export handler...")
+
+    from datetime import datetime
+    from uuid import uuid4
+
+    from settler_workhorse.handlers.audit_trail_export import handle_audit_trail_export
+    from settler_workhorse.models import Job, JobType
+
+    job = Job(
+        id=uuid4(),
+        tenant_id=uuid4(),
+        job_type=JobType.AUDIT_TRAIL_EXPORT,
+        payload={
+            "tenant_id": str(uuid4()),
+            "from": "2024-01-01T00:00:00Z",
+            "to": "2024-01-31T23:59:59Z",
+            "format": "json",
+            "dry_run": True,
+            "batch_size": 100,
+        },
+        created_at=datetime.utcnow(),
+    )
+
+    result = handle_audit_trail_export(job)
+
+    assert result.success is True
+    assert result.data is not None
+    assert result.data["format"] == "json"
+
+    print("OK: audit.trail.export handler works")
+    return True
+
+
 def main():
     """Run all smoke tests."""
     print("=" * 50)
@@ -127,6 +304,12 @@ def main():
         test_models,
         test_handler_registration,
         test_cli_help,
+        test_phase6_handlers_import,
+        test_phase6_job_types,
+        test_batch_backfill_handler,
+        test_report_generate_handler,
+        test_ml_features_build_handler,
+        test_audit_trail_export_handler,
     ]
 
     passed = 0

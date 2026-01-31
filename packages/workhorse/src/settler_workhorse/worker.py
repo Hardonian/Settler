@@ -115,6 +115,22 @@ class Worker:
             ]
         )
 
+        # Phase 6 - Shared/core jobs (always enabled)
+        types.extend(
+            [
+                JobType.BATCH_BACKFILL,
+                JobType.REPORT_GENERATE,
+                JobType.ML_FEATURES_BUILD,
+            ]
+        )
+
+        # Phase 6 - Settler-specific jobs (always enabled)
+        types.extend(
+            [
+                JobType.AUDIT_TRAIL_EXPORT,
+            ]
+        )
+
         return types
 
     def _setup_signal_handlers(self) -> None:

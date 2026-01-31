@@ -16,7 +16,7 @@ import { v4 as uuidv4 } from "uuid";
 const enqueueSchema = z.object({
   tenant_id: z.string(),
   type: z.string(),
-  payload: z.record(z.unknown()),
+  payload: z.record(z.string(), z.unknown()),
   idempotency_key: z.string().optional(),
   max_attempts: z.number(),
   run_at: z.string().optional(),
