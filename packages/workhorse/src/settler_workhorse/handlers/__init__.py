@@ -21,4 +21,13 @@ from settler_workhorse.handlers import ml_features_build  # noqa: F401
 # Phase 6 - Settler-specific handlers
 from settler_workhorse.handlers import audit_trail_export  # noqa: F401
 
+# Phase 7 - Client-facing import/export handlers
+from settler_workhorse.handlers import export_csv  # noqa: F401
+from settler_workhorse.handlers import export_excel  # noqa: F401
+from settler_workhorse.handlers import export_pdf  # noqa: F401
+from settler_workhorse.handlers import import_validate  # noqa: F401
+
+# Phase 7 - Receipt processing handlers
+from settler_workhorse.handlers import receipt_ocr  # noqa: F401
+
 __all__ = []

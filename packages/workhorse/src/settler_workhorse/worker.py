@@ -131,6 +131,26 @@ class Worker:
             ]
         )
 
+        # Phase 7 - Client-facing import/export jobs (always enabled)
+        types.extend(
+            [
+                JobType.EXPORT_CSV,
+                JobType.EXPORT_EXCEL,
+                JobType.EXPORT_PDF,
+                JobType.IMPORT_VALIDATE,
+                JobType.IMPORT_PROCESS,
+            ]
+        )
+
+        # Phase 7 - Receipt processing jobs (always enabled)
+        types.extend(
+            [
+                JobType.RECEIPT_OCR,
+                JobType.RECEIPT_EXTRACT,
+                JobType.RECEIPT_MATCH,
+            ]
+        )
+
         return types
 
     def _setup_signal_handlers(self) -> None:
