@@ -77,3 +77,5 @@ SEED_ROUND_PITCH_DECK_OUTLINE.md
 core
 node-compile-cache/
 nul
+__pycache__/
+*.pyc
