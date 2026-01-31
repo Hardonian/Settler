@@ -11,7 +11,13 @@ from settler_workhorse.utils.logging import configure_logging, get_logger
 from settler_workhorse.worker import Worker
 
 # Import handlers to register them
-from settler_workhorse.handlers import csv_ingestion  # noqa: F401
+from settler_workhorse.handlers import (  # noqa: F401
+    anomaly_score,
+    csv_ingestion,
+    eval_run,
+    ingest_normalize,
+    recon_run,
+)
 
 
 @click.group()

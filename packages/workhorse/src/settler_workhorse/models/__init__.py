@@ -32,6 +32,12 @@ class JobType(str, Enum):
     DATA_QUALITY_CHECK = "data_quality_check"
     CUSTOM = "custom"
 
+    # Phase 2 - New job types
+    INGEST_NORMALIZE = "ingest.normalize"
+    RECON_RUN = "recon.run"
+    ANOMALY_SCORE = "anomaly.score"
+    EVAL_RUN = "eval.run"
+
 
 class JobPriority(int, Enum):
     """Job priority levels (lower = higher priority)."""
@@ -153,7 +159,9 @@ class JobStats(BaseModel):
 
     @property
     def total(self) -> int:
-        return self.queued + self.running + self.succeeded + self.failed + self.dead + self.cancelled
+        return (
+            self.queued + self.running + self.succeeded + self.failed + self.dead + self.cancelled
+        )
 
 
 class WorkerHeartbeat(BaseModel):

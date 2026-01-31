@@ -52,9 +52,7 @@ class JobRepository:
         finally:
             self.pool.putconn(conn)
 
-    def _set_tenant_context(
-        self, conn: psycopg.Connection, tenant_id: UUID
-    ) -> None:
+    def _set_tenant_context(self, conn: psycopg.Connection, tenant_id: UUID) -> None:
         """Set tenant context for RLS policies."""
         with conn.cursor() as cur:
             cur.execute(
@@ -80,8 +78,7 @@ class JobRepository:
         """
         lock_cutoff = datetime.utcnow() - timedelta(seconds=lock_timeout_seconds)
 
-        query = sql.SQL(
-            """
+        query = sql.SQL("""
             WITH next_job AS (
                 SELECT id, tenant_id
                 FROM python_jobs
@@ -109,8 +106,7 @@ class JobRepository:
                 RETURNING python_jobs.*
             )
             SELECT * FROM claimed;
-            """
-        )
+            """)
 
         # Build job type filter if specified
         job_type_filter = sql.SQL("")
@@ -349,10 +345,12 @@ class JobRepository:
         """
         error_data = None
         if error:
-            error_data = json.dumps({
-                "message": str(error),
-                "type": error.__class__.__name__,
-            })
+            error_data = json.dumps(
+                {
+                    "message": str(error),
+                    "type": error.__class__.__name__,
+                }
+            )
 
         with self._connection() as conn:
             with conn.cursor() as cur:

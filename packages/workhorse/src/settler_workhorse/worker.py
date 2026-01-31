@@ -97,6 +97,16 @@ class Worker:
         # Always support custom and daily report
         types.extend([JobType.CUSTOM, JobType.DAILY_REPORT, JobType.DATA_QUALITY_CHECK])
 
+        # Phase 2 - New job types (always enabled)
+        types.extend(
+            [
+                JobType.INGEST_NORMALIZE,
+                JobType.RECON_RUN,
+                JobType.ANOMALY_SCORE,
+                JobType.EVAL_RUN,
+            ]
+        )
+
         return types
 
     def _setup_signal_handlers(self) -> None:
@@ -214,9 +224,7 @@ class Worker:
                     updated, will_retry = self.jobs.fail_job(
                         job.id, error, self.worker_id, schedule_retry=True
                     )
-                    self.jobs.complete_attempt(
-                        job.id, job.attempts, success=False, error=error
-                    )
+                    self.jobs.complete_attempt(job.id, job.attempts, success=False, error=error)
                     if not will_retry:
                         self.jobs_failed += 1
 
@@ -226,9 +234,7 @@ class Worker:
                 updated, will_retry = self.jobs.fail_job(
                     job.id, e, self.worker_id, schedule_retry=True
                 )
-                self.jobs.complete_attempt(
-                    job.id, job.attempts, success=False, error=e
-                )
+                self.jobs.complete_attempt(job.id, job.attempts, success=False, error=e)
                 if not will_retry:
                     self.jobs_failed += 1
 
@@ -299,7 +305,11 @@ class Worker:
         """
         return WorkerHeartbeat(
             worker_id=self.worker_id,
-            status="shutting_down" if self.shutting_down else ("busy" if self.current_job else "healthy"),
+            status=(
+                "shutting_down"
+                if self.shutting_down
+                else ("busy" if self.current_job else "healthy")
+            ),
             jobs_processed=self.jobs_processed,
             jobs_failed=self.jobs_failed,
             current_job_id=self.current_job.id if self.current_job else None,
@@ -310,4 +320,5 @@ class Worker:
 
 def clear_context():
     from settler_workhorse.utils.logging import clear_context as _clear
+
     _clear()

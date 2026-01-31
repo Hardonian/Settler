@@ -74,8 +74,15 @@ def auto_detect_columns(df: pd.DataFrame) -> Dict[str, str]:
 
     # Amount patterns
     amount_patterns = [
-        "amount", "total", "value", "sum", "price", "cost",
-        "debit", "credit", "transaction_amount"
+        "amount",
+        "total",
+        "value",
+        "sum",
+        "price",
+        "cost",
+        "debit",
+        "credit",
+        "transaction_amount",
     ]
     for i, header in enumerate(headers):
         if any(p in header for p in amount_patterns):
@@ -84,8 +91,13 @@ def auto_detect_columns(df: pd.DataFrame) -> Dict[str, str]:
 
     # Date patterns
     date_patterns = [
-        "date", "time", "timestamp", "created", "transaction_date",
-        "posted_date", "value_date"
+        "date",
+        "time",
+        "timestamp",
+        "created",
+        "transaction_date",
+        "posted_date",
+        "value_date",
     ]
     for i, header in enumerate(headers):
         if any(p in header for p in date_patterns):
@@ -94,8 +106,14 @@ def auto_detect_columns(df: pd.DataFrame) -> Dict[str, str]:
 
     # Description patterns
     desc_patterns = [
-        "description", "desc", "memo", "note", "details",
-        "narration", "reference", "transaction_description"
+        "description",
+        "desc",
+        "memo",
+        "note",
+        "details",
+        "narration",
+        "reference",
+        "transaction_description",
     ]
     for i, header in enumerate(headers):
         if any(p in header for p in desc_patterns):
@@ -104,8 +122,12 @@ def auto_detect_columns(df: pd.DataFrame) -> Dict[str, str]:
 
     # ID patterns
     id_patterns = [
-        "id", "transaction_id", "external_id", "reference",
-        "ref", "transaction_reference"
+        "id",
+        "transaction_id",
+        "external_id",
+        "reference",
+        "ref",
+        "transaction_reference",
     ]
     for i, header in enumerate(headers):
         if any(p in header for p in id_patterns):
@@ -269,10 +291,12 @@ def process_csv(
             records.append(record)
 
         except Exception as e:
-            errors.append({
-                "row": int(idx) + 1,
-                "error": str(e),
-            })
+            errors.append(
+                {
+                    "row": int(idx) + 1,
+                    "error": str(e),
+                }
+            )
 
     return {
         "total_rows": len(df),
@@ -303,6 +327,7 @@ def handle_csv_ingestion(job: Job) -> JobResult:
 
     if file_content_b64:
         import base64
+
         content = base64.b64decode(file_content_b64)
     elif file_path:
         # TODO: Implement storage service integration

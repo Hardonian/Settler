@@ -1,0 +1,107 @@
+# Settler Workhorse - Docker Compose Configuration
+# For local development and testing
+
+version: "3.8"
+
+services:
+  # PostgreSQL database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: settler
+      POSTGRES_PASSWORD: settler_dev_password
+      POSTGRES_DB: settler_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U settler -d settler_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching and job coordination
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Python Worker Service
+  workhorse:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    environment:
+      # Database
+      DATABASE_URL: postgresql://settler:settler_dev_password@postgres:5432/settler_dev
+      WORKHORSE_DATABASE_URL: postgresql://settler:settler_dev_password@postgres:5432/settler_dev
+
+      # Worker configuration
+      WORKHORSE_WORKER_ID: docker-worker-1
+      WORKHORSE_WORKER_POLL_INTERVAL_SECONDS: 5
+      WORKHORSE_WORKER_LOCK_TIMEOUT_SECONDS: 300
+      WORKHORSE_WORKER_MAX_JOBS: 100
+
+      # Retry configuration
+      WORKHORSE_RETRY_MAX_ATTEMPTS: 3
+      WORKHORSE_RETRY_BACKOFF_BASE_SECONDS: 1.0
+      WORKHORSE_RETRY_BACKOFF_MAX_SECONDS: 300.0
+
+      # Logging
+      WORKHORSE_LOG_LEVEL: INFO
+      WORKHORSE_ENVIRONMENT: development
+
+      # Feature flags
+      WORKHORSE_ENABLE_CSV_INGESTION: "true"
+      WORKHORSE_ENABLE_JSON_INGESTION: "true"
+      WORKHORSE_ENABLE_PDF_REPORTS: "false"
+      WORKHORSE_ENABLE_EXCEL_EXPORTS: "true"
+      WORKHORSE_ENABLE_ANOMALY_DETECTION: "true"
+      WORKHORSE_ENABLE_ML_SCORING: "true"
+
+      # Observability
+      WORKHORSE_ENABLE_METRICS: "true"
+      WORKHORSE_METRICS_PORT: 9090
+      WORKHORSE_ENABLE_OPENTELEMETRY: "false"
+    ports:
+      - "9090:9090" # Metrics port
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    command: settler-worker worker
+
+  # Worker 2 (for testing concurrent workers)
+  workhorse-2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    environment:
+      DATABASE_URL: postgresql://settler:settler_dev_password@postgres:5432/settler_dev
+      WORKHORSE_DATABASE_URL: postgresql://settler:settler_dev_password@postgres:5432/settler_dev
+      WORKHORSE_WORKER_ID: docker-worker-2
+      WORKHORSE_WORKER_POLL_INTERVAL_SECONDS: 5
+      WORKHORSE_WORKER_LOCK_TIMEOUT_SECONDS: 300
+      WORKHORSE_LOG_LEVEL: INFO
+      WORKHORSE_ENVIRONMENT: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    command: settler-worker worker
+
+volumes:
+  postgres_data:
+  redis_data:
