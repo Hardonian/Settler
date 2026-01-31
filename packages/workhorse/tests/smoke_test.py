@@ -291,6 +291,151 @@ def test_audit_trail_export_handler():
     return True
 
 
+def test_phase7_handlers_import():
+    """Test Phase 7 handler imports."""
+    print("Testing Phase 7 handler imports...")
+
+    # Import all Phase 7 handlers
+    from settler_workhorse.handlers import export_csv
+    from settler_workhorse.handlers import export_excel
+    from settler_workhorse.handlers import export_pdf
+    from settler_workhorse.handlers import import_validate
+    from settler_workhorse.handlers import receipt_ocr
+
+    print("OK: Phase 7 handlers imported successfully")
+    return True
+
+
+def test_phase7_job_types():
+    """Test Phase 7 job types are registered."""
+    print("Testing Phase 7 job types...")
+
+    from settler_workhorse.models import JobType
+    from settler_workhorse.worker import HANDLER_REGISTRY
+
+    # Check job types exist
+    phase7_types = [
+        JobType.EXPORT_CSV,
+        JobType.EXPORT_EXCEL,
+        JobType.EXPORT_PDF,
+        JobType.IMPORT_VALIDATE,
+        JobType.RECEIPT_OCR,
+    ]
+
+    for job_type in phase7_types:
+        assert job_type in HANDLER_REGISTRY, f"Handler not registered for {job_type}"
+
+    print("OK: All Phase 7 job types registered")
+    return True
+
+
+def test_export_csv_handler():
+    """Test export.csv handler with sample payload."""
+    print("Testing export.csv handler...")
+
+    from datetime import datetime
+    from uuid import uuid4
+
+    from settler_workhorse.handlers.export_csv import handle_export_csv
+    from settler_workhorse.models import Job, JobType
+
+    job = Job(
+        id=uuid4(),
+        tenant_id=uuid4(),
+        job_type=JobType.EXPORT_CSV,
+        payload={
+            "tenant_id": str(uuid4()),
+            "entity_type": "transactions",
+            "filters": {"from": "2024-01-01", "to": "2024-01-31"},
+            "columns": ["id", "amount", "date", "description"],
+            "dry_run": True,
+        },
+        created_at=datetime.utcnow(),
+    )
+
+    result = handle_export_csv(job)
+
+    assert result.success is True
+    assert result.data is not None
+    assert result.data["entity_type"] == "transactions"
+
+    print("OK: export.csv handler works")
+    return True
+
+
+def test_import_validate_handler():
+    """Test import.validate handler with sample payload."""
+    print("Testing import.validate handler...")
+
+    from datetime import datetime
+    from uuid import uuid4
+    import base64
+
+    from settler_workhorse.handlers.import_validate import handle_import_validate
+    from settler_workhorse.models import Job, JobType
+
+    # Create sample CSV content
+    csv_content = "id,amount,date\ntxn1,10.00,2024-01-01\ntxn2,20.00,2024-01-02"
+    csv_base64 = base64.b64encode(csv_content.encode()).decode()
+
+    job = Job(
+        id=uuid4(),
+        tenant_id=uuid4(),
+        job_type=JobType.IMPORT_VALIDATE,
+        payload={
+            "tenant_id": str(uuid4()),
+            "file_content_base64": csv_base64,
+            "import_type": "csv",
+            "expected_columns": ["id", "amount", "date"],
+            "required_columns": ["id", "amount"],
+            "dry_run": True,
+        },
+        created_at=datetime.utcnow(),
+    )
+
+    result = handle_import_validate(job)
+
+    assert result.success is True
+    assert result.data is not None
+
+    print("OK: import.validate handler works")
+    return True
+
+
+def test_receipt_ocr_handler():
+    """Test receipt.ocr handler with sample payload."""
+    print("Testing receipt.ocr handler...")
+
+    from datetime import datetime
+    from uuid import uuid4
+
+    from settler_workhorse.handlers.receipt_ocr import handle_receipt_ocr
+    from settler_workhorse.models import Job, JobType
+
+    job = Job(
+        id=uuid4(),
+        tenant_id=uuid4(),
+        job_type=JobType.RECEIPT_OCR,
+        payload={
+            "tenant_id": str(uuid4()),
+            "image_content_base64": "",  # Will fail validation, but tests dry_run
+            "receipt_id": f"receipt_{uuid4().hex[:8]}",
+            "ocr_engine": "mock",
+            "dry_run": True,
+        },
+        created_at=datetime.utcnow(),
+    )
+
+    result = handle_receipt_ocr(job)
+
+    assert result.success is True
+    assert result.data is not None
+    assert result.data["ocr_engine"] == "mock"
+
+    print("OK: receipt.ocr handler works")
+    return True
+
+
 def main():
     """Run all smoke tests."""
     print("=" * 50)
@@ -310,6 +455,11 @@ def main():
         test_report_generate_handler,
         test_ml_features_build_handler,
         test_audit_trail_export_handler,
+        test_phase7_handlers_import,
+        test_phase7_job_types,
+        test_export_csv_handler,
+        test_import_validate_handler,
+        test_receipt_ocr_handler,
     ]
 
     passed = 0

@@ -317,3 +317,121 @@ export async function enqueueCSVIngestion(
     idempotencyKey: options?.idempotencyKey,
   });
 }
+
+/**
+ * Enqueue an export job
+ *
+ * Export data in CSV, Excel, or PDF format.
+ */
+export async function enqueueExport(
+  entityType: "transactions" | "reconciliations" | "accounts" | "ledgers",
+  format: "csv" | "excel" | "pdf",
+  tenantId: string,
+  options?: {
+    filters?: Record<string, unknown>;
+    columns?: string[];
+    title?: string; // For PDF
+    priority?: number;
+    idempotencyKey?: string;
+  }
+): Promise<EnqueuePythonJobResult> {
+  const jobTypeMap: Record<string, PythonJobType> = {
+    csv: "csv_ingestion", // Will be mapped by backend to export.csv
+    excel: "excel_export", // Will be mapped by backend to export.excel
+    pdf: "pdf_report", // Will be mapped by backend to export.pdf
+  };
+
+  const payload: Record<string, unknown> = {
+    tenant_id: tenantId,
+    entity_type: entityType,
+    filters: options?.filters || {},
+    columns: options?.columns || [],
+    dry_run: false,
+    idempotency_key: options?.idempotencyKey || null,
+  };
+
+  if (format === "pdf" && options?.title) {
+    payload.title = options.title;
+  }
+
+  return enqueuePythonJob({
+    jobType: jobTypeMap[format] ?? "custom",
+    payload,
+    priority: options?.priority,
+    idempotencyKey: options?.idempotencyKey,
+  });
+}
+
+/**
+ * Enqueue an import validation job
+ *
+ * Validate CSV/Excel files before actual import.
+ */
+export async function enqueueImportValidation(
+  fileContentBase64: string,
+  importType: "csv" | "xlsx",
+  tenantId: string,
+  options?: {
+    expectedColumns?: string[];
+    requiredColumns?: string[];
+    columnMapping?: Record<string, string>;
+    priority?: number;
+    idempotencyKey?: string;
+  }
+): Promise<EnqueuePythonJobResult> {
+  // Note: This requires backend support for "import.validate" job type
+  // For now, we'll use a generic approach
+  return enqueuePythonJob({
+    jobType: "custom",
+    payload: {
+      tenant_id: tenantId,
+      file_content_base64: fileContentBase64,
+      import_type: importType,
+      expected_columns: options?.expectedColumns || [],
+      required_columns: options?.requiredColumns || [],
+      column_mapping: options?.columnMapping || {},
+      dry_run: false,
+      idempotency_key: options?.idempotencyKey || null,
+    },
+    priority: options?.priority,
+    idempotencyKey: options?.idempotencyKey,
+  });
+}
+
+/**
+ * Enqueue a receipt OCR job
+ *
+ * Extract text and data from receipt images.
+ */
+export async function enqueueReceiptOCR(
+  imageContentBase64: string,
+  tenantId: string,
+  options?: {
+    receiptId?: string;
+    ocrEngine?: "tesseract" | "mock";
+    preprocess?: boolean;
+    extractStructure?: boolean;
+    language?: string;
+    priority?: number;
+    idempotencyKey?: string;
+  }
+): Promise<EnqueuePythonJobResult> {
+  // Note: This requires backend support for "receipt.ocr" job type
+  // For now, we'll use a generic approach
+  return enqueuePythonJob({
+    jobType: "custom",
+    payload: {
+      tenant_id: tenantId,
+      image_content_base64: imageContentBase64,
+      receipt_id: options?.receiptId || null,
+      ocr_engine: options?.ocrEngine || "tesseract",
+      preprocess: options?.preprocess !== false,
+      extract_structure: options?.extractStructure !== false,
+      language: options?.language || "eng",
+      dry_run: false,
+      idempotency_key: options?.idempotencyKey || null,
+    },
+    priority: options?.priority,
+    idempotencyKey: options?.idempotencyKey,
+  });
+}

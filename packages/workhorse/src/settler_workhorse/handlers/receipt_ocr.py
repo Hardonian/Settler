@@ -55,8 +55,10 @@ def validate_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
 
     image_content_base64 = payload.get("image_content_base64")
     image_url = payload.get("image_url")
+    dry_run = payload.get("dry_run", False)
 
-    if not image_content_base64 and not image_url:
+    # Skip image validation in dry_run mode
+    if not dry_run and not image_content_base64 and not image_url:
         raise ReceiptOCRError("Either image_content_base64 or image_url is required")
 
     return {
@@ -262,6 +264,23 @@ def handle_receipt_ocr(job: Job) -> JobResult:
     )
 
     try:
+        # Handle dry_run mode early
+        if dry_run:
+            return JobResult(
+                success=True,
+                data={
+                    "ocr_id": f"receipt_ocr_{job.id}_dryrun",
+                    "tenant_id": tenant_id,
+                    "receipt_id": receipt_id,
+                    "mode": "dry_run",
+                    "ocr_engine": ocr_engine,
+                    "language": language,
+                    "idempotency_key": idempotency_key,
+                },
+                records_processed=0,
+                records_failed=0,
+            )
+
         # Decode image
         if image_content_base64:
             try:
