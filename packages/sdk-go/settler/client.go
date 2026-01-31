@@ -197,6 +197,16 @@ func (c *Client) Webhooks() *WebhooksClient {
 	return &WebhooksClient{client: c}
 }
 
+// Jobs returns a JobsClient for reconciliation job operations
+func (c *Client) Jobs() *JobsClient {
+	return &JobsClient{client: c}
+}
+
+// Reports returns a ReportsClient for reconciliation report operations
+func (c *Client) Reports() *ReportsClient {
+	return &ReportsClient{client: c}
+}
+
 // PaginationParams represents common pagination parameters
 type PaginationParams struct {
 	Page  int

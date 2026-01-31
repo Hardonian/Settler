@@ -6,6 +6,10 @@ import { ReceiptsClient } from "./clients/receipts";
 import { FlagsClient } from "./clients/flags";
 import { ConvertClient } from "./clients/convert";
 import { ConsoleClient } from "./clients/console";
+import { TransactionsClient } from "./clients/transactions";
+import { SettlementsClient } from "./clients/settlements";
+import { FeesClient } from "./clients/fees";
+import { ExportsClient } from "./clients/exports";
 import {
   parseError,
   NetworkError,
@@ -79,6 +83,10 @@ export class SettlerClient {
   public readonly flags: FlagsClient;
   public readonly convert: ConvertClient;
   public readonly console: ConsoleClient;
+  public readonly transactions: TransactionsClient;
+  public readonly settlements: SettlementsClient;
+  public readonly fees: FeesClient;
+  public readonly exports: ExportsClient;
 
   private readonly apiKey: string;
   private readonly baseUrl: string;
@@ -131,6 +139,10 @@ export class SettlerClient {
     this.flags = new FlagsClient(this);
     this.convert = new ConvertClient(this);
     this.console = new ConsoleClient(this);
+    this.transactions = new TransactionsClient(this);
+    this.settlements = new SettlementsClient(this);
+    this.fees = new FeesClient(this);
+    this.exports = new ExportsClient(this);
   }
 
   /**

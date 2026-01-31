@@ -1,95 +1,457 @@
-class AdaptersClient:
-    """Client for adapter operations"""
-    
-    def __init__(self, client: SettlerClient):
+"""
+Settler Python SDK Client
+
+Production-grade Python client for the Settler Reconciliation API.
+Supports all API endpoints: transactions, settlements, fees, exports,
+currency, webhooks, jobs, and reports.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import time
+from typing import Any, Dict, List, Optional, Union
+from urllib.parse import urlencode, urljoin
+
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+from .exceptions import (
+    AuthenticationError,
+    NetworkError,
+    NotFoundError,
+    RateLimitError,
+    ServerError,
+    SettlerError,
+    ValidationError,
+)
+
+
+class SettlerClient:
+    """Main client for the Settler Reconciliation API.
+
+    Args:
+        api_key: API key or JWT token for authentication.
+        base_url: Base URL for the API.
+        timeout: Request timeout in seconds.
+        max_retries: Maximum number of retries for failed requests.
+
+    Example::
+
+        client = SettlerClient(api_key="sk_your_api_key")
+        txns = client.transactions.list(provider="stripe", limit=50)
+        job = client.jobs.create(provider="stripe", date_range={"start": "...", "end": "..."})
+    """
+
+    DEFAULT_BASE_URL = "https://api.settler.io/api/v1"
+    DEFAULT_TIMEOUT = 30
+    DEFAULT_MAX_RETRIES = 3
+
+    def __init__(
+        self,
+        api_key: str,
+        base_url: str = DEFAULT_BASE_URL,
+        timeout: int = DEFAULT_TIMEOUT,
+        max_retries: int = DEFAULT_MAX_RETRIES,
+    ) -> None:
+        if not api_key:
+            raise ValueError("API key is required")
+
+        self._api_key = api_key
+        self._base_url = base_url.rstrip("/")
+        self._timeout = timeout
+
+        # Configure session with retry
+        self._session = requests.Session()
+        retry_strategy = Retry(
+            total=max_retries,
+            backoff_factor=1,
+            status_forcelist=[502, 503, 504],
+            allowed_methods=["GET", "POST", "PUT", "DELETE"],
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        self._session.mount("https://", adapter)
+        self._session.mount("http://", adapter)
+
+        # Deduplication cache
+        self._dedup_cache: Dict[str, float] = {}
+        self._dedup_ttl = 60.0
+
+        # Initialize sub-clients
+        self.transactions = TransactionsClient(self)
+        self.settlements = SettlementsClient(self)
+        self.fees = FeesClient(self)
+        self.exports = ExportsClient(self)
+        self.currency = CurrencyClient(self)
+        self.webhooks = WebhooksClient(self)
+        self.jobs = JobsClient(self)
+        self.reports = ReportsClient(self)
+
+    def _get_headers(self) -> Dict[str, str]:
+        headers = {
+            "Content-Type": "application/json",
+            "User-Agent": "settler-python/1.0.0",
+        }
+        if self._api_key.startswith("rk_") or self._api_key.startswith("sk_"):
+            headers["X-API-Key"] = self._api_key
+        else:
+            headers["Authorization"] = f"Bearer {self._api_key}"
+        return headers
+
+    def _request(
+        self,
+        method: str,
+        path: str,
+        data: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = None,
+    ) -> Any:
+        """Make an HTTP request to the Settler API."""
+        url = f"{self._base_url}{path}"
+
+        # Clean up None values from params
+        if params:
+            params = {k: v for k, v in params.items() if v is not None}
+
+        try:
+            response = self._session.request(
+                method=method,
+                url=url,
+                json=data,
+                params=params,
+                headers=self._get_headers(),
+                timeout=self._timeout,
+            )
+        except requests.ConnectionError as exc:
+            raise NetworkError(f"Connection failed: {exc}") from exc
+        except requests.Timeout as exc:
+            raise NetworkError(f"Request timed out after {self._timeout}s") from exc
+        except requests.RequestException as exc:
+            raise NetworkError(f"Request failed: {exc}") from exc
+
+        return self._handle_response(response)
+
+    def _handle_response(self, response: requests.Response) -> Any:
+        """Parse the API response and raise appropriate errors."""
+        if 200 <= response.status_code < 300:
+            if not response.content:
+                return None
+            content_type = response.headers.get("content-type", "")
+            if "application/json" in content_type:
+                return response.json()
+            return response.text
+
+        # Parse error body
+        message = "Unknown error"
+        try:
+            body = response.json()
+            message = body.get("message") or body.get("error") or message
+        except (ValueError, KeyError):
+            message = response.text or message
+
+        status = response.status_code
+        if status == 400:
+            raise ValidationError(message, status)
+        elif status in (401, 403):
+            raise AuthenticationError(message, status)
+        elif status == 404:
+            raise NotFoundError(message, status)
+        elif status == 429:
+            raise RateLimitError(message, status)
+        elif 500 <= status < 600:
+            raise ServerError(message, status)
+        else:
+            raise SettlerError(message, status)
+
+
+class TransactionsClient:
+    """Client for transaction operations."""
+
+    def __init__(self, client: SettlerClient) -> None:
         self._client = client
-    
-    def list(self) -> List[Dict[str, Any]]:
-        """List available adapters"""
-        response = self._client._request("GET", "/api/v1/adapters")
-        return response.get("data", [])
-    
-    def get(self, adapter_name: str) -> Dict[str, Any]:
-        """Get adapter details"""
-        response = self._client._request("GET", f"/api/v1/adapters/{adapter_name}")
-        return response.get("data", {})
+
+    def list(
+        self,
+        page: Optional[int] = None,
+        limit: Optional[int] = None,
+        provider: Optional[str] = None,
+        status: Optional[str] = None,
+        type: Optional[str] = None,
+        payment_id: Optional[str] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """List transactions with optional filtering and pagination."""
+        params: Dict[str, Any] = {}
+        if page is not None:
+            params["page"] = page
+        if limit is not None:
+            params["limit"] = limit
+        if provider:
+            params["provider"] = provider
+        if status:
+            params["status"] = status
+        if type:
+            params["type"] = type
+        if payment_id:
+            params["paymentId"] = payment_id
+        if start_date:
+            params["startDate"] = start_date
+        if end_date:
+            params["endDate"] = end_date
+        return self._client._request("GET", "/transactions", params=params)
+
+    def get(self, transaction_id: str) -> Dict[str, Any]:
+        """Get a transaction by ID."""
+        return self._client._request("GET", f"/transactions/{transaction_id}")
 
 
-class ReceiptsClient:
-    """Client for receipt operations"""
+class SettlementsClient:
+    """Client for settlement operations."""
 
-    def __init__(self, client: SettlerClient):
+    def __init__(self, client: SettlerClient) -> None:
         self._client = client
 
-    def parse(self, file_url: str, options: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        """
-        Parse a receipt from a URL
-        
+    def list(
+        self,
+        page: Optional[int] = None,
+        limit: Optional[int] = None,
+        provider: Optional[str] = None,
+        status: Optional[str] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """List settlements with optional filtering and pagination."""
+        params: Dict[str, Any] = {}
+        if page is not None:
+            params["page"] = page
+        if limit is not None:
+            params["limit"] = limit
+        if provider:
+            params["provider"] = provider
+        if status:
+            params["status"] = status
+        if start_date:
+            params["startDate"] = start_date
+        if end_date:
+            params["endDate"] = end_date
+        return self._client._request("GET", "/settlements", params=params)
+
+    def get(self, settlement_id: str) -> Dict[str, Any]:
+        """Get a settlement by ID."""
+        return self._client._request("GET", f"/settlements/{settlement_id}")
+
+
+class FeesClient:
+    """Client for fee visibility and reporting."""
+
+    def __init__(self, client: SettlerClient) -> None:
+        self._client = client
+
+    def list(
+        self,
+        transaction_id: Optional[str] = None,
+        settlement_id: Optional[str] = None,
+        type: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """List fees with optional filtering."""
+        params: Dict[str, Any] = {}
+        if transaction_id:
+            params["transactionId"] = transaction_id
+        if settlement_id:
+            params["settlementId"] = settlement_id
+        if type:
+            params["type"] = type
+        return self._client._request("GET", "/fees", params=params)
+
+    def get_effective_rate(
+        self,
+        transaction_id: Optional[str] = None,
+        provider: Optional[str] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Calculate effective processing rate."""
+        params: Dict[str, Any] = {}
+        if transaction_id:
+            params["transactionId"] = transaction_id
+        if provider:
+            params["provider"] = provider
+        if start_date:
+            params["startDate"] = start_date
+        if end_date:
+            params["endDate"] = end_date
+        return self._client._request("GET", "/fees/effective-rate", params=params)
+
+
+class ExportsClient:
+    """Client for data export operations."""
+
+    def __init__(self, client: SettlerClient) -> None:
+        self._client = client
+
+    def create(
+        self,
+        job_id: str,
+        format: str,
+        date_range: Dict[str, str],
+        options: Optional[Dict[str, Any]] = None,
+    ) -> Any:
+        """Create an export of reconciled data.
+
         Args:
-            file_url: URL of the receipt image or PDF
-            options: Optional parsing options
+            job_id: The reconciliation job ID.
+            format: Export format - "quickbooks", "csv", or "json".
+            date_range: Dict with "start" and "end" ISO date strings.
+            options: Optional export options.
         """
-        data = {"url": file_url}
+        data: Dict[str, Any] = {
+            "jobId": job_id,
+            "format": format,
+            "dateRange": date_range,
+        }
         if options:
             data["options"] = options
-        response = self._client._request("POST", "/api/v1/receipts/parse", data=data)
-        return response.get("data", {})
-
-    def get(self, receipt_id: str) -> Dict[str, Any]:
-        """Get parsed receipt details"""
-        response = self._client._request("GET", f"/api/v1/receipts/{receipt_id}")
-        return response.get("data", {})
+        return self._client._request("POST", "/exports", data=data)
 
 
-class FlagsClient:
-    """Client for feature flag operations"""
+class CurrencyClient:
+    """Client for multi-currency and FX operations."""
 
-    def __init__(self, client: SettlerClient):
+    def __init__(self, client: SettlerClient) -> None:
         self._client = client
 
-    def evaluate(self, flag_key: str, context: Dict[str, Any], default_value: Any = None) -> Dict[str, Any]:
-        """
-        Evaluate a feature flag
-        
+    def convert(
+        self,
+        value: float,
+        from_currency: str,
+        to_currency: str,
+        date: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Convert an amount to a target currency.
+
         Args:
-            flag_key: The key of the flag to evaluate
-            context: User/Environment context for evaluation rules
-            default_value: Value to return if evaluation fails
+            value: Amount to convert.
+            from_currency: Source currency code (e.g. "USD").
+            to_currency: Target currency code (e.g. "EUR").
+            date: Optional date for historical rates.
         """
-        data = {
-            "flagKey": flag_key,
-            "context": context,
-            "defaultValue": default_value
+        data: Dict[str, Any] = {
+            "amount": {"value": value, "currency": from_currency},
+            "toCurrency": to_currency,
         }
-        try:
-            response = self._client._request("POST", "/api/v1/feature-flags/evaluate", data=data)
-            return response.get("data", {})
-        except Exception:
-            if default_value is not None:
-                return {
-                    "flagKey": flag_key,
-                    "value": default_value,
-                    "reason": "error_fallback"
-                }
-            raise
-
-
-class ConvertClient:
-    """Client for conversion operations"""
-
-    def __init__(self, client: SettlerClient):
-        self._client = client
-
-    def unit(self, value: float, from_unit: str, to_unit: str) -> Dict[str, Any]:
-        """Convert units"""
-        data = {"value": value, "from": from_unit, "to": to_unit}
-        response = self._client._request("POST", "/api/v1/convert/unit", data=data)
-        return response.get("data", {})
-
-    def currency(self, amount: float, from_currency: str, to_currency: str, date: Optional[str] = None) -> Dict[str, Any]:
-        """Convert currency"""
-        data = {"amount": amount, "from": from_currency, "to": to_currency}
         if date:
             data["date"] = date
-        response = self._client._request("POST", "/api/v1/convert/currency", data=data)
-        return response.get("data", {})
+        return self._client._request("POST", "/currency/convert", data=data)
+
+    def get_fx_rate(
+        self,
+        from_currency: str,
+        to_currency: str,
+        date: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Get the FX rate for a currency pair."""
+        params: Dict[str, Any] = {
+            "fromCurrency": from_currency,
+            "toCurrency": to_currency,
+        }
+        if date:
+            params["date"] = date
+        return self._client._request("GET", "/currency/fx-rate", params=params)
+
+
+class WebhooksClient:
+    """Client for webhook operations."""
+
+    def __init__(self, client: SettlerClient) -> None:
+        self._client = client
+
+    def receive(
+        self,
+        adapter: str,
+        payload: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """Send a webhook payload for processing.
+
+        Args:
+            adapter: Payment provider adapter ("stripe", "paypal", "square").
+            payload: The raw webhook payload from the provider.
+        """
+        return self._client._request(
+            "POST", f"/webhooks/receive/{adapter}", data=payload
+        )
+
+
+class JobsClient:
+    """Client for reconciliation job management."""
+
+    def __init__(self, client: SettlerClient) -> None:
+        self._client = client
+
+    def create(
+        self,
+        provider: str,
+        date_range: Dict[str, str],
+        options: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Create a new reconciliation job.
+
+        Args:
+            provider: Payment provider ("stripe", "paypal", "square", "bank").
+            date_range: Dict with "start" and "end" ISO date strings.
+            options: Optional job options (autoReconcile, notifyOnComplete).
+        """
+        data: Dict[str, Any] = {
+            "provider": provider,
+            "dateRange": date_range,
+        }
+        if options:
+            data["options"] = options
+        return self._client._request("POST", "/jobs", data=data)
+
+    def list(
+        self,
+        page: Optional[int] = None,
+        limit: Optional[int] = None,
+        status: Optional[str] = None,
+        provider: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """List reconciliation jobs."""
+        params: Dict[str, Any] = {}
+        if page is not None:
+            params["page"] = page
+        if limit is not None:
+            params["limit"] = limit
+        if status:
+            params["status"] = status
+        if provider:
+            params["provider"] = provider
+        return self._client._request("GET", "/jobs", params=params)
+
+    def get(self, job_id: str) -> Dict[str, Any]:
+        """Get a reconciliation job by ID."""
+        return self._client._request("GET", f"/jobs/{job_id}")
+
+    def run(self, job_id: str) -> Dict[str, Any]:
+        """Run a reconciliation job."""
+        return self._client._request("POST", f"/jobs/{job_id}/run")
+
+    def delete(self, job_id: str) -> None:
+        """Delete a reconciliation job."""
+        self._client._request("DELETE", f"/jobs/{job_id}")
+
+
+class ReportsClient:
+    """Client for reconciliation reports."""
+
+    def __init__(self, client: SettlerClient) -> None:
+        self._client = client
+
+    def get(self, job_id: str) -> Dict[str, Any]:
+        """Get a reconciliation report for a job."""
+        return self._client._request("GET", f"/reports/{job_id}")
+
+    def get_unmatched(self, job_id: str) -> Dict[str, Any]:
+        """Get unmatched transactions for a job."""
+        return self._client._request("GET", f"/reports/{job_id}/unmatched")

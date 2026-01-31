@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Settler.Sdk</RootNamespace>
+    <PackageId>Settler.Sdk</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Settler</Authors>
+    <Description>Production-grade .NET SDK for the Settler Reconciliation API</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/settler/settler-dotnet</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/settler/settler-dotnet</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="8.0.0" />
+  </ItemGroup>
+
+</Project>
