@@ -5,7 +5,17 @@ Production-grade Python client for Settler Reconciliation API
 
 __version__ = "1.0.0"
 
-from .client import SettlerClient
+from .client import (
+    SettlerClient,
+    TransactionsClient,
+    SettlementsClient,
+    FeesClient,
+    ExportsClient,
+    CurrencyClient,
+    WebhooksClient,
+    JobsClient,
+    ReportsClient,
+)
 from .exceptions import (
     SettlerError,
     NetworkError,
@@ -18,6 +28,14 @@ from .exceptions import (
 
 __all__ = [
     "SettlerClient",
+    "TransactionsClient",
+    "SettlementsClient",
+    "FeesClient",
+    "ExportsClient",
+    "CurrencyClient",
+    "WebhooksClient",
+    "JobsClient",
+    "ReportsClient",
     "SettlerError",
     "NetworkError",
     "AuthenticationError",

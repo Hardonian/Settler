@@ -58,6 +58,7 @@ tags:
 paths:
   /transactions:
     get:
+      operationId: listTransactions
       tags:
         - Transactions
       summary: List transactions
@@ -126,6 +127,7 @@ paths:
 
   /transactions/{id}:
     get:
+      operationId: getTransaction
       tags:
         - Transactions
       summary: Get transaction by ID
@@ -153,6 +155,7 @@ paths:
 
   /settlements:
     get:
+      operationId: listSettlements
       tags:
         - Settlements
       summary: List settlements
@@ -205,6 +208,7 @@ paths:
 
   /settlements/{id}:
     get:
+      operationId: getSettlement
       tags:
         - Settlements
       summary: Get settlement by ID
@@ -228,6 +232,7 @@ paths:
 
   /fees:
     get:
+      operationId: listFees
       tags:
         - Fees
       summary: List fees
@@ -263,6 +268,7 @@ paths:
 
   /fees/effective-rate:
     get:
+      operationId: getEffectiveRate
       tags:
         - Fees
       summary: Calculate effective rate
@@ -313,6 +319,7 @@ paths:
 
   /exports:
     post:
+      operationId: createExport
       tags:
         - Exports
       summary: Create export
@@ -374,6 +381,7 @@ paths:
 
   /currency/convert:
     post:
+      operationId: convertCurrency
       tags:
         - Currency
       summary: Convert currency
@@ -418,6 +426,7 @@ paths:
 
   /currency/fx-rate:
     get:
+      operationId: getFxRate
       tags:
         - Currency
       summary: Get FX rate
@@ -461,6 +470,7 @@ paths:
 
   /webhooks/receive/{adapter}:
     post:
+      operationId: receiveWebhook
       tags:
         - Webhooks
       summary: Receive webhook
@@ -482,23 +492,309 @@ paths:
         '200':
           description: Webhook processed successfully
           content:
-            application/json
-              application/json:
-                schema:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      processed:
+                        type: boolean
+                      events:
+                        type: array
+                        items:
+                          type: object
+
+  /jobs:
+    post:
+      operationId: createJob
+      tags:
+        - Jobs
+      summary: Create reconciliation job
+      description: Create a new reconciliation job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - provider
+                - dateRange
+              properties:
+                provider:
+                  type: string
+                  enum: [stripe, paypal, square, bank]
+                dateRange:
                   type: object
                   properties:
-                    data:
-                      type: object
-                      properties:
-                        processed:
-                          type: boolean
-                        events:
-                          type: array
-                          items:
-                            type: object
+                    start:
+                      type: string
+                      format: date-time
+                    end:
+                      type: string
+                      format: date-time
+                options:
+                  type: object
+                  properties:
+                    autoReconcile:
+                      type: boolean
+                      default: true
+                    notifyOnComplete:
+                      type: boolean
+                      default: false
+      responses:
+        '201':
+          description: Job created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Job'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    get:
+      operationId: listJobs
+      tags:
+        - Jobs
+      summary: List reconciliation jobs
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, running, completed, failed]
+        - name: provider
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Job'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+  /jobs/{id}:
+    get:
+      operationId: getJob
+      tags:
+        - Jobs
+      summary: Get job by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Job'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      operationId: deleteJob
+      tags:
+        - Jobs
+      summary: Delete job
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Job deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /jobs/{id}/run:
+    post:
+      operationId: runJob
+      tags:
+        - Jobs
+      summary: Run reconciliation job
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Job started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Job'
+
+  /reports/{jobId}:
+    get:
+      operationId: getReport
+      tags:
+        - Reports
+      summary: Get reconciliation report
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Report'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /reports/{jobId}/unmatched:
+    get:
+      operationId: getUnmatchedTransactions
+      tags:
+        - Reports
+      summary: Get unmatched transactions
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transaction'
 
 components:
   schemas:
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenantId:
+          type: string
+          format: uuid
+        provider:
+          type: string
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+        dateRange:
+          type: object
+          properties:
+            start:
+              type: string
+              format: date-time
+            end:
+              type: string
+              format: date-time
+        result:
+          type: object
+          properties:
+            matched:
+              type: integer
+            unmatched:
+              type: integer
+            totalProcessed:
+              type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Report:
+      type: object
+      properties:
+        jobId:
+          type: string
+          format: uuid
+        provider:
+          type: string
+        dateRange:
+          type: object
+          properties:
+            start:
+              type: string
+              format: date-time
+            end:
+              type: string
+              format: date-time
+        summary:
+          type: object
+          properties:
+            totalTransactions:
+              type: integer
+            matched:
+              type: integer
+            unmatched:
+              type: integer
+            totalAmount:
+              $ref: '#/components/schemas/Money'
+            totalFees:
+              $ref: '#/components/schemas/Money'
+        status:
+          type: string
+          enum: [pending, completed, failed]
+        createdAt:
+          type: string
+          format: date-time
+
     Transaction:
       type: object
       properties:

@@ -4,12 +4,6 @@ import (
 	"context"
 )
 
-// DateRange represents a date range for export operations
-type DateRange struct {
-	Start string `json:"start"`
-	End   string `json:"end"`
-}
-
 // ExportOptions represents options for creating an export
 type ExportOptions struct {
 	IncludeFees        bool                   `json:"includeFees,omitempty"`
