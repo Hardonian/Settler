@@ -108,6 +108,45 @@ This monorepo contains:
 - **`packages/cli`**: Command-line tool
 - **`packages/react-settler`**: React components
 - **`packages/adapters`**: Service adapter implementations
+- **`packages/jobforge-*`**: JobForge job queue system (see below)
+
+## 🔄 Background Job Processing (JobForge)
+
+Settler now includes **JobForge**, a production-grade, Postgres-native job queue for background processing:
+
+- **Contract Processing**: Async validation, parsing, and enrichment
+- **Notifications**: Email and webhook delivery with retries
+- **Data Ingestion**: Bulk reconciliation data imports
+- **Audit Jobs**: Compliance checks and reporting
+
+**Key Features:**
+- Multi-tenant isolation via Row Level Security (RLS)
+- Automatic retries with exponential backoff
+- Idempotent job enqueuing (no duplicates)
+- Dead-letter queue for failed jobs
+- Horizontal worker scaling with `FOR UPDATE SKIP LOCKED`
+
+**Quick Start:**
+
+```typescript
+import { JobForgeClient } from '@jobforge/sdk-ts'
+import { SettlerJobTypes } from '@jobforge/adapter-settler'
+
+const jobforge = new JobForgeClient({
+  supabaseUrl: process.env.SUPABASE_URL!,
+  supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+})
+
+// Enqueue a contract processing job
+await jobforge.enqueueJob({
+  tenant_id: user.tenantId,
+  type: SettlerJobTypes.CONTRACT_PROCESS,
+  payload: { contractId: 'abc-123' },
+  idempotency_key: `contract-abc-123-process`,
+})
+```
+
+**Documentation:** [docs/jobforge-integration.md](docs/jobforge-integration.md)
 
 ## 🔐 Security
 
