@@ -986,6 +986,71 @@ export interface Database {
         };
         Update: Partial<Database["public"]["Tables"]["python_dead_letters"]["Insert"]>;
       };
+      // Generic Job Queue Tables
+      jobs: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          type: string;
+          payload: Json;
+          status: string;
+          attempts: number;
+          max_attempts: number;
+          run_at: string;
+          locked_at: string | null;
+          started_at: string | null;
+          finished_at: string | null;
+          locked_by: string | null;
+          error: Json | null;
+          error_message: string | null;
+          result_ref: string | null;
+          idempotency_key: string | null;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          type: string;
+          payload?: Json;
+          status?: string;
+          attempts?: number;
+          max_attempts?: number;
+          run_at?: string;
+          locked_at?: string | null;
+          started_at?: string | null;
+          finished_at?: string | null;
+          locked_by?: string | null;
+          error?: Json | null;
+          error_message?: string | null;
+          result_ref?: string | null;
+          idempotency_key?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["jobs"]["Insert"]>;
+      };
+      job_results: {
+        Row: {
+          id: string;
+          job_id: string;
+          tenant_id: string;
+          result_data: Json | null;
+          result_url: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          job_id: string;
+          tenant_id: string;
+          result_data?: Json | null;
+          result_url?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["job_results"]["Insert"]>;
+      };
       [key: string]: {
         Row: Record<string, unknown>;
         Insert: Record<string, unknown>;
@@ -1201,6 +1266,79 @@ export interface Database {
           p_lock_timeout_seconds: number;
         };
         Returns: number;
+      };
+      // Generic Job Queue Functions
+      enqueue_job: {
+        Args: {
+          p_tenant_id: string;
+          p_type: string;
+          p_payload?: Json;
+          p_idempotency_key?: string | null;
+          p_run_at?: string | null;
+          p_max_attempts?: number;
+          p_created_by?: string | null;
+        };
+        Returns: string;
+      };
+      claim_jobs: {
+        Args: {
+          p_worker_id: string;
+          p_limit?: number;
+          p_tenant_id?: string | null;
+        };
+        Returns: Array<{
+          job_id: string;
+          tenant_id: string;
+          job_type: string;
+          payload: Json;
+          attempts: number;
+          max_attempts: number;
+        }>;
+      };
+      complete_job: {
+        Args: {
+          p_job_id: string;
+          p_status: string;
+          p_error?: Json | null;
+          p_error_message?: string | null;
+          p_result_ref?: string | null;
+        };
+        Returns: boolean;
+      };
+      heartbeat_job: {
+        Args: {
+          p_job_id: string;
+          p_worker_id: string;
+        };
+        Returns: boolean;
+      };
+      release_stale_locks: {
+        Args: {
+          p_stale_threshold?: string;
+        };
+        Returns: number;
+      };
+      store_job_result: {
+        Args: {
+          p_job_id: string;
+          p_result_data?: Json | null;
+          p_result_url?: string | null;
+        };
+        Returns: string;
+      };
+      retry_job: {
+        Args: {
+          p_job_id: string;
+          p_delay?: string;
+        };
+        Returns: boolean;
+      };
+      create_test_job: {
+        Args: {
+          p_tenant_id: string;
+          p_test_data?: Json;
+        };
+        Returns: string;
       };
       [key: string]: {
         Args: Record<string, unknown>;
