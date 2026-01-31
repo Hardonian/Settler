@@ -7,7 +7,7 @@ import { emitLifecycleEventSafe, LifecycleEventType } from "@/lib/ops/lifecycle-
 import { prisma } from "@/shared/db/prismaClient";
 import { appLogger } from "@/lib/utils/logger";
 import { encrypt } from "@/lib/security/encryption";
-import { sanitize } from "@/lib/security/input-sanitization";
+import { sanitizeString } from "@/lib/security/input-sanitization";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -41,9 +41,12 @@ export const GET = withUniversalBillingGate(
 
       if (error) {
         // Sanitize error message to prevent XSS
-        const sanitizedError = sanitize(error);
+        const sanitizedError = sanitizeString(error);
         return NextResponse.redirect(
-          new URL(`/dashboard/integrations?error=${encodeURIComponent(sanitizedError)}`, request.url)
+          new URL(
+            `/dashboard/integrations?error=${encodeURIComponent(sanitizedError)}`,
+            request.url
+          )
         );
       }
 
@@ -99,9 +102,13 @@ export const GET = withUniversalBillingGate(
         {
           connector_id: typeof connector.id === "string" ? connector.id : "",
           tenant_id: tenantId,
-          encrypted_credentials: authResult.metadata ? encrypt(JSON.stringify(authResult.metadata)) : "{}",
+          encrypted_credentials: authResult.metadata
+            ? encrypt(JSON.stringify(authResult.metadata))
+            : "{}",
           access_token_encrypted: authResult.accessToken ? encrypt(authResult.accessToken) : null,
-          refresh_token_encrypted: authResult.refreshToken ? encrypt(authResult.refreshToken) : null,
+          refresh_token_encrypted: authResult.refreshToken
+            ? encrypt(authResult.refreshToken)
+            : null,
           ...(authResult.expiresIn
             ? {
                 token_expires_at: new Date(Date.now() + authResult.expiresIn * 1000).toISOString(),
@@ -184,12 +191,10 @@ export const GET = withUniversalBillingGate(
     } catch (error) {
       appLogger.error("Error in callback route", error);
       // Sanitize error message before redirecting
-      const errorMessage = error instanceof Error ? sanitize(error.message) : "callback_failed";
+      const errorMessage =
+        error instanceof Error ? sanitizeString(error.message) : "callback_failed";
       return NextResponse.redirect(
-        new URL(
-          `/dashboard/integrations?error=${encodeURIComponent(errorMessage)}`,
-          request.url
-        )
+        new URL(`/dashboard/integrations?error=${encodeURIComponent(errorMessage)}`, request.url)
       );
     }
   },

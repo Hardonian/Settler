@@ -136,7 +136,26 @@
     "mirror:verify": "tsx scripts/mirror-verify.ts",
     "mirror:publish": "tsx scripts/mirror-publish.ts",
     "setup:open-core": "bash scripts/setup-open-core.sh",
-    "settler:run": "node scripts/settler-engine.mjs"
+    "settler:run": "node scripts/settler-engine.mjs",
+    "workhorse:install": "cd packages/workhorse && pip install -e \".[dev]\"",
+    "workhorse:worker": "cd packages/workhorse && python -m settler_workhorse.cli worker",
+    "workhorse:health": "cd packages/workhorse && python -m settler_workhorse.cli health",
+    "workhorse:enqueue": "cd packages/workhorse && python -m settler_workhorse.cli enqueue",
+    "workhorse:maintenance": "cd packages/workhorse && python -m settler_workhorse.cli maintenance",
+    "workhorse:smoke": "cd packages/workhorse && python tests/smoke_test.py",
+    "workhorse:lint": "cd packages/workhorse && python -m ruff check src/ tests/",
+    "workhorse:lint:fix": "cd packages/workhorse && python -m ruff check --fix src/ tests/",
+    "workhorse:format": "cd packages/workhorse && python -m black src/ tests/",
+    "workhorse:format:check": "cd packages/workhorse && python -m black --check src/ tests/",
+    "workhorse:typecheck": "cd packages/workhorse && python -m mypy src/ --ignore-missing-imports",
+    "workhorse:test": "cd packages/workhorse && python -m pytest tests/ -v",
+    "workhorse:verify": "npm run workhorse:format:check && npm run workhorse:lint && npm run workhorse:typecheck",
+    "worker:py": "cd packages/workhorse && python -m settler_workhorse.cli worker",
+    "jobs:smoke": "tsx scripts/worker-smoke-test.ts",
+    "workhorse:test": "cd packages/workhorse && pytest tests/ -v",
+    "workhorse:lint": "cd packages/workhorse && black --check src/ tests/ && ruff check src/ tests/ && mypy src/",
+    "workhorse:format": "cd packages/workhorse && black src/ tests/ && ruff fix src/ tests/",
+    "workhorse:dev": "cd packages/workhorse && python -m settler_workhorse.cli worker --poll-interval 2"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

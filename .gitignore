@@ -79,3 +79,17 @@ node-compile-cache/
 nul
 __pycache__/
 *.pyc
+
+# internal agent/planning/strategy docs (keep local, don't track)
+internal/
+*.claude.md
+.*_COMPLETE.md
+.*_FINAL.md
+completion-reports/
+!docs/completion-reports/
+!docs/GO_LIVE.md
+
+# AGENTS.md and CLAUDE.md are needed for agent context but can be optionally ignored
+# Uncomment below to ignore them:
+# AGENTS.md
+# CLAUDE.md

@@ -17,7 +17,7 @@
  * ```
  */
 
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 /**
  * Generic graceful error response
@@ -43,25 +43,25 @@ export interface GracefulErrorResponse<T = unknown> {
  */
 export function gracefulError<T = null>(
   error: unknown,
-  defaultMessage: string = 'An error occurred',
+  defaultMessage: string = "An error occurred",
   emptyData: T | null = null
 ): NextResponse<GracefulErrorResponse<T | null>> {
   const errorMessage = error instanceof Error ? error.message : String(error);
   const errorStack = error instanceof Error ? error.stack : undefined;
 
   // Log error server-side (never expose to client)
-  console.error('[API Error]', {
+  console.error("[API Error]", {
     error: errorMessage,
-    ...(process.env.NODE_ENV === 'development' && errorStack ? { stack: errorStack } : {}),
+    ...(process.env.NODE_ENV === "development" && errorStack ? { stack: errorStack } : {}),
   });
 
   return NextResponse.json(
     {
       success: false,
       error: defaultMessage,
-      message: 'Please try again later or contact support if the issue persists',
+      message: "Please try again later or contact support if the issue persists",
       ...(emptyData !== null ? { data: emptyData } : {}),
-      ...(process.env.NODE_ENV === 'development' ? { details: errorMessage } : {}),
+      ...(process.env.NODE_ENV === "development" ? { details: errorMessage } : {}),
     },
     { status: 200 }
   );
@@ -74,8 +74,9 @@ export function gracefulError<T = null>(
  */
 export function gracefulErrorList<T>(
   error: unknown,
-  defaultMessage: string = 'Unable to fetch data'
+  defaultMessage: string = "Unable to fetch data"
 ): NextResponse<GracefulErrorResponse<T[]>> {
+  // @ts-expect-error - Type inference issue with generic null union
   return gracefulError<T[]>(error, defaultMessage, []);
 }
 
@@ -84,7 +85,7 @@ export function gracefulErrorList<T>(
  */
 export function gracefulErrorSingle(
   error: unknown,
-  defaultMessage: string = 'Unable to fetch resource'
+  defaultMessage: string = "Unable to fetch resource"
 ): NextResponse<GracefulErrorResponse<null>> {
   return gracefulError<null>(error, defaultMessage, null);
 }

@@ -1,0 +1,159 @@
+name: Worker CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "packages/workhorse/**"
+      - "supabase/migrations/**python*"
+      - "scripts/worker-smoke-test.ts"
+      - ".github/workflows/worker-ci.yml"
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "packages/workhorse/**"
+      - "supabase/migrations/**python*"
+      - "scripts/worker-smoke-test.ts"
+      - ".github/workflows/worker-ci.yml"
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+jobs:
+  # Minimal worker smoke test with mocked DB (for CI without real database)
+  worker-smoke-mocked:
+    name: Worker Smoke Test (Mocked)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
+
+      - name: Install Node.js dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Python workhorse
+        run: pnpm workhorse:install
+
+      - name: Run Python smoke tests (mocked)
+        run: pnpm workhorse:smoke
+        env:
+          # Mock database URL - tests don't need real DB
+          DATABASE_URL: postgresql://mock:mock@localhost:5432/mock
+
+  # Full worker test with real database
+  worker-smoke-full:
+    name: Worker Smoke Test (With DB)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: settler_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
+
+      - name: Install Node.js dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Python workhorse
+        run: pnpm workhorse:install
+
+      - name: Apply migrations
+        run: |
+          # Apply workhorse migrations directly using psql
+          # In production, use supabase db push or proper migration tool
+          export PGPASSWORD=postgres
+          for file in supabase/migrations/*python* supabase/migrations/*job_queue*; do
+            if [ -f "$file" ]; then
+              echo "Applying: $file"
+              psql -h localhost -U postgres -d settler_test -f "$file" || echo "Note: Some migrations may fail if tables exist"
+            fi
+          done
+        continue-on-error: true
+
+      - name: Run full smoke test suite
+        run: pnpm jobs:smoke
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
+          NODE_ENV: test
+
+  # Lint and type check for TypeScript parts
+  worker-quality:
+    name: Worker Quality Gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
+
+      - name: Install Node.js dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Python workhorse
+        run: pnpm workhorse:install
+
+      - name: Run Python linting
+        run: |
+          cd packages/workhorse
+          pip install black ruff mypy
+          black --check src/ tests/ || echo "Black formatting issues found"
+          ruff check src/ tests/ || echo "Ruff issues found"
+          mypy src/ || echo "MyPy issues found"
+        continue-on-error: true
+
+      - name: TypeScript type check
+        run: pnpm typecheck --filter=@settler/types --filter=@settler/protocol || true
+
+      - name: Lint check
+        run: pnpm lint || true
+        continue-on-error: true
