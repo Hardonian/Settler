@@ -80,6 +80,10 @@ nul
 __pycache__/
 *.pyc
 
+# temporary JobForge integration artifacts
+.tmp/
+*.zip
+
 # internal agent/planning/strategy docs (keep local, don't track)
 internal/
 *.claude.md
