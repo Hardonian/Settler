@@ -143,6 +143,8 @@
     "workhorse:enqueue": "cd packages/workhorse && python -m settler_workhorse.cli enqueue",
     "workhorse:maintenance": "cd packages/workhorse && python -m settler_workhorse.cli maintenance",
     "workhorse:smoke": "cd packages/workhorse && python tests/smoke_test.py",
+    "worker:py": "cd packages/workhorse && python -m settler_workhorse.cli worker",
+    "jobs:smoke": "tsx scripts/worker-smoke-test.ts",
     "workhorse:test": "cd packages/workhorse && pytest tests/ -v",
     "workhorse:lint": "cd packages/workhorse && black --check src/ tests/ && ruff check src/ tests/ && mypy src/",
     "workhorse:format": "cd packages/workhorse && black src/ tests/ && ruff fix src/ tests/",
