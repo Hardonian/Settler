@@ -5,6 +5,7 @@ Thank you for your interest in contributing to Settler Enterprise! This document
 ## Developer Console
 
 When contributing to Console features:
+
 - ✅ Use unified auth (`lib/api/unified-auth.ts`)
 - ✅ Support both session and API key auth
 - ✅ Never return 500 - use graceful degradation
@@ -51,14 +52,67 @@ npm run migrate
 npm run dev
 ```
 
+## Quality Gates (Required)
+
+All contributions must pass the quality gates before being merged:
+
+### Fast Verification (Pre-commit)
+
+Run before every commit:
+
+```bash
+npm run verify:fast
+```
+
+This checks:
+
+- ✅ TypeScript type checking
+- ✅ ESLint (with auto-fix)
+- ✅ Prettier formatting
+- ✅ Python Black formatting (for workhorse changes)
+- ✅ Python Ruff linting
+
+### Full Verification (Pre-push)
+
+Run before pushing to remote:
+
+```bash
+npm run verify:full
+```
+
+This includes all fast checks plus:
+
+- ✅ Build verification (all packages)
+- ✅ Test suite (Jest + Pytest)
+- ✅ Python MyPy type checking
+
+### Pre-commit Hooks
+
+The repository uses `lint-staged` to run checks on changed files:
+
+- TypeScript/JavaScript: ESLint + Prettier
+- Python: Black + Ruff
+- JSON/YAML: Prettier
+
+### CI/CD Gates
+
+Pull requests are blocked if:
+
+- ❌ Lint errors exist
+- ❌ Type errors exist
+- ❌ Tests fail
+- ❌ Build fails
+- ❌ Internal files are tracked (see `.github/workflows/internal-doc-hygiene.yml`)
+
 ## Code Style
 
 ### TypeScript
 
-- **Strict mode**: Always enabled. No `any` types (use `unknown` if needed)
+- **Strict mode**: Always enabled. Replace `any` with `unknown` + narrowing
 - **Naming**: Use descriptive names. Prefer `getUserById` over `getUser`
 - **Imports**: Use absolute imports when possible: `import { Job } from '@settler/api/domain'`
 - **Exports**: Prefer named exports over default exports
+- **Error Handling**: Use structured error envelopes: `{ code, message, traceId, retryable }`
 
 ### Formatting
 

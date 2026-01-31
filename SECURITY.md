@@ -1,7 +1,20 @@
 # Security Policy
 
-**Last Updated:** January 2026  
-**Version:** 1.0
+**Last Updated:** January 31, 2026  
+**Version:** 1.1
+
+## Recent Security Hardening (Phase 6)
+
+The following security improvements were implemented in the January 2026 hardening effort:
+
+- ✅ **RLS Policy Completion**: Added RLS policies for 16 tables missing tenant isolation
+- ✅ **Composite Indexes**: Created optimized indexes for tenant-scoped queries
+- ✅ **Idempotency Key Isolation**: Added tenant_id to prevent cross-tenant key collisions
+- ✅ **CI Security Gates**: Automated checks for security best practices
+- ✅ **Internal Doc Hygiene**: Removed internal strategy docs from git tracking
+- ✅ **Python Workhorse Verification**: Added security checks for Python batch jobs
+
+**See:** [Security Audit Trail](#security-audit-trail) for detailed timeline.
 
 ## Reporting Security Vulnerabilities
 
@@ -13,6 +26,7 @@ We take security seriously. If you discover a security vulnerability, please rep
 **Subject:** `[SECURITY] Brief description of the issue`
 
 **Please include:**
+
 - Description of the vulnerability
 - Steps to reproduce
 - Potential impact
@@ -26,12 +40,12 @@ We take security seriously. If you discover a security vulnerability, please rep
 
 ### Severity Levels
 
-| Severity | Description | Response Time | Example |
-|----------|-------------|---------------|---------|
-| **Critical** | Remote code execution, data breach, authentication bypass | 4 hours | SQL injection, RCE |
-| **High** | Privilege escalation, sensitive data exposure | 24 hours | Authorization bypass, API key leak |
-| **Medium** | Information disclosure, CSRF, XSS | 72 hours | IDOR, stored XSS |
-| **Low** | Best practice violations, minor info leaks | 7 days | Missing security headers |
+| Severity     | Description                                               | Response Time | Example                            |
+| ------------ | --------------------------------------------------------- | ------------- | ---------------------------------- |
+| **Critical** | Remote code execution, data breach, authentication bypass | 4 hours       | SQL injection, RCE                 |
+| **High**     | Privilege escalation, sensitive data exposure             | 24 hours      | Authorization bypass, API key leak |
+| **Medium**   | Information disclosure, CSRF, XSS                         | 72 hours      | IDOR, stored XSS                   |
+| **Low**      | Best practice violations, minor info leaks                | 7 days        | Missing security headers           |
 
 ### Bug Bounty Program
 
@@ -53,23 +67,27 @@ Rewards are determined by impact, exploitability, and report quality.
 #### API Keys and Credentials
 
 **Storage:**
+
 - All API keys are encrypted at rest using AES-256
 - Keys are stored in environment variables or secure vaults (AWS Secrets Manager, HashiCorp Vault)
 - Never commit secrets to version control
 - Use `.env` files for local development (excluded from git)
 
 **Rotation:**
+
 - API keys can be rotated via the dashboard or API
 - Old keys remain valid for 24 hours after rotation (grace period)
 - We recommend rotating keys every 90 days
 - Enterprise customers can enforce automatic rotation
 
 **Access Control:**
+
 - API keys are scoped by permissions (read-only, write, admin)
 - Keys can be restricted by IP allowlist (Enterprise)
 - All key usage is logged and auditable
 
 **Best Practices for Users:**
+
 ```bash
 # ✅ DO: Use environment variables
 export SETTLER_API_KEY="sk_live_..."
@@ -88,12 +106,14 @@ git add .env  # NEVER DO THIS
 #### Third-Party Credentials
 
 **Adapter Credentials (Stripe, Shopify, etc.):**
+
 - Credentials are encrypted before storage
 - Credentials are never logged or exposed in API responses
 - Credentials are transmitted only over TLS 1.3
 - Users can revoke access at any time
 
 **Webhook Secrets:**
+
 - Webhook secrets are generated automatically
 - Secrets are hashed using bcrypt before storage
 - Secrets are never exposed in API responses
@@ -104,6 +124,7 @@ git add .env  # NEVER DO THIS
 #### Incident Response Plan
 
 **Detection:**
+
 - 24/7 monitoring via automated security tools
 - Intrusion detection systems (IDS)
 - Anomaly detection for unusual access patterns
@@ -134,17 +155,20 @@ git add .env  # NEVER DO THIS
 #### Customer Notification
 
 **When We Notify:**
+
 - Any unauthorized access to customer data
 - Any exposure of sensitive information (API keys, credentials)
 - Any breach affecting customer reconciliation data
 - Any incident requiring customer action
 
 **Notification Method:**
+
 - Email to registered account email
 - In-app notification banner
 - Public disclosure on status page (for public incidents)
 
 **Notification Content:**
+
 - What happened (clear, non-technical language)
 - What data was affected
 - What we're doing to fix it
@@ -153,6 +177,7 @@ git add .env  # NEVER DO THIS
 - Contact information for questions
 
 **Example Notification:**
+
 ```
 Subject: Security Incident Notification - [Date]
 
@@ -189,16 +214,19 @@ Questions? Contact security@settler.io
 #### Regulatory Compliance
 
 **GDPR (EU):**
+
 - Notify supervisory authority within 72 hours
 - Notify affected individuals without undue delay
 - Document all breaches in incident log
 
 **SOC 2:**
+
 - Document incident in security log
 - Report to auditors during annual audit
 - Maintain incident response documentation
 
 **HIPAA (if applicable):**
+
 - Notify affected individuals within 60 days
 - Notify HHS within 60 days (if >500 affected)
 - Provide credit monitoring if PHI was exposed
@@ -214,25 +242,28 @@ Questions? Contact security@settler.io
 const jobSchema = z.object({
   name: z.string().min(1).max(255),
   source: z.object({
-    adapter: z.enum(['stripe', 'shopify', 'quickbooks', 'paypal']),
-    config: z.record(z.string(), z.unknown())
+    adapter: z.enum(["stripe", "shopify", "quickbooks", "paypal"]),
+    config: z.record(z.string(), z.unknown()),
   }),
   target: z.object({
-    adapter: z.enum(['stripe', 'shopify', 'quickbooks', 'paypal']),
-    config: z.record(z.string(), z.unknown())
+    adapter: z.enum(["stripe", "shopify", "quickbooks", "paypal"]),
+    config: z.record(z.string(), z.unknown()),
   }),
   rules: z.object({
-    matching: z.array(z.object({
-      field: z.string(),
-      type: z.enum(['exact', 'fuzzy', 'range']),
-      tolerance: z.number().optional()
-    })),
-    conflictResolution: z.enum(['first-wins', 'last-wins', 'manual'])
-  })
+    matching: z.array(
+      z.object({
+        field: z.string(),
+        type: z.enum(["exact", "fuzzy", "range"]),
+        tolerance: z.number().optional(),
+      })
+    ),
+    conflictResolution: z.enum(["first-wins", "last-wins", "manual"]),
+  }),
 });
 ```
 
 **Validation Rules:**
+
 - All strings are sanitized to prevent injection attacks
 - Numbers are validated for range and type
 - Dates are validated for format and range
@@ -242,14 +273,14 @@ const jobSchema = z.object({
 
 **Common Validations:**
 
-| Input Type | Validation | Example |
-|------------|------------|---------|
-| **Strings** | Length, character set, sanitization | `name: z.string().min(1).max(255)` |
-| **Numbers** | Range, type, precision | `amount: z.number().positive().max(999999999)` |
-| **Dates** | ISO 8601 format, range | `date: z.string().datetime()` |
-| **URLs** | Valid URL format, HTTPS only | `url: z.string().url().startsWith('https://')` |
-| **Emails** | Valid email format | `email: z.string().email()` |
-| **API Keys** | Format validation | `apiKey: z.string().regex(/^sk_(live|test)_[a-zA-Z0-9]+$/)` |
+| Input Type   | Validation                          | Example                                        |
+| ------------ | ----------------------------------- | ---------------------------------------------- | ----------------------- |
+| **Strings**  | Length, character set, sanitization | `name: z.string().min(1).max(255)`             |
+| **Numbers**  | Range, type, precision              | `amount: z.number().positive().max(999999999)` |
+| **Dates**    | ISO 8601 format, range              | `date: z.string().datetime()`                  |
+| **URLs**     | Valid URL format, HTTPS only        | `url: z.string().url().startsWith('https://')` |
+| **Emails**   | Valid email format                  | `email: z.string().email()`                    |
+| **API Keys** | Format validation                   | `apiKey: z.string().regex(/^sk\_(live          | test)\_[a-zA-Z0-9]+$/)` |
 
 #### SQL Injection Prevention
 
@@ -257,10 +288,7 @@ const jobSchema = z.object({
 
 ```typescript
 // ✅ DO: Parameterized queries
-const job = await db.query(
-  'SELECT * FROM jobs WHERE id = $1 AND user_id = $2',
-  [jobId, userId]
-);
+const job = await db.query("SELECT * FROM jobs WHERE id = $1 AND user_id = $2", [jobId, userId]);
 
 // ❌ DON'T: String concatenation
 const job = await db.query(
@@ -269,6 +297,7 @@ const job = await db.query(
 ```
 
 **ORM Usage:**
+
 - We use Prisma ORM which automatically parameterizes queries
 - Raw SQL queries are avoided when possible
 - If raw SQL is needed, parameters are always used
@@ -276,11 +305,13 @@ const job = await db.query(
 #### XSS Prevention
 
 **Output Encoding:**
+
 - All user input is HTML-encoded before rendering
 - We use React's built-in XSS protection
 - Content Security Policy (CSP) headers are enforced
 
 **CSP Headers:**
+
 ```
 Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'
 ```
@@ -288,21 +319,23 @@ Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; 
 #### CSRF Protection
 
 **API Protection:**
+
 - CSRF tokens for state-changing operations
 - SameSite cookies for session management
 - Origin header validation
 
 **Implementation:**
+
 ```typescript
 // CSRF token validation middleware
 const validateCSRF = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers['x-csrf-token'];
+  const token = req.headers["x-csrf-token"];
   const sessionToken = req.session.csrfToken;
-  
+
   if (!token || token !== sessionToken) {
-    return res.status(403).json({ error: 'Invalid CSRF token' });
+    return res.status(403).json({ error: "Invalid CSRF token" });
   }
-  
+
   next();
 };
 ```
@@ -310,6 +343,7 @@ const validateCSRF = (req: Request, res: Response, next: NextFunction) => {
 #### Rate Limiting
 
 **Per API Key:**
+
 - 100 requests per 15 minutes (Free tier)
 - 500 requests per 15 minutes (Starter)
 - 2,000 requests per 15 minutes (Growth)
@@ -317,10 +351,12 @@ const validateCSRF = (req: Request, res: Response, next: NextFunction) => {
 - Custom limits (Enterprise)
 
 **Per IP Address:**
+
 - 1,000 requests per hour (prevents abuse)
 - Exponential backoff on rate limit exceeded
 
 **Implementation:**
+
 ```typescript
 // Rate limiting middleware
 const rateLimiter = rateLimit({
@@ -336,16 +372,19 @@ const rateLimiter = rateLimit({
 #### Encryption at Rest
 
 **Database:**
+
 - All databases use AES-256 encryption
 - Encryption keys are managed by cloud provider (AWS KMS, GCP KMS)
 - Backups are encrypted automatically
 
 **Object Storage:**
+
 - All files stored in S3/R2 are encrypted (SSE-S3 or SSE-KMS)
 - Encryption is enabled by default
 - Keys are rotated annually
 
 **Secrets:**
+
 - API keys and credentials are encrypted before storage
 - Encryption keys are stored separately from encrypted data
 - Key rotation is supported without re-encryption
@@ -353,12 +392,14 @@ const rateLimiter = rateLimit({
 #### Encryption in Transit
 
 **TLS Configuration:**
+
 - TLS 1.3 only (TLS 1.2 deprecated)
 - Strong cipher suites only
 - Perfect Forward Secrecy (PFS) enabled
 - HSTS headers enforced
 
 **Certificate Management:**
+
 - Certificates from Let's Encrypt (automated renewal)
 - Enterprise customers can use custom certificates
 - Certificate pinning supported (mobile SDKs)
@@ -368,16 +409,19 @@ const rateLimiter = rateLimit({
 #### Authentication
 
 **API Keys:**
+
 - Scoped by permissions (read, write, admin)
 - Can be restricted by IP allowlist (Enterprise)
 - All usage is logged and auditable
 
 **OAuth 2.0:**
+
 - Support for GitHub, Google, Microsoft
 - PKCE flow for mobile/SPA
 - Refresh tokens with rotation
 
 **Multi-Factor Authentication (MFA):**
+
 - TOTP-based (Google Authenticator, Authy)
 - SMS-based (optional)
 - Hardware keys (FIDO2/WebAuthn) - Enterprise
@@ -385,12 +429,14 @@ const rateLimiter = rateLimit({
 #### Authorization
 
 **Role-Based Access Control (RBAC):**
+
 - **Owner:** Full access
 - **Admin:** Manage users, jobs, settings
 - **Developer:** Create/edit jobs, view reports
 - **Viewer:** Read-only access
 
 **Resource-Level Permissions:**
+
 - Permissions can be scoped to specific jobs
 - Permissions can be scoped to specific adapters
 - Permissions are enforced at API level
@@ -400,6 +446,7 @@ const rateLimiter = rateLimit({
 #### Logging
 
 **What We Log:**
+
 - All API requests (endpoint, method, user, IP, timestamp)
 - Authentication events (logins, failures, MFA)
 - Authorization events (permission denials)
@@ -408,6 +455,7 @@ const rateLimiter = rateLimit({
 - Security events (failed logins, suspicious activity)
 
 **Log Retention:**
+
 - 7 days (Free tier)
 - 30 days (Starter)
 - 90 days (Growth)
@@ -415,6 +463,7 @@ const rateLimiter = rateLimit({
 - Custom (Enterprise, up to 7 years)
 
 **Log Storage:**
+
 - Logs are stored in encrypted storage
 - Logs are immutable (append-only)
 - Logs are searchable via API
@@ -422,12 +471,14 @@ const rateLimiter = rateLimit({
 #### Monitoring
 
 **Security Monitoring:**
+
 - Intrusion detection systems (IDS)
 - Anomaly detection (unusual access patterns)
 - Failed login attempt tracking
 - API abuse detection
 
 **Alerting:**
+
 - Real-time alerts for critical security events
 - Daily security summary reports
 - Weekly vulnerability scan reports
@@ -439,6 +490,7 @@ const rateLimiter = rateLimit({
 **Status:** In Progress (Target: Q2 2026)
 
 **Controls:**
+
 - Access controls (RBAC, MFA)
 - Encryption (at rest, in transit)
 - Logging and monitoring
@@ -448,12 +500,14 @@ const rateLimiter = rateLimit({
 #### GDPR Compliance
 
 **Data Processing:**
+
 - Data minimization (only collect necessary data)
 - Right to access (data export API)
 - Right to erasure (data deletion API)
 - Data Processing Agreement (DPA) available
 
 **Data Residency:**
+
 - EU data stored in EU regions (Enterprise)
 - Data transfer agreements (SCCs) in place
 
@@ -462,6 +516,7 @@ const rateLimiter = rateLimit({
 **Status:** Not applicable (we don't store card data)
 
 **If Required:**
+
 - Scope reduction (never store card data)
 - Network segmentation
 - Access controls
@@ -495,16 +550,19 @@ const rateLimiter = rateLimit({
 ### Security Resources
 
 **Documentation:**
+
 - [API Security Guide](./docs/api-security.md)
 - [Webhook Security Guide](./docs/webhook-security.md)
 - [Compliance Documentation](./docs/compliance.md)
 
 **Support:**
+
 - **Security Issues:** security@settler.io
 - **General Support:** support@settler.io
 - **Status Page:** status.settler.io
 
 **External Resources:**
+
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
 - [CWE Top 25](https://cwe.mitre.org/top25/)
 - [NIST Cybersecurity Framework](https://www.nist.gov/cyberframework)
