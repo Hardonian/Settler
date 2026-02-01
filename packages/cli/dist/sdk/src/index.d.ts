@@ -7,6 +7,10 @@ import { ReceiptsClient } from "./clients/receipts";
 import { FlagsClient } from "./clients/flags";
 import { ConvertClient } from "./clients/convert";
 import { ConsoleClient } from "./clients/console";
+import { TransactionsClient } from "./clients/transactions";
+import { SettlementsClient } from "./clients/settlements";
+import { FeesClient } from "./clients/fees";
+import { ExportsClient } from "./clients/exports";
 export * from "./types";
 export { SettlerError, NetworkError, AuthError, ValidationError, RateLimitError, ServerError, UnknownError, parseError, } from "./errors";
 export { createPaginatedIterator, collectPaginated, PaginatedIterator, } from "./utils/pagination";
@@ -14,7 +18,11 @@ export { verifyWebhookSignature, verifyWebhookSignatureWithTimestamp, extractWeb
 export { TokenManager, type TokenInfo, } from "./utils/token-refresh";
 export { MiddlewareChain, type Middleware, type RequestContext, type ResponseContext, createLoggingMiddleware, createMetricsMiddleware, } from "./utils/middleware";
 export { withRetry, type RetryConfig } from "./utils/retry";
-export { SettlerClient, JobsClient, ReportsClient, WebhooksClient, AdaptersClient, ReceiptsClient, FlagsClient, ConvertClient, ConsoleClient };
+export { SettlerClient, JobsClient, ReportsClient, WebhooksClient, AdaptersClient, ReceiptsClient, FlagsClient, ConvertClient, ConsoleClient, TransactionsClient, SettlementsClient, FeesClient, ExportsClient };
+export type { Transaction, Money, PaginationInfo, ListTransactionsParams, TransactionListResponse, TransactionResponse, } from "./clients/transactions";
+export type { Settlement, ListSettlementsParams, SettlementListResponse, SettlementResponse, } from "./clients/settlements";
+export type { Fee, ListFeesParams, FeeListResponse, EffectiveRateParams, EffectiveRateResult, EffectiveRateResponse, } from "./clients/fees";
+export type { CreateExportRequest, ExportDateRange, ExportOptions, ExportSummary, ExportResult, } from "./clients/exports";
 export type { ApiKey, CreateApiKeyRequest, CreateApiKeyResponse, UsageSummary, UsageEvent, UsageResponse, Activity, ReceiptListItem, FeatureFlag, } from "./clients/console";
 export default SettlerClient;
 //# sourceMappingURL=index.d.ts.map

@@ -9,6 +9,10 @@ const receipts_1 = require("./clients/receipts");
 const flags_1 = require("./clients/flags");
 const convert_1 = require("./clients/convert");
 const console_1 = require("./clients/console");
+const transactions_1 = require("./clients/transactions");
+const settlements_1 = require("./clients/settlements");
+const fees_1 = require("./clients/fees");
+const exports_1 = require("./clients/exports");
 const errors_1 = require("./errors");
 const retry_1 = require("./utils/retry");
 const deduplication_1 = require("./utils/deduplication");
@@ -41,6 +45,10 @@ class SettlerClient {
     flags;
     convert;
     console;
+    transactions;
+    settlements;
+    fees;
+    exports;
     apiKey;
     baseUrl;
     timeout;
@@ -85,6 +93,10 @@ class SettlerClient {
         this.flags = new flags_1.FlagsClient(this);
         this.convert = new convert_1.ConvertClient(this);
         this.console = new console_1.ConsoleClient(this);
+        this.transactions = new transactions_1.TransactionsClient(this);
+        this.settlements = new settlements_1.SettlementsClient(this);
+        this.fees = new fees_1.FeesClient(this);
+        this.exports = new exports_1.ExportsClient(this);
     }
     /**
      * Adds a middleware to the middleware chain

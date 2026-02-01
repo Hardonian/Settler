@@ -14,7 +14,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ConsoleClient = exports.ConvertClient = exports.FlagsClient = exports.ReceiptsClient = exports.AdaptersClient = exports.WebhooksClient = exports.ReportsClient = exports.JobsClient = exports.SettlerClient = exports.withRetry = exports.createMetricsMiddleware = exports.createLoggingMiddleware = exports.MiddlewareChain = exports.TokenManager = exports.extractWebhookTimestamp = exports.verifyWebhookSignatureWithTimestamp = exports.verifyWebhookSignature = exports.PaginatedIterator = exports.collectPaginated = exports.createPaginatedIterator = exports.parseError = exports.UnknownError = exports.ServerError = exports.RateLimitError = exports.ValidationError = exports.AuthError = exports.NetworkError = exports.SettlerError = void 0;
+exports.ExportsClient = exports.FeesClient = exports.SettlementsClient = exports.TransactionsClient = exports.ConsoleClient = exports.ConvertClient = exports.FlagsClient = exports.ReceiptsClient = exports.AdaptersClient = exports.WebhooksClient = exports.ReportsClient = exports.JobsClient = exports.SettlerClient = exports.withRetry = exports.createMetricsMiddleware = exports.createLoggingMiddleware = exports.MiddlewareChain = exports.TokenManager = exports.extractWebhookTimestamp = exports.verifyWebhookSignatureWithTimestamp = exports.verifyWebhookSignature = exports.PaginatedIterator = exports.collectPaginated = exports.createPaginatedIterator = exports.parseError = exports.UnknownError = exports.ServerError = exports.RateLimitError = exports.ValidationError = exports.AuthError = exports.NetworkError = exports.SettlerError = void 0;
 const client_1 = require("./client");
 Object.defineProperty(exports, "SettlerClient", { enumerable: true, get: function () { return client_1.SettlerClient; } });
 const jobs_1 = require("./clients/jobs");
@@ -33,6 +33,14 @@ const convert_1 = require("./clients/convert");
 Object.defineProperty(exports, "ConvertClient", { enumerable: true, get: function () { return convert_1.ConvertClient; } });
 const console_1 = require("./clients/console");
 Object.defineProperty(exports, "ConsoleClient", { enumerable: true, get: function () { return console_1.ConsoleClient; } });
+const transactions_1 = require("./clients/transactions");
+Object.defineProperty(exports, "TransactionsClient", { enumerable: true, get: function () { return transactions_1.TransactionsClient; } });
+const settlements_1 = require("./clients/settlements");
+Object.defineProperty(exports, "SettlementsClient", { enumerable: true, get: function () { return settlements_1.SettlementsClient; } });
+const fees_1 = require("./clients/fees");
+Object.defineProperty(exports, "FeesClient", { enumerable: true, get: function () { return fees_1.FeesClient; } });
+const exports_1 = require("./clients/exports");
+Object.defineProperty(exports, "ExportsClient", { enumerable: true, get: function () { return exports_1.ExportsClient; } });
 // Export types
 __exportStar(require("./types"), exports);
 // Export error classes
