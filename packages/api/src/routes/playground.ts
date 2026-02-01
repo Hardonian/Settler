@@ -8,7 +8,6 @@ import { Router, Response, RequestHandler, Request } from "express";
 import { z } from "zod";
 import fs from "fs";
 import path from "path";
-// @ts-expect-error - PrismaClient is generated at build time
 import { PrismaClient } from "@prisma/client";
 import { validateRequest } from "../middleware/validation";
 import { handleRouteError } from "../utils/error-handler";

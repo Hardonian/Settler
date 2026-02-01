@@ -6,7 +6,6 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
 import { logInfo } from '../../utils/logger';
 import { AIModel } from '../ai-mesh/ai-router';

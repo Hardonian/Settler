@@ -4,8 +4,6 @@
  * Type definitions for the unified Recon Core Engine
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error - Prisma types are generated at build time
 import type { ReconJob as PrismaReconJob, ReconResult as PrismaReconResult } from "@prisma/client";
 
 export type ReconStrategy = "deterministic" | "fuzzy" | "ml_based" | "hybrid";

@@ -10,7 +10,6 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error - PrismaClient is generated at build time
 import { PrismaClient } from "@prisma/client";
 import { sendEmail, EmailTemplate } from "../../lib/email";
 import { getJobFailureTemplate, getJobCompletionTemplate } from "../email/job-templates";
