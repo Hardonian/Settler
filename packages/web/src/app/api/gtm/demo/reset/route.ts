@@ -51,7 +51,7 @@ export const POST = withSecurity(
       success: true,
       message: 'Demo data reset successfully',
     });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error('[Demo Reset] Error', error);
     return NextResponse.json(
       {

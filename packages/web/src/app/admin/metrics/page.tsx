@@ -43,7 +43,7 @@ async function AdminMetricsContent() {
         </div>
       );
     }
-  } catch (_error) {
+  } catch (error) {
     adminLogger.error('Error in admin metrics page', error);
     return (
       <div className="text-center py-12">

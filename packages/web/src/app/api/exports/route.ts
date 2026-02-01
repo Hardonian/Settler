@@ -66,7 +66,8 @@ export const POST = withSecurity(
                 });
                 tenantId = billingAccount?.tenantId || null;
               }
-            } catch (_error) {
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            } catch (error) {
               return NextResponse.json(
                 {
                   error: "Unauthorized",
@@ -76,7 +77,8 @@ export const POST = withSecurity(
               );
             }
           }
-        } catch (_error) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
           return NextResponse.json(
             {
               error: "Unauthorized",
@@ -179,7 +181,7 @@ export const POST = withSecurity(
           },
           { status: 201 }
         );
-      } catch (_error) {
+      } catch (error) {
         const duration = Date.now() - startTime;
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
         const errorStack = error instanceof Error ? error.stack : undefined;
@@ -272,7 +274,7 @@ export const GET = withSecurity(
             rowCount: exp.rowCount,
           })),
         });
-      } catch (_error) {
+      } catch (error) {
         // Never return 500 - return empty exports array with graceful error message
         return NextResponse.json(
           {
@@ -417,7 +419,7 @@ async function processExport(
     });
 
     appLogger.info(`[Export API] Export ${exportId} completed successfully`);
-  } catch (_error) {
+  } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
 
     await prisma.export.update({

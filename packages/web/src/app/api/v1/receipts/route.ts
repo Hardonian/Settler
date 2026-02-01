@@ -440,7 +440,7 @@ export async function POST(request: NextRequest) {
       const response = NextResponse.json(demoReceipt, { status: 200 });
       return addCorrelationHeaders(response, correlationId);
     }
-  } catch (_error) {
+  } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     logger.error("Receipt parse request error", {
       correlationId,

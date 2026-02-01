@@ -37,6 +37,7 @@ const endpoints = [
     path: '/api/v1/jobs/:id',
     description: 'Get reconciliation job details',
     example: `const job = await client.jobs.get(jobId);
+// eslint-disable-next-line no-console
 console.log(job.status); // 'pending' | 'running' | 'completed' | 'failed'`,
   },
   {
@@ -44,6 +45,7 @@ console.log(job.status); // 'pending' | 'running' | 'completed' | 'failed'`,
     path: '/api/v1/jobs/:id/run',
     description: 'Run a reconciliation job',
     example: `const report = await client.jobs.run(jobId);
+// eslint-disable-next-line no-console
 console.log(report.summary);`,
   },
   {
@@ -53,6 +55,7 @@ console.log(report.summary);`,
     example: `const receipt = await client.receipts.parse({
   file: "https://example.com/receipt.jpg",
 });
+// eslint-disable-next-line no-console
 console.log(receipt.total, receipt.merchant);`,
   },
   {
@@ -60,6 +63,7 @@ console.log(receipt.total, receipt.merchant);`,
     path: '/api/v1/reports/:jobId',
     description: 'Get reconciliation report',
     example: `const report = await client.reports.get(jobId);
+// eslint-disable-next-line no-console
 console.log(report.summary);
 // {
 //   total: 150,

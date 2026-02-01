@@ -19,7 +19,7 @@ export async function withFallback<T>(
 ): Promise<T> {
   try {
     return await fn();
-  } catch (_error) {
+  } catch (error) {
     if (config.onFallback) {
       config.onFallback(error);
     }
@@ -64,7 +64,7 @@ export async function raceToSuccess<T>(
     }
     try {
       return await fn();
-    } catch (_error) {
+    } catch (error) {
       errors.push({ error, index: i });
       if (onError) {
         onError(error, i);

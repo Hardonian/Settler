@@ -46,7 +46,7 @@ export const POST = withSecurity(
     }
     
     return NextResponse.json({ success: true });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error('[Acknowledge Alert API] Error', error);
     return NextResponse.json(
       {

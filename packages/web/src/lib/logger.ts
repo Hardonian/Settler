@@ -79,6 +79,7 @@ function log(
       }
       break;
     case 'info':
+      // eslint-disable-next-line no-console
       console.log(logMessage);
       break;
     case 'warn':

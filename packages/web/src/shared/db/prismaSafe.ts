@@ -25,7 +25,7 @@ async function getPrismaClient(): Promise<PrismaClient | null> {
     const { prisma } = (await import('./prismaClient')) as { prisma: PrismaClient };
     prismaInstance = prisma;
     return prisma;
-  } catch (_error) {
+  } catch (error) {
     prismaError = error instanceof Error ? error : new Error('Failed to load Prisma');
     console.error('[PrismaSafe] Failed to load Prisma client:', prismaError);
     return null;

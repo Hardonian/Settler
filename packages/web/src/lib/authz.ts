@@ -57,7 +57,7 @@ export async function getWorkspaceMembership(
       workspaceId,
       role: membership.role,
     };
-  } catch (_error) {
+  } catch (error) {
     console.error('[authz] Error checking workspace membership:', error);
     return {
       authorized: false,
@@ -96,7 +96,7 @@ export async function isAdmin(workspaceId?: string): Promise<boolean> {
     }
 
     return false;
-  } catch (_error) {
+  } catch (error) {
     console.error('[authz] Error checking admin status:', error);
     return false;
   }

@@ -36,7 +36,7 @@ async function guardInternalAccess(request: NextRequest): Promise<NextResponse |
   try {
     // Require authenticated session (Console users).
     await requireAuth(request);
-  } catch (_error) {
+  } catch (error) {
     // Do not reveal route existence.
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
@@ -73,7 +73,7 @@ export const GET = withSecurity(
       default:
         return await handleAllExamples();
     }
-  } catch (_error) {
+  } catch (error) {
     // Never return 500 - return graceful error response
     return NextResponse.json(
       {
@@ -118,7 +118,7 @@ export const POST = withSecurity(
       size: result.size ?? 0,
       contentType: result.contentType,
     });
-  } catch (_error) {
+  } catch (error) {
     // Never return 500 - return graceful error response
     return NextResponse.json(
       {

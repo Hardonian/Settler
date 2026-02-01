@@ -162,7 +162,7 @@ export async function checkUserEntitlements(
       allowed: true,
       entitlements,
     };
-  } catch (_error) {
+  } catch (error) {
     await safeLogger.error("[Entitlement Checks] Entitlement check failed", {
       billingAccountId,
       error: error instanceof Error ? error.message : String(error),
@@ -200,7 +200,7 @@ export async function getUserBillingStatus(billingAccountId: string): Promise<st
   try {
     const billing = await getBillingHardening();
     return await billing.getBillingStatus(billingAccountId);
-  } catch (_error) {
+  } catch (error) {
     await safeLogger.error("[Entitlement Checks] Billing status check failed", {
       billingAccountId,
       error: error instanceof Error ? error.message : String(error),

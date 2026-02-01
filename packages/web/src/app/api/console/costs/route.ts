@@ -63,7 +63,7 @@ export const GET = withSecurity(
     logger.info('Costs calculated successfully', { correlationId, billingAccountId: billingAccount.id });
     const response = NextResponse.json(costs);
     return addCorrelationHeaders(response, correlationId);
-  } catch (_error) {
+  } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     logger.error('Error fetching costs', {
       correlationId,

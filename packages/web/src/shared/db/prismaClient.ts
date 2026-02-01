@@ -184,9 +184,10 @@ try {
 
   // Log successful initialization (only in development)
   if (nodeEnv === "development" && optimizedDbUrl) {
+    // eslint-disable-next-line no-console
     console.log("[Prisma] Client initialized successfully with connection pooling");
   }
-} catch (_error) {
+} catch (error) {
   // If Prisma initialization fails (e.g., missing DATABASE_URL or engine type mismatch),
   // create a stub client that returns null/empty results gracefully
   const errorMessage = error instanceof Error ? error.message : String(error);
@@ -285,7 +286,7 @@ async function checkConnectionHealth(): Promise<boolean> {
   try {
     await prismaInstance.$queryRaw`SELECT 1`;
     return true;
-  } catch (_error) {
+  } catch (error) {
     console.error("[Prisma] Connection health check failed:", error);
     return false;
   }
@@ -307,6 +308,7 @@ if (typeof setInterval !== "undefined" && nodeEnv === "production") {
 // Graceful shutdown handler
 if (typeof process !== "undefined") {
   const shutdown = async () => {
+    // eslint-disable-next-line no-console
     console.log("[Prisma] Closing database connections...");
     await prismaInstance.$disconnect().catch((error) => {
       console.error("[Prisma] Error disconnecting:", error);

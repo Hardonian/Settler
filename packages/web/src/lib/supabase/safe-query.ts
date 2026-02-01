@@ -102,7 +102,7 @@ export async function safeQuery<T>(
       error: null,
       isEmpty,
     };
-  } catch (_error) {
+  } catch (error) {
     // Unexpected error - log but don't throw
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     await safeLogger.error('[SafeQuery] Unexpected error', {

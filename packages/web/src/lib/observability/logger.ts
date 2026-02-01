@@ -85,6 +85,7 @@ class Logger {
         break;
       case 'info':
       default:
+        // eslint-disable-next-line no-console
         console.log(logString);
         break;
     }

@@ -18,7 +18,7 @@ export async function validateRequestBody<T>(
     const body = await request.json();
     const validated = schema.parse(body);
     return { success: true, data: validated };
-  } catch (_error) {
+  } catch (error) {
     if (error instanceof z.ZodError) {
       return {
         success: false,
@@ -47,7 +47,7 @@ export function validateQueryParams<T>(
     });
     const validated = schema.parse(params);
     return { success: true, data: validated };
-  } catch (_error) {
+  } catch (error) {
     if (error instanceof z.ZodError) {
       return {
         success: false,

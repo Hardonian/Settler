@@ -150,7 +150,7 @@ export const GET = withSecurity(
                 limit: usage.limit === -1 ? 0 : usage.limit, // -1 means unlimited, show as 0 for UI
                 remaining: usage.remaining === -1 ? -1 : usage.remaining,
               };
-            } catch (_error) {
+            } catch (error) {
               appLogger.error(`[Usage API] Error getting usage for ${service}`, error);
               // Continue with other services
             }
@@ -173,7 +173,7 @@ export const GET = withSecurity(
         });
         const response = NextResponse.json(summary, { status: 200 });
         return addCorrelationHeaders(response, correlationId);
-      } catch (_error) {
+      } catch (error) {
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
         logger.error("Error fetching usage summary", {
           correlationId,

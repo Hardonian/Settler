@@ -118,7 +118,7 @@ export default function JobsPage() {
 
       setJobs(jobsList);
       setFilteredJobs(jobsList);
-    } catch (_error) {
+    } catch (error) {
       logger.error("Failed to fetch jobs", error instanceof Error ? error : new Error(String(error)));
       setJobs([]);
       setFilteredJobs([]);

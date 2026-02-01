@@ -167,7 +167,7 @@ export const GET = withSecurity(
       health.checks.migrations.criticalTablesExist = true;
       health.checks.migrations.status = 'ok';
     }
-  } catch (_error) {
+  } catch (error) {
     health.checks.supabase.status = 'error';
     health.checks.supabase.error = error instanceof Error ? error.message : 'Unknown error';
     health.status = 'unhealthy';

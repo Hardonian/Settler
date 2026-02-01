@@ -72,7 +72,7 @@ export async function assertTenantAccess(
       allowed: true,
       tenantId,
     };
-  } catch (_error) {
+  } catch (error) {
     await safeLogger.error('[assertTenantAccess] Error', {
       tenantId,
       error: error instanceof Error ? error.message : String(error),

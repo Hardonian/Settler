@@ -62,7 +62,7 @@ export async function safeFetch<T = unknown>(
       success: true,
       data,
     };
-  } catch (_error) {
+  } catch (error) {
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
         return {

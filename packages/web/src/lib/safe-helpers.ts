@@ -65,7 +65,7 @@ export async function safeFetch(
       }
 
       return { success: true, data: response };
-    } catch (_error) {
+    } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
       
       // Don't retry on network errors if we're out of retries
@@ -105,7 +105,7 @@ export async function safeSupabase() {
       success: true as const,
       data: client,
     };
-  } catch (_error) {
+  } catch (error) {
     return {
       success: false as const,
       error: error instanceof Error ? error.message : 'Failed to create Supabase client',
@@ -140,7 +140,7 @@ export function safeStripe(): SafeResult<Stripe> {
       success: true,
       data: stripe,
     };
-  } catch (_error) {
+  } catch (error) {
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to create Stripe client',
@@ -197,7 +197,7 @@ export function safeJsonParse<T>(json: string): SafeResult<T> {
       success: true,
       data,
     };
-  } catch (_error) {
+  } catch (error) {
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Invalid JSON',
@@ -223,7 +223,7 @@ export async function safeWithTimeout<T>(
       success: true,
       data,
     };
-  } catch (_error) {
+  } catch (error) {
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Operation failed',
@@ -249,7 +249,7 @@ export async function retryWithBackoff<T>(
         success: true,
         data: result,
       };
-    } catch (_error) {
+    } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
 
       if (attempt < maxRetries) {

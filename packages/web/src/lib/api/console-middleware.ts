@@ -54,13 +54,14 @@ export function withConsoleLogging(
       requestLog.headers = headers;
     }
 
+    // eslint-disable-next-line no-console
     console.log('[Console API Request]', JSON.stringify(requestLog));
 
     // Execute handler
     let response: NextResponse;
     try {
       response = await handler(req);
-    } catch (_error) {
+    } catch (error) {
       // Log error
       console.error('[Console API Error]', {
         type: 'error',
@@ -90,6 +91,7 @@ export function withConsoleLogging(
     // Track metrics
     await trackApiMetric(path, method, response.status, duration);
 
+    // eslint-disable-next-line no-console
     console.log('[Console API Response]', JSON.stringify(responseLog));
 
     // Add correlation headers

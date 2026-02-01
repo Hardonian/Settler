@@ -179,7 +179,7 @@ export function withErrorHandling<T extends (...args: any[]) => Promise<NextResp
       const traceId = await getTraceId();
       result.headers.set('x-trace-id', traceId);
       return result;
-    } catch (_error) {
+    } catch (error) {
       return handleApiError(error, 'An error occurred', context);
     }
   }) as T;

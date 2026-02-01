@@ -57,7 +57,7 @@ export const GET = withSecurity(
 
     const response = NextResponse.json({ receipts });
     return addCorrelationHeaders(response, correlationId);
-  } catch (_error) {
+  } catch (error) {
     // If auth error, return 401
     if (error instanceof Error && error.message.includes('Unauthorized')) {
       logger.warn('Authentication failed', { correlationId, error: error.message });

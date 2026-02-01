@@ -165,7 +165,7 @@ async function handleGet(request: NextRequest) {
       limit: pagination.limit,
       offset: pagination.offset,
     });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error('[tenants] Error', error);
     // Never return 500 - return empty tenants list with professional error message
     return NextResponse.json(

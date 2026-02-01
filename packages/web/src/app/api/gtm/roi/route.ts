@@ -42,7 +42,7 @@ export const GET = withSecurity(
     const roi = await calculateROI(billingAccountId, startDate, endDate);
 
     return NextResponse.json(roi);
-  } catch (_error) {
+  } catch (error) {
     appLogger.error('[ROI API] Error', error);
     return NextResponse.json(
       {

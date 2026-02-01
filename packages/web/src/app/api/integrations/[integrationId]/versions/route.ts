@@ -33,7 +33,7 @@ export const GET = withSecurity(
     };
 
     return NextResponse.json(versionInfo);
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Error in versions GET", error);
     return NextResponse.json(
       {

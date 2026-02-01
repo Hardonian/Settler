@@ -92,7 +92,7 @@ export async function logAuditEvent(entry: AuditLogEntry): Promise<void> {
         metadata: (entry.metadata || {}) as never,
       },
     });
-  } catch (_error) {
+  } catch (error) {
     // Don't block operations if audit logging fails
     console.error('[Audit Logger] Error logging audit event:', error);
   }
@@ -155,7 +155,7 @@ export async function queryAuditLogs(options: {
       limit,
       offset,
     };
-  } catch (_error) {
+  } catch (error) {
     console.error('[Audit Logger] Error querying audit logs:', error);
     return {
       logs: [],

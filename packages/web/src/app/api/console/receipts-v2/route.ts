@@ -65,7 +65,7 @@ export const POST = withSecurity(
         }
 
         return NextResponse.json({ receipt }, { status: 201 });
-      } catch (_error) {
+      } catch (error) {
         // Return typed error, not 500
         if (error instanceof z.ZodError) {
           return NextResponse.json(
@@ -118,7 +118,7 @@ export const GET = withSecurity(
         const receipts = await listReceipts(tenantId, limit);
 
         return NextResponse.json({ receipts });
-      } catch (_error) {
+      } catch (error) {
         appLogger.error("[Receipts V2 API] Error", { error, feature: "GET API" });
         return NextResponse.json({ receipts: [] }, { status: 200 });
       }

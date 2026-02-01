@@ -50,7 +50,7 @@ export async function generateStaticParams() {
         page: path.split("/").filter(Boolean),
       };
     });
-  } catch (_error) {
+  } catch (error) {
     console.error("Error fetching Builder pages:", error);
     return [];
   }

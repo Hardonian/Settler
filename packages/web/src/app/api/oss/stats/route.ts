@@ -76,7 +76,7 @@ export const GET = withSecurity(
         headers: getCacheHeaders('API'),
       }
     );
-  } catch (_error) {
+  } catch (error) {
     appLogger.error('Failed to fetch OSS stats', error);
     // Never return 500 - return empty stats with graceful error message
     return NextResponse.json(

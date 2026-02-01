@@ -48,7 +48,7 @@ export default function IntegrationConfigurationPage() {
       };
       setConfig(integrationConfig);
       setFormData(integrationConfig.config);
-    } catch (_error) {
+    } catch (error) {
       console.error("Failed to fetch integration config:", error);
     } finally {
       setIsLoading(false);
@@ -71,12 +71,13 @@ export default function IntegrationConfigurationPage() {
     try {
       setIsSaving(true);
       // In production: await fetch(`/api/integrations/${integrationId}/config`, { method: "POST", body: JSON.stringify(formData) });
+      // eslint-disable-next-line no-console
       console.log("Saving config:", formData);
       // Update local state
       if (config) {
         setConfig({ ...config, config: formData, is_connected: true });
       }
-    } catch (_error) {
+    } catch (error) {
       console.error("Save failed:", error);
     } finally {
       setIsSaving(false);
@@ -87,9 +88,10 @@ export default function IntegrationConfigurationPage() {
     try {
       setIsTesting(true);
       // In production: await fetch(`/api/integrations/${integrationId}/test`, { method: "POST", body: JSON.stringify(formData) });
+      // eslint-disable-next-line no-console
       console.log("Testing connection:", formData);
       alert("Connection test successful!");
-    } catch (_error) {
+    } catch (error) {
       console.error("Test failed:", error);
       alert("Connection test failed. Please check your credentials.");
     } finally {

@@ -66,7 +66,7 @@ export const GET = withSecurity(
     
     // Add CORS headers
     return addCorsHeaders(response, request);
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Error in status GET", error);
     // Never return 500 - return degraded status with graceful error message
     const errorResponse = NextResponse.json(

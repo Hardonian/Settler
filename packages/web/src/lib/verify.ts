@@ -20,7 +20,7 @@ export async function loadVerifier(): Promise<typeof wasmModule> {
     const importedModule = await import(/* webpackIgnore: true */ "/wasm/settler_verify_wasm.js");
     wasmModule = importedModule as typeof wasmModule;
     return wasmModule;
-  } catch (_error) {
+  } catch (error) {
     console.warn("[verify] wasm verifier unavailable", error);
     return null;
   }

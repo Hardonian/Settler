@@ -72,6 +72,7 @@ export function RealtimePosts() {
               filter: "status=eq.published",
             },
             (payload) => {
+              // eslint-disable-next-line no-console
               console.log("Post change received:", payload);
 
               if (payload.eventType === "INSERT") {

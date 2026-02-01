@@ -27,7 +27,7 @@ async function DashboardMetrics() {
     let externalMetrics;
     try {
       externalMetrics = await getExternalMetrics();
-    } catch (_error) {
+    } catch (error) {
       const logger = (await import('@/lib/logging/logger')).logger;
       logger.warn('Failed to fetch external metrics', { error });
       externalMetrics = {
@@ -51,7 +51,7 @@ async function DashboardMetrics() {
         const logger = (await import('@/lib/logging/logger')).logger;
         logger.warn('RPC function error', { error: result.error });
       }
-    } catch (_error) {
+    } catch (error) {
       appLogger.warn('RPC function not available, using fallback queries', { error: error });
     }
 
@@ -63,7 +63,7 @@ async function DashboardMetrics() {
         .select('*', { count: 'exact', head: true })
         .gte('created_at', new Date(Date.now() - 60 * 60 * 1000).toISOString());
       recentActivityCount = count || 0;
-    } catch (_error) {
+    } catch (error) {
       appLogger.warn('Error fetching activity count', { error: error });
     }
 
@@ -75,7 +75,7 @@ async function DashboardMetrics() {
         .select('*', { count: 'exact', head: true })
         .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
       newUsersCount = count || 0;
-    } catch (_error) {
+    } catch (error) {
       appLogger.warn('Error fetching new users count', { error: error });
     }
 
@@ -104,7 +104,7 @@ async function DashboardMetrics() {
           topPost = result;
         }
       }
-    } catch (_error) {
+    } catch (error) {
       appLogger.warn('Error fetching posts', { error: error });
     }
 
@@ -116,7 +116,7 @@ async function DashboardMetrics() {
         .select('*', { count: 'exact', head: true })
         .eq('status', 'published');
       totalPosts = count || 0;
-    } catch (_error) {
+    } catch (error) {
       appLogger.warn('Error fetching total posts', { error: error });
     }
 
@@ -127,7 +127,7 @@ async function DashboardMetrics() {
         .from('profiles')
         .select('*', { count: 'exact', head: true });
       totalProfiles = count || 0;
-    } catch (_error) {
+    } catch (error) {
       appLogger.warn('Error fetching total profiles', { error: error });
     }
 
@@ -326,7 +326,7 @@ async function DashboardMetrics() {
       <Footer />
       </div>
     );
-  } catch (_error) {
+  } catch (error) {
     appLogger.error('Error in DashboardMetrics', error);
     return (
       <div className="min-h-screen flex items-center justify-center">

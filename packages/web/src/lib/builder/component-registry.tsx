@@ -254,6 +254,7 @@ export function registerBuilderComponents() {
     }
   );
 
+  // eslint-disable-next-line no-console
   console.log("✅ Builder.io components registered successfully");
 }
 

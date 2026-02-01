@@ -160,7 +160,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
         conversionRates,
       },
     });
-  } catch (_error) {
+  } catch (error) {
     await safeLogger.error('[Activation Funnel] Failed to get metrics', {
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,

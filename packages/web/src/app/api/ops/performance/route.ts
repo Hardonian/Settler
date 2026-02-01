@@ -103,7 +103,7 @@ export const GET = withSecurity(async function GET(_request: NextRequest) {
       timestamp: new Date().toISOString(),
       metrics,
     });
-  } catch (_error) {
+  } catch (error) {
     await logger.error('Failed to get performance metrics', {
       error: error instanceof Error ? error.message : String(error),
     });

@@ -46,7 +46,7 @@ export const POST = withSecurity(
       });
 
       return NextResponse.json({ success: true }, { status: 200 });
-    } catch (_error) {
+    } catch (error) {
       return handleApiError(error, "Failed to start experiment");
     }
   },

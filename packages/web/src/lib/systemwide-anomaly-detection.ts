@@ -78,6 +78,7 @@ export async function detectSystemAnomalies(): Promise<SystemAnomaly[]> {
  */
 export async function triggerAnomalyAlert(anomaly: SystemAnomaly): Promise<void> {
   // In production, send to alerting system (PagerDuty, Slack, etc.)
+  // eslint-disable-next-line no-console
   console.log(`ALERT: ${anomaly.severity.toUpperCase()} - ${anomaly.description}`);
 
   // Store alert

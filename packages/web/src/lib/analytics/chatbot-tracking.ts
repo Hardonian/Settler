@@ -54,7 +54,7 @@ export async function trackChatbotInteraction(
     }).catch((error) => {
       console.error('Failed to track chatbot interaction:', error);
     });
-  } catch (_error) {
+  } catch (error) {
     console.error('Chatbot tracking error:', error);
   }
 }

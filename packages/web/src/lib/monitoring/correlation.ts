@@ -83,6 +83,7 @@ export class CorrelationLogger {
         break;
       case 'info':
       default:
+        // eslint-disable-next-line no-console
         console.log(JSON.stringify(logEntry));
         break;
     }

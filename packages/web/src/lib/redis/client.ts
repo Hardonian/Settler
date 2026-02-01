@@ -79,7 +79,7 @@ export async function safeRedisOperation<T>(
 
   try {
     return await operation(client);
-  } catch (_error) {
+  } catch (error) {
     console.warn('[Redis] Operation failed, using fallback:', error);
     return fallback();
   }

@@ -83,7 +83,7 @@ export async function getFeatureFlags(tenantId: TenantId): Promise<FlagValue[]> 
     }
 
     return Array.from(flagMap.values());
-  } catch (_error) {
+  } catch (error) {
     await safeLogger.error("[getFeatureFlags] Unexpected error", {
       tenantId,
       error: error instanceof Error ? error.message : String(error),
@@ -184,7 +184,7 @@ export async function setFeatureFlag(
     }
 
     return true;
-  } catch (_error) {
+  } catch (error) {
     await safeLogger.error("[setFeatureFlag] Unexpected error", {
       tenantId,
       key,

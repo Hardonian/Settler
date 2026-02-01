@@ -59,6 +59,7 @@ const job = await client.jobs.create({
   },
 });
 
+// eslint-disable-next-line no-console
 console.log('Job created:', job.data.id);`;
 
   const errorHandlingCode = `import {
@@ -71,7 +72,7 @@ console.log('Job created:', job.data.id);`;
 
 try {
   const job = await client.jobs.create({ /* ... */ });
-} catch (_error) {
+} catch (error) {
   if (error instanceof ValidationError) {
     console.error('Validation error:', error.message);
   } else if (error instanceof AuthError) {
@@ -85,6 +86,7 @@ try {
 
   const paginationCode = `// Iterate over all jobs
 for await (const job of client.jobs.listPaginated()) {
+  // eslint-disable-next-line no-console
   console.log(job.name);
 }
 

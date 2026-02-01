@@ -28,8 +28,9 @@ export async function saveAnalyticsEvent(data: {
     //     metadata: data.metadata,
     //   },
     // });
+    // eslint-disable-next-line no-console
     console.log('Analytics event (not persisted):', data.type);
-  } catch (_error) {
+  } catch (error) {
     console.error('Failed to save analytics event:', error);
     // Don't throw - analytics failures shouldn't break the app
   }
@@ -63,8 +64,9 @@ export async function saveSDKDownload(data: {
     //     ipAddress: data.ipAddress,
     //   },
     // });
+    // eslint-disable-next-line no-console
     console.log('SDK download (not persisted):', data.packageName);
-  } catch (_error) {
+  } catch (error) {
     console.error('Failed to save SDK download:', error);
   }
 }
@@ -97,8 +99,9 @@ export async function savePlaygroundUsage(data: {
     //     metadata: data.metadata,
     //   },
     // });
+    // eslint-disable-next-line no-console
     console.log('Playground usage (not persisted):', data.feature);
-  } catch (_error) {
+  } catch (error) {
     console.error('Failed to save playground usage:', error);
   }
 }
@@ -129,8 +132,9 @@ export async function saveChatbotConversation(data: {
     //     metadata: data.metadata,
     //   },
     // });
+    // eslint-disable-next-line no-console
     console.log('Chatbot conversation (not persisted):', data.conversationId);
-  } catch (_error) {
+  } catch (error) {
     console.error('Failed to save chatbot conversation:', error);
   }
 }
@@ -155,8 +159,9 @@ export async function saveChatbotAnalytics(data: {
     //     userId: data.userId,
     //   },
     // });
+    // eslint-disable-next-line no-console
     console.log('Chatbot analytics (not persisted):', data.type);
-  } catch (_error) {
+  } catch (error) {
     console.error('Failed to save chatbot analytics:', error);
   }
 }

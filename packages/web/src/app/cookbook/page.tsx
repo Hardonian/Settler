@@ -72,6 +72,7 @@ const job = await settler.jobs.create({
 });
 
 const report = await settler.jobs.run(job.data.id);
+// eslint-disable-next-line no-console
 console.log(\`Matched: \${report.data.summary.matched}\`);`,
       gradient: 'from-blue-600 to-indigo-600',
     },
@@ -344,6 +345,7 @@ const settler = new Settler({
 
 // List API keys
 const keys = await settler.apiKeys.list();
+// eslint-disable-next-line no-console
 console.log("API Keys:", keys.data);
 
 // Create new API key
@@ -352,10 +354,12 @@ const newKey = await settler.apiKeys.create({
   scopes: ["jobs:read", "jobs:write", "reports:read"],
   rateLimit: 2000,
 });
+// eslint-disable-next-line no-console
 console.log("New key:", newKey.data.key); // Only shown once!
 
 // Regenerate API key
 const regenerated = await settler.apiKeys.regenerate(keys.data[0].id);
+// eslint-disable-next-line no-console
 console.log("Regenerated key:", regenerated.data.key);
 
 // Revoke API key
@@ -384,7 +388,9 @@ const activation = await settler.dashboards.activation({
   startDate: "2026-01-01T00:00:00Z",
   endDate: "2026-01-31T23:59:59Z",
 });
+// eslint-disable-next-line no-console
 console.log("Signup funnel:", activation.data.signupFunnel);
+// eslint-disable-next-line no-console
 console.log("Time to first value:", activation.data.timeToFirstValue);
 
 // Get usage dashboard
@@ -392,7 +398,9 @@ const usage = await settler.dashboards.usage({
   startDate: "2026-01-01T00:00:00Z",
   endDate: "2026-01-31T23:59:59Z",
 });
+// eslint-disable-next-line no-console
 console.log("Reconciliation volume:", usage.data.reconciliationVolume);
+// eslint-disable-next-line no-console
 console.log("Accuracy trends:", usage.data.accuracyTrends);`,
       gradient: 'from-green-600 to-emerald-600',
     },
@@ -417,7 +425,7 @@ async function createJobWithRetry(config: any, maxRetries = 3) {
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await settler.jobs.create(config);
-    } catch (_error) {
+    } catch (error) {
       if (error instanceof SettlerError) {
         if (error.type === "RateLimitError" && i < maxRetries - 1) {
           const delay = Math.pow(2, i) * 1000;

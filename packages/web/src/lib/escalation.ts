@@ -125,6 +125,7 @@ async function escalateTicket(
   // Send alert (in production, use notification system)
   if (action === "notify" && targetUserId) {
     // Send notification to target user
+    // eslint-disable-next-line no-console
     console.log(`Escalation alert: Ticket ${ticketId} escalated to ${targetUserId}`);
   }
 }

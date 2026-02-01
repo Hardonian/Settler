@@ -53,7 +53,7 @@ export const POST = withSecurity(
       shareUrl,
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Share artifact error", error);
     return NextResponse.json(
       {
@@ -162,7 +162,7 @@ export const GET = withSecurity(
       { error: 'Unsupported artifact type' },
       { status: 400 }
     );
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Get shareable artifact error", error);
     return NextResponse.json(
       {

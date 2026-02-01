@@ -50,7 +50,7 @@ if (BUFFER_CONFIG.enabled && process.env.REDIS_URL) {
       url: process.env.REDIS_URL,
       token: process.env.UPSTASH_REDIS_REST_TOKEN,
     });
-  } catch (_error) {
+  } catch (error) {
     appLogger.warn("[Write Buffer] Redis initialization failed, buffering disabled", { error });
   }
 }
@@ -146,7 +146,7 @@ export async function bufferUsageEvent(event: UsageEventBuffer): Promise<void> {
         void flushUsageEvents();
       }
     }
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("[Write Buffer] Failed to buffer usage event", { error, event });
 
     // Fallback to sync write
@@ -182,7 +182,7 @@ export async function bufferApiCallLog(log: ApiCallLogBuffer): Promise<void> {
         void flushApiCallLogs();
       }
     }
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("[Write Buffer] Failed to buffer API call log", { error, log });
 
     if (BUFFER_CONFIG.fallbackToSync) {
@@ -217,7 +217,7 @@ export async function bufferAuditLog(log: AuditLogBuffer): Promise<void> {
         void flushAuditLogs();
       }
     }
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("[Write Buffer] Failed to buffer audit log", { error, log });
 
     if (BUFFER_CONFIG.fallbackToSync) {
@@ -265,7 +265,7 @@ export async function flushUsageEvents(): Promise<void> {
       count: events.length,
       duration,
     });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("[Write Buffer] Failed to flush usage events", {
       error,
       count: events.length,
@@ -320,7 +320,7 @@ export async function flushApiCallLogs(): Promise<void> {
       count: logs.length,
       duration,
     });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("[Write Buffer] Failed to flush API call logs", {
       error,
       count: logs.length,
@@ -368,7 +368,7 @@ export async function flushAuditLogs(): Promise<void> {
       count: logs.length,
       duration,
     });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("[Write Buffer] Failed to flush audit logs", {
       error,
       count: logs.length,
@@ -397,7 +397,7 @@ async function syncWriteUsageEvent(event: UsageEventBuffer): Promise<void> {
         aggregated: false,
       },
     });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("[Write Buffer] Sync write usage event failed", { error, event });
   }
 }
@@ -408,7 +408,7 @@ async function syncWriteApiCallLog(log: ApiCallLogBuffer): Promise<void> {
       INSERT INTO api_call_logs (tenant_id, user_id, method, path, status_code, response_time, user_agent, ip_address, error, created_at)
       VALUES (${log.tenantId ? `'${log.tenantId}'` : "NULL"}, ${log.userId ? `'${log.userId}'` : "NULL"}, '${log.method}', '${log.path}', ${log.statusCode}, ${log.responseTime}, ${log.userAgent ? `'${log.userAgent.replace(/'/g, "''")}'` : "NULL"}, ${log.ipAddress ? `'${log.ipAddress}'` : "NULL"}, ${log.error ? `'${log.error.replace(/'/g, "''")}'` : "NULL"}, '${log.createdAt.toISOString()}')
     `);
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("[Write Buffer] Sync write API call log failed", { error, log });
   }
 }
@@ -421,7 +421,7 @@ async function syncWriteAuditLog(log: AuditLogBuffer): Promise<void> {
         metadata: log.metadata ?? {},
       },
     });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("[Write Buffer] Sync write audit log failed", { error, log });
   }
 }
@@ -451,7 +451,7 @@ export function startPeriodicFlush(): void {
 
     try {
       await Promise.all([flushUsageEvents(), flushApiCallLogs(), flushAuditLogs()]);
-    } catch (_error) {
+    } catch (error) {
       appLogger.error("[Write Buffer] Periodic flush failed", { error });
     }
   }, BUFFER_CONFIG.flushInterval);
@@ -481,7 +481,7 @@ export async function flushAll(): Promise<void> {
   try {
     await Promise.all([flushUsageEvents(), flushApiCallLogs(), flushAuditLogs()]);
     appLogger.info("[Write Buffer] All buffers flushed");
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("[Write Buffer] Failed to flush all buffers", { error });
   }
 }

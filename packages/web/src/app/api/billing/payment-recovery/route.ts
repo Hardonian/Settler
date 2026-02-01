@@ -63,7 +63,7 @@ export const GET = withSecurity(
     }
 
     return NextResponse.json({ recovery: data?.[0] || null });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Error in payment-recovery GET", error);
     return NextResponse.json(
       {
@@ -165,7 +165,7 @@ export const POST = withSecurity(
     }
 
     return NextResponse.json({ recovery: data });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Error in payment-recovery POST", error);
     return NextResponse.json(
       {

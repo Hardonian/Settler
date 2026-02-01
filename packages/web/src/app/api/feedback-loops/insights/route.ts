@@ -19,7 +19,7 @@ export const GET = withSecurity(
   try {
     const insights = await getLatestInsights(10);
     return NextResponse.json({ insights });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error('[Feedback Loops] Error fetching insights', error);
     return NextResponse.json(
       {

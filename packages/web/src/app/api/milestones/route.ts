@@ -70,7 +70,7 @@ export const POST = withSecurity(
     }
 
     return NextResponse.json({ achieved: true, milestone: data });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Error in milestones POST", error);
     return NextResponse.json(
       {
@@ -129,7 +129,7 @@ export const GET = withSecurity(
     type MilestoneRow = { milestone_type: string };
     const milestones = (data || []).map((m: MilestoneRow) => m.milestone_type);
     return NextResponse.json({ milestones });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Error in milestones GET", error);
     return NextResponse.json(
       {

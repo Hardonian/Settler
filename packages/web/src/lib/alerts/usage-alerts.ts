@@ -71,11 +71,11 @@ export async function checkUsageAlerts(
             message,
           });
         }
-      } catch (_error) {
+      } catch (error) {
         console.error(`[Usage Alerts] Error checking ${service}:`, error);
       }
     }
-  } catch (_error) {
+  } catch (error) {
     console.error('[Usage Alerts] Error:', error);
   }
 
@@ -100,7 +100,7 @@ export async function getCurrentUserUsageAlerts(): Promise<UsageAlert[]> {
     if (!billingAccount) return [];
 
     return await checkUsageAlerts(billingAccount.id);
-  } catch (_error) {
+  } catch (error) {
     console.error('[Usage Alerts] Error getting alerts:', error);
     return [];
   }

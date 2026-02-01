@@ -35,7 +35,7 @@ export const POST = withSecurity(
       let body;
       try {
         body = await request.json();
-      } catch (_error) {
+      } catch (error) {
         return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
       }
 
@@ -152,7 +152,7 @@ export const POST = withSecurity(
       };
 
       return NextResponse.json(jobResponse, { status: 201 });
-    } catch (_error) {
+    } catch (error) {
       // Never return 500 - always return 200 with error info for playground
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       appLogger.error("[Recon Jobs API] Error", error, { errorMessage });
@@ -337,7 +337,7 @@ export const GET = withSecurity(
         },
         { status: 200 }
       );
-    } catch (_error) {
+    } catch (error) {
       const duration = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       const errorStack = error instanceof Error ? error.stack : undefined;

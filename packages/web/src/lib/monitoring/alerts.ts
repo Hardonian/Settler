@@ -118,7 +118,7 @@ export async function checkErrorRateAlerts(tenantId?: string): Promise<Alert[]> 
     }
     
     return newAlerts;
-  } catch (_error) {
+  } catch (error) {
     console.error('[alerts] Failed to check error rate:', error);
     return [];
   }
@@ -163,7 +163,7 @@ export async function checkPerformanceAlerts(tenantId?: string): Promise<Alert[]
     }
     
     return newAlerts;
-  } catch (_error) {
+  } catch (error) {
     console.error('[alerts] Failed to check performance:', error);
     return [];
   }

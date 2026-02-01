@@ -90,6 +90,7 @@ export async function transitionLifecycleStage(
   });
 
   // Log transition
+  // eslint-disable-next-line no-console
   console.log(`Lifecycle transition: ${userId} ${fromStage} → ${newStage} (trigger: ${trigger})`);
 }
 

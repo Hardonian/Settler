@@ -149,7 +149,9 @@ const reconciliation = await client.reconciliations.create({
 
 // Get variance report with full audit trail
 const variances = await client.reconciliations.getVariances(reconciliation.id);
+// eslint-disable-next-line no-console
 console.log(\`Found \${variances.count} discrepancies\`);
+// eslint-disable-next-line no-console
 console.log(\`Evidence hash: \${variances.evidenceHash}\`);`;
 
   return (

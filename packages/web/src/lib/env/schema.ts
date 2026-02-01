@@ -231,11 +231,12 @@ export function validateEnv(): Env {
     const parsed = envSchema.parse(process.env);
 
     if (!isBuildTime) {
+      // eslint-disable-next-line no-console
       console.log("✅ Environment validation passed");
     }
 
     return parsed;
-  } catch (_error) {
+  } catch (error) {
     if (error instanceof z.ZodError) {
       const errors = error.issues.map((err: z.ZodIssue) => {
         const path = err.path.join(".");

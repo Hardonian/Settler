@@ -106,7 +106,7 @@ export const GET = withSecurity(async function GET(_request: NextRequest) {
         ...(retryBacklog > 100 ? [{ type: 'retry_backlog', severity: 'medium', count: retryBacklog }] : []),
       ],
     });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error('Failed to get admin health', error);
     return NextResponse.json(
       { error: 'Failed to retrieve health metrics' },
@@ -122,7 +122,7 @@ async function checkDatabaseHealth(): Promise<'operational' | 'degraded' | 'down
   try {
     await prisma.$queryRaw`SELECT 1`;
     return 'operational';
-  } catch (_error) {
+  } catch (error) {
     appLogger.error('Database health check failed', error);
     return 'degraded';
   }

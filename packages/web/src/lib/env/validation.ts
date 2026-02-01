@@ -166,6 +166,7 @@ export function requireEnvironment(): void {
   }
 
   if (result.valid && !isBuild) {
+    // eslint-disable-next-line no-console
     console.log('✅ Environment validation passed');
   }
 }

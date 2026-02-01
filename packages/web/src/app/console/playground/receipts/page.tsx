@@ -21,6 +21,7 @@ const receipt = await settler.receipts.parse({
   mimeType: 'image/jpeg'
 });
 
+// eslint-disable-next-line no-console
 console.log(receipt);`,
   python: `# Using Python SDK
 from settler import Settler

@@ -57,7 +57,7 @@ export default function AddOnsMarketplacePage() {
           setFilteredAddOns(data.addons || []);
           return;
         }
-      } catch (_error) {
+      } catch (error) {
         console.error("Failed to fetch addons from API:", error);
       }
       
@@ -147,7 +147,7 @@ export default function AddOnsMarketplacePage() {
       ];
       setAddOns(mockAddOns);
       setFilteredAddOns(mockAddOns);
-    } catch (_error) {
+    } catch (error) {
       console.error("Failed to fetch add-ons:", error);
     } finally {
       setIsLoading(false);
@@ -158,13 +158,14 @@ export default function AddOnsMarketplacePage() {
     try {
       setIsProcessing(true);
       // In production: await fetch(`/api/billing/addon/purchase`, { method: "POST", body: JSON.stringify({ add_on_id: id }) });
+      // eslint-disable-next-line no-console
       console.log("Purchasing add-on:", id);
       // Update local state
       setAddOns((prev) =>
         prev.map((addOn) => (addOn.id === id ? { ...addOn, is_purchased: true } : addOn))
       );
       setIsModalOpen(false);
-    } catch (_error) {
+    } catch (error) {
       console.error("Purchase failed:", error);
       throw error;
     } finally {
@@ -176,11 +177,12 @@ export default function AddOnsMarketplacePage() {
     try {
       setIsProcessing(true);
       // In production: await fetch(`/api/billing/addon/cancel`, { method: "POST", body: JSON.stringify({ add_on_id: id }) });
+      // eslint-disable-next-line no-console
       console.log("Canceling add-on:", id);
       setAddOns((prev) =>
         prev.map((addOn) => (addOn.id === id ? { ...addOn, is_purchased: false } : addOn))
       );
-    } catch (_error) {
+    } catch (error) {
       console.error("Cancel failed:", error);
     } finally {
       setIsProcessing(false);

@@ -34,6 +34,7 @@ export interface EmailData {
 export async function sendLifecycleEmail(emailData: EmailData): Promise<void> {
   try {
     // TODO: Integrate with email service (SendGrid, Resend, etc.)
+    // eslint-disable-next-line no-console
     console.log('[Lifecycle Email] Sending email:', emailData);
 
     // For now, log to database for tracking
@@ -52,7 +53,7 @@ export async function sendLifecycleEmail(emailData: EmailData): Promise<void> {
         NOW()
       )
     `;
-  } catch (_error) {
+  } catch (error) {
     console.error('[Lifecycle Email] Error sending email:', error);
     // Don't throw - email failures shouldn't block operations
   }
@@ -203,7 +204,7 @@ export async function scheduleLifecycleEmails(userId: string): Promise<void> {
         await sendTrialEndingEmail(userId, userEmail, daysRemaining);
       }
     }
-  } catch (_error) {
+  } catch (error) {
     console.error('[Lifecycle Emails] Error scheduling emails:', error);
   }
 }

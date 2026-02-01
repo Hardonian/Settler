@@ -107,7 +107,7 @@ export const POST = withSecurity(
           } else {
             tenantId = result as string;
           }
-        } catch (_error) {
+        } catch (error) {
           appLogger.error("[Workspace API] Error creating workspace", error);
           // Never return 500 - return graceful error response
           return NextResponse.json(
@@ -204,7 +204,7 @@ export const POST = withSecurity(
           },
           trace_id: traceId,
         });
-      } catch (_error) {
+      } catch (error) {
         appLogger.error("[Workspace API] Error", error);
 
         if (error instanceof z.ZodError) {
@@ -305,7 +305,7 @@ export const GET = withSecurity(
           workspaces: workspacesWithRole,
           trace_id: traceId,
         });
-      } catch (_error) {
+      } catch (error) {
         appLogger.error("[Workspace API] Error", error);
         // Never return 500 - return empty workspaces array with graceful error message
         return NextResponse.json(

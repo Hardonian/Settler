@@ -81,7 +81,7 @@ export const POST = withSecurity(
         }
 
         return NextResponse.json({ success: true, planType });
-      } catch (_error) {
+      } catch (error) {
         appLogger.error("Upgrade error", error);
         // Never return 500 - return graceful error response
         return NextResponse.json(

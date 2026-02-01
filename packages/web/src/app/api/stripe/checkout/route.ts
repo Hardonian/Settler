@@ -178,7 +178,7 @@ export const POST = withSecurity(
       await trackApiMetric("/api/stripe/checkout", "POST", 200, Date.now() - startTime);
 
       return NextResponse.json({ url: session.url });
-    } catch (_error) {
+    } catch (error) {
       appLogger.error("[Stripe Checkout] Error creating checkout session", error, {
         error: error instanceof Error ? error.message : "Unknown error",
         stack: error instanceof Error ? error.stack : undefined,

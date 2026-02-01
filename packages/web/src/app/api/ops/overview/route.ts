@@ -89,7 +89,7 @@ export const GET = withSecurity(
       pendingJobs: pendingJobCount,
       failedWebhooks: failedWebhookCount,
     });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error('Ops overview error', error);
     return NextResponse.json(
       {

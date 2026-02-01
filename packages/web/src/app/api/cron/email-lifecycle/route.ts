@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
 
           results.processed++;
           results.emails.push(user.email);
-        } catch (_error) {
+        } catch (error) {
           logger.error(
             "Failed to send Day 7 email",
             error instanceof Error ? error : new Error(String(error)),
@@ -159,7 +159,7 @@ export async function GET(request: NextRequest) {
 
           results.processed++;
           results.emails.push(user.email);
-        } catch (_error) {
+        } catch (error) {
           logger.error(
             "Failed to send Day 14 email",
             error instanceof Error ? error : new Error(String(error)),
@@ -214,7 +214,7 @@ export async function GET(request: NextRequest) {
 
           results.processed++;
           results.emails.push(user.email);
-        } catch (_error) {
+        } catch (error) {
           logger.error(
             "Failed to send Day 21 email",
             error instanceof Error ? error : new Error(String(error)),
@@ -272,7 +272,7 @@ export async function GET(request: NextRequest) {
 
             results.processed++;
             results.emails.push(user.email);
-          } catch (_error) {
+          } catch (error) {
             logger.error(
               `Failed to send Day ${day} email`,
               error instanceof Error ? error : new Error(String(error)),
@@ -319,7 +319,7 @@ export async function GET(request: NextRequest) {
 
           results.processed++;
           results.emails.push(user.email);
-        } catch (_error) {
+        } catch (error) {
           logger.error(
             "Failed to send trial ended email",
             error instanceof Error ? error : new Error(String(error)),
@@ -342,7 +342,7 @@ export async function GET(request: NextRequest) {
       errors: results.errors,
       emails: results.emails,
     });
-  } catch (_error) {
+  } catch (error) {
     logger.error(
       "Email lifecycle cron job failed",
       error instanceof Error ? error : new Error(String(error))

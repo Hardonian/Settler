@@ -64,7 +64,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
         createdBy: s.created_by,
       })),
     });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Error in snapshots GET", error);
     return NextResponse.json(
       {
@@ -144,7 +144,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     }
 
     return NextResponse.json({ snapshot });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Error in snapshots POST", error);
     return NextResponse.json(
       {

@@ -213,7 +213,7 @@ export async function handleAsyncError<T>(
   try {
     const data = await promise;
     return { data, error: undefined, type: "success", context: context || {} };
-  } catch (_error) {
+  } catch (error) {
     const handled = handleError(error, context);
     return { data: undefined, error: handled.error, type: handled.type, context: handled.context };
   }
@@ -229,7 +229,7 @@ export function safeJsonParse<T = unknown>(
   try {
     const data = JSON.parse(jsonString) as T;
     return { data };
-  } catch (_error) {
+  } catch (error) {
     const parseError = error instanceof Error ? error : new Error("JSON parse failed");
     return { error: parseError };
   }
@@ -420,7 +420,7 @@ export async function parseRequestBody<T extends Record<string, unknown>>(
   try {
     const body = await request.json();
     return { data: body as T };
-  } catch (_error) {
+  } catch (error) {
     const parseError = error instanceof Error ? error : new Error("Invalid JSON body");
     return { error: parseError };
   }
@@ -544,7 +544,7 @@ export async function withTimeout<T>(
 
   try {
     return await Promise.race([promise, timeoutPromise]);
-  } catch (_error) {
+  } catch (error) {
     if (error instanceof Error) {
       throw error;
     }
@@ -571,7 +571,7 @@ export async function retryAsync<T>(
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       return await operation();
-    } catch (_error) {
+    } catch (error) {
       lastError = error instanceof Error ? error : new Error("Operation failed");
 
       if (attempt === maxAttempts) {

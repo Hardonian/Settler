@@ -41,7 +41,7 @@ async function getRealityData() {
         fetchError instanceof Error ? fetchError.message : 'Unknown error'
       );
     }
-  } catch (_error) {
+  } catch (error) {
     // Catch any other errors
     console.warn('[Trust] Error in getRealityData (non-fatal):', 
       error instanceof Error ? error.message : 'Unknown error'

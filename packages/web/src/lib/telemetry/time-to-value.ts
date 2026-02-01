@@ -35,7 +35,7 @@ export async function trackSignup(userId: string): Promise<void> {
       onboardingType: 'new_user',
     });
     await logger.info('User signup tracked', { userId });
-  } catch (_error) {
+  } catch (error) {
     await logger.error('Failed to track signup', {
       userId,
       error: error instanceof Error ? error.message : String(error),
@@ -55,7 +55,7 @@ export async function trackEmailVerified(userId: string): Promise<void> {
       duration: 0,
     });
     await logger.info('Email verified tracked', { userId });
-  } catch (_error) {
+  } catch (error) {
     await logger.error('Failed to track email verified', {
       userId,
       error: error instanceof Error ? error.message : String(error),
@@ -75,7 +75,7 @@ export async function trackTenantCreated(userId: string, tenantId: string): Prom
       duration: 0,
     });
     await logger.info('Tenant created tracked', { userId, tenantId });
-  } catch (_error) {
+  } catch (error) {
     await logger.error('Failed to track tenant created', {
       userId,
       tenantId,
@@ -100,7 +100,7 @@ export async function trackProviderConnected(
       duration: 0,
     });
     await logger.info('Provider connected tracked', { userId, tenantId, providerId });
-  } catch (_error) {
+  } catch (error) {
     await logger.error('Failed to track provider connected', {
       userId,
       tenantId,
@@ -143,7 +143,7 @@ export async function trackFirstReconciliation(
       tenantId,
       runId,
     });
-  } catch (_error) {
+  } catch (error) {
     await logger.error('Failed to track first reconciliation', {
       userId,
       tenantId,
@@ -168,7 +168,7 @@ export async function trackFirstReceiptParsed(
       featureCategory: 'ai',
     });
     await logger.info('First receipt parsed tracked', { userId, tenantId, receiptId });
-  } catch (_error) {
+  } catch (error) {
     await logger.error('Failed to track first receipt parsed', {
       userId,
       tenantId,
@@ -193,7 +193,7 @@ export async function trackFirstFeatureFlagUsed(
       featureCategory: 'platform',
     });
     await logger.info('First feature flag used tracked', { userId, tenantId, flagKey });
-  } catch (_error) {
+  } catch (error) {
     await logger.error('Failed to track first feature flag used', {
       userId,
       tenantId,
@@ -214,7 +214,7 @@ export async function getTimeToValueMetrics(
     // Simplified implementation - would query timeToValue table if it existed
     // For now, return null (can be enhanced with actual table)
     return null;
-  } catch (_error) {
+  } catch (error) {
     await logger.error('Failed to get time-to-value metrics', {
       userId,
       error: error instanceof Error ? error.message : String(error),
@@ -246,7 +246,7 @@ export async function getTimeToValueStats(): Promise<{
       totalUsers: 0,
       completedUsers: 0,
     };
-  } catch (_error) {
+  } catch (error) {
     await logger.error('Failed to get time-to-value stats', {
       error: error instanceof Error ? error.message : String(error),
     });

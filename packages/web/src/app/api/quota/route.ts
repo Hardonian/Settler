@@ -175,7 +175,7 @@ export const GET = withSecurity(
     ];
 
     return NextResponse.json({ quotas });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Error in quota GET", error);
     // Never return 500 - return empty quotas with graceful error message
     return NextResponse.json({ 

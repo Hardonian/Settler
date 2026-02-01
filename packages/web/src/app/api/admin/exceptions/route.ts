@@ -147,7 +147,7 @@ export const GET = withSecurity(
           },
         }
       );
-    } catch (_error) {
+    } catch (error) {
       adminLogger.error("Failed to retrieve exceptions", error);
 
       if (error instanceof Error && error.name === "ZodError") {

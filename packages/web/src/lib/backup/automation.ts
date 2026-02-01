@@ -49,7 +49,7 @@ export async function createDatabaseBackup(config: BackupConfig = {}): Promise<{
     });
 
     return { success: true, backupId };
-  } catch (_error) {
+  } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorObj = error instanceof Error ? error : new Error(errorMessage);
     logger.error('Database Backup Failed', errorObj, {
@@ -76,7 +76,7 @@ export async function cleanupOldBackups(retentionDays: number = 30): Promise<{
     // 3. Return count of deleted backups
 
     return { deleted: 0, errors: 0 };
-  } catch (_error) {
+  } catch (error) {
     logger.error('Backup cleanup failed', error instanceof Error ? error : new Error(String(error)));
     return { deleted: 0, errors: 1 };
   }
@@ -99,7 +99,7 @@ export async function verifyBackup(backupId: string): Promise<{
     // 4. Return verification result
 
     return { valid: true };
-  } catch (_error) {
+  } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return { valid: false, error: errorMessage };
   }
@@ -137,7 +137,7 @@ export async function restoreFromBackup(
     });
 
     return { success: true };
-  } catch (_error) {
+  } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorObj = error instanceof Error ? error : new Error(errorMessage);
     

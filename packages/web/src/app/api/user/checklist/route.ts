@@ -47,7 +47,7 @@ export const GET = withSecurity(
       .map((item: ChecklistItemRow) => item.checklist_item);
 
     return NextResponse.json({ completedItems });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Error in checklist GET", error);
     // Never return 500 - return empty checklist with graceful error message
     return NextResponse.json({ 
@@ -100,7 +100,7 @@ export const POST = withSecurity(
     }
 
     return NextResponse.json({ success: true, item: data });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Error in checklist POST", error);
     // Never return 500 - return graceful error response
     return NextResponse.json({ 

@@ -90,7 +90,7 @@ export async function safeModeGuard<T>(fn: () => Promise<T>, defaultValue: T): P
   }
   try {
     return await fn();
-  } catch (_error) {
+  } catch (error) {
     console.warn("[safeModeGuard] Operation failed, using default:", error);
     return defaultValue;
   }

@@ -80,7 +80,7 @@ export async function requireSubscriptionTier(
       authorized: true,
       tier: subscription.tier,
     };
-  } catch (_error) {
+  } catch (error) {
     await logger.error('Subscription check failed', {
       trace_id: traceId,
       route: request.nextUrl.pathname,

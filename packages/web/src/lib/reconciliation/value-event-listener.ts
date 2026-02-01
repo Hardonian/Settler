@@ -40,5 +40,6 @@ export async function initializeValueEventListeners(): Promise<void> {
   //   });
   // });
   
+  // eslint-disable-next-line no-console
   console.log('[ValueEventListeners] Initialized (placeholder - requires event bus integration)');
 }

@@ -50,7 +50,7 @@ export async function verifyBillingAccountAccessOptimized(
     );
 
     return !!billingAccount && (billingAccount as { userId?: string }).userId === userId;
-  } catch (_error) {
+  } catch (error) {
     console.error("[verifyBillingAccountAccessOptimized] Error:", error);
     return false;
   }

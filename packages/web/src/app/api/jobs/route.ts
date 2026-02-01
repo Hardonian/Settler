@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Error in POST /api/jobs", { error, traceId });
 
     return NextResponse.json(

@@ -147,7 +147,7 @@ export async function retryWithBackoff<T>(
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       return await fn();
-    } catch (_error) {
+    } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
       if (attempt < maxAttempts) {
         const backoffDelay = delay * Math.pow(2, attempt - 1);

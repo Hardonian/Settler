@@ -131,6 +131,7 @@ const job = await client.jobs.create({
 
 // Run the job
 const report = await client.jobs.run(job.id);
+// eslint-disable-next-line no-console
 console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);`}
           language="typescript"
         />

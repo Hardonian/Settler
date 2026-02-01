@@ -55,7 +55,7 @@ export async function sendSlackAlert(options: AlertOptions): Promise<void> {
         ],
       }),
     });
-  } catch (_error) {
+  } catch (error) {
     console.error('[Alerts] Failed to send Slack alert:', error);
   }
 }
@@ -72,6 +72,7 @@ export async function sendEmailAlert(options: AlertOptions): Promise<void> {
 
   // If you have an email service configured, use it here
   // For now, just log the alert
+  // eslint-disable-next-line no-console
   console.log('[Email Alert]', {
     to: alertEmail,
     subject: `[${options.severity.toUpperCase()}] Reliability Alert: ${options.type}`,
@@ -112,7 +113,7 @@ export async function sendPagerDutyAlert(options: AlertOptions): Promise<void> {
         },
       }),
     });
-  } catch (_error) {
+  } catch (error) {
     console.error('[Alerts] Failed to send PagerDuty alert:', error);
   }
 }

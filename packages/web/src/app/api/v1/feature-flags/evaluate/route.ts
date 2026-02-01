@@ -102,7 +102,7 @@ export const POST = withSecurity(
       environment: result.environment,
       metadata: result.metadata,
     });
-  } catch (_error) {
+  } catch (error) {
     // Never return 500 - always return 200 with demo evaluation for playground
     appLogger.error('Error evaluating feature flag', error);
     return NextResponse.json(

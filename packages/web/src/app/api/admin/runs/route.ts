@@ -109,7 +109,7 @@ export const GET = withSecurity(
         limit: params.limit,
         offset: params.offset,
       });
-    } catch (_error) {
+    } catch (error) {
       appLogger.error("[Admin Runs] Error", error);
 
       if (error instanceof Error && error.name === "ZodError") {

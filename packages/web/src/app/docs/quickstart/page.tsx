@@ -50,6 +50,7 @@ const client = new Settler({
   },
 });
 
+// eslint-disable-next-line no-console
 console.log("Job created:", job.id);`,
     action: { label: 'See Integrations', href: '/integrations' },
   },
@@ -61,6 +62,7 @@ const receipt = await client.receipts.parse({
   file: "https://example.com/receipt.jpg",
 });
 
+// eslint-disable-next-line no-console
 console.log("Receipt parsed:", receipt.total, receipt.merchant);
 
 # Or upload CSV/JSON
@@ -75,11 +77,14 @@ const upload = await client.data.upload({
     description: 'Review variances and evidence',
     code: `# Get job status
 const status = await client.jobs.get(job.id);
+// eslint-disable-next-line no-console
 console.log("Status:", status.status);
 
 # Get report
 const report = await client.reports.get(job.id);
+// eslint-disable-next-line no-console
 console.log("Matched:", report.summary.matched);
+// eslint-disable-next-line no-console
 console.log("Unmatched:", report.summary.unmatched);`,
     action: { label: 'Open Reports', href: '/docs/api' },
   },

@@ -22,7 +22,7 @@ export const GET = withSecurity(
 
     const stats = await getReferralStats(user.id);
     return NextResponse.json({ stats });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Error in referrals GET", error);
     // Never return 500 - return empty stats with graceful error message
     return NextResponse.json({ 
@@ -61,7 +61,7 @@ export const POST = withSecurity(
     }
 
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Error in referrals POST", error);
     // Never return 500 - return graceful error response
     return NextResponse.json({ 

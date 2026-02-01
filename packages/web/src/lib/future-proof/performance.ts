@@ -16,6 +16,7 @@ export async function measureTime<T>(
   const durationMs = performance.now() - start;
 
   if (label && process.env.NODE_ENV === 'development') {
+    // eslint-disable-next-line no-console
     console.log(`[Performance] ${label}: ${durationMs.toFixed(2)}ms`);
   }
 
@@ -41,7 +42,7 @@ export async function batchProcess<T, R>(
       try {
         const result = await processor(item);
         results.push(result);
-      } catch (_error) {
+      } catch (error) {
         console.error('[Batch] Error processing item:', error);
         // Continue processing other items
       }

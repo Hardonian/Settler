@@ -67,7 +67,7 @@ export const POST = withSecurity(
       skippedSteps: updated.skippedSteps,
       steps,
     });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error('[Onboarding API] Error', error);
     return NextResponse.json(
       {

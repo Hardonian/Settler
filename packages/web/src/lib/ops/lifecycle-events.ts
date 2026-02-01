@@ -104,7 +104,7 @@ export async function emitLifecycleEventSafe(
   try {
     const mod = await getActivationFunnel();
     await mod.emitLifecycleEvent(eventType, params);
-  } catch (_error) {
+  } catch (error) {
     // Don't throw - event tracking should never break the main flow
     console.error(`Failed to emit lifecycle event ${eventType}:`, error);
   }

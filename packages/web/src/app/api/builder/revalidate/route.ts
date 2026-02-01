@@ -51,6 +51,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Revalidate the specific path
+    // eslint-disable-next-line no-console
     console.log(`🔄 Revalidating path: ${url} (model: ${model})`);
     revalidatePath(url);
 
@@ -68,7 +69,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 }
     );
-  } catch (_error) {
+  } catch (error) {
     console.error('Error processing Builder.io webhook:', error);
     return NextResponse.json(
       { error: 'Internal server error' },

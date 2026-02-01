@@ -208,7 +208,7 @@ export async function getCurrentUsage(
         if (cached !== null && typeof cached === "string") {
           current = parseInt(cached, 10);
         }
-      } catch (_error) {
+      } catch (error) {
         // Redis error - fall back to database
         console.warn("[Usage Tracking] Redis read error, falling back to database:", error);
       }
@@ -235,7 +235,7 @@ export async function getCurrentUsage(
           await redis.set(redisKey, current.toString(), {
             ex: period === "daily" ? 86400 : 2592000,
           });
-        } catch (_error) {
+        } catch (error) {
           // Redis error - continue without caching
           console.warn("[Usage Tracking] Redis cache error:", error);
         }
@@ -254,7 +254,7 @@ export async function getCurrentUsage(
       tier,
       ...(allowed ? {} : { reason: `Usage limit exceeded: ${current}/${limit}` }),
     };
-  } catch (_error) {
+  } catch (error) {
     console.error("[Usage Tracking] Error getting current usage:", error);
     // Fail open - allow request if tracking fails
     return {
@@ -374,7 +374,7 @@ export async function checkAndIncrementUsage(
           resetAt: getPeriodEnd(period),
           tier,
         };
-      } catch (_error) {
+      } catch (error) {
         // Redis error - fall back to database
         console.warn("[Usage Tracking] Redis increment error, falling back to database:", error);
       }
@@ -390,7 +390,7 @@ export async function checkAndIncrementUsage(
       periodStart,
       tier
     );
-  } catch (_error) {
+  } catch (error) {
     console.error("[Usage Tracking] Error checking and incrementing usage:", error);
     // Fail open - allow request if tracking fails
     return {
@@ -536,7 +536,7 @@ export async function recordUsageEvent(
         metadata: (metadata ?? {}) as never,
       },
     });
-  } catch (_error) {
+  } catch (error) {
     // Don't block request if event recording fails
     console.error("[Usage Tracking] Error recording usage event:", error);
   }

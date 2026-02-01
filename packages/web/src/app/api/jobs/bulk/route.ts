@@ -64,7 +64,7 @@ export const POST = withSecurity(
                 });
                 tenantId = billingAccount?.tenantId || null;
               }
-            } catch (_error) {
+            } catch (error) {
               return NextResponse.json(
                 {
                   error: "Unauthorized",
@@ -74,7 +74,7 @@ export const POST = withSecurity(
               );
             }
           }
-        } catch (_error) {
+        } catch (error) {
           return NextResponse.json(
             {
               error: "Unauthorized",
@@ -185,7 +185,7 @@ export const POST = withSecurity(
             }).catch(() => {
               // Don't fail if audit logging fails
             });
-          } catch (_error) {
+          } catch (error) {
             const errorMessage = error instanceof Error ? error.message : "Unknown error";
             results.push({ jobId, success: false, error: errorMessage });
           }
@@ -216,7 +216,7 @@ export const POST = withSecurity(
           },
           { status: 200 }
         );
-      } catch (_error) {
+      } catch (error) {
         const duration = Date.now() - startTime;
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
         const errorStack = error instanceof Error ? error.stack : undefined;

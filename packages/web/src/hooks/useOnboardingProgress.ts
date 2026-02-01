@@ -33,7 +33,7 @@ export function useOnboardingProgress(): {
           setProgress(data.progress);
           setNextStep(data.nextStep);
         }
-      } catch (_error) {
+      } catch (error) {
         console.error("Failed to fetch onboarding progress", error);
       } finally {
         setLoading(false);

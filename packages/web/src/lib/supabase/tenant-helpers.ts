@@ -45,7 +45,7 @@ export async function isTenantMember(tenantId: string): Promise<boolean> {
     }
     
     return data !== null;
-  } catch (_error) {
+  } catch (error) {
     await safeLogger.error('[isTenantMember] Unexpected error', {
       tenantId,
       error: error instanceof Error ? error.message : String(error),
@@ -86,7 +86,7 @@ export async function getUserTenants(): Promise<string[]> {
     }
     
     return (data || []).map((row: { tenant_id: string }) => row.tenant_id);
-  } catch (_error) {
+  } catch (error) {
     await safeLogger.error('[getUserTenants] Unexpected error', {
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
@@ -124,7 +124,7 @@ export async function getPrimaryTenant(): Promise<string | null> {
     // Fallback to first tenant from tenant_users
     const tenants = await getUserTenants();
     return tenants.length > 0 ? (tenants[0] ?? null) : null;
-  } catch (_error) {
+  } catch (error) {
     await safeLogger.error('[getPrimaryTenant] Unexpected error', {
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,

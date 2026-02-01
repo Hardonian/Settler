@@ -159,7 +159,7 @@ export async function enqueuePythonJob(
       job: job as PythonJob,
       correlationId,
     };
-  } catch (_error) {
+  } catch (error) {
     console.error("Error enqueueing Python job:", error);
     return {
       success: false,
@@ -183,7 +183,7 @@ export async function getPythonJob(jobId: string): Promise<PythonJob | null> {
     }
 
     return data as PythonJob;
-  } catch (_error) {
+  } catch (error) {
     console.error("Error fetching Python job:", error);
     return null;
   }
@@ -240,7 +240,7 @@ export async function getPythonJobStats(): Promise<PythonJobStats | null> {
     }
 
     return stats;
-  } catch (_error) {
+  } catch (error) {
     console.error("Error fetching job stats:", error);
     return null;
   }
@@ -284,7 +284,7 @@ export async function cancelPythonJob(jobId: string): Promise<boolean> {
     }
 
     return true;
-  } catch (_error) {
+  } catch (error) {
     console.error("Error cancelling Python job:", error);
     return false;
   }

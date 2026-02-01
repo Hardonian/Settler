@@ -100,7 +100,8 @@ export async function getPages(): Promise<ActionState<FormattedPage[]>> {
     });
 
     return { success: true, data: formattedPages };
-  } catch (_error) {
+             
+  } catch (error) {
     console.error(
       "Failed to fetch pages:",
       error instanceof Error ? error.message : "Unknown error"
@@ -122,7 +123,8 @@ export async function getPage(id: string): Promise<ActionState<TenantPageRecord>
     }
 
     return { success: true, data: page as TenantPageRecord };
-  } catch (_error) {
+             
+  } catch (error) {
     console.error(
       "Failed to fetch page:",
       error instanceof Error ? error.message : "Unknown error"
@@ -167,7 +169,8 @@ export async function createPage(formData: FormData): Promise<ActionState<Tenant
 
     revalidatePath("/admin/pages");
     return { success: true, data: newPage as TenantPageRecord };
-  } catch (_error) {
+             
+  } catch (error) {
     console.error(
       "Failed to create page:",
       error instanceof Error ? error.message : "Unknown error"
@@ -212,7 +215,8 @@ export async function updatePageBlocks(
     revalidatePath(`/${existingPage.slug}`); // Revalidate the public path too
 
     return { success: true };
-  } catch (_error) {
+             
+  } catch (error) {
     console.error(
       "Failed to update page:",
       error instanceof Error ? error.message : "Unknown error"
@@ -239,7 +243,8 @@ export async function deletePage(id: string): Promise<ActionState> {
 
     revalidatePath("/admin/pages");
     return { success: true };
-  } catch (_error) {
+             
+  } catch (error) {
     console.error(
       "Failed to delete page:",
       error instanceof Error ? error.message : "Unknown error"

@@ -99,7 +99,7 @@ export function validateRequestBody<T extends Record<string, unknown>>(
     if (rule.sanitize) {
       try {
         sanitized[key] = rule.sanitize(value);
-      } catch (_error) {
+      } catch (error) {
         errors.push(`Field '${key}' failed sanitization: ${error instanceof Error ? error.message : 'Unknown error'}`);
         continue;
       }

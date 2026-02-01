@@ -150,7 +150,7 @@ export const GET = withSecurity(
       },
       limits: planLimits,
     });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Usage warnings error", error);
     // Return 200 with empty warnings instead of 500 to prevent UI crash
     return NextResponse.json(

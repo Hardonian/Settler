@@ -87,7 +87,7 @@ export default function UsageDashboardPage() {
         byIntegration: [],
         dailyUsage: [],
       });
-    } catch (_error) {
+    } catch (error) {
       logger.error("Failed to fetch usage data", error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsLoading(false);

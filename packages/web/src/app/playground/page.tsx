@@ -43,6 +43,7 @@ const job = await client.jobs.create({
 });
 
 const report = await client.jobs.run(job.data.id);
+// eslint-disable-next-line no-console
 console.log(report.data.summary);`);
 
   const [output, setOutput] = useState<string>(

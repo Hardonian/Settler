@@ -46,6 +46,7 @@ const result = await client.${getMethodName(apiCall.endpoint)}(${
       apiCall.body ? JSON.stringify(apiCall.body, null, 2) : ''
     });
 
+// eslint-disable-next-line no-console
 console.log(result);`;
   }
 
@@ -61,6 +62,7 @@ ${headersString}
 });
 
 const data = await response.json();
+// eslint-disable-next-line no-console
 console.log(data);`;
 }
 

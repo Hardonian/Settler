@@ -102,7 +102,7 @@ export function withIdempotency<T extends unknown[]>(
       }
 
       return response;
-    } catch (_error) {
+    } catch (error) {
       // On error, mark idempotency key as failed
       if (idempotencyKey) {
         await failIdempotencyKey(idempotencyKey).catch(() => {

@@ -74,7 +74,7 @@ export function withErrorHandler<T extends (...args: any[]) => Promise<NextRespo
   return (async (...args: Parameters<T>) => {
     try {
       return await handler(...args);
-    } catch (_error) {
+    } catch (error) {
       return createErrorResponse(error);
     }
   }) as T;

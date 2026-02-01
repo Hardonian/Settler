@@ -36,7 +36,7 @@ export const GET = withSecurity(
         }));
 
         return NextResponse.json({ customers });
-      } catch (_error) {
+      } catch (error) {
         appLogger.error("Failed to fetch customers", error);
         // Never return 500 - return graceful error response
 

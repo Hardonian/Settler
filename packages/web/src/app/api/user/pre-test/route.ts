@@ -33,7 +33,7 @@ export const POST = withSecurity(
     }
 
     return NextResponse.json({ success: true });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Pre-test save error", error);
     return NextResponse.json(
       {

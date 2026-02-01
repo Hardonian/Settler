@@ -125,7 +125,7 @@ export const POST = withSecurity(
       result,
       correlationId,
     });
-  } catch (_error) {
+  } catch (error) {
     const errorObj = error instanceof Error ? error : new Error(String(error));
     logger.error('Error in sync route', errorObj, { correlationId });
 

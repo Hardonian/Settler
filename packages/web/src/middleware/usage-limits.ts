@@ -113,7 +113,7 @@ export async function checkUsageLimit(
       remaining,
       resetAt,
     };
-  } catch (_error) {
+  } catch (error) {
     logger.error('Error checking usage limit', {
       correlationId,
       billingAccountId,
@@ -170,7 +170,7 @@ export async function incrementUsageCounter(
         limit: -1, // Will be set by checkUsageLimit if needed
       },
     });
-  } catch (_error) {
+  } catch (error) {
     console.error('[Usage Limits] Error incrementing counter:', {
       billingAccountId,
       service,

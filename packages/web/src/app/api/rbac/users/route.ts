@@ -66,7 +66,7 @@ export const GET = withSecurity(
     }
 
     return NextResponse.json({ users });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Error in users GET", error);
     // Never return 500 - return empty users array with graceful error message
     return NextResponse.json({ 

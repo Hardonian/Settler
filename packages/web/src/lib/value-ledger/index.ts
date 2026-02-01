@@ -91,7 +91,7 @@ export async function recordValueEvent(event: ValueEvent): Promise<void> {
         event_count = value_ledger_daily.event_count + 1,
         updated_at = NOW()
     `;
-  } catch (_error) {
+  } catch (error) {
     // Log but don't throw - value tracking should never break user flows
     console.error("[recordValueEvent] Failed to record value event:", error);
   }
@@ -180,7 +180,7 @@ export async function getValueMetrics(
     }
 
     return metrics;
-  } catch (_error) {
+  } catch (error) {
     console.error("[getValueMetrics] Failed to get value metrics:", error);
     // Return zero metrics on error
     return {

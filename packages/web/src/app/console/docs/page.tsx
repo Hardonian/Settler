@@ -252,6 +252,7 @@ const receipt = await settler.receipts.parse({
   mimeType: 'image/jpeg'
 });
 
+// eslint-disable-next-line no-console
 console.log(receipt.merchant, receipt.total);`,
   },
   python: {

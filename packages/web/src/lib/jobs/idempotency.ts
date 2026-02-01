@@ -19,7 +19,7 @@ export async function checkJobIdempotency(
     // For now, we'll use a simple check - in production this should query the actual jobs table
     // This is a placeholder - actual implementation depends on your jobs table schema
     return { exists: false };
-  } catch (_error) {
+  } catch (error) {
     console.error('[Job Idempotency] Error checking key:', error);
     // Fail open - allow job creation
     return { exists: false };

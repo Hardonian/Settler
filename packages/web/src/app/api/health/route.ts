@@ -127,7 +127,7 @@ export const GET = withSecurity(
       };
       overallStatus = 'unhealthy';
     }
-  } catch (_error) {
+  } catch (error) {
     checks.supabaseClientInit = {
       status: 'error',
       message: error instanceof Error ? error.message : 'Initialization failed',
@@ -157,7 +157,7 @@ export const GET = withSecurity(
       };
       // Database is optional, don't mark as unhealthy
     }
-  } catch (_error) {
+  } catch (error) {
     checks.database = {
       status: 'error',
       message: error instanceof Error ? error.message : 'Connection failed',
@@ -207,7 +207,7 @@ export const GET = withSecurity(
         message: 'Service role key not available for backend verification',
       };
     }
-  } catch (_error) {
+  } catch (error) {
     checks.backendContract = {
       status: 'error',
       message: `Backend verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`,

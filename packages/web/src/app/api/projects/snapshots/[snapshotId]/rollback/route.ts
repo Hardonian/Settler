@@ -76,7 +76,7 @@ export const POST = withSecurity(
     }
 
     return NextResponse.json({ success: true });
-  } catch (_error) {
+  } catch (error) {
     appLogger.error("Error in rollback", error);
     return NextResponse.json(
       {

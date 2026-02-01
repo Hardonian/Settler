@@ -149,7 +149,7 @@ export async function getEntitlements(): Promise<Entitlements> {
           console.warn("[Entitlements] Failed to query Supabase subscription:", supabaseError);
         }
       }
-    } catch (_error) {
+    } catch (error) {
       // Profile/subscription lookup failed - use defaults
       console.warn("[Entitlements] Failed to get user profile/subscription:", error);
     }
@@ -161,7 +161,7 @@ export async function getEntitlements(): Promise<Entitlements> {
       isPaid,
       userId: user.id,
     };
-  } catch (_error) {
+  } catch (error) {
     // Auth check failed - return defaults
     console.warn("[Entitlements] Failed to get entitlements:", error);
     return defaults;
