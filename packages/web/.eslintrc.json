@@ -29,7 +29,11 @@
     "@typescript-eslint/unbound-method": "off",
     "@typescript-eslint/no-unnecessary-type-assertion": "off",
     "@typescript-eslint/no-redundant-type-constituents": "off",
-    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "off",
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+    ],
+    "no-console": "off",
     "no-case-declarations": "off",
     "prefer-rest-params": "off",
     "react-hooks/exhaustive-deps": "off",
