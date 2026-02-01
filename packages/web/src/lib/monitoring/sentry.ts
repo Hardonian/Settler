@@ -178,6 +178,7 @@ class SentryClient {
     const consoleLevel = level === "warning" ? "warn" : level;
 
     if (!this.initialized) {
+      // eslint-disable-next-line no-console
       (console[consoleLevel as "info" | "warn" | "error"] as typeof console.log)(
         "[Message]",
         message,
@@ -208,7 +209,9 @@ class SentryClient {
             context
           );
         });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
+      // eslint-disable-next-line no-console
       (console[consoleLevel as "info" | "warn" | "error"] as typeof console.log)(
         "[Message]",
         message,
