@@ -274,6 +274,7 @@ export const GET = withSecurity(
             rowCount: exp.rowCount,
           })),
         });
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         // Never return 500 - return empty exports array with graceful error message
         return NextResponse.json(

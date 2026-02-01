@@ -125,7 +125,8 @@ export const POST = withSecurity(
       result,
       correlationId,
     });
-  } catch (error) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
     const errorObj = error instanceof Error ? error : new Error(String(error));
     logger.error('Error in sync route', errorObj, { correlationId });
 

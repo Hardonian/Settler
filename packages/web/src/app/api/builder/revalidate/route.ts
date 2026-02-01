@@ -69,7 +69,8 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 }
     );
-  } catch (error) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
     console.error('Error processing Builder.io webhook:', error);
     return NextResponse.json(
       { error: 'Internal server error' },

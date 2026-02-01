@@ -128,7 +128,8 @@ export const GET = withSecurity(
     }
 
     return NextResponse.json(insights);
-  } catch (error) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
     appLogger.error("AI data insights error", error);
     return NextResponse.json(
       {

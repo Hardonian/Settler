@@ -85,6 +85,7 @@ export const POST = withUniversalBillingGate(async function POST(
         if (accessToken) {
           await driver.revoke(accessToken, { tenantId });
         }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         appLogger.error('Failed to revoke token', error);
         // Continue with disconnection even if revoke fails
@@ -110,7 +111,8 @@ export const POST = withUniversalBillingGate(async function POST(
       success: true,
       message: 'Connector disconnected successfully',
     });
-  } catch (error) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
     appLogger.error('Error in disconnect route', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(

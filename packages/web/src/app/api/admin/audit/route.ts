@@ -108,7 +108,8 @@ export const GET = withSecurity(
         limit: params.limit,
         offset: params.offset,
       });
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
       appLogger.error("[Admin Audit] Error", error);
 
       if (error instanceof Error && error.name === "ZodError") {

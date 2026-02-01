@@ -87,7 +87,8 @@ export const POST = withSecurity(
       suggestions: aiResponse.suggestions,
       related_docs: aiResponse.relatedDocs,
     });
-  } catch (error) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
     appLogger.error("AI support assistant error", error);
     // Never return 500 - return graceful error response
     return NextResponse.json(

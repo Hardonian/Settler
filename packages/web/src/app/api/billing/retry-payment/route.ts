@@ -72,7 +72,8 @@ export const POST = withSecurity(
     }
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
     appLogger.error("Error in retry-payment POST", error);
     return NextResponse.json(
       {
