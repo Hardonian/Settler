@@ -328,9 +328,11 @@ npx playwright test tests/e2e/visual.spec.ts --project=visual-desktop-light --de
 
 ## Known Limitations
 
-1. **Windows Build:** Local Windows build has symlink permission issues in standalone mode
-   - **Workaround:** CI runs on Ubuntu where this works
-   - **Impact:** None for visual testing
+1. **Windows Build:** ✅ RESOLVED - Windows symlink permission issue has been fixed
+   - **Solution:** `packages/web/next.config.js` now automatically detects Windows and disables `output: 'standalone'` on Windows platforms
+   - **Result:** `npm run build` now works on Windows without elevated permissions
+   - **CI Behavior:** CI still uses standalone mode (Linux) for optimized Docker deployments
+   - **Setup Script:** Run `scripts/setup-windows.bat` for automated Windows development setup
 
 2. **Auth Pages:** Console pages test redirect behavior rather than authenticated state
    - **Rationale:** Visual tests should be deterministic and not depend on test credentials

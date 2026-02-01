@@ -11,6 +11,17 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 });
 
 const path = require("path");
+const os = require("os");
+
+/**
+ * Detect if running on Windows without elevated permissions
+ * Windows symlink creation requires admin rights, which causes
+ * EPERM errors during Next.js standalone build
+ */
+const isWindows = os.platform() === "win32";
+// Only use standalone output on non-Windows platforms or CI (CI runs on Linux)
+// On Windows, use default output format to avoid symlink permission issues
+const shouldUseStandalone = !isWindows || process.env.CI === "true";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -18,7 +29,9 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   // Optimize build output
-  output: "standalone",
+  // Note: On Windows, standalone mode is disabled to avoid symlink permission issues
+  // The standalone output is used in CI/production (Linux) for optimized Docker deployments
+  output: shouldUseStandalone ? "standalone" : undefined,
   // Reduce memory footprint during build
   compress: true,
   // Enable instrumentation
@@ -36,18 +49,18 @@ const nextConfig = {
     // - Lower bandwidth costs
     // - Better Core Web Vitals
     optimizePackageImports: [
-      "lucide-react",              // Icons: ~300KB → ~20KB per icon
-      "@radix-ui/react-progress",  // UI primitives
+      "lucide-react", // Icons: ~300KB → ~20KB per icon
+      "@radix-ui/react-progress", // UI primitives
       "@radix-ui/react-radio-group",
       "@radix-ui/react-dialog",
       "@radix-ui/react-select",
       "@radix-ui/react-dropdown-menu",
       "@radix-ui/react-tabs",
       "@radix-ui/react-tooltip",
-      "framer-motion",             // Animations: ~180KB, tree-shake unused features
-      "date-fns",                  // Date utilities: ~200KB → ~2KB per function
-      "@tanstack/react-query",     // Data fetching
-      "recharts",                  // Charts: ~400KB, only load used chart types
+      "framer-motion", // Animations: ~180KB, tree-shake unused features
+      "date-fns", // Date utilities: ~200KB → ~2KB per function
+      "@tanstack/react-query", // Data fetching
+      "recharts", // Charts: ~400KB, only load used chart types
     ],
     // Scale-Readiness: Keep server-only packages out of client bundles
     // WHY THIS HELPS AT SCALE:
@@ -57,9 +70,9 @@ const nextConfig = {
     serverComponentsExternalPackages: [
       "@prisma/client",
       "prisma",
-      "bcrypt",                    // Password hashing (server-only)
-      "jsonwebtoken",              // JWT signing (server-only)
-      "nodemailer",                // Email (server-only)
+      "bcrypt", // Password hashing (server-only)
+      "jsonwebtoken", // JWT signing (server-only)
+      "nodemailer", // Email (server-only)
     ],
   },
   eslint: {
