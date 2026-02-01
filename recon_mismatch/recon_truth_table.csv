@@ -1,0 +1,4 @@
+source_record_id,target_record_id,match_status,rule_applied,confidence,explanation,source_values,target_values,differences,timestamp
+stripe_m1,,source_orphan,none,0.0,No target records found with key: pi_mismatch_demo|100.0,"{""external_id"": ""pi_mismatch_demo"", ""amount"": 100.0, ""currency"": ""USD""}",{},{},2026-02-01T00:54:26.857931
+stripe_m2,shopify_m2,matched,external_id_exact_match + amount_exact_match,1.0,Records matched using rule: external_id_exact_match + amount_exact_match,"{""external_id"": ""pi_date_mismatch"", ""amount"": 50.0, ""currency"": ""USD""}","{""external_id"": ""pi_date_mismatch"", ""amount"": 50.0, ""currency"": ""USD""}",{},2026-02-01T00:54:26.857944
+,shopify_m1,target_orphan,none,0.0,No source records found with key: pi_mismatch_demo|99.99,{},"{""external_id"": ""pi_mismatch_demo"", ""amount"": 99.99, ""currency"": ""USD""}",{},2026-02-01T00:54:26.857950

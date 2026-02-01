@@ -10,6 +10,9 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List
 
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from reconciliation_engine.engine import (
     ReconciliationEngine,
     Severity,
@@ -171,8 +174,8 @@ Examples:
             if result.invariant_violations:
                 print(f"\n  Invariant violations: {len(result.invariant_violations)}")
                 for v in result.invariant_violations:
-                    emoji = "🔴" if v.severity == Severity.BLOCKER else "🟡"
-                    print(f"    {emoji} {v.invariant_name}: {v.message}")
+                    marker = "[BLOCKER]" if v.severity == Severity.BLOCKER else "[HIGH]"
+                    print(f"    {marker} {v.invariant_name}: {v.message}")
 
             if artifacts:
                 print(f"\n  Audit artifacts:")

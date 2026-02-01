@@ -1,0 +1,139 @@
+{
+  "run_id": "recon_20260201_005408_a1726efe",
+  "started_at": "2026-02-01T00:54:08.794015",
+  "completed_at": "2026-02-01T00:54:08.794186",
+  "total_source": 5,
+  "total_target": 5,
+  "match_keys": [
+    "external_id",
+    "amount",
+    "date"
+  ],
+  "matched_count": 5,
+  "mismatched_count": 0,
+  "source_orphan_count": 0,
+  "target_orphan_count": 0,
+  "match_rate": 1.0,
+  "source_data_hash": "f93313d27d7ffc90",
+  "target_data_hash": "a8825467a8edec77",
+  "invariant_violations": [],
+  "has_blocker_violations": false,
+  "options": {
+    "amount_tolerance": 0.01,
+    "date_tolerance_days": 0,
+    "case_sensitive": false,
+    "fuzzy_rules": []
+  },
+  "truth_table": [
+    {
+      "source_record_id": "stripe_001",
+      "target_record_id": "shopify_001",
+      "match_status": "matched",
+      "rule_applied": "external_id_exact_match + amount_exact_match + date_exact_match",
+      "confidence": 1.0,
+      "explanation": "Records matched using rule: external_id_exact_match + amount_exact_match + date_exact_match",
+      "source_values": {
+        "external_id": "pi_3O1234567890",
+        "amount": 100.0,
+        "date": "2024-01-15",
+        "currency": "USD"
+      },
+      "target_values": {
+        "external_id": "pi_3O1234567890",
+        "amount": 100.0,
+        "date": "2024-01-15",
+        "currency": "USD"
+      },
+      "differences": {},
+      "timestamp": "2026-02-01T00:54:08.794148"
+    },
+    {
+      "source_record_id": "stripe_002",
+      "target_record_id": "shopify_002",
+      "match_status": "matched",
+      "rule_applied": "external_id_exact_match + amount_exact_match + date_exact_match",
+      "confidence": 1.0,
+      "explanation": "Records matched using rule: external_id_exact_match + amount_exact_match + date_exact_match",
+      "source_values": {
+        "external_id": "pi_3O0987654321",
+        "amount": 250.0,
+        "date": "2024-01-16",
+        "currency": "USD"
+      },
+      "target_values": {
+        "external_id": "pi_3O0987654321",
+        "amount": 250.0,
+        "date": "2024-01-16",
+        "currency": "USD"
+      },
+      "differences": {},
+      "timestamp": "2026-02-01T00:54:08.794160"
+    },
+    {
+      "source_record_id": "stripe_003",
+      "target_record_id": "shopify_003",
+      "match_status": "matched",
+      "rule_applied": "external_id_exact_match + amount_exact_match + date_exact_match",
+      "confidence": 1.0,
+      "explanation": "Records matched using rule: external_id_exact_match + amount_exact_match + date_exact_match",
+      "source_values": {
+        "external_id": "pi_3O5555555555",
+        "amount": 75.5,
+        "date": "2024-01-17",
+        "currency": "USD"
+      },
+      "target_values": {
+        "external_id": "pi_3O5555555555",
+        "amount": 75.5,
+        "date": "2024-01-17",
+        "currency": "USD"
+      },
+      "differences": {},
+      "timestamp": "2026-02-01T00:54:08.794168"
+    },
+    {
+      "source_record_id": "stripe_004",
+      "target_record_id": "shopify_004",
+      "match_status": "matched",
+      "rule_applied": "external_id_exact_match + amount_exact_match + date_exact_match",
+      "confidence": 1.0,
+      "explanation": "Records matched using rule: external_id_exact_match + amount_exact_match + date_exact_match",
+      "source_values": {
+        "external_id": "pi_3O7777777777",
+        "amount": 500.0,
+        "date": "2024-01-18",
+        "currency": "USD"
+      },
+      "target_values": {
+        "external_id": "pi_3O7777777777",
+        "amount": 500.0,
+        "date": "2024-01-18",
+        "currency": "USD"
+      },
+      "differences": {},
+      "timestamp": "2026-02-01T00:54:08.794174"
+    },
+    {
+      "source_record_id": "stripe_005",
+      "target_record_id": "shopify_005",
+      "match_status": "matched",
+      "rule_applied": "external_id_exact_match + amount_exact_match + date_exact_match",
+      "confidence": 1.0,
+      "explanation": "Records matched using rule: external_id_exact_match + amount_exact_match + date_exact_match",
+      "source_values": {
+        "external_id": "pi_3O8888888888",
+        "amount": 29.99,
+        "date": "2024-01-19",
+        "currency": "USD"
+      },
+      "target_values": {
+        "external_id": "pi_3O8888888888",
+        "amount": 29.99,
+        "date": "2024-01-19",
+        "currency": "USD"
+      },
+      "differences": {},
+      "timestamp": "2026-02-01T00:54:08.794179"
+    }
+  ]
+}

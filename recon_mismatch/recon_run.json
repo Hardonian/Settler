@@ -1,0 +1,95 @@
+{
+  "run_id": "recon_20260201_005426_a89ece6e",
+  "started_at": "2026-02-01T00:54:26.857841",
+  "completed_at": "2026-02-01T00:54:26.857956",
+  "total_source": 2,
+  "total_target": 2,
+  "match_keys": [
+    "external_id",
+    "amount"
+  ],
+  "matched_count": 1,
+  "mismatched_count": 0,
+  "source_orphan_count": 1,
+  "target_orphan_count": 1,
+  "match_rate": 0.5,
+  "source_data_hash": "f1fc6b9a87412b98",
+  "target_data_hash": "0a693c52773a08f3",
+  "invariant_violations": [
+    {
+      "invariant_name": "no_orphaned_transactions",
+      "severity": "high",
+      "message": "Found 1 source orphans and 1 target orphans",
+      "details": {
+        "orphaned_sources": [
+          "stripe_m1"
+        ],
+        "orphaned_targets": [
+          "shopify_m1"
+        ]
+      },
+      "remediation": "Review unmatched transactions for data quality issues"
+    }
+  ],
+  "has_blocker_violations": false,
+  "options": {
+    "amount_tolerance": 0.01,
+    "date_tolerance_days": 0,
+    "case_sensitive": false,
+    "fuzzy_rules": []
+  },
+  "truth_table": [
+    {
+      "source_record_id": "stripe_m1",
+      "target_record_id": null,
+      "match_status": "source_orphan",
+      "rule_applied": "none",
+      "confidence": 0.0,
+      "explanation": "No target records found with key: pi_mismatch_demo|100.0",
+      "source_values": {
+        "external_id": "pi_mismatch_demo",
+        "amount": 100.0,
+        "currency": "USD"
+      },
+      "target_values": {},
+      "differences": {},
+      "timestamp": "2026-02-01T00:54:26.857931"
+    },
+    {
+      "source_record_id": "stripe_m2",
+      "target_record_id": "shopify_m2",
+      "match_status": "matched",
+      "rule_applied": "external_id_exact_match + amount_exact_match",
+      "confidence": 1.0,
+      "explanation": "Records matched using rule: external_id_exact_match + amount_exact_match",
+      "source_values": {
+        "external_id": "pi_date_mismatch",
+        "amount": 50.0,
+        "currency": "USD"
+      },
+      "target_values": {
+        "external_id": "pi_date_mismatch",
+        "amount": 50.0,
+        "currency": "USD"
+      },
+      "differences": {},
+      "timestamp": "2026-02-01T00:54:26.857944"
+    },
+    {
+      "source_record_id": null,
+      "target_record_id": "shopify_m1",
+      "match_status": "target_orphan",
+      "rule_applied": "none",
+      "confidence": 0.0,
+      "explanation": "No source records found with key: pi_mismatch_demo|99.99",
+      "source_values": {},
+      "target_values": {
+        "external_id": "pi_mismatch_demo",
+        "amount": 99.99,
+        "currency": "USD"
+      },
+      "differences": {},
+      "timestamp": "2026-02-01T00:54:26.857950"
+    }
+  ]
+}

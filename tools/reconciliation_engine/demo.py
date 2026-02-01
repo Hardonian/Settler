@@ -156,7 +156,7 @@ def demo_forced_mismatch():
     engine = ReconciliationEngine(
         source_records=stripe_data,
         target_records=shopify_data,
-        match_keys=["external_id", "amount", "date"],
+        match_keys=["external_id"],  # Only match on external_id, let tolerance handle amount
         options={"amount_tolerance": 0.01},
     )
 
@@ -165,15 +165,31 @@ def demo_forced_mismatch():
     print(f"\n[FAIL] Reconciliation Failed to Match")
     print(f"   Match Rate: {result.match_rate:.2%}")
     print(f"   Mismatched: {result.mismatched_count}")
+    print(f"   Source Orphans: {result.source_orphan_count}")
+    print(f"   Target Orphans: {result.target_orphan_count}")
 
-    # Show the detailed explanation
-    mismatch_entry = [e for e in result.truth_table if e.match_status.value == "mismatched"][0]
-    print(f"\n   [INFO] Explanation:")
-    print(f"      - Source Record: {mismatch_entry.source_record_id}")
-    print(f"      - Target Record: {mismatch_entry.target_record_id}")
-    print(f"      - Match Key: external_id matched (pi_mismatch_001)")
-    print(f"      - Failure: Amount difference of 1.00 exceeds tolerance (0.01)")
-    print(f"      - Rule Applied: {mismatch_entry.rule_applied}")
+    # Show the detailed explanation - look for mismatches or orphans
+    if result.mismatched_count > 0:
+        entry = [e for e in result.truth_table if e.match_status.value == "mismatched"][0]
+        entry_type = "MISMATCH"
+    elif result.source_orphan_count > 0:
+        entry = [e for e in result.truth_table if e.match_status.value == "source_orphan"][0]
+        entry_type = "ORPHAN"
+    else:
+        entry = result.truth_table[0] if result.truth_table else None
+        entry_type = "OTHER"
+
+    if entry:
+        print(f"\n   [INFO] Explanation ({entry_type}):")
+        print(f"      - Source Record: {entry.source_record_id}")
+        print(f"      - Target Record: {entry.target_record_id}")
+        if entry_type == "MISMATCH":
+            print(f"      - Match Key: external_id matched (pi_mismatch_001)")
+            print(f"      - Failure: Amount difference exceeds tolerance")
+        else:
+            print(f"      - Match Key: Different amounts created different keys")
+            print(f"      - Result: Orphan (no match found)")
+        print(f"      - Rule Applied: {entry.rule_applied}")
 
     return result
 
