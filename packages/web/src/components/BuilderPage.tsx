@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Builder.io Page Component
  * Wrapper that dynamically imports the actual component with SSR disabled
