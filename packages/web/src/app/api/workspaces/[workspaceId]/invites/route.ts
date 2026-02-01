@@ -45,7 +45,7 @@ export const POST = withSecurity(
     }
 
     // Check user has admin/owner role
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { data: membership } = await (supabase
       .from('tenant_users') as any)
       .select('role')
@@ -80,7 +80,7 @@ export const POST = withSecurity(
     });
 
     // Track event
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     await (supabase.rpc as any)('track_onboarding_event', {
       p_tenant_id: params.workspaceId,
       p_user_id: user.id,
@@ -102,7 +102,7 @@ export const POST = withSecurity(
       inviteUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/invite/${token}`,
       trace_id: traceId,
     });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error('[Invite API] Error', error);
     
     if (error instanceof z.ZodError) {
@@ -149,7 +149,7 @@ export const GET = withSecurity(
     }
 
     // Check user has admin/owner role
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { data: membership } = await (supabase
       .from('tenant_users') as any)
       .select('role')
@@ -185,7 +185,7 @@ export const GET = withSecurity(
       invites,
       trace_id: traceId,
     });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error('[Invite API] Error', error);
     // Never return 500 - return empty invites array with graceful error message
     return NextResponse.json(

@@ -31,7 +31,7 @@ export function withTiming<T extends (...args: any[]) => Promise<NextResponse>>(
       response.headers.set('x-trace-id', traceId);
 
       return response;
-    } catch (error) {
+    } catch (_error) {
       const duration = Date.now() - startTime;
 
       // Record error timing

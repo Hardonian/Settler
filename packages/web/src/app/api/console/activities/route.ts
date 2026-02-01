@@ -23,7 +23,7 @@ export const GET = withSecurity(
     
     const activities = await getRecentActivities(10);
     return NextResponse.json({ activities });
-  } catch (error) {
+  } catch (_error) {
     // If auth error, return 401
     if (error instanceof Error && error.message.includes('Unauthorized')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

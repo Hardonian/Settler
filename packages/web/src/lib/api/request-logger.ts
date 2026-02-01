@@ -90,7 +90,7 @@ export function withRequestLogging<T extends (...args: any[]) => Promise<Respons
       const response = await handler(...args);
       await logRequest(request, response, startTime);
       return response;
-    } catch (error) {
+    } catch (_error) {
       // Create error response for logging
       const errorResponse = new Response(JSON.stringify({ error: "Internal error" }), {
         status: 200,

@@ -76,7 +76,7 @@ export const POST = withSecurity(
     }
 
     return NextResponse.json({ url: session.url });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error('[Stripe Portal] Error creating customer portal session', error, {
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,

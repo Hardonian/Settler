@@ -92,7 +92,7 @@ export const GET = withSecurity(
           createdAt: receipt.createdAt,
           updatedAt: receipt.updatedAt,
         });
-      } catch (error) {
+      } catch (_error) {
         // Never return 500 - always return 200 with demo response for playground
         appLogger.error("Error fetching receipt", error);
         return NextResponse.json(

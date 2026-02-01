@@ -71,7 +71,7 @@ export async function checkIdempotency(key: string): Promise<IdempotencyRecord |
       createdAt: record.createdAt,
       completedAt: record.completedAt || undefined,
     };
-  } catch (error) {
+  } catch (_error) {
     console.error('[Idempotency] Error checking idempotency:', error);
     // On error, allow request to proceed (fail open)
     return null;
@@ -107,7 +107,7 @@ export async function recordIdempotency(
         completedAt: status !== 'pending' ? new Date() : null,
       },
     });
-  } catch (error) {
+  } catch (_error) {
     console.error('[Idempotency] Error recording idempotency:', error);
     // Don't throw - idempotency is best effort
   }
@@ -173,7 +173,7 @@ export function withIdempotency(
         statusText: response.statusText,
         headers,
       });
-    } catch (error) {
+    } catch (_error) {
       // Record failure
       await recordIdempotency(key, 'failed', {
         error: error instanceof Error ? error.message : 'Unknown error',

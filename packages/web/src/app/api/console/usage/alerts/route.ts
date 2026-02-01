@@ -27,7 +27,7 @@ export const GET = withSecurity(
     const alerts = await getCurrentUserUsageAlerts();
 
     return NextResponse.json({ alerts });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error('[Usage Alerts API] Error', error);
     return NextResponse.json({ alerts: [] });
   }

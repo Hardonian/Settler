@@ -240,7 +240,7 @@ export async function trackValueEvent(event: ValueEvent): Promise<void> {
         ...event.metadata,
       });
     }
-  } catch (error) {
+  } catch (_error) {
     // Fail silently - don't break user flow
     console.error('[trackValueEvent] Failed to track:', error);
   }

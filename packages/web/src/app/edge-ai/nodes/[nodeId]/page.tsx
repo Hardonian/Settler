@@ -61,7 +61,7 @@ export default function NodeDetailPage() {
         },
       };
       setNode(mockNode);
-    } catch (error) {
+    } catch (_error) {
       logger.error("Failed to fetch node", error instanceof Error ? error : new Error(String(error)), { nodeId });
     } finally {
       setIsLoading(false);

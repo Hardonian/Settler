@@ -21,7 +21,6 @@ export function ChurnAnalysisDashboard() {
 
   useEffect(() => {
     void fetchChurnMetrics();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeRange]);
 
   const fetchChurnMetrics = async () => {

@@ -98,7 +98,7 @@ export function decrypt(encryptedData: string): string {
 
   try {
     parsed = JSON.parse(encryptedData);
-  } catch (error) {
+  } catch (_error) {
     throw new Error("Invalid encrypted data format: must be JSON");
   }
 

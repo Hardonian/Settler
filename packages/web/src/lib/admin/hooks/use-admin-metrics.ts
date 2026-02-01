@@ -260,10 +260,10 @@ export function useAdminStream(
               setLatency(health.latency);
               break;
           }
-        } catch (error) {
+        } catch (_error) {
           // Error parsing event - non-critical, continue processing
           if (process.env.NODE_ENV === 'development') {
-            // eslint-disable-next-line no-console
+             
             console.error('[Admin Stream] Error parsing event:', error);
           }
         }

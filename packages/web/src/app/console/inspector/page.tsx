@@ -59,7 +59,7 @@ export default function InspectorPage() {
           setRunAttempts([]);
         }
       }
-    } catch (error) {
+    } catch (_error) {
       // No mock data - show empty state on error
       if (activeTab === 'webhooks') {
         setWebhookAttempts([]);

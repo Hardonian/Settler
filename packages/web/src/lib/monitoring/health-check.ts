@@ -46,7 +46,7 @@ export async function checkSupabaseHealth(): Promise<HealthCheckResult> {
       status: latency > 1000 ? 'degraded' : 'healthy',
       latency,
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       service: 'supabase',
       status: 'unhealthy',
@@ -89,7 +89,7 @@ export async function checkDatabaseHealth(): Promise<HealthCheckResult> {
         apiCallLogsCount: count || 0,
       },
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       service: 'database',
       status: 'unhealthy',
@@ -134,7 +134,7 @@ export async function checkApiLoggingHealth(): Promise<HealthCheckResult> {
         recentLogs: count || 0,
       },
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       service: 'api-logging',
       status: 'unhealthy',
@@ -180,7 +180,7 @@ export async function checkRLSHealth(): Promise<HealthCheckResult> {
       latency,
       details: { rlsEnforced: true },
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       service: 'rls',
       status: 'degraded',
@@ -230,7 +230,7 @@ export async function checkJobQueueHealth(): Promise<HealthCheckResult> {
         stuckJobs: stuckCount,
       },
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       service: 'job-queue',
       status: 'degraded',

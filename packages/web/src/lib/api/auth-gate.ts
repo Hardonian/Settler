@@ -68,7 +68,7 @@ export async function requireAuth(request: NextRequest): Promise<{
         email: user.email,
       },
     };
-  } catch (error) {
+  } catch (_error) {
     await logger.error("Auth check failed", {
       trace_id: traceId,
       route: request.nextUrl.pathname,
@@ -145,7 +145,7 @@ export async function requireAdmin(request: NextRequest): Promise<{
       isAdmin: true,
       user: authResult.user,
     };
-  } catch (error) {
+  } catch (_error) {
     await logger.error("Admin check failed", {
       trace_id: traceId,
       route: request.nextUrl.pathname,

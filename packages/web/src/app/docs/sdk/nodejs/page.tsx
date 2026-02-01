@@ -71,7 +71,7 @@ console.log('Job created:', job.data.id);`;
 
 try {
   const job = await client.jobs.create({ /* ... */ });
-} catch (error) {
+} catch (_error) {
   if (error instanceof ValidationError) {
     console.error('Validation error:', error.message);
   } else if (error instanceof AuthError) {

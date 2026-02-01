@@ -38,7 +38,7 @@ export const POST = withSecurity(
     // Restore project data based on type
     if (project_type === "job") {
       const { error: updateError } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         .from("reconciliation_jobs" as any)
         .update(snapshot_data as Record<string, unknown> as never)
         .eq("id", project_id)
@@ -76,7 +76,7 @@ export const POST = withSecurity(
     }
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error("Error in rollback", error);
     return NextResponse.json(
       {

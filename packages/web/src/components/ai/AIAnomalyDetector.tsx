@@ -16,7 +16,6 @@ export function AIAnomalyDetector({ userId }: { userId?: string }) {
     if (userId) {
       void fetchAnomalies();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const fetchAnomalies = async () => {

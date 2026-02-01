@@ -146,7 +146,7 @@ export function withGracefulErrors<T extends unknown[]>(
   return async (...args: T): Promise<NextResponse> => {
     try {
       return await handler(...args);
-    } catch (error) {
+    } catch (_error) {
       return createGracefulErrorResponse(error, options);
     }
   };

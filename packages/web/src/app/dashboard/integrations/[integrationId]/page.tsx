@@ -48,7 +48,7 @@ export default function IntegrationConfigurationPage() {
       };
       setConfig(integrationConfig);
       setFormData(integrationConfig.config);
-    } catch (error) {
+    } catch (_error) {
       console.error("Failed to fetch integration config:", error);
     } finally {
       setIsLoading(false);
@@ -76,7 +76,7 @@ export default function IntegrationConfigurationPage() {
       if (config) {
         setConfig({ ...config, config: formData, is_connected: true });
       }
-    } catch (error) {
+    } catch (_error) {
       console.error("Save failed:", error);
     } finally {
       setIsSaving(false);
@@ -89,7 +89,7 @@ export default function IntegrationConfigurationPage() {
       // In production: await fetch(`/api/integrations/${integrationId}/test`, { method: "POST", body: JSON.stringify(formData) });
       console.log("Testing connection:", formData);
       alert("Connection test successful!");
-    } catch (error) {
+    } catch (_error) {
       console.error("Test failed:", error);
       alert("Connection test failed. Please check your credentials.");
     } finally {

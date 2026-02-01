@@ -22,7 +22,7 @@ function getStripe(): Stripe | null {
     const secretKey = process.env.STRIPE_SECRET_KEY;
     if (!secretKey) {
       // Demo mode: return null instead of throwing
-      // eslint-disable-next-line no-console
+       
       console.warn('[Stripe] STRIPE_SECRET_KEY not configured, running in demo mode');
       return null;
     }
@@ -103,7 +103,7 @@ export async function getOrCreateStripeCustomer(
   // Check if Stripe is configured
   if (!isStripeConfigured()) {
     // Demo mode: return a mock customer ID
-    // eslint-disable-next-line no-console
+     
     console.warn('[Stripe] Demo mode: returning mock customer ID');
     return 'cus_demo_' + billingAccountId.substring(0, 8);
   }
@@ -181,7 +181,7 @@ export async function createCheckoutSession(
   // Check if Stripe is configured
   if (!isStripeConfigured()) {
     // Demo mode: return a mock checkout session
-    // eslint-disable-next-line no-console
+     
     console.warn('[Stripe] Demo mode: returning mock checkout session');
     return {
       id: 'cs_demo_' + Date.now(),
@@ -252,7 +252,7 @@ export async function createCustomerPortalSession(
   // Check if Stripe is configured
   if (!isStripeConfigured()) {
     // Demo mode: return a mock portal session
-    // eslint-disable-next-line no-console
+     
     console.warn('[Stripe] Demo mode: returning mock portal session');
     return {
       id: 'bps_demo_' + Date.now(),
@@ -306,7 +306,7 @@ export async function syncSubscription(stripeSubscription: Stripe.Subscription):
   const billingAccountId = stripeSubscription.metadata?.billingAccountId;
   if (!billingAccountId || typeof billingAccountId !== 'string' || !isValidUUID(billingAccountId)) {
     // Log error but don't throw - webhook processing should be resilient
-    // eslint-disable-next-line no-console
+     
     console.error('[Stripe] Subscription missing valid billingAccountId metadata', {
       subscriptionId: stripeSubscription.id,
       metadata: stripeSubscription.metadata,
@@ -320,7 +320,7 @@ export async function syncSubscription(stripeSubscription: Stripe.Subscription):
     select: { id: true },
   });
   if (!accountExists) {
-    // eslint-disable-next-line no-console
+     
     console.error('[Stripe] Billing account not found', { billingAccountId, subscriptionId: stripeSubscription.id });
     return;
   }
@@ -329,7 +329,7 @@ export async function syncSubscription(stripeSubscription: Stripe.Subscription):
   const planCode = (stripeSubscription.metadata?.planCode || 'starter') as PlanCode;
   const planConfig = getPlanConfig(planCode);
   if (!planConfig) {
-    // eslint-disable-next-line no-console
+     
     console.error('[Stripe] Invalid plan code', { planCode, subscriptionId: stripeSubscription.id });
     return;
   }

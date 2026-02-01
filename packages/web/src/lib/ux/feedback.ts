@@ -75,7 +75,7 @@ export async function withFeedback<T>(
     }
     
     return result;
-  } catch (error) {
+  } catch (_error) {
     if (showLoading) {
       globalLoadingState.setError(error instanceof Error ? error : null);
     }

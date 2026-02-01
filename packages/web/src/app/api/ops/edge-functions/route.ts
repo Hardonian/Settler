@@ -52,7 +52,7 @@ export const GET = withSecurity(
     ];
 
     return NextResponse.json({ functions });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error("Error in edge-functions GET", error);
     return NextResponse.json(
       {

@@ -45,7 +45,7 @@ export const POST = withSecurity(
 
     // For now, just update version
     const integrationData = integration as { id: string };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { error: updateError } = await (supabase.from("integration_credentials") as any)
       .update({
         version: "2.1.0",
@@ -66,7 +66,7 @@ export const POST = withSecurity(
     }
 
     return NextResponse.json({ success: true, version: "2.1.0" });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error("Error in upgrade POST", error);
     return NextResponse.json(
       {

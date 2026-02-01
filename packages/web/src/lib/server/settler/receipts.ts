@@ -70,7 +70,7 @@ async function getPreviousReceiptHash(
     type ReceiptRow = Database["public"]["Tables"]["receipts"]["Row"];
     const { data } = (await query.maybeSingle()) as { data: ReceiptRow | null };
     return data?.hash;
-  } catch (error) {
+  } catch (_error) {
     await safeLogger.error("[getPreviousReceiptHash] Error", {
       tenantId,
       sourceId,
@@ -168,7 +168,7 @@ export async function createReceipt(
       createdBy: receipt.created_by,
       createdAt: new Date(receipt.created_at),
     };
-  } catch (error) {
+  } catch (_error) {
     await safeLogger.error("[createReceipt] Unexpected error", {
       tenantId,
       error: error instanceof Error ? error.message : String(error),
@@ -243,7 +243,7 @@ export async function verifyReceiptChain(
       valid: issues.length === 0,
       issues,
     };
-  } catch (error) {
+  } catch (_error) {
     await safeLogger.error("[verifyReceiptChain] Unexpected error", {
       tenantId,
       error: error instanceof Error ? error.message : String(error),
@@ -308,7 +308,7 @@ export async function listReceipts(tenantId: TenantId, limit: number = 50): Prom
       createdBy: r.created_by,
       createdAt: new Date(r.created_at),
     }));
-  } catch (error) {
+  } catch (_error) {
     await safeLogger.error("[listReceipts] Unexpected error", {
       tenantId,
       error: error instanceof Error ? error.message : String(error),

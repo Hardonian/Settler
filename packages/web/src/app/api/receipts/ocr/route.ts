@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (_error) {
     appLogger.error("Error in POST /api/receipts/ocr", { error, traceId });
 
     return NextResponse.json(

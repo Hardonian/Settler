@@ -83,7 +83,7 @@ export async function checkRequestRateLimit(
         concurrentJobs: 0,
       },
     };
-  } catch (error) {
+  } catch (_error) {
     console.error('[Quota] Error checking rate limit:', error);
     // Fail open - allow request
     return { allowed: true };
@@ -152,7 +152,7 @@ export async function checkJobQuota(
         concurrentJobs,
       },
     };
-  } catch (error) {
+  } catch (_error) {
     console.error('[Quota] Error checking job quota:', error);
     // Fail open - allow job creation
     return { allowed: true };
@@ -174,7 +174,7 @@ async function getConcurrentJobCount(tenantId: string): Promise<number> {
     `.catch(() => [{ count: BigInt(0) }]);
 
     return Number(runningJobs[0]?.count || 0);
-  } catch (error) {
+  } catch (_error) {
     console.error('[Quota] Error getting concurrent job count:', error);
     return 0;
   }
@@ -193,7 +193,7 @@ async function getJobCountSince(tenantId: string, since: Date): Promise<number> 
     `.catch(() => [{ count: BigInt(0) }]);
 
     return Number(jobs[0]?.count || 0);
-  } catch (error) {
+  } catch (_error) {
     console.error('[Quota] Error getting job count:', error);
     return 0;
   }
@@ -220,7 +220,7 @@ export async function recordUsage(
     }).catch(() => {
       // Ignore errors - usage tracking is best-effort
     });
-  } catch (error) {
+  } catch (_error) {
     console.error('[Quota] Error recording usage:', error);
     // Don't throw - usage tracking is best-effort
   }

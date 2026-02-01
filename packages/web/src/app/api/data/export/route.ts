@@ -56,7 +56,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
         "Content-Disposition": `attachment; filename="settler-export-${type}-${new Date().toISOString().split("T")[0]}.json"`,
       },
     });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error("Error in export GET", error);
     return NextResponse.json(
       {

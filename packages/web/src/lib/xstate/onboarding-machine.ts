@@ -87,7 +87,7 @@ async function loadProgress(workspaceId: string): Promise<{
       throw new Error(`Failed to load onboarding progress: ${response.statusText}`);
     }
     return response.json();
-  } catch (error) {
+  } catch (_error) {
     clearTimeout(timeoutId);
     if (error instanceof Error && error.name === 'AbortError') {
       throw new Error('Request timed out. Please check your connection and try again.');
@@ -120,7 +120,7 @@ async function createWorkspace(data: {
       throw new Error(error.error || `Failed to create workspace: ${response.statusText}`);
     }
     return response.json();
-  } catch (error) {
+  } catch (_error) {
     clearTimeout(timeoutId);
     if (error instanceof Error && error.name === 'AbortError') {
       throw new Error('Request timed out. Please check your connection and try again.');
@@ -159,7 +159,7 @@ async function completeStep(
       throw new Error(error.error || `Failed to complete step: ${response.statusText}`);
     }
     return response.json();
-  } catch (error) {
+  } catch (_error) {
     clearTimeout(timeoutId);
     if (error instanceof Error && error.name === 'AbortError') {
       throw new Error('Request timed out. Please check your connection and try again.');
@@ -191,7 +191,7 @@ async function sendInvite(
       const error = await response.json().catch(() => ({}));
       throw new Error(error.error || `Failed to send invite: ${response.statusText}`);
     }
-  } catch (error) {
+  } catch (_error) {
     clearTimeout(timeoutId);
     if (error instanceof Error && error.name === 'AbortError') {
       throw new Error('Request timed out. Please check your connection and try again.');

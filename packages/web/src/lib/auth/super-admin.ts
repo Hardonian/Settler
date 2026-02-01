@@ -39,7 +39,7 @@ export async function isSuperAdmin(): Promise<boolean> {
     }
     
     return false;
-  } catch (error) {
+  } catch (_error) {
     console.error('[isSuperAdmin] Error checking super admin status:', error);
     return false;
   }
@@ -78,7 +78,7 @@ export async function getSuperAdminStatus(): Promise<{
       userId: user.id,
       email: user.email || undefined,
     };
-  } catch (error) {
+  } catch (_error) {
     console.error('[getSuperAdminStatus] Error:', error);
     return { isSuperAdmin: false };
   }

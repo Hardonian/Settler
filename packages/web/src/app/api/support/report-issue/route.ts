@@ -118,7 +118,7 @@ export const POST = withSecurity(
         priority: ticketData.priority,
       },
     });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error('Report issue error', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(

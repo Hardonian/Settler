@@ -50,7 +50,7 @@ export const POST = withSecurity(
     }
 
     return NextResponse.json({ solution });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error("Error in troubleshooting POST", error);
     return NextResponse.json(
       {

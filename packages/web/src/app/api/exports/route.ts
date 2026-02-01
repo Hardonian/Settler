@@ -66,7 +66,7 @@ export const POST = withSecurity(
                 });
                 tenantId = billingAccount?.tenantId || null;
               }
-            } catch (error) {
+            } catch (_error) {
               return NextResponse.json(
                 {
                   error: "Unauthorized",
@@ -76,7 +76,7 @@ export const POST = withSecurity(
               );
             }
           }
-        } catch (error) {
+        } catch (_error) {
           return NextResponse.json(
             {
               error: "Unauthorized",
@@ -179,7 +179,7 @@ export const POST = withSecurity(
           },
           { status: 201 }
         );
-      } catch (error) {
+      } catch (_error) {
         const duration = Date.now() - startTime;
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
         const errorStack = error instanceof Error ? error.stack : undefined;
@@ -272,7 +272,7 @@ export const GET = withSecurity(
             rowCount: exp.rowCount,
           })),
         });
-      } catch (error) {
+      } catch (_error) {
         // Never return 500 - return empty exports array with graceful error message
         return NextResponse.json(
           {
@@ -417,7 +417,7 @@ async function processExport(
     });
 
     appLogger.info(`[Export API] Export ${exportId} completed successfully`);
-  } catch (error) {
+  } catch (_error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
 
     await prisma.export.update({

@@ -117,7 +117,7 @@ export async function executeReconciliationWithFailSafe(
       errors: [],
       confidence,
     };
-  } catch (error) {
+  } catch (_error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return {
       success: false,
@@ -161,7 +161,7 @@ async function getPartialResults(jobId: string): Promise<ReconciliationResult | 
     }
 
     return null;
-  } catch (error) {
+  } catch (_error) {
     console.error('[Fail-Safe] Error getting partial results:', error);
     return null;
   }
@@ -217,7 +217,7 @@ export async function validateReconciliationSafety(
       safe: warnings.length === 0,
       warnings,
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       safe: false,
       warnings: ['Unable to validate safety: ' + (error instanceof Error ? error.message : 'Unknown error')],

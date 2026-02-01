@@ -108,7 +108,7 @@ export const GET = withSecurity(
         limit: params.limit,
         offset: params.offset,
       });
-    } catch (error) {
+    } catch (_error) {
       appLogger.error("[Admin Audit] Error", error);
 
       if (error instanceof Error && error.name === "ZodError") {

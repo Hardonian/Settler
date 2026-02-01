@@ -82,7 +82,6 @@ export function SettlerStaticImage({ imageKey, className, alt }: SettlerStaticIm
   const config = getImageConfig(imageKey);
 
   return (
-    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={config.path}
       alt={alt || config.alt}

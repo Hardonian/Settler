@@ -141,7 +141,7 @@ export function PricingWithFeatures() {
         window.location.href = url;
       }
     } catch (error: unknown) {
-      // eslint-disable-next-line no-console
+       
       console.error('Failed to start checkout:', error);
       // Fallback to signup page
       router.push('/signup');

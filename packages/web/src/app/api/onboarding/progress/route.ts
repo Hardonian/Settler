@@ -63,7 +63,7 @@ export const GET = withSecurity(
       completedAt: progress.completedAt,
       steps,
     });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error('[Onboarding API] Error', error);
     return NextResponse.json(
       {
@@ -133,7 +133,7 @@ export const POST = withSecurity(
       completedAt: updated.completedAt,
       steps,
     });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error('[Onboarding API] Error', error);
     return NextResponse.json(
       {

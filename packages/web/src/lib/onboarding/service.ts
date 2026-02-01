@@ -110,7 +110,7 @@ export async function getOnboardingProgress(userId: string): Promise<OnboardingP
     }
 
     return progress as OnboardingProgress;
-  } catch (error) {
+  } catch (_error) {
     console.error('[Onboarding] Error getting progress:', error);
     return null;
   }
@@ -182,7 +182,7 @@ export async function completeStep(
     });
 
     return updated as OnboardingProgress;
-  } catch (error) {
+  } catch (_error) {
     console.error('[Onboarding] Error completing step:', error);
     return null;
   }
@@ -222,7 +222,7 @@ export async function skipStep(
     });
 
     return updated as OnboardingProgress;
-  } catch (error) {
+  } catch (_error) {
     console.error('[Onboarding] Error skipping step:', error);
     return null;
   }
@@ -235,7 +235,7 @@ export async function isOnboardingComplete(userId: string): Promise<boolean> {
   try {
     const progress = await getOnboardingProgress(userId);
     return progress?.progress === 100 || progress?.currentStep === 'complete' || false;
-  } catch (error) {
+  } catch (_error) {
     console.error('[Onboarding] Error checking completion:', error);
     return false;
   }
@@ -254,7 +254,7 @@ export async function getCurrentUserOnboardingProgress(): Promise<OnboardingProg
     }
 
     return await getOnboardingProgress(user.id);
-  } catch (error) {
+  } catch (_error) {
     console.error('[Onboarding] Error getting current user progress:', error);
     return null;
   }

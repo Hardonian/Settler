@@ -56,7 +56,7 @@ export const GET = withSecurity(
       });
 
       return NextResponse.json({ page }, { status: 200 });
-    } catch (error) {
+    } catch (_error) {
       return handleApiError(error, "Failed to load page");
     }
   },
@@ -114,7 +114,7 @@ export const PUT = withSecurity(
       });
 
       return NextResponse.json({ page }, { status: 200 });
-    } catch (error) {
+    } catch (_error) {
       if (error instanceof z.ZodError) {
         return NextResponse.json({ error: "Invalid request", details: error.issues }, { status: 400 });
       }
@@ -146,7 +146,7 @@ export const DELETE = withSecurity(
       await prisma.tenantPage.delete({ where: { id: params.id } });
 
       return NextResponse.json({ success: true }, { status: 200 });
-    } catch (error) {
+    } catch (_error) {
       return handleApiError(error, "Failed to delete page");
     }
   },

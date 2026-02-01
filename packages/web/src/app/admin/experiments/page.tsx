@@ -66,7 +66,7 @@ export default async function ExperimentsList() {
       </Card>
     </div>
   );
-  } catch (error) {
+  } catch (_error) {
     // Top-level error boundary for admin experiments
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     adminLogger.error('Error in admin experiments page', new Error(errorMessage));

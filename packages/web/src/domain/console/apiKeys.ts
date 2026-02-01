@@ -137,7 +137,7 @@ export async function listApiKeys(userId?: string): Promise<ApiKeyListItem[]> {
     }).catch(() => {}); // Don't fail if logging fails
 
     return mappedKeys;
-  } catch (error) {
+  } catch (_error) {
     // If it's an auth error, re-throw it so caller can handle redirect
     if (error instanceof Error && error.message.includes('Unauthorized')) {
       throw error;

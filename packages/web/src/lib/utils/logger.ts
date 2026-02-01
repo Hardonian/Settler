@@ -24,7 +24,7 @@ export const appLogger = {
   
   warn: (message: string, metadata?: Record<string, unknown>) => {
     if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
+       
       console.warn(`[Warn] ${message}`, metadata);
     }
     logger.warn(message, metadata).catch(() => {
@@ -34,7 +34,7 @@ export const appLogger = {
   
   error: (message: string, error?: unknown, metadata?: Record<string, unknown>) => {
     if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
+       
       console.error(`[Error] ${message}`, error, metadata);
     }
     logger.error(message, {

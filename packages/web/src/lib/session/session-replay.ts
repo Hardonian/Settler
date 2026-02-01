@@ -58,7 +58,7 @@ class SessionReplay {
 
       this.initialized = true;
       logger.info(`Session replay initialized: ${this.config.provider}`);
-    } catch (error) {
+    } catch (_error) {
       logger.error('Failed to initialize session replay', error instanceof Error ? error : new Error(String(error)));
     }
   }
@@ -167,7 +167,7 @@ class SessionReplay {
           // Clarity doesn't support user identification
           break;
       }
-    } catch (error) {
+    } catch (_error) {
       logger.warn('Failed to identify user in session replay', error instanceof Error ? error : new Error(String(error)));
     }
   }

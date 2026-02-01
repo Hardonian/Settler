@@ -34,7 +34,7 @@ export const edgeConfig = {
     try {
       const value = await get<T>(key);
       return value ?? null;
-    } catch (error) {
+    } catch (_error) {
       console.error(`[Edge Config] Error getting key "${key}":`, error);
       return null;
     }
@@ -57,7 +57,7 @@ export const edgeConfig = {
         (acc, key, index) => ({ ...acc, [key]: values[index] ?? null }),
         {} as Record<string, T | null>
       );
-    } catch (error) {
+    } catch (_error) {
       console.error(`[Edge Config] Error getting multiple keys:`, error);
       return keys.reduce(
         (acc: Record<string, T | null>, key: string) => ({ ...acc, [key]: null }),
@@ -77,7 +77,7 @@ export const edgeConfig = {
     try {
       const value = await get(key);
       return value !== null && value !== undefined;
-    } catch (error) {
+    } catch (_error) {
       console.error(`[Edge Config] Error checking existence of key "${key}":`, error);
       return false;
     }
@@ -110,7 +110,7 @@ export async function getFeatureFlagFromEdgeConfig(
     }
 
     return null;
-  } catch (error) {
+  } catch (_error) {
     console.error(`[Edge Config] Error getting feature flag "${flagKey}":`, error);
     return null;
   }

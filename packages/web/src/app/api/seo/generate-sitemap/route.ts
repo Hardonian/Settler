@@ -82,7 +82,7 @@ ${integrations
         "Cache-Control": "public, max-age=3600, s-maxage=3600",
       },
     });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error("Sitemap generation error", error);
     return NextResponse.json(
       {

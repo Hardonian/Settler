@@ -63,7 +63,7 @@ export function ReportIssue({ onSuccess }: ReportIssueProps) {
       if (onSuccess) {
         setTimeout(onSuccess, 2000);
       }
-    } catch (error) {
+    } catch (_error) {
       setError(error instanceof Error ? error.message : "Failed to submit issue");
     } finally {
       setSubmitting(false);

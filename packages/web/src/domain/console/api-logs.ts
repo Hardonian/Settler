@@ -74,7 +74,7 @@ export async function logApiCall(log: Omit<ApiCallLog, 'id' | 'timestamp'>): Pro
       console.error('[logApiCall] Failed to log API call:', error);
       // Don't throw - logging failures shouldn't break API calls
     }
-  } catch (error) {
+  } catch (_error) {
     console.error('[logApiCall] Error logging API call:', error);
     // Don't throw - logging failures shouldn't break API calls
   }
@@ -213,7 +213,7 @@ export async function getApiCallLogs(filters: ApiLogFilters = {}): Promise<ApiCa
       userAgent: log.user_agent,
       ipAddress: log.ip_address,
     }));
-  } catch (error) {
+  } catch (_error) {
     console.error('[getApiCallLogs] Error:', error);
     return [];
   }

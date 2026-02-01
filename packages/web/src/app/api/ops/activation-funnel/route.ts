@@ -48,7 +48,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
       );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const where: any = {
       timestamp: {
         gte: start,
@@ -160,7 +160,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
         conversionRates,
       },
     });
-  } catch (error) {
+  } catch (_error) {
     await safeLogger.error('[Activation Funnel] Failed to get metrics', {
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,

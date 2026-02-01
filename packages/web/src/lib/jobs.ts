@@ -123,7 +123,7 @@ export async function enqueueJob({
     }
 
     return { jobId };
-  } catch (error) {
+  } catch (_error) {
     appLogger.error("Exception enqueueing job", { error, tenantId, type });
     return createErrorResponse(
       "Failed to enqueue job",
@@ -160,7 +160,7 @@ export async function getJob(jobId: string, tenantId: string): Promise<Job | Api
     }
 
     return job as Job;
-  } catch (error) {
+  } catch (_error) {
     appLogger.error("Exception getting job", { error, jobId, tenantId });
     return createErrorResponse(
       "Failed to retrieve job",
@@ -218,7 +218,7 @@ export async function listJobs({
       total,
       hasMore: total > offset + limit,
     };
-  } catch (error) {
+  } catch (_error) {
     appLogger.error("Exception listing jobs", { error, tenantId });
     return createErrorResponse(
       "Failed to list jobs",
@@ -270,7 +270,7 @@ export async function getJobResult(jobId: string, tenantId: string): Promise<Job
     }
 
     return result as JobResult;
-  } catch (error) {
+  } catch (_error) {
     appLogger.error("Exception getting job result", { error, jobId, tenantId });
     return createErrorResponse(
       "Failed to retrieve job result",

@@ -81,7 +81,7 @@ export const GET = withSecurity(
       );
 
       return NextResponse.json({ results }, { status: 200 });
-    } catch (error) {
+    } catch (_error) {
       return handleApiError(error, "Failed to load experiment results");
     }
   },

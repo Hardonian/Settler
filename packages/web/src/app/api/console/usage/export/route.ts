@@ -121,7 +121,7 @@ export const GET = withSecurity(
             },
           });
         }
-      } catch (error) {
+      } catch (_error) {
         appLogger.error("[Usage Export] Error", error);
         return NextResponse.json(
           {

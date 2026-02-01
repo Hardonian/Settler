@@ -195,7 +195,7 @@ export async function listMeaningfulChanges(
     });
 
     return changes.slice(0, limit);
-  } catch (error) {
+  } catch (_error) {
     await safeLogger.error("[listMeaningfulChanges] Unexpected error", {
       tenantId,
       error: error instanceof Error ? error.message : String(error),

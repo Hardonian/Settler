@@ -50,7 +50,7 @@ export const POST = withSecurity(
     };
 
     return NextResponse.json(testResult);
-  } catch (error) {
+  } catch (_error) {
     appLogger.error("Error in integration test", error);
     return NextResponse.json(
       {

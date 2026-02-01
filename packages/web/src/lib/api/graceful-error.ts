@@ -11,7 +11,7 @@
  * ```ts
  * try {
  *   // ... route logic
- * } catch (error) {
+ * } catch (_error) {
  *   return gracefulError(error, 'Unable to process request');
  * }
  * ```

@@ -149,7 +149,7 @@ export const GET = withSecurity(
       },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (_error) {
     appLogger.error('Health check error', error);
     // Never return 500 - return degraded status with graceful error message
     return NextResponse.json(

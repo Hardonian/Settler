@@ -64,7 +64,7 @@ export const POST = withSecurity(
         // Create workspace using Prisma (fallback to direct insert if function doesn't exist)
         let tenantId: string;
         try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           
           const { data: result, error } = await (supabase.rpc as any)(
             "create_workspace_with_owner",
             {
@@ -86,7 +86,7 @@ export const POST = withSecurity(
             tenantId = tenant.id;
 
             // Add user as owner
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             await (supabase.from("tenant_users") as any).insert({
               tenant_id: tenantId,
               user_id: user.id,
@@ -95,7 +95,7 @@ export const POST = withSecurity(
             });
 
             // Initialize onboarding progress
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             await (supabase.from("tenant_onboarding_progress") as any).insert({
               tenant_id: tenantId,
               user_id: user.id,
@@ -107,7 +107,7 @@ export const POST = withSecurity(
           } else {
             tenantId = result as string;
           }
-        } catch (error) {
+        } catch (_error) {
           appLogger.error("[Workspace API] Error creating workspace", error);
           // Never return 500 - return graceful error response
           return NextResponse.json(
@@ -123,7 +123,7 @@ export const POST = withSecurity(
 
         // Track onboarding event (with fallback)
         try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           
           await (supabase.rpc as any)("track_onboarding_event", {
             p_tenant_id: tenantId,
             p_user_id: user.id,
@@ -137,7 +137,7 @@ export const POST = withSecurity(
           });
         } catch {
           // Fallback: insert directly
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           
           await (supabase.from("onboarding_events") as any).insert({
             tenant_id: tenantId,
             user_id: user.id,
@@ -150,7 +150,7 @@ export const POST = withSecurity(
 
         // Complete the create_workspace step (with fallback)
         try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           
           await (supabase.rpc as any)("complete_onboarding_step", {
             p_tenant_id: tenantId,
             p_user_id: user.id,
@@ -159,7 +159,7 @@ export const POST = withSecurity(
           });
         } catch {
           // Fallback: update directly
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           
           await (supabase.from("tenant_onboarding_progress") as any).upsert(
             {
               tenant_id: tenantId,
@@ -204,7 +204,7 @@ export const POST = withSecurity(
           },
           trace_id: traceId,
         });
-      } catch (error) {
+      } catch (_error) {
         appLogger.error("[Workspace API] Error", error);
 
         if (error instanceof z.ZodError) {
@@ -251,7 +251,7 @@ export const GET = withSecurity(
         }
 
         // Get user's tenant memberships
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const { data: memberships, error } = await (supabase.from("tenant_users") as any)
           .select("tenant_id, role")
           .eq("user_id", user.id);
@@ -305,7 +305,7 @@ export const GET = withSecurity(
           workspaces: workspacesWithRole,
           trace_id: traceId,
         });
-      } catch (error) {
+      } catch (_error) {
         appLogger.error("[Workspace API] Error", error);
         // Never return 500 - return empty workspaces array with graceful error message
         return NextResponse.json(

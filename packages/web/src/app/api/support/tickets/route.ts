@@ -17,7 +17,7 @@ export const runtime = 'nodejs';
 
 export const GET = withSecurity(
   withUniversalBillingGate(async function GET(request: Request) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const adminCheck = await requireAdmin(request as any);
   if (!adminCheck.isAdmin) {
     return adminCheck.error!;
@@ -79,7 +79,7 @@ export const GET = withSecurity(
     }));
 
     return NextResponse.json({ tickets: ticketsWithUsers });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error('Failed to fetch support tickets', error);
     // Never return 500 - return empty array with graceful error message
     return NextResponse.json({ 

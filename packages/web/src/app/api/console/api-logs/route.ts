@@ -94,7 +94,7 @@ async function handleGet(request: NextRequest) {
       limit: filters.limit,
       offset: filters.offset,
     });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error("[api-logs] Error", error);
     // Never return 500 - return actionable error message with empty logs
     return NextResponse.json(

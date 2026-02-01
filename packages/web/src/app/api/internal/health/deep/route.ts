@@ -71,7 +71,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
           name: `Table: ${table}`,
           status: 'ok',
         });
-      } catch (error) {
+      } catch (_error) {
         allOk = false;
         checks.push({
           name: `Table: ${table}`,
@@ -117,7 +117,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
           status: 'ok',
           details: { canRead: true, membershipCount: data?.length || 0 },
         });
-      } catch (error) {
+      } catch (_error) {
         allOk = false;
         checks.push({
           name: 'Workspace Membership',
@@ -135,11 +135,11 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
 
     // Check 4: Job queue accessible
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const { error } = await (supabase
         .from('jobs' as any)
         .select('id, status')
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         .limit(1) as any);
 
       if (error) {
@@ -151,7 +151,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
         status: 'ok',
         details: { accessible: true },
       });
-    } catch (error) {
+    } catch (_error) {
       allOk = false;
       checks.push({
         name: 'Job Queue',
@@ -169,7 +169,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
         status: 'ok',
         message: error ? 'Connected (function may not exist)' : 'Connected',
       });
-    } catch (error) {
+    } catch (_error) {
       allOk = false;
       checks.push({
         name: 'Database Connection',
@@ -183,7 +183,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
       checks,
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (_error) {
     logger.error('Deep health check failed', error as Error);
     return NextResponse.json(
       {

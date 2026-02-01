@@ -25,7 +25,7 @@ export const GET = withSecurity(
     
     const keys = await listApiKeys();
     return NextResponse.json({ keys });
-  } catch (error) {
+  } catch (_error) {
     // Use unified error handler (returns 200 with error envelope)
     return handleApiError(error, 'Failed to fetch API keys');
   }
@@ -47,7 +47,7 @@ export const POST = withSecurity(
     } as CreateApiKeyInput);
 
     return NextResponse.json(result);
-  } catch (error) {
+  } catch (_error) {
     // Use unified error handler (returns 200 with error envelope)
     return handleApiError(error, 'Failed to create API key');
   }

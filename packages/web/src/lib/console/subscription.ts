@@ -131,7 +131,7 @@ export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
       status: subscription.status || undefined,
       features: TIER_FEATURES[tier],
     };
-  } catch (error) {
+  } catch (_error) {
     console.error('[getSubscriptionInfo] Error:', error);
     // Default to unauthenticated on error
     return {
@@ -190,7 +190,7 @@ export async function canMakePlaygroundRequest(): Promise<{ allowed: boolean; re
       reason: usage.reason,
       remaining: usage.remaining === -1 ? undefined : usage.remaining,
     };
-  } catch (error) {
+  } catch (_error) {
     console.error('[canMakePlaygroundRequest] Error:', error);
     // Fail open - allow request if tracking fails
     const info = await getSubscriptionInfo();

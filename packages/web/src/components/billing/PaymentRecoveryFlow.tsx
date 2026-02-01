@@ -31,7 +31,6 @@ export function PaymentRecoveryFlow({ userId, subscriptionId }: PaymentRecoveryF
 
   useEffect(() => {
     void fetchRecoveryStatus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, subscriptionId]);
 
   const fetchRecoveryStatus = async () => {

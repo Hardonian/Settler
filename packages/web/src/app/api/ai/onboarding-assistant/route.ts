@@ -76,7 +76,7 @@ export const POST = withSecurity(
     }
 
     return NextResponse.json({ response });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error("Error in onboarding-assistant POST", error);
     // Never return 500 - return graceful error response
     return NextResponse.json({ 

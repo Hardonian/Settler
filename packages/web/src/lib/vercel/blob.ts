@@ -66,7 +66,7 @@ export const blob = {
         ...(result.contentType ? { contentType: result.contentType } : {}),
         ...("size" in result && result.size !== undefined ? { size: result.size as number } : {}),
       };
-    } catch (error) {
+    } catch (_error) {
       console.error(`[Blob] Error uploading file "${pathname}":`, error);
       throw error;
     }
@@ -83,7 +83,7 @@ export const blob = {
 
     try {
       await del(url);
-    } catch (error) {
+    } catch (_error) {
       console.error(`[Blob] Error deleting file "${url}":`, error);
       throw error;
     }
@@ -107,7 +107,7 @@ export const blob = {
 
     try {
       return await head(url);
-    } catch (error) {
+    } catch (_error) {
       console.error(`[Blob] Error getting file metadata for "${url}":`, error);
       return null;
     }
@@ -138,7 +138,7 @@ export const blob = {
 
     try {
       return await list(options);
-    } catch (error) {
+    } catch (_error) {
       console.error(`[Blob] Error listing files:`, error);
       return { blobs: [], hasMore: false };
     }

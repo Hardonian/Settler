@@ -62,7 +62,7 @@ export const POST = withSecurity(
 
     if (recovery) {
       const recoveryData = recovery as PaymentRecoveryRow;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       await (supabase.from("payment_recovery") as any)
         .update({
           recovery_attempts: (recoveryData.recovery_attempts || 0) + 1,
@@ -72,7 +72,7 @@ export const POST = withSecurity(
     }
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error("Error in retry-payment POST", error);
     return NextResponse.json(
       {

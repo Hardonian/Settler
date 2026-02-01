@@ -84,7 +84,7 @@ export async function withRetry<T>(
   for (let attempt = 1; attempt <= finalConfig.maxAttempts; attempt++) {
     try {
       return await fn();
-    } catch (error) {
+    } catch (_error) {
       lastError = error;
       
       // Check if error is retryable

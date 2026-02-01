@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     const supabase = await createAdminClient();
 
     // Get paid users
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { data: users, error } = (await supabase.rpc(
       "get_paid_users_for_monthly_summary" as any
     )) as {
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
 
         results.processed++;
         results.emails.push(user.email);
-      } catch (error) {
+      } catch (_error) {
         logger.error(
           "Failed to send monthly summary",
           error instanceof Error ? error : new Error(String(error)),
@@ -121,7 +121,7 @@ export async function GET(request: NextRequest) {
       processed: results.processed,
       errors: results.errors,
     });
-  } catch (error) {
+  } catch (_error) {
     logger.error(
       "Monthly summary cron job failed",
       error instanceof Error ? error : new Error(String(error))

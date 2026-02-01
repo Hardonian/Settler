@@ -61,7 +61,7 @@ export const POST = withUniversalBillingGate(async function POST(
     });
 
     return NextResponse.json(result);
-  } catch (error) {
+  } catch (_error) {
     appLogger.error('Error in test route', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(

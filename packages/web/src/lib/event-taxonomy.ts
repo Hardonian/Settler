@@ -94,7 +94,7 @@ export async function trackEvent(event: Omit<Event, "timestamp">): Promise<void>
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(fullEvent),
     });
-  } catch (error) {
+  } catch (_error) {
     console.error("Failed to track event:", error);
   }
 }

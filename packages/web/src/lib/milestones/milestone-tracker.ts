@@ -41,7 +41,7 @@ export async function shouldCelebrateMilestone(
     });
 
     return !celebrated;
-  } catch (error) {
+  } catch (_error) {
     console.error('[Milestone Tracker] Error checking milestone:', error);
     return false;
   }
@@ -60,7 +60,7 @@ export async function recordMilestone(event: MilestoneEvent): Promise<void> {
         changes: (event.metadata || {}) as Prisma.InputJsonValue,
       },
     });
-  } catch (error) {
+  } catch (_error) {
     console.error('[Milestone Tracker] Error recording milestone:', error);
     // Don't throw - milestone tracking is non-critical
   }
@@ -151,7 +151,7 @@ export async function checkMilestones(userId: string): Promise<MilestoneType[]> 
         await recordMilestone({ userId, milestone: 'first_feature_flag' });
       }
     }
-  } catch (error) {
+  } catch (_error) {
     console.error('[Milestone Tracker] Error checking milestones:', error);
   }
 

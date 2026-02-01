@@ -82,7 +82,7 @@ export const GET = withSecurity(
         },
         { status: 200 }
       );
-    } catch (error) {
+    } catch (_error) {
       return handleApiError(error, "Failed to fetch branding");
     }
   },
@@ -131,7 +131,7 @@ export const PUT = withSecurity(
         },
         { status: 200 }
       );
-    } catch (error) {
+    } catch (_error) {
       if (error instanceof z.ZodError) {
         return NextResponse.json({ error: "Invalid request", details: error.issues }, { status: 400 });
       }

@@ -24,7 +24,7 @@ export function safeJsonParse<T = unknown>(
 ): T | null {
   try {
     return JSON.parse(text) as T;
-  } catch (error) {
+  } catch (_error) {
     const parseError = error instanceof Error ? error : new Error(String(error));
     console.warn(
       `[SafeParse] JSON parse failed in ${context || "unknown"}:`,
@@ -58,7 +58,7 @@ export function safeJsonParseResult<T = unknown>(
   try {
     const data = JSON.parse(text) as T;
     return { success: true, data };
-  } catch (error) {
+  } catch (_error) {
     const parseError = error instanceof Error ? error : new Error(String(error));
     console.warn(
       `[SafeParse] JSON parse failed in ${context || "unknown"}:`,
@@ -82,7 +82,7 @@ export function safeJsonParseOrThrow<T = unknown>(
 ): T {
   try {
     return JSON.parse(text) as T;
-  } catch (error) {
+  } catch (_error) {
     const parseError = error instanceof Error ? error : new Error(String(error));
     console.error(
       `[SafeParse] Critical JSON parse failure in ${context}:`,
@@ -105,7 +105,7 @@ export function safeJsonStringify<T = unknown>(
 ): string {
   try {
     return JSON.stringify(value);
-  } catch (error) {
+  } catch (_error) {
     const stringifyError =
       error instanceof Error ? error : new Error(String(error));
     console.warn(

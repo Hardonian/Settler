@@ -52,7 +52,7 @@ export const POST = withSecurity(async function POST(request: NextRequest) {
       processed,
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (_error) {
     logger.error('Job drain failed', error as Error);
     // Never return 500 - return graceful error response (cron can retry)
     return NextResponse.json(

@@ -60,7 +60,7 @@ export async function retryDbOperation<T>(
   for (let attempt = 0; attempt <= config.maxRetries; attempt++) {
     try {
       return await operation();
-    } catch (error) {
+    } catch (_error) {
       lastError = error instanceof Error ? error : new Error(String(error));
 
       // Don't retry if it's not a retryable error

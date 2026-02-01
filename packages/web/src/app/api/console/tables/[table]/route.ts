@@ -64,7 +64,7 @@ export const GET = withSecurity(
       const orderBy = searchParams.get('orderBy') || 'created_at';
       const orderAsc = searchParams.get('orderAsc') === 'true';
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const { data: rpcData, error: rpcError } = await supabase.rpc('get_table_records', {
         p_table_schema: schema,
         p_table_name: table,
@@ -182,7 +182,7 @@ export const POST = withSecurity(
     
     // Try RPC function first
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const { data: rpcData, error: rpcError } = await supabase.rpc('create_table_record', {
         p_table_schema: schema,
         p_table_name: table,
@@ -259,7 +259,7 @@ export const PATCH = withSecurity(
     
     // Try RPC function first
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const { data: rpcData, error: rpcError } = await supabase.rpc('update_table_record', {
         p_table_schema: schema,
         p_table_name: table,
@@ -278,7 +278,7 @@ export const PATCH = withSecurity(
     
     // Type assertion needed because table name is dynamic and TypeScript can't infer the schema
     // This is safe because we're updating arbitrary tables via the console API
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { data, error } = await (supabase
       .from(tableName) as any)
       .update(body as Record<string, unknown>)
@@ -343,7 +343,7 @@ export const DELETE = withSecurity(
     
     // Try RPC function first
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const { error: rpcError } = await supabase.rpc('delete_table_record', {
         p_table_schema: schema,
         p_table_name: table,

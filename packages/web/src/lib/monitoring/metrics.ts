@@ -53,7 +53,7 @@ export async function trackMetric(event: MetricEvent): Promise<void> {
       },
     });
     */
-  } catch (error) {
+  } catch (_error) {
     // Don't throw - metrics are non-critical
     console.warn('[Metrics] Failed to track metric:', error);
   }
@@ -116,7 +116,7 @@ export async function trackError(event: ErrorEvent): Promise<void> {
       }
     }
     */
-  } catch (error) {
+  } catch (_error) {
     // Don't throw - error tracking is non-critical
     console.warn('[Monitoring] Failed to track error:', error);
   }

@@ -96,7 +96,7 @@ export async function executeQuery<T>(
       if (cached !== null) {
         return cached;
       }
-    } catch (error) {
+    } catch (_error) {
       // Cache error, continue to query
       console.warn('[Query Builder] Cache error, continuing:', error);
     }
@@ -119,7 +119,7 @@ export async function executeQuery<T>(
       }
       
       return result;
-    } catch (error) {
+    } catch (_error) {
       lastError = error instanceof Error ? error : new Error('Unknown error');
       
       // Don't retry on auth errors

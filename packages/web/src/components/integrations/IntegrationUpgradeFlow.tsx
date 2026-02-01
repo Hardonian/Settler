@@ -30,7 +30,6 @@ export function IntegrationUpgradeFlow({
 
   useEffect(() => {
     void fetchVersionInfo();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [integrationId, currentVersion]);
 
   const fetchVersionInfo = async () => {

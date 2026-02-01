@@ -64,7 +64,7 @@ async function verifyBillingAccountAccess(billingAccountId: string): Promise<boo
     });
     
     return !!billingAccount;
-  } catch (error) {
+  } catch (_error) {
     console.error('[verifyBillingAccountAccess] Error:', error);
     return false;
   }
@@ -130,7 +130,7 @@ export async function getUsageEvents(
         metadata: event.metadata as Record<string, unknown> | undefined,
       };
     });
-  } catch (error) {
+  } catch (_error) {
     console.error('[getUsageEvents] Error:', error);
     // Return empty array instead of throwing to prevent 500 errors
     return [];
@@ -211,7 +211,7 @@ export async function getUsageSummary(
       errorRate: totalCalls > 0 ? errorCount / totalCalls : 0,
       period: { start: startDate, end: endDate },
     };
-  } catch (error) {
+  } catch (_error) {
     console.error('[getUsageSummary] Error:', error);
     // Return empty summary instead of throwing to prevent 500 errors
     return {

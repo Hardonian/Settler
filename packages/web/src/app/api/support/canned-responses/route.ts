@@ -54,7 +54,7 @@ export const GET = withSecurity(
         usageCount: r.usage_count || 0,
       })),
     });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error("Error in canned-responses GET", error);
     // Never return 500 - return empty responses array with graceful error message
     return NextResponse.json({ 
@@ -106,7 +106,7 @@ export const POST = withSecurity(
     }
 
     return NextResponse.json({ response: data });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error("Error in canned-responses POST", error);
     // Never return 500 - return graceful error response
     return NextResponse.json({ 

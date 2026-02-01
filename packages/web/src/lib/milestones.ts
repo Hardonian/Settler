@@ -37,7 +37,7 @@ export async function trackMilestone(event: MilestoneEvent): Promise<void> {
     if (!response.ok) {
       console.error("Failed to track milestone:", await response.text());
     }
-  } catch (error) {
+  } catch (_error) {
     console.error("Error tracking milestone:", error);
   }
 }
@@ -53,7 +53,7 @@ export async function hasMilestone(userId: string, milestoneType: MilestoneType)
       return data.achieved === true;
     }
     return false;
-  } catch (error) {
+  } catch (_error) {
     console.error("Error checking milestone:", error);
     return false;
   }
@@ -70,7 +70,7 @@ export async function getUserMilestones(userId: string): Promise<MilestoneType[]
       return data.milestones || [];
     }
     return [];
-  } catch (error) {
+  } catch (_error) {
     console.error("Error fetching milestones:", error);
     return [];
   }

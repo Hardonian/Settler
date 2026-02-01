@@ -36,7 +36,7 @@ export function AuditLogViewer() {
     } catch (error: unknown) {
       // Error fetching audit logs - handled by error state
       if (process.env.NODE_ENV === 'development') {
-        // eslint-disable-next-line no-console
+         
         console.error("Failed to fetch audit logs:", error);
       }
     } finally {

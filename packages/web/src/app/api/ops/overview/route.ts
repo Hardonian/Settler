@@ -16,7 +16,7 @@ export const runtime = 'nodejs';
 
 export const GET = withSecurity(
   withUniversalBillingGate(async function GET(request: Request) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const adminCheck = await requireAdmin(request as any);
   if (!adminCheck.isAdmin) {
     return adminCheck.error!;
@@ -89,7 +89,7 @@ export const GET = withSecurity(
       pendingJobs: pendingJobCount,
       failedWebhooks: failedWebhookCount,
     });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error('Ops overview error', error);
     return NextResponse.json(
       {

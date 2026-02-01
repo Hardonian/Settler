@@ -112,7 +112,7 @@ export async function authenticateRequest(
 
       return context;
     }
-  } catch (error) {
+  } catch (_error) {
     // Session auth failed
     console.error('[UnifiedAuth] Session auth error:', error);
   }

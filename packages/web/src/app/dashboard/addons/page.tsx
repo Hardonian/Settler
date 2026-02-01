@@ -57,7 +57,7 @@ export default function AddOnsMarketplacePage() {
           setFilteredAddOns(data.addons || []);
           return;
         }
-      } catch (error) {
+      } catch (_error) {
         console.error("Failed to fetch addons from API:", error);
       }
       
@@ -147,7 +147,7 @@ export default function AddOnsMarketplacePage() {
       ];
       setAddOns(mockAddOns);
       setFilteredAddOns(mockAddOns);
-    } catch (error) {
+    } catch (_error) {
       console.error("Failed to fetch add-ons:", error);
     } finally {
       setIsLoading(false);
@@ -164,7 +164,7 @@ export default function AddOnsMarketplacePage() {
         prev.map((addOn) => (addOn.id === id ? { ...addOn, is_purchased: true } : addOn))
       );
       setIsModalOpen(false);
-    } catch (error) {
+    } catch (_error) {
       console.error("Purchase failed:", error);
       throw error;
     } finally {
@@ -180,7 +180,7 @@ export default function AddOnsMarketplacePage() {
       setAddOns((prev) =>
         prev.map((addOn) => (addOn.id === id ? { ...addOn, is_purchased: false } : addOn))
       );
-    } catch (error) {
+    } catch (_error) {
       console.error("Cancel failed:", error);
     } finally {
       setIsProcessing(false);

@@ -37,7 +37,7 @@ async function isEventProcessed(eventId: string): Promise<boolean> {
       select: { id: true, status: true },
     });
     return existing !== null && existing.status === "processed";
-  } catch (error) {
+  } catch (_error) {
     await safeLogger.error("[Stripe Webhook] Error checking event idempotency", {
       eventId,
       error: error instanceof Error ? error.message : String(error),
@@ -165,7 +165,7 @@ function extractBillingAccountId(event: Stripe.Event): string | null {
     const invoice = event.data.object as Stripe.Invoice;
     // Invoice.subscription can be string | Stripe.Subscription | null
     // Access via type assertion since TypeScript types may not expose it directly
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const subscription = (invoice as any).subscription as string | Stripe.Subscription | null;
     if (!subscription || typeof subscription === "string") {
       // We'd need to fetch the subscription to get metadata, but for now return null
@@ -244,7 +244,7 @@ export async function POST(request: NextRequest) {
   // Record event receipt (with idempotency protection)
   try {
     await recordEventReceived(event.id, event.type, safeJsonParseWithDefault(body, {}, "stripe webhook body"));
-  } catch (error) {
+  } catch (_error) {
     await safeLogger.error("[Stripe Webhook] Failed to record event", {
       eventId: event.id,
       error: error instanceof Error ? error.message : String(error),
@@ -329,7 +329,7 @@ export async function POST(request: NextRequest) {
               object: result.data,
             },
           } as Stripe.Event);
-        } catch (error) {
+        } catch (_error) {
           await safeLogger.error("[Stripe Webhook] Failed to sync subscription from checkout", {
             eventId: event.id,
             subscriptionId,
@@ -476,7 +476,7 @@ export async function POST(request: NextRequest) {
           where: { eventId: event.id },
           data: { billingAccountId },
         });
-      } catch (error) {
+      } catch (_error) {
         // Non-critical - just log
         await safeLogger.warn("[Stripe Webhook] Failed to update billing account ID", {
           eventId: event.id,
@@ -523,7 +523,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({ received: true, trace_id: traceId });
     response.headers.set("x-trace-id", traceId);
     return response;
-  } catch (error) {
+  } catch (_error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     await logger.error("Stripe webhook processing failed", {
       trace_id: traceId,

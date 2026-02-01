@@ -51,7 +51,7 @@ export const POST = withSecurity(
     // In production, notify billing team
 
     return NextResponse.json({ dispute: data });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error("Error in dispute POST", error);
     return NextResponse.json(
       {

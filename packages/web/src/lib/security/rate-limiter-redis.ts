@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { safeRedisOperation } from '@/lib/redis/client';
 
 // Optional Redis type - gracefully handles if package not installed
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 type Redis = any;
 
 interface RateLimitConfig {

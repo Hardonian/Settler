@@ -43,7 +43,7 @@ export const GET = withSecurity(
     }
 
     // Check user is member of workspace
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { data: membership } = await (supabase
       .from('tenant_users') as any)
       .select('role')
@@ -59,7 +59,7 @@ export const GET = withSecurity(
     }
 
     // Get onboarding progress
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { data: progress, error } = await (supabase
       .from('tenant_onboarding_progress') as any)
       .select('*')
@@ -83,7 +83,7 @@ export const GET = withSecurity(
 
     // If no progress, create initial
     if (!progress) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const { data: newProgress, error: createError } = await (supabase
         .from('tenant_onboarding_progress') as any)
         .insert({
@@ -157,7 +157,7 @@ export const GET = withSecurity(
       steps,
       trace_id: traceId,
     });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error('[Onboarding API] Error', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(
@@ -196,7 +196,7 @@ export const POST = withSecurity(
     }
 
     // Check user is member of workspace
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { data: membership } = await (supabase
       .from('tenant_users') as any)
       .select('role')
@@ -215,7 +215,7 @@ export const POST = withSecurity(
     const { stepId } = completeStepSchema.parse(body);
 
     // Complete step using Supabase function
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { data: result, error } = await (supabase.rpc as any)('complete_onboarding_step', {
       p_tenant_id: params.workspaceId,
       p_user_id: user.id,
@@ -246,7 +246,7 @@ export const POST = withSecurity(
 
     // Check if activation is complete
     if (progress.progress >= 100) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       await (supabase.rpc as any)('track_onboarding_event', {
         p_tenant_id: params.workspaceId,
         p_user_id: user.id,
@@ -275,7 +275,7 @@ export const POST = withSecurity(
       steps,
       trace_id: traceId,
     });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error('[Onboarding API] Error', error);
     
     if (error instanceof z.ZodError) {

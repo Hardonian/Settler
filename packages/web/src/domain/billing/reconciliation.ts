@@ -142,7 +142,7 @@ export async function reconcileBillingAccount(
       changes,
       errors,
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       success: false,
       billingAccountId,
@@ -249,7 +249,7 @@ export async function findOutOfSyncSubscriptions(): Promise<
           issue: `Period end mismatch: DB=${dbPeriodEnd}, Stripe=${stripePeriodEnd}`,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       if (error instanceof Stripe.errors.StripeError && error.code === "resource_missing") {
         // Subscription doesn't exist in Stripe
         issues.push({

@@ -186,7 +186,7 @@ try {
   if (nodeEnv === "development" && optimizedDbUrl) {
     console.log("[Prisma] Client initialized successfully with connection pooling");
   }
-} catch (error) {
+} catch (_error) {
   // If Prisma initialization fails (e.g., missing DATABASE_URL or engine type mismatch),
   // create a stub client that returns null/empty results gracefully
   const errorMessage = error instanceof Error ? error.message : String(error);
@@ -285,7 +285,7 @@ async function checkConnectionHealth(): Promise<boolean> {
   try {
     await prismaInstance.$queryRaw`SELECT 1`;
     return true;
-  } catch (error) {
+  } catch (_error) {
     console.error("[Prisma] Connection health check failed:", error);
     return false;
   }

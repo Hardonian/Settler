@@ -220,7 +220,7 @@ export async function getExecutiveMetrics(
       periodEnd,
       calculatedAt: now,
     };
-  } catch (error) {
+  } catch (_error) {
     console.error('[Metrics] Error calculating metrics:', error);
     // Return zero metrics on error
     return {
@@ -259,7 +259,7 @@ export async function getBillingAccountMetrics(billingAccountId: string) {
       ...metrics,
       currentUsage: usage,
     };
-  } catch (error) {
+  } catch (_error) {
     console.error('[Metrics] Error getting billing account metrics:', error);
     return null;
   }

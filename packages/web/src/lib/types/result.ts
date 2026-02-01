@@ -244,7 +244,7 @@ export async function tryCatch<T>(
   try {
     const data = await fn();
     return ok(data);
-  } catch (error) {
+  } catch (_error) {
     return err(toAppError(error));
   }
 }
@@ -259,7 +259,7 @@ export function tryCatchSync<T>(
   try {
     const data = fn();
     return ok(data);
-  } catch (error) {
+  } catch (_error) {
     return err(toAppError(error));
   }
 }

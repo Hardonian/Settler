@@ -98,7 +98,7 @@ export const POST = withSecurity(async function POST(request: NextRequest) {
       createdAt: flag.createdAt,
       updatedAt: flag.updatedAt,
     });
-  } catch (error) {
+  } catch (_error) {
     // Never return 500 - always return 200 with error info for playground
     appLogger.error('Error creating feature flag', error);
     return NextResponse.json(
@@ -186,7 +186,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
         updatedAt: flag.updatedAt,
       })),
     });
-  } catch (error) {
+  } catch (_error) {
     // Never return 500 - always return 200 with empty array for playground
     const { appLogger } = await import('@/lib/utils/logger');
     appLogger.error('Error listing feature flags', error);

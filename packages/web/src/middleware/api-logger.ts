@@ -45,7 +45,7 @@ async function getTenantFromRequest(_request: NextRequest): Promise<string | und
     }
 
     return undefined;
-  } catch (error) {
+  } catch (_error) {
     await safeLogger.error("[api-logger] Failed to get tenant", {
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
@@ -188,7 +188,7 @@ export async function logApiRequest(
       ...(userAgent ? { userAgent } : {}),
       ...(ipAddress !== "unknown" ? { ipAddress } : {}),
     });
-  } catch (error) {
+  } catch (_error) {
     // Don't let logging errors break the request
     await safeLogger.error("[api-logger] Failed to log API call", {
       error: error instanceof Error ? error.message : String(error),
@@ -221,7 +221,7 @@ export function withApiLogging(handler: (request: NextRequest) => Promise<NextRe
     let response: NextResponse;
     try {
       response = await handler(request);
-    } catch (error) {
+    } catch (_error) {
       // Create error response - never return 500, return 200 with error message
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       response = NextResponse.json(

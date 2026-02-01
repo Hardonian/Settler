@@ -6,7 +6,7 @@
  */
 
 // Optional Redis import - gracefully handles if package not installed
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 type Redis = any;
 
 let redisClient: Redis | null = null;
@@ -79,7 +79,7 @@ export async function safeRedisOperation<T>(
 
   try {
     return await operation(client);
-  } catch (error) {
+  } catch (_error) {
     console.warn('[Redis] Operation failed, using fallback:', error);
     return fallback();
   }

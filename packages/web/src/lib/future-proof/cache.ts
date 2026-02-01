@@ -75,9 +75,9 @@ export async function cacheGet<T>(
     if (client) {
       return await safeRedisOperation(
         async (redis) => {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+           
           const value = await redis.get(key);
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+           
           return value as T | null;
         },
         () => memoryCache.get<T>(key)

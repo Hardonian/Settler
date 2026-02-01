@@ -33,7 +33,7 @@ export const POST = withSecurity(
         }
 
         // Update user plan
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const { error: updateError } = (await (supabase.from("profiles") as any)
           .update({
             plan_type: planType,
@@ -47,7 +47,7 @@ export const POST = withSecurity(
         }
 
         // Get updated profile
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const { data: profile } = (await supabase
           .from("profiles")
           .select("*")
@@ -81,7 +81,7 @@ export const POST = withSecurity(
         }
 
         return NextResponse.json({ success: true, planType });
-      } catch (error) {
+      } catch (_error) {
         appLogger.error("Upgrade error", error);
         // Never return 500 - return graceful error response
         return NextResponse.json(

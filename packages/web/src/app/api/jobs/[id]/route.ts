@@ -92,7 +92,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (_error) {
     appLogger.error("Error in GET /api/jobs/[id]", { error, traceId });
 
     return NextResponse.json(

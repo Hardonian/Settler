@@ -86,7 +86,7 @@ export async function listAlerts(
       acknowledgedAt: a.acknowledged_at ? new Date(a.acknowledged_at) : undefined,
       createdAt: new Date(a.created_at),
     }));
-  } catch (error) {
+  } catch (_error) {
     await safeLogger.error("[listAlerts] Unexpected error", {
       tenantId,
       error: error instanceof Error ? error.message : String(error),
@@ -139,7 +139,7 @@ export async function acknowledgeAlert(tenantId: TenantId, alertId: string): Pro
     }
 
     return true;
-  } catch (error) {
+  } catch (_error) {
     await safeLogger.error("[acknowledgeAlert] Unexpected error", {
       tenantId,
       alertId,

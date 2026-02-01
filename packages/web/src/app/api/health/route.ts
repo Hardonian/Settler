@@ -63,7 +63,7 @@ export const GET = withSecurity(
         ]);
         
         // Check if result has error property
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const error = (queryResult as any)?.error;
         if (error && error.code !== 'PGRST116') {
           // PGRST116 is "no rows returned" which is fine for health check
@@ -89,7 +89,7 @@ export const GET = withSecurity(
           ),
         ]);
         
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const rpcError = (rpcResult_race as any)?.error;
         if (rpcError) {
           // RPC might be blocked by RLS for anon users - this is expected
@@ -127,7 +127,7 @@ export const GET = withSecurity(
       };
       overallStatus = 'unhealthy';
     }
-  } catch (error) {
+  } catch (_error) {
     checks.supabaseClientInit = {
       status: 'error',
       message: error instanceof Error ? error.message : 'Initialization failed',
@@ -157,7 +157,7 @@ export const GET = withSecurity(
       };
       // Database is optional, don't mark as unhealthy
     }
-  } catch (error) {
+  } catch (_error) {
     checks.database = {
       status: 'error',
       message: error instanceof Error ? error.message : 'Connection failed',
@@ -207,7 +207,7 @@ export const GET = withSecurity(
         message: 'Service role key not available for backend verification',
       };
     }
-  } catch (error) {
+  } catch (_error) {
     checks.backendContract = {
       status: 'error',
       message: `Backend verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`,

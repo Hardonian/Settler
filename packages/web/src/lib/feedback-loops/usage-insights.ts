@@ -142,7 +142,7 @@ export async function generateUsageInsights(): Promise<UsageInsight[]> {
     await storeInsights(insights);
 
     return insights;
-  } catch (error) {
+  } catch (_error) {
     console.error('[Usage Insights] Error generating insights:', error);
     return [];
   }
@@ -172,7 +172,7 @@ async function storeInsights(insights: UsageInsight[]): Promise<void> {
         )
       `;
     }
-  } catch (error) {
+  } catch (_error) {
     console.error('[Usage Insights] Error storing insights:', error);
   }
 }
@@ -210,7 +210,7 @@ export async function getLatestInsights(limit: number = 5): Promise<UsageInsight
         }
       })
       .filter((insight): insight is UsageInsight => insight !== null);
-  } catch (error) {
+  } catch (_error) {
     console.error('[Usage Insights] Error fetching insights:', error);
     return [];
   }

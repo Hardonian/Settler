@@ -37,7 +37,7 @@ export function UserImpersonation() {
     } catch (error: unknown) {
       // Error stopping impersonation - handled by error state
       if (process.env.NODE_ENV === 'development') {
-        // eslint-disable-next-line no-console
+         
         console.error("Failed to stop impersonation:", error);
       }
     }

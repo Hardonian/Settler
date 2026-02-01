@@ -57,7 +57,7 @@ export async function getFeatureFlag(
           }
         }
       }
-    } catch (error) {
+    } catch (_error) {
       // Fall back to env var if database check fails
       console.warn('Failed to check feature flag from database:', error);
     }

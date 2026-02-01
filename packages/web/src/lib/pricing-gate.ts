@@ -50,7 +50,7 @@ export async function checkFeatureAccess(): Promise<{
       tier: status.tier,
       upgradeUrl: '/console/billing',
     };
-  } catch (error) {
+  } catch (_error) {
     // Fail closed - deny access on error
     console.error('[checkFeatureAccess] Error:', error);
     return {
@@ -104,7 +104,7 @@ export async function requirePlan(
       currentPlan: entitlements.plan,
       upgradeUrl: '/pricing?plan=' + minimumPlan,
     };
-  } catch (error) {
+  } catch (_error) {
     console.error('[requirePlan] Error:', error);
     return {
       hasAccess: false,

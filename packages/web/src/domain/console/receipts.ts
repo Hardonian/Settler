@@ -128,7 +128,7 @@ async function verifyBillingAccountAccess(billingAccountId: string): Promise<boo
     }
 
     return true;
-  } catch (error) {
+  } catch (_error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     console.error("[verifyBillingAccountAccess] Error", {
       error: errorMessage,
@@ -243,7 +243,7 @@ export async function listReceipts(
       itemCount: receipt.items.length,
       createdAt: receipt.createdAt,
     }));
-  } catch (error) {
+  } catch (_error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     console.error("[listReceipts] Error", {
       error: errorMessage,
@@ -391,7 +391,7 @@ export async function getReceiptDetail(
     }
 
     // Double-check billing account matches (defense in depth)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const uploadBillingAccountId = (receipt as any).upload?.billingAccountId as string | undefined;
     if (uploadBillingAccountId !== billingAccountId) {
       console.error("[getReceiptDetail] Billing account mismatch - potential security issue", {
@@ -425,7 +425,7 @@ export async function getReceiptDetail(
         category: item.category,
       })),
     };
-  } catch (error) {
+  } catch (_error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     console.error("[getReceiptDetail] Error", {
       error: errorMessage,

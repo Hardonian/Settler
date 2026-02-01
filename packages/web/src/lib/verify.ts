@@ -7,7 +7,7 @@ export type WasmVerificationResponse = {
   error?: string;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 let wasmModule: { verify_manifest: (manifestJson: string, filesJson: string) => string } | null =
   null;
 
@@ -20,7 +20,7 @@ export async function loadVerifier(): Promise<typeof wasmModule> {
     const importedModule = await import(/* webpackIgnore: true */ "/wasm/settler_verify_wasm.js");
     wasmModule = importedModule as typeof wasmModule;
     return wasmModule;
-  } catch (error) {
+  } catch (_error) {
     console.warn("[verify] wasm verifier unavailable", error);
     return null;
   }

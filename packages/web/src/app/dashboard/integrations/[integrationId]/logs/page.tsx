@@ -80,7 +80,7 @@ export default function IntegrationLogsPage() {
         .limit(50);
 
       setSyncRuns((runs || []) as SyncRun[]);
-    } catch (error) {
+    } catch (_error) {
       console.error('Failed to fetch sync runs:', error);
     } finally {
       setIsLoading(false);

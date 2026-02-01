@@ -52,7 +52,7 @@ export async function sendLifecycleEmail(emailData: EmailData): Promise<void> {
         NOW()
       )
     `;
-  } catch (error) {
+  } catch (_error) {
     console.error('[Lifecycle Email] Error sending email:', error);
     // Don't throw - email failures shouldn't block operations
   }
@@ -203,7 +203,7 @@ export async function scheduleLifecycleEmails(userId: string): Promise<void> {
         await sendTrialEndingEmail(userId, userEmail, daysRemaining);
       }
     }
-  } catch (error) {
+  } catch (_error) {
     console.error('[Lifecycle Emails] Error scheduling emails:', error);
   }
 }

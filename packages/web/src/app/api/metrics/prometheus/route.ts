@@ -31,7 +31,7 @@ export const GET = withSecurity(
         'Content-Type': 'text/plain; version=0.0.4',
       },
     });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error('Error exporting metrics', error);
     return NextResponse.json(
       {

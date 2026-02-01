@@ -49,7 +49,7 @@ export async function trackSDKDownload(event: SDKDownloadEvent): Promise<void> {
     }).catch((error) => {
       console.error('Failed to track SDK download:', error);
     });
-  } catch (error) {
+  } catch (_error) {
     console.error('SDK download tracking error:', error);
   }
 }
@@ -75,7 +75,7 @@ export async function trackPlaygroundUsage(event: PlaygroundUsageEvent): Promise
     }).catch((error) => {
       console.error('Failed to track playground usage:', error);
     });
-  } catch (error) {
+  } catch (_error) {
     console.error('Playground usage tracking error:', error);
   }
 }
@@ -100,7 +100,7 @@ export async function trackSDKStatsView(): Promise<void> {
     }).catch((error) => {
       console.error('Failed to track stats view:', error);
     });
-  } catch (error) {
+  } catch (_error) {
     console.error('Stats view tracking error:', error);
   }
 }
@@ -126,7 +126,7 @@ export async function trackDocsView(page: string, section?: string): Promise<voi
     }).catch((error) => {
       console.error('Failed to track docs view:', error);
     });
-  } catch (error) {
+  } catch (_error) {
     console.error('Docs view tracking error:', error);
   }
 }
@@ -150,7 +150,7 @@ export async function trackGitHubStar(): Promise<void> {
     }).catch((error) => {
       console.error('Failed to track GitHub star:', error);
     });
-  } catch (error) {
+  } catch (_error) {
     console.error('GitHub star tracking error:', error);
   }
 }

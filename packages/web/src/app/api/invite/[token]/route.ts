@@ -70,7 +70,7 @@ export const GET = withSecurity(
       },
       trace_id: traceId,
     });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error('[Invite API] Error', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(
@@ -140,7 +140,7 @@ export const POST = withSecurity(
     }
 
     // Add user to tenant using Supabase
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { error: membershipError } = await (supabase
       .from('tenant_users') as any)
       .upsert({
@@ -168,7 +168,7 @@ export const POST = withSecurity(
     });
 
     // Track event
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     await (supabase.rpc as any)('track_onboarding_event', {
       p_tenant_id: invite.tenantId,
       p_user_id: user.id,
@@ -185,7 +185,7 @@ export const POST = withSecurity(
       workspaceId: invite.tenantId,
       trace_id: traceId,
     });
-  } catch (error) {
+  } catch (_error) {
     appLogger.error('[Invite API] Error', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(

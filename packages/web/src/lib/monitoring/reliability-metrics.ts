@@ -84,7 +84,7 @@ export async function recordReliabilityMetric(metric: ReliabilityMetric): Promis
       // Table might not exist - log to console as fallback
       console.log('[Reliability Metric]', JSON.stringify(metric));
     });
-  } catch (error) {
+  } catch (_error) {
     // Don't throw - metrics are best-effort
     console.error('[Reliability Metrics] Error recording metric:', error);
   }
@@ -170,7 +170,7 @@ export async function getOperationStats(
       retryCount: Number(row.retry_count ?? 0n),
       deadLetterCount: Number(row.dead_letter_count ?? 0n),
     };
-  } catch (error) {
+  } catch (_error) {
     console.error('[Reliability Metrics] Error getting stats:', error);
     return null;
   }
@@ -225,7 +225,7 @@ export async function getAdapterErrorRates(
         totalRequests: total,
       };
     });
-  } catch (error) {
+  } catch (_error) {
     console.error('[Reliability Metrics] Error getting adapter error rates:', error);
     return [];
   }

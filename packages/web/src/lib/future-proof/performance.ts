@@ -41,7 +41,7 @@ export async function batchProcess<T, R>(
       try {
         const result = await processor(item);
         results.push(result);
-      } catch (error) {
+      } catch (_error) {
         console.error('[Batch] Error processing item:', error);
         // Continue processing other items
       }

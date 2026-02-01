@@ -58,7 +58,7 @@ export const GET = withSecurity(
           ...getCacheHeaders('STATIC'),
         },
       });
-    } catch (error) {
+    } catch (_error) {
       // Fallback to original if optimization fails
       appLogger.error('Image optimization error', error);
       return new NextResponse(imageBuffer as unknown as BodyInit, {
@@ -68,7 +68,7 @@ export const GET = withSecurity(
         },
       });
     }
-  } catch (error) {
+  } catch (_error) {
     appLogger.error('Image optimization error', error);
     return NextResponse.json(
       {

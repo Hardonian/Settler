@@ -13,7 +13,6 @@ const express_1 = require("express");
 const zod_1 = require("zod");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-// @ts-ignore - PrismaClient is generated at build time
 const client_1 = require("@prisma/client");
 const validation_1 = require("../middleware/validation");
 const error_handler_1 = require("../utils/error-handler");

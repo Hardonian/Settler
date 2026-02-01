@@ -110,7 +110,7 @@ export async function enforceUsageLimit(
     });
 
     return { allowed: true };
-  } catch (error) {
+  } catch (_error) {
     console.error('[Usage Enforcement] Error:', error);
     // Fail closed - deny request if enforcement fails
     return {
