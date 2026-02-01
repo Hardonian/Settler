@@ -7,13 +7,7 @@
  * - Compliance snapshot replay
  */
 
-import {
-  ReconciliationIntel,
-  TruthTableEntry,
-  DriftReport,
-  AnomalyClassification,
-  ComplianceSnapshot,
-} from "./index";
+import { ReconciliationIntel, TruthTableEntry } from "./index";
 
 // Simulated historical data generator
 function generateHistoricalData(
@@ -123,11 +117,13 @@ async function demoAnomalyClassification(): Promise<void> {
   const spikeVolume = 350; // 3.5x spike
 
   // Normal run
-  const normalData = generateHistoricalData(1, normalVolume, 0)[0];
+  const normalRuns = generateHistoricalData(1, normalVolume, 0);
+  const normalData = normalRuns[0] || [];
   intel.processRun("run_normal", "stripe", "quickbooks", normalData, true, []);
 
   // Spike run
-  const spikeData = generateHistoricalData(1, spikeVolume, 0)[0];
+  const spikeRuns = generateHistoricalData(1, spikeVolume, 0);
+  const spikeData = spikeRuns[0] || [];
   const result = intel.processRun("run_spike", "stripe", "quickbooks", spikeData, true, []);
 
   console.log("Simulated volume spike:");
@@ -363,15 +359,6 @@ async function demoComplianceSnapshot(): Promise<void> {
   // Export artifacts
   console.log("\n─".repeat(60));
   console.log("Exporting Artifacts...");
-
-  const result = intel.processRun(
-    "final_run",
-    "stripe",
-    "quickbooks",
-    historicalData[historicalData.length - 1],
-    true,
-    []
-  );
 
   // Export to output directory
   try {
