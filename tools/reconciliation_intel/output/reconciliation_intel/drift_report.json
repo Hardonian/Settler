@@ -1,0 +1,19 @@
+[
+  {
+    "detected": true,
+    "severity": "high",
+    "drift_type": "timing_anomaly",
+    "magnitude": 7281172.231427782,
+    "baseline_period": {
+      "start": "2026-01-18T17:00:00.000Z",
+      "end": "2026-01-24T17:00:00.000Z"
+    },
+    "current_period": {
+      "start": "2026-01-25T17:00:00.000Z",
+      "end": "2026-01-30T17:00:00.000Z"
+    },
+    "explanation": "Reconciliation timing variance of 7281s detected. Processing times are inconsistent.",
+    "financial_impact": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries."
+  }
+]

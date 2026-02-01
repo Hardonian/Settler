@@ -1,0 +1,572 @@
+{
+  "snapshot_id": "snap_1769908068421_g9vs6lod6",
+  "version": "1.0.0",
+  "created_at": "2026-02-01T01:07:48.421Z",
+  "date_range": {
+    "start": "2026-01-01",
+    "end": "2026-01-31"
+  },
+  "frozen_at": "2026-02-01T01:07:48.421Z",
+  "frozen_by": "system_automated",
+  "immutable_hash": "000000000123aac6",
+  "reconciliation_runs": [
+    {
+      "run_id": "run_20260101",
+      "run_at": "2026-02-01T01:07:48.382Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 1,
+      "truth_table_hash": "000000006a4286b5",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260102",
+      "run_at": "2026-02-01T01:07:48.382Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 1,
+      "truth_table_hash": "000000007ffbb4fd",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260103",
+      "run_at": "2026-02-01T01:07:48.383Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 1,
+      "truth_table_hash": "000000003cc90c85",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260104",
+      "run_at": "2026-02-01T01:07:48.383Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 1,
+      "truth_table_hash": "0000000006699bf3",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260105",
+      "run_at": "2026-02-01T01:07:48.384Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 1,
+      "truth_table_hash": "00000000499c446b",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260106",
+      "run_at": "2026-02-01T01:07:48.385Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 1,
+      "truth_table_hash": "000000007331131d",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260107",
+      "run_at": "2026-02-01T01:07:48.386Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 1,
+      "truth_table_hash": "00000000269d9501",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260108",
+      "run_at": "2026-02-01T01:07:48.387Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 1,
+      "truth_table_hash": "0000000046763b77",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260109",
+      "run_at": "2026-02-01T01:07:48.389Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 1,
+      "truth_table_hash": "000000004c75f411",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260110",
+      "run_at": "2026-02-01T01:07:48.390Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 1,
+      "truth_table_hash": "00000000209ddc67",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260111",
+      "run_at": "2026-02-01T01:07:48.392Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 0.98,
+      "truth_table_hash": "0000000022df4e1e",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260112",
+      "run_at": "2026-02-01T01:07:48.393Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 1,
+      "truth_table_hash": "000000002fcd9611",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260113",
+      "run_at": "2026-02-01T01:07:48.394Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 0.99,
+      "truth_table_hash": "00000000132cc353",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260114",
+      "run_at": "2026-02-01T01:07:48.395Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 0.99,
+      "truth_table_hash": "00000000125df99d",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260115",
+      "run_at": "2026-02-01T01:07:48.396Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 1,
+      "truth_table_hash": "0000000022969101",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260116",
+      "run_at": "2026-02-01T01:07:48.397Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 1,
+      "truth_table_hash": "00000000372670af",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260117",
+      "run_at": "2026-02-01T01:07:48.398Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 0.99,
+      "truth_table_hash": "0000000017df518e",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260118",
+      "run_at": "2026-02-01T01:07:48.399Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 1,
+      "truth_table_hash": "0000000038ebeecd",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260119",
+      "run_at": "2026-02-01T01:07:48.400Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 1,
+      "truth_table_hash": "00000000148f68e3",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260120",
+      "run_at": "2026-02-01T01:07:48.400Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 0.99,
+      "truth_table_hash": "000000007605a0a5",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260121",
+      "run_at": "2026-02-01T01:07:48.401Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 1,
+      "truth_table_hash": "0000000024e14c9d",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260122",
+      "run_at": "2026-02-01T01:07:48.402Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 1,
+      "truth_table_hash": "0000000051ea61c1",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260123",
+      "run_at": "2026-02-01T01:07:48.402Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 1,
+      "truth_table_hash": "0000000007d29fef",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260124",
+      "run_at": "2026-02-01T01:07:48.403Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 0.99,
+      "truth_table_hash": "00000000281f907a",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260125",
+      "run_at": "2026-02-01T01:07:48.404Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 0.99,
+      "truth_table_hash": "0000000022e9528d",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260126",
+      "run_at": "2026-02-01T01:07:48.406Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 0.99,
+      "truth_table_hash": "000000002caa0201",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260127",
+      "run_at": "2026-02-01T01:07:48.408Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 0.99,
+      "truth_table_hash": "0000000008108248",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260128",
+      "run_at": "2026-02-01T01:07:48.409Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 0.99,
+      "truth_table_hash": "00000000694d683b",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260129",
+      "run_at": "2026-02-01T01:07:48.415Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 1,
+      "truth_table_hash": "00000000767f0733",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "run_20260130",
+      "run_at": "2026-02-01T01:07:48.419Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 0.98,
+      "truth_table_hash": "00000000235a468c",
+      "invariant_check_passed": true,
+      "violations": []
+    },
+    {
+      "run_id": "final_run",
+      "run_at": "2026-02-01T01:07:48.499Z",
+      "source_system": "stripe",
+      "target_system": "quickbooks",
+      "record_count": 100,
+      "match_rate": 0.98,
+      "truth_table_hash": "00000000235a468c",
+      "invariant_check_passed": true,
+      "violations": []
+    }
+  ],
+  "summary": {
+    "total_records_processed": 3000,
+    "total_matches": 2987,
+    "total_mismatches": 13,
+    "total_amount_matched": 0,
+    "total_amount_variance": 0,
+    "currencies": [],
+    "rule_coverage": {}
+  },
+  "attestations": [
+    {
+      "attestation_id": "att_1769908068421_r40aj1uew",
+      "attested_at": "2026-02-01T01:07:48.421Z",
+      "attested_by": "finance_controller@company.com",
+      "role": "Finance Controller",
+      "scope": "January 2026 Reconciliation Period",
+      "statement": "I attest that all reconciliation runs have been reviewed and meet our financial controls standards.",
+      "signature": "000000001591bb9b"
+    },
+    {
+      "attestation_id": "att_1769908068421_cx3g7q5g4",
+      "attested_at": "2026-02-01T01:07:48.421Z",
+      "attested_by": "compliance_officer@company.com",
+      "role": "Compliance Officer",
+      "scope": "SOX Compliance Review",
+      "statement": "I attest that the reconciliation process adheres to SOX Section 404 internal control requirements.",
+      "signature": "000000004104e591"
+    }
+  ],
+  "proof_chain": [
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260101",
+      "hash": "000000006a4286b5",
+      "timestamp": "2026-02-01T01:07:48.382Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260102",
+      "hash": "000000007ffbb4fd",
+      "timestamp": "2026-02-01T01:07:48.382Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260103",
+      "hash": "000000003cc90c85",
+      "timestamp": "2026-02-01T01:07:48.383Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260104",
+      "hash": "0000000006699bf3",
+      "timestamp": "2026-02-01T01:07:48.383Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260105",
+      "hash": "00000000499c446b",
+      "timestamp": "2026-02-01T01:07:48.384Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260106",
+      "hash": "000000007331131d",
+      "timestamp": "2026-02-01T01:07:48.385Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260107",
+      "hash": "00000000269d9501",
+      "timestamp": "2026-02-01T01:07:48.386Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260108",
+      "hash": "0000000046763b77",
+      "timestamp": "2026-02-01T01:07:48.387Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260109",
+      "hash": "000000004c75f411",
+      "timestamp": "2026-02-01T01:07:48.389Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260110",
+      "hash": "00000000209ddc67",
+      "timestamp": "2026-02-01T01:07:48.390Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260111",
+      "hash": "0000000022df4e1e",
+      "timestamp": "2026-02-01T01:07:48.392Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260112",
+      "hash": "000000002fcd9611",
+      "timestamp": "2026-02-01T01:07:48.393Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260113",
+      "hash": "00000000132cc353",
+      "timestamp": "2026-02-01T01:07:48.394Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260114",
+      "hash": "00000000125df99d",
+      "timestamp": "2026-02-01T01:07:48.395Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260115",
+      "hash": "0000000022969101",
+      "timestamp": "2026-02-01T01:07:48.396Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260116",
+      "hash": "00000000372670af",
+      "timestamp": "2026-02-01T01:07:48.397Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260117",
+      "hash": "0000000017df518e",
+      "timestamp": "2026-02-01T01:07:48.398Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260118",
+      "hash": "0000000038ebeecd",
+      "timestamp": "2026-02-01T01:07:48.399Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260119",
+      "hash": "00000000148f68e3",
+      "timestamp": "2026-02-01T01:07:48.400Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260120",
+      "hash": "000000007605a0a5",
+      "timestamp": "2026-02-01T01:07:48.400Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260121",
+      "hash": "0000000024e14c9d",
+      "timestamp": "2026-02-01T01:07:48.401Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260122",
+      "hash": "0000000051ea61c1",
+      "timestamp": "2026-02-01T01:07:48.402Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260123",
+      "hash": "0000000007d29fef",
+      "timestamp": "2026-02-01T01:07:48.402Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260124",
+      "hash": "00000000281f907a",
+      "timestamp": "2026-02-01T01:07:48.403Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260125",
+      "hash": "0000000022e9528d",
+      "timestamp": "2026-02-01T01:07:48.404Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260126",
+      "hash": "000000002caa0201",
+      "timestamp": "2026-02-01T01:07:48.406Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260127",
+      "hash": "0000000008108248",
+      "timestamp": "2026-02-01T01:07:48.408Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260128",
+      "hash": "00000000694d683b",
+      "timestamp": "2026-02-01T01:07:48.409Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260129",
+      "hash": "00000000767f0733",
+      "timestamp": "2026-02-01T01:07:48.415Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "run_20260130",
+      "hash": "00000000235a468c",
+      "timestamp": "2026-02-01T01:07:48.419Z"
+    },
+    {
+      "link_type": "truth_table",
+      "reference": "final_run",
+      "hash": "00000000235a468c",
+      "timestamp": "2026-02-01T01:07:48.499Z"
+    }
+  ]
+}

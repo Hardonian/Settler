@@ -1,0 +1,93 @@
+{
+  "generated_at": "2026-02-01T01:07:48.501Z",
+  "total_rules": 3,
+  "healthy_rules": 3,
+  "at_risk_rules": 0,
+  "critical_rules": 0,
+  "overall_health": 98,
+  "rules": [
+    {
+      "rule_id": "amount_only",
+      "rule_name": "amount_only",
+      "invocations": 30,
+      "matches": 30,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "confidence_sum": 28.41299999999999,
+      "avg_confidence": 0.9470999999999996,
+      "accuracy_rate": 1,
+      "precision": 1,
+      "recall": 1,
+      "f1_score": 1,
+      "trend": "stable",
+      "health_score": 99
+    },
+    {
+      "rule_id": "exact_match",
+      "rule_name": "exact_match",
+      "invocations": 30,
+      "matches": 29,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "confidence_sum": 28.41299999999999,
+      "avg_confidence": 0.9470999999999996,
+      "accuracy_rate": 0.9666666666666667,
+      "precision": 1,
+      "recall": 1,
+      "f1_score": 1,
+      "trend": "stable",
+      "health_score": 98
+    },
+    {
+      "rule_id": "fuzzy_match",
+      "rule_name": "fuzzy_match",
+      "invocations": 30,
+      "matches": 29,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "confidence_sum": 28.41299999999999,
+      "avg_confidence": 0.9470999999999996,
+      "accuracy_rate": 0.9666666666666667,
+      "precision": 1,
+      "recall": 1,
+      "f1_score": 1,
+      "trend": "stable",
+      "health_score": 98
+    }
+  ],
+  "recommendations": [
+    {
+      "rule_id": "exact_match",
+      "action": "promote",
+      "priority": "low",
+      "reason": "High performing rule",
+      "suggestions": [
+        "Document as best practice",
+        "Consider as template for new rules"
+      ],
+      "expected_impact": "Standardize best practices"
+    },
+    {
+      "rule_id": "fuzzy_match",
+      "action": "promote",
+      "priority": "low",
+      "reason": "High performing rule",
+      "suggestions": [
+        "Document as best practice",
+        "Consider as template for new rules"
+      ],
+      "expected_impact": "Standardize best practices"
+    },
+    {
+      "rule_id": "amount_only",
+      "action": "promote",
+      "priority": "low",
+      "reason": "High performing rule",
+      "suggestions": [
+        "Document as best practice",
+        "Consider as template for new rules"
+      ],
+      "expected_impact": "Standardize best practices"
+    }
+  ]
+}

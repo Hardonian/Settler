@@ -1,0 +1,546 @@
+[
+  {
+    "alert_id": "alert_1769908068383_0001",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 6109s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.383Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260102",
+      "affected_records": 610932545
+    }
+  },
+  {
+    "alert_id": "alert_1769908068383_0002",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7043s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.383Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260103",
+      "affected_records": 704264466
+    }
+  },
+  {
+    "alert_id": "alert_1769908068384_0003",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7464s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.384Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260104",
+      "affected_records": 746361222
+    }
+  },
+  {
+    "alert_id": "alert_1769908068385_0004",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7705s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.385Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260105",
+      "affected_records": 770452363
+    }
+  },
+  {
+    "alert_id": "alert_1769908068386_0005",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7861s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.386Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260106",
+      "affected_records": 786077100
+    }
+  },
+  {
+    "alert_id": "alert_1769908068387_0006",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.387Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260107",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068389_0007",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.389Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260108",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068390_0008",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.390Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260109",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068392_0009",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.392Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260110",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068393_0010",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.393Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260111",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068394_0011",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.394Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260112",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068395_0012",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.395Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260113",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068396_0013",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.396Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260114",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068397_0014",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.397Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260115",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068398_0015",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.398Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260116",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068399_0016",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.399Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260117",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068400_0017",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.400Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260118",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068400_0018",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.400Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260119",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068401_0019",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.401Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260120",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068402_0020",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.402Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260121",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068402_0021",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.402Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260122",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068403_0022",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.403Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260123",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068404_0023",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.404Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260124",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068406_0024",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.406Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260125",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068407_0025",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.407Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260126",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "val_1769908068407_uuff96a63",
+    "alert_type": "anomaly",
+    "severity": "medium",
+    "status": "active",
+    "title": "Value Shortfall Detected",
+    "what_changed": "Total value deviation of 10.25% detected. Expected $55867.45, observed $50140.58 ($5726.87 shortfall).",
+    "why_it_matters": "Moderate value difference of $5726.87 should be investigated before period close.",
+    "confidence_score": 0.307524642609472,
+    "recommended_action": "Investigate root cause of shortfall",
+    "created_at": "2026-02-01T01:07:48.406Z",
+    "metadata": {
+      "source": "anomaly_classifier",
+      "reconciliation_run_id": "run_20260126",
+      "affected_records": 50140.5814208128
+    }
+  },
+  {
+    "alert_id": "alert_1769908068409_0026",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.409Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260127",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "val_1769908068409_98lan29zb",
+    "alert_type": "anomaly",
+    "severity": "medium",
+    "status": "active",
+    "title": "Value Surplus Detected",
+    "what_changed": "Total value deviation of 17.41% detected. Expected $50140.58, observed $58870.13 ($8729.55 surplus).",
+    "why_it_matters": "Moderate value difference of $8729.55 should be investigated before period close.",
+    "confidence_score": 0.5223042442503618,
+    "recommended_action": "Investigate root cause of surplus",
+    "created_at": "2026-02-01T01:07:48.408Z",
+    "metadata": {
+      "source": "anomaly_classifier",
+      "reconciliation_run_id": "run_20260127",
+      "affected_records": 58870.12758256992
+    }
+  },
+  {
+    "alert_id": "alert_1769908068415_0027",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.415Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260128",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068419_0028",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.419Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260129",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068421_0029",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7970s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.421Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "run_20260130",
+      "affected_records": 797037599
+    }
+  },
+  {
+    "alert_id": "alert_1769908068501_0030",
+    "alert_type": "drift",
+    "severity": "high",
+    "status": "active",
+    "title": "Drift Detected: Processing Time Anomaly",
+    "what_changed": "Reconciliation timing variance of 7281s detected. Processing times are inconsistent.",
+    "why_it_matters": "Timing irregularities may indicate infrastructure issues, potentially delaying financial close and audit deadlines.",
+    "confidence_score": 0.99,
+    "recommended_action": "Review infrastructure performance, check for resource contention, optimize reconciliation queries.",
+    "created_at": "2026-02-01T01:07:48.501Z",
+    "metadata": {
+      "source": "drift_detector",
+      "reconciliation_run_id": "final_run",
+      "affected_records": 728117223
+    }
+  }
+]
