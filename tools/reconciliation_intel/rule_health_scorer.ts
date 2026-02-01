@@ -108,9 +108,12 @@ export class RuleHealthScorer {
     const history = this.ruleHistory.get(ruleId);
     if (!history || history.length === 0) return null;
 
+    const firstEntry = history[0];
+    if (!firstEntry) return null;
+
     const aggregated: RulePerformance = {
       rule_id: ruleId,
-      rule_name: history[0].rule_name,
+      rule_name: firstEntry.rule_name,
       invocations: 0,
       matches: 0,
       false_positives: 0,
@@ -180,7 +183,7 @@ export class RuleHealthScorer {
     const rules: RulePerformance[] = [];
     const recommendations: RuleRecommendation[] = [];
 
-    this.ruleHistory.forEach((history, ruleId) => {
+    this.ruleHistory.forEach((_, ruleId) => {
       const performance = this.getRulePerformance(ruleId);
       if (performance) {
         rules.push(performance);

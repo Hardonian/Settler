@@ -249,7 +249,11 @@ export class DriftDetector {
 
     const diffs: number[] = [];
     for (let i = 1; i < timestamps.length; i++) {
-      diffs.push(Math.abs(timestamps[i] - timestamps[i - 1]));
+      const curr = timestamps[i];
+      const prev = timestamps[i - 1];
+      if (curr !== undefined && prev !== undefined) {
+        diffs.push(Math.abs(curr - prev));
+      }
     }
 
     const mean = diffs.reduce((a, b) => a + b, 0) / diffs.length;

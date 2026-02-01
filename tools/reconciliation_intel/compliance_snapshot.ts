@@ -179,10 +179,9 @@ export class ComplianceSnapshotBuilder {
    * Verify snapshot integrity
    */
   verifyIntegrity(snapshot: ComplianceSnapshot): boolean {
-    const calculatedHash = this.calculateImmutableHash({
-      ...snapshot,
-      immutable_hash: "",
-    });
+    const snapshotWithoutHash = { ...snapshot };
+    delete (snapshotWithoutHash as any).immutable_hash;
+    const calculatedHash = this.calculateImmutableHash(snapshotWithoutHash as any);
 
     return calculatedHash === snapshot.immutable_hash;
   }
