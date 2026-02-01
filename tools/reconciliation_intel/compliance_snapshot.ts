@@ -249,7 +249,7 @@ export class ComplianceSnapshotBuilder {
   exportToJson(snapshot: ComplianceSnapshot): string {
     return JSON.stringify(
       snapshot,
-      (key, value) => {
+      (_key, value) => {
         if (value instanceof Map) {
           return Object.fromEntries(value);
         }
