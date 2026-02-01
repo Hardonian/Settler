@@ -203,6 +203,7 @@ class SentryClient {
         })
         .catch(() => {
           // Sentry not available, log to console instead
+          // eslint-disable-next-line no-console
           (console[consoleLevel as "info" | "warn" | "error"] as typeof console.log)(
             "[Message]",
             message,
