@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error
 import { http, HttpResponse } from "msw";
 import { mockJob } from "../fixtures";
 

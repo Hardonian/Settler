@@ -6,7 +6,7 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore - PrismaClient is generated at build time
+// @ts-expect-error - PrismaClient is generated at build time
 import type { PrismaClient } from '@prisma/client';
 import { logInfo } from '../../utils/logger';
 import { PatternExtractor } from '../intelligence/pattern-extractor';

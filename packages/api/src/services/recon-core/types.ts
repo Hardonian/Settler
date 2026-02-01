@@ -1,24 +1,20 @@
 /**
  * Recon Core Engine Types
- * 
+ *
  * Type definitions for the unified Recon Core Engine
  */
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore - Prisma types are generated at build time
-import type { ReconJob as PrismaReconJob, ReconResult as PrismaReconResult } from '@prisma/client';
+// @ts-expect-error - Prisma types are generated at build time
+import type { ReconJob as PrismaReconJob, ReconResult as PrismaReconResult } from "@prisma/client";
 
-export type ReconStrategy = 
-  | 'deterministic'
-  | 'fuzzy'
-  | 'ml_based'
-  | 'hybrid';
+export type ReconStrategy = "deterministic" | "fuzzy" | "ml_based" | "hybrid";
 
 export interface ValidationRule {
   field: string;
-  operator: 'equals' | 'not_equals' | 'greater_than' | 'less_than' | 'contains' | 'regex';
+  operator: "equals" | "not_equals" | "greater_than" | "less_than" | "contains" | "regex";
   value: unknown;
-  severity?: 'warning' | 'error';
+  severity?: "warning" | "error";
 }
 
 export interface ReconJobInput {
@@ -60,7 +56,7 @@ export interface ReconUnmatched {
   id: string;
   sourceId?: string;
   targetId?: string;
-  type: 'source' | 'target';
+  type: "source" | "target";
   amount?: number;
   currency?: string;
   reason?: string;
@@ -74,7 +70,7 @@ export interface ReconConflict {
   field: string;
   sourceValue: unknown;
   targetValue: unknown;
-  severity: 'warning' | 'error';
+  severity: "warning" | "error";
   metadata?: Record<string, unknown>;
 }
 

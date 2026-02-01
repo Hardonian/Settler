@@ -7,7 +7,7 @@
 
 import { Response, NextFunction } from 'express';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore - PrismaClient is generated at build time
+// @ts-expect-error - PrismaClient is generated at build time
 import type { PrismaClient } from '@prisma/client';
 import type { TenantRequest } from './tenant';
 import { logError } from '../utils/logger';

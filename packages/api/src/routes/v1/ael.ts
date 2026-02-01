@@ -6,9 +6,9 @@
 
 import { Router, Response } from 'express';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore - PrismaClient is generated at build time
+// @ts-expect-error - PrismaClient is generated at build time
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore - PrismaClient is generated at build time
+// @ts-expect-error - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
 import { authMiddleware } from '../../middleware/auth';
 import { tenantMiddleware, TenantRequest } from '../../middleware/tenant';

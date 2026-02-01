@@ -1,6 +1,6 @@
 /**
  * Job Failure Notification Service
- * 
+ *
  * Sends notifications when reconciliation jobs fail.
  * Enterprise-ready with:
  * - Type-safe Prisma queries
@@ -10,12 +10,12 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore - PrismaClient is generated at build time
-import { PrismaClient } from '@prisma/client';
-import { sendEmail, EmailTemplate } from '../../lib/email';
-import { getJobFailureTemplate, getJobCompletionTemplate } from '../email/job-templates';
-import { sendWebhookNotification } from './webhook-notifications';
-import { logWarn, logInfo, logError } from '../../utils/logger';
+// @ts-expect-error - PrismaClient is generated at build time
+import { PrismaClient } from "@prisma/client";
+import { sendEmail, EmailTemplate } from "../../lib/email";
+import { getJobFailureTemplate, getJobCompletionTemplate } from "../email/job-templates";
+import { sendWebhookNotification } from "./webhook-notifications";
+import { logWarn, logInfo, logError } from "../../utils/logger";
 
 interface JobFailureNotificationParams {
   jobId: string;
@@ -75,22 +75,28 @@ export async function notifyJobFailure(
       const template = getJobFailureTemplate();
       const html = template
         .replace(/\{\{jobName\}\}/g, job.name)
-        .replace(/\{\{jobDescription\}\}/g, job.description || '')
+        .replace(/\{\{jobDescription\}\}/g, job.description || "")
         .replace(/\{\{errorMessage\}\}/g, errorMessage)
-        .replace(/\{\{errorStack\}\}/g, errorStack || '')
+        .replace(/\{\{errorStack\}\}/g, errorStack || "")
         .replace(/\{\{jobId\}\}/g, jobId)
         .replace(/\{\{resultId\}\}/g, resultId)
-        .replace(/\{\{supportUrl\}\}/g, `${process.env.NEXT_PUBLIC_APP_URL || 'https://settler.dev'}/support`)
-        .replace(/\{\{jobUrl\}\}/g, `${process.env.NEXT_PUBLIC_APP_URL || 'https://settler.dev'}/dashboard/jobs/${jobId}`);
+        .replace(
+          /\{\{supportUrl\}\}/g,
+          `${process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev"}/support`
+        )
+        .replace(
+          /\{\{jobUrl\}\}/g,
+          `${process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev"}/dashboard/jobs/${jobId}`
+        );
 
       const emailTemplate: EmailTemplate = {
         to: billingAccount.email,
         subject: `Reconciliation Job Failed: ${job.name}`,
         html: html,
-        text: `Your reconciliation job "${job.name}" has failed.\n\nError: ${errorMessage}\n\nView details: ${process.env.NEXT_PUBLIC_APP_URL || 'https://settler.dev'}/dashboard/jobs/${jobId}`,
+        text: `Your reconciliation job "${job.name}" has failed.\n\nError: ${errorMessage}\n\nView details: ${process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev"}/dashboard/jobs/${jobId}`,
         tags: [
-          { name: 'type', value: 'job_failure' },
-          { name: 'job_id', value: jobId },
+          { name: "type", value: "job_failure" },
+          { name: "job_id", value: jobId },
         ],
       };
       await sendEmail(emailTemplate);
@@ -108,22 +114,22 @@ export async function notifyJobFailure(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let auditModule: { logAuditEvent?: (params: unknown) => Promise<void> } | null = null;
       try {
-        // @ts-ignore - Module may not exist in API package
-        auditModule = await import('../../lib/audit/logger');
+        // @ts-expect-error - Module may not exist in API package
+        auditModule = await import("../../lib/audit/logger");
       } catch {
         // Module doesn't exist - that's okay
         auditModule = null;
       }
-      
+
       if (auditModule?.logAuditEvent) {
         await auditModule.logAuditEvent({
           userId: userId,
           tenantId: tenantId,
-          action: 'notify',
-          resourceType: 'reconciliation_job',
+          action: "notify",
+          resourceType: "reconciliation_job",
           resourceId: jobId,
           metadata: {
-            notificationType: 'job_failure',
+            notificationType: "job_failure",
             resultId: resultId,
             errorMessage: errorMessage,
           },
@@ -139,7 +145,7 @@ export async function notifyJobFailure(
       await sendWebhookNotification(prisma, {
         tenantId,
         userId,
-        eventType: 'job_failed',
+        eventType: "job_failed",
         jobId,
         resultId,
         errorMessage,
@@ -150,7 +156,7 @@ export async function notifyJobFailure(
       // Don't throw - webhook failure shouldn't break notification flow
     }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     logError(`[JobFailureNotification] Failed to send notification`, error, { errorMessage });
     // Don't throw - notification failure shouldn't break job execution
   }
@@ -211,20 +217,26 @@ export async function notifyJobCompletion(
         .replace(/\{\{jobName\}\}/g, job.name)
         .replace(/\{\{matchedCount\}\}/g, matchedCount.toString())
         .replace(/\{\{unmatchedCount\}\}/g, unmatchedCount.toString())
-        .replace(/\{\{accuracy\}\}/g, Math.round(accuracy * 10) / 10 + '%')
+        .replace(/\{\{accuracy\}\}/g, Math.round(accuracy * 10) / 10 + "%")
         .replace(/\{\{jobId\}\}/g, jobId)
         .replace(/\{\{resultId\}\}/g, resultId)
-        .replace(/\{\{exceptionsUrl\}\}/g, `${process.env.NEXT_PUBLIC_APP_URL || 'https://settler.dev'}/dashboard/jobs/${jobId}/exceptions`)
-        .replace(/\{\{jobUrl\}\}/g, `${process.env.NEXT_PUBLIC_APP_URL || 'https://settler.dev'}/dashboard/jobs/${jobId}`);
+        .replace(
+          /\{\{exceptionsUrl\}\}/g,
+          `${process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev"}/dashboard/jobs/${jobId}/exceptions`
+        )
+        .replace(
+          /\{\{jobUrl\}\}/g,
+          `${process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev"}/dashboard/jobs/${jobId}`
+        );
 
       const emailTemplate: EmailTemplate = {
         to: billingAccount.email,
         subject: `Reconciliation Complete: ${job.name} - ${unmatchedCount} Exceptions`,
         html: html,
-        text: `Your reconciliation job "${job.name}" has completed.\n\nMatched: ${matchedCount}\nUnmatched: ${unmatchedCount}\nAccuracy: ${Math.round(accuracy * 10) / 10}%\n\nReview exceptions: ${process.env.NEXT_PUBLIC_APP_URL || 'https://settler.dev'}/dashboard/jobs/${jobId}/exceptions`,
+        text: `Your reconciliation job "${job.name}" has completed.\n\nMatched: ${matchedCount}\nUnmatched: ${unmatchedCount}\nAccuracy: ${Math.round(accuracy * 10) / 10}%\n\nReview exceptions: ${process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev"}/dashboard/jobs/${jobId}/exceptions`,
         tags: [
-          { name: 'type', value: 'job_completion' },
-          { name: 'job_id', value: jobId },
+          { name: "type", value: "job_completion" },
+          { name: "job_id", value: jobId },
         ],
       };
       await sendEmail(emailTemplate);
