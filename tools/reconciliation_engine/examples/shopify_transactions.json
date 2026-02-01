@@ -1,0 +1,52 @@
+[
+  {
+    "id": "shopify_001",
+    "external_id": "pi_3O1234567890",
+    "amount": 100.0,
+    "currency": "USD",
+    "date": "2024-01-15",
+    "description": "Order #1001 - Complete",
+    "order_number": "1001",
+    "customer_email": "customer1@example.com"
+  },
+  {
+    "id": "shopify_002",
+    "external_id": "pi_3O0987654321",
+    "amount": 250.0,
+    "currency": "USD",
+    "date": "2024-01-16",
+    "description": "Order #1002 - Complete",
+    "order_number": "1002",
+    "customer_email": "customer2@example.com"
+  },
+  {
+    "id": "shopify_003",
+    "external_id": "pi_3O5555555555",
+    "amount": 75.5,
+    "currency": "USD",
+    "date": "2024-01-17",
+    "description": "Order #1003 - Complete",
+    "order_number": "1003",
+    "customer_email": "customer3@example.com"
+  },
+  {
+    "id": "shopify_004",
+    "external_id": "pi_3O7777777777",
+    "amount": 500.0,
+    "currency": "USD",
+    "date": "2024-01-18",
+    "description": "Order #1004 - Enterprise Quarterly",
+    "order_number": "1004",
+    "customer_email": "enterprise@bigcorp.com"
+  },
+  {
+    "id": "shopify_005",
+    "external_id": "pi_3O8888888888",
+    "amount": 29.99,
+    "currency": "USD",
+    "date": "2024-01-19",
+    "description": "Order #1005 - Subscription",
+    "order_number": "1005",
+    "customer_email": "subscriber@example.com"
+  }
+]

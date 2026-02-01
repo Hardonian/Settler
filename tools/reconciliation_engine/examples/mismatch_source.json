@@ -1,0 +1,20 @@
+[
+  {
+    "id": "stripe_m1",
+    "external_id": "pi_mismatch_demo",
+    "amount": 100.0,
+    "currency": "USD",
+    "date": "2024-01-15",
+    "description": "Charge that will mismatch",
+    "metadata": { "intentional": "mismatch_amount" }
+  },
+  {
+    "id": "stripe_m2",
+    "external_id": "pi_date_mismatch",
+    "amount": 50.0,
+    "currency": "USD",
+    "date": "2024-01-20",
+    "description": "Charge with date mismatch",
+    "metadata": { "intentional": "mismatch_date" }
+  }
+]

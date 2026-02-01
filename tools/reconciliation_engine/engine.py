@@ -343,7 +343,7 @@ class InvariantChecker:
                 if entry.source_record_id:
                     matched_sources.add(entry.source_record_id)
                 if entry.target_record_id:
-                    matched_targets.add(entry.target_record_id
+                    matched_targets.add(entry.target_record_id)
 
         orphaned_sources = [
             r.get("id", "unknown")

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "shopify_m1",
+    "external_id": "pi_mismatch_demo",
+    "amount": 99.99,
+    "currency": "USD",
+    "date": "2024-01-15",
+    "description": "Order with different amount - intentional mismatch",
+    "reason": "Amount differs by 0.01 - will mismatch with strict tolerance"
+  },
+  {
+    "id": "shopify_m2",
+    "external_id": "pi_date_mismatch",
+    "amount": 50.0,
+    "currency": "USD",
+    "date": "2024-01-21",
+    "description": "Order with different date",
+    "reason": "Date differs by 1 day - will mismatch without date tolerance"
+  }
+]
