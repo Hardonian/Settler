@@ -1,6 +1,6 @@
 /**
  * Kill Switch / Feature Flags System
- * 
+ *
  * Allows disabling features in production without code deployment.
  * Useful for emergency shutdowns, gradual rollouts, and A/B testing.
  */
@@ -61,6 +61,7 @@ class FeatureFlagManager {
       }
 
       this.initialized = true;
+      // eslint-disable-next-line no-console
       console.info("[FeatureFlags] Initialized with", this.flags.size, "flags");
     } catch (error) {
       console.error("[FeatureFlags] Failed to initialize:", error);
@@ -119,7 +120,7 @@ class FeatureFlagManager {
     let hash = 0;
     for (let i = 0; i < userId.length; i++) {
       const char = userId.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return Math.abs(hash);
@@ -137,6 +138,7 @@ class FeatureFlagManager {
    */
   setFlag(flag: FeatureFlag): void {
     this.flags.set(flag.key, flag);
+    // eslint-disable-next-line no-console
     console.info(`[FeatureFlags] Flag "${flag.key}" set to ${flag.enabled}`);
   }
 
@@ -160,6 +162,7 @@ class FeatureFlagManager {
     if (flag) {
       flag.enabled = true;
       this.flags.set(key, flag);
+      // eslint-disable-next-line no-console
       console.info(`[FeatureFlags] Feature "${key}" enabled`);
     }
   }

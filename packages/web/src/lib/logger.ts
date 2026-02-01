@@ -11,7 +11,7 @@ export interface LogContext {
   [key: string]: unknown;
 }
 
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+export type LogLevel = "debug" | "info" | "warn" | "error";
 
 export interface LogEntry {
   level: LogLevel;
@@ -27,16 +27,16 @@ export interface LogEntry {
 export function createLogger(context: LogContext = {}) {
   return {
     debug: (message: string, extraContext?: LogContext) => {
-      log('debug', message, { ...context, ...extraContext });
+      log("debug", message, { ...context, ...extraContext });
     },
     info: (message: string, extraContext?: LogContext) => {
-      log('info', message, { ...context, ...extraContext });
+      log("info", message, { ...context, ...extraContext });
     },
     warn: (message: string, extraContext?: LogContext) => {
-      log('warn', message, { ...context, ...extraContext });
+      log("warn", message, { ...context, ...extraContext });
     },
     error: (message: string, error?: Error, extraContext?: LogContext) => {
-      log('error', message, { ...context, ...extraContext }, error);
+      log("error", message, { ...context, ...extraContext }, error);
     },
   };
 }
@@ -44,12 +44,7 @@ export function createLogger(context: LogContext = {}) {
 /**
  * Log an entry
  */
-function log(
-  level: LogLevel,
-  message: string,
-  context: LogContext = {},
-  error?: Error
-) {
+function log(level: LogLevel, message: string, context: LogContext = {}, error?: Error) {
   const entry: LogEntry = {
     level,
     message,
@@ -64,28 +59,31 @@ function log(
     level: entry.level,
     message: entry.message,
     ...entry.context,
-    error: error ? {
-      name: error.name,
-      message: error.message,
-      stack: error.stack,
-    } : undefined,
+    error: error
+      ? {
+          name: error.name,
+          message: error.message,
+          stack: error.stack,
+        }
+      : undefined,
     timestamp: entry.timestamp.toISOString(),
   });
 
   switch (level) {
-    case 'debug':
-      if (process.env.NODE_ENV === 'development') {
+    case "debug":
+      if (process.env.NODE_ENV === "development") {
+        // eslint-disable-next-line no-console
         console.debug(logMessage);
       }
       break;
-    case 'info':
+    case "info":
       // eslint-disable-next-line no-console
       console.log(logMessage);
       break;
-    case 'warn':
+    case "warn":
       console.warn(logMessage);
       break;
-    case 'error':
+    case "error":
       console.error(logMessage);
       break;
   }
