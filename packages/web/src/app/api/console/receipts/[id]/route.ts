@@ -44,6 +44,7 @@ export const GET = withSecurity(
         }
 
         // ID is now validated as string
+        // eslint-disable-next-line no-console
         console.assert(typeof id === "string", "ID should be string after validation");
 
         // Authenticate using unified auth (session or API key)
