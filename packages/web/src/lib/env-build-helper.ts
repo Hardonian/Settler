@@ -41,6 +41,8 @@ export const RUNTIME_ONLY = [
   'ENCRYPTION_KEY',
   'JWT_SECRET',
   'JWT_REFRESH_SECRET',
+  'JOBFORGE_INTEGRATION_ENABLED',
+  'JOBFORGE_BUNDLE_EXECUTION_ENABLED',
   'SUPABASE_SERVICE_ROLE_KEY',
   'STRIPE_SECRET_KEY',
   'STRIPE_WEBHOOK_SECRET',
@@ -116,4 +118,3 @@ export function validateBuildEnv(): { valid: boolean; errors: string[]; warnings
     warnings,
   };
 }
-

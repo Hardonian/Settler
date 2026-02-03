@@ -23,6 +23,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@jobforge/sdk-ts": "workspace:*",
     "@settler/sdk": "workspace:*",
     "commander": "^11.1.0",
     "chalk": "^4.1.2",
