@@ -20,6 +20,7 @@ import {
   AlertTriangle,
   PlayCircle,
   FileSearch,
+  Workflow,
 } from "lucide-react";
 import { isSuperAdmin } from "@/lib/auth/super-admin";
 import { redirect } from "next/navigation";
@@ -75,6 +76,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <Link href="/admin/runs">
               <Button variant="ghost" className="w-full justify-start gap-2">
                 <PlayCircle size={18} /> Runs
+              </Button>
+            </Link>
+            <Link href="/admin/jobforge">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <Workflow size={18} /> JobForge
               </Button>
             </Link>
             <Link href="/admin/audit">
@@ -138,6 +144,15 @@ export default async function AdminLayout({ children }: { children: React.ReactN
                 aria-label="Reconciliation runs"
               >
                 <PlayCircle size={18} aria-hidden="true" /> Runs
+              </Button>
+            </Link>
+            <Link href="/admin/jobforge">
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-2"
+                aria-label="JobForge operations"
+              >
+                <Workflow size={18} aria-hidden="true" /> JobForge
               </Button>
             </Link>
             <Link href="/admin/audit">

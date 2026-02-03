@@ -69,7 +69,15 @@ SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
 ```
 
-No additional environment variables are required.
+JobForge admin tooling is gated by feature flags (disabled by default):
+
+```bash
+# Enable JobForge admin + CLI tooling (default: false)
+JOBFORGE_INTEGRATION_ENABLED=false
+
+# Gate bundle execution requests (default: false)
+JOBFORGE_BUNDLE_EXECUTION_ENABLED=false
+```
 
 ## Usage
 
@@ -143,6 +151,72 @@ if (job.result_id) {
   const result = await jobforge.getJobResult(job.result_id, tenantId)
   console.log(result.result) // Job output
 }
+```
+
+### Admin Console (Minimal)
+
+Settler exposes a minimal JobForge admin page for super admins at:
+
+```
+/admin/jobforge
+```
+
+Capabilities:
+- Submit event (explicit tenant + project mapping)
+- Run module (dry-run)
+- View report + request bundle execution (gated by `JOBFORGE_BUNDLE_EXECUTION_ENABLED`)
+
+### CLI (Admin)
+
+JobForge admin actions are available in the CLI when the integration is enabled:
+
+```bash
+# Submit an event
+settler admin jobforge:submit-event \
+  --tenant-id <uuid> \
+  --project-id <uuid> \
+  --event-name "settler.recon.event" \
+  --payload '{"source":"admin","notes":"manual submit"}'
+
+# Run module dry-run
+settler admin jobforge:module:dry-run \
+  --tenant-id <uuid> \
+  --project-id <uuid> \
+  --module-name "reconciliation.preview" \
+  --input '{"run_id":"..."}'
+
+# View report
+settler admin jobforge:report \
+  --tenant-id <uuid> \
+  --project-id <uuid> \
+  --job-id <uuid>
+
+# Request bundle execution (gated)
+settler admin jobforge:bundle:request \
+  --tenant-id <uuid> \
+  --project-id <uuid> \
+  --bundle-id <bundle> \
+  --confirm
+```
+
+### Smoke Tests & Verification
+
+Use the following commands to verify the integration end-to-end (requires
+`JOBFORGE_INTEGRATION_ENABLED=true` and valid Supabase credentials):
+
+```bash
+# Dry-run a module (safe smoke test)
+settler admin jobforge:module:dry-run \
+  --tenant-id <uuid> \
+  --project-id <uuid> \
+  --module-name "reconciliation.preview" \
+  --input '{"run_id":"smoke-test"}'
+
+# Fetch report details for a known job ID
+settler admin jobforge:report \
+  --tenant-id <uuid> \
+  --project-id <uuid> \
+  --job-id <uuid>
 ```
 
 ## Worker Setup

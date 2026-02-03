@@ -8,6 +8,7 @@ import { adaptersCommand } from "./commands/adapters";
 import { debugCommand } from "./commands/debug";
 import { receiptsCommand } from "./commands/receipts";
 import { consoleCommand } from "./commands/console";
+import { createAdminCommands } from "./commands/admin";
 
 const program = new Command();
 
@@ -29,6 +30,7 @@ program.addCommand(adaptersCommand);
 program.addCommand(debugCommand);
 program.addCommand(receiptsCommand);
 program.addCommand(consoleCommand);
+program.addCommand(createAdminCommands());
 
 // Parse arguments
 program.parse();
