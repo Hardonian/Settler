@@ -2,9 +2,11 @@
  * Console Overview Page
  *
  * Shows overview stats and quick links for the Developer Console.
+ * OPTIMIZED: Heavy components code-split with Suspense boundaries
  */
 
 import { Suspense } from "react";
+import dynamic from "next/dynamic";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -17,18 +19,74 @@ import { listFeatureFlags } from "@/domain/console/featureFlags";
 import { validateSupabaseEnv } from "@/lib/env/validator";
 import { EnvErrorPanel } from "@/components/env/EnvErrorPanel";
 import { isSafeMode } from "@/lib/safe";
-import { LiveActivityFeed } from "@/components/console/LiveActivityFeed";
-import { OnboardingWizardClient } from "@/components/onboarding/OnboardingWizardClient";
-import { WelcomeBannerClient } from "@/components/onboarding/WelcomeBannerClient";
-import { InsightsPanel } from "@/components/console/AIInsightsPanel";
-import { ErrorAlertsPanel } from "@/components/console/ErrorAlertsPanel";
-import { UsageWarningBanner } from "@/components/console/UsageWarningBanner";
-import { GuidedTourClient } from "@/components/console/GuidedTourClient";
-import { UsageInsightsPanel } from "@/components/console/UsageInsightsPanel";
 import { RBACGate } from "@/lib/rbac-gate";
 import { appLogger } from "@/lib/utils/logger";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
-import { PageLoadingSkeleton } from "@/components/shared/loading-state";
+import { PageLoadingSkeleton, CardSkeleton } from "@/components/shared/loading-state";
+
+// OPTIMIZATION: Code-split heavy dashboard components
+// These are not needed for initial paint and add ~15KB to the bundle
+const LiveActivityFeed = dynamic(
+  () =>
+    import("@/components/console/LiveActivityFeed").then((mod) => ({
+      default: mod.LiveActivityFeed,
+    })),
+  { ssr: false, loading: () => <CardSkeleton className="h-[300px]" /> }
+);
+
+const OnboardingWizardClient = dynamic(
+  () =>
+    import("@/components/onboarding/OnboardingWizardClient").then((mod) => ({
+      default: mod.OnboardingWizardClient,
+    })),
+  { ssr: false, loading: () => null }
+);
+
+const WelcomeBannerClient = dynamic(
+  () =>
+    import("@/components/onboarding/WelcomeBannerClient").then((mod) => ({
+      default: mod.WelcomeBannerClient,
+    })),
+  { ssr: false, loading: () => null }
+);
+
+const InsightsPanel = dynamic(
+  () =>
+    import("@/components/console/AIInsightsPanel").then((mod) => ({ default: mod.InsightsPanel })),
+  { ssr: false, loading: () => <CardSkeleton className="h-[200px]" /> }
+);
+
+const ErrorAlertsPanel = dynamic(
+  () =>
+    import("@/components/console/ErrorAlertsPanel").then((mod) => ({
+      default: mod.ErrorAlertsPanel,
+    })),
+  { ssr: false, loading: () => <CardSkeleton className="h-[200px]" /> }
+);
+
+const UsageWarningBanner = dynamic(
+  () =>
+    import("@/components/console/UsageWarningBanner").then((mod) => ({
+      default: mod.UsageWarningBanner,
+    })),
+  { ssr: false, loading: () => null }
+);
+
+const GuidedTourClient = dynamic(
+  () =>
+    import("@/components/console/GuidedTourClient").then((mod) => ({
+      default: mod.GuidedTourClient,
+    })),
+  { ssr: false, loading: () => null }
+);
+
+const UsageInsightsPanel = dynamic(
+  () =>
+    import("@/components/console/UsageInsightsPanel").then((mod) => ({
+      default: mod.UsageInsightsPanel,
+    })),
+  { ssr: false, loading: () => <CardSkeleton className="h-[150px]" /> }
+);
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs"; // Ensure Node.js runtime for Prisma binary engine
