@@ -382,6 +382,47 @@ class WebhooksClient:
             "POST", f"/webhooks/receive/{adapter}", data=payload
         )
 
+    def create(
+        self,
+        url: str,
+        events: Optional[List[str]] = None,
+        secret: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Create a webhook.
+
+        Args:
+            url: Destination URL for webhook delivery.
+            events: Optional list of event types to subscribe to.
+            secret: Optional signing secret for webhook verification.
+        """
+        data: Dict[str, Any] = {"url": url}
+        if events:
+            data["events"] = events
+        if secret:
+            data["secret"] = secret
+        return self._client._request("POST", "/webhooks", data=data)
+
+    def list(
+        self,
+        cursor: Optional[str] = None,
+        limit: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """List webhooks with optional pagination."""
+        params: Dict[str, Any] = {}
+        if cursor:
+            params["cursor"] = cursor
+        if limit is not None:
+            params["limit"] = limit
+        return self._client._request("GET", "/webhooks", params=params)
+
+    def get(self, webhook_id: str) -> Dict[str, Any]:
+        """Get a webhook by ID."""
+        return self._client._request("GET", f"/webhooks/{webhook_id}")
+
+    def delete(self, webhook_id: str) -> None:
+        """Delete a webhook by ID."""
+        self._client._request("DELETE", f"/webhooks/{webhook_id}")
+
 
 class JobsClient:
     """Client for reconciliation job management."""

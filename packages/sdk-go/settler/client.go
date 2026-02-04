@@ -81,7 +81,13 @@ func NewClient(options ...ClientOption) (*Client, error) {
 
 // request makes an HTTP request to the API
 func (c *Client) request(ctx context.Context, method, path string, body interface{}, query url.Values) (map[string]interface{}, error) {
-	url := c.baseURL + path
+	return c.requestWithBase(ctx, c.baseURL, method, path, body, query)
+}
+
+// requestWithBase makes an HTTP request to the API with a custom base URL
+func (c *Client) requestWithBase(ctx context.Context, baseURL, method, path string, body interface{}, query url.Values) (map[string]interface{}, error) {
+	baseURL = strings.TrimSuffix(baseURL, "/")
+	url := baseURL + path
 	if query != nil {
 		url = url + "?" + query.Encode()
 	}
@@ -207,6 +213,21 @@ func (c *Client) Reports() *ReportsClient {
 	return &ReportsClient{client: c}
 }
 
+// Console returns a ConsoleClient for console operations
+func (c *Client) Console() *ConsoleClient {
+	return &ConsoleClient{client: c}
+}
+
+// Flags returns a FlagsClient for feature flag operations
+func (c *Client) Flags() *FlagsClient {
+	return &FlagsClient{client: c}
+}
+
+// Convert returns a ConvertClient for unit/currency conversions
+func (c *Client) Convert() *ConvertClient {
+	return &ConvertClient{client: c}
+}
+
 // PaginationParams represents common pagination parameters
 type PaginationParams struct {
 	Page  int
@@ -223,4 +244,15 @@ func (p PaginationParams) ToQuery() url.Values {
 		q.Set("limit", strconv.Itoa(p.Limit))
 	}
 	return q
+}
+
+func (c *Client) rootBaseURL() string {
+	base := strings.TrimSuffix(c.baseURL, "/")
+	if strings.HasSuffix(base, "/api/v1") {
+		return strings.TrimSuffix(base, "/api/v1")
+	}
+	if strings.HasSuffix(base, "/api") {
+		return strings.TrimSuffix(base, "/api")
+	}
+	return base
 }
