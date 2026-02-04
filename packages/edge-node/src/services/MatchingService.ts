@@ -17,9 +17,7 @@ export interface Candidate {
 
 export class MatchingService {
   constructor(
-    // @ts-expect-error - Reserved for future use
     private _db: Database.Database,
-    // @ts-expect-error - Reserved for future use
     private _modelManager: ModelManager
   ) {}
 
@@ -71,7 +69,7 @@ export class MatchingService {
 
   private extractId(record: Record<string, unknown>): string {
     const rawId = record.id || record.transaction_id || record.order_id;
-    return typeof rawId === 'string' || typeof rawId === 'number' ? String(rawId) : "";
+    return typeof rawId === "string" || typeof rawId === "number" ? String(rawId) : "";
   }
 
   private calculateMatchScore(
@@ -168,8 +166,12 @@ export class MatchingService {
   ): number {
     const sourceRaw = source[field];
     const targetRaw = target[field];
-    const sourceValue = (typeof sourceRaw === 'string' || typeof sourceRaw === 'number' ? String(sourceRaw) : "").toLowerCase();
-    const targetValue = (typeof targetRaw === 'string' || typeof targetRaw === 'number' ? String(targetRaw) : "").toLowerCase();
+    const sourceValue = (
+      typeof sourceRaw === "string" || typeof sourceRaw === "number" ? String(sourceRaw) : ""
+    ).toLowerCase();
+    const targetValue = (
+      typeof targetRaw === "string" || typeof targetRaw === "number" ? String(targetRaw) : ""
+    ).toLowerCase();
 
     if (!sourceValue || !targetValue) {
       return 0;

@@ -9,7 +9,6 @@ import { logInfo, logError } from "../utils/logger";
 /**
  * Calculate days remaining in trial
  */
-// @ts-expect-error - Reserved for future use
 function _calculateDaysRemaining(_trialEndDate: string): number {
   return 0;
 }

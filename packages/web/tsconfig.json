@@ -49,8 +49,8 @@
       "@settler/react-settler/*": ["../react-settler/dist/*"],
       "@settler/protocol": ["../protocol/dist"],
       "@settler/protocol/*": ["../protocol/dist/*"],
-      "@settler/sdk": ["../sdk/dist"],
-      "@settler/sdk/*": ["../sdk/dist/*"],
+      "@settler/sdk": ["../sdk/src"],
+      "@settler/sdk/*": ["../sdk/src/*"],
       "@settler/types": ["../types/dist"],
       "@settler/types/*": ["../types/dist/*"]
     }

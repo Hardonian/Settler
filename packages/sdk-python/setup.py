@@ -30,10 +30,7 @@ setup(
         "Programming Language :: Python :: 3.12",
     ],
     python_requires=">=3.8",
-    install_requires=[
-        "requests>=2.31.0",
-        "urllib3>=2.0.0",
-    ],
+    install_requires=[],
     extras_require={
         "dev": [
             "pytest>=7.4.0",

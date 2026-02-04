@@ -17,7 +17,6 @@ export interface Anomaly {
 export class AnomalyDetectionService {
   constructor(
     private db: Database.Database,
-    // @ts-expect-error - Reserved for future use
     private _modelManager: ModelManager
   ) {}
 
@@ -81,7 +80,7 @@ export class AnomalyDetectionService {
 
   private checkDuplicate(transaction: Record<string, unknown>): boolean {
     const rawId = transaction.id || transaction.transaction_id;
-    const id = typeof rawId === 'string' || typeof rawId === 'number' ? String(rawId) : "";
+    const id = typeof rawId === "string" || typeof rawId === "number" ? String(rawId) : "";
     if (!id) return false;
 
     const result = this.db

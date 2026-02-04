@@ -184,8 +184,15 @@ func parsePagination(data map[string]interface{}) Pagination {
 
 // getInt safely extracts an int value from a map
 func getInt(data map[string]interface{}, key string) int {
-	if val, ok := data[key].(float64); ok {
-		return int(val)
+	if value, ok := data[key]; ok {
+		switch typed := value.(type) {
+		case float64:
+			return int(typed)
+		case int:
+			return typed
+		case int64:
+			return int(typed)
+		}
 	}
 	return 0
 }

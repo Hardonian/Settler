@@ -10,13 +10,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import socket
 import time
 from typing import Any, Dict, List, Optional, Union
-from urllib.parse import urlencode, urljoin
-
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 from .exceptions import (
     AuthenticationError,
@@ -27,6 +26,21 @@ from .exceptions import (
     SettlerError,
     ValidationError,
 )
+
+class SimpleResponse:
+    """Minimal response wrapper to mirror requests.Response fields used by the SDK."""
+
+    def __init__(self, status_code: int, content: bytes, headers: Dict[str, str]) -> None:
+        self.status_code = status_code
+        self.content = content
+        self.headers = headers
+
+    @property
+    def text(self) -> str:
+        return self.content.decode("utf-8", errors="replace")
+
+    def json(self) -> Dict[str, Any]:
+        return json.loads(self.text) if self.content else {}
 
 
 class SettlerClient:
@@ -48,6 +62,7 @@ class SettlerClient:
     DEFAULT_BASE_URL = "https://api.settler.io/api/v1"
     DEFAULT_TIMEOUT = 30
     DEFAULT_MAX_RETRIES = 3
+    RETRY_STATUS_CODES = (502, 503, 504)
 
     def __init__(
         self,
@@ -62,18 +77,7 @@ class SettlerClient:
         self._api_key = api_key
         self._base_url = base_url.rstrip("/")
         self._timeout = timeout
-
-        # Configure session with retry
-        self._session = requests.Session()
-        retry_strategy = Retry(
-            total=max_retries,
-            backoff_factor=1,
-            status_forcelist=[502, 503, 504],
-            allowed_methods=["GET", "POST", "PUT", "DELETE"],
-        )
-        adapter = HTTPAdapter(max_retries=retry_strategy)
-        self._session.mount("https://", adapter)
-        self._session.mount("http://", adapter)
+        self._max_retries = max_retries
 
         # Deduplication cache
         self._dedup_cache: Dict[str, float] = {}
@@ -113,26 +117,46 @@ class SettlerClient:
         # Clean up None values from params
         if params:
             params = {k: v for k, v in params.items() if v is not None}
+            if params:
+                url = f"{url}?{urlencode(params)}"
 
-        try:
-            response = self._session.request(
-                method=method,
-                url=url,
-                json=data,
-                params=params,
-                headers=self._get_headers(),
-                timeout=self._timeout,
-            )
-        except requests.ConnectionError as exc:
-            raise NetworkError(f"Connection failed: {exc}") from exc
-        except requests.Timeout as exc:
-            raise NetworkError(f"Request timed out after {self._timeout}s") from exc
-        except requests.RequestException as exc:
-            raise NetworkError(f"Request failed: {exc}") from exc
+        payload = None
+        headers = self._get_headers()
+        if data is not None:
+            payload = json.dumps(data).encode("utf-8")
+            headers["Content-Type"] = "application/json"
 
-        return self._handle_response(response)
+        for attempt in range(self._max_retries + 1):
+            try:
+                request = Request(url=url, method=method, data=payload, headers=headers)
+                with urlopen(request, timeout=self._timeout) as response:
+                    body = response.read()
+                    simple_response = SimpleResponse(
+                        status_code=response.status,
+                        content=body,
+                        headers=dict(response.headers),
+                    )
+                    return self._handle_response(simple_response)
+            except HTTPError as exc:
+                body = exc.read()
+                simple_response = SimpleResponse(
+                    status_code=exc.code,
+                    content=body,
+                    headers=dict(exc.headers) if exc.headers else {},
+                )
+                if exc.code in self.RETRY_STATUS_CODES and attempt < self._max_retries:
+                    time.sleep(2**attempt)
+                    continue
+                return self._handle_response(simple_response)
+            except (URLError, socket.timeout) as exc:
+                if attempt < self._max_retries:
+                    time.sleep(2**attempt)
+                    continue
+                raise NetworkError(f"Request failed: {exc}") from exc
 
-    def _handle_response(self, response: requests.Response) -> Any:
+        raise NetworkError("Request failed after retries")
+
+    def _handle_response(self, response: "SimpleResponse") -> Any:
         """Parse the API response and raise appropriate errors."""
         if 200 <= response.status_code < 300:
             if not response.content:
@@ -381,6 +405,47 @@ class WebhooksClient:
         return self._client._request(
             "POST", f"/webhooks/receive/{adapter}", data=payload
         )
+
+    def create(
+        self,
+        url: str,
+        events: Optional[List[str]] = None,
+        secret: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Create a webhook.
+
+        Args:
+            url: Destination URL for webhook delivery.
+            events: Optional list of event types to subscribe to.
+            secret: Optional signing secret for webhook verification.
+        """
+        data: Dict[str, Any] = {"url": url}
+        if events:
+            data["events"] = events
+        if secret:
+            data["secret"] = secret
+        return self._client._request("POST", "/webhooks", data=data)
+
+    def list(
+        self,
+        cursor: Optional[str] = None,
+        limit: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """List webhooks with optional pagination."""
+        params: Dict[str, Any] = {}
+        if cursor:
+            params["cursor"] = cursor
+        if limit is not None:
+            params["limit"] = limit
+        return self._client._request("GET", "/webhooks", params=params)
+
+    def get(self, webhook_id: str) -> Dict[str, Any]:
+        """Get a webhook by ID."""
+        return self._client._request("GET", f"/webhooks/{webhook_id}")
+
+    def delete(self, webhook_id: str) -> None:
+        """Delete a webhook by ID."""
+        self._client._request("DELETE", f"/webhooks/{webhook_id}")
 
 
 class JobsClient:
