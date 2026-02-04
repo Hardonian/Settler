@@ -24,12 +24,14 @@ Settler is a reconciliation platform monorepo that provides a multi-tenant API, 
 - A monorepo that ships a reconciliation API, a developer/ops console, SDKs, and background job processing.
 - A reference implementation of reconciliation workflows using Postgres (Supabase), Next.js, and Node.
 - A collection of adapters and integration points that connect external data sources to core reconciliation logic.
+- **Open core**: The reconciliation engine, SDKs, and basic adapters are freely available.
 
 ## What This Project Is NOT
 
 - A general-purpose accounting system or ledger.
 - A compliance or correctness guarantee (operators still review and resolve discrepancies).
 - A hosted SaaS instance out of the box (deployment and infrastructure are your responsibility).
+- A fully open-source project (core is accessible, some components are commercial).
 
 ## Where This Fits (If Part of a Larger System)
 
@@ -119,6 +121,56 @@ Common pitfalls:
 - Read [`CONTRIBUTING.md`](CONTRIBUTING.md) for setup, quality gates, and review expectations.
 - Open issues using the templates in `.github/ISSUE_TEMPLATE`.
 - Use Discussions (if enabled) for Q&A, ideas, and integration showcases.
+
+## Open Core vs Commercial
+
+### What's Included (Free/Open)
+
+**Self-hosted deployment:**
+
+- Reconciliation engine and API (Node.js/Next.js)
+- PostgreSQL schema and migrations
+- Webhook handling with idempotency
+- TypeScript, Go, and Python SDKs
+- Basic adapters (Stripe, Shopify, PayPal)
+- Developer console UI
+- Background job processing (JobForge/Workhorse)
+
+**Use this if:**
+
+- You want to self-host on your own infrastructure
+- You need custom integrations or modifications
+- You prefer to manage your own operations
+- You're building internal tools
+
+### Commercial Add-ons
+
+**Hosted service (settler.dev):**
+
+- Managed infrastructure and scaling
+- Priority support and SLAs
+- Advanced analytics and dashboards
+- SSO and enterprise authentication
+- Custom adapter development
+- Dedicated support channels
+
+**Use this if:**
+
+- You don't want to manage infrastructure
+- You need guaranteed uptime and support
+- You want advanced features without development
+- You need enterprise integrations
+
+### Upgrading from Self-Hosted to Commercial
+
+No migration required. The commercial service uses the same API:
+
+1. Keep your existing integration code
+2. Change API endpoint from `your-domain.com` to `api.settler.dev`
+3. Use new API keys from the commercial console
+4. All webhooks, SDKs, and integrations continue working
+
+Contact: commercial@settler.dev (no sales calls, email-only)
 
 ## License & Governance
 
