@@ -92,7 +92,6 @@ class SentryClient {
       // eslint-disable-next-line no-console
       console.info("[Sentry] Initialized successfully");
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error("[Sentry] Failed to initialize:", error);
     }
   }
@@ -130,7 +129,6 @@ class SentryClient {
       // eslint-disable-next-line no-console
       console.info("[Sentry] Server initialized successfully");
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error("[Sentry] Failed to initialize server:", error);
     }
   }
@@ -140,12 +138,7 @@ class SentryClient {
    */
   captureException(error: Error, context?: Record<string, unknown>): void {
     if (!this.initialized) {
-      // eslint-disable-next-line no-console
-      (console[consoleLevel as "info" | "warn" | "error"] as typeof console.log)(
-        "[Message]",
-        message,
-        context
-      );
+      console.error("[Error]", error, context);
       return;
     }
 

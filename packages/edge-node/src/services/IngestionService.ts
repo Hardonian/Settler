@@ -23,7 +23,6 @@ export interface IngestionResult {
 
 export class IngestionService {
   constructor(
-    // @ts-expect-error - Reserved for future use
     private _db: Database.Database,
     private piiRedaction: PIIRedactionService
   ) {}
