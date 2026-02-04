@@ -1,6 +1,6 @@
 /**
  * Usage Tracking Middleware
- * 
+ *
  * Tracks API usage for billing, analytics, and rate limiting
  * Records:
  * - Request counts per tenant
@@ -9,8 +9,9 @@
  * - Cost attribution
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { logInfo } from '../utils/logger';
+import { Request, Response, NextFunction } from "express";
+import { logInfo } from "../utils/logger";
+import { memoizeRequestValue } from "../utils/request-cache";
 
 export interface UsageMetrics {
   tenantId: string;
@@ -34,7 +35,10 @@ export interface UsageTrackingRequest extends Request {
 export interface UsageTrackingService {
   recordUsage(metrics: UsageMetrics): Promise<void>;
   getUsage(tenantId: string, startDate: Date, endDate: Date): Promise<UsageMetrics[]>;
-  getUsageSummary(tenantId: string, period: 'day' | 'week' | 'month'): Promise<{
+  getUsageSummary(
+    tenantId: string,
+    period: "day" | "week" | "month"
+  ): Promise<{
     totalRequests: number;
     totalCost: number;
     byEndpoint: Record<string, number>;
@@ -54,34 +58,35 @@ class InMemoryUsageTrackingService implements UsageTrackingService {
 
   async getUsage(tenantId: string, startDate: Date, endDate: Date): Promise<UsageMetrics[]> {
     return this.metrics.filter(
-      m => m.tenantId === tenantId &&
-           m.timestamp >= startDate &&
-           m.timestamp <= endDate
+      (m) => m.tenantId === tenantId && m.timestamp >= startDate && m.timestamp <= endDate
     );
   }
 
-  async getUsageSummary(tenantId: string, period: 'day' | 'week' | 'month'): Promise<{
+  async getUsageSummary(
+    tenantId: string,
+    period: "day" | "week" | "month"
+  ): Promise<{
     totalRequests: number;
     totalCost: number;
     byEndpoint: Record<string, number>;
   }> {
     const now = new Date();
     const startDate = new Date();
-    
+
     switch (period) {
-      case 'day':
+      case "day":
         startDate.setDate(now.getDate() - 1);
         break;
-      case 'week':
+      case "week":
         startDate.setDate(now.getDate() - 7);
         break;
-      case 'month':
+      case "month":
         startDate.setMonth(now.getMonth() - 1);
         break;
     }
 
     const usage = await this.getUsage(tenantId, startDate, now);
-    
+
     const byEndpoint: Record<string, number> = {};
     let totalCost = 0;
 
@@ -113,21 +118,24 @@ export function setUsageTrackingService(service: UsageTrackingService): void {
 export function usageTrackingMiddleware() {
   return async (req: UsageTrackingRequest, res: Response, next: NextFunction) => {
     const startTime = Date.now();
-    const tenantId = (req as any).tenantId || (req as any).user?.tenantId || 'anonymous';
+    const tenantId = await memoizeRequestValue(
+      req,
+      "usage-tracking:tenant-id",
+      async () => (req as any).tenantId || (req as any).user?.tenantId || "anonymous"
+    );
 
     // Capture response
     const originalSend = res.send;
-    res.send = function(body) {
+    res.send = function (body) {
       const processingTime = Date.now() - startTime;
-      const requestSize = req.headers['content-length'] 
-        ? parseInt(req.headers['content-length'], 10) 
+      const requestSize = req.headers["content-length"]
+        ? parseInt(req.headers["content-length"], 10)
         : JSON.stringify(req.body).length;
-      const responseSize = typeof body === 'string' 
-        ? Buffer.byteLength(body, 'utf8') 
-        : JSON.stringify(body).length;
+      const responseSize =
+        typeof body === "string" ? Buffer.byteLength(body, "utf8") : JSON.stringify(body).length;
 
       // Calculate cost (example: $0.001 per 1000 requests + $0.01 per GB processed)
-      const cost = (1 / 1000) + ((requestSize + responseSize) / (1024 * 1024 * 1024)) * 0.01;
+      const cost = 1 / 1000 + ((requestSize + responseSize) / (1024 * 1024 * 1024)) * 0.01;
 
       const metrics: UsageMetrics = {
         tenantId,
@@ -139,7 +147,7 @@ export function usageTrackingMiddleware() {
         processingTime,
         cost,
         metadata: {
-          userAgent: req.headers['user-agent'],
+          userAgent: req.headers["user-agent"],
           ip: req.ip,
         },
       };
@@ -147,8 +155,8 @@ export function usageTrackingMiddleware() {
       req.usageMetrics = metrics;
 
       // Record asynchronously (don't block response)
-      usageTrackingService.recordUsage(metrics).catch(error => {
-        logInfo('Failed to record usage metrics', { error });
+      usageTrackingService.recordUsage(metrics).catch((error) => {
+        logInfo("Failed to record usage metrics", { error });
       });
 
       return originalSend.call(this, body);
@@ -161,10 +169,15 @@ export function usageTrackingMiddleware() {
 /**
  * Get usage for current tenant
  */
-export async function getCurrentUsage(req: UsageTrackingRequest, period: 'day' | 'week' | 'month' = 'day') {
+export async function getCurrentUsage(
+  req: UsageTrackingRequest,
+  period: "day" | "week" | "month" = "day"
+) {
   const tenantId = (req as any).tenantId || (req as any).user?.tenantId;
   if (!tenantId) {
     return null;
   }
-  return usageTrackingService.getUsageSummary(tenantId, period);
+  return memoizeRequestValue(req, `usage-summary:${tenantId}:${period}`, () =>
+    usageTrackingService.getUsageSummary(tenantId, period)
+  );
 }

@@ -2,7 +2,7 @@
 
 import io
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import chardet
 import pandas as pd
@@ -37,7 +37,7 @@ def detect_encoding(content: bytes) -> str:
     return encoding
 
 
-def parse_date_robust(value: Any) -> Optional[datetime]:
+def parse_date_robust(value: Any) -> datetime | None:
     """Parse date from various formats.
 
     Args:
@@ -60,7 +60,7 @@ def parse_date_robust(value: Any) -> Optional[datetime]:
         return None
 
 
-def auto_detect_columns(df: pd.DataFrame) -> Dict[str, str]:
+def auto_detect_columns(df: pd.DataFrame) -> dict[str, str]:
     """Auto-detect column mappings from DataFrame headers.
 
     Args:
@@ -145,7 +145,7 @@ def auto_detect_columns(df: pd.DataFrame) -> Dict[str, str]:
     return mapping
 
 
-def normalize_amount(value: Any) -> Optional[float]:
+def normalize_amount(value: Any) -> float | None:
     """Normalize amount value to float.
 
     Args:
@@ -194,10 +194,10 @@ def normalize_amount(value: Any) -> Optional[float]:
 
 def process_csv(
     content: bytes,
-    column_mapping: Optional[Dict[str, str]] = None,
+    column_mapping: dict[str, str] | None = None,
     default_currency: str = "USD",
     skip_rows: int = 0,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Process CSV content with robust parsing.
 
     Args:
@@ -221,10 +221,10 @@ def process_csv(
             dtype=str,  # Read all as strings initially
             keep_default_na=True,
         )
-    except pd.errors.EmptyDataError:
-        raise ValueError("CSV file is empty")
+    except pd.errors.EmptyDataError as e:
+        raise ValueError("CSV file is empty") from e
     except pd.errors.ParserError as e:
-        raise ValueError(f"Failed to parse CSV: {e}")
+        raise ValueError(f"Failed to parse CSV: {e}") from e
 
     if len(df) == 0:
         raise ValueError("CSV file contains no data rows")

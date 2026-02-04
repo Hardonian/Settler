@@ -1,5 +1,4 @@
-"""
-Enterprise-grade observability for the Settler workhorse.
+"""Enterprise-grade observability for the Settler workhorse.
 
 Provides Prometheus metrics, OpenTelemetry tracing, structured logging,
 and performance profiling hooks for production ML/AI workloads.
@@ -7,24 +6,25 @@ and performance profiling hooks for production ML/AI workloads.
 
 import functools
 import json
-import os
 import time
 import uuid
+from collections.abc import Callable
 from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Protocol, TypeVar, cast
+from typing import Any, TypeVar, cast
 
 # Context variables for distributed tracing
-_current_trace_id: ContextVar[str] = ContextVar('trace_id')
-_current_span_id: ContextVar[str] = ContextVar('span_id')
-_current_correlation_id: ContextVar[Optional[str]] = ContextVar('correlation_id', default=None)
+_current_trace_id: ContextVar[str] = ContextVar("trace_id")
+_current_span_id: ContextVar[str] = ContextVar("span_id")
+_current_correlation_id: ContextVar[str | None] = ContextVar("correlation_id", default=None)
 
 
 class MetricType(Enum):
     """Types of metrics supported."""
+
     COUNTER = "counter"
     GAUGE = "gauge"
     HISTOGRAM = "histogram"
@@ -34,30 +34,32 @@ class MetricType(Enum):
 @dataclass
 class Metric:
     """A single metric data point."""
+
     name: str
     value: float
     metric_type: MetricType
-    labels: Dict[str, str] = field(default_factory=dict)
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    labels: dict[str, str] = field(default_factory=dict)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     description: str = ""
 
 
 @dataclass
 class Span:
     """A trace span representing an operation."""
+
     name: str
     span_id: str
     trace_id: str
-    parent_id: Optional[str] = None
-    start_time: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    end_time: Optional[datetime] = None
-    attributes: Dict[str, Any] = field(default_factory=dict)
-    events: List[Dict[str, Any]] = field(default_factory=list)
+    parent_id: str | None = None
+    start_time: datetime = field(default_factory=lambda: datetime.now(UTC))
+    end_time: datetime | None = None
+    attributes: dict[str, Any] = field(default_factory=dict)
+    events: list[dict[str, Any]] = field(default_factory=list)
     status: str = "unset"  # unset, ok, error
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
     @property
-    def duration_ms(self) -> Optional[float]:
+    def duration_ms(self) -> float | None:
         """Calculate span duration in milliseconds."""
         if self.end_time:
             return (self.end_time - self.start_time).total_seconds() * 1000
@@ -67,114 +69,116 @@ class Span:
 @dataclass
 class LogEntry:
     """Structured log entry with context."""
+
     timestamp: datetime
     level: str
     message: str
-    trace_id: Optional[str] = None
-    span_id: Optional[str] = None
-    correlation_id: Optional[str] = None
-    job_type: Optional[str] = None
-    job_id: Optional[str] = None
-    context: Dict[str, Any] = field(default_factory=dict)
-    error: Optional[Dict[str, Any]] = None
+    trace_id: str | None = None
+    span_id: str | None = None
+    correlation_id: str | None = None
+    job_type: str | None = None
+    job_id: str | None = None
+    context: dict[str, Any] = field(default_factory=dict)
+    error: dict[str, Any] | None = None
 
 
 class MetricsCollector:
-    """
-    Prometheus-compatible metrics collector.
-    
+    """Prometheus-compatible metrics collector.
+
     Supports counters, gauges, histograms, and summaries with
     dimensional labels for high-cardinality environments.
-    
+
     Example:
         metrics = MetricsCollector()
-        
+
         # Counter
         metrics.counter("jobs_completed", labels={"type": "reconciliation"})
-        
+
         # Gauge
         metrics.gauge("queue_depth", value=42, labels={"queue": "high_priority"})
-        
+
         # Histogram
         metrics.histogram("job_duration_ms", value=1500, labels={"type": "export"})
     """
-    
+
     def __init__(self, prefix: str = "settler"):
         self.prefix = prefix
-        self._counters: Dict[str, Dict[frozenset, float]] = {}
-        self._gauges: Dict[str, Dict[frozenset, float]] = {}
-        self._histograms: Dict[str, List[tuple]] = {}
-        self._metric_descriptions: Dict[str, str] = {}
-    
+        self._counters: dict[str, dict[frozenset, float]] = {}
+        self._gauges: dict[str, dict[frozenset, float]] = {}
+        self._histograms: dict[str, list[tuple]] = {}
+        self._metric_descriptions: dict[str, str] = {}
+
     def _make_key(self, name: str) -> str:
         return f"{self.prefix}_{name}"
-    
-    def _freeze_labels(self, labels: Dict[str, str]) -> frozenset:
+
+    def _freeze_labels(self, labels: dict[str, str]) -> frozenset:
         return frozenset(labels.items()) if labels else frozenset()
-    
+
     def register(self, name: str, metric_type: MetricType, description: str):
         """Register a metric with metadata."""
         key = self._make_key(name)
         self._metric_descriptions[key] = description
-        
+
         if metric_type == MetricType.COUNTER and key not in self._counters:
             self._counters[key] = {}
         elif metric_type == MetricType.GAUGE and key not in self._gauges:
             self._gauges[key] = {}
         elif metric_type == MetricType.HISTOGRAM and key not in self._histograms:
             self._histograms[key] = []
-    
-    def counter(self, name: str, value: float = 1, labels: Optional[Dict[str, str]] = None):
+
+    def counter(self, name: str, value: float = 1, labels: dict[str, str] | None = None):
         """Increment a counter metric."""
         key = self._make_key(name)
         frozen = self._freeze_labels(labels or {})
-        
+
         if key not in self._counters:
             self._counters[key] = {}
-        
+
         self._counters[key][frozen] = self._counters[key].get(frozen, 0) + value
-    
-    def gauge(self, name: str, value: float, labels: Optional[Dict[str, str]] = None):
+
+    def gauge(self, name: str, value: float, labels: dict[str, str] | None = None):
         """Set a gauge metric to a specific value."""
         key = self._make_key(name)
         frozen = self._freeze_labels(labels or {})
-        
+
         if key not in self._gauges:
             self._gauges[key] = {}
-        
+
         self._gauges[key][frozen] = value
-    
-    def histogram(self, name: str, value: float, labels: Optional[Dict[str, str]] = None):
+
+    def histogram(self, name: str, value: float, labels: dict[str, str] | None = None):
         """Record a value in a histogram."""
         key = self._make_key(name)
         frozen_labels = self._freeze_labels(labels or {})
-        
+
         if key not in self._histograms:
             self._histograms[key] = []
-        
+
         self._histograms[key].append((value, frozen_labels))
-    
-    def get_counter(self, name: str, labels: Optional[Dict[str, str]] = None) -> float:
+
+    def get_counter(self, name: str, labels: dict[str, str] | None = None) -> float:
         """Get current counter value."""
         key = self._make_key(name)
         frozen = self._freeze_labels(labels or {})
         return self._counters.get(key, {}).get(frozen, 0)
-    
-    def get_gauge(self, name: str, labels: Optional[Dict[str, str]] = None) -> float:
+
+    def get_gauge(self, name: str, labels: dict[str, str] | None = None) -> float:
         """Get current gauge value."""
         key = self._make_key(name)
         frozen = self._freeze_labels(labels or {})
         return self._gauges.get(key, {}).get(frozen, 0)
-    
-    def get_histogram_stats(self, name: str, labels: Optional[Dict[str, str]] = None) -> Dict[str, float]:
+
+    def get_histogram_stats(
+        self, name: str, labels: dict[str, str] | None = None
+    ) -> dict[str, float]:
         """Get histogram statistics."""
         key = self._make_key(name)
         frozen = self._freeze_labels(labels or {})
         values = [v for v, lbls in self._histograms.get(key, []) if lbls == frozen]
-        
+
         if not values:
             return {"count": 0, "sum": 0, "avg": 0, "min": 0, "max": 0}
-        
+
         return {
             "count": len(values),
             "sum": sum(values),
@@ -182,11 +186,11 @@ class MetricsCollector:
             "min": min(values),
             "max": max(values),
         }
-    
+
     def to_prometheus_format(self) -> str:
         """Export metrics in Prometheus exposition format."""
         lines = []
-        
+
         # Counters
         for name, label_values in self._counters.items():
             desc = self._metric_descriptions.get(name, "")
@@ -196,7 +200,7 @@ class MetricsCollector:
                 label_str = ",".join([f'{k}="{v}"' for k, v in sorted(labels)])
                 lines.append(f"{name}{{{label_str}}} {value}")
             lines.append("")
-        
+
         # Gauges
         for name, label_values in self._gauges.items():
             desc = self._metric_descriptions.get(name, "")
@@ -206,81 +210,77 @@ class MetricsCollector:
                 label_str = ",".join([f'{k}="{v}"' for k, v in sorted(labels)])
                 lines.append(f"{name}{{{label_str}}} {value}")
             lines.append("")
-        
+
         # Histograms (simplified - just count/sum)
         for name, values in self._histograms.items():
             desc = self._metric_descriptions.get(name, "")
             lines.append(f"# HELP {name} {desc}")
             lines.append(f"# TYPE {name} histogram")
             # Group by labels
-            by_labels: Dict[frozenset, List[float]] = {}
+            by_labels: dict[frozenset, list[float]] = {}
             for value, labels in values:
                 if labels not in by_labels:
                     by_labels[labels] = []
                 by_labels[labels].append(value)
-            
+
             for labels, vals in by_labels.items():
                 label_str = ",".join([f'{k}="{v}"' for k, v in sorted(labels)])
                 lines.append(f"{name}_count{{{label_str}}} {len(vals)}")
                 lines.append(f"{name}_sum{{{label_str}}} {sum(vals)}")
             lines.append("")
-        
+
         return "\n".join(lines)
-    
-    def to_dict(self) -> Dict[str, Any]:
+
+    def to_dict(self) -> dict[str, Any]:
         """Export metrics as a dictionary."""
         return {
             "counters": {
-                name: dict((dict(labels), val) for labels, val in label_values.items())
+                name: {tuple(sorted(labels)): val for labels, val in label_values.items()}
                 for name, label_values in self._counters.items()
             },
             "gauges": {
-                name: dict((dict(labels), val) for labels, val in label_values.items())
+                name: {tuple(sorted(labels)): val for labels, val in label_values.items()}
                 for name, label_values in self._gauges.items()
             },
-            "histograms": {
-                name: self.get_histogram_stats(name)
-                for name in self._histograms.keys()
-            },
+            "histograms": {name: self.get_histogram_stats(name) for name in self._histograms},
         }
 
 
 class Tracer:
-    """
-    OpenTelemetry-compatible distributed tracer.
-    
+    """OpenTelemetry-compatible distributed tracer.
+
     Provides span-based tracing with parent-child relationships,
     attributes, events, and context propagation.
-    
+
     Example:
         tracer = Tracer()
-        
+
         with tracer.span("process_job", attributes={"job_type": "export"}) as span:
             # Do work
             span.add_event("validation_complete", {"records": 100})
             # More work
     """
-    
+
     def __init__(self, service_name: str = "settler-workhorse"):
         self.service_name = service_name
-        self._spans: List[Span] = []
-        self._active_spans: Dict[str, Span] = {}
-    
+        self._spans: list[Span] = []
+        self._active_spans: dict[str, Span] = {}
+
     def _generate_id(self) -> str:
         """Generate a unique span/trace ID."""
         return uuid.uuid4().hex[:16]
-    
+
     @contextmanager
     def span(
         self,
         name: str,
-        attributes: Optional[Dict[str, Any]] = None,
-        parent_id: Optional[str] = None,
+        attributes: dict[str, Any] | None = None,
+        parent_id: str | None = None,
     ):
         """Create a new span as a context manager."""
         trace_id = self.get_trace_id() or self._generate_id()
         span_id = self._generate_id()
-        
+
         span = Span(
             name=name,
             span_id=span_id,
@@ -288,14 +288,14 @@ class Tracer:
             parent_id=parent_id or self.get_span_id(),
             attributes=attributes or {},
         )
-        
+
         self._spans.append(span)
         self._active_spans[span_id] = span
-        
+
         # Set context
         token_trace = _current_trace_id.set(trace_id)
         token_span = _current_span_id.set(span_id)
-        
+
         try:
             yield span
             span.status = "ok"
@@ -304,30 +304,30 @@ class Tracer:
             span.error_message = str(e)
             raise
         finally:
-            span.end_time = datetime.now(timezone.utc)
+            span.end_time = datetime.now(UTC)
             del self._active_spans[span_id]
             _current_trace_id.reset(token_trace)
             _current_span_id.reset(token_span)
-    
-    def get_trace_id(self) -> Optional[str]:
+
+    def get_trace_id(self) -> str | None:
         """Get current trace ID from context."""
         try:
             return _current_trace_id.get()
         except LookupError:
             return None
-    
-    def get_span_id(self) -> Optional[str]:
+
+    def get_span_id(self) -> str | None:
         """Get current span ID from context."""
         try:
             return _current_span_id.get()
         except LookupError:
             return None
-    
-    def get_spans(self) -> List[Span]:
+
+    def get_spans(self) -> list[Span]:
         """Get all recorded spans."""
         return self._spans.copy()
-    
-    def to_dict(self) -> List[Dict[str, Any]]:
+
+    def to_dict(self) -> list[dict[str, Any]]:
         """Export spans as a list of dictionaries."""
         return [
             {
@@ -345,7 +345,7 @@ class Tracer:
             }
             for s in self._spans
         ]
-    
+
     def clear(self):
         """Clear all recorded spans."""
         self._spans.clear()
@@ -353,77 +353,80 @@ class Tracer:
 
 
 class StructuredLogger:
-    """
-    Structured JSON logger with correlation IDs.
-    
+    """Structured JSON logger with correlation IDs.
+
     Provides context-rich logging with automatic trace/span/correlation
     ID injection for distributed systems debugging.
-    
+
     Example:
         logger = StructuredLogger()
-        
+
         # With job context
         with logger.job_context("export_csv", "job-123"):
             logger.info("Starting export", {"records": 1000})
             logger.warning("Large batch detected", {"size": 50000})
             logger.error("Export failed", error=e, context={"retry": 1})
     """
-    
+
     LEVELS = {"debug": 10, "info": 20, "warning": 30, "error": 40, "critical": 50}
-    
-    def __init__(self, min_level: str = "info", output_file: Optional[str] = None):
+
+    def __init__(self, min_level: str = "info", output_file: str | None = None):
         self.min_level = self.LEVELS.get(min_level, 20)
         self.output_file = output_file
-        self._entries: List[LogEntry] = []
-        self._current_job_type: ContextVar[Optional[str]] = ContextVar('job_type', default=None)
-        self._current_job_id: ContextVar[Optional[str]] = ContextVar('job_id', default=None)
-    
+        self._entries: list[LogEntry] = []
+        self._current_job_type: ContextVar[str | None] = ContextVar("job_type", default=None)
+        self._current_job_id: ContextVar[str | None] = ContextVar("job_id", default=None)
+
     def _should_log(self, level: str) -> bool:
         return self.LEVELS.get(level, 20) >= self.min_level
-    
+
     def _create_entry(
         self,
         level: str,
         message: str,
-        context: Optional[Dict[str, Any]] = None,
-        error: Optional[Exception] = None,
+        context: dict[str, Any] | None = None,
+        error: Exception | None = None,
     ) -> LogEntry:
         """Create a log entry with context."""
         try:
             trace_id = _current_trace_id.get()
         except LookupError:
             trace_id = None
-        
+
         try:
             span_id = _current_span_id.get()
         except LookupError:
             span_id = None
-        
+
         try:
             correlation_id = _current_correlation_id.get()
         except LookupError:
             correlation_id = None
-        
+
         try:
             job_type = self._current_job_type.get()
         except LookupError:
             job_type = None
-        
+
         try:
             job_id = self._current_job_id.get()
         except LookupError:
             job_id = None
-        
+
         error_dict = None
         if error:
             error_dict = {
                 "type": type(error).__name__,
                 "message": str(error),
-                "traceback": getattr(error, '__traceback__', None).__str__() if hasattr(error, '__traceback__') else None,
+                "traceback": (
+                    getattr(error, "__traceback__", None).__str__()
+                    if hasattr(error, "__traceback__")
+                    else None
+                ),
             }
-        
+
         return LogEntry(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             level=level,
             message=message,
             trace_id=trace_id,
@@ -434,11 +437,11 @@ class StructuredLogger:
             context=context or {},
             error=error_dict,
         )
-    
+
     def _output(self, entry: LogEntry):
         """Output a log entry."""
         self._entries.append(entry)
-        
+
         # JSON output
         log_dict = {
             "timestamp": entry.timestamp.isoformat(),
@@ -453,67 +456,67 @@ class StructuredLogger:
         }
         if entry.error:
             log_dict["error"] = entry.error
-        
+
         log_line = json.dumps(log_dict, default=str)
-        
+
         # Console output
         print(log_line, flush=True)
-        
+
         # File output
         if self.output_file:
             try:
-                with open(self.output_file, 'a') as f:
-                    f.write(log_line + '\n')
+                with open(self.output_file, "a") as f:
+                    f.write(log_line + "\n")
             except Exception:
                 pass  # Don't fail on logging errors
-    
-    def debug(self, message: str, context: Optional[Dict[str, Any]] = None):
+
+    def debug(self, message: str, context: dict[str, Any] | None = None):
         """Log a debug message."""
         if self._should_log("debug"):
             self._output(self._create_entry("debug", message, context))
-    
-    def info(self, message: str, context: Optional[Dict[str, Any]] = None):
+
+    def info(self, message: str, context: dict[str, Any] | None = None):
         """Log an info message."""
         if self._should_log("info"):
             self._output(self._create_entry("info", message, context))
-    
-    def warning(self, message: str, context: Optional[Dict[str, Any]] = None):
+
+    def warning(self, message: str, context: dict[str, Any] | None = None):
         """Log a warning message."""
         if self._should_log("warning"):
             self._output(self._create_entry("warning", message, context))
-    
+
     def error(
         self,
         message: str,
-        error: Optional[Exception] = None,
-        context: Optional[Dict[str, Any]] = None,
+        error: Exception | None = None,
+        context: dict[str, Any] | None = None,
     ):
         """Log an error message."""
         if self._should_log("error"):
             self._output(self._create_entry("error", message, context, error))
-    
+
     def critical(
         self,
         message: str,
-        error: Optional[Exception] = None,
-        context: Optional[Dict[str, Any]] = None,
+        error: Exception | None = None,
+        context: dict[str, Any] | None = None,
     ):
         """Log a critical message."""
         if self._should_log("critical"):
             self._output(self._create_entry("critical", message, context, error))
-    
+
     @contextmanager
     def job_context(self, job_type: str, job_id: str):
         """Set job context for logging."""
         token_type = self._current_job_type.set(job_type)
         token_id = self._current_job_id.set(job_id)
-        
+
         try:
             yield self
         finally:
             self._current_job_type.reset(token_type)
             self._current_job_id.reset(token_id)
-    
+
     @contextmanager
     def correlation_context(self, correlation_id: str):
         """Set correlation ID for distributed tracing."""
@@ -522,8 +525,8 @@ class StructuredLogger:
             yield self
         finally:
             _current_correlation_id.reset(token)
-    
-    def get_entries(self) -> List[LogEntry]:
+
+    def get_entries(self) -> list[LogEntry]:
         """Get all logged entries."""
         return self._entries.copy()
 
@@ -550,18 +553,18 @@ def get_logger() -> StructuredLogger:
 
 
 # Decorators for easy instrumentation
-F = TypeVar('F', bound=Callable[..., Any])
+F = TypeVar("F", bound=Callable[..., Any])
 
 
-def timed(metric_name: str, labels: Optional[Dict[str, str]] = None) -> Callable[[F], F]:
-    """
-    Decorator to time function execution and record as histogram.
-    
+def timed(metric_name: str, labels: dict[str, str] | None = None) -> Callable[[F], F]:
+    """Decorator to time function execution and record as histogram.
+
     Example:
         @timed("job_duration_ms", labels={"type": "export"})
         def process_export():
             pass
     """
+
     def decorator(func: F) -> F:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -571,38 +574,42 @@ def timed(metric_name: str, labels: Optional[Dict[str, str]] = None) -> Callable
             finally:
                 duration_ms = (time.time() - start) * 1000
                 _global_metrics.histogram(metric_name, duration_ms, labels)
-        return cast(F, wrapper)
+
+        return cast("F", wrapper)
+
     return decorator
 
 
-def traced(span_name: Optional[str] = None) -> Callable[[F], F]:
-    """
-    Decorator to create a span for function execution.
-    
+def traced(span_name: str | None = None) -> Callable[[F], F]:
+    """Decorator to create a span for function execution.
+
     Example:
         @traced("validate_import")
         def validate_data(data):
             pass
     """
+
     def decorator(func: F) -> F:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             name = span_name or func.__name__
             with _global_tracer.span(name, attributes={"function": func.__name__}):
                 return func(*args, **kwargs)
-        return cast(F, wrapper)
+
+        return cast("F", wrapper)
+
     return decorator
 
 
 def logged(operation: str, level: str = "info") -> Callable[[F], F]:
-    """
-    Decorator to log function entry and exit.
-    
+    """Decorator to log function entry and exit.
+
     Example:
         @logged("processing receipt", "info")
         def process_receipt(image):
             pass
     """
+
     def decorator(func: F) -> F:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -614,40 +621,42 @@ def logged(operation: str, level: str = "info") -> Callable[[F], F]:
             except Exception as e:
                 _global_logger.error(f"Failed: {operation}", error=e)
                 raise
-        return cast(F, wrapper)
+
+        return cast("F", wrapper)
+
     return decorator
 
 
 class PerformanceProfiler:
-    """
-    Performance profiling for hot paths.
-    
+    """Performance profiling for hot paths.
+
     Tracks function call counts, total time, and provides
     flamegraph-compatible output.
-    
+
     Example:
         profiler = PerformanceProfiler()
-        
+
         @profiler.profile
         def hot_function():
             pass
-        
+
         # Later
         print(profiler.report())
     """
-    
+
     def __init__(self):
-        self._stats: Dict[str, Dict[str, Any]] = {}
-    
+        self._stats: dict[str, dict[str, Any]] = {}
+
     def profile(self, func: F) -> F:
         """Decorator to profile a function."""
+
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             name = func.__qualname__
-            
+
             if name not in self._stats:
                 self._stats[name] = {"calls": 0, "total_time": 0, "max_time": 0}
-            
+
             start = time.perf_counter()
             try:
                 return func(*args, **kwargs)
@@ -656,34 +665,38 @@ class PerformanceProfiler:
                 self._stats[name]["calls"] += 1
                 self._stats[name]["total_time"] += duration
                 self._stats[name]["max_time"] = max(self._stats[name]["max_time"], duration)
-        
-        return cast(F, wrapper)
-    
+
+        return cast("F", wrapper)
+
     def report(self) -> str:
         """Generate a performance report."""
         if not self._stats:
             return "No profiling data collected"
-        
+
         lines = ["Performance Profile:", "=" * 80]
-        lines.append(f"{'Function':<50} {'Calls':>8} {'Total(ms)':>12} {'Avg(ms)':>10} {'Max(ms)':>10}")
+        lines.append(
+            f"{'Function':<50} {'Calls':>8} {'Total(ms)':>12} {'Avg(ms)':>10} {'Max(ms)':>10}"
+        )
         lines.append("-" * 80)
-        
+
         for name, stats in sorted(self._stats.items(), key=lambda x: -x[1]["total_time"]):
             calls = stats["calls"]
             total_ms = stats["total_time"] * 1000
             avg_ms = total_ms / calls if calls > 0 else 0
             max_ms = stats["max_time"] * 1000
             lines.append(f"{name:<50} {calls:>8} {total_ms:>12.2f} {avg_ms:>10.2f} {max_ms:>10.2f}")
-        
+
         return "\n".join(lines)
-    
-    def to_dict(self) -> Dict[str, Dict[str, Any]]:
+
+    def to_dict(self) -> dict[str, dict[str, Any]]:
         """Export profiling data as dictionary."""
         return {
             name: {
                 "calls": stats["calls"],
                 "total_ms": stats["total_time"] * 1000,
-                "avg_ms": (stats["total_time"] * 1000) / stats["calls"] if stats["calls"] > 0 else 0,
+                "avg_ms": (
+                    (stats["total_time"] * 1000) / stats["calls"] if stats["calls"] > 0 else 0
+                ),
                 "max_ms": stats["max_time"] * 1000,
             }
             for name, stats in self._stats.items()
@@ -691,60 +704,61 @@ class PerformanceProfiler:
 
 
 class HealthChecker:
-    """
-    Health check system for dependencies.
-    
+    """Health check system for dependencies.
+
     Monitors database, external APIs, and other dependencies
     with configurable check intervals and thresholds.
-    
+
     Example:
         health = HealthChecker()
-        
+
         @health.check("database")
         def check_database():
             # Return True if healthy, False/raise if not
             return db_connection.is_alive()
-        
+
         status = health.status()  # {"database": {"healthy": True, "last_check": ...}}
     """
-    
+
     def __init__(self, check_interval_seconds: float = 30.0):
         self.check_interval = check_interval_seconds
-        self._checks: Dict[str, tuple] = {}
-        self._results: Dict[str, Dict[str, Any]] = {}
-    
+        self._checks: dict[str, tuple] = {}
+        self._results: dict[str, dict[str, Any]] = {}
+
     def check(self, name: str):
         """Decorator to register a health check."""
+
         def decorator(func: Callable[[], bool]):
             self._checks[name] = (func, time.time())
             return func
+
         return decorator
-    
-    def run_check(self, name: str) -> Dict[str, Any]:
+
+    def run_check(self, name: str) -> dict[str, Any]:
         """Run a specific health check."""
         if name not in self._checks:
             return {"healthy": False, "error": "Check not registered", "last_check": None}
-        
+
         check_func, _ = self._checks[name]
-        
+
         try:
             result = check_func()
             healthy = bool(result)
             self._results[name] = {
                 "healthy": healthy,
-                "last_check": datetime.now(timezone.utc).isoformat(),
+                "last_check": datetime.now(UTC).isoformat(),
                 "error": None,
             }
         except Exception as e:
             self._results[name] = {
                 "healthy": False,
-                "last_check": datetime.now(timezone.utc).isoformat(),
+                "last_check": datetime.now(UTC).isoformat(),
                 "error": str(e),
             }
-        
+
         return self._results[name]
-    
-    def status(self) -> Dict[str, Dict[str, Any]]:
+
+    def status(self) -> dict[str, dict[str, Any]]:
         """Get health status of all dependencies."""
         # Run stale checks
         now = time.time()
@@ -752,9 +766,9 @@ class HealthChecker:
             if name not in self._results or (now - last_run) > self.check_interval:
                 self.run_check(name)
                 self._checks[name] = (func, now)
-        
+
         return self._results.copy()
-    
+
     def is_healthy(self) -> bool:
         """Check if all dependencies are healthy."""
         status = self.status()

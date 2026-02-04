@@ -6,7 +6,7 @@ Idempotent, retry-safe, and tenant-scoped.
 
 import hashlib
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from settler_workhorse.models import Job, JobResult, JobType
 from settler_workhorse.utils.logging import get_logger
@@ -15,8 +15,9 @@ from settler_workhorse.worker import register_handler
 # Try to import openpyxl, fallback to CSV if not available
 try:
     from openpyxl import Workbook
-    from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+    from openpyxl.styles import Alignment, Font, PatternFill
     from openpyxl.utils import get_column_letter
+
     HAS_OPENPYXL = True
 except ImportError:
     HAS_OPENPYXL = False
@@ -30,7 +31,7 @@ class ExcelExportError(Exception):
     pass
 
 
-def validate_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
+def validate_payload(payload: dict[str, Any]) -> dict[str, Any]:
     """Validate and normalize Excel export payload.
 
     Args:
@@ -67,9 +68,9 @@ def validate_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
 
 def generate_mock_data(
     entity_type: str,
-    filters: Dict[str, Any],
+    filters: dict[str, Any],
     max_records: int,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """Generate mock data for export.
 
     Args:
@@ -122,8 +123,8 @@ def generate_mock_data(
 
 
 def generate_excel_content(
-    records: List[Dict[str, Any]],
-    columns: List[str],
+    records: list[dict[str, Any]],
+    columns: list[str],
     sheet_name: str,
     format_headers: bool,
     freeze_headers: bool,
@@ -148,10 +149,7 @@ def generate_excel_content(
     ws.title = sheet_name
 
     # Determine columns
-    if columns:
-        fieldnames = columns
-    else:
-        fieldnames = list(records[0].keys()) if records else []
+    fieldnames = columns or (list(records[0].keys()) if records else [])
 
     # Write headers
     for col_idx, field in enumerate(fieldnames, 1):
@@ -186,6 +184,7 @@ def generate_excel_content(
 
     # Save to bytes
     from io import BytesIO
+
     output = BytesIO()
     wb.save(output)
     return output.getvalue()
@@ -296,7 +295,9 @@ def handle_export_excel(job: Job) -> JobResult:
         )
 
     except Exception as e:
-        logger.error("Excel export failed", exc_info=True, tenant_id=tenant_id, entity_type=entity_type)
+        logger.error(
+            "Excel export failed", exc_info=True, tenant_id=tenant_id, entity_type=entity_type
+        )
         return JobResult(
             success=False,
             error=str(e),

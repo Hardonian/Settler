@@ -8,7 +8,7 @@ import csv
 import hashlib
 import io
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from settler_workhorse.models import Job, JobResult, JobType
 from settler_workhorse.utils.logging import get_logger
@@ -17,12 +17,14 @@ from settler_workhorse.worker import register_handler
 # Try to import optional dependencies
 try:
     import chardet
+
     HAS_CHARDET = True
 except ImportError:
     HAS_CHARDET = False
 
 try:
     from openpyxl import load_workbook
+
     HAS_OPENPYXL = True
 except ImportError:
     HAS_OPENPYXL = False
@@ -36,7 +38,7 @@ class ImportValidationError(Exception):
     pass
 
 
-def validate_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
+def validate_payload(payload: dict[str, Any]) -> dict[str, Any]:
     """Validate and normalize import validation payload.
 
     Args:
@@ -87,10 +89,10 @@ def detect_encoding(content_bytes: bytes) -> str:
 
 def validate_csv_content(
     content_bytes: bytes,
-    expected_columns: List[str],
-    required_columns: List[str],
+    expected_columns: list[str],
+    required_columns: list[str],
     max_preview_rows: int,
-) -> Tuple[bool, List[Dict[str, Any]], Dict[str, Any]]:
+) -> tuple[bool, list[dict[str, Any]], dict[str, Any]]:
     """Validate CSV content.
 
     Args:
@@ -147,11 +149,13 @@ def validate_csv_content(
 
             # Add to preview
             if len(preview_rows) < max_preview_rows:
-                preview_rows.append({
-                    "row_number": idx,
-                    "data": dict(row),
-                    "errors": row_errors,
-                })
+                preview_rows.append(
+                    {
+                        "row_number": idx,
+                        "data": dict(row),
+                        "errors": row_errors,
+                    }
+                )
 
         is_valid = len(errors) == 0 and stats["error_rows"] == 0
 
@@ -163,10 +167,10 @@ def validate_csv_content(
 
 def validate_excel_content(
     content_bytes: bytes,
-    expected_columns: List[str],
-    required_columns: List[str],
+    expected_columns: list[str],
+    required_columns: list[str],
     max_preview_rows: int,
-) -> Tuple[bool, List[Dict[str, Any]], Dict[str, Any]]:
+) -> tuple[bool, list[dict[str, Any]], dict[str, Any]]:
     """Validate Excel content.
 
     Args:
@@ -179,7 +183,11 @@ def validate_excel_content(
         Tuple of (is_valid, preview_rows, statistics)
     """
     if not HAS_OPENPYXL:
-        return False, [], {"error": "openpyxl not installed", "total_rows": 0, "valid_rows": 0, "error_rows": 0}
+        return (
+            False,
+            [],
+            {"error": "openpyxl not installed", "total_rows": 0, "valid_rows": 0, "error_rows": 0},
+        )
 
     errors = []
     preview_rows = []
@@ -195,7 +203,9 @@ def validate_excel_content(
         ws = wb.active
 
         # Get headers from first row
-        headers = [str(cell.value) if cell.value else f"Column_{i}" for i, cell in enumerate(ws[1], 1)]
+        headers = [
+            str(cell.value) if cell.value else f"Column_{i}" for i, cell in enumerate(ws[1], 1)
+        ]
 
         # Check for expected columns
         if expected_columns:
@@ -212,7 +222,7 @@ def validate_excel_content(
         # Validate rows
         for idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
             stats["total_rows"] += 1
-            row_data = dict(zip(headers, row))
+            row_data = dict(zip(headers, row, strict=False))
             row_errors = []
 
             # Check required fields
@@ -227,11 +237,13 @@ def validate_excel_content(
 
             # Add to preview
             if len(preview_rows) < max_preview_rows:
-                preview_rows.append({
-                    "row_number": idx,
-                    "data": row_data,
-                    "errors": row_errors,
-                })
+                preview_rows.append(
+                    {
+                        "row_number": idx,
+                        "data": row_data,
+                        "errors": row_errors,
+                    }
+                )
 
         is_valid = len(errors) == 0 and stats["error_rows"] == 0
 
@@ -353,7 +365,9 @@ def handle_import_validate(job: Job) -> JobResult:
         )
 
     except Exception as e:
-        logger.error("Import validation failed", exc_info=True, tenant_id=tenant_id, import_type=import_type)
+        logger.error(
+            "Import validation failed", exc_info=True, tenant_id=tenant_id, import_type=import_type
+        )
         return JobResult(
             success=False,
             error=str(e),

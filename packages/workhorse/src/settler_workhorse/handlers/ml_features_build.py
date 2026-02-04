@@ -7,7 +7,7 @@ Idempotent, retry-safe, and tenant-scoped.
 import hashlib
 import json
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from settler_workhorse.models import Job, JobResult, JobType
 from settler_workhorse.utils.logging import get_logger
@@ -22,7 +22,7 @@ class FeaturesBuildError(Exception):
     pass
 
 
-def validate_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
+def validate_payload(payload: dict[str, Any]) -> dict[str, Any]:
     """Validate and normalize features build payload.
 
     Args:
@@ -58,8 +58,8 @@ def compute_features_for_subject(
     subject_type: str,
     subject_id: str,
     feature_set: str,
-    feature_config: Dict[str, Any],
-) -> Dict[str, Any]:
+    feature_config: dict[str, Any],
+) -> dict[str, Any]:
     """Compute features for a single subject.
 
     Args:
@@ -84,7 +84,7 @@ def compute_features_for_subject(
         return _compute_generic_features(subject_id, feature_config)
 
 
-def _compute_transaction_features(subject_id: str, config: Dict[str, Any]) -> Dict[str, Any]:
+def _compute_transaction_features(subject_id: str, config: dict[str, Any]) -> dict[str, Any]:
     """Compute features for a transaction."""
     # Generate deterministic mock features based on subject_id hash
     hash_val = int(hashlib.md5(subject_id.encode()).hexdigest(), 16)
@@ -100,18 +100,15 @@ def _compute_transaction_features(subject_id: str, config: Dict[str, Any]) -> Di
             "amount_magnitude": float(base_amount),
             "amount_log": float(__import__("math").log10(max(base_amount, 1))),
             "amount_roundness": 1.0 if base_amount % 100 == 0 else 0.0,
-
             # Temporal features
             "hour_of_day": hash_val % 24,
             "day_of_week": hash_val % 7,
             "is_weekend": 1.0 if hash_val % 7 in [5, 6] else 0.0,
             "is_business_hours": 1.0 if 9 <= (hash_val % 24) <= 17 else 0.0,
-
             # Risk features
             "velocity_24h": float(hash_val % 50),
             "unique_counterparties": float(hash_val % 10),
             "recurring_pattern_score": float((hash_val % 100) / 100),
-
             # Match quality features (if reconciliation context)
             "match_confidence": float((hash_val % 1000) / 1000),
             "has_external_id": 1.0 if hash_val % 3 == 0 else 0.0,
@@ -121,7 +118,7 @@ def _compute_transaction_features(subject_id: str, config: Dict[str, Any]) -> Di
     }
 
 
-def _compute_account_features(subject_id: str, config: Dict[str, Any]) -> Dict[str, Any]:
+def _compute_account_features(subject_id: str, config: dict[str, Any]) -> dict[str, Any]:
     """Compute features for an account."""
     hash_val = int(hashlib.md5(subject_id.encode()).hexdigest(), 16)
 
@@ -141,7 +138,7 @@ def _compute_account_features(subject_id: str, config: Dict[str, Any]) -> Dict[s
     }
 
 
-def _compute_reconciliation_features(subject_id: str, config: Dict[str, Any]) -> Dict[str, Any]:
+def _compute_reconciliation_features(subject_id: str, config: dict[str, Any]) -> dict[str, Any]:
     """Compute features for a reconciliation run."""
     hash_val = int(hashlib.md5(subject_id.encode()).hexdigest(), 16)
 
@@ -165,7 +162,7 @@ def _compute_reconciliation_features(subject_id: str, config: Dict[str, Any]) ->
     }
 
 
-def _compute_generic_features(subject_id: str, config: Dict[str, Any]) -> Dict[str, Any]:
+def _compute_generic_features(subject_id: str, config: dict[str, Any]) -> dict[str, Any]:
     """Compute generic features for unknown subject types."""
     hash_val = int(hashlib.md5(subject_id.encode()).hexdigest(), 16)
 
@@ -185,11 +182,11 @@ def _compute_generic_features(subject_id: str, config: Dict[str, Any]) -> Dict[s
 def build_features_batch(
     tenant_id: str,
     subject_type: str,
-    subject_ids: List[str],
+    subject_ids: list[str],
     feature_set: str,
-    feature_config: Dict[str, Any],
+    feature_config: dict[str, Any],
     batch_size: int,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Build features for a batch of subjects.
 
     Args:
@@ -223,11 +220,13 @@ def build_features_batch(
             )
             results.append(features)
         except Exception as e:
-            errors.append({
-                "subject_id": subject_id,
-                "error": str(e),
-                "index": idx,
-            })
+            errors.append(
+                {
+                    "subject_id": subject_id,
+                    "error": str(e),
+                    "index": idx,
+                }
+            )
 
     return {
         "subjects_processed": len(results),
@@ -325,7 +324,11 @@ def handle_ml_features_build(job: Job) -> JobResult:
                 "mode": "live",
                 "subjects_processed": batch_result["subjects_processed"],
                 "subjects_failed": batch_result["subjects_failed"],
-                "feature_names": list(batch_result["features"][0]["features"].keys()) if batch_result["features"] else [],
+                "feature_names": (
+                    list(batch_result["features"][0]["features"].keys())
+                    if batch_result["features"]
+                    else []
+                ),
                 "content_hash": content_hash,
                 "idempotency_key": idempotency_key,
                 "computed_at": datetime.utcnow().isoformat(),

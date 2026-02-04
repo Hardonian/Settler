@@ -74,17 +74,15 @@ function createPrintfFormat() {
       const tenant_id = info.tenant_id;
       const user_id = info.user_id;
 
-      const {
-        timestamp: _ts,
-        level: _lvl,
-        message: _msg,
-        request_id: _req,
-        trace_id: _trace,
-        span_id: _span,
-        tenant_id: _tenant,
-        user_id: _user,
-        ...meta
-      } = info as Record<string, unknown>;
+      const meta = { ...(info as Record<string, unknown>) };
+      delete meta.timestamp;
+      delete meta.level;
+      delete meta.message;
+      delete meta.request_id;
+      delete meta.trace_id;
+      delete meta.span_id;
+      delete meta.tenant_id;
+      delete meta.user_id;
       const metaStr = Object.keys(meta).length ? JSON.stringify(redact(meta)) : "";
 
       const requestInfo =

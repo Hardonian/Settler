@@ -1,7 +1,6 @@
 """Configuration management for Settler Workhorse."""
 
 import os
-from typing import List, Optional
 
 from pydantic import PostgresDsn, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -37,8 +36,8 @@ class Settings(BaseSettings):
     database_pool_recycle: int = 1800
 
     # Supabase-specific
-    supabase_url: Optional[str] = None
-    supabase_service_role_key: Optional[str] = None
+    supabase_url: str | None = None
+    supabase_service_role_key: str | None = None
 
     @field_validator("database_url")
     @classmethod
@@ -51,7 +50,7 @@ class Settings(BaseSettings):
     # ==========================================================================
     # Worker Configuration
     # ==========================================================================
-    worker_id: Optional[str] = None
+    worker_id: str | None = None
     worker_poll_interval_seconds: float = 5.0
     worker_max_jobs: int = 100
     worker_lock_timeout_seconds: int = 300  # 5 minutes
@@ -61,6 +60,7 @@ class Settings(BaseSettings):
     @field_validator("worker_concurrency")
     @classmethod
     def validate_concurrency(cls, v: int) -> int:
+        """Ensure worker concurrency stays within safe bounds."""
         if v < 1:
             raise ValueError("concurrency must be at least 1")
         if v > 10:
@@ -87,12 +87,12 @@ class Settings(BaseSettings):
     # ==========================================================================
     storage_type: str = "local"  # "local", "s3", "r2"
     storage_local_path: str = "./storage"
-    storage_s3_bucket: Optional[str] = None
-    storage_s3_region: Optional[str] = None
-    storage_s3_access_key: Optional[str] = None
-    storage_s3_secret_key: Optional[str] = None
-    storage_r2_account_id: Optional[str] = None
-    storage_r2_bucket: Optional[str] = None
+    storage_s3_bucket: str | None = None
+    storage_s3_region: str | None = None
+    storage_s3_access_key: str | None = None
+    storage_s3_secret_key: str | None = None
+    storage_r2_account_id: str | None = None
+    storage_r2_bucket: str | None = None
 
     # ==========================================================================
     # Observability Configuration
@@ -100,13 +100,13 @@ class Settings(BaseSettings):
     enable_metrics: bool = True
     metrics_port: int = 9090
     enable_opentelemetry: bool = False
-    otel_endpoint: Optional[str] = None
+    otel_endpoint: str | None = None
     otel_service_name: str = "settler-workhorse"
 
     # ==========================================================================
     # Security Configuration
     # ==========================================================================
-    allowed_job_types: List[str] = []
+    allowed_job_types: list[str] = []
     enable_strict_tenant_isolation: bool = True
     require_idempotency_key: bool = False
 
@@ -126,14 +126,17 @@ class Settings(BaseSettings):
 
     @property
     def is_production(self) -> bool:
+        """Return True when running in production mode."""
         return self.environment.lower() == "production"
 
     @property
     def is_development(self) -> bool:
+        """Return True when running in development mode."""
         return self.environment.lower() == "development"
 
     @property
     def effective_worker_id(self) -> str:
+        """Return a deterministic worker identifier for logging/coordination."""
         if self.worker_id:
             return self.worker_id
         import socket
@@ -148,9 +151,9 @@ def get_settings() -> Settings:
     return Settings()
 
 
-def validate_environment() -> List[str]:
+def validate_environment() -> list[str]:
     """Validate required environment variables are set."""
-    errors: List[str] = []
+    errors: list[str] = []
 
     required = [
         "DATABASE_URL",

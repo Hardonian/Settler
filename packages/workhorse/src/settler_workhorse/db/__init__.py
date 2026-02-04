@@ -1,9 +1,10 @@
 """Database layer for job queue operations with RLS compliance."""
 
 import json
+from collections.abc import Generator
 from contextlib import contextmanager
 from datetime import datetime, timedelta
-from typing import Any, Dict, Generator, List, Optional, Tuple
+from typing import Any
 from uuid import UUID
 
 import psycopg
@@ -12,16 +13,7 @@ from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
 
 from settler_workhorse.config import Settings, get_settings
-from settler_workhorse.models import (
-    DeadLetter,
-    Job,
-    JobAttempt,
-    JobEnqueueRequest,
-    JobResult,
-    JobStats,
-    JobStatus,
-    JobType,
-)
+from settler_workhorse.models import Job, JobEnqueueRequest, JobResult, JobStats, JobType
 
 
 class DatabaseError(Exception):
@@ -39,7 +31,7 @@ class TenantContextError(Exception):
 class JobRepository:
     """Repository for job queue operations with tenant isolation."""
 
-    def __init__(self, pool: ConnectionPool, settings: Optional[Settings] = None):
+    def __init__(self, pool: ConnectionPool, settings: Settings | None = None):
         self.pool = pool
         self.settings = settings or get_settings()
 
@@ -64,8 +56,8 @@ class JobRepository:
         self,
         worker_id: str,
         lock_timeout_seconds: int = 300,
-        supported_job_types: Optional[List[JobType]] = None,
-    ) -> Optional[Job]:
+        supported_job_types: list[JobType] | None = None,
+    ) -> Job | None:
         """Claim the next available job with optimistic locking.
 
         Args:
@@ -78,7 +70,8 @@ class JobRepository:
         """
         lock_cutoff = datetime.utcnow() - timedelta(seconds=lock_timeout_seconds)
 
-        query = sql.SQL("""
+        query = sql.SQL(
+            """
             WITH next_job AS (
                 SELECT id, tenant_id
                 FROM python_jobs
@@ -106,7 +99,8 @@ class JobRepository:
                 RETURNING python_jobs.*
             )
             SELECT * FROM claimed;
-            """)
+            """
+        )
 
         # Build job type filter if specified
         job_type_filter = sql.SQL("")
@@ -116,26 +110,25 @@ class JobRepository:
 
         query = query.format(job_type_filter=job_type_filter)
 
-        with self._connection() as conn:
-            with conn.cursor(row_factory=dict_row) as cur:
-                params = {
-                    "worker_id": worker_id,
-                    "lock_cutoff": lock_cutoff,
-                }
-                if supported_job_types:
-                    params["job_types"] = types_str
+        with self._connection() as conn, conn.cursor(row_factory=dict_row) as cur:
+            params = {
+                "worker_id": worker_id,
+                "lock_cutoff": lock_cutoff,
+            }
+            if supported_job_types:
+                params["job_types"] = types_str
 
-                cur.execute(query, params)
-                row = cur.fetchone()
+            cur.execute(query, params)
+            row = cur.fetchone()
 
-                if not row:
-                    return None
+            if not row:
+                return None
 
-                # Set tenant context for any subsequent operations
-                self._set_tenant_context(conn, row["tenant_id"])
-                conn.commit()
+            # Set tenant context for any subsequent operations
+            self._set_tenant_context(conn, row["tenant_id"])
+            conn.commit()
 
-                return Job.model_validate(row)
+            return Job.model_validate(row)
 
     def complete_job(
         self,
@@ -169,22 +162,21 @@ class JobRepository:
             RETURNING id;
         """
 
-        with self._connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    query,
-                    {
-                        "job_id": str(job_id),
-                        "worker_id": worker_id,
-                        "result": json.dumps(result.data) if result.data else None,
-                        "records_processed": result.records_processed,
-                        "records_failed": result.records_failed,
-                        "output_location": result.output_location,
-                    },
-                )
-                row = cur.fetchone()
-                conn.commit()
-                return row is not None
+        with self._connection() as conn, conn.cursor() as cur:
+            cur.execute(
+                query,
+                {
+                    "job_id": str(job_id),
+                    "worker_id": worker_id,
+                    "result": json.dumps(result.data) if result.data else None,
+                    "records_processed": result.records_processed,
+                    "records_failed": result.records_failed,
+                    "output_location": result.output_location,
+                },
+            )
+            row = cur.fetchone()
+            conn.commit()
+            return row is not None
 
     def fail_job(
         self,
@@ -192,7 +184,7 @@ class JobRepository:
         error: Exception,
         worker_id: str,
         schedule_retry: bool = True,
-    ) -> Tuple[bool, bool]:
+    ) -> tuple[bool, bool]:
         """Mark a job as failed, optionally scheduling retry.
 
         Args:
@@ -211,37 +203,36 @@ class JobRepository:
         }
 
         # Get current job state to check attempts
-        with self._connection() as conn:
-            with conn.cursor(row_factory=dict_row) as cur:
-                cur.execute(
-                    """
+        with self._connection() as conn, conn.cursor(row_factory=dict_row) as cur:
+            cur.execute(
+                """
                     SELECT attempts, max_attempts, tenant_id, job_type, payload, workspace_id
                     FROM python_jobs
                     WHERE id = %(job_id)s AND locked_by = %(worker_id)s
                     FOR UPDATE;
                     """,
-                    {"job_id": str(job_id), "worker_id": worker_id},
+                {"job_id": str(job_id), "worker_id": worker_id},
+            )
+            job_row = cur.fetchone()
+
+            if not job_row:
+                return (False, False)
+
+            current_attempts = job_row["attempts"]
+            max_attempts = job_row["max_attempts"]
+            can_retry = schedule_retry and current_attempts < max_attempts
+
+            if can_retry:
+                # Schedule retry with exponential backoff
+                backoff_seconds = min(
+                    self.settings.retry_backoff_base_seconds
+                    * (self.settings.retry_backoff_multiplier ** (current_attempts - 1)),
+                    self.settings.retry_backoff_max_seconds,
                 )
-                job_row = cur.fetchone()
+                available_at = datetime.utcnow() + timedelta(seconds=backoff_seconds)
 
-                if not job_row:
-                    return (False, False)
-
-                current_attempts = job_row["attempts"]
-                max_attempts = job_row["max_attempts"]
-                can_retry = schedule_retry and current_attempts < max_attempts
-
-                if can_retry:
-                    # Schedule retry with exponential backoff
-                    backoff_seconds = min(
-                        self.settings.retry_backoff_base_seconds
-                        * (self.settings.retry_backoff_multiplier ** (current_attempts - 1)),
-                        self.settings.retry_backoff_max_seconds,
-                    )
-                    available_at = datetime.utcnow() + timedelta(seconds=backoff_seconds)
-
-                    cur.execute(
-                        """
+                cur.execute(
+                    """
                         UPDATE python_jobs
                         SET status = 'queued',
                             available_at = %(available_at)s,
@@ -252,17 +243,17 @@ class JobRepository:
                             updated_at = NOW()
                         WHERE id = %(job_id)s;
                         """,
-                        {
-                            "job_id": str(job_id),
-                            "available_at": available_at,
-                            "error": json.dumps(error_data),
-                            "error_message": str(error)[:500],
-                        },
-                    )
-                else:
-                    # Move to dead letter state
-                    cur.execute(
-                        """
+                    {
+                        "job_id": str(job_id),
+                        "available_at": available_at,
+                        "error": json.dumps(error_data),
+                        "error_message": str(error)[:500],
+                    },
+                )
+            else:
+                # Move to dead letter state
+                cur.execute(
+                    """
                         UPDATE python_jobs
                         SET status = 'dead',
                             completed_at = NOW(),
@@ -273,40 +264,40 @@ class JobRepository:
                             updated_at = NOW()
                         WHERE id = %(job_id)s;
                         """,
-                        {
-                            "job_id": str(job_id),
-                            "error": json.dumps(error_data),
-                            "error_message": str(error)[:500],
-                        },
-                    )
+                    {
+                        "job_id": str(job_id),
+                        "error": json.dumps(error_data),
+                        "error_message": str(error)[:500],
+                    },
+                )
 
-                    # Create dead letter entry
-                    cur.execute(
-                        """
+                # Create dead letter entry
+                cur.execute(
+                    """
                         INSERT INTO python_dead_letters (
                             job_id, tenant_id, workspace_id, job_type,
                             payload, error, created_at
                         ) VALUES (%s, %s, %s, %s, %s, %s, NOW());
                         """,
-                        (
-                            str(job_id),
-                            str(job_row["tenant_id"]),
-                            str(job_row["workspace_id"]) if job_row["workspace_id"] else None,
-                            job_row["job_type"],
-                            json.dumps(job_row["payload"]),
-                            json.dumps(error_data),
-                        ),
-                    )
+                    (
+                        str(job_id),
+                        str(job_row["tenant_id"]),
+                        str(job_row["workspace_id"]) if job_row["workspace_id"] else None,
+                        job_row["job_type"],
+                        json.dumps(job_row["payload"]),
+                        json.dumps(error_data),
+                    ),
+                )
 
-                conn.commit()
-                return (True, can_retry)
+            conn.commit()
+            return (True, can_retry)
 
     def record_attempt(
         self,
         job_id: UUID,
         attempt_no: int,
         worker_id: str,
-        correlation_id: Optional[str] = None,
+        correlation_id: str | None = None,
     ) -> None:
         """Record the start of a job attempt.
 
@@ -316,24 +307,23 @@ class JobRepository:
             worker_id: Worker processing the job
             correlation_id: Optional correlation ID for tracing
         """
-        with self._connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    """
+        with self._connection() as conn, conn.cursor() as cur:
+            cur.execute(
+                """
                     INSERT INTO python_job_attempts (
                         job_id, attempt_no, started_at, worker_id, correlation_id
                     ) VALUES (%s, %s, NOW(), %s, %s);
                     """,
-                    (str(job_id), attempt_no, worker_id, correlation_id),
-                )
-                conn.commit()
+                (str(job_id), attempt_no, worker_id, correlation_id),
+            )
+            conn.commit()
 
     def complete_attempt(
         self,
         job_id: UUID,
         attempt_no: int,
         success: bool,
-        error: Optional[Exception] = None,
+        error: Exception | None = None,
     ) -> None:
         """Complete a job attempt record.
 
@@ -352,10 +342,9 @@ class JobRepository:
                 }
             )
 
-        with self._connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    """
+        with self._connection() as conn, conn.cursor() as cur:
+            cur.execute(
+                """
                     UPDATE python_job_attempts
                     SET finished_at = NOW(),
                         ok = %(success)s,
@@ -363,20 +352,20 @@ class JobRepository:
                     WHERE job_id = %(job_id)s
                         AND attempt_no = %(attempt_no)s;
                     """,
-                    {
-                        "job_id": str(job_id),
-                        "attempt_no": attempt_no,
-                        "success": success,
-                        "error": error_data,
-                    },
-                )
-                conn.commit()
+                {
+                    "job_id": str(job_id),
+                    "attempt_no": attempt_no,
+                    "success": success,
+                    "error": error_data,
+                },
+            )
+            conn.commit()
 
     def enqueue(
         self,
         tenant_id: UUID,
         request: JobEnqueueRequest,
-        workspace_id: Optional[UUID] = None,
+        workspace_id: UUID | None = None,
     ) -> Job:
         """Enqueue a new job.
 
@@ -432,7 +421,7 @@ class JobRepository:
 
                 return Job.model_validate(row)
 
-    def get_job(self, job_id: UUID, tenant_id: UUID) -> Optional[Job]:
+    def get_job(self, job_id: UUID, tenant_id: UUID) -> Job | None:
         """Get a job by ID with tenant isolation.
 
         Args:
@@ -453,7 +442,7 @@ class JobRepository:
                 row = cur.fetchone()
                 return Job.model_validate(row) if row else None
 
-    def get_job_stats(self, tenant_id: Optional[UUID] = None) -> JobStats:
+    def get_job_stats(self, tenant_id: UUID | None = None) -> JobStats:
         """Get job queue statistics.
 
         Args:
@@ -475,7 +464,7 @@ class JobRepository:
         """
 
         tenant_filter = ""
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
 
         if tenant_id:
             tenant_filter = "WHERE tenant_id = %(tenant_id)s"
@@ -483,11 +472,10 @@ class JobRepository:
 
         query = query.format(tenant_filter=tenant_filter)
 
-        with self._connection() as conn:
-            with conn.cursor(row_factory=dict_row) as cur:
-                cur.execute(query, params)
-                row = cur.fetchone()
-                return JobStats.model_validate(row)
+        with self._connection() as conn, conn.cursor(row_factory=dict_row) as cur:
+            cur.execute(query, params)
+            row = cur.fetchone()
+            return JobStats.model_validate(row)
 
     def release_stale_locks(self, lock_timeout_seconds: int) -> int:
         """Release locks held by workers that appear to have crashed.
@@ -500,10 +488,9 @@ class JobRepository:
         """
         lock_cutoff = datetime.utcnow() - timedelta(seconds=lock_timeout_seconds)
 
-        with self._connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    """
+        with self._connection() as conn, conn.cursor() as cur:
+            cur.execute(
+                """
                     UPDATE python_jobs
                     SET status = 'queued',
                         locked_at = NULL,
@@ -513,11 +500,11 @@ class JobRepository:
                     WHERE status = 'running'
                         AND locked_at < %(cutoff)s;
                     """,
-                    {"cutoff": lock_cutoff},
-                )
-                released = cur.rowcount
-                conn.commit()
-                return released
+                {"cutoff": lock_cutoff},
+            )
+            released = cur.rowcount
+            conn.commit()
+            return released
 
     def cancel_job(self, job_id: UUID, tenant_id: UUID) -> bool:
         """Cancel a queued or running job.
@@ -551,7 +538,7 @@ class JobRepository:
                 return cancelled
 
 
-def create_connection_pool(settings: Optional[Settings] = None) -> ConnectionPool:
+def create_connection_pool(settings: Settings | None = None) -> ConnectionPool:
     """Create a database connection pool.
 
     Args:

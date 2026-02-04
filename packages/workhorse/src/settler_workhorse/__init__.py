@@ -1,5 +1,4 @@
-"""
-Settler Workhorse - Enterprise-grade Python batch processing subsystem.
+"""Settler Workhorse - Enterprise-grade Python batch processing subsystem.
 
 Provides ML/AI infrastructure, distributed caching, async processing,
 observability, health checks, and plugin architecture for reconciliation
@@ -8,107 +7,91 @@ workloads at scale.
 
 __version__ = "0.2.0"
 
-# Core modules
-from settler_workhorse import (
-    async_pool,
-    cache,
-    config,
-    db,
-    health,
-    ml,
-    models,
-    observability,
-    plugins,
-    resilience,
-    utils,
-    worker,
-)
-
-# Primary exports
-from settler_workhorse.models import Job, JobStatus, JobPriority, JobType, JobResult
-from settler_workhorse.worker import Worker
-from settler_workhorse.config import get_settings
-
-# ML/AI
-from settler_workhorse.ml.core import (
-    VectorEmbedding,
-    SimilaritySearchEngine,
-    MLModelConfig,
-    ABTestFramework,
-    FeatureVector,
-)
-
-# Resilience
-from settler_workhorse.resilience import (
-    CircuitBreaker,
-    RetryExecutor,
-    RateLimiter,
-    Bulkhead,
-    circuit_breaker,
-    retry,
-    rate_limit,
-)
-
-# Observability
-from settler_workhorse.observability import (
-    MetricsCollector,
-    Tracer,
-    Span,
-    StructuredLogger,
-    PerformanceProfiler,
-    HealthChecker,
-    timed,
-    traced,
-    get_metrics,
-    get_tracer,
-    get_logger,
+# Async Processing
+from settler_workhorse.async_pool import (
+    AsyncJobProcessor,
+    AsyncTaskExecutor,
+    ConnectionPool,
+    StreamingProcessor,
+    batch_process,
+    parallel_map,
 )
 
 # Caching
 from settler_workhorse.cache import (
-    LocalLRUCache,
-    DistributedCache,
-    HybridCache,
-    FeatureStoreCache,
     CacheBackend,
+    DistributedCache,
+    FeatureStoreCache,
+    HybridCache,
+    LocalLRUCache,
     get_cache,
     get_global_cache,
     set_global_cache,
 )
-
-# Async Processing
-from settler_workhorse.async_pool import (
-    ConnectionPool,
-    AsyncTaskExecutor,
-    AsyncJobProcessor,
-    StreamingProcessor,
-    parallel_map,
-    batch_process,
-)
+from settler_workhorse.config import get_settings
 
 # Health Checks
 from settler_workhorse.health import (
-    HealthStatus,
-    HealthCheckResult,
-    SystemHealth,
     DatabaseHealthCheck,
-    RedisHealthCheck,
     ExternalAPIHealthCheck,
     HealthCheckRegistry,
+    HealthCheckResult,
     HealthEndpoint,
+    HealthStatus,
+    RedisHealthCheck,
+    SystemHealth,
+)
+
+# ML/AI
+from settler_workhorse.ml.core import (
+    ABTestFramework,
+    FeatureVector,
+    MLModelConfig,
+    SimilaritySearchEngine,
+    VectorEmbedding,
+)
+
+# Primary exports
+from settler_workhorse.models import Job, JobPriority, JobResult, JobStatus, JobType
+
+# Observability
+from settler_workhorse.observability import (
+    HealthChecker,
+    MetricsCollector,
+    PerformanceProfiler,
+    Span,
+    StructuredLogger,
+    Tracer,
+    get_logger,
+    get_metrics,
+    get_tracer,
+    timed,
+    traced,
 )
 
 # Plugins
 from settler_workhorse.plugins import (
-    PluginInterface,
-    PluginInfo,
-    HookManager,
-    PluginRegistry,
     HandlerRegistry,
-    hook,
-    get_plugin_registry,
+    HookManager,
+    PluginInfo,
+    PluginInterface,
+    PluginRegistry,
     get_handler_registry,
+    get_plugin_registry,
+    hook,
 )
+
+# Resilience
+from settler_workhorse.resilience import (
+    Bulkhead,
+    CircuitBreaker,
+    RateLimiter,
+    RetryExecutor,
+    circuit_breaker,
+    rate_limit,
+    retry,
+)
+from settler_workhorse.worker import Worker
 
 __all__ = [
     # Version

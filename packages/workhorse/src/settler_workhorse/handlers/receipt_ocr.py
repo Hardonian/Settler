@@ -8,7 +8,7 @@ import base64
 import hashlib
 import io
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from settler_workhorse.models import Job, JobResult, JobType
 from settler_workhorse.utils.logging import get_logger
@@ -17,6 +17,7 @@ from settler_workhorse.worker import register_handler
 # Try to import OCR libraries
 try:
     from PIL import Image
+
     HAS_PIL = True
 except ImportError:
     HAS_PIL = False
@@ -24,6 +25,7 @@ except ImportError:
 # Try to import pytesseract for OCR
 try:
     import pytesseract
+
     HAS_TESSERACT = True
 except ImportError:
     HAS_TESSERACT = False
@@ -37,7 +39,7 @@ class ReceiptOCRError(Exception):
     pass
 
 
-def validate_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
+def validate_payload(payload: dict[str, Any]) -> dict[str, Any]:
     """Validate and normalize receipt OCR payload.
 
     Args:
@@ -92,11 +94,13 @@ def preprocess_image(image: "Image.Image") -> "Image.Image":
 
     # Increase contrast
     from PIL import ImageEnhance
+
     enhancer = ImageEnhance.Contrast(image)
     image = enhancer.enhance(2.0)
 
     # Sharpen
     from PIL import ImageFilter
+
     image = image.filter(ImageFilter.SHARPEN)
 
     return image
@@ -120,10 +124,10 @@ def extract_text_tesseract(image: "Image.Image", language: str) -> str:
         return text
     except Exception as e:
         logger.error("Tesseract OCR failed", error=str(e))
-        raise ReceiptOCRError(f"OCR failed: {e}")
+        raise ReceiptOCRError(f"OCR failed: {e}") from e
 
 
-def extract_structure_from_text(text: str) -> Dict[str, Any]:
+def extract_structure_from_text(text: str) -> dict[str, Any]:
     """Extract structured data from receipt text.
 
     Args:
@@ -132,7 +136,7 @@ def extract_structure_from_text(text: str) -> Dict[str, Any]:
     Returns:
         Structured receipt data
     """
-    lines = text.split('\n')
+    lines = text.split("\n")
     lines = [line.strip() for line in lines if line.strip()]
 
     # Simple heuristics for receipt data extraction
@@ -145,8 +149,8 @@ def extract_structure_from_text(text: str) -> Dict[str, Any]:
 
     # Look for date patterns
     date_patterns = [
-        r'(\d{1,2}[/-]\d{1,2}[/-]\d{2,4})',  # MM/DD/YYYY or DD/MM/YY
-        r'(\d{4}-\d{2}-\d{2})',  # YYYY-MM-DD
+        r"(\d{1,2}[/-]\d{1,2}[/-]\d{2,4})",  # MM/DD/YYYY or DD/MM/YY
+        r"(\d{4}-\d{2}-\d{2})",  # YYYY-MM-DD
     ]
 
     for line in lines:
@@ -160,9 +164,9 @@ def extract_structure_from_text(text: str) -> Dict[str, Any]:
 
     # Look for total amount
     total_patterns = [
-        r'total[:\s]*[$]?([\d,]+\.\d{2})',
-        r'amount[:\s]*[$]?([\d,]+\.\d{2})',
-        r'[$]?([\d,]+\.\d{2})\s*$',
+        r"total[:\s]*[$]?([\d,]+\.\d{2})",
+        r"amount[:\s]*[$]?([\d,]+\.\d{2})",
+        r"[$]?([\d,]+\.\d{2})\s*$",
     ]
 
     for line in lines:
@@ -171,7 +175,7 @@ def extract_structure_from_text(text: str) -> Dict[str, Any]:
             match = re.search(pattern, line_lower, re.IGNORECASE)
             if match:
                 try:
-                    total = float(match.group(1).replace(',', ''))
+                    total = float(match.group(1).replace(",", ""))
                     break
                 except ValueError:
                     continue
@@ -179,14 +183,16 @@ def extract_structure_from_text(text: str) -> Dict[str, Any]:
             break
 
     # Look for line items (simple heuristic: lines with prices)
-    item_pattern = r'(.+?)\s+[$]?([\d,]+\.\d{2})'
+    item_pattern = r"(.+?)\s+[$]?([\d,]+\.\d{2})"
     for line in lines[1:-1]:  # Skip first (merchant) and last (total)
         match = re.search(item_pattern, line)
-        if match and 'total' not in line.lower():
-            items.append({
-                "description": match.group(1).strip(),
-                "amount": float(match.group(2).replace(',', '')),
-            })
+        if match and "total" not in line.lower():
+            items.append(
+                {
+                    "description": match.group(1).strip(),
+                    "amount": float(match.group(2).replace(",", "")),
+                }
+            )
 
     return {
         "merchant_name": merchant_name,
@@ -198,7 +204,7 @@ def extract_structure_from_text(text: str) -> Dict[str, Any]:
     }
 
 
-def mock_ocr(image_bytes: bytes) -> Dict[str, Any]:
+def mock_ocr(image_bytes: bytes) -> dict[str, Any]:
     """Mock OCR for testing without Tesseract.
 
     Args:
@@ -381,7 +387,9 @@ def handle_receipt_ocr(job: Job) -> JobResult:
         )
 
     except Exception as e:
-        logger.error("Receipt OCR failed", exc_info=True, tenant_id=tenant_id, receipt_id=receipt_id)
+        logger.error(
+            "Receipt OCR failed", exc_info=True, tenant_id=tenant_id, receipt_id=receipt_id
+        )
         return JobResult(
             success=False,
             error=str(e),

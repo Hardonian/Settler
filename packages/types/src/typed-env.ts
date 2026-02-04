@@ -6,7 +6,6 @@
  */
 
 import { z } from "zod";
-import { isBuildTime } from "./env-build-helper";
 
 export const CLIENT_ENV_KEYS = [
   "NEXT_PUBLIC_SITE_URL",
@@ -116,6 +115,17 @@ export interface EnvValidationResult {
   warnings: string[];
 }
 
+function isBuildTime(): boolean {
+  return (
+    process.env.NEXT_PHASE === "phase-production-build" ||
+    (process.env.NODE_ENV === "production" && !!process.env.VERCEL) ||
+    process.env.SKIP_ENV_VALIDATION === "true" ||
+    !!process.env.VERCEL_ENV ||
+    process.env.CI === "true" ||
+    process.env.CI === "1"
+  );
+}
+
 function formatZodErrors(error: z.ZodError): string[] {
   return error.issues.map((issue: z.ZodIssue) => {
     const path = issue.path.length > 0 ? issue.path.join(".") : "env";
@@ -136,9 +146,6 @@ function pickEnv(
   );
 }
 
-/**
- * Validate client environment variables.
- */
 export function validateClientEnv(
   input: NodeJS.ProcessEnv = process.env,
   mode: "build" | "runtime" = "runtime"
@@ -172,9 +179,6 @@ export function validateClientEnv(
   };
 }
 
-/**
- * Validate server environment variables.
- */
 export function validateServerEnv(
   mode: "build" | "runtime",
   input: NodeJS.ProcessEnv = process.env
@@ -182,13 +186,8 @@ export function validateServerEnv(
   const buildTime = mode === "build";
   const allowMissingBuildKeys =
     buildTime && (input.SKIP_ENV_VALIDATION === "true" || input.CI === "true" || input.CI === "1");
-  let schema: any;
-  if (buildTime) {
-    schema = serverEnvBuildSchema;
-  } else {
-    schema = serverEnvSchema;
-  }
-  const result = (schema as any).safeParse(pickEnv(input, SERVER_ENV_KEYS));
+  const schema = buildTime ? serverEnvBuildSchema : serverEnvSchema;
+  const result = (schema as z.ZodTypeAny).safeParse(pickEnv(input, SERVER_ENV_KEYS));
 
   if (!result.success) {
     return {
@@ -233,70 +232,25 @@ export function validateServerEnv(
   };
 }
 
-/**
- * Parse and return client environment variables.
- */
-export function parseClientEnv(input: NodeJS.ProcessEnv = process.env): ClientEnv {
-  return clientEnvSchema.parse(pickEnv(input, CLIENT_ENV_KEYS));
-}
-
-/**
- * Parse and return server environment variables.
- */
-export function parseServerEnv(
-  mode: "build" | "runtime",
-  input: NodeJS.ProcessEnv = process.env
-): ServerEnv {
-  const runtimeOptionalKeys: Partial<Record<ServerEnvKey, true>> = {
-    SUPABASE_SERVICE_ROLE_KEY: true,
-    JWT_SECRET: true,
-    ENCRYPTION_KEY: true,
-    STRIPE_SECRET_KEY: true,
-    STRIPE_WEBHOOK_SECRET: true,
-    RESEND_API_KEY: true,
-    RESEND_FROM_EMAIL: true,
-    DATABASE_URL: true,
-    SUPABASE_DATABASE_URL: true,
-    DIRECT_URL: true,
-  };
-
-  // partial() with refinements can throw in some runtimes. Fall back gracefully.
-  let schema: any;
-  if (mode === "build") {
-    try {
-      schema = (serverEnvSchema as any).partial(runtimeOptionalKeys);
-    } catch {
-      schema = serverEnvSchema;
-    }
-  } else {
-    schema = serverEnvSchema;
-  }
-  const result = (schema as any).parse(pickEnv(input, SERVER_ENV_KEYS));
-  // Cast to ServerEnv - in runtime mode all required fields are validated
-  return result as ServerEnv;
-}
-
-/**
- * Validate environment variable scopes for client/server separation.
- */
 export function validateEnvScopes(): EnvValidationResult {
   const errors: string[] = [];
+  const warnings: string[] = [];
 
   for (const key of CLIENT_ENV_KEYS) {
     if (!key.startsWith("NEXT_PUBLIC_")) {
-      errors.push(`Client env var ${key} must start with NEXT_PUBLIC_`);
+      errors.push(`Client env key ${key} must start with NEXT_PUBLIC_`);
     }
   }
 
   for (const key of SERVER_ENV_KEYS) {
     if (key.startsWith("NEXT_PUBLIC_")) {
-      errors.push(`Server env var ${key} must not start with NEXT_PUBLIC_`);
+      errors.push(`Server env key ${key} must not start with NEXT_PUBLIC_`);
     }
   }
 
   return {
     valid: errors.length === 0,
     errors,
-    warnings: [],
+    warnings,
   };
 }

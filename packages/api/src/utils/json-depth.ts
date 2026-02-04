@@ -2,6 +2,56 @@ export interface JsonDepthOptions {
   maxDepth?: number;
 }
 
+export function scanJsonDepth(input: Buffer | string, options: JsonDepthOptions = {}): number {
+  const maxDepth = options.maxDepth ?? Number.POSITIVE_INFINITY;
+  const text = typeof input === "string" ? input : input.toString("utf8");
+  let depth = 0;
+  let maxObserved = 0;
+  let inString = false;
+  let escaping = false;
+
+  for (let i = 0; i < text.length; i += 1) {
+    const char = text[i];
+
+    if (inString) {
+      if (escaping) {
+        escaping = false;
+        continue;
+      }
+      if (char === "\\") {
+        escaping = true;
+        continue;
+      }
+      if (char === '"') {
+        inString = false;
+      }
+      continue;
+    }
+
+    if (char === '"') {
+      inString = true;
+      continue;
+    }
+
+    if (char === "{" || char === "[") {
+      depth += 1;
+      if (depth > maxObserved) {
+        maxObserved = depth;
+        if (maxObserved > maxDepth) {
+          return maxObserved;
+        }
+      }
+      continue;
+    }
+
+    if (char === "}" || char === "]") {
+      depth = Math.max(0, depth - 1);
+    }
+  }
+
+  return maxObserved;
+}
+
 export function countJsonDepth(value: unknown, options: JsonDepthOptions = {}): number {
   const maxDepth = options.maxDepth ?? Number.POSITIVE_INFINITY;
 

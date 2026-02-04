@@ -1,14 +1,11 @@
 """CLI entry point for Settler Workhorse."""
 
 import sys
-from typing import Optional
 
 import click
 
 from settler_workhorse.config import Settings, get_settings, validate_environment
 from settler_workhorse.db import create_connection_pool
-from settler_workhorse.utils.logging import configure_logging, get_logger
-from settler_workhorse.worker import Worker
 
 # Import handlers to register them
 from settler_workhorse.handlers import (  # noqa: F401
@@ -18,13 +15,15 @@ from settler_workhorse.handlers import (  # noqa: F401
     ingest_normalize,
     recon_run,
 )
+from settler_workhorse.utils.logging import configure_logging, get_logger
+from settler_workhorse.worker import Worker
 
 
 @click.group()
 @click.option("--env-file", type=click.Path(exists=True), help="Path to .env file")
 @click.option("--debug", is_flag=True, help="Enable debug mode")
 @click.pass_context
-def cli(ctx: click.Context, env_file: Optional[str], debug: bool) -> None:
+def cli(ctx: click.Context, env_file: str | None, debug: bool) -> None:
     """Settler Workhorse - Python batch processing subsystem."""
     # Ensure context object exists
     ctx.ensure_object(dict)
@@ -50,9 +49,9 @@ def cli(ctx: click.Context, env_file: Optional[str], debug: bool) -> None:
 @click.pass_context
 def worker(
     ctx: click.Context,
-    worker_id: Optional[str],
-    poll_interval: Optional[float],
-    max_jobs: Optional[int],
+    worker_id: str | None,
+    poll_interval: float | None,
+    max_jobs: int | None,
 ) -> None:
     """Start the background worker."""
     settings: Settings = ctx.obj["settings"]
@@ -110,11 +109,10 @@ def health(ctx: click.Context) -> None:
         pool = create_connection_pool(settings)
 
         # Test database connection
-        with pool.connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute("SELECT 1")
-                result = cur.fetchone()
-                assert result[0] == 1
+        with pool.connection() as conn, conn.cursor() as cur:
+            cur.execute("SELECT 1")
+            result = cur.fetchone()
+            assert result[0] == 1
 
         click.echo("✓ Database connection: OK")
 
@@ -147,7 +145,7 @@ def enqueue(
     job_type: str,
     payload: str,
     priority: int,
-    idempotency_key: Optional[str],
+    idempotency_key: str | None,
 ) -> None:
     """Enqueue a job manually (for testing/admin)."""
     settings: Settings = ctx.obj["settings"]
@@ -220,7 +218,7 @@ def maintenance(ctx: click.Context, release_stale: bool, lock_timeout: int) -> N
 
         # Show current stats
         stats = job_repo.get_job_stats()
-        click.echo(f"\nQueue status:")
+        click.echo("\nQueue status:")
         click.echo(f"  Queued: {stats.queued}")
         click.echo(f"  Running: {stats.running}")
         click.echo(f"  Succeeded: {stats.succeeded}")

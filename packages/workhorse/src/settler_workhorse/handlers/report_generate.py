@@ -7,7 +7,7 @@ Idempotent, retry-safe, and tenant-scoped.
 import hashlib
 import json
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from settler_workhorse.models import Job, JobResult, JobType
 from settler_workhorse.utils.logging import get_logger
@@ -22,7 +22,7 @@ class ReportGenerationError(Exception):
     pass
 
 
-def validate_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
+def validate_payload(payload: dict[str, Any]) -> dict[str, Any]:
     """Validate and normalize report generation payload.
 
     Args:
@@ -58,9 +58,9 @@ def validate_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
 
 def generate_report_data(
     report_type: str,
-    filters: Dict[str, Any],
+    filters: dict[str, Any],
     max_records: int,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Generate report data based on report type.
 
     Args:
@@ -86,7 +86,7 @@ def generate_report_data(
     return generator(filters, max_records)
 
 
-def _generate_recon_summary(filters: Dict[str, Any], max_records: int) -> Dict[str, Any]:
+def _generate_recon_summary(filters: dict[str, Any], max_records: int) -> dict[str, Any]:
     """Generate reconciliation summary report."""
     return {
         "report_type": "reconciliation_summary",
@@ -110,7 +110,7 @@ def _generate_recon_summary(filters: Dict[str, Any], max_records: int) -> Dict[s
     }
 
 
-def _generate_transaction_volume(filters: Dict[str, Any], max_records: int) -> Dict[str, Any]:
+def _generate_transaction_volume(filters: dict[str, Any], max_records: int) -> dict[str, Any]:
     """Generate transaction volume report."""
     return {
         "report_type": "transaction_volume",
@@ -132,7 +132,7 @@ def _generate_transaction_volume(filters: Dict[str, Any], max_records: int) -> D
     }
 
 
-def _generate_anomaly_summary(filters: Dict[str, Any], max_records: int) -> Dict[str, Any]:
+def _generate_anomaly_summary(filters: dict[str, Any], max_records: int) -> dict[str, Any]:
     """Generate anomaly summary report."""
     return {
         "report_type": "anomaly_summary",
@@ -156,7 +156,7 @@ def _generate_anomaly_summary(filters: Dict[str, Any], max_records: int) -> Dict
     }
 
 
-def _generate_audit_trail(filters: Dict[str, Any], max_records: int) -> Dict[str, Any]:
+def _generate_audit_trail(filters: dict[str, Any], max_records: int) -> dict[str, Any]:
     """Generate audit trail report."""
     return {
         "report_type": "audit_trail",
@@ -177,7 +177,7 @@ def _generate_audit_trail(filters: Dict[str, Any], max_records: int) -> Dict[str
     }
 
 
-def _generate_custom_report(filters: Dict[str, Any], max_records: int) -> Dict[str, Any]:
+def _generate_custom_report(filters: dict[str, Any], max_records: int) -> dict[str, Any]:
     """Generate custom report."""
     return {
         "report_type": "custom",
@@ -188,10 +188,10 @@ def _generate_custom_report(filters: Dict[str, Any], max_records: int) -> Dict[s
 
 
 def generate_artifact_content(
-    report_data: Dict[str, Any],
+    report_data: dict[str, Any],
     report_format: str,
     report_name: str,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Generate artifact content in specified format.
 
     Args:
@@ -202,9 +202,7 @@ def generate_artifact_content(
     Returns:
         Artifact metadata and content reference
     """
-    content_hash = hashlib.sha256(
-        json.dumps(report_data, sort_keys=True).encode()
-    ).hexdigest()[:16]
+    content_hash = hashlib.sha256(json.dumps(report_data, sort_keys=True).encode()).hexdigest()[:16]
 
     artifact = {
         "format": report_format,
@@ -230,7 +228,7 @@ def generate_artifact_content(
     return artifact
 
 
-def _generate_html_report(report_data: Dict[str, Any], report_name: str) -> str:
+def _generate_html_report(report_data: dict[str, Any], report_name: str) -> str:
     """Generate HTML version of report."""
     html = f"""<!DOCTYPE html>
 <html>
@@ -256,7 +254,7 @@ def _generate_html_report(report_data: Dict[str, Any], report_name: str) -> str:
     return html
 
 
-def _generate_csv_report(report_data: Dict[str, Any]) -> str:
+def _generate_csv_report(report_data: dict[str, Any]) -> str:
     """Generate CSV version of report."""
     # Simple CSV generation for tabular data
     lines = []

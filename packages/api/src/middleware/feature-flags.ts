@@ -1,6 +1,6 @@
 /**
  * Feature Flags Middleware
- * 
+ *
  * Implements feature flag system for gradual rollouts, A/B testing, and feature toggles
  * Supports:
  * - Per-tenant feature flags
@@ -10,8 +10,9 @@
  * - Time-based flags (scheduled releases)
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { logInfo } from '../utils/logger';
+import { Request, Response, NextFunction } from "express";
+import { logInfo } from "../utils/logger";
+import { memoizeRequestValue } from "../utils/request-cache";
 
 export interface FeatureFlag {
   key: string;
@@ -84,7 +85,7 @@ class InMemoryFeatureFlagService implements FeatureFlagService {
     // Check rollout percentage
     if (flag.rolloutPercentage !== undefined) {
       const hash = this.hashContext(key, context);
-      const percentage = (hash % 100);
+      const percentage = hash % 100;
       if (percentage >= flag.rolloutPercentage) {
         return false;
       }
@@ -95,7 +96,7 @@ class InMemoryFeatureFlagService implements FeatureFlagService {
       const hash = this.hashContext(key, context);
       const percentage = hash % 100;
       let cumulative = 0;
-      
+
       for (const [variant, variantPercentage] of Object.entries(flag.variants)) {
         cumulative += variantPercentage;
         if (percentage < cumulative) {
@@ -109,7 +110,7 @@ class InMemoryFeatureFlagService implements FeatureFlagService {
 
   async getFlags(context: FeatureFlagContext): Promise<Record<string, boolean | string>> {
     const result: Record<string, boolean | string> = {};
-    
+
     for (const [key] of this.flags) {
       const value = await this.getFlag(key, context);
       if (value !== null) {
@@ -121,11 +122,11 @@ class InMemoryFeatureFlagService implements FeatureFlagService {
   }
 
   private hashContext(key: string, context: FeatureFlagContext): number {
-    const str = `${key}:${context.tenantId || ''}:${context.userId || ''}`;
+    const str = `${key}:${context.tenantId || ""}:${context.userId || ""}`;
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return Math.abs(hash);
@@ -158,14 +159,17 @@ export function featureFlagsMiddleware() {
       const context: FeatureFlagContext = {
         tenantId: (req as any).tenantId || (req as any).user?.tenantId,
         userId: (req as any).userId || (req as any).user?.id,
-        environment: process.env.NODE_ENV || 'development',
+        environment: process.env.NODE_ENV || "development",
       };
 
       req.featureFlagContext = context;
-      req.featureFlags = await featureFlagService.getFlags(context);
+      const cacheKey = `feature-flags:${context.tenantId || "anonymous"}:${context.userId || "anonymous"}`;
+      req.featureFlags = await memoizeRequestValue(req, cacheKey, () =>
+        featureFlagService.getFlags(context)
+      );
 
       // Log feature flag access for analytics
-      logInfo('Feature flags loaded', {
+      logInfo("Feature flags loaded", {
         tenantId: context.tenantId,
         flagsCount: Object.keys(req.featureFlags).length,
       });
@@ -173,7 +177,7 @@ export function featureFlagsMiddleware() {
       next();
     } catch (error) {
       // Don't fail request if feature flags fail
-      logInfo('Feature flags error (non-blocking)', { error });
+      logInfo("Feature flags error (non-blocking)", { error });
       req.featureFlags = {};
       next();
     }
@@ -185,7 +189,7 @@ export function featureFlagsMiddleware() {
  */
 export function isFeatureEnabled(req: FeatureFlagRequest, key: string): boolean {
   const value = req.featureFlags?.[key];
-  return value === true || value === 'enabled';
+  return value === true || value === "enabled";
 }
 
 /**
@@ -193,7 +197,7 @@ export function isFeatureEnabled(req: FeatureFlagRequest, key: string): boolean 
  */
 export function getFeatureVariant(req: FeatureFlagRequest, key: string): string | null {
   const value = req.featureFlags?.[key];
-  if (typeof value === 'string' && value !== 'enabled' && value !== 'disabled') {
+  if (typeof value === "string" && value !== "enabled" && value !== "disabled") {
     return value;
   }
   return null;
@@ -206,7 +210,7 @@ export function requireFeatureFlag(key: string) {
   return (req: FeatureFlagRequest, res: Response, next: NextFunction) => {
     if (!isFeatureEnabled(req, key)) {
       res.status(403).json({
-        error: 'Feature Not Available',
+        error: "Feature Not Available",
         message: `Feature flag '${key}' is not enabled for your account`,
       });
     }

@@ -6,8 +6,9 @@ Idempotent, retry-safe, and tenant-scoped.
 
 import hashlib
 import json
+from collections.abc import Generator
 from datetime import datetime
-from typing import Any, Dict, Generator, List, Optional
+from typing import Any
 
 from settler_workhorse.models import Job, JobResult, JobType
 from settler_workhorse.utils.logging import get_logger
@@ -22,7 +23,7 @@ class AuditExportError(Exception):
     pass
 
 
-def validate_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
+def validate_payload(payload: dict[str, Any]) -> dict[str, Any]:
     """Validate and normalize audit export payload.
 
     Args:
@@ -49,7 +50,7 @@ def validate_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
             if from_dt > to_dt:
                 raise AuditExportError("'from' date must be before 'to' date")
         except ValueError as e:
-            raise AuditExportError(f"Invalid date format: {e}")
+            raise AuditExportError(f"Invalid date format: {e}") from e
 
     export_format = payload.get("format", "json")
     if export_format not in ("json", "csv"):
@@ -74,12 +75,12 @@ def validate_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
 
 def generate_audit_events_batch(
     tenant_id: str,
-    from_date: Optional[str],
-    to_date: Optional[str],
-    entity_types: List[str],
+    from_date: str | None,
+    to_date: str | None,
+    entity_types: list[str],
     batch_size: int,
     offset: int = 0,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """Generate a batch of audit events.
 
     Args:
@@ -98,7 +99,9 @@ def generate_audit_events_batch(
 
     events = []
     event_types = ["create", "update", "delete", "view", "reconcile", "match", "export"]
-    entity_types_list = entity_types if entity_types else ["transaction", "reconciliation", "rule", "user"]
+    entity_types_list = (
+        entity_types if entity_types else ["transaction", "reconciliation", "rule", "user"]
+    )
 
     for i in range(batch_size):
         event_id = f"audit_{tenant_id}_{offset + i}_{datetime.utcnow().strftime('%Y%m%d')}"
@@ -115,10 +118,14 @@ def generate_audit_events_batch(
             "timestamp": datetime.utcnow().isoformat(),
             "ip_address": f"192.168.{(offset + i) % 255}.{(offset + i) % 256}",
             "user_agent": "Mozilla/5.0 (compatible; Settler/1.0)",
-            "changes": {
-                "before": {"status": "pending"},
-                "after": {"status": "completed"},
-            } if event_type == "update" else None,
+            "changes": (
+                {
+                    "before": {"status": "pending"},
+                    "after": {"status": "completed"},
+                }
+                if event_type == "update"
+                else None
+            ),
             "metadata": {
                 "source": "web",
                 "session_id": f"session_{(offset + i) % 100}",
@@ -132,12 +139,12 @@ def generate_audit_events_batch(
 
 def stream_audit_events(
     tenant_id: str,
-    from_date: Optional[str],
-    to_date: Optional[str],
-    entity_types: List[str],
+    from_date: str | None,
+    to_date: str | None,
+    entity_types: list[str],
     batch_size: int,
     max_records: int = 100000,
-) -> Generator[List[Dict[str, Any]], None, None]:
+) -> Generator[list[dict[str, Any]], None, None]:
     """Stream audit events in batches to control memory usage.
 
     Args:
@@ -178,7 +185,9 @@ def stream_audit_events(
             break
 
 
-def format_event_for_export(event: Dict[str, Any], format_type: str, include_fields: List[str]) -> str:
+def format_event_for_export(
+    event: dict[str, Any], format_type: str, include_fields: list[str]
+) -> str:
     """Format a single audit event for export.
 
     Args:
@@ -210,13 +219,13 @@ def format_event_for_export(event: Dict[str, Any], format_type: str, include_fie
 
 def generate_export_content(
     tenant_id: str,
-    from_date: Optional[str],
-    to_date: Optional[str],
+    from_date: str | None,
+    to_date: str | None,
     export_format: str,
-    include_fields: List[str],
-    entity_types: List[str],
+    include_fields: list[str],
+    entity_types: list[str],
     batch_size: int,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Generate export content and metadata.
 
     Args:

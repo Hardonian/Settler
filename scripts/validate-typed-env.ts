@@ -3,47 +3,47 @@
  * Typed environment validation for server/client scopes.
  */
 
-import fs from 'fs';
-import path from 'path';
-import * as dotenv from 'dotenv';
+import fs from "fs";
+import path from "path";
+import * as dotenv from "dotenv";
 import {
   CLIENT_ENV_KEYS,
-  validateClientEnv,
+  validateTypedClientEnv as validateClientEnv,
   validateEnvScopes,
-  validateServerEnv,
-} from '../packages/web/src/lib/typed-env';
+  validateTypedServerEnv as validateServerEnv,
+} from "@settler/types";
 
 function loadDotEnv(): void {
-  const envPath = path.resolve(process.cwd(), '.env');
+  const envPath = path.resolve(process.cwd(), ".env");
   if (fs.existsSync(envPath)) {
     dotenv.config({ path: envPath });
   }
 }
 
 function extractEnvKeys(filePath: string): string[] {
-  const content = fs.readFileSync(filePath, 'utf-8');
+  const content = fs.readFileSync(filePath, "utf-8");
   return content
-    .split('\n')
+    .split("\n")
     .map((line: string) => line.trim())
-    .filter((line: string) => line.length > 0 && !line.startsWith('#'))
-    .map((line: string) => line.split('=')[0])
+    .filter((line: string) => line.length > 0 && !line.startsWith("#"))
+    .map((line: string) => line.split("=")[0])
     .filter((key: string): key is string => Boolean(key));
 }
 
-function getMode(args: string[]): 'build' | 'runtime' {
-  const modeArg = args.find((arg: string) => arg.startsWith('--mode='));
+function getMode(args: string[]): "build" | "runtime" {
+  const modeArg = args.find((arg: string) => arg.startsWith("--mode="));
   if (modeArg) {
-    const modeValue = modeArg.split('=')[1];
-    if (modeValue === 'runtime') {
-      return 'runtime';
+    const modeValue = modeArg.split("=")[1];
+    if (modeValue === "runtime") {
+      return "runtime";
     }
   }
 
-  if (args.includes('--runtime')) {
-    return 'runtime';
+  if (args.includes("--runtime")) {
+    return "runtime";
   }
 
-  return 'build';
+  return "build";
 }
 
 function main(): void {
@@ -55,7 +55,7 @@ function main(): void {
   console.log(`🔍 Validating typed environment variables (${mode})...`);
 
   const scopeCheck = validateEnvScopes();
-  const clientCheck = validateClientEnv();
+  const clientCheck = validateClientEnv(process.env, mode);
   const serverCheck = validateServerEnv(mode);
 
   const errors: string[] = [];
@@ -64,10 +64,10 @@ function main(): void {
   errors.push(...scopeCheck.errors, ...clientCheck.errors, ...serverCheck.errors);
   warnings.push(...clientCheck.warnings, ...serverCheck.warnings);
 
-  const envExamplePath = path.resolve(process.cwd(), '.env.example');
+  const envExamplePath = path.resolve(process.cwd(), ".env.example");
   if (fs.existsSync(envExamplePath)) {
     const exampleKeys = extractEnvKeys(envExamplePath);
-    const exampleClientKeys = exampleKeys.filter((key: string) => key.startsWith('NEXT_PUBLIC_'));
+    const exampleClientKeys = exampleKeys.filter((key: string) => key.startsWith("NEXT_PUBLIC_"));
 
     for (const key of exampleClientKeys) {
       if (!CLIENT_ENV_KEYS.includes(key as (typeof CLIENT_ENV_KEYS)[number])) {
@@ -83,17 +83,17 @@ function main(): void {
   }
 
   if (warnings.length > 0) {
-    console.warn('⚠️  Warnings:');
+    console.warn("⚠️  Warnings:");
     warnings.forEach((warning: string) => console.warn(`  • ${warning}`));
   }
 
   if (errors.length > 0) {
-    console.error('❌ Environment validation failed:');
+    console.error("❌ Environment validation failed:");
     errors.forEach((error: string) => console.error(`  • ${error}`));
     process.exit(1);
   }
 
-  console.log('✅ Typed environment validation passed.');
+  console.log("✅ Typed environment validation passed.");
 }
 
 main();

@@ -1,6 +1,5 @@
 """Smoke tests for Settler Workhorse."""
 
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -11,11 +10,6 @@ def test_imports():
     print("Testing imports...")
 
     from settler_workhorse import __version__
-    from settler_workhorse.config import Settings, get_settings
-    from settler_workhorse.models import Job, JobResult, JobType
-    from settler_workhorse.db import JobRepository
-    from settler_workhorse.worker import Worker, register_handler
-    from settler_workhorse.utils.logging import configure_logging, get_logger
 
     print(f"OK: All imports successful (version: {__version__})")
     return True
@@ -99,7 +93,7 @@ def test_cli_help():
     """Test CLI help output."""
     print("Testing CLI...")
 
-    result = subprocess.run(
+    subprocess.run(
         [sys.executable, "-m", "settler_workhorse.cli", "--help"],
         capture_output=True,
         text=True,
@@ -108,7 +102,6 @@ def test_cli_help():
 
     # Should fail due to missing DATABASE_URL, but let's check the import works
     # Actually, let's just verify the module structure
-    from settler_workhorse.cli import cli
 
     print("OK: CLI module loads")
     return True
@@ -119,10 +112,6 @@ def test_phase6_handlers_import():
     print("Testing Phase 6 handler imports...")
 
     # Import all Phase 6 handlers
-    from settler_workhorse.handlers import batch_backfill
-    from settler_workhorse.handlers import report_generate
-    from settler_workhorse.handlers import ml_features_build
-    from settler_workhorse.handlers import audit_trail_export
 
     print("OK: Phase 6 handlers imported successfully")
     return True
@@ -296,11 +285,6 @@ def test_phase7_handlers_import():
     print("Testing Phase 7 handler imports...")
 
     # Import all Phase 7 handlers
-    from settler_workhorse.handlers import export_csv
-    from settler_workhorse.handlers import export_excel
-    from settler_workhorse.handlers import export_pdf
-    from settler_workhorse.handlers import import_validate
-    from settler_workhorse.handlers import receipt_ocr
 
     print("OK: Phase 7 handlers imported successfully")
     return True
@@ -367,9 +351,9 @@ def test_import_validate_handler():
     """Test import.validate handler with sample payload."""
     print("Testing import.validate handler...")
 
+    import base64
     from datetime import datetime
     from uuid import uuid4
-    import base64
 
     from settler_workhorse.handlers.import_validate import handle_import_validate
     from settler_workhorse.models import Job, JobType

@@ -112,7 +112,7 @@ const nextConfig = {
   // are not required during build and will be validated at runtime
   env: {
     // Flag to indicate build context (used by env validation helpers)
-    SKIP_ENV_VALIDATION: process.env.VERCEL ? "true" : undefined,
+    SKIP_ENV_VALIDATION: process.env.VERCEL || process.env.CI ? "true" : undefined,
   },
   transpilePackages: [
     "@settler/api",

@@ -6,7 +6,7 @@ Safe no-op if no transactions to match.
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 from uuid import UUID
 
 from settler_workhorse.db import JobRepository
@@ -26,12 +26,12 @@ class TransactionMatchError(Exception):
 def _fetch_transactions(
     job_repo: JobRepository,
     tenant_id: UUID,
-    ingestion_id: Optional[str] = None,
-    source_id: Optional[str] = None,
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
+    ingestion_id: str | None = None,
+    source_id: str | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
     limit: int = 10000,
-) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """Fetch source and target transactions from database.
 
     Args:
@@ -46,11 +46,10 @@ def _fetch_transactions(
     Returns:
         Tuple of (source_transactions, target_transactions)
     """
-    import psycopg
     from psycopg.rows import dict_row
 
     conditions = ["tenant_id = %(tenant_id)s"]
-    params: Dict[str, Any] = {"tenant_id": str(tenant_id), "limit": limit}
+    params: dict[str, Any] = {"tenant_id": str(tenant_id), "limit": limit}
 
     if ingestion_id:
         conditions.append("ingestion_id = %(ingestion_id)s")
@@ -69,7 +68,7 @@ def _fetch_transactions(
         params["end_date"] = end_date
 
     query = f"""
-        SELECT 
+        SELECT
             id,
             ingestion_id,
             raw_record_id,
@@ -106,15 +105,15 @@ def _fetch_transactions(
                 return sources, targets
     except Exception as e:
         logger.error("Failed to fetch transactions", error=str(e))
-        raise TransactionMatchError(f"Database query failed: {e}")
+        raise TransactionMatchError(f"Database query failed: {e}") from e
 
 
 def _match_transactions(
-    sources: List[Dict[str, Any]],
-    targets: List[Dict[str, Any]],
+    sources: list[dict[str, Any]],
+    targets: list[dict[str, Any]],
     match_strategy: str = "exact",
     tolerance: float = 0.01,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Match source and target transactions.
 
     Args:
@@ -131,7 +130,7 @@ def _match_transactions(
     unmatched_targets = targets.copy()
 
     # Build index of targets for efficient matching
-    target_index: Dict[str, List[Dict]] = {}
+    target_index: dict[str, list[dict]] = {}
     for target in targets:
         # Index by absolute amount and date (without time)
         key = f"{abs(float(target.get('amount', 0)))}|{str(target.get('date', ''))[:10]}"
@@ -184,9 +183,9 @@ def _match_transactions(
 def _create_reconciliation_run(
     job_repo: JobRepository,
     tenant_id: UUID,
-    user_id: Optional[UUID],
-    ingestion_id: Optional[str],
-    match_results: Dict[str, Any],
+    user_id: UUID | None,
+    ingestion_id: str | None,
+    match_results: dict[str, Any],
 ) -> str:
     """Create a ReconciliationRun record.
 
@@ -263,14 +262,14 @@ def _create_reconciliation_run(
                 raise TransactionMatchError("Failed to create reconciliation run")
     except Exception as e:
         logger.error("Failed to create reconciliation run", error=str(e))
-        raise TransactionMatchError(f"Failed to create run: {e}")
+        raise TransactionMatchError(f"Failed to create run: {e}") from e
 
 
 def _create_reconciliation_matches(
     job_repo: JobRepository,
     tenant_id: UUID,
     run_id: str,
-    matches: List[Dict[str, Any]],
+    matches: list[dict[str, Any]],
 ) -> int:
     """Create ReconciliationMatch records for matched transactions.
 
@@ -348,7 +347,7 @@ def _create_reconciliation_matches(
                 return inserted
     except Exception as e:
         logger.error("Failed to create reconciliation matches", error=str(e))
-        raise TransactionMatchError(f"Failed to create matches: {e}")
+        raise TransactionMatchError(f"Failed to create matches: {e}") from e
 
 
 @register_handler(JobType.TRANSACTION_MATCH)
@@ -372,8 +371,8 @@ def handle_transaction_match(job: Job) -> JobResult:
         - match_strategy: Matching strategy (exact, fuzzy)
         - tolerance: Amount tolerance for matching
     """
-    from settler_workhorse.db import create_connection_pool
     from settler_workhorse.config import get_settings
+    from settler_workhorse.db import create_connection_pool
 
     payload = job.payload
     ingestion_id = payload.get("ingestion_id")

@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, Field, field_validator
@@ -75,35 +75,35 @@ class Job(BaseModel):
 
     id: UUID
     tenant_id: UUID
-    workspace_id: Optional[UUID] = None
+    workspace_id: UUID | None = None
     job_type: JobType
-    payload: Dict[str, Any] = Field(default_factory=dict)
+    payload: dict[str, Any] = Field(default_factory=dict)
     status: JobStatus = JobStatus.QUEUED
     priority: int = Field(default=JobPriority.NORMAL, ge=1)
-    idempotency_key: Optional[str] = None
+    idempotency_key: str | None = None
 
     # Execution tracking
     attempts: int = Field(default=0, ge=0)
     max_attempts: int = Field(default=3, ge=1)
     created_at: datetime
-    updated_at: Optional[datetime] = None
-    available_at: Optional[datetime] = None
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    updated_at: datetime | None = None
+    available_at: datetime | None = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
 
     # Error tracking
-    last_error: Optional[Dict[str, Any]] = None
-    error_message: Optional[str] = None
+    last_error: dict[str, Any] | None = None
+    error_message: str | None = None
 
     # Lock tracking
-    locked_at: Optional[datetime] = None
-    locked_by: Optional[str] = None
+    locked_at: datetime | None = None
+    locked_by: str | None = None
 
     # Result tracking
-    result: Optional[Dict[str, Any]] = None
-    output_location: Optional[str] = None
-    records_processed: Optional[int] = None
-    records_failed: Optional[int] = None
+    result: dict[str, Any] | None = None
+    output_location: str | None = None
+    records_processed: int | None = None
+    records_failed: int | None = None
 
     model_config = {"from_attributes": True}
 
@@ -111,15 +111,15 @@ class Job(BaseModel):
 class JobAttempt(BaseModel):
     """Record of a job execution attempt."""
 
-    id: Optional[UUID] = None
+    id: UUID | None = None
     job_id: UUID
     attempt_no: int = Field(ge=1)
     started_at: datetime
-    finished_at: Optional[datetime] = None
-    ok: Optional[bool] = None
-    error: Optional[Dict[str, Any]] = None
-    worker_id: Optional[str] = None
-    correlation_id: Optional[str] = None
+    finished_at: datetime | None = None
+    ok: bool | None = None
+    error: dict[str, Any] | None = None
+    worker_id: str | None = None
+    correlation_id: str | None = None
 
     model_config = {"from_attributes": True}
 
@@ -127,14 +127,14 @@ class JobAttempt(BaseModel):
 class DeadLetter(BaseModel):
     """Dead letter queue entry for failed jobs."""
 
-    id: Optional[UUID] = None
+    id: UUID | None = None
     job_id: UUID
     tenant_id: UUID
-    workspace_id: Optional[UUID] = None
+    workspace_id: UUID | None = None
     job_type: JobType
-    payload: Dict[str, Any]
-    error: Dict[str, Any]
-    created_at: Optional[datetime] = None
+    payload: dict[str, Any]
+    error: dict[str, Any]
+    created_at: datetime | None = None
 
     model_config = {"from_attributes": True}
 
@@ -143,15 +143,16 @@ class JobEnqueueRequest(BaseModel):
     """Request to enqueue a new job."""
 
     job_type: JobType
-    payload: Dict[str, Any] = Field(default_factory=dict)
+    payload: dict[str, Any] = Field(default_factory=dict)
     priority: int = Field(default=JobPriority.NORMAL, ge=1)
-    idempotency_key: Optional[str] = None
+    idempotency_key: str | None = None
     max_attempts: int = Field(default=3, ge=1)
     delay_seconds: int = Field(default=0, ge=0)
 
     @field_validator("idempotency_key")
     @classmethod
-    def validate_idempotency_key(cls, v: Optional[str]) -> Optional[str]:
+    def validate_idempotency_key(cls, v: str | None) -> str | None:
+        """Ensure idempotency keys fit within storage constraints."""
         if v is not None and len(v) > 255:
             raise ValueError("idempotency_key must be 255 characters or less")
         return v
@@ -161,12 +162,12 @@ class JobResult(BaseModel):
     """Result of job execution."""
 
     success: bool
-    data: Optional[Dict[str, Any]] = None
-    error: Optional[str] = None
-    records_processed: Optional[int] = None
-    records_failed: Optional[int] = None
-    output_location: Optional[str] = None
-    processing_time_ms: Optional[int] = None
+    data: dict[str, Any] | None = None
+    error: str | None = None
+    records_processed: int | None = None
+    records_failed: int | None = None
+    output_location: str | None = None
+    processing_time_ms: int | None = None
 
 
 class JobStats(BaseModel):
@@ -181,6 +182,7 @@ class JobStats(BaseModel):
 
     @property
     def total(self) -> int:
+        """Return total jobs across all statuses."""
         return (
             self.queued + self.running + self.succeeded + self.failed + self.dead + self.cancelled
         )
@@ -193,6 +195,6 @@ class WorkerHeartbeat(BaseModel):
     status: str  # "healthy", "busy", "paused", "shutting_down"
     jobs_processed: int
     jobs_failed: int
-    current_job_id: Optional[UUID] = None
+    current_job_id: UUID | None = None
     last_heartbeat: datetime
     version: str
