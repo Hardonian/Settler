@@ -1,21 +1,16 @@
-name: Quality Gates
+name: Docs Reality Gates
 
 on:
+  pull_request:
   push:
     branches: [main]
-  pull_request:
 
 permissions:
   contents: read
 
-env:
-  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
-
 jobs:
-  quality:
+  docs-reality:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -31,14 +26,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm run lint
-
-      - name: Typecheck
-        run: pnpm run typecheck
-
-      - name: Tests
-        run: pnpm run test
-
-      - name: Build
-        run: pnpm run build
+      - name: Verify docs match reality
+        run: pnpm run verify:docs

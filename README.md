@@ -1,304 +1,127 @@
-# Settler (OSS-first)
+# Settler
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
-[![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
+Settler is a reconciliation platform monorepo that provides a multi-tenant API, web console, SDKs, and background processing for matching financial records and surfacing discrepancies.
 
-**Settler** is an OSS-first reconciliation engine that surfaces discrepancies from local or hosted data sources. Enterprise offerings are optional hosting and support layers that do not change core reconciliation logic.
+## Landing strip
 
-Settler does not provide compliance or correctness guarantees. It deterministically surfaces discrepancies so operators can review and act.
+- Deterministic reconciliation workflows backed by PostgreSQL/Supabase and a Next.js console.
+- Monorepo with API, web app, adapters, SDKs, and JobForge/Workhorse background processing.
+- Designed for multi-tenant, audit-friendly financial data operations.
+- Extensible via adapters, job types, and SDK integrations.
 
-**Pricing:** 
-- **Free:** 100 transactions/month free, then $0.01 per transaction
-- **Starter:** $29/month + $0.01 per transaction over 1,000 included
-- **Growth:** $99/month + $0.01 per transaction over 10,000 included
-- **Enterprise:** Custom pricing with volume discounts
+**Who this is for:** engineers building reconciliation pipelines, fintech operators running internal finance ops, and contributors extending adapters/SDKs.
 
-See [config/pricing-simple.ts](config/pricing-simple.ts) for complete pricing details.
+**Quickstart:** install dependencies and start the web console via the Quick Start section below (pnpm + Supabase/Postgres required).
 
-## 🚀 Quick Start
+## Why This Exists
+
+- Financial teams need deterministic, reviewable reconciliation workflows rather than opaque “black box” matching.
+- Reconciliation is fragile when the ingestion, matching, and audit trail are scattered across services.
+- Settler centralizes reconciliation logic, visibility, and integrations in one codebase while keeping infrastructure components modular.
+
+## What This Project Is
+
+- A monorepo that ships a reconciliation API, a developer/ops console, SDKs, and background job processing.
+- A reference implementation of reconciliation workflows using Postgres (Supabase), Next.js, and Node.
+- A collection of adapters and integration points that connect external data sources to core reconciliation logic.
+
+## What This Project Is NOT
+
+- A general-purpose accounting system or ledger.
+- A compliance or correctness guarantee (operators still review and resolve discrepancies).
+- A hosted SaaS instance out of the box (deployment and infrastructure are your responsibility).
+
+## Where This Fits (If Part of a Larger System)
+
+- **Upstream inputs:** transaction exports, bank feeds, invoicing systems, and external data sources via adapters.
+- **Core responsibilities:** ingest, normalize, reconcile, and surface discrepancies with an audit trail.
+- **Downstream outputs:** dashboards, exports, and webhook/event-driven integrations for downstream systems.
+
+## Core Capabilities
+
+- Reconciliation API with multi-tenant data modeling and structured error handling.
+- Next.js web console for operational visibility and admin workflows.
+- JobForge-backed background processing with configurable job types.
+- Workhorse Python worker for batch or queue-driven execution paths.
+- SDKs and adapters for integrating external services and automations.
+
+## Quick Start
 
 ### Prerequisites
 
-- Node.js >= 24.0.0
-- PostgreSQL (via Supabase)
-- Redis (via Upstash, optional)
+- Node.js 24.x (see `.nvmrc`)
+- pnpm 10.x (see `package.json`)
+- PostgreSQL (Supabase or a local Postgres instance)
 
-### Installation
+### Install and Run
 
 ```bash
-# Clone repository
-git clone https://github.com/your-org/settler-enterprise.git
-cd settler-enterprise
-
-# Install dependencies
-npm install
-
-# Set up environment variables
+pnpm install
 cp .env.example .env
-# Edit .env with your configuration
-
-# Run database migrations
-export DATABASE_URL="your-connection-string"
-npx tsx scripts/run-migrations-remote.ts
-
-# Start development server
-cd packages/web
-pnpm dev
 ```
 
-## 📖 Documentation
-
-### Getting Started
-- [Quick Start Guide](docs/QUICK_START.md)
-- [Environment Setup](ENV_SETUP_GUIDE.md)
-- [Remote Database Setup](REMOTE_SETUP_GUIDE.md)
-
-### Developer Console
-- [Console Documentation](docs/CONSOLE.md)
-- [API Documentation](docs/API.md)
-- [Authentication Guide](docs/AUTH.md)
-
-### Architecture
-- [Architecture Overview](docs/architecture.md)
-- [Database Schema](docs/database-schema.md)
-- [API Reference](docs/API_REFERENCE.md)
-
-### Operations
-- [Deployment Guide](DEPLOYMENT_CHECKLIST.md)
-- [Monitoring & Alerts](docs/monitoring.md)
-- [Troubleshooting](docs/troubleshooting.md)
-- [Backend Contract Verification](docs/backend-contract-verification.md)
-
-## 🎯 Core Features
-
-### Reconciliation Engine
-Event-sourced matching engine for high-volume transaction processing with deterministic math.
-
-### Receipts API
-AI-powered OCR to extract structured JSON from PDFs and images.
-
-### Feature Flags
-Edge-compatible flags designed for financial rollouts.
-
-### Developer Console
-Real-time visibility into your financial data flows with:
-- API call logging and analytics
-- Usage monitoring and metrics
-- Receipt browser and management
-- Feature flag management
-- Tenant observability (super admin)
-
-## 🏗️ Architecture
-
-Settler Enterprise follows a **Hexagonal Architecture** (Ports & Adapters) pattern with **CQRS** and **Event-Driven** principles:
-
-- **Domain Layer**: Core business logic, independent of infrastructure
-- **Application Layer**: Orchestrates domain objects to fulfill use cases
-- **Infrastructure Layer**: Database, caching, external service adapters
-- **Presentation Layer**: HTTP API routes and middleware
-
-Built with TypeScript, Next.js, PostgreSQL (via Supabase), and Redis (via Upstash).
-
-## 📦 Platform Components
-
-This monorepo contains:
-
-- **`packages/web`**: Next.js web application and Developer Console
-- **`packages/api`**: Core Node.js API server
-- **`packages/cli`**: Command-line tool
-- **`packages/react-settler`**: React components
-- **`packages/adapters`**: Service adapter implementations
-- **`packages/jobforge-*`**: JobForge job queue system (see below)
-
-## 🔄 Background Job Processing (JobForge)
-
-Settler now includes **JobForge**, a production-grade, Postgres-native job queue for background processing:
-
-- **Contract Processing**: Async validation, parsing, and enrichment
-- **Notifications**: Email and webhook delivery with retries
-- **Data Ingestion**: Bulk reconciliation data imports
-- **Audit Jobs**: Compliance checks and reporting
-
-**Key Features:**
-- Multi-tenant isolation via Row Level Security (RLS)
-- Automatic retries with exponential backoff
-- Idempotent job enqueuing (no duplicates)
-- Dead-letter queue for failed jobs
-- Horizontal worker scaling with `FOR UPDATE SKIP LOCKED`
-
-**Quick Start:**
-
-```typescript
-import { JobForgeClient } from '@jobforge/sdk-ts'
-import { SettlerJobTypes } from '@jobforge/adapter-settler'
-
-const jobforge = new JobForgeClient({
-  supabaseUrl: process.env.SUPABASE_URL!,
-  supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-})
-
-// Enqueue a contract processing job
-await jobforge.enqueueJob({
-  tenant_id: user.tenantId,
-  type: SettlerJobTypes.CONTRACT_PROCESS,
-  payload: { contractId: 'abc-123' },
-  idempotency_key: `contract-abc-123-process`,
-})
-```
-
-**Documentation:** [docs/jobforge-integration.md](docs/jobforge-integration.md)
-
-## 🔐 Security
-
-- **Authentication**: Required for all console routes
-- **Authorization**: Subscription-based access control
-- **Tenant Isolation**: RLS policies enforce boundaries
-- **PII Protection**: Automatic data sanitization
-- **Rate Limiting**: Protection against abuse
-
-## 📊 Monitoring
-
-- **Health Checks**: `/api/console/health`
-- **API Logging**: Automatic logging with PII sanitization
-- **Alerting**: Automated alerts for anomalies
-- **Performance Tracking**: Response time and error rate monitoring
-
-## 🧪 Testing
+Set the required environment variables in `.env`, then run migrations and start the web console:
 
 ```bash
-# Run all tests
-export DATABASE_URL="your-connection-string"
-./scripts/run-all-tests.sh
-
-# Run specific tests
-npx tsx scripts/test-setup.ts
-npx tsx scripts/integration-test.ts
+export DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DB"
+pnpm exec tsx scripts/run-migrations-remote.ts
+pnpm --filter @settler/web dev
 ```
 
-## 📝 Changelog
+**Success signal:** open `http://localhost:3000` and sign up to reach the console UI.
 
-See [CHANGELOG.md](CHANGELOG.md) for detailed changelog.
+## Architecture Overview
 
-## 🤝 Contributing
+High-level flow:
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+1. API routes receive requests and validate inputs.
+2. Domain/application services orchestrate reconciliation logic.
+3. Persistence and adapters handle storage and external integrations.
+4. JobForge + Workhorse handle asynchronous/background execution.
 
-## 📄 License
+Key directories:
 
-Proprietary - See [LICENSE](LICENSE) for details.
+- `packages/api`: reconciliation API (domain, application, infrastructure, routes)
+- `packages/web`: Next.js web console
+- `packages/adapters`: integration adapters
+- `packages/jobforge-*`: job queue infrastructure
+- `packages/workhorse`: Python worker for batch processing
+- `packages/sdk-*`: language SDKs
 
-## 👨‍💼 Solo Operator Runbook
+## Extending the Project
 
-This repository includes comprehensive operational tooling designed for solo operators running a SaaS business. All commands are production-ready and safe to run in CI/CD.
+- **Add an adapter:** implement a new adapter in `packages/adapters` and register it with the API boundary.
+- **Add a job type:** extend JobForge types in `packages/jobforge-adapter-settler` and update workers.
+- **Add UI surfaces:** use `packages/web` for console pages and shared UI patterns.
+- **Add SDK functionality:** update the relevant SDK in `packages/sdk-*` and keep API contracts in sync.
 
-### Daily Ops Commands
+Common pitfalls:
 
-```bash
-# Generate daily founder report (growth, activation, revenue, billing health)
-npm run ops:daily
+- Keep tenant isolation boundaries intact (RLS policies and tenant-scoped queries).
+- Maintain deterministic reconciliation logic (no hidden side effects in matching).
+- Update docs and scripts together; CI enforces docs reality checks.
 
-# Generate weekly founder report (week-over-week trends, recommendations)
-npm run ops:weekly
+## Failure & Degradation Model
 
-# Run comprehensive health check (lint, typecheck, routes, SLA, migrations)
-npm run ops:doctor
+- API requests return explicit error responses with HTTP status codes when validation fails.
+- If dependencies (Postgres, Redis) are unavailable, health checks fail and background jobs pause.
+- Background jobs follow retry rules defined in JobForge configuration; failed jobs are surfaced for review.
+- Settler surfaces discrepancies but does not auto-resolve correctness disputes.
 
-# Generate billing evidence pack for a tenant (for support/debugging)
-npm run ops:billing:evidence --tenant <tenant-id>
+## Security & Safety Considerations
 
-# Generate procurement pack for B2B sales (Terms, Privacy, DPA, Security)
-npm run ops:procurement:pack
+- Treat service-role credentials and database URLs as high-privilege secrets.
+- Tenant isolation relies on Postgres RLS and tenant-scoped access patterns.
+- Run verification scripts before release; they validate contracts and environment assumptions.
 
-# Run smoke tests (key routes, webhooks, DB connectivity)
-npm run qa:smoke
+## Contributing
 
-# Run comprehensive code quality audit (security, performance, error handling)
-npm run ops:audit
-```
+- Read [`CONTRIBUTING.md`](CONTRIBUTING.md) for setup, quality gates, and review expectations.
+- Open issues using the templates in `.github/ISSUE_TEMPLATE`.
+- Use Discussions (if enabled) for Q&A, ideas, and integration showcases.
 
-### Automated Reports
+## License & Governance
 
-Reports are automatically generated via GitHub Actions:
-- **Daily Reports**: Generated at 07:40 and 16:40 America/Toronto
-- **Weekly Reports**: Generated every Monday at 07:40 America/Toronto
-- **Artifacts**: All reports are uploaded as GitHub Actions artifacts
-
-Reports include:
-- Growth metrics (signups, activations, MRR)
-- Activation funnel (signup → tenant → provider → first recon)
-- Usage metrics (reconciliation runs, transactions processed)
-- Revenue metrics (MRR, ARR, churn, LTV)
-- Billing health (active subscriptions, payment failures, dunning)
-- Risk indicators (error rates, SLA violations)
-- Support metrics (open tickets, response times)
-- Cost proxies (API calls, database queries)
-
-### Daily Workflow
-
-1. **Morning (07:40 ET)**: Review daily report from GitHub Actions
-2. **Check Health**: Run `npm run ops:doctor` to verify system health
-3. **Monitor Activation**: Check `/console/admin/activation` for funnel metrics
-4. **Review Billing**: Check for past_due subscriptions and failed payments
-
-### Weekly Workflow
-
-1. **Monday Morning**: Review weekly report from GitHub Actions
-2. **Procurement Requests**: Generate procurement packs as needed
-3. **Billing Incidents**: Use `ops:billing:evidence` to gather evidence
-4. **Health Audit**: Run full `ops:doctor` check
-
-### On-Call in 10 Minutes
-
-1. **Check Status**: Visit `/status` for public status, `/api/admin/health` for detailed metrics
-2. **Review Alerts**: Check error spikes, webhook failures, reconciliation issues
-3. **Billing Issues**: Use `ops:billing:evidence` to gather tenant billing data
-4. **Quick Fixes**: 
-   - Webhook failures: Check StripeEvent table for failed events
-   - Reconciliation errors: Review ReconResult table for failed runs
-   - Database issues: Run `npm run prisma:status` to check migrations
-
-### Key Endpoints
-
-- **Public Status**: `/status` - System status for customers
-- **Admin Health**: `/api/admin/health` - Detailed internal health metrics
-- **Activation Funnel**: `/console/admin/activation` - Product-led growth metrics
-- **Billing Portal**: `/console/billing` - Customer billing management
-
-### Reports Location
-
-All reports are saved to `ops/reports/`:
-- `FOUNDERS_DAILY_REPORT.md` - Daily operational metrics
-- `FOUNDERS_WEEKLY_REPORT.md` - Weekly aggregated metrics
-- `DOCTOR_SUMMARY.md` - Health check results
-- `ops/packs/billing-evidence/` - Billing incident evidence packs
-- `ops/packs/procurement/` - B2B sales procurement packs
-
-## 🆘 Support
-
-- **Documentation**: [docs/](docs/)
-- **Console**: [Developer Console](/console)
-- **Issues**: Contact support via console
-
-## Deterministic verification
-
-Settler includes a Rust reconciliation kernel and verifier that provide deterministic outputs and local verification. These components surface discrepancies between normalized inputs and outputs; they do not make compliance or correctness guarantees. Verification is optional and runs client-side when the wasm verifier is available.
-
-- Kernel docs: [docs/kernel/DETERMINISM.md](docs/kernel/DETERMINISM.md)
-- Verifier quickstart: [docs/verify/QUICKSTART.md](docs/verify/QUICKSTART.md)
-
-## 🎉 Release v1.0.0
-
-**First Official Release** - December 21, 2024
-
-### What's New
-- ✅ API call logging system
-- ✅ Tenant observability dashboard
-- ✅ Enhanced security and performance
-- ✅ Comprehensive monitoring
-- ✅ Production-ready infrastructure
-
-See [RELEASE_NOTES.md](RELEASE_NOTES.md) for complete release notes.
-
----
-
-**Settler Enterprise** - Financial Reconciliation as a Service
+- The repository is governed under a proprietary license. See [`LICENSE`](LICENSE).
+- Some subpackages carry different licenses; see [`docs/LICENSING_OVERVIEW.md`](docs/LICENSING_OVERVIEW.md).
+- Governance and decision-making are documented in [`GOVERNANCE.md`](GOVERNANCE.md).

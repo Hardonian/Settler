@@ -171,6 +171,7 @@ if (fast) {
   runStep("App Router Validation", "pnpm run verify:app-router", true);
   runStep("Lint (ESLint)", "pnpm run lint -- --no-cache", true);
   runStep("Type Check (TypeScript)", "pnpm run typecheck -- --no-cache", true);
+  runStep("Docs Reality Check", "pnpm run verify:docs", true);
 
   if (full) {
     runStep("Typed Env Validation (Runtime)", "pnpm run verify:env:typed -- --mode=runtime", true);
