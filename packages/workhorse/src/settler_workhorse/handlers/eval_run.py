@@ -4,7 +4,8 @@ Evaluates dataset quality, completeness, and schema compliance.
 Safe no-op if no dataset provided.
 """
 
-from typing import Any, Dict, List, Optional
+from contextlib import suppress
+from typing import Any
 
 from settler_workhorse.models import Job, JobResult, JobType
 from settler_workhorse.utils.logging import get_logger
@@ -20,9 +21,9 @@ class EvaluationError(Exception):
 
 
 def evaluate_completeness(
-    records: List[Dict[str, Any]],
-    required_fields: Optional[List[str]] = None,
-) -> Dict[str, Any]:
+    records: list[dict[str, Any]],
+    required_fields: list[str] | None = None,
+) -> dict[str, Any]:
     """Evaluate data completeness across records.
 
     Args:
@@ -42,7 +43,7 @@ def evaluate_completeness(
         }
 
     # Calculate per-field completeness
-    field_stats: Dict[str, Dict[str, Any]] = {}
+    field_stats: dict[str, dict[str, Any]] = {}
     for field in required:
         field_stats[field] = {"present": 0, "missing": 0, "null": 0}
 
@@ -86,9 +87,9 @@ def evaluate_completeness(
 
 
 def evaluate_schema_compliance(
-    records: List[Dict[str, Any]],
-    schema: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    records: list[dict[str, Any]],
+    schema: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Evaluate records against expected schema.
 
     Args:
@@ -158,9 +159,9 @@ def evaluate_schema_compliance(
 
 
 def evaluate_consistency(
-    records: List[Dict[str, Any]],
-    options: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    records: list[dict[str, Any]],
+    options: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Evaluate data consistency (duplicates, ranges, etc.).
 
     Args:
@@ -175,7 +176,7 @@ def evaluate_consistency(
     # Check for duplicates based on specified keys
     duplicate_keys = opts.get("duplicate_keys", ["external_id"])
 
-    seen: Dict[str, int] = {}
+    seen: dict[str, int] = {}
     duplicates = []
 
     for idx, record in enumerate(records):
@@ -201,10 +202,8 @@ def evaluate_consistency(
     for record in records:
         amount = record.get("amount")
         if amount is not None:
-            try:
+            with suppress(ValueError, TypeError):
                 amounts.append(float(amount))
-            except (ValueError, TypeError):
-                pass
 
     amount_stats = {}
     if amounts:

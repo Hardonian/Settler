@@ -5,7 +5,7 @@ Safe no-op if no datasets provided.
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from settler_workhorse.models import Job, JobResult, JobType
 from settler_workhorse.utils.logging import get_logger
@@ -21,11 +21,11 @@ class ReconciliationError(Exception):
 
 
 def reconcile_datasets(
-    source_records: List[Dict[str, Any]],
-    target_records: List[Dict[str, Any]],
-    match_keys: List[str],
-    options: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    source_records: list[dict[str, Any]],
+    target_records: list[dict[str, Any]],
+    match_keys: list[str],
+    options: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Reconcile two datasets using match keys.
 
     Args:
@@ -42,14 +42,14 @@ def reconcile_datasets(
     case_sensitive = opts.get("case_sensitive", False)
 
     # Build indices for efficient matching
-    source_index: Dict[str, List[Dict]] = {}
+    source_index: dict[str, list[dict]] = {}
     for record in source_records:
         key = _build_match_key(record, match_keys, case_sensitive)
         if key not in source_index:
             source_index[key] = []
         source_index[key].append(record)
 
-    target_index: Dict[str, List[Dict]] = {}
+    target_index: dict[str, list[dict]] = {}
     for record in target_records:
         key = _build_match_key(record, match_keys, case_sensitive)
         if key not in target_index:
@@ -102,7 +102,7 @@ def reconcile_datasets(
                     )
 
     # Remaining target records are orphans
-    for key, batch in target_index.items():
+    for _key, batch in target_index.items():
         for record in batch:
             # Check if already matched
             already_matched = any(m["target"] == record for m in matched)
@@ -131,8 +131,8 @@ def reconcile_datasets(
 
 
 def _build_match_key(
-    record: Dict[str, Any],
-    keys: List[str],
+    record: dict[str, Any],
+    keys: list[str],
     case_sensitive: bool = False,
 ) -> str:
     """Build match key from record using specified fields.
@@ -158,10 +158,10 @@ def _build_match_key(
 
 
 def _records_match(
-    source: Dict[str, Any],
-    target: Dict[str, Any],
+    source: dict[str, Any],
+    target: dict[str, Any],
     tolerance: float = 0.01,
-    options: Optional[Dict[str, Any]] = None,
+    options: dict[str, Any] | None = None,
 ) -> bool:
     """Check if two records match within tolerance.
 
@@ -195,14 +195,13 @@ def _records_match(
     src_date = source.get("date")
     tgt_date = target.get("date")
 
-    if src_date and tgt_date:
+    if src_date and tgt_date and str(src_date) != str(tgt_date):
         # Simple string comparison for dates (assume normalized)
-        if str(src_date) != str(tgt_date):
-            # Optionally: use date tolerance
-            date_tolerance_days = opts.get("date_tolerance_days", 0)
-            if date_tolerance_days == 0:
-                return False
-            # TODO: Implement date tolerance comparison
+        # Optionally: use date tolerance
+        date_tolerance_days = opts.get("date_tolerance_days", 0)
+        if date_tolerance_days == 0:
+            return False
+        # TODO: Implement date tolerance comparison
 
     return True
 

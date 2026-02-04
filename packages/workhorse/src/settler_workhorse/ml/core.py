@@ -1,5 +1,4 @@
-"""
-ML Core - Base classes for ML/AI operations.
+"""ML Core - Base classes for ML/AI operations.
 
 Enterprise-grade ML infrastructure with:
 - Vector embeddings support
@@ -9,20 +8,21 @@ Enterprise-grade ML infrastructure with:
 - A/B testing framework
 """
 
+import hashlib
+import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union
-import hashlib
-import json
+from typing import Any, Generic, TypeVar
+
 import numpy as np
 from pydantic import BaseModel, Field
 
 
 class VectorEmbedding(BaseModel):
     """Vector embedding for semantic search.
-    
+
     Attributes:
         id: Unique identifier
         tenant_id: Tenant scope
@@ -33,16 +33,17 @@ class VectorEmbedding(BaseModel):
         model_version: Model version used for embedding
         created_at: Timestamp
     """
+
     id: str
     tenant_id: str
     entity_type: str
     entity_id: str
-    vector: List[float]
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    vector: list[float]
+    metadata: dict[str, Any] = Field(default_factory=dict)
     model_version: str = "1.0.0"
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    
-    def to_dict(self) -> Dict[str, Any]:
+
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for storage."""
         return {
             "id": self.id,
@@ -54,9 +55,9 @@ class VectorEmbedding(BaseModel):
             "model_version": self.model_version,
             "created_at": self.created_at.isoformat(),
         }
-    
+
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "VectorEmbedding":
+    def from_dict(cls, data: dict[str, Any]) -> "VectorEmbedding":
         """Create from dictionary."""
         return cls(
             id=data["id"],
@@ -66,12 +67,17 @@ class VectorEmbedding(BaseModel):
             vector=data["vector"],
             metadata=data.get("metadata", {}),
             model_version=data.get("model_version", "1.0.0"),
-            created_at=datetime.fromisoformat(data["created_at"]) if "created_at" in data else datetime.utcnow(),
+            created_at=(
+                datetime.fromisoformat(data["created_at"])
+                if "created_at" in data
+                else datetime.utcnow()
+            ),
         )
 
 
 class MLOperationType(str, Enum):
     """Types of ML operations."""
+
     EMBEDDING_GENERATION = "embedding_generation"
     SIMILARITY_SEARCH = "similarity_search"
     CLASSIFICATION = "classification"
@@ -84,7 +90,7 @@ class MLOperationType(str, Enum):
 @dataclass
 class MLModelConfig:
     """ML model configuration.
-    
+
     Attributes:
         name: Model name
         version: Model version
@@ -95,31 +101,35 @@ class MLModelConfig:
         batch_size: Inference batch size
         confidence_threshold: Minimum confidence for predictions
     """
+
     name: str
     version: str = "1.0.0"
     operation_type: MLOperationType = MLOperationType.CLASSIFICATION
-    hyperparameters: Dict[str, Any] = field(default_factory=dict)
-    feature_columns: List[str] = field(default_factory=list)
-    target_column: Optional[str] = None
+    hyperparameters: dict[str, Any] = field(default_factory=dict)
+    feature_columns: list[str] = field(default_factory=list)
+    target_column: str | None = None
     batch_size: int = 1000
     confidence_threshold: float = 0.8
-    
+
     def get_signature(self) -> str:
         """Generate unique signature for model config."""
-        config_str = json.dumps({
-            "name": self.name,
-            "version": self.version,
-            "operation_type": self.operation_type.value,
-            "hyperparameters": self.hyperparameters,
-            "feature_columns": self.feature_columns,
-            "target_column": self.target_column,
-        }, sort_keys=True)
+        config_str = json.dumps(
+            {
+                "name": self.name,
+                "version": self.version,
+                "operation_type": self.operation_type.value,
+                "hyperparameters": self.hyperparameters,
+                "feature_columns": self.feature_columns,
+                "target_column": self.target_column,
+            },
+            sort_keys=True,
+        )
         return hashlib.sha256(config_str.encode()).hexdigest()[:16]
 
 
 class MLModelVersion(BaseModel):
     """ML model version metadata.
-    
+
     Attributes:
         model_name: Base model name
         version: Version string (semver)
@@ -131,22 +141,23 @@ class MLModelVersion(BaseModel):
         traffic_percentage: Traffic percentage (0-100)
         artifact_path: Path to model artifact
     """
+
     model_name: str
     version: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    trained_by: Optional[str] = None
-    metrics: Dict[str, float] = Field(default_factory=dict)
+    trained_by: str | None = None
+    metrics: dict[str, float] = Field(default_factory=dict)
     is_production: bool = False
     is_canary: bool = False
     traffic_percentage: float = 0.0
-    artifact_path: Optional[str] = None
-    
+    artifact_path: str | None = None
+
     def promote_to_production(self) -> None:
         """Promote this version to production."""
         self.is_production = True
         self.is_canary = False
         self.traffic_percentage = 100.0
-    
+
     def set_canary(self, percentage: float) -> None:
         """Set as canary deployment with traffic percentage."""
         self.is_canary = True
@@ -158,20 +169,21 @@ T = TypeVar("T")
 
 class FeatureVector(BaseModel, Generic[T]):
     """Generic feature vector for ML operations.
-    
+
     Type parameter T defines the entity type (e.g., Transaction, Receipt).
     """
+
     entity_id: str
     tenant_id: str
-    features: Dict[str, Union[float, int, str, bool]]
+    features: dict[str, float | int | str | bool]
     feature_version: str = "1.0.0"
     computed_at: datetime = Field(default_factory=datetime.utcnow)
     entity_type: str = "unknown"
-    
-    def to_numpy(self, feature_names: List[str]) -> np.ndarray:
+
+    def to_numpy(self, feature_names: list[str]) -> np.ndarray:
         """Convert to numpy array with specified feature order."""
         return np.array([self.features.get(name, 0.0) for name in feature_names])
-    
+
     def get_feature_hash(self) -> str:
         """Generate hash of feature values for deduplication."""
         feature_str = json.dumps(self.features, sort_keys=True)
@@ -180,48 +192,48 @@ class FeatureVector(BaseModel, Generic[T]):
 
 class MLPipelineStage(ABC):
     """Abstract base class for ML pipeline stages.
-    
+
     All ML operations should inherit from this class to ensure
     consistent interface, observability, and error handling.
     """
-    
+
     def __init__(self, name: str, config: MLModelConfig):
         self.name = name
         self.config = config
         self._initialized = False
-    
+
     @abstractmethod
     def initialize(self) -> None:
         """Initialize the pipeline stage.
-        
+
         Load models, allocate resources, validate configuration.
         """
         pass
-    
+
     @abstractmethod
-    def execute(self, inputs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def execute(self, inputs: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Execute the pipeline stage on inputs.
-        
+
         Args:
             inputs: List of input records
-            
+
         Returns:
             List of output records with predictions/features
         """
         pass
-    
+
     @abstractmethod
-    def health_check(self) -> Dict[str, Any]:
+    def health_check(self) -> dict[str, Any]:
         """Check health of the pipeline stage.
-        
+
         Returns:
             Health status dictionary
         """
         pass
-    
-    def validate_inputs(self, inputs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+
+    def validate_inputs(self, inputs: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Validate and filter inputs.
-        
+
         Returns only valid inputs with required features.
         """
         valid = []
@@ -233,39 +245,39 @@ class MLPipelineStage(ABC):
 
 class SimilaritySearchEngine:
     """Vector similarity search engine.
-    
+
     Performs efficient similarity search on vector embeddings.
     Supports cosine similarity, Euclidean distance, and dot product.
     """
-    
+
     def __init__(self, metric: str = "cosine"):
         self.metric = metric
-        self.embeddings: List[VectorEmbedding] = []
-    
+        self.embeddings: list[VectorEmbedding] = []
+
     def add_embedding(self, embedding: VectorEmbedding) -> None:
         """Add an embedding to the index."""
         self.embeddings.append(embedding)
-    
+
     def search(
         self,
-        query_vector: List[float],
+        query_vector: list[float],
         top_k: int = 10,
-        tenant_id: Optional[str] = None,
-        entity_type: Optional[str] = None,
-    ) -> List[Dict[str, Any]]:
+        tenant_id: str | None = None,
+        entity_type: str | None = None,
+    ) -> list[dict[str, Any]]:
         """Search for similar embeddings.
-        
+
         Args:
             query_vector: Query embedding vector
             top_k: Number of results to return
             tenant_id: Filter by tenant (optional)
             entity_type: Filter by entity type (optional)
-            
+
         Returns:
             List of results with similarity scores
         """
         query_np = np.array(query_vector)
-        
+
         results = []
         for emb in self.embeddings:
             # Filter by tenant and entity type
@@ -273,27 +285,31 @@ class SimilaritySearchEngine:
                 continue
             if entity_type and emb.entity_type != entity_type:
                 continue
-            
+
             # Calculate similarity
             emb_np = np.array(emb.vector)
-            
+
             if self.metric == "cosine":
-                similarity = np.dot(query_np, emb_np) / (np.linalg.norm(query_np) * np.linalg.norm(emb_np))
+                similarity = np.dot(query_np, emb_np) / (
+                    np.linalg.norm(query_np) * np.linalg.norm(emb_np)
+                )
             elif self.metric == "euclidean":
                 similarity = -np.linalg.norm(query_np - emb_np)  # Negative for sorting
             else:  # dot
                 similarity = np.dot(query_np, emb_np)
-            
-            results.append({
-                "embedding": emb,
-                "similarity": float(similarity),
-            })
-        
+
+            results.append(
+                {
+                    "embedding": emb,
+                    "similarity": float(similarity),
+                }
+            )
+
         # Sort by similarity (descending)
         results.sort(key=lambda x: x["similarity"], reverse=True)
-        
+
         return results[:top_k]
-    
+
     def clear(self) -> None:
         """Clear all embeddings."""
         self.embeddings.clear()
@@ -301,47 +317,47 @@ class SimilaritySearchEngine:
 
 class ABTestFramework:
     """A/B testing framework for ML models.
-    
+
     Manages traffic splitting between model versions.
     """
-    
+
     def __init__(self):
-        self.versions: Dict[str, List[MLModelVersion]] = {}
-    
+        self.versions: dict[str, list[MLModelVersion]] = {}
+
     def register_version(self, version: MLModelVersion) -> None:
         """Register a model version."""
         if version.model_name not in self.versions:
             self.versions[version.model_name] = []
         self.versions[version.model_name].append(version)
-    
+
     def get_version_for_request(
         self,
         model_name: str,
-        request_id: Optional[str] = None,
-        user_id: Optional[str] = None,
-    ) -> Optional[MLModelVersion]:
+        request_id: str | None = None,
+        user_id: str | None = None,
+    ) -> MLModelVersion | None:
         """Select model version for request.
-        
+
         Uses consistent hashing for deterministic routing.
-        
+
         Args:
             model_name: Name of the model
             request_id: Request identifier (for consistent hashing)
             user_id: User identifier (for user-based routing)
-            
+
         Returns:
             Selected model version
         """
         if model_name not in self.versions:
             return None
-        
+
         versions = self.versions[model_name]
-        
+
         # Check for production version
         prod_versions = [v for v in versions if v.is_production]
         if prod_versions:
             return prod_versions[0]
-        
+
         # Use consistent hashing for canary
         if request_id:
             hash_val = int(hashlib.sha256(request_id.encode()).hexdigest(), 16)
@@ -351,19 +367,16 @@ class ABTestFramework:
                     cumulative += version.traffic_percentage
                     if (hash_val % 10000) / 100 < cumulative:
                         return version
-        
+
         # Default to first version
         return versions[0] if versions else None
-    
-    def get_traffic_split(self, model_name: str) -> Dict[str, float]:
+
+    def get_traffic_split(self, model_name: str) -> dict[str, float]:
         """Get current traffic split for a model."""
         if model_name not in self.versions:
             return {}
-        
-        return {
-            v.version: v.traffic_percentage
-            for v in self.versions[model_name]
-        }
+
+        return {v.version: v.traffic_percentage for v in self.versions[model_name]}
 
 
 # Export all classes

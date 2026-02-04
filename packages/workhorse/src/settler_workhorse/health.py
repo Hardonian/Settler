@@ -1,5 +1,4 @@
-"""
-Comprehensive health checks and monitoring for the Settler workhorse.
+"""Comprehensive health checks and monitoring for the Settler workhorse.
 
 Provides health check endpoints, dependency status, readiness/liveness
 probes, and system diagnostics for production operations.
@@ -9,6 +8,7 @@ import asyncio
 import inspect
 import os
 import platform
+
 try:
     import resource
 except ImportError:
@@ -16,14 +16,16 @@ except ImportError:
 import sys
 import time
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Protocol, Set, Tuple, Type, Union
+from typing import Any
 
 
 class HealthStatus(Enum):
     """Health check status values."""
+
     HEALTHY = "healthy"
     DEGRADED = "degraded"
     UNHEALTHY = "unhealthy"
@@ -33,48 +35,54 @@ class HealthStatus(Enum):
 @dataclass
 class HealthCheckResult:
     """Result of a single health check."""
+
     name: str
     status: HealthStatus
     message: str
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
     duration_ms: float = 0.0
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+
     @property
     def is_healthy(self) -> bool:
+        """Return True when the check status is healthy."""
         return self.status == HealthStatus.HEALTHY
 
 
 @dataclass
 class SystemHealth:
     """Overall system health summary."""
+
     status: HealthStatus
-    checks: List[HealthCheckResult]
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    checks: list[HealthCheckResult]
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     version: str = "unknown"
     uptime_seconds: float = 0.0
-    
+
     @property
     def healthy_count(self) -> int:
+        """Return the number of healthy checks."""
         return sum(1 for c in self.checks if c.status == HealthStatus.HEALTHY)
-    
+
     @property
     def degraded_count(self) -> int:
+        """Return the number of degraded checks."""
         return sum(1 for c in self.checks if c.status == HealthStatus.DEGRADED)
-    
+
     @property
     def unhealthy_count(self) -> int:
+        """Return the number of unhealthy checks."""
         return sum(1 for c in self.checks if c.status == HealthStatus.UNHEALTHY)
 
 
 class HealthCheck(ABC):
     """Abstract base class for health checks."""
-    
+
     def __init__(self, name: str, critical: bool = True, timeout_seconds: float = 5.0):
         self.name = name
         self.critical = critical
         self.timeout_seconds = timeout_seconds
-    
+
     @abstractmethod
     async def check(self) -> HealthCheckResult:
         """Execute the health check."""
@@ -83,20 +91,20 @@ class HealthCheck(ABC):
 
 class DatabaseHealthCheck(HealthCheck):
     """Health check for database connectivity."""
-    
+
     def __init__(
         self,
         name: str = "database",
-        check_fn: Optional[Callable[[], Any]] = None,
+        check_fn: Callable[[], Any] | None = None,
         timeout_seconds: float = 5.0,
     ):
         super().__init__(name, critical=True, timeout_seconds=timeout_seconds)
         self.check_fn = check_fn
-    
+
     async def check(self) -> HealthCheckResult:
         """Check database connectivity."""
         start = time.perf_counter()
-        
+
         try:
             if self.check_fn:
                 if inspect.iscoroutinefunction(self.check_fn):
@@ -111,9 +119,9 @@ class DatabaseHealthCheck(HealthCheck):
                         loop.run_in_executor(None, self.check_fn),
                         timeout=self.timeout_seconds,
                     )
-            
+
             duration_ms = (time.perf_counter() - start) * 1000
-            
+
             return HealthCheckResult(
                 name=self.name,
                 status=HealthStatus.HEALTHY,
@@ -121,8 +129,8 @@ class DatabaseHealthCheck(HealthCheck):
                 details={"response_time_ms": duration_ms},
                 duration_ms=duration_ms,
             )
-            
-        except asyncio.TimeoutError:
+
+        except TimeoutError:
             duration_ms = (time.perf_counter() - start) * 1000
             return HealthCheckResult(
                 name=self.name,
@@ -131,7 +139,7 @@ class DatabaseHealthCheck(HealthCheck):
                 details={"timeout": self.timeout_seconds},
                 duration_ms=duration_ms,
             )
-            
+
         except Exception as e:
             duration_ms = (time.perf_counter() - start) * 1000
             return HealthCheckResult(
@@ -145,7 +153,7 @@ class DatabaseHealthCheck(HealthCheck):
 
 class RedisHealthCheck(HealthCheck):
     """Health check for Redis connectivity."""
-    
+
     def __init__(
         self,
         name: str = "redis",
@@ -156,30 +164,30 @@ class RedisHealthCheck(HealthCheck):
         super().__init__(name, critical=False, timeout_seconds=timeout_seconds)
         self.host = host
         self.port = port
-    
+
     async def check(self) -> HealthCheckResult:
         """Check Redis connectivity."""
         start = time.perf_counter()
-        
+
         try:
             import redis
-            
+
             client = redis.Redis(
                 host=self.host,
                 port=self.port,
                 socket_timeout=self.timeout_seconds,
                 socket_connect_timeout=self.timeout_seconds,
             )
-            
+
             # Run in thread pool since redis-py is sync
             loop = asyncio.get_event_loop()
             info = await asyncio.wait_for(
                 loop.run_in_executor(None, client.info),
                 timeout=self.timeout_seconds,
             )
-            
+
             duration_ms = (time.perf_counter() - start) * 1000
-            
+
             return HealthCheckResult(
                 name=self.name,
                 status=HealthStatus.HEALTHY,
@@ -191,7 +199,7 @@ class RedisHealthCheck(HealthCheck):
                 },
                 duration_ms=duration_ms,
             )
-            
+
         except ImportError:
             duration_ms = (time.perf_counter() - start) * 1000
             return HealthCheckResult(
@@ -200,7 +208,7 @@ class RedisHealthCheck(HealthCheck):
                 message="Redis package not installed",
                 duration_ms=duration_ms,
             )
-            
+
         except Exception as e:
             duration_ms = (time.perf_counter() - start) * 1000
             return HealthCheckResult(
@@ -214,7 +222,7 @@ class RedisHealthCheck(HealthCheck):
 
 class ExternalAPIHealthCheck(HealthCheck):
     """Health check for external API dependencies."""
-    
+
     def __init__(
         self,
         name: str,
@@ -226,51 +234,53 @@ class ExternalAPIHealthCheck(HealthCheck):
         super().__init__(name, critical=critical, timeout_seconds=timeout_seconds)
         self.url = url
         self.expected_status = expected_status
-    
+
     async def check(self) -> HealthCheckResult:
         """Check external API availability."""
         start = time.perf_counter()
-        
+
         try:
             import aiohttp
-            
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
+
+            async with (
+                aiohttp.ClientSession() as session,
+                session.get(
                     self.url,
                     timeout=aiohttp.ClientTimeout(total=self.timeout_seconds),
-                ) as response:
-                    duration_ms = (time.perf_counter() - start) * 1000
-                    
-                    if response.status == self.expected_status:
-                        return HealthCheckResult(
-                            name=self.name,
-                            status=HealthStatus.HEALTHY,
-                            message=f"API responded with status {response.status}",
-                            details={
-                                "status_code": response.status,
-                                "response_time_ms": duration_ms,
-                                "url": self.url,
-                            },
-                            duration_ms=duration_ms,
-                        )
-                    else:
-                        return HealthCheckResult(
-                            name=self.name,
-                            status=HealthStatus.DEGRADED,
-                            message=f"API responded with unexpected status {response.status}",
-                            details={
-                                "expected_status": self.expected_status,
-                                "actual_status": response.status,
-                                "url": self.url,
-                            },
-                            duration_ms=duration_ms,
-                        )
-                            
+                ) as response,
+            ):
+                duration_ms = (time.perf_counter() - start) * 1000
+
+                if response.status == self.expected_status:
+                    return HealthCheckResult(
+                        name=self.name,
+                        status=HealthStatus.HEALTHY,
+                        message=f"API responded with status {response.status}",
+                        details={
+                            "status_code": response.status,
+                            "response_time_ms": duration_ms,
+                            "url": self.url,
+                        },
+                        duration_ms=duration_ms,
+                    )
+                else:
+                    return HealthCheckResult(
+                        name=self.name,
+                        status=HealthStatus.DEGRADED,
+                        message=f"API responded with unexpected status {response.status}",
+                        details={
+                            "expected_status": self.expected_status,
+                            "actual_status": response.status,
+                            "url": self.url,
+                        },
+                        duration_ms=duration_ms,
+                    )
+
         except ImportError:
             # Fallback to urllib
             try:
                 import urllib.request
-                
+
                 loop = asyncio.get_event_loop()
                 response = await asyncio.wait_for(
                     loop.run_in_executor(
@@ -279,9 +289,9 @@ class ExternalAPIHealthCheck(HealthCheck):
                     ),
                     timeout=self.timeout_seconds,
                 )
-                
+
                 duration_ms = (time.perf_counter() - start) * 1000
-                
+
                 return HealthCheckResult(
                     name=self.name,
                     status=HealthStatus.HEALTHY,
@@ -293,7 +303,7 @@ class ExternalAPIHealthCheck(HealthCheck):
                     },
                     duration_ms=duration_ms,
                 )
-                
+
             except Exception as e:
                 duration_ms = (time.perf_counter() - start) * 1000
                 return HealthCheckResult(
@@ -303,7 +313,7 @@ class ExternalAPIHealthCheck(HealthCheck):
                     details={"error": str(e), "url": self.url},
                     duration_ms=duration_ms,
                 )
-        
+
         except Exception as e:
             duration_ms = (time.perf_counter() - start) * 1000
             return HealthCheckResult(
@@ -317,7 +327,7 @@ class ExternalAPIHealthCheck(HealthCheck):
 
 class DiskSpaceHealthCheck(HealthCheck):
     """Health check for disk space."""
-    
+
     def __init__(
         self,
         name: str = "disk_space",
@@ -329,24 +339,24 @@ class DiskSpaceHealthCheck(HealthCheck):
         self.path = path
         self.warning_threshold = warning_threshold_percent
         self.critical_threshold = critical_threshold_percent
-    
+
     async def check(self) -> HealthCheckResult:
         """Check disk space availability."""
         start = time.perf_counter()
-        
+
         try:
             import shutil
-            
+
             loop = asyncio.get_event_loop()
             stat = await loop.run_in_executor(None, shutil.disk_usage, self.path)
-            
+
             total = stat.total
             used = stat.used
             free = stat.free
             used_percent = (used / total) * 100
-            
+
             duration_ms = (time.perf_counter() - start) * 1000
-            
+
             details = {
                 "path": self.path,
                 "total_gb": total / (1024**3),
@@ -354,7 +364,7 @@ class DiskSpaceHealthCheck(HealthCheck):
                 "free_gb": free / (1024**3),
                 "used_percent": used_percent,
             }
-            
+
             if used_percent >= self.critical_threshold:
                 return HealthCheckResult(
                     name=self.name,
@@ -379,7 +389,7 @@ class DiskSpaceHealthCheck(HealthCheck):
                     details=details,
                     duration_ms=duration_ms,
                 )
-                
+
         except Exception as e:
             duration_ms = (time.perf_counter() - start) * 1000
             return HealthCheckResult(
@@ -393,7 +403,7 @@ class DiskSpaceHealthCheck(HealthCheck):
 
 class MemoryHealthCheck(HealthCheck):
     """Health check for system memory."""
-    
+
     def __init__(
         self,
         name: str = "memory",
@@ -403,27 +413,27 @@ class MemoryHealthCheck(HealthCheck):
         super().__init__(name, critical=False, timeout_seconds=3.0)
         self.warning_threshold = warning_threshold_percent
         self.critical_threshold = critical_threshold_percent
-    
+
     async def check(self) -> HealthCheckResult:
         """Check memory availability."""
         start = time.perf_counter()
-        
+
         try:
             import psutil
-            
+
             loop = asyncio.get_event_loop()
             memory = await loop.run_in_executor(None, psutil.virtual_memory)
-            
+
             used_percent = memory.percent
-            
+
             duration_ms = (time.perf_counter() - start) * 1000
-            
+
             details = {
                 "total_gb": memory.total / (1024**3),
                 "available_gb": memory.available / (1024**3),
                 "used_percent": used_percent,
             }
-            
+
             if used_percent >= self.critical_threshold:
                 return HealthCheckResult(
                     name=self.name,
@@ -448,7 +458,7 @@ class MemoryHealthCheck(HealthCheck):
                     details=details,
                     duration_ms=duration_ms,
                 )
-                
+
         except ImportError:
             duration_ms = (time.perf_counter() - start) * 1000
             return HealthCheckResult(
@@ -457,7 +467,7 @@ class MemoryHealthCheck(HealthCheck):
                 message="psutil not installed, cannot check memory",
                 duration_ms=duration_ms,
             )
-        
+
         except Exception as e:
             duration_ms = (time.perf_counter() - start) * 1000
             return HealthCheckResult(
@@ -470,142 +480,138 @@ class MemoryHealthCheck(HealthCheck):
 
 
 class HealthCheckRegistry:
-    """
-    Registry for managing and executing health checks.
-    
+    """Registry for managing and executing health checks.
+
     Example:
         registry = HealthCheckRegistry()
-        
+
         # Register checks
         registry.register(DatabaseHealthCheck(check_fn=db_ping))
         registry.register(RedisHealthCheck())
-        
+
         # Run all checks
         health = await registry.check_all()
-        
+
         # Or run specific check
         db_health = await registry.check("database")
     """
-    
+
     def __init__(self, version: str = "unknown"):
         self.version = version
-        self._checks: Dict[str, HealthCheck] = {}
+        self._checks: dict[str, HealthCheck] = {}
         self._start_time = time.time()
-    
+
     def register(self, check: HealthCheck):
         """Register a health check."""
         self._checks[check.name] = check
-    
+
     def unregister(self, name: str):
         """Unregister a health check."""
         self._checks.pop(name, None)
-    
-    async def check(self, name: str) -> Optional[HealthCheckResult]:
+
+    async def check(self, name: str) -> HealthCheckResult | None:
         """Run a specific health check."""
         check = self._checks.get(name)
         if not check:
             return None
-        
+
         return await check.check()
-    
+
     async def check_all(self) -> SystemHealth:
         """Run all registered health checks."""
         results = await asyncio.gather(
             *[check.check() for check in self._checks.values()],
             return_exceptions=True,
         )
-        
-        checks: List[HealthCheckResult] = []
+
+        checks: list[HealthCheckResult] = []
         for result in results:
             if isinstance(result, Exception):
-                checks.append(HealthCheckResult(
-                    name="unknown",
-                    status=HealthStatus.UNKNOWN,
-                    message=f"Check failed with exception: {str(result)}",
-                ))
+                checks.append(
+                    HealthCheckResult(
+                        name="unknown",
+                        status=HealthStatus.UNKNOWN,
+                        message=f"Check failed with exception: {str(result)}",
+                    )
+                )
             else:
                 checks.append(result)
-        
+
         # Determine overall status
         critical_unhealthy = any(
-            r.status == HealthStatus.UNHEALTHY and self._checks.get(r.name, HealthCheck("")).critical
+            r.status == HealthStatus.UNHEALTHY
+            and self._checks.get(r.name, HealthCheck("")).critical
             for r in checks
         )
-        
+
         any_unhealthy = any(r.status == HealthStatus.UNHEALTHY for r in checks)
         any_degraded = any(r.status == HealthStatus.DEGRADED for r in checks)
-        
+
         if critical_unhealthy:
             overall_status = HealthStatus.UNHEALTHY
         elif any_unhealthy or any_degraded:
             overall_status = HealthStatus.DEGRADED
         else:
             overall_status = HealthStatus.HEALTHY
-        
+
         return SystemHealth(
             status=overall_status,
             checks=checks,
             version=self.version,
             uptime_seconds=time.time() - self._start_time,
         )
-    
-    def get_check_names(self) -> List[str]:
+
+    def get_check_names(self) -> list[str]:
         """Get names of all registered checks."""
         return list(self._checks.keys())
 
 
 class HealthEndpoint:
-    """
-    HTTP endpoint handler for health checks.
-    
+    """HTTP endpoint handler for health checks.
+
     Provides standard Kubernetes-style endpoints:
     - /health/live - Liveness probe
     - /health/ready - Readiness probe
     - /health - Full health check
-    
+
     Example:
         registry = HealthCheckRegistry()
         endpoint = HealthEndpoint(registry)
-        
+
         # In your web framework
         @app.get("/health")
         async def health():
             return await endpoint.full_check()
     """
-    
-    def __init__(self, registry: HealthCheckRegistry, ready_checks: Optional[List[str]] = None):
+
+    def __init__(self, registry: HealthCheckRegistry, ready_checks: list[str] | None = None):
         self.registry = registry
         self.ready_checks = ready_checks or []
-    
-    async def liveness(self) -> Tuple[Dict[str, Any], int]:
-        """
-        Liveness probe - is the process running?
-        
+
+    async def liveness(self) -> tuple[dict[str, Any], int]:
+        """Liveness probe - is the process running?
+
         Returns simple 200 if process is alive.
         """
         return {
             "status": "alive",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }, 200
-    
-    async def readiness(self) -> Tuple[Dict[str, Any], int]:
-        """
-        Readiness probe - is the service ready to accept traffic?
-        
+
+    async def readiness(self) -> tuple[dict[str, Any], int]:
+        """Readiness probe - is the service ready to accept traffic?
+
         Checks critical dependencies only.
         """
         health = await self.registry.check_all()
-        
+
         # Only check critical services for readiness
-        critical_checks = [
-            c for c in health.checks
-            if c.name in self.ready_checks
-        ]
-        
+        critical_checks = [c for c in health.checks if c.name in self.ready_checks]
+
         ready = all(c.is_healthy for c in critical_checks)
-        
+
         status_code = 200 if ready else 503
-        
+
         return {
             "ready": ready,
             "checks": [
@@ -618,19 +624,18 @@ class HealthEndpoint:
             ],
             "timestamp": health.timestamp.isoformat(),
         }, status_code
-    
-    async def full_check(self) -> Tuple[Dict[str, Any], int]:
-        """
-        Full health check with all registered checks.
-        
+
+    async def full_check(self) -> tuple[dict[str, Any], int]:
+        """Full health check with all registered checks.
+
         Returns detailed health information.
         """
         health = await self.registry.check_all()
-        
+
         status_code = 200 if health.status == HealthStatus.HEALTHY else 503
         if health.status == HealthStatus.DEGRADED:
             status_code = 200  # Degraded still serves traffic
-        
+
         return {
             "status": health.status.value,
             "version": health.version,
@@ -655,14 +660,13 @@ class HealthEndpoint:
 
 
 class SystemDiagnostics:
-    """
-    System diagnostics and information gathering.
-    
+    """System diagnostics and information gathering.
+
     Provides detailed system information for debugging and monitoring.
     """
-    
+
     @staticmethod
-    def get_system_info() -> Dict[str, Any]:
+    def get_system_info() -> dict[str, Any]:
         """Get comprehensive system information."""
         info = {
             "platform": {
@@ -680,12 +684,13 @@ class SystemDiagnostics:
                 "pid": os.getpid(),
             },
         }
-        
+
         # Try to get resource usage
         try:
             import psutil
+
             process = psutil.Process()
-            
+
             info["resources"] = {
                 "memory_mb": process.memory_info().rss / (1024 * 1024),
                 "cpu_percent": process.cpu_percent(),
@@ -695,24 +700,28 @@ class SystemDiagnostics:
             }
         except Exception:
             pass
-        
+
         return info
-    
+
     @staticmethod
-    def get_resource_limits() -> Dict[str, Any]:
+    def get_resource_limits() -> dict[str, Any]:
         """Get system resource limits."""
         if resource is None:
             return {"error": "Resource limits not available on Windows"}
-        
+
         try:
             limits = {
                 "max_open_files": resource.getrlimit(resource.RLIMIT_NOFILE),
-                "max_memory_mb": resource.getrlimit(resource.RLIMIT_AS)[0] / (1024 * 1024) if resource.getrlimit(resource.RLIMIT_AS)[0] > 0 else "unlimited",
+                "max_memory_mb": (
+                    resource.getrlimit(resource.RLIMIT_AS)[0] / (1024 * 1024)
+                    if resource.getrlimit(resource.RLIMIT_AS)[0] > 0
+                    else "unlimited"
+                ),
                 "max_processes": resource.getrlimit(resource.RLIMIT_NPROC),
             }
         except Exception:
             limits = {"error": "Could not retrieve resource limits"}
-        
+
         return limits
 
 

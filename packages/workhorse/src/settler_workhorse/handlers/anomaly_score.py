@@ -4,7 +4,8 @@ Scores records for anomalies using statistical methods.
 Safe no-op if no input data provided.
 """
 
-from typing import Any, Dict, List, Optional
+from contextlib import suppress
+from typing import Any
 
 from settler_workhorse.models import Job, JobResult, JobType
 from settler_workhorse.utils.logging import get_logger
@@ -36,9 +37,9 @@ def calculate_zscore(value: float, mean: float, std: float) -> float:
 
 
 def detect_amount_anomalies(
-    records: List[Dict[str, Any]],
-    options: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    records: list[dict[str, Any]],
+    options: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Detect anomalies in amount values.
 
     Args:
@@ -57,10 +58,8 @@ def detect_amount_anomalies(
     for record in records:
         amount = record.get("amount")
         if amount is not None:
-            try:
+            with suppress(ValueError, TypeError):
                 amounts.append(float(amount))
-            except (ValueError, TypeError):
-                pass
 
     if len(amounts) < 2:
         return {
@@ -148,9 +147,9 @@ def detect_amount_anomalies(
 
 
 def detect_temporal_anomalies(
-    records: List[Dict[str, Any]],
-    options: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    records: list[dict[str, Any]],
+    options: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Detect temporal anomalies (gaps, duplicates, outliers).
 
     Args:
@@ -172,7 +171,7 @@ def detect_temporal_anomalies(
     anomalies = []
 
     # Check for duplicate dates
-    date_counts: Dict[str, int] = {}
+    date_counts: dict[str, int] = {}
     for d in dates:
         date_counts[d] = date_counts.get(d, 0) + 1
 

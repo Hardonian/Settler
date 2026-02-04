@@ -6,10 +6,10 @@ Safe no-op if no reconciliation data exists.
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import UUID
 
-from settler_workhorse.db import DatabaseError, JobRepository
+from settler_workhorse.db import JobRepository
 from settler_workhorse.models import Job, JobResult, JobType
 from settler_workhorse.utils.logging import get_logger
 from settler_workhorse.worker import register_handler
@@ -26,10 +26,10 @@ class VarianceReportError(Exception):
 def _fetch_recon_results(
     job_repo: JobRepository,
     tenant_id: UUID,
-    recon_job_id: Optional[str] = None,
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
-) -> List[Dict[str, Any]]:
+    recon_job_id: str | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+) -> list[dict[str, Any]]:
     """Fetch reconciliation results from database.
 
     Args:
@@ -42,11 +42,10 @@ def _fetch_recon_results(
     Returns:
         List of recon result records
     """
-    import psycopg
     from psycopg.rows import dict_row
 
     conditions = ["tenant_id = %(tenant_id)s"]
-    params: Dict[str, Any] = {"tenant_id": str(tenant_id)}
+    params: dict[str, Any] = {"tenant_id": str(tenant_id)}
 
     if recon_job_id:
         conditions.append("recon_job_id = %(recon_job_id)s")
@@ -61,7 +60,7 @@ def _fetch_recon_results(
         params["end_date"] = end_date
 
     query = f"""
-        SELECT 
+        SELECT
             id,
             recon_job_id,
             status,
@@ -97,10 +96,10 @@ def _fetch_recon_results(
                 return [dict(row) for row in rows] if rows else []
     except Exception as e:
         logger.error("Failed to fetch recon results", error=str(e))
-        raise VarianceReportError(f"Database query failed: {e}")
+        raise VarianceReportError(f"Database query failed: {e}") from e
 
 
-def _calculate_variance_metrics(results: List[Dict[str, Any]]) -> Dict[str, Any]:
+def _calculate_variance_metrics(results: list[dict[str, Any]]) -> dict[str, Any]:
     """Calculate variance metrics across reconciliation results.
 
     Args:
@@ -141,7 +140,7 @@ def _calculate_variance_metrics(results: List[Dict[str, Any]]) -> Dict[str, Any]
     variance_rate = 1.0 - (total_matched * 2 / max(total_records, 1))
 
     # Status breakdown
-    status_counts: Dict[str, int] = {}
+    status_counts: dict[str, int] = {}
     for r in results:
         status = r.get("status", "unknown")
         status_counts[status] = status_counts.get(status, 0) + 1
@@ -159,9 +158,7 @@ def _calculate_variance_metrics(results: List[Dict[str, Any]]) -> Dict[str, Any]
         "variance_rate": round(variance_rate, 4),
         "match_rate": round(1.0 - variance_rate, 4),
         "status_breakdown": status_counts,
-        "currencies": list(
-            set(r.get("currency") for r in results if r.get("currency"))
-        ),
+        "currencies": list({r.get("currency") for r in results if r.get("currency")}),
     }
 
 
@@ -169,7 +166,7 @@ def _store_report_result(
     job_repo: JobRepository,
     job_id: UUID,
     tenant_id: UUID,
-    report_data: Dict[str, Any],
+    report_data: dict[str, Any],
 ) -> str:
     """Store report result in job_results table via RPC.
 
@@ -222,7 +219,7 @@ def _store_report_result(
                 raise VarianceReportError("Failed to store report result")
     except Exception as e:
         logger.error("Failed to store report result", error=str(e))
-        raise VarianceReportError(f"Failed to store result: {e}")
+        raise VarianceReportError(f"Failed to store result: {e}") from e
 
 
 @register_handler(JobType.VARIANCE_REPORT)
@@ -244,8 +241,8 @@ def handle_variance_report(job: Job) -> JobResult:
         - end_date: Optional end date (ISO format)
         - include_details: Whether to include detailed breakdown
     """
-    from settler_workhorse.db import create_connection_pool
     from settler_workhorse.config import get_settings
+    from settler_workhorse.db import create_connection_pool
 
     payload = job.payload
     recon_job_id = payload.get("recon_job_id")

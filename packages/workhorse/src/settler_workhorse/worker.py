@@ -3,22 +3,22 @@
 import signal
 import sys
 import time
+from collections.abc import Callable
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional, Type
+from typing import Any
 
 from settler_workhorse.config import Settings, get_settings
 from settler_workhorse.db import JobRepository, create_connection_pool
-from settler_workhorse.models import Job, JobResult, JobStatus, JobType, WorkerHeartbeat
+from settler_workhorse.models import Job, JobResult, JobType, WorkerHeartbeat
 from settler_workhorse.utils.logging import (
     LogContext,
-    bind_context,
     generate_correlation_id,
     get_logger,
 )
 
 # Registry of job handlers
 JobHandler = Callable[[Job], JobResult]
-HANDLER_REGISTRY: Dict[JobType, JobHandler] = {}
+HANDLER_REGISTRY: dict[JobType, JobHandler] = {}
 
 
 def register_handler(job_type: JobType) -> Callable[[JobHandler], JobHandler]:
@@ -38,10 +38,13 @@ def register_handler(job_type: JobType) -> Callable[[JobHandler], JobHandler]:
     return decorator
 
 
-class WorkerShutdown(Exception):
+class WorkerShutdownError(Exception):
     """Exception to signal graceful shutdown."""
 
     pass
+
+
+WorkerShutdown = WorkerShutdownError
 
 
 class Worker:
@@ -49,8 +52,8 @@ class Worker:
 
     def __init__(
         self,
-        settings: Optional[Settings] = None,
-        job_repository: Optional[JobRepository] = None,
+        settings: Settings | None = None,
+        job_repository: JobRepository | None = None,
     ):
         self.settings = settings or get_settings()
         self.worker_id = self.settings.effective_worker_id
@@ -68,8 +71,8 @@ class Worker:
         self.shutting_down = False
         self.jobs_processed = 0
         self.jobs_failed = 0
-        self.current_job: Optional[Job] = None
-        self.started_at: Optional[datetime] = None
+        self.current_job: Job | None = None
+        self.started_at: datetime | None = None
 
         # Supported job types (filter to enabled types)
         self.supported_job_types = self._get_supported_job_types()
@@ -77,7 +80,7 @@ class Worker:
         # Setup signal handlers
         self._setup_signal_handlers()
 
-    def _get_supported_job_types(self) -> List[JobType]:
+    def _get_supported_job_types(self) -> list[JobType]:
         """Get list of job types this worker can handle."""
         types = []
 
@@ -169,7 +172,7 @@ class Worker:
         self.logger.info(f"Received {sig_name}, initiating graceful shutdown")
         self.shutting_down = True
 
-    def _get_handler(self, job_type: JobType) -> Optional[JobHandler]:
+    def _get_handler(self, job_type: JobType) -> JobHandler | None:
         """Get handler for job type.
 
         Args:
@@ -197,7 +200,7 @@ class Worker:
         if not handler:
             raise NotImplementedError(f"No handler registered for job type: {job.job_type}")
 
-        self.logger.info(f"Executing job", job_type=job.job_type.value, attempt=job.attempts + 1)
+        self.logger.info("Executing job", job_type=job.job_type.value, attempt=job.attempts + 1)
 
         start_time = time.time()
         result = handler(job)
@@ -222,7 +225,7 @@ class Worker:
         """
         # Check for shutdown
         if self.shutting_down:
-            raise WorkerShutdown("Shutdown requested")
+            raise WorkerShutdownError("Shutdown requested")
 
         # Claim next job
         job = self.jobs.claim_next_job(
@@ -296,9 +299,9 @@ class Worker:
         """
         try:
             return self._process_single_job()
-        except WorkerShutdown:
+        except WorkerShutdownError:
             raise
-        except Exception as e:
+        except Exception:
             self.logger.error("Error in job processing cycle", exc_info=True)
             return False
 
@@ -321,10 +324,10 @@ class Worker:
                     # No jobs available, wait before polling again
                     time.sleep(self.settings.worker_poll_interval_seconds)
 
-        except WorkerShutdown:
+        except WorkerShutdownError:
             self.logger.info("Worker shutting down gracefully")
 
-        except Exception as e:
+        except Exception:
             self.logger.error("Worker encountered fatal error", exc_info=True)
             sys.exit(1)
 
@@ -362,7 +365,8 @@ class Worker:
         )
 
 
-def clear_context():
+def clear_context() -> None:
+    """Clear any bound logging context values."""
     from settler_workhorse.utils.logging import clear_context as _clear
 
     _clear()

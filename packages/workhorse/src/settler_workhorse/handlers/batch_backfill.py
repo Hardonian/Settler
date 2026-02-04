@@ -5,7 +5,7 @@ Idempotent, retry-safe, and tenant-scoped.
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from settler_workhorse.models import Job, JobResult, JobType
 from settler_workhorse.utils.logging import get_logger
@@ -20,7 +20,7 @@ class BackfillError(Exception):
     pass
 
 
-def validate_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
+def validate_payload(payload: dict[str, Any]) -> dict[str, Any]:
     """Validate and normalize backfill payload.
 
     Args:
@@ -51,7 +51,7 @@ def validate_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
             if from_dt > to_dt:
                 raise BackfillError("'from' date must be before 'to' date")
         except ValueError as e:
-            raise BackfillError(f"Invalid date format: {e}")
+            raise BackfillError(f"Invalid date format: {e}") from e
 
     return {
         "tenant_id": tenant_id,
@@ -68,12 +68,12 @@ def validate_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
 
 def simulate_backfill(
     entity: str,
-    from_date: Optional[str],
-    to_date: Optional[str],
-    cursor: Optional[str],
+    from_date: str | None,
+    to_date: str | None,
+    cursor: str | None,
     limit: int,
     operation: str,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Simulate backfill operation (dry run mode).
 
     Args:
@@ -109,12 +109,12 @@ def simulate_backfill(
 def execute_backfill(
     tenant_id: str,
     entity: str,
-    from_date: Optional[str],
-    to_date: Optional[str],
-    cursor: Optional[str],
+    from_date: str | None,
+    to_date: str | None,
+    cursor: str | None,
     limit: int,
     operation: str,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Execute actual backfill operation.
 
     Args:

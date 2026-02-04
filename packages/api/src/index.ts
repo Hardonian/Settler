@@ -67,7 +67,7 @@ import { validateStartup } from "./utils/startup-validation";
 import cookieParser from "cookie-parser";
 import { initializeWebSocket } from "./infrastructure/websocket";
 import { createServer } from "http";
-import { countJsonDepth } from "./utils/json-depth";
+import { scanJsonDepth } from "./utils/json-depth";
 
 const app: Express = express();
 const PORT = config.port;
@@ -161,8 +161,7 @@ app.use(
     limit: "1mb", // Reduced from 10mb
     verify: (_req, _res, buf) => {
       try {
-        const parsed = JSON.parse(buf.toString());
-        const depth = countJsonDepth(parsed, { maxDepth: 20 });
+        const depth = scanJsonDepth(buf, { maxDepth: 20 });
         if (depth > 20) {
           throw new Error("JSON depth exceeds maximum of 20 levels");
         }

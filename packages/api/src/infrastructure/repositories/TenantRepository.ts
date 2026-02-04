@@ -1,25 +1,53 @@
-import { ITenantRepository } from '../../domain/repositories/ITenantRepository';
-import { Tenant, TenantProps } from '../../domain/entities/Tenant';
-import { query } from '../../db';
+import { ITenantRepository } from "../../domain/repositories/ITenantRepository";
+import { Tenant, TenantProps } from "../../domain/entities/Tenant";
+import { query } from "../../db";
+import {
+  getCachedTenantProps,
+  getTenantCacheKey,
+  setCachedTenantProps,
+} from "../../utils/tenant-cache";
+import { invalidateTenantCache } from "../../utils/cache-invalidation";
 
 export class TenantRepository implements ITenantRepository {
   async findById(id: string): Promise<Tenant | null> {
+    const cacheKey = getTenantCacheKey("id", id);
+    const cached = await getCachedTenantProps(cacheKey);
+    if (cached !== undefined) {
+      return cached ? Tenant.fromPersistence(cached) : null;
+    }
+
     const rows = await query<TenantProps>(
       `SELECT * FROM tenants WHERE id = $1 AND deleted_at IS NULL`,
       [id]
     );
-    return rows.length > 0 && rows[0] ? Tenant.fromPersistence(rows[0]) : null;
+    const tenant = rows.length > 0 && rows[0] ? Tenant.fromPersistence(rows[0]) : null;
+    await setCachedTenantProps(cacheKey, rows[0] ?? null);
+    return tenant;
   }
 
   async findBySlug(slug: string): Promise<Tenant | null> {
+    const cacheKey = getTenantCacheKey("slug", slug);
+    const cached = await getCachedTenantProps(cacheKey);
+    if (cached !== undefined) {
+      return cached ? Tenant.fromPersistence(cached) : null;
+    }
+
     const rows = await query<TenantProps>(
       `SELECT * FROM tenants WHERE slug = $1 AND deleted_at IS NULL`,
       [slug]
     );
-    return rows.length > 0 && rows[0] ? Tenant.fromPersistence(rows[0]) : null;
+    const tenant = rows.length > 0 && rows[0] ? Tenant.fromPersistence(rows[0]) : null;
+    await setCachedTenantProps(cacheKey, rows[0] ?? null);
+    return tenant;
   }
 
   async findByCustomDomain(domain: string): Promise<Tenant | null> {
+    const cacheKey = getTenantCacheKey("host", domain);
+    const cached = await getCachedTenantProps(cacheKey);
+    if (cached !== undefined) {
+      return cached ? Tenant.fromPersistence(cached) : null;
+    }
+
     const rows = await query<TenantProps>(
       `SELECT * FROM tenants 
        WHERE config->>'customDomain' = $1 
@@ -27,7 +55,9 @@ export class TenantRepository implements ITenantRepository {
        AND deleted_at IS NULL`,
       [domain]
     );
-    return rows.length > 0 && rows[0] ? Tenant.fromPersistence(rows[0]) : null;
+    const tenant = rows.length > 0 && rows[0] ? Tenant.fromPersistence(rows[0]) : null;
+    await setCachedTenantProps(cacheKey, rows[0] ?? null);
+    return tenant;
   }
 
   async findSubAccounts(parentTenantId: string): Promise<Tenant[]> {
@@ -36,7 +66,7 @@ export class TenantRepository implements ITenantRepository {
        WHERE parent_tenant_id = $1 AND deleted_at IS NULL`,
       [parentTenantId]
     );
-    return rows.map(row => Tenant.fromPersistence(row));
+    return rows.map((row) => Tenant.fromPersistence(row));
   }
 
   async findParentTenant(tenantId: string): Promise<Tenant | null> {
@@ -51,10 +81,8 @@ export class TenantRepository implements ITenantRepository {
   }
 
   async findAll(): Promise<Tenant[]> {
-    const rows = await query<TenantProps>(
-      `SELECT * FROM tenants WHERE deleted_at IS NULL`
-    );
-    return rows.map(row => Tenant.fromPersistence(row));
+    const rows = await query<TenantProps>(`SELECT * FROM tenants WHERE deleted_at IS NULL`);
+    return rows.map((row) => Tenant.fromPersistence(row));
   }
 
   async save(tenant: Tenant): Promise<void> {
@@ -90,9 +118,11 @@ export class TenantRepository implements ITenantRepository {
         props.deletedAt || null,
       ]
     );
+    await invalidateTenantCache(tenant.id);
   }
 
   async delete(id: string): Promise<void> {
     await query(`UPDATE tenants SET deleted_at = NOW() WHERE id = $1`, [id]);
+    await invalidateTenantCache(id);
   }
 }

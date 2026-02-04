@@ -4,7 +4,7 @@ Normalizes CSV/JSON data into canonical format for downstream processing.
 Safe no-op if no input data exists.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from settler_workhorse.models import Job, JobResult, JobType
 from settler_workhorse.utils.logging import get_logger
@@ -20,10 +20,10 @@ class NormalizationError(Exception):
 
 
 def normalize_csv_data(
-    records: List[Dict[str, Any]],
+    records: list[dict[str, Any]],
     schema_version: str = "v1",
-    options: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    options: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Normalize CSV records to canonical format.
 
     Args:
@@ -34,7 +34,6 @@ def normalize_csv_data(
     Returns:
         Normalization result with canonical records
     """
-    opts = options or {}
     canonical_records = []
     errors = []
 
@@ -92,8 +91,8 @@ def normalize_csv_data(
 def normalize_json_data(
     data: Any,
     schema_version: str = "v1",
-    options: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    options: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Normalize JSON data to canonical format.
 
     Args:

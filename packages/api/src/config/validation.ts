@@ -193,7 +193,6 @@ if (!isBuild && (env.NODE_ENV === "production" || env.NODE_ENV === "preview")) {
   }
 
   if (env.ALLOWED_ORIGINS === "*") {
-    // eslint-disable-next-line no-console
     console.warn(
       `WARNING: CORS allows all origins in ${env.NODE_ENV}. Consider restricting ALLOWED_ORIGINS.`,
       {

@@ -1,6 +1,6 @@
 /**
  * Environment Variable Build Helper
- * 
+ *
  * Provides utilities to safely access environment variables during build
  * without causing build failures for runtime-only variables.
  */
@@ -10,24 +10,25 @@
  */
 export function isBuildTime(): boolean {
   return (
-    process.env.NEXT_PHASE === 'phase-production-build' ||
-    (process.env.NODE_ENV === 'production' && !!process.env.VERCEL) ||
-    process.env.SKIP_ENV_VALIDATION === 'true' ||
+    process.env.NEXT_PHASE === "phase-production-build" ||
+    (process.env.NODE_ENV === "production" && !!process.env.VERCEL) ||
+    process.env.SKIP_ENV_VALIDATION === "true" ||
     !!process.env.VERCEL_ENV ||
-    process.env.CI === 'true'
+    process.env.CI === "true" ||
+    process.env.CI === "1"
   );
 }
 
 /**
  * Build-time required environment variables
  * These are needed during the build process
- * 
+ *
  * Note: DATABASE_URL is needed for Prisma client generation and build-time queries,
  * but Prisma will handle missing DATABASE_URL gracefully during build if engineType is "binary"
  */
 export const BUILD_TIME_REQUIRED = [
-  'SUPABASE_URL',
-  'SUPABASE_ANON_KEY',
+  "SUPABASE_URL",
+  "SUPABASE_ANON_KEY",
   // DATABASE_URL is optional during build - Prisma can generate client without it
   // but it's required at runtime for database operations
 ] as const;
@@ -37,15 +38,15 @@ export const BUILD_TIME_REQUIRED = [
  * These are NOT required during build but will be needed at runtime
  */
 export const RUNTIME_ONLY = [
-  'DB_PASSWORD',
-  'ENCRYPTION_KEY',
-  'JWT_SECRET',
-  'JWT_REFRESH_SECRET',
-  'JOBFORGE_INTEGRATION_ENABLED',
-  'JOBFORGE_BUNDLE_EXECUTION_ENABLED',
-  'SUPABASE_SERVICE_ROLE_KEY',
-  'STRIPE_SECRET_KEY',
-  'STRIPE_WEBHOOK_SECRET',
+  "DB_PASSWORD",
+  "ENCRYPTION_KEY",
+  "JWT_SECRET",
+  "JWT_REFRESH_SECRET",
+  "JOBFORGE_INTEGRATION_ENABLED",
+  "JOBFORGE_BUNDLE_EXECUTION_ENABLED",
+  "SUPABASE_SERVICE_ROLE_KEY",
+  "STRIPE_SECRET_KEY",
+  "STRIPE_WEBHOOK_SECRET",
 ] as const;
 
 /**
@@ -60,11 +61,7 @@ export function getEnvSafe(
     buildTimeRequired?: boolean;
   } = {}
 ): string {
-  const {
-    required = false,
-    defaultValue = '',
-    buildTimeRequired = false,
-  } = options;
+  const { required = false, defaultValue = "", buildTimeRequired = false } = options;
 
   const value = process.env[name];
   const isBuild = isBuildTime();

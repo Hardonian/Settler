@@ -3,15 +3,17 @@
 import logging
 import sys
 import uuid
-from typing import Any, Dict, Optional
+from typing import TYPE_CHECKING, Any
 
 import structlog
-from structlog.types import Processor
+
+if TYPE_CHECKING:
+    from structlog.types import Processor
 
 from settler_workhorse.config import Settings, get_settings
 
 
-def configure_logging(settings: Optional[Settings] = None) -> None:
+def configure_logging(settings: Settings | None = None) -> None:
     """Configure structured logging for the application.
 
     Args:
@@ -57,7 +59,7 @@ def configure_logging(settings: Optional[Settings] = None) -> None:
     )
 
 
-def get_logger(name: Optional[str] = None, **context: Any) -> structlog.stdlib.BoundLogger:
+def get_logger(name: str | None = None, **context: Any) -> structlog.stdlib.BoundLogger:
     """Get a structured logger with optional context.
 
     Args:
@@ -101,11 +103,13 @@ class LogContext:
 
     def __init__(self, **kwargs: Any):
         self.kwargs = kwargs
-        self.token: Optional[Any] = None
+        self.token: Any | None = None
 
     def __enter__(self) -> "LogContext":
+        """Bind the context values for the duration of the block."""
         bind_context(**self.kwargs)
         return self
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        """Clear the context values when exiting the block."""
         clear_context()

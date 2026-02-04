@@ -8,7 +8,7 @@ import csv
 import hashlib
 import io
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from settler_workhorse.models import Job, JobResult, JobType
 from settler_workhorse.utils.logging import get_logger
@@ -23,7 +23,7 @@ class CSVExportError(Exception):
     pass
 
 
-def validate_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
+def validate_payload(payload: dict[str, Any]) -> dict[str, Any]:
     """Validate and normalize CSV export payload.
 
     Args:
@@ -58,9 +58,9 @@ def validate_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
 
 def generate_mock_data(
     entity_type: str,
-    filters: Dict[str, Any],
+    filters: dict[str, Any],
     max_records: int,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """Generate mock data for export.
 
     Args:
@@ -138,7 +138,7 @@ def format_value(value: Any, date_format: str) -> str:
 
     # Escape quotes and wrap in quotes if contains special chars
     str_val = str(value)
-    if ',' in str_val or '"' in str_val or '\n' in str_val:
+    if "," in str_val or '"' in str_val or "\n" in str_val:
         str_val = str_val.replace('"', '""')
         str_val = f'"{str_val}"'
 
@@ -146,8 +146,8 @@ def format_value(value: Any, date_format: str) -> str:
 
 
 def generate_csv_content(
-    records: List[Dict[str, Any]],
-    columns: List[str],
+    records: list[dict[str, Any]],
+    columns: list[str],
     include_headers: bool,
     date_format: str,
 ) -> str:
@@ -168,16 +168,10 @@ def generate_csv_content(
     output = io.StringIO()
 
     # Determine columns
-    if columns:
-        fieldnames = columns
-    else:
-        fieldnames = list(records[0].keys())
+    fieldnames = columns or list(records[0].keys())
 
     writer = csv.DictWriter(
-        output,
-        fieldnames=fieldnames,
-        extrasaction='ignore',
-        lineterminator='\n'
+        output, fieldnames=fieldnames, extrasaction="ignore", lineterminator="\n"
     )
 
     if include_headers:
@@ -282,7 +276,9 @@ def handle_export_csv(job: Job) -> JobResult:
         )
 
     except Exception as e:
-        logger.error("CSV export failed", exc_info=True, tenant_id=tenant_id, entity_type=entity_type)
+        logger.error(
+            "CSV export failed", exc_info=True, tenant_id=tenant_id, entity_type=entity_type
+        )
         return JobResult(
             success=False,
             error=str(e),

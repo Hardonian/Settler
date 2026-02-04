@@ -2,8 +2,7 @@
 
 import hashlib
 import secrets
-from datetime import datetime, timedelta
-from typing import Any, Dict, Optional
+from typing import Any
 from uuid import UUID
 
 
@@ -64,7 +63,7 @@ def format_duration(seconds: float) -> str:
         return f"{hours}h {minutes}m"
 
 
-def truncate_string(value: Optional[str], max_length: int = 100) -> Optional[str]:
+def truncate_string(value: str | None, max_length: int = 100) -> str | None:
     """Truncate a string to maximum length.
 
     Args:
@@ -98,7 +97,7 @@ def safe_json_dumps(obj: Any, max_length: int = 10000) -> str:
         return f'{{"error": "Failed to serialize: {e}"}}'
 
 
-def hash_payload(payload: Dict[str, Any]) -> str:
+def hash_payload(payload: dict[str, Any]) -> str:
     """Create a hash of a payload for comparison.
 
     Args:
@@ -113,7 +112,7 @@ def hash_payload(payload: Dict[str, Any]) -> str:
     return hashlib.sha256(canonical.encode()).hexdigest()[:16]
 
 
-def parse_uuid(value: Optional[str]) -> Optional[UUID]:
+def parse_uuid(value: str | None) -> UUID | None:
     """Safely parse a UUID string.
 
     Args:

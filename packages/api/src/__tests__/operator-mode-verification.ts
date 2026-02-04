@@ -4,16 +4,10 @@
  * and kill switches work without redeploy
  */
 
-import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
-import { query } from '../db';
-import {
-  generateDailyIntelligence,
-  getFailedIngestions,
-} from '../services/operator-mode/daily-intelligence';
-import {
-  checkAlertThresholds,
-  upsertAlertThreshold,
-} from '../services/operator-mode/alerting';
+import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
+import { query } from "../db";
+import { generateDailyIntelligence } from "../services/operator-mode/daily-intelligence";
+import { checkAlertThresholds, upsertAlertThreshold } from "../services/operator-mode/alerting";
 import {
   disableConnector,
   enableConnector,
@@ -21,14 +15,11 @@ import {
   pauseBackgroundJob,
   resumeBackgroundJob,
   isBackgroundJobPaused,
-} from '../services/operator-mode/kill-switches';
-import {
-  createIngestion,
-  updateIngestionStatus,
-} from '../services/ingestion/ingestion-service';
-import { v4 as uuidv4 } from 'uuid';
+} from "../services/operator-mode/kill-switches";
+import { createIngestion, updateIngestionStatus } from "../services/ingestion/ingestion-service";
+import { v4 as uuidv4 } from "uuid";
 
-describe('Operator Mode Verification', () => {
+describe("Operator Mode Verification", () => {
   const testUserId = uuidv4();
   const testTenantId = uuidv4();
   const testBillingAccountId = uuidv4();
@@ -65,8 +56,8 @@ describe('Operator Mode Verification', () => {
     await query(`DELETE FROM kill_switches WHERE target = 'test-job'`);
   });
 
-  describe('Simulated Failure Produces Alert + Trace ID', () => {
-    it('should create failed ingestion with trace ID', async () => {
+  describe("Simulated Failure Produces Alert + Trace ID", () => {
+    it("should create failed ingestion with trace ID", async () => {
       const traceId = `trace-${uuidv4()}`;
       const sourceId = uuidv4();
 
@@ -78,9 +69,9 @@ describe('Operator Mode Verification', () => {
         traceId,
       });
 
-      await updateIngestionStatus(ingestionId, 'failed', {
-        errorMessage: 'Simulated failure for testing',
-        errorStack: 'Error: Test failure',
+      await updateIngestionStatus(ingestionId, "failed", {
+        errorMessage: "Simulated failure for testing",
+        errorStack: "Error: Test failure",
       });
 
       // Verify ingestion exists with trace ID
@@ -92,12 +83,12 @@ describe('Operator Mode Verification', () => {
       );
 
       expect(ingestions.length).toBe(1);
-      expect(ingestions[0].status).toBe('failed');
+      expect(ingestions[0].status).toBe("failed");
       expect(ingestions[0].trace_id).toBe(traceId);
-      expect(ingestions[0].error_message).toContain('Simulated failure');
+      expect(ingestions[0].error_message).toContain("Simulated failure");
     });
 
-    it('should include failed ingestion in daily intelligence', async () => {
+    it("should include failed ingestion in daily intelligence", async () => {
       const traceId = `trace-${uuidv4()}`;
       const sourceId = uuidv4();
 
@@ -109,8 +100,8 @@ describe('Operator Mode Verification', () => {
         traceId,
       });
 
-      await updateIngestionStatus(ingestionId, 'failed', {
-        errorMessage: 'Test failure',
+      await updateIngestionStatus(ingestionId, "failed", {
+        errorMessage: "Test failure",
       });
 
       // Get daily intelligence
@@ -118,23 +109,23 @@ describe('Operator Mode Verification', () => {
 
       // Find our failed ingestion
       const failedIngestion = intelligence.failedIngestions.find(
-        fi => fi.ingestionId === ingestionId
+        (fi) => fi.ingestionId === ingestionId
       );
 
       expect(failedIngestion).toBeDefined();
       expect(failedIngestion?.traceId).toBe(traceId);
-      expect(failedIngestion?.errorMessage).toContain('Test failure');
+      expect(failedIngestion?.errorMessage).toContain("Test failure");
     });
 
-    it('should trigger alert when threshold exceeded', async () => {
+    it("should trigger alert when threshold exceeded", async () => {
       // Create alert rule for failed ingestions
       const thresholdId = await upsertAlertThreshold(testUserId, {
-        name: 'Test Failed Ingestion Alert',
-        metric: 'failed_ingestion',
+        name: "Test Failed Ingestion Alert",
+        metric: "failed_ingestion",
         threshold: 0, // Alert if any failures
-        operator: 'gt',
-        severity: 'high',
-        channels: ['email'],
+        operator: "gt",
+        severity: "high",
+        channels: ["email"],
         enabled: true,
       });
 
@@ -148,8 +139,8 @@ describe('Operator Mode Verification', () => {
           traceId: `trace-${uuidv4()}`,
         });
 
-        await updateIngestionStatus(ingestionId, 'failed', {
-          errorMessage: 'Test failure',
+        await updateIngestionStatus(ingestionId, "failed", {
+          errorMessage: "Test failure",
         });
       }
 
@@ -157,9 +148,7 @@ describe('Operator Mode Verification', () => {
       const alerts = await checkAlertThresholds();
 
       // Should have at least one alert for failed ingestions
-      const failedIngestionAlerts = alerts.filter(
-        a => a.metric === 'failed_ingestion'
-      );
+      const failedIngestionAlerts = alerts.filter((a) => a.metric === "failed_ingestion");
 
       expect(failedIngestionAlerts.length).toBeGreaterThan(0);
 
@@ -178,16 +167,16 @@ describe('Operator Mode Verification', () => {
     });
   });
 
-  describe('Kill Switch Works Without Redeploy', () => {
-    it('should disable connector via kill switch', async () => {
-      const connectorType = 'test-connector';
+  describe("Kill Switch Works Without Redeploy", () => {
+    it("should disable connector via kill switch", async () => {
+      const connectorType = "test-connector";
 
       // Verify connector is not disabled initially
       const initiallyDisabled = await isConnectorDisabled(connectorType);
       expect(initiallyDisabled).toBe(false);
 
       // Disable connector via kill switch
-      await disableConnector(connectorType, 'Test: Disabling connector');
+      await disableConnector(connectorType, "Test: Disabling connector");
 
       // Verify connector is now disabled
       const afterDisable = await isConnectorDisabled(connectorType);
@@ -201,14 +190,14 @@ describe('Operator Mode Verification', () => {
       );
 
       expect(killSwitches.length).toBe(1);
-      expect(killSwitches[0].reason).toContain('Disabling connector');
+      expect(killSwitches[0].reason).toContain("Disabling connector");
     });
 
-    it('should enable connector via kill switch', async () => {
-      const connectorType = 'test-connector';
+    it("should enable connector via kill switch", async () => {
+      const connectorType = "test-connector";
 
       // Ensure connector is disabled first
-      await disableConnector(connectorType, 'Test');
+      await disableConnector(connectorType, "Test");
 
       // Enable connector via kill switch
       await enableConnector(connectorType);
@@ -227,15 +216,15 @@ describe('Operator Mode Verification', () => {
       expect(killSwitches.length).toBe(0);
     });
 
-    it('should pause background job via kill switch', async () => {
-      const jobType = 'test-job';
+    it("should pause background job via kill switch", async () => {
+      const jobType = "test-job";
 
       // Verify job is not paused initially
       const initiallyPaused = await isBackgroundJobPaused(jobType);
       expect(initiallyPaused).toBe(false);
 
       // Pause job via kill switch
-      await pauseBackgroundJob(jobType, 'Test: Pausing job');
+      await pauseBackgroundJob(jobType, "Test: Pausing job");
 
       // Verify job is now paused
       const afterPause = await isBackgroundJobPaused(jobType);
@@ -249,14 +238,14 @@ describe('Operator Mode Verification', () => {
       );
 
       expect(killSwitches.length).toBe(1);
-      expect(killSwitches[0].reason).toContain('Pausing job');
+      expect(killSwitches[0].reason).toContain("Pausing job");
     });
 
-    it('should resume background job via kill switch', async () => {
-      const jobType = 'test-job';
+    it("should resume background job via kill switch", async () => {
+      const jobType = "test-job";
 
       // Ensure job is paused first
-      await pauseBackgroundJob(jobType, 'Test');
+      await pauseBackgroundJob(jobType, "Test");
 
       // Resume job via kill switch
       await resumeBackgroundJob(jobType);
@@ -275,11 +264,11 @@ describe('Operator Mode Verification', () => {
       expect(killSwitches.length).toBe(0);
     });
 
-    it('should prevent connector usage when disabled', async () => {
-      const connectorType = 'test-connector';
+    it("should prevent connector usage when disabled", async () => {
+      const connectorType = "test-connector";
 
       // Disable connector
-      await disableConnector(connectorType, 'Test');
+      await disableConnector(connectorType, "Test");
 
       // Attempt to check if connector is disabled
       const isDisabled = await isConnectorDisabled(connectorType);
@@ -289,11 +278,11 @@ describe('Operator Mode Verification', () => {
       // The route handler checks this before creating sources
     });
 
-    it('should prevent background job execution when paused', async () => {
-      const jobType = 'test-job';
+    it("should prevent background job execution when paused", async () => {
+      const jobType = "test-job";
 
       // Pause job
-      await pauseBackgroundJob(jobType, 'Test');
+      await pauseBackgroundJob(jobType, "Test");
 
       // Attempt to check if job is paused
       const isPaused = await isBackgroundJobPaused(jobType);

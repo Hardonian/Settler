@@ -19,6 +19,19 @@ export {
   type FullEnv,
 } from "./env-validation";
 
+export {
+  CLIENT_ENV_KEYS,
+  SERVER_ENV_KEYS,
+  BUILD_REQUIRED_SERVER_KEYS,
+  RUNTIME_REQUIRED_SERVER_KEYS,
+  validateClientEnv as validateTypedClientEnv,
+  validateServerEnv as validateTypedServerEnv,
+  validateEnvScopes,
+  type ClientEnvKey,
+  type ServerEnvKey,
+  type EnvValidationResult,
+} from "./typed-env";
+
 // Logging utilities (Phase 5: Observability)
 export {
   logger,

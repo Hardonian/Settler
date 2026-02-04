@@ -4,22 +4,20 @@ Tests variance report and transaction matching handlers.
 """
 
 import sys
-from datetime import UTC, datetime
 from pathlib import Path
-from uuid import uuid4
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from settler_workhorse.models import Job, JobResult, JobStatus, JobType
-from settler_workhorse.handlers.variance_report import (
-    _calculate_variance_metrics,
-    handle_variance_report,
-)
 from settler_workhorse.handlers.transaction_match import (
     _match_transactions,
     handle_transaction_match,
 )
+from settler_workhorse.handlers.variance_report import (
+    _calculate_variance_metrics,
+    handle_variance_report,
+)
+from settler_workhorse.models import JobType
 
 
 def test_variance_metrics_calculation():
