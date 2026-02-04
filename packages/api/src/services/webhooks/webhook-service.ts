@@ -310,7 +310,7 @@ export class WebhookService {
           attempts,
           errorMessage,
           metadata: {
-            idempotencyKey: idempotencyKey || null,
+            idempotencyKey: idempotencyKey || Prisma.JsonNull,
             isReplay: event.metadata?.isReplay || false,
             replayCount: event.metadata?.replayCount || 0,
           } as Prisma.InputJsonValue,
@@ -560,7 +560,7 @@ export class WebhookService {
     const replayCount = (metadata?.replayCount as number) || 0;
 
     // Create replay event
-    const payload = originalDelivery.payload as WebhookEventPayload;
+    const payload = originalDelivery.payload as unknown as WebhookEventPayload;
     const replayEvent: WebhookEventPayload = {
       ...payload,
       id: crypto.randomUUID(), // New event ID for replay
