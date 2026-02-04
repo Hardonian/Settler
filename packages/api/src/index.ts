@@ -54,7 +54,12 @@ import { observabilityMiddleware } from "./middleware/observability";
 import { eventTrackingMiddleware } from "./middleware/event-tracking";
 import { setupSignalHandlers, registerShutdownHandler } from "./utils/graceful-shutdown";
 import { requestTimeoutMiddleware, getRequestTimeout } from "./middleware/request-timeout";
-import { initializeSentry, sentryRequestHandler, sentryTracingHandler, sentryErrorHandler } from "./middleware/sentry";
+import {
+  initializeSentry,
+  sentryRequestHandler,
+  sentryTracingHandler,
+  sentryErrorHandler,
+} from "./middleware/sentry";
 import { profilingMiddleware } from "./infrastructure/observability/profiling";
 import { setCsrfToken, csrfProtection, getCsrfToken } from "./middleware/csrf";
 import { sanitizeInput, sanitizeUrlParams } from "./middleware/input-sanitization";
@@ -62,6 +67,7 @@ import { validateStartup } from "./utils/startup-validation";
 import cookieParser from "cookie-parser";
 import { initializeWebSocket } from "./infrastructure/websocket";
 import { createServer } from "http";
+import { countJsonDepth } from "./utils/json-depth";
 
 const app: Express = express();
 const PORT = config.port;
@@ -74,21 +80,25 @@ app.use(sentryRequestHandler());
 app.use(sentryTracingHandler());
 
 // Security middleware
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https:"],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", "data:", "https:"],
+      },
     },
-  },
-}));
+  })
+);
 
-app.use(cors({
-  origin: config.allowedOrigins,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: config.allowedOrigins,
+    credentials: true,
+  })
+);
 
 // Compression middleware (Gzip and Brotli)
 app.use(compressionMiddleware);
@@ -128,9 +138,9 @@ if (config.features.enableRequestTimeout) {
 
 // Trace ID middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
-  const traceId = (req.headers['x-trace-id'] as string) || uuidv4();
+  const traceId = (req.headers["x-trace-id"] as string) || uuidv4();
   (req as AuthRequest).traceId = traceId;
-  res.setHeader('X-Trace-Id', traceId);
+  res.setHeader("X-Trace-Id", traceId);
   next();
 });
 
@@ -146,31 +156,25 @@ const ipLimiter = rateLimit({
 app.use("/api/", ipLimiter);
 
 // Body parsing with size and depth limits
-function countDepth(obj: unknown, current = 0): number {
-  if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
-    return current;
-  }
-  const depths = Object.values(obj).map(v => countDepth(v, current + 1));
-  return Math.max(current, ...depths);
-}
-
-app.use(express.json({
-  limit: "1mb", // Reduced from 10mb
-  verify: (_req, _res, buf) => {
-    try {
-      const parsed = JSON.parse(buf.toString());
-      const depth = countDepth(parsed);
-      if (depth > 20) {
-        throw new Error('JSON depth exceeds maximum of 20 levels');
+app.use(
+  express.json({
+    limit: "1mb", // Reduced from 10mb
+    verify: (_req, _res, buf) => {
+      try {
+        const parsed = JSON.parse(buf.toString());
+        const depth = countJsonDepth(parsed, { maxDepth: 20 });
+        if (depth > 20) {
+          throw new Error("JSON depth exceeds maximum of 20 levels");
+        }
+      } catch (error: unknown) {
+        if (error instanceof Error && error.message.includes("depth")) {
+          throw error;
+        }
+        // Ignore JSON parse errors, let express handle them
       }
-    } catch (error: unknown) {
-      if (error instanceof Error && error.message.includes('depth')) {
-        throw error;
-      }
-      // Ignore JSON parse errors, let express handle them
-    }
-  },
-}));
+    },
+  })
+);
 
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 
@@ -182,12 +186,12 @@ app.use(sanitizeInput);
 app.use(sanitizeUrlParams);
 
 // Validate secrets at startup (production and preview)
-if (config.nodeEnv === 'production' || config.nodeEnv === 'preview') {
+if (config.nodeEnv === "production" || config.nodeEnv === "preview") {
   try {
     SecretsManager.validateSecrets(REQUIRED_SECRETS);
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    logError('Secret validation failed', error, { message });
+    const message = error instanceof Error ? error.message : "Unknown error";
+    logError("Secret validation failed", error, { message });
     process.exit(1);
   }
 }
@@ -344,54 +348,54 @@ async function startServer() {
     // Run startup validations
     const validation = await validateStartup();
     if (!validation.passed) {
-      logError('Startup validation failed', undefined, { validation });
-      if (config.nodeEnv === 'production') {
+      logError("Startup validation failed", undefined, { validation });
+      if (config.nodeEnv === "production") {
         process.exit(1);
       } else {
-        logWarn('Continuing despite validation failures (non-production mode)');
+        logWarn("Continuing despite validation failures (non-production mode)");
       }
     }
 
     await initDatabase();
-    logInfo('Database initialized');
-    
+    logInfo("Database initialized");
+
     // Start background jobs
     startDataRetentionJob();
     startMaterializedViewRefreshJob();
-    
+
     // Process pending webhooks every minute
     const webhookInterval = setInterval(() => {
-      processPendingWebhooks().catch(error => {
-        logError('Failed to process pending webhooks', error);
+      processPendingWebhooks().catch((error) => {
+        logError("Failed to process pending webhooks", error);
       });
     }, 60000);
-    
+
     // Register webhook interval cleanup
     registerShutdownHandler(async () => {
       clearInterval(webhookInterval);
-      logInfo('Webhook processing stopped');
+      logInfo("Webhook processing stopped");
     });
-    
+
     const httpServer = createServer(app);
-    
+
     // Initialize WebSocket server
     initializeWebSocket(httpServer);
-    
+
     const server = httpServer.listen(PORT, () => {
       logInfo(`Settler API server running on port ${PORT}`, { port: PORT });
     });
-    
+
     // Setup graceful shutdown handlers
     setupSignalHandlers(server, {
       timeout: 30000, // 30 seconds
       onShutdown: async () => {
-        logInfo('Custom shutdown tasks completed');
+        logInfo("Custom shutdown tasks completed");
       },
     });
-    
+
     return server;
   } catch (error) {
-    logError('Failed to start server', error);
+    logError("Failed to start server", error);
     process.exit(1);
   }
 }
