@@ -5,9 +5,13 @@ import { v4 as uuidv4 } from "uuid";
 import { logError } from "../utils/logger";
 
 export function idempotencyMiddleware() {
-  return async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  const middleware = async function idempotencyHandler(
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     // Only apply to state-changing methods
-    if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
+    if (!["POST", "PUT", "PATCH", "DELETE"].includes(req.method)) {
       return next();
     }
 
@@ -16,10 +20,13 @@ export function idempotencyMiddleware() {
     }
 
     // Get idempotency key from header or generate one
-    const idempotencyKey = (req.headers['idempotency-key'] as string) || uuidv4();
-    
+    const idempotencyKey = (req.headers["idempotency-key"] as string) || uuidv4();
+
     // Check if we've seen this request
-    const cached = await query<{ response: { statusCode?: number; data: unknown }; created_at: Date }>(
+    const cached = await query<{
+      response: { statusCode?: number; data: unknown };
+      created_at: Date;
+    }>(
       `SELECT response, created_at
        FROM idempotency_keys
        WHERE user_id = $1 AND key = $2 AND expires_at > NOW()`,
@@ -41,12 +48,12 @@ export function idempotencyMiddleware() {
     let responseData: unknown;
 
     // Override json to capture response
-    res.json = function(data: unknown) {
+    res.json = function (data: unknown) {
       responseData = data;
       return originalJson(data);
     };
 
-    res.status = function(code: number) {
+    res.status = function (code: number) {
       statusCode = code;
       return originalStatus(code);
     };
@@ -54,23 +61,19 @@ export function idempotencyMiddleware() {
     // Call next middleware
     await new Promise<void>((resolve) => {
       const originalEnd = res.end.bind(res);
-      res.end = function(chunk?: unknown, encoding?: BufferEncoding, cb?: () => void) {
+      res.end = function (chunk?: unknown, encoding?: BufferEncoding, cb?: () => void) {
         // Cache successful responses (2xx)
         if (statusCode >= 200 && statusCode < 300) {
           query(
             `INSERT INTO idempotency_keys (user_id, key, response, expires_at)
              VALUES ($1, $2, $3, NOW() + INTERVAL '24 hours')
              ON CONFLICT (user_id, key) DO NOTHING`,
-            [
-              req.userId || null,
-              idempotencyKey,
-              JSON.stringify({ statusCode, data: responseData }),
-            ]
-          ).catch(err => {
-            logError('Failed to cache idempotency key', err);
+            [req.userId || null, idempotencyKey, JSON.stringify({ statusCode, data: responseData })]
+          ).catch((err) => {
+            logError("Failed to cache idempotency key", err);
           });
         }
-        if (encoding !== undefined && typeof encoding === 'string') {
+        if (encoding !== undefined && typeof encoding === "string") {
           originalEnd(chunk, encoding, cb);
         } else if (cb !== undefined) {
           originalEnd(chunk, cb);
@@ -82,4 +85,6 @@ export function idempotencyMiddleware() {
       next();
     });
   };
+
+  return middleware;
 }

@@ -207,67 +207,74 @@ app.use("/api/v1", openApiRouter);
 // API versioning middleware
 app.use("/api", versionMiddleware);
 
-// Idempotency middleware for state-changing operations
-app.use("/api/v1", idempotencyMiddleware());
-app.use("/api/v2", idempotencyMiddleware());
+const v1ProtectedRouter = express.Router();
+const v2ProtectedRouter = express.Router();
+
+// Auth required routes (apply auth middleware once per request)
+v1ProtectedRouter.use(authMiddleware);
+v2ProtectedRouter.use(authMiddleware);
+
+// Idempotency middleware for state-changing operations (requires auth)
+v1ProtectedRouter.use(idempotencyMiddleware());
+v2ProtectedRouter.use(idempotencyMiddleware());
 
 // Rate limiting per API key
-app.use("/api/v1", authMiddleware, rateLimitMiddleware());
-app.use("/api/v2", authMiddleware, rateLimitMiddleware());
+v1ProtectedRouter.use(rateLimitMiddleware());
+v2ProtectedRouter.use(rateLimitMiddleware());
 
 // Test mode middleware (after auth, before routes)
-app.use("/api/v1", authMiddleware, testModeMiddleware);
-app.use("/api/v2", authMiddleware, testModeMiddleware);
-app.use("/api/v1", authMiddleware, validateTestMode);
-app.use("/api/v2", authMiddleware, validateTestMode);
+v1ProtectedRouter.use(testModeMiddleware);
+v2ProtectedRouter.use(testModeMiddleware);
+v1ProtectedRouter.use(validateTestMode);
+v2ProtectedRouter.use(validateTestMode);
 
 // Auth routes (no auth required for login/refresh)
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v2/auth", authRouter);
 
 // API Keys routes (requires auth)
-app.use("/api/v1", authMiddleware, apiKeysRouter);
-app.use("/api/v2", authMiddleware, apiKeysRouter);
+v1ProtectedRouter.use(apiKeysRouter);
+v2ProtectedRouter.use(apiKeysRouter);
 
 // Exceptions routes (requires auth)
-app.use("/api/v1", authMiddleware, exceptionsRouter);
-app.use("/api/v2", authMiddleware, exceptionsRouter);
+v1ProtectedRouter.use(exceptionsRouter);
+v2ProtectedRouter.use(exceptionsRouter);
 
 // Test mode routes (requires auth)
-app.use("/api/v1", authMiddleware, testModeRouter);
-app.use("/api/v2", authMiddleware, testModeRouter);
+v1ProtectedRouter.use(testModeRouter);
+v2ProtectedRouter.use(testModeRouter);
 
 // Dashboard routes (requires auth)
-app.use("/api/v1", authMiddleware, dashboardsRouter);
-app.use("/api/v2", authMiddleware, dashboardsRouter);
+v1ProtectedRouter.use(dashboardsRouter);
+v2ProtectedRouter.use(dashboardsRouter);
 
 // Feedback routes (requires auth)
-app.use("/api/v1", authMiddleware, feedbackRouter);
-app.use("/api/v2", authMiddleware, feedbackRouter);
+v1ProtectedRouter.use(feedbackRouter);
+v2ProtectedRouter.use(feedbackRouter);
 
 // Alert routes (requires auth)
-app.use("/api/v1", authMiddleware, alertsRouter);
-app.use("/api/v2", authMiddleware, alertsRouter);
+v1ProtectedRouter.use(alertsRouter);
+v2ProtectedRouter.use(alertsRouter);
 
 // Adapter test routes (requires auth)
-app.use("/api/v1", authMiddleware, adapterTestRouter);
-app.use("/api/v2", authMiddleware, adapterTestRouter);
+v1ProtectedRouter.use(adapterTestRouter);
+v2ProtectedRouter.use(adapterTestRouter);
 
 // Enhanced reports routes (requires auth)
-app.use("/api/v1", authMiddleware, reportsEnhancedRouter);
-app.use("/api/v2", authMiddleware, reportsEnhancedRouter);
+v1ProtectedRouter.use(reportsEnhancedRouter);
+v2ProtectedRouter.use(reportsEnhancedRouter);
 
 // Confidence score routes (requires auth)
-app.use("/api/v1", authMiddleware, confidenceRouter);
-app.use("/api/v2", authMiddleware, confidenceRouter);
+v1ProtectedRouter.use(confidenceRouter);
+v2ProtectedRouter.use(confidenceRouter);
 
 // Reconciliation status routes (requires auth)
-app.use("/api/v1", authMiddleware, reconciliationStatusRouter);
-app.use("/api/v2", authMiddleware, reconciliationStatusRouter);
+v1ProtectedRouter.use(reconciliationStatusRouter);
+v2ProtectedRouter.use(reconciliationStatusRouter);
 
 // Rules editor routes (requires auth)
-app.use("/api/v1", authMiddleware, rulesEditorRouter);
-app.use("/api/v2", authMiddleware, rulesEditorRouter);
+v1ProtectedRouter.use(rulesEditorRouter);
+v2ProtectedRouter.use(rulesEditorRouter);
 
 // Playground routes (no auth, rate-limited)
 app.use("/api/v1/playground", playgroundRouter);
@@ -277,51 +284,54 @@ app.use("/api/v2/playground", playgroundRouter);
 app.get("/api/csrf-token", getCsrfToken);
 
 // CLI wizard routes (requires auth)
-app.use("/api/v1", authMiddleware, cliWizardRouter);
-app.use("/api/v2", authMiddleware, cliWizardRouter);
+v1ProtectedRouter.use(cliWizardRouter);
+v2ProtectedRouter.use(cliWizardRouter);
 
 // Enhanced export routes (requires auth)
-app.use("/api/v1", authMiddleware, exportEnhancedRouter);
-app.use("/api/v2", authMiddleware, exportEnhancedRouter);
+v1ProtectedRouter.use(exportEnhancedRouter);
+v2ProtectedRouter.use(exportEnhancedRouter);
 
 // AI assistant routes (requires auth)
-app.use("/api/v1", authMiddleware, aiAssistantRouter);
-app.use("/api/v2", authMiddleware, aiAssistantRouter);
+v1ProtectedRouter.use(aiAssistantRouter);
+v2ProtectedRouter.use(aiAssistantRouter);
 
 // Audit trail routes (requires auth)
-app.use("/api/v1", authMiddleware, auditTrailRouter);
-app.use("/api/v2", authMiddleware, auditTrailRouter);
+v1ProtectedRouter.use(auditTrailRouter);
+v2ProtectedRouter.use(auditTrailRouter);
 
 // Tenant data management routes (requires auth + tenant context)
-app.use("/api/v1/tenant", authMiddleware, tenantMiddleware, tenantDataRouter);
-app.use("/api/v2/tenant", authMiddleware, tenantMiddleware, tenantDataRouter);
+v1ProtectedRouter.use("/tenant", tenantMiddleware, tenantDataRouter);
+v2ProtectedRouter.use("/tenant", tenantMiddleware, tenantDataRouter);
 
 // Webhook management routes (requires auth)
-app.use("/api/v1/webhooks", authMiddleware, webhookManagementRouter);
-app.use("/api/v2/webhooks", authMiddleware, webhookManagementRouter);
+v1ProtectedRouter.use("/webhooks", webhookManagementRouter);
+v2ProtectedRouter.use("/webhooks", webhookManagementRouter);
 
 // Notification routes (requires auth)
-app.use("/api/v1/notifications", authMiddleware, notificationsRouter);
-app.use("/api/v2/notifications", authMiddleware, notificationsRouter);
+v1ProtectedRouter.use("/notifications", notificationsRouter);
+v2ProtectedRouter.use("/notifications", notificationsRouter);
 
 // Usage tracking routes (requires auth)
-app.use("/api/v1/usage", authMiddleware, usageRouter);
-app.use("/api/v2/usage", authMiddleware, usageRouter);
+v1ProtectedRouter.use("/usage", usageRouter);
+v2ProtectedRouter.use("/usage", usageRouter);
 
 // Batch processing routes (requires auth)
-app.use("/api/v1/batch", authMiddleware, batchRouter);
-app.use("/api/v2/batch", authMiddleware, batchRouter);
+v1ProtectedRouter.use("/batch", batchRouter);
+v2ProtectedRouter.use("/batch", batchRouter);
 
 // Export routes (requires auth)
-app.use("/api/v1/exports", authMiddleware, exportsRouter);
-app.use("/api/v2/exports", authMiddleware, exportsRouter);
+v1ProtectedRouter.use("/exports", exportsRouter);
+v2ProtectedRouter.use("/exports", exportsRouter);
 
 // Versioned API routes
-app.use("/api/v1", authMiddleware, v1Router);
-app.use("/api/v2", authMiddleware, v2Router);
+v1ProtectedRouter.use(v1Router);
+v2ProtectedRouter.use(v2Router);
 
 // Optimized reconciliation summary endpoint
-app.use("/api/v1/reconciliations", authMiddleware, reconciliationSummaryRouter);
+v1ProtectedRouter.use("/reconciliations", reconciliationSummaryRouter);
+
+app.use("/api/v1", v1ProtectedRouter);
+app.use("/api/v2", v2ProtectedRouter);
 
 // Sentry error handler (before custom error handler)
 app.use(sentryErrorHandler());
