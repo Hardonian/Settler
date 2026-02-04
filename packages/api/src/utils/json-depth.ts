@@ -18,7 +18,7 @@ export function scanJsonDepth(input: Buffer | string, options: JsonDepthOptions 
         escaping = false;
         continue;
       }
-      if (char === "\\\\") {
+      if (char === "\\") {
         escaping = true;
         continue;
       }
