@@ -1,0 +1,19 @@
+name: Question or clarification
+description: Ask a question about usage, architecture, or contribution
+title: "[Question]: "
+labels: [question]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+      description: What do you need help with?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Add any relevant context, logs, or screenshots.
+    validations:
+      required: false

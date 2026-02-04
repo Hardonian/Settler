@@ -1,260 +1,139 @@
-# Contributing to Settler Enterprise
+# Contributing to Settler
 
-Thank you for your interest in contributing to Settler Enterprise! This document provides guidelines and instructions for contributing to the enterprise platform.
+Thanks for investing time in Settler. This guide explains how to set up the repo, make safe changes, and pass the required quality gates.
 
-## Developer Console
+## Project Overview
 
-When contributing to Console features:
+Settler is a multi-package monorepo. Most changes land in:
 
-- ✅ Use unified auth (`lib/api/unified-auth.ts`)
-- ✅ Support both session and API key auth
-- ✅ Never return 500 - use graceful degradation
-- ✅ Log activities using `logActivity()`
-- ✅ Update shared types in `shared/types/console.ts`
-- ✅ Test with SDK, CLI, and Console UI
+- `packages/api` — reconciliation API (domain, application, infrastructure, routes)
+- `packages/web` — Next.js console
+- `packages/adapters` — integration adapters
+- `packages/jobforge-*` — background job infrastructure
+- `packages/workhorse` — Python worker
+- `packages/sdk-*` — language SDKs
 
-See [Console Complete Guide](docs/CONSOLE_COMPLETE.md) for details.
-
-Thank you for your interest in contributing to Settler! This document provides guidelines and instructions for contributing.
+If you are unsure where a change belongs, open an issue first.
 
 ## Development Setup
 
 ### Prerequisites
 
-- Node.js 20.19.6+ (see `.nvmrc`)
-- npm 10.0.0+
-- PostgreSQL 15+ (or Supabase account)
-- Redis (or Upstash account)
-- Docker & Docker Compose (for local development)
+- Node.js 24.x (see `.nvmrc`)
+- pnpm 10.x (see `package.json`)
+- PostgreSQL (Supabase or local Postgres)
 
 ### Initial Setup
 
 ```bash
-# Clone the repository
-git clone https://github.com/shardie-github/Settler-API.git
-cd Settler-API
-
-# Install dependencies
-npm install
-
-# Set up environment variables
+pnpm install
 cp .env.example .env
-# Edit .env with your database and API keys
+```
 
-# Start services (PostgreSQL, Redis)
-docker-compose up -d
+Update `.env` with your Postgres/Supabase credentials.
 
-# Run database migrations
-cd packages/api
-npm run migrate
+### Run Migrations
 
-# Start development server
-npm run dev
+```bash
+export DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DB"
+pnpm exec tsx scripts/run-migrations-remote.ts
+```
+
+### Start the Web Console
+
+```bash
+pnpm --filter @settler/web dev
 ```
 
 ## Quality Gates (Required)
 
-All contributions must pass the quality gates before being merged:
+Settler requires verification before changes can be merged.
 
 ### Fast Verification (Pre-commit)
 
-Run before every commit:
-
 ```bash
-npm run verify:fast
+pnpm run verify:fast
 ```
-
-This checks:
-
-- ✅ TypeScript type checking
-- ✅ ESLint (with auto-fix)
-- ✅ Prettier formatting
-- ✅ Python Black formatting (for workhorse changes)
-- ✅ Python Ruff linting
 
 ### Full Verification (Pre-push)
 
-Run before pushing to remote:
-
 ```bash
-npm run verify:full
+pnpm run verify:full
 ```
 
-This includes all fast checks plus:
+### Docs Reality Checks
 
-- ✅ Build verification (all packages)
-- ✅ Test suite (Jest + Pytest)
-- ✅ Python MyPy type checking
+Documentation must match the repository state. Run:
 
-### Pre-commit Hooks
+```bash
+pnpm run verify:docs
+```
 
-The repository uses `lint-staged` to run checks on changed files:
+## Safe Change Guidelines
 
-- TypeScript/JavaScript: ESLint + Prettier
-- Python: Black + Ruff
-- JSON/YAML: Prettier
+- Preserve tenant isolation (RLS and tenant-scoped queries).
+- Keep reconciliation logic deterministic.
+- Update docs and scripts together.
+- Avoid adding network calls to hot paths without retries/timeouts.
 
-### CI/CD Gates
+## Making a Small First Contribution
 
-Pull requests are blocked if:
+Good first contributions include:
 
-- ❌ Lint errors exist
-- ❌ Type errors exist
-- ❌ Tests fail
-- ❌ Build fails
-- ❌ Internal files are tracked (see `.github/workflows/internal-doc-hygiene.yml`)
+- Documentation fixes (README, docs, diagrams).
+- Adapter improvements and new integration tests.
+- SDK improvements and typed examples.
+- Minor UI enhancements in `packages/web`.
+
+Check the issue list for **good first issue** labels or open a proposal with a small scope.
+
+## Issue and Discussion Guidelines
+
+Use the issue templates in `.github/ISSUE_TEMPLATE` for:
+
+- Bug reports
+- Feature requests
+- Questions/clarifications
+
+If GitHub Discussions are enabled, we recommend the following categories:
+
+- **Q&A:** usage questions and troubleshooting
+- **Ideas:** feature proposals and roadmap discussions
+- **Show & Tell:** integrations and community demos
+- **Design/Architecture:** changes with system-wide impact
 
 ## Code Style
 
 ### TypeScript
 
-- **Strict mode**: Always enabled. Replace `any` with `unknown` + narrowing
-- **Naming**: Use descriptive names. Prefer `getUserById` over `getUser`
-- **Imports**: Use absolute imports when possible: `import { Job } from '@settler/api/domain'`
-- **Exports**: Prefer named exports over default exports
-- **Error Handling**: Use structured error envelopes: `{ code, message, traceId, retryable }`
+- Strict typing; avoid `any`.
+- Prefer named exports.
+- Use consistent error envelopes: `{ code, message, traceId, retryable }`.
 
 ### Formatting
 
-- **Prettier**: Auto-formats on save (configured in `.prettierrc`)
-- **Line length**: 100 characters
-- **Indentation**: 2 spaces
-- **Semicolons**: Required
-
-### Linting
-
-- **ESLint**: Runs on save and in CI
-- **Rules**: TypeScript ESLint with strict rules
-- **Fix**: Run `npm run lint:fix` to auto-fix issues
-
-### Code Organization
-
-- **Layers**: Follow hexagonal architecture (domain → application → infrastructure → routes)
-- **Single Responsibility**: Each function/class should do one thing
-- **DRY**: Don't repeat yourself. Extract common logic to utilities
-- **Comments**: Add JSDoc comments for public APIs
+- Prettier formatting is enforced.
+- Run `pnpm run format:check` before submitting.
 
 ## Testing
 
-### Writing Tests
+```bash
+pnpm run test
+```
 
-- **Coverage**: Maintain 70%+ coverage minimum
-- **Unit tests**: Test domain logic and utilities in isolation
-- **Integration tests**: Test API endpoints with Supertest
-- **E2E tests**: Test full workflows with Playwright
-
-### Running Tests
+For workspace-specific tests:
 
 ```bash
-# All tests
-npm run test
-
-# Unit tests only
-cd packages/api && npm run test
-
-# Integration tests
-cd packages/api && npm run test:integration
-
-# E2E tests
-npm run test:e2e
-
-# Coverage report
-cd packages/api && npm run test:coverage
+pnpm --filter @settler/web test
 ```
 
 ## Pull Request Process
 
-### Before Submitting
+1. Create a feature branch.
+2. Keep PRs focused and describe the user impact.
+3. Ensure `pnpm run verify:full` passes.
+4. Update docs if behavior or commands change.
 
-1. **Create feature branch**: `git checkout -b feature/your-feature-name`
-2. **Make changes**: Write code, add tests, update docs
-3. **Run checks**:
-   ```bash
-   npm run lint
-   npm run typecheck
-   npm run test
-   npm run format:check
-   ```
-4. **Commit changes**: Use conventional commit format (see below)
+## Support
 
-### Commit Message Format
-
-Use [Conventional Commits](https://www.conventionalcommits.org/):
-
-```
-type(scope): description
-
-[optional body]
-
-[optional footer]
-```
-
-**Types:**
-
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation changes
-- `refactor`: Code refactoring
-- `test`: Test additions/changes
-- `chore`: Build/tooling changes
-- `perf`: Performance improvements
-- `style`: Code style changes (formatting)
-
-**Examples:**
-
-```
-feat(api): add webhook retry mechanism
-fix(auth): handle expired refresh tokens
-docs(readme): add troubleshooting section
-refactor(repos): extract job repository interface
-```
-
-### PR Checklist
-
-- [ ] Code follows style guidelines
-- [ ] Tests added/updated and passing
-- [ ] Documentation updated (README, JSDoc, etc.)
-- [ ] No linter errors (`npm run lint`)
-- [ ] No type errors (`npm run typecheck`)
-- [ ] Code formatted (`npm run format:check`)
-- [ ] Coverage maintained (70%+)
-- [ ] Commit messages follow conventional format
-
-## Security Guidelines
-
-- **Never commit secrets**: Use environment variables
-- **Input validation**: Validate all inputs with Zod
-- **SQL injection**: Always use parameterized queries
-- **XSS prevention**: Sanitize output data
-- **Rate limiting**: Apply rate limits to public endpoints
-- **Authentication**: Protect all routes except health/metrics
-
-## Documentation
-
-### Code Documentation
-
-- **JSDoc**: Add JSDoc comments for all public APIs
-- **Examples**: Include usage examples in JSDoc
-- **Types**: Document complex types and interfaces
-
-### README Updates
-
-- Update README if adding new features
-- Add troubleshooting tips for common issues
-- Update environment variable documentation
-
-## Getting Help
-
-- **Documentation**: Check [README.md](./README.md) and [docs/README.md](./docs/README.md)
-- **Issues**: Search existing issues before creating new ones
-- **Discussions**: Use GitHub Discussions for questions
-- **Email**: support@settler.dev
-
-## Code Review Process
-
-1. **Automated checks**: CI runs lint, typecheck, format check, and tests
-2. **Review**: At least one maintainer reviews the PR
-3. **Feedback**: Address review comments promptly
-4. **Approval**: PR is merged after approval and CI passes
-
-Thank you for contributing to Settler! 🎉
+Need help? See [SUPPORT.md](SUPPORT.md).

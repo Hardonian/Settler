@@ -76,6 +76,7 @@
     "verify:full": "node scripts/verify.mjs --full",
     "verify:app-router": "tsx scripts/validate-app-router.ts",
     "verify:env:typed": "tsx scripts/validate-typed-env.ts",
+    "verify:docs": "node scripts/verify-docs.mjs",
     "verify:skip-tests": "node scripts/verify.mjs --skip-tests",
     "verify:skip-build": "node scripts/verify.mjs --skip-build",
     "validate": "npm run lint && npm run typecheck && npm run format:check",
