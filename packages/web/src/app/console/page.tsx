@@ -6,7 +6,6 @@
  */
 
 import { Suspense } from "react";
-import dynamic from "next/dynamic";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -22,70 +21,73 @@ import { isSafeMode } from "@/lib/safe";
 import { RBACGate } from "@/lib/rbac-gate";
 import { appLogger } from "@/lib/utils/logger";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
-import { PageLoadingSkeleton, CardSkeleton } from "@/components/shared/loading-state";
+import { PageLoadingSkeleton, CardLoadingSkeleton } from "@/components/shared/loading-state";
 
 // OPTIMIZATION: Code-split heavy dashboard components
 // These are not needed for initial paint and add ~15KB to the bundle
-const LiveActivityFeed = dynamic(
+// Using next/dynamic with alias to avoid conflict with export const dynamic
+import nextDynamic from "next/dynamic";
+
+const LiveActivityFeed = nextDynamic(
   () =>
     import("@/components/console/LiveActivityFeed").then((mod) => ({
       default: mod.LiveActivityFeed,
     })),
-  { ssr: false, loading: () => <CardSkeleton className="h-[300px]" /> }
+  { loading: () => <CardLoadingSkeleton count={3} /> }
 );
 
-const OnboardingWizardClient = dynamic(
+const OnboardingWizardClient = nextDynamic(
   () =>
     import("@/components/onboarding/OnboardingWizardClient").then((mod) => ({
       default: mod.OnboardingWizardClient,
     })),
-  { ssr: false, loading: () => null }
+  { loading: () => null }
 );
 
-const WelcomeBannerClient = dynamic(
+const WelcomeBannerClient = nextDynamic(
   () =>
     import("@/components/onboarding/WelcomeBannerClient").then((mod) => ({
       default: mod.WelcomeBannerClient,
     })),
-  { ssr: false, loading: () => null }
+  { loading: () => null }
 );
 
-const InsightsPanel = dynamic(
+const InsightsPanel = nextDynamic(
   () =>
     import("@/components/console/AIInsightsPanel").then((mod) => ({ default: mod.InsightsPanel })),
-  { ssr: false, loading: () => <CardSkeleton className="h-[200px]" /> }
+  { loading: () => <CardLoadingSkeleton count={2} /> }
 );
 
-const ErrorAlertsPanel = dynamic(
+const ErrorAlertsPanel = nextDynamic(
   () =>
     import("@/components/console/ErrorAlertsPanel").then((mod) => ({
       default: mod.ErrorAlertsPanel,
     })),
-  { ssr: false, loading: () => <CardSkeleton className="h-[200px]" /> }
+  { loading: () => <CardLoadingSkeleton count={2} /> }
 );
 
-const UsageWarningBanner = dynamic(
+const UsageWarningBanner = nextDynamic(
   () =>
     import("@/components/console/UsageWarningBanner").then((mod) => ({
       default: mod.UsageWarningBanner,
     })),
-  { ssr: false, loading: () => null }
+  { loading: () => null }
 );
 
-const GuidedTourClient = dynamic(
+const GuidedTourClient = nextDynamic(
   () =>
     import("@/components/console/GuidedTourClient").then((mod) => ({
       default: mod.GuidedTourClient,
     })),
-  { ssr: false, loading: () => null }
+  { loading: () => null }
 );
 
-const UsageInsightsPanel = dynamic(
+const UsageInsightsPanel = nextDynamic(
   () =>
     import("@/components/console/UsageInsightsPanel").then((mod) => ({
       default: mod.UsageInsightsPanel,
     })),
-  { ssr: false, loading: () => <CardSkeleton className="h-[150px]" /> }
+  { loading: () => <CardLoadingSkeleton count={2} /> }
 );
 
 export const dynamic = "force-dynamic";
