@@ -447,20 +447,34 @@ export class WebhookService {
     const nextRetryAt = new Date(Date.now() + delayMs);
 
     // Update webhook delivery record
-    await this.prisma.webhookDelivery.updateMany({
-      where: {
-        webhookId: delivery.webhookId,
-        status: "failed",
-        metadata: {
-          path: ["idempotencyKey"],
-          equals: delivery.idempotencyKey || null,
+    if (delivery.idempotencyKey) {
+      await this.prisma.webhookDelivery.updateMany({
+        where: {
+          webhookId: delivery.webhookId,
+          status: "failed",
+          metadata: {
+            path: ["idempotencyKey"],
+            equals: delivery.idempotencyKey,
+          },
         },
-      },
-      data: {
-        attempts: attempt,
-        nextRetryAt,
-      },
-    });
+        data: {
+          attempts: attempt,
+          nextRetryAt,
+        },
+      });
+    } else {
+      // For deliveries without idempotency keys, use simpler where clause
+      await this.prisma.webhookDelivery.updateMany({
+        where: {
+          webhookId: delivery.webhookId,
+          status: "failed",
+        },
+        data: {
+          attempts: attempt,
+          nextRetryAt,
+        },
+      });
+    }
 
     // Schedule retry (in production, use a job queue)
     setTimeout(async () => {
