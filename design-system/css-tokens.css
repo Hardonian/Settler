@@ -1,0 +1,215 @@
+/**
+ * Design Token System — Canonical CSS Variables
+ *
+ * This file is the SINGLE SOURCE OF TRUTH for all visual design values.
+ * All other token files (tokens.json, tailwind.config.js, globals.css)
+ * should reference and map to these variables.
+ *
+ * PHILOSOPHY:
+ * - Minimal, explicit, centralized
+ * - Easy to evolve without drift
+ * - Enforceable via linting
+ *
+ * TO EXTEND:
+ * 1. Add new token here following the naming convention
+ * 2. Update tailwind.config.js to map to this token
+ * 3. Do NOT add ad-hoc hex values in components
+ *
+ * DO NOT:
+ * - Change the chosen palette direction
+ * - Add new colors without updating all token references
+ * - Use hardcoded values in components
+ */
+
+/* ============================================
+   COLOR TOKENS — Semantic Mapping
+   ============================================ */
+
+:root {
+  /* === CORE COLORS === */
+
+  /* Primary brand color (blue palette) */
+  --color-primary-50: #f0f9ff;
+  --color-primary-100: #e0f2fe;
+  --color-primary-200: #bae6fd;
+  --color-primary-300: #7dd3fc;
+  --color-primary-400: #38bdf8;
+  --color-primary-500: #0ea5e9;
+  --color-primary-600: #0284c7;
+  --color-primary-700: #0369a1;
+  --color-primary-800: #075985;
+  --color-primary-900: #0c4a6e;
+
+  /* Accent colors (electric palette) */
+  --color-electric-cyan: #06b6d4;
+  --color-electric-purple: #a855f7;
+  --color-electric-neon: #00ff88;
+  --color-electric-blue: #3b82f6;
+  --color-electric-indigo: #6366f1;
+
+  /* Semantic Colors */
+  --color-success-500: #22c55e;
+  --color-warning-500: #f59e0b;
+  --color-error-500: #ef4444;
+
+  /* Neutral palette */
+  --color-neutral-white: #ffffff;
+  --color-neutral-black: #000000;
+  --color-neutral-gray-50: #f9fafb;
+  --color-neutral-gray-100: #f3f4f6;
+  --color-neutral-gray-200: #e5e7eb;
+  --color-neutral-gray-300: #d1d5db;
+  --color-neutral-gray-400: #9ca3af;
+  --color-neutral-gray-500: #6b7280;
+  --color-neutral-gray-600: #4b5563;
+  --color-neutral-gray-700: #374151;
+  --color-neutral-gray-800: #1f2937;
+  --color-neutral-gray-900: #111827;
+
+  /* ============================================
+     SEMANTIC TOKENS — Mapped to Components
+     ============================================ */
+
+  /* Background */
+  --bg: var(--color-neutral-white);
+  --bg-muted: var(--color-neutral-gray-50);
+  --bg-subtle: var(--color-neutral-gray-100);
+
+  /* Surface */
+  --surface: var(--color-neutral-white);
+  --surface-muted: var(--color-neutral-gray-50);
+  --surface-elevated: var(--color-neutral-white);
+
+  /* Text */
+  --text: var(--color-neutral-gray-900);
+  --text-muted: var(--color-neutral-gray-600);
+  --text-subtle: var(--color-neutral-gray-400);
+  --text-inverse: var(--color-neutral-white);
+
+  /* Primary interactive */
+  --primary: var(--color-primary-600);
+  --primary-hover: var(--color-primary-700);
+  --primary-light: var(--color-primary-100);
+  --primary-foreground: var(--color-neutral-white);
+
+  /* Border */
+  --border: var(--color-neutral-gray-200);
+  --border-muted: var(--color-neutral-gray-100);
+  --border-focus: var(--color-primary-500);
+
+  /* Focus ring — WCAG AA compliant */
+  --focus-ring: 0 0 0 3px rgba(14, 165, 233, 0.4);
+  --focus-ring-offset: 0 0 0 2px var(--color-neutral-white);
+
+  /* Status colors */
+  --status-success: var(--color-success-500);
+  --status-warning: var(--color-warning-500);
+  --status-error: var(--color-error-500);
+
+  /* ============================================
+     TYPOGRAPHY TOKENS
+     ============================================ */
+
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  --leading-tight: 1.4;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+
+  /* ============================================
+     SPACING TOKENS
+     ============================================ */
+
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+
+  /* ============================================
+     RADIUS TOKENS
+     ============================================ */
+
+  --radius-none: 0;
+  --radius-sm: 0.125rem;
+  --radius-base: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-full: 9999px;
+
+  /* ============================================
+     ELEVATION/SHADOW TOKENS
+     ============================================ */
+
+  --shadow-none: none;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* ============================================
+     UI POLISH TOKENS
+     ============================================ */
+
+  --ui-card-padding: 1.5rem;
+  --ui-control-height: 2.5rem;
+  --ui-radius-md: 0.375rem;
+  --ui-radius-lg: 0.5rem;
+  --ui-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   LEGACY TOKEN ALIASES (for backward compatibility)
+   Maps old token names to canonical names
+   ============================================ */
+
+:root {
+  /* Aliases for semantic naming */
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
+  --color-card: var(--surface);
+  --color-muted: var(--surface-muted);
+  --color-accent: var(--color-electric-cyan);
+  --color-border: var(--border);
+  --color-input: var(--color-neutral-gray-200);
+  --color-ring: var(--color-primary-500);
+
+  /* HSL aliases for globals.css compatibility */
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 222.2 84% 4.9%;
+}
