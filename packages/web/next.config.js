@@ -27,20 +27,15 @@ const shouldUseStandalone = !isWindows || process.env.CI === "true";
 const nextConfig = {
   pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
   reactStrictMode: true,
-  swcMinify: true,
   // Optimize build output
   // Note: On Windows, standalone mode is disabled to avoid symlink permission issues
   // The standalone output is used in CI/production (Linux) for optimized Docker deployments
   output: shouldUseStandalone ? "standalone" : undefined,
   // Reduce memory footprint during build
   compress: true,
-  // Enable instrumentation
   experimental: {
-    instrumentationHook: true,
     // Optimize memory usage
     optimizeCss: true,
-    // Enable SWC minification for faster builds
-    swcMinify: true,
     // Scale-Readiness: Tree-shake heavy packages to reduce bundle size
     // Each package here gets modular imports (import { Icon } from 'lucide-react')
     // instead of full bundle imports, saving ~50-200KB per package
@@ -62,33 +57,19 @@ const nextConfig = {
       "@tanstack/react-query", // Data fetching
       "recharts", // Charts: ~400KB, only load used chart types
     ],
-    // Scale-Readiness: Keep server-only packages out of client bundles
-    // WHY THIS HELPS AT SCALE:
-    // - Prevents accidental client-side usage (security)
-    // - Reduces bundle size dramatically
-    // - Faster builds (less transpilation)
-    serverComponentsExternalPackages: [
-      "@prisma/client",
-      "prisma",
-      "bcrypt", // Password hashing (server-only)
-      "jsonwebtoken", // JWT signing (server-only)
-      "nodemailer", // Email (server-only)
-    ],
   },
-  eslint: {
-    // Scale-Readiness: Linting handled in pre-commit hooks and CI pipeline
-    // This prevents build failures from style warnings while maintaining quality gates
-    // WHERE TYPE SAFETY IS ENFORCED:
-    // - Pre-commit hooks (Husky)
-    // - CI/CD pipeline (GitHub Actions)
-    // - IDE real-time linting (ESLint extension)
-    // WHY THIS HELPS AT SCALE:
-    // - Faster deploys (no lint blocking)
-    // - Consistent enforcement via automation
-    // - Clear separation: formatting ≠ deployment blocker
-    ignoreDuringBuilds: true,
-    dirs: ["src", "app"],
-  },
+  // Scale-Readiness: Keep server-only packages out of client bundles
+  // WHY THIS HELPS AT SCALE:
+  // - Prevents accidental client-side usage (security)
+  // - Reduces bundle size dramatically
+  // - Faster builds (less transpilation)
+  serverExternalPackages: [
+    "@prisma/client",
+    "prisma",
+    "bcrypt", // Password hashing (server-only)
+    "jsonwebtoken", // JWT signing (server-only)
+    "nodemailer", // Email (server-only)
+  ],
   typescript: {
     // Scale-Readiness: Type safety enforced during development, not deployment
     // Next.js has its own type checking that handles webpack aliases correctly
@@ -107,6 +88,9 @@ const nextConfig = {
     ignoreBuildErrors: true,
     tsconfigPath: "./tsconfig.json",
   },
+  // Configure Turbopack explicitly to avoid dev startup failures
+  // when a custom webpack config is present.
+  turbopack: {},
   // Environment variables configuration
   // Note: Runtime-only env vars (DB_PASSWORD, ENCRYPTION_KEY, JWT_SECRET, etc.)
   // are not required during build and will be validated at runtime
