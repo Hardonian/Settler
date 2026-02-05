@@ -2,76 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Responsive text utilities - prevents overflow and layout breaks */
-@import '../styles/responsive-text.css';
+/**
+ * Design Token System — Settler
+ *
+ * This file imports the canonical design tokens and extends them with
+ * component-level styling. See design-system/css-tokens.css for the
+ * single source of truth for all token values.
+ *
+ * PHILOSOPHY:
+ * - Tokens live in css-tokens.css (single source of truth)
+ * - This file handles component-level styles using those tokens
+ * - Tailwind utilities handle most styling needs
+ */
 
-/* Shine animation for logo */
-@keyframes shine {
-  0% {
-    transform: translateX(-100%) skewX(-12deg);
-  }
-  100% {
-    transform: translateX(200%) skewX(-12deg);
-  }
-}
-
-.animate-shine {
-  animation: shine 2s ease-in-out infinite;
-}
-
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    /* Runtime UI polish tokens (safe defaults) */
-    --ui-card-padding: 1.5rem; /* matches p-6 */
-    --ui-control-height: 2.5rem; /* matches min-h-10 */
-    --ui-radius-md: 0.375rem; /* matches rounded-md */
-    --ui-radius-lg: 0.5rem; /* matches rounded-lg */
-    --ui-card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.10), 0 2px 4px -2px rgb(0 0 0 / 0.10);
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-  }
-}
+/* Import canonical design tokens */
+@import "../../../../design-system/css-tokens.css";
 
 /* Glassmorphism Utility Classes */
 @layer utilities {
   .glass {
-    @apply backdrop-blur-md bg-white/40 dark:bg-white/5 border border-slate-200/60 dark:border-white/5;
+    @apply backdrop-blur-md bg-white/40 dark:bg-white/5 border border-neutral-200/60 dark:border-white/5;
   }
 
   .glass-strong {
-    @apply backdrop-blur-lg bg-white/60 dark:bg-white/10 border border-slate-200/70 dark:border-white/10;
+    @apply backdrop-blur-lg bg-white/60 dark:bg-white/10 border border-neutral-200/70 dark:border-white/10;
   }
 
   .glass-subtle {
-    @apply backdrop-blur-sm bg-white/30 dark:bg-white/5 border border-slate-200/50 dark:border-white/5;
+    @apply backdrop-blur-sm bg-white/30 dark:bg-white/5 border border-neutral-200/50 dark:border-white/5;
   }
 }
 
@@ -189,7 +147,7 @@
 
   /* Inline code: ensure proper contrast and sizing */
   code:not(pre code) {
-    @apply bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-1.5 py-0.5 rounded;
+    @apply bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 px-1.5 py-0.5 rounded;
     font-size: clamp(0.8125rem, 1vw + 0.25rem, 0.875rem); /* 13px - 14px */
   }
 
@@ -247,15 +205,15 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-slate-100 dark:bg-slate-800;
+  @apply bg-neutral-100 dark:bg-neutral-800;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-300 dark:bg-slate-600 rounded-full;
+  @apply bg-neutral-300 dark:bg-neutral-600 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-slate-400 dark:bg-slate-500;
+  @apply bg-neutral-400 dark:bg-neutral-500;
 }
 
 /* Performance optimizations */
@@ -289,9 +247,9 @@ html {
 
 /* Focus visible for accessibility */
 :focus-visible {
-  outline: 2px solid theme("colors.primary.600");
+  outline: 2px solid var(--color-primary-600);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
 }
 
 /* Skip to main content link */
@@ -300,8 +258,8 @@ html {
   left: -9999px;
   z-index: 999;
   padding: 1em;
-  background-color: theme("colors.primary.600");
-  color: white;
+  background-color: var(--color-primary-600);
+  color: var(--color-neutral-white);
   text-decoration: none;
 }
 
@@ -335,13 +293,13 @@ html {
 @keyframes glow {
   0% {
     box-shadow:
-      0 0 5px rgba(6, 182, 212, 0.5),
-      0 0 10px rgba(6, 182, 212, 0.3);
+      0 0 5px var(--color-electric-cyan),
+      0 0 10px var(--color-electric-cyan);
   }
   100% {
     box-shadow:
-      0 0 20px rgba(6, 182, 212, 0.8),
-      0 0 30px rgba(168, 85, 247, 0.5);
+      0 0 20px var(--color-electric-cyan),
+      0 0 30px var(--color-electric-purple);
   }
 }
 
