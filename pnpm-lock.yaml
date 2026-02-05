@@ -343,6 +343,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@jobforge/sdk-ts':
+        specifier: workspace:*
+        version: link:../jobforge-sdk-ts
       '@settler/sdk':
         specifier: workspace:*
         version: link:../sdk
@@ -680,6 +683,12 @@ importers:
       '@builder.io/sdk':
         specifier: ^6.2.0
         version: 6.2.0
+      '@jobforge/sdk-ts':
+        specifier: workspace:*
+        version: link:../jobforge-sdk-ts
+      '@jobforge/shared':
+        specifier: workspace:*
+        version: link:../jobforge-shared
       '@mdx-js/loader':
         specifier: ^3.0.0
         version: 3.1.1(webpack@5.104.1)
