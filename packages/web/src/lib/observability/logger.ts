@@ -1,6 +1,6 @@
 /**
  * Structured Logging Wrapper
- * 
+ *
  * Outputs structured JSON logs with:
  * - level (info, warn, error, debug)
  * - message
@@ -11,9 +11,9 @@
  * - Additional context
  */
 
-import { getTraceId } from './trace';
+import { getTraceId } from "./trace";
 
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+export type LogLevel = "debug" | "info" | "warn" | "error";
 
 export interface LogContext {
   trace_id?: string;
@@ -24,21 +24,17 @@ export interface LogContext {
 }
 
 class Logger {
-  private isDevelopment = process.env.NODE_ENV === 'development';
-  private logLevel: LogLevel = (process.env.LOG_LEVEL as LogLevel) || 'info';
+  private isDevelopment = process.env.NODE_ENV === "development";
+  private logLevel: LogLevel = (process.env.LOG_LEVEL as LogLevel) || "info";
 
   private shouldLog(level: LogLevel): boolean {
-    const levels: LogLevel[] = ['debug', 'info', 'warn', 'error'];
+    const levels: LogLevel[] = ["debug", "info", "warn", "error"];
     const currentLevelIndex = levels.indexOf(this.logLevel);
     const messageLevelIndex = levels.indexOf(level);
     return messageLevelIndex >= currentLevelIndex;
   }
 
-  private async log(
-    level: LogLevel,
-    message: string,
-    context: LogContext = {}
-  ): Promise<void> {
+  private async log(level: LogLevel, message: string, context: LogContext = {}): Promise<void> {
     if (!this.shouldLog(level)) {
       return;
     }
@@ -72,39 +68,38 @@ class Logger {
     const logString = JSON.stringify(logEntry);
 
     switch (level) {
-      case 'error':
+      case "error":
         console.error(logString);
         break;
-      case 'warn':
+      case "warn":
         console.warn(logString);
         break;
-      case 'debug':
+      case "debug":
         if (this.isDevelopment) {
           console.debug(logString);
         }
         break;
-      case 'info':
+      case "info":
       default:
-        // eslint-disable-next-line no-console
-        console.log(logString);
+        console.warn(logString);
         break;
     }
   }
 
   async debug(message: string, context?: LogContext): Promise<void> {
-    await this.log('debug', message, context);
+    await this.log("debug", message, context);
   }
 
   async info(message: string, context?: LogContext): Promise<void> {
-    await this.log('info', message, context);
+    await this.log("info", message, context);
   }
 
   async warn(message: string, context?: LogContext): Promise<void> {
-    await this.log('warn', message, context);
+    await this.log("warn", message, context);
   }
 
   async error(message: string, context?: LogContext): Promise<void> {
-    await this.log('error', message, context);
+    await this.log("error", message, context);
   }
 }
 

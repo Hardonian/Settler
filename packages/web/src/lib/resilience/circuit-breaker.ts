@@ -1,6 +1,6 @@
 /**
  * Circuit Breaker Pattern Implementation
- * 
+ *
  * Prevents cascading failures by stopping requests to failing services
  * and allowing them to recover.
  */
@@ -13,9 +13,9 @@ export interface CircuitBreakerConfig {
 }
 
 export enum CircuitState {
-  CLOSED = 'closed', // Normal operation
-  OPEN = 'open', // Circuit is open, requests fail fast
-  HALF_OPEN = 'half-open', // Testing if service recovered
+  CLOSED = "closed", // Normal operation
+  OPEN = "open", // Circuit is open, requests fail fast
+  HALF_OPEN = "half-open", // Testing if service recovered
 }
 
 interface CircuitBreakerMetrics {
@@ -57,7 +57,7 @@ export class CircuitBreaker {
     this.updateState();
 
     if (this.metrics.state === CircuitState.OPEN) {
-      const error = new CircuitBreakerOpenError('Circuit breaker is open');
+      const error = new CircuitBreakerOpenError("Circuit breaker is open");
       // Don't increment failure count for open circuit (already failed)
       throw error;
     }
@@ -97,7 +97,7 @@ export class CircuitBreaker {
         if (this.metrics.failures >= this.config.failureThreshold) {
           this.metrics.state = CircuitState.OPEN;
           this.metrics.lastFailureTime = now;
-          console.warn('[CircuitBreaker] Circuit opened due to failures:', this.metrics.failures);
+          console.warn("[CircuitBreaker] Circuit opened due to failures:", this.metrics.failures);
         }
         break;
 
@@ -109,7 +109,7 @@ export class CircuitBreaker {
         ) {
           this.metrics.state = CircuitState.HALF_OPEN;
           this.metrics.halfOpenCalls = 0;
-          console.info('[CircuitBreaker] Circuit moved to half-open state');
+          console.warn("[CircuitBreaker] Circuit moved to half-open state");
         }
         break;
 
@@ -120,13 +120,13 @@ export class CircuitBreaker {
           if (this.metrics.failures > 0) {
             this.metrics.state = CircuitState.OPEN;
             this.metrics.lastFailureTime = now;
-            console.warn('[CircuitBreaker] Circuit reopened after half-open failures');
+            console.warn("[CircuitBreaker] Circuit reopened after half-open failures");
           } else {
             // Success! Close circuit
             this.metrics.state = CircuitState.CLOSED;
             this.metrics.failures = 0;
             this.failureWindow = [];
-            console.info('[CircuitBreaker] Circuit closed after successful half-open');
+            console.info("[CircuitBreaker] Circuit closed after successful half-open");
           }
         }
         break;
@@ -145,7 +145,7 @@ export class CircuitBreaker {
         this.metrics.failures = 0;
         this.failureWindow = [];
         this.metrics.halfOpenCalls = 0;
-        console.info('[CircuitBreaker] Circuit closed after successful recovery');
+        console.warn("[CircuitBreaker] Circuit closed after successful recovery");
       }
     } else {
       this.metrics.successes++;
@@ -171,7 +171,7 @@ export class CircuitBreaker {
       // Failure in half-open state, reopen circuit
       this.metrics.state = CircuitState.OPEN;
       this.metrics.lastFailureTime = now;
-      console.warn('[CircuitBreaker] Circuit reopened after half-open failure');
+      console.warn("[CircuitBreaker] Circuit reopened after half-open failure");
     }
   }
 
@@ -202,14 +202,14 @@ export class CircuitBreaker {
       halfOpenCalls: 0,
     };
     this.failureWindow = [];
-    console.info('[CircuitBreaker] Circuit manually reset');
+    console.info("[CircuitBreaker] Circuit manually reset");
   }
 }
 
 export class CircuitBreakerOpenError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'CircuitBreakerOpenError';
+    this.name = "CircuitBreakerOpenError";
   }
 }
 
@@ -218,7 +218,10 @@ export class CircuitBreakerOpenError extends Error {
  */
 const circuitBreakers = new Map<string, CircuitBreaker>();
 
-export function getCircuitBreaker(serviceName: string, config?: Partial<CircuitBreakerConfig>): CircuitBreaker {
+export function getCircuitBreaker(
+  serviceName: string,
+  config?: Partial<CircuitBreakerConfig>
+): CircuitBreaker {
   if (!circuitBreakers.has(serviceName)) {
     circuitBreakers.set(serviceName, new CircuitBreaker(config));
   }
