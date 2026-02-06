@@ -1,7 +1,7 @@
 import { query } from "../db";
 import { generateWebhookSignature } from "./webhook-signature";
 import { logInfo, logError, logWarn } from "./logger";
-import { config } from "../config";
+import { validatedConfig as config } from "../config/validation";
 
 /**
  * Webhook payload structure
@@ -12,6 +12,7 @@ export interface WebhookPayload {
   timestamp: string;
   jobId?: string;
   executionId?: string;
+  idempotencyKey?: string;
   [key: string]: unknown; // Allow additional properties
 }
 
@@ -23,6 +24,125 @@ interface WebhookDelivery {
   secret: string;
 }
 
+/**
+ * Idempotency check result
+ */
+interface IdempotencyCheck {
+  shouldProcess: boolean;
+  existingDelivery?: {
+    id: string;
+    status: string;
+    createdAt: Date;
+  };
+  reason?: string;
+}
+
+/**
+ * Idempotency window in milliseconds (24 hours)
+ */
+const IDEMPOTENCY_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Check idempotency key for duplicate detection
+ */
+export async function checkIdempotency(
+  idempotencyKey: string,
+  webhookId: string
+): Promise<IdempotencyCheck> {
+  if (!idempotencyKey) {
+    return { shouldProcess: true };
+  }
+
+  // Look for existing delivery with same idempotency key
+  const existing = await query<{ id: string; status: string; created_at: Date }>(
+    `SELECT id, status, created_at
+     FROM webhook_deliveries
+     WHERE webhook_id = $1
+     AND metadata->>'idempotencyKey' = $2
+     AND created_at > NOW() - INTERVAL '24 hours'
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [webhookId, idempotencyKey]
+  );
+
+  if (existing.length === 0) {
+    return { shouldProcess: true };
+  }
+
+  const delivery = existing[0];
+
+  // If already delivered successfully, skip processing
+  if (delivery.status === "delivered") {
+    logInfo("Skipping duplicate webhook delivery", {
+      webhookId,
+      idempotencyKey,
+      existingDeliveryId: delivery.id,
+    });
+    return {
+      shouldProcess: false,
+      existingDelivery: {
+        id: delivery.id,
+        status: delivery.status,
+        createdAt: delivery.created_at,
+      },
+      reason: "Already delivered successfully",
+    };
+  }
+
+  // If previous attempt failed, allow retry
+  if (delivery.status === "failed") {
+    return {
+      shouldProcess: true,
+      existingDelivery: {
+        id: delivery.id,
+        status: delivery.status,
+        createdAt: delivery.created_at,
+      },
+      reason: "Previous attempt failed, allowing retry",
+    };
+  }
+
+  // If pending or processing, skip to prevent race conditions
+  return {
+    shouldProcess: false,
+    existingDelivery: {
+      id: delivery.id,
+      status: delivery.status,
+      createdAt: delivery.created_at,
+    },
+    reason: "Delivery already in progress",
+  };
+}
+
+/**
+ * Store idempotency key for a webhook delivery
+ */
+export async function storeIdempotencyKey(
+  idempotencyKey: string,
+  deliveryId: string,
+  status: "pending" | "completed" | "failed" = "pending"
+): Promise<void> {
+  if (!idempotencyKey) {
+    return;
+  }
+
+  const expiresAt = new Date(Date.now() + IDEMPOTENCY_WINDOW_MS);
+
+  await query(
+    `INSERT INTO idempotency_keys (key, status, response, expires_at, completed_at)
+     VALUES ($1, $2, $3, $4, $5)
+     ON CONFLICT (key) DO UPDATE
+     SET status = $2, response = $3, expires_at = $4, completed_at = $5`,
+    [
+      idempotencyKey,
+      status,
+      JSON.stringify({ deliveryId, timestamp: new Date().toISOString() }),
+      expiresAt,
+      status === "completed" ? new Date() : null,
+    ]
+  );
+}
+
 // Process webhook deliveries with exponential backoff
 export async function processWebhookDelivery(delivery: WebhookDelivery): Promise<void> {
   const maxRetries = config.webhook.maxRetries;
@@ -30,17 +150,14 @@ export async function processWebhookDelivery(delivery: WebhookDelivery): Promise
 
   while (attempt <= maxRetries) {
     try {
-      const signature = generateWebhookSignature(
-        JSON.stringify(delivery.payload),
-        delivery.secret
-      );
+      const signature = generateWebhookSignature(JSON.stringify(delivery.payload), delivery.secret);
 
       const response = await fetch(delivery.url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'X-Webhook-Signature': signature,
-          'X-Webhook-Timestamp': Math.floor(Date.now() / 1000).toString(),
+          "Content-Type": "application/json",
+          "X-Webhook-Signature": signature,
+          "X-Webhook-Timestamp": Math.floor(Date.now() / 1000).toString(),
         },
         body: JSON.stringify(delivery.payload),
         signal: AbortSignal.timeout(10000), // 10s timeout
@@ -61,7 +178,7 @@ export async function processWebhookDelivery(delivery: WebhookDelivery): Promise
         [response.status, attempt + 1, delivery.id]
       );
 
-      logInfo('Webhook delivered', {
+      logInfo("Webhook delivered", {
         deliveryId: delivery.id,
         webhookId: delivery.webhookId,
         attempt: attempt + 1,
@@ -79,14 +196,10 @@ export async function processWebhookDelivery(delivery: WebhookDelivery): Promise
                error = $1,
                attempts = $2
            WHERE id = $3`,
-          [
-            error.message,
-            attempt,
-            delivery.id,
-          ]
+          [error.message, attempt, delivery.id]
         );
 
-        logError('Webhook delivery failed after max retries', error, {
+        logError("Webhook delivery failed after max retries", error, {
           deliveryId: delivery.id,
           webhookId: delivery.webhookId,
           attempts: attempt,
@@ -108,15 +221,10 @@ export async function processWebhookDelivery(delivery: WebhookDelivery): Promise
              attempts = $2,
              next_retry_at = $3
          WHERE id = $4`,
-        [
-          error.message,
-          attempt,
-          nextRetryAt,
-          delivery.id,
-        ]
+        [error.message, attempt, nextRetryAt, delivery.id]
       );
 
-      logWarn('Webhook delivery failed, will retry', {
+      logWarn("Webhook delivery failed, will retry", {
         deliveryId: delivery.id,
         attempt,
         nextRetryAt: nextRetryAt.toISOString(),
@@ -129,9 +237,9 @@ export async function processWebhookDelivery(delivery: WebhookDelivery): Promise
 // Process pending webhook deliveries
 export async function processPendingWebhooks(): Promise<void> {
   // Check kill switch for webhook processing
-  const { isBackgroundJobPaused } = await import('../services/operator-mode/kill-switches');
-  if (await isBackgroundJobPaused('webhook')) {
-    logWarn('Webhook processing paused via kill switch');
+  const { isBackgroundJobPaused } = await import("../services/operator-mode/kill-switches");
+  if (await isBackgroundJobPaused("webhook")) {
+    logWarn("Webhook processing paused via kill switch");
     return;
   }
 
@@ -153,22 +261,19 @@ export async function processPendingWebhooks(): Promise<void> {
 }
 
 // Queue webhook for delivery
-export async function queueWebhookDelivery(
-  webhookId: string,
-  payload: any
-): Promise<string> {
+export async function queueWebhookDelivery(webhookId: string, payload: any): Promise<string> {
   const webhooks = await query<{ url: string; secret: string }>(
     `SELECT url, secret FROM webhooks WHERE id = $1 AND status = 'active'`,
     [webhookId]
   );
 
   if (webhooks.length === 0) {
-    throw new Error('Webhook not found or inactive');
+    throw new Error("Webhook not found or inactive");
   }
 
   const webhook = webhooks[0];
   if (!webhook) {
-    throw new Error('Webhook not found or inactive');
+    throw new Error("Webhook not found or inactive");
   }
 
   const result = await query<{ id: string }>(
@@ -180,7 +285,7 @@ export async function queueWebhookDelivery(
 
   const deliveryId = result[0]?.id;
   if (!deliveryId) {
-    throw new Error('Failed to create webhook delivery');
+    throw new Error("Failed to create webhook delivery");
   }
 
   // Process immediately (in production, use job queue)
@@ -190,8 +295,8 @@ export async function queueWebhookDelivery(
     url: webhook.url,
     payload,
     secret: webhook.secret,
-  }).catch(error => {
-    logError('Failed to process webhook delivery', error, { deliveryId });
+  }).catch((error) => {
+    logError("Failed to process webhook delivery", error, { deliveryId });
   });
 
   return deliveryId;
