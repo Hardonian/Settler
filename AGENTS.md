@@ -244,3 +244,28 @@ These are actionable, repo-specific improvements aligned with current direction:
 ---
 
 **For questions:** See `docs/OPERATIONS.md` or `CONTRIBUTING.md`
+
+## 10. Safe-to-Edit Map (Guardrails)
+
+**Safe zones (preferred for changes):**
+
+- `packages/web/src/app/` (UI + route handlers)
+- `packages/api/src/` (API logic and middleware)
+- `scripts/` (automation, verification, QA)
+- `docs/` (documentation)
+
+**High-risk zones (extra caution):**
+
+- `supabase/` and `prisma/` migrations
+- `packages/*/src/__tests__/` (test correctness gates)
+- `.github/workflows/` (CI gate behavior)
+
+## 11. Standard Command Canon (Copy/Paste)
+
+- Install: `pnpm install`
+- Lint: `pnpm run lint`
+- Typecheck: `pnpm run typecheck`
+- Tests: `pnpm run test`
+- E2E: `pnpm run test:e2e`
+- Build: `pnpm run build`
+- Docs reality: `pnpm run verify:docs`

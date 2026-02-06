@@ -119,6 +119,9 @@
     "postinstall": "test -f scripts/vercel-prisma-postinstall.js && node scripts/vercel-prisma-postinstall.js || echo 'Skipping postinstall: script not found (expected in Vercel builds)'",
     "verify:build": "test -f scripts/verify-build-setup.sh && bash scripts/verify-build-setup.sh || echo '⚠️  Build verification script not available'",
     "setup:turbo": "test -f scripts/setup-vercel-turbo-cache.sh && bash scripts/setup-vercel-turbo-cache.sh || echo '⚠️  Turbo setup script not available'",
+    "demo:setup": "tsx scripts/generate-demo-data.ts",
+    "demo:reset": "tsx scripts/generate-demo-data.ts",
+    "demo:start": "npm run demo:setup && turbo run dev --filter @settler/web",
     "agents:deploy": "bash scripts/deploy-autonomous-agents.sh",
     "agents:setup": "tsx scripts/setup-autonomous-agents.ts",
     "agents:monitor": "bash scripts/monitor-agents.sh",
@@ -157,9 +160,6 @@
     "workhorse:verify": "npm run workhorse:format:check && npm run workhorse:lint && npm run workhorse:typecheck",
     "worker:py": "cd packages/workhorse && python -m settler_workhorse.cli worker",
     "jobs:smoke": "tsx scripts/worker-smoke-test.ts",
-    "workhorse:test": "cd packages/workhorse && pytest tests/ -v",
-    "workhorse:lint": "cd packages/workhorse && black --check src/ tests/ && ruff check src/ tests/ && mypy src/",
-    "workhorse:format": "cd packages/workhorse && black src/ tests/ && ruff fix src/ tests/",
     "workhorse:dev": "cd packages/workhorse && python -m settler_workhorse.cli worker --poll-interval 2"
   },
   "lint-staged": {
