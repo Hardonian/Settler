@@ -58,7 +58,7 @@ class ConnectorRuntime {
             try {
                 decrypted = await (0, credential_encryption_1.decryptCredentials)(JSON.stringify(creds.encrypted_credentials), this.config.supabaseUrl, this.config.supabaseServiceKey);
             }
-            catch (_error) {
+            catch {
                 // Fallback: use as-is if decryption fails (backwards compatibility)
                 decrypted = creds.encrypted_credentials;
             }
@@ -67,7 +67,7 @@ class ConnectorRuntime {
             try {
                 decrypted.access_token = await (0, credential_encryption_1.decryptToken)(creds.access_token_encrypted, this.config.supabaseUrl, this.config.supabaseServiceKey);
             }
-            catch (_error) {
+            catch {
                 decrypted.access_token = creds.access_token_encrypted;
             }
         }
@@ -75,7 +75,7 @@ class ConnectorRuntime {
             try {
                 decrypted.refresh_token = await (0, credential_encryption_1.decryptToken)(creds.refresh_token_encrypted, this.config.supabaseUrl, this.config.supabaseServiceKey);
             }
-            catch (_error) {
+            catch {
                 decrypted.refresh_token = creds.refresh_token_encrypted;
             }
         }

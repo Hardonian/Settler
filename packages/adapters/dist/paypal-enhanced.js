@@ -25,7 +25,7 @@ class PayPalEnhancedAdapter {
             // For now, verify webhook_id matches expected
             return !!webhookId;
         }
-        catch (_error) {
+        catch {
             return false;
         }
     }

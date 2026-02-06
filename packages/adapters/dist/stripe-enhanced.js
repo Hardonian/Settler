@@ -34,7 +34,7 @@ class StripeEnhancedAdapter {
                 .digest("hex");
             return signatures.some((sig) => crypto_1.default.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSignature)));
         }
-        catch (_error) {
+        catch {
             return false;
         }
     }

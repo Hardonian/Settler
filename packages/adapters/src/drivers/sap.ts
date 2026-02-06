@@ -34,7 +34,7 @@ export class SapDriver implements ConnectorDriver {
   };
 
   async testConnection(options: TestConnectionOptions): Promise<TestConnectionResult> {
-    const { credentials, config: _config } = options;
+    const { credentials } = options;
     const odataUrl = credentials.odata_url as string;
     const username = credentials.username as string;
     const password = credentials.password as string;

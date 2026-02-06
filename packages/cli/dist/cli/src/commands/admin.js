@@ -3,9 +3,14 @@
  * Admin CLI Commands
  * CLI interface for admin operations
  */
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createAdminCommands = createAdminCommands;
+const chalk_1 = __importDefault(require("chalk"));
 const commander_1 = require("commander");
+const jobforge_1 = require("../lib/jobforge");
 function createAdminCommands() {
     const admin = new commander_1.Command('admin');
     // Get saga status
@@ -92,6 +97,132 @@ function createAdminCommands() {
         .requiredOption('--reconciliation-id <id>', 'Reconciliation ID')
         .action(async (options) => {
         console.log(`Dry-running reconciliation ${options.reconciliationId}`);
+    });
+    // JobForge: Submit event
+    admin
+        .command('jobforge:submit-event')
+        .description('Submit a JobForge event (admin)')
+        .requiredOption('--tenant-id <id>', 'Tenant ID (UUID)')
+        .requiredOption('--project-id <id>', 'Project ID (UUID)')
+        .requiredOption('--event-name <name>', 'Event name')
+        .option('--payload <json>', 'Event payload JSON', '{}')
+        .option('--idempotency-key <key>', 'Idempotency key')
+        .action(async (options) => {
+        try {
+            const client = (0, jobforge_1.requireJobForgeClient)();
+            const payload = (0, jobforge_1.parseJsonOption)(options.payload);
+            const job = await client.enqueueJob({
+                tenant_id: options.tenantId,
+                type: 'settler.admin.event',
+                payload: {
+                    tenant_id: options.tenantId,
+                    project_id: options.projectId,
+                    event_name: options.eventName,
+                    payload,
+                },
+                idempotency_key: options.idempotencyKey,
+            });
+            console.log(chalk_1.default.green(`✓ JobForge event submitted: ${job.id}`));
+        }
+        catch (error) {
+            console.error(chalk_1.default.red(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`));
+            process.exit(1);
+        }
+    });
+    // JobForge: Module dry-run
+    admin
+        .command('jobforge:module:dry-run')
+        .description('Run a JobForge module in dry-run mode')
+        .requiredOption('--tenant-id <id>', 'Tenant ID (UUID)')
+        .requiredOption('--project-id <id>', 'Project ID (UUID)')
+        .requiredOption('--module-name <name>', 'Module name')
+        .option('--input <json>', 'Module input JSON', '{}')
+        .option('--idempotency-key <key>', 'Idempotency key')
+        .action(async (options) => {
+        try {
+            const client = (0, jobforge_1.requireJobForgeClient)();
+            const input = (0, jobforge_1.parseJsonOption)(options.input);
+            const job = await client.enqueueJob({
+                tenant_id: options.tenantId,
+                type: 'settler.admin.module.dry_run',
+                payload: {
+                    tenant_id: options.tenantId,
+                    project_id: options.projectId,
+                    module_name: options.moduleName,
+                    input,
+                    dry_run: true,
+                },
+                idempotency_key: options.idempotencyKey,
+            });
+            console.log(chalk_1.default.green(`✓ JobForge dry-run queued: ${job.id}`));
+        }
+        catch (error) {
+            console.error(chalk_1.default.red(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`));
+            process.exit(1);
+        }
+    });
+    // JobForge: View report
+    admin
+        .command('jobforge:report')
+        .description('View a JobForge report by job ID')
+        .requiredOption('--tenant-id <id>', 'Tenant ID (UUID)')
+        .requiredOption('--project-id <id>', 'Project ID (UUID)')
+        .requiredOption('--job-id <id>', 'Job ID (UUID)')
+        .action(async (options) => {
+        try {
+            const client = (0, jobforge_1.requireJobForgeClient)();
+            const job = await client.getJob(options.jobId, options.tenantId);
+            if (!job) {
+                console.log(chalk_1.default.yellow('No JobForge job found.'));
+                return;
+            }
+            const result = job.result_id
+                ? await client.getResult(job.result_id, options.tenantId)
+                : null;
+            console.log(chalk_1.default.cyan('JobForge Job:'));
+            console.log(JSON.stringify(job, null, 2));
+            console.log(chalk_1.default.cyan('JobForge Result:'));
+            console.log(JSON.stringify(result, null, 2));
+        }
+        catch (error) {
+            console.error(chalk_1.default.red(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`));
+            process.exit(1);
+        }
+    });
+    // JobForge: Request bundle execution (gated)
+    admin
+        .command('jobforge:bundle:request')
+        .description('Request a JobForge bundle execution (gated)')
+        .requiredOption('--tenant-id <id>', 'Tenant ID (UUID)')
+        .requiredOption('--project-id <id>', 'Project ID (UUID)')
+        .requiredOption('--bundle-id <id>', 'Bundle ID')
+        .option('--report-job-id <id>', 'Report Job ID (UUID)')
+        .requiredOption('--confirm', 'Confirm bundle execution request')
+        .action(async (options) => {
+        try {
+            const config = (0, jobforge_1.getJobForgeConfig)();
+            if (!config.bundleExecutionEnabled) {
+                console.error(chalk_1.default.red('Bundle execution requests are disabled. Set JOBFORGE_BUNDLE_EXECUTION_ENABLED=1 to enable.'));
+                process.exit(1);
+            }
+            const client = (0, jobforge_1.requireJobForgeClient)();
+            const job = await client.enqueueJob({
+                tenant_id: options.tenantId,
+                type: 'settler.admin.bundle.execute',
+                payload: {
+                    tenant_id: options.tenantId,
+                    project_id: options.projectId,
+                    bundle_id: options.bundleId,
+                    report_job_id: options.reportJobId ?? null,
+                    requested_at: new Date().toISOString(),
+                },
+            });
+            console.log(chalk_1.default.green(`✓ Bundle execution requested: ${job.id}`));
+        }
+        catch (error) {
+            console.error(chalk_1.default.red(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`));
+            process.exit(1);
+        }
     });
     return admin;
 }

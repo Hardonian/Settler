@@ -15,18 +15,9 @@ module.exports = {
   },
   overrides: [
     {
-      files: ["src/commands/**/*.ts"],
-      rules: {
-        "@typescript-eslint/no-unsafe-call": "off", // Commander.js API uses any types
-        "@typescript-eslint/no-unsafe-member-access": "off", // Commander.js options are loosely typed
-        "@typescript-eslint/no-unsafe-assignment": "off", // Commander.js returns are loosely typed
-        "no-console": "off", // CLI commands intentionally use console.log for user output
-      },
-    },
-    {
       files: ["src/**/*.ts"],
       rules: {
-        "no-console": ["warn", { allow: ["warn", "error", "log"] }], // Allow console.log in CLI
+        "no-console": "off", // CLI intentionally uses console.log for user output
       },
     },
   ],

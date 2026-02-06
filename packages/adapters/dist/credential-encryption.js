@@ -59,7 +59,7 @@ async function encryptCredentials(credentials, supabaseUrl, supabaseServiceKey) 
             return data; // Return vault reference
         }
     }
-    catch (_error) {
+    catch {
         console.warn("Supabase Vault not available, using application-level encryption");
     }
     // Option 2: Application-level encryption using AES-256-GCM
@@ -95,7 +95,7 @@ async function decryptCredentials(encryptedCredentials, supabaseUrl, supabaseSer
             return JSON.parse(data);
         }
     }
-    catch (_error) {
+    catch {
         // Not a vault reference, try application-level decryption
     }
     // Option 2: Application-level decryption
@@ -122,7 +122,7 @@ async function decryptCredentials(encryptedCredentials, supabaseUrl, supabaseSer
     try {
         return JSON.parse(Buffer.from(encryptedCredentials, "base64").toString("utf8"));
     }
-    catch (_error) {
+    catch {
         throw new Error("Failed to decode credentials");
     }
 }

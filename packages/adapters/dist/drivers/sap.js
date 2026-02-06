@@ -23,7 +23,7 @@ class SapDriver {
         optionalConfig: ["client", "system_number", "application_server"],
     };
     async testConnection(options) {
-        const { credentials, config: _config } = options;
+        const { credentials } = options;
         const odataUrl = credentials.odata_url;
         const username = credentials.username;
         const password = credentials.password;

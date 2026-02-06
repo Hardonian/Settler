@@ -31,7 +31,7 @@ class SquareEnhancedAdapter {
                 .digest("base64");
             return crypto_1.default.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature));
         }
-        catch (_error) {
+        catch {
             return false;
         }
     }

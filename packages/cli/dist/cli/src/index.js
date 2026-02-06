@@ -9,6 +9,7 @@ const adapters_1 = require("./commands/adapters");
 const debug_1 = require("./commands/debug");
 const receipts_1 = require("./commands/receipts");
 const console_1 = require("./commands/console");
+const admin_1 = require("./commands/admin");
 const program = new commander_1.Command();
 program
     .name("settler")
@@ -26,6 +27,7 @@ program.addCommand(adapters_1.adaptersCommand);
 program.addCommand(debug_1.debugCommand);
 program.addCommand(receipts_1.receiptsCommand);
 program.addCommand(console_1.consoleCommand);
+program.addCommand((0, admin_1.createAdminCommands)());
 // Parse arguments
 program.parse();
 // Show help if no command provided

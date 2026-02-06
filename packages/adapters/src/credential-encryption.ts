@@ -29,7 +29,7 @@ export async function encryptCredentials(
     if (!error && data) {
       return data as string; // Return vault reference
     }
-  } catch (_error) {
+  } catch {
     console.warn("Supabase Vault not available, using application-level encryption");
   }
 

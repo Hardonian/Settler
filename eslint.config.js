@@ -69,4 +69,11 @@ module.exports = [
       ],
     },
   },
+  // CLI package: allow console.log for CLI output (must come after general config to override)
+  {
+    files: ["packages/cli/src/**/*.ts"],
+    rules: {
+      "no-console": "off",
+    },
+  },
 ];
