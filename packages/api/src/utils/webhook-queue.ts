@@ -161,6 +161,7 @@ export async function processWebhookDelivery(delivery: WebhookDelivery): Promise
           "Content-Type": "application/json",
           "X-Webhook-Signature": signature,
           "X-Webhook-Timestamp": Math.floor(Date.now() / 1000).toString(),
+          "X-Webhook-Event": delivery.payload.event,
         },
         body: JSON.stringify(delivery.payload),
         signal: AbortSignal.timeout(10000), // 10s timeout
