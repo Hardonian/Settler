@@ -193,7 +193,7 @@ class AlertManager {
      */
     async sendNotification(alert) {
         // TODO: Integrate with notification service (email, Slack, PagerDuty, etc.)
-        console.log(`Alert: [${alert.severity.toUpperCase()}] ${alert.title} - ${alert.message}`);
+        console.warn(`Alert: [${alert.severity.toUpperCase()}] ${alert.title} - ${alert.message}`);
         // Example: Send to webhook
         const webhookUrl = process.env.ALERT_WEBHOOK_URL;
         if (webhookUrl) {
