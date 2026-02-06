@@ -202,7 +202,7 @@ export class CircuitBreaker {
       halfOpenCalls: 0,
     };
     this.failureWindow = [];
-    console.info("[CircuitBreaker] Circuit manually reset");
+    console.warn("[CircuitBreaker] Circuit manually reset");
   }
 }
 
