@@ -1,20 +1,20 @@
 /**
  * AI Assist Components
- * 
+ *
  * Gated, explainable AI assistance with deterministic fallbacks.
  * Always shows baseline recommendation with optional AI enhancement.
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Sparkles, AlertCircle, CheckCircle2, Info } from 'lucide-react';
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Sparkles, AlertCircle, CheckCircle2, Info } from "lucide-react";
 
 export interface AIRecommendation {
-  type: 'match' | 'duplicate' | 'mismatch' | 'anomaly';
+  type: "match" | "duplicate" | "mismatch" | "anomaly";
   confidence: number; // 0-1
   explanation: string;
   signals: Array<{ name: string; value: string; weight: number }>;
@@ -33,16 +33,21 @@ interface AIAssistProps {
 /**
  * AI Assist Card Component
  */
-export function AIAssistCard({ recommendation, onAccept, onReject, enabled = true }: AIAssistProps) {
-  const [_showDetails, _setShowDetails] = useState(false);
-
+export function AIAssistCard({
+  recommendation,
+  onAccept,
+  onReject,
+  enabled = true,
+}: AIAssistProps) {
   if (!enabled) {
     return (
       <Card className="border-slate-200 dark:border-slate-800">
         <CardContent className="pt-6">
           <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
             <Info className="w-4 h-4" />
-            <span className="text-sm">AI Assist is disabled. Using deterministic baseline only.</span>
+            <span className="text-sm">
+              AI Assist is disabled. Using deterministic baseline only.
+            </span>
           </div>
           <div className="mt-2 p-3 bg-slate-50 dark:bg-slate-900 rounded text-sm">
             <strong>Baseline:</strong> {recommendation.deterministicBaseline}
@@ -54,10 +59,10 @@ export function AIAssistCard({ recommendation, onAccept, onReject, enabled = tru
 
   const confidenceColor =
     recommendation.confidence > 0.8
-      ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+      ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
       : recommendation.confidence > 0.5
-      ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
-      : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
+        ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300"
+        : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
 
   return (
     <Card className="border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/10">

@@ -24,7 +24,6 @@ interface UserRole {
 export function RBACManager() {
   const [roles, setRoles] = useState<Role[]>([]);
   const [userRoles, setUserRoles] = useState<UserRole[]>([]);
-  const [_loading, setLoading] = useState(true);
 
   useEffect(() => {
     void fetchRBACData();
@@ -49,7 +48,7 @@ export function RBACManager() {
     } catch (error: unknown) {
       console.error("Failed to fetch RBAC data:", error);
     } finally {
-      setLoading(false);
+      // Loading complete
     }
   };
 

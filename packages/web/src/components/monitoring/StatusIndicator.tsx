@@ -55,9 +55,8 @@ export function StatusIndicator() {
           // Non-200 response - default to operational
           setStatus("operational");
         }
-      } catch (error: unknown) {
+      } catch (_error: unknown) {
         // Any other error - default to operational
-        console.debug("Status check error:", error);
         setStatus("operational");
       }
       setIsVisible(true);

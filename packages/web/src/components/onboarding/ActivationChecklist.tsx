@@ -67,7 +67,7 @@ export function ActivationChecklist({
   onItemComplete: _onItemComplete,
   onAllComplete: _onAllComplete,
 }: ActivationChecklistProps) {
-  const [items, _setItems] = useState<ChecklistItem[]>(DEFAULT_CHECKLIST);
+  const [items] = useState<ChecklistItem[]>(DEFAULT_CHECKLIST);
   const [completedItems, setCompletedItems] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
@@ -241,8 +241,8 @@ export function ActivationChecklist({
               🎉 Congratulations! You&apos;re all set up.
             </p>
             <p className="text-xs text-green-800 dark:text-green-400">
-              You&apos;ve completed all required activation steps. Start reconciling your transactions
-              now!
+              You&apos;ve completed all required activation steps. Start reconciling your
+              transactions now!
             </p>
           </div>
         )}

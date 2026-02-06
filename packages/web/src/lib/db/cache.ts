@@ -8,9 +8,9 @@
  * - Cache hit/miss metrics
  */
 
-import { safeRedisOperation } from '@/lib/redis/client';
-import { trackMetric } from '@/lib/monitoring/metrics';
-import { safeJsonParse } from '@/lib/utils/safe-parse';
+import { safeRedisOperation } from "@/lib/redis/client";
+import { trackMetric } from "@/lib/monitoring/metrics";
+import { safeJsonParse } from "@/lib/utils/safe-parse";
 
 export interface CacheOptions {
   /** Cache TTL in seconds */
@@ -24,25 +24,19 @@ export interface CacheOptions {
 /**
  * Generate cache key from query parameters
  */
-export function generateCacheKey(
-  prefix: string,
-  params: Record<string, unknown>
-): string {
+export function generateCacheKey(prefix: string, params: Record<string, unknown>): string {
   const sortedParams = Object.keys(params)
     .sort()
     .map((key) => `${key}:${JSON.stringify(params[key])}`)
-    .join('|');
-  
+    .join("|");
+
   return `${prefix}:${sortedParams}`;
 }
 
 /**
  * Get cached value
  */
-export async function getCached<T>(
-  key: string,
-  options: CacheOptions
-): Promise<T | null> {
+export async function getCached<T>(key: string, options: CacheOptions): Promise<T | null> {
   if (options.skip) {
     return null;
   }
@@ -57,14 +51,14 @@ export async function getCached<T>(
     );
 
     if (result) {
-      await trackMetric({ name: 'cache.hit', value: 1, tags: { key: key.substring(0, 50) } });
+      await trackMetric({ name: "cache.hit", value: 1, tags: { key: key.substring(0, 50) } });
       return result as T;
     }
 
-    await trackMetric({ name: 'cache.miss', value: 1, tags: { key: key.substring(0, 50) } });
+    await trackMetric({ name: "cache.miss", value: 1, tags: { key: key.substring(0, 50) } });
     return null;
-  } catch (error) {
-    await trackMetric({ name: 'cache.error', value: 1, tags: { key: key.substring(0, 50) } });
+  } catch (_error) {
+    await trackMetric({ name: "cache.error", value: 1, tags: { key: key.substring(0, 50) } });
     return null;
   }
 }
@@ -72,11 +66,7 @@ export async function getCached<T>(
 /**
  * Set cached value
  */
-export async function setCached<T>(
-  key: string,
-  value: T,
-  options: CacheOptions
-): Promise<void> {
+export async function setCached<T>(key: string, value: T, options: CacheOptions): Promise<void> {
   if (options.skip) {
     return;
   }
@@ -89,9 +79,9 @@ export async function setCached<T>(
       () => {} // Fallback to no-op
     );
 
-    await trackMetric({ name: 'cache.set', value: 1, tags: { key: key.substring(0, 50) } });
-  } catch (error) {
-    await trackMetric({ name: 'cache.error', value: 1, tags: { key: key.substring(0, 50) } });
+    await trackMetric({ name: "cache.set", value: 1, tags: { key: key.substring(0, 50) } });
+  } catch (_error) {
+    await trackMetric({ name: "cache.error", value: 1, tags: { key: key.substring(0, 50) } });
   }
 }
 
@@ -104,13 +94,13 @@ export async function invalidateCache(pattern: string): Promise<void> {
       async (client) => {
         // Redis SCAN for pattern matching
         const keys: string[] = [];
-        let cursor = '0';
-        
+        let cursor = "0";
+
         do {
-          const result = await client.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
+          const result = await client.scan(cursor, "MATCH", pattern, "COUNT", 100);
           cursor = result[0];
           keys.push(...result[1]);
-        } while (cursor !== '0');
+        } while (cursor !== "0");
 
         if (keys.length > 0) {
           await client.del(...keys);
@@ -119,9 +109,13 @@ export async function invalidateCache(pattern: string): Promise<void> {
       () => {} // Fallback to no-op
     );
 
-    await trackMetric({ name: 'cache.invalidate', value: 1, tags: { pattern: pattern.substring(0, 50) } });
-  } catch (error) {
-    await trackMetric({ name: 'cache.error', value: 1, tags: { operation: 'invalidate' } });
+    await trackMetric({
+      name: "cache.invalidate",
+      value: 1,
+      tags: { pattern: pattern.substring(0, 50) },
+    });
+  } catch (_error) {
+    await trackMetric({ name: "cache.error", value: 1, tags: { operation: "invalidate" } });
   }
 }
 

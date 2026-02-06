@@ -37,7 +37,6 @@ export function OperationsDashboard() {
   const [systemHealth, setSystemHealth] = useState<SystemHealth[]>([]);
   const [edgeFunctions, setEdgeFunctions] = useState<EdgeFunctionHealth[]>([]);
   const [retryQueues, setRetryQueues] = useState<RetryQueue[]>([]);
-  const [_loading, setLoading] = useState(true);
 
   useEffect(() => {
     void fetchOpsData();
@@ -71,8 +70,6 @@ export function OperationsDashboard() {
       }
     } catch (error: unknown) {
       console.error("Failed to fetch ops data:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
