@@ -126,7 +126,7 @@ export class CircuitBreaker {
             this.metrics.state = CircuitState.CLOSED;
             this.metrics.failures = 0;
             this.failureWindow = [];
-            console.info("[CircuitBreaker] Circuit closed after successful half-open");
+            console.warn("[CircuitBreaker] Circuit closed after successful half-open");
           }
         }
         break;
