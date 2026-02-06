@@ -13,7 +13,6 @@ const logger_1 = require("../utils/logger");
 /**
  * Calculate days remaining in trial
  */
-// @ts-expect-error - Reserved for future use
 function _calculateDaysRemaining(_trialEndDate) {
     return 0;
 }

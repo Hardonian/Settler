@@ -24,35 +24,35 @@ export declare const serverEnvSchema: z.ZodObject<{
     STRIPE_SECRET_KEY: z.ZodOptional<z.ZodString>;
     STRIPE_WEBHOOK_SECRET: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    DATABASE_URL: string;
     SUPABASE_URL: string;
     SUPABASE_ANON_KEY: string;
     SUPABASE_SERVICE_ROLE_KEY: string;
+    DATABASE_URL: string;
     JWT_SECRET: string;
     ENCRYPTION_KEY: string;
+    STRIPE_SECRET_KEY?: string | undefined;
+    STRIPE_WEBHOOK_SECRET?: string | undefined;
+    RESEND_API_KEY?: string | undefined;
+    RESEND_FROM_EMAIL?: string | undefined;
     REDIS_URL?: string | undefined;
     UPSTASH_REDIS_REST_URL?: string | undefined;
     UPSTASH_REDIS_REST_TOKEN?: string | undefined;
-    RESEND_API_KEY?: string | undefined;
-    RESEND_FROM_EMAIL?: string | undefined;
     SENTRY_DSN?: string | undefined;
-    STRIPE_SECRET_KEY?: string | undefined;
-    STRIPE_WEBHOOK_SECRET?: string | undefined;
 }, {
-    DATABASE_URL: string;
     SUPABASE_URL: string;
     SUPABASE_ANON_KEY: string;
     SUPABASE_SERVICE_ROLE_KEY: string;
+    DATABASE_URL: string;
     JWT_SECRET: string;
     ENCRYPTION_KEY: string;
+    STRIPE_SECRET_KEY?: string | undefined;
+    STRIPE_WEBHOOK_SECRET?: string | undefined;
+    RESEND_API_KEY?: string | undefined;
+    RESEND_FROM_EMAIL?: string | undefined;
     REDIS_URL?: string | undefined;
     UPSTASH_REDIS_REST_URL?: string | undefined;
     UPSTASH_REDIS_REST_TOKEN?: string | undefined;
-    RESEND_API_KEY?: string | undefined;
-    RESEND_FROM_EMAIL?: string | undefined;
     SENTRY_DSN?: string | undefined;
-    STRIPE_SECRET_KEY?: string | undefined;
-    STRIPE_WEBHOOK_SECRET?: string | undefined;
 }>;
 /**
  * Client-side environment schema
@@ -68,14 +68,14 @@ export declare const clientEnvSchema: z.ZodObject<{
     NEXT_PUBLIC_SITE_URL: string;
     NEXT_PUBLIC_SUPABASE_URL: string;
     NEXT_PUBLIC_SUPABASE_ANON_KEY: string;
-    NEXT_PUBLIC_SENTRY_DSN?: string | undefined;
     NEXT_PUBLIC_APP_URL?: string | undefined;
+    NEXT_PUBLIC_SENTRY_DSN?: string | undefined;
 }, {
     NEXT_PUBLIC_SUPABASE_URL: string;
     NEXT_PUBLIC_SUPABASE_ANON_KEY: string;
     NEXT_PUBLIC_SITE_URL?: string | undefined;
-    NEXT_PUBLIC_SENTRY_DSN?: string | undefined;
     NEXT_PUBLIC_APP_URL?: string | undefined;
+    NEXT_PUBLIC_SENTRY_DSN?: string | undefined;
 }>;
 /**
  * Combined environment schema for full validation
@@ -102,45 +102,45 @@ export declare const fullEnvSchema: z.ZodObject<{
     NEXT_PUBLIC_SENTRY_DSN: z.ZodOptional<z.ZodString>;
     NEXT_PUBLIC_APP_URL: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    DATABASE_URL: string;
-    SUPABASE_URL: string;
-    SUPABASE_ANON_KEY: string;
-    SUPABASE_SERVICE_ROLE_KEY: string;
-    JWT_SECRET: string;
-    ENCRYPTION_KEY: string;
     NEXT_PUBLIC_SITE_URL: string;
     NEXT_PUBLIC_SUPABASE_URL: string;
     NEXT_PUBLIC_SUPABASE_ANON_KEY: string;
-    REDIS_URL?: string | undefined;
-    UPSTASH_REDIS_REST_URL?: string | undefined;
-    UPSTASH_REDIS_REST_TOKEN?: string | undefined;
-    RESEND_API_KEY?: string | undefined;
-    RESEND_FROM_EMAIL?: string | undefined;
-    SENTRY_DSN?: string | undefined;
-    STRIPE_SECRET_KEY?: string | undefined;
-    STRIPE_WEBHOOK_SECRET?: string | undefined;
-    NEXT_PUBLIC_SENTRY_DSN?: string | undefined;
-    NEXT_PUBLIC_APP_URL?: string | undefined;
-}, {
-    DATABASE_URL: string;
     SUPABASE_URL: string;
     SUPABASE_ANON_KEY: string;
     SUPABASE_SERVICE_ROLE_KEY: string;
+    DATABASE_URL: string;
     JWT_SECRET: string;
     ENCRYPTION_KEY: string;
-    NEXT_PUBLIC_SUPABASE_URL: string;
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: string;
+    NEXT_PUBLIC_APP_URL?: string | undefined;
+    NEXT_PUBLIC_SENTRY_DSN?: string | undefined;
+    STRIPE_SECRET_KEY?: string | undefined;
+    STRIPE_WEBHOOK_SECRET?: string | undefined;
+    RESEND_API_KEY?: string | undefined;
+    RESEND_FROM_EMAIL?: string | undefined;
     REDIS_URL?: string | undefined;
     UPSTASH_REDIS_REST_URL?: string | undefined;
     UPSTASH_REDIS_REST_TOKEN?: string | undefined;
-    RESEND_API_KEY?: string | undefined;
-    RESEND_FROM_EMAIL?: string | undefined;
     SENTRY_DSN?: string | undefined;
+}, {
+    NEXT_PUBLIC_SUPABASE_URL: string;
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: string;
+    SUPABASE_URL: string;
+    SUPABASE_ANON_KEY: string;
+    SUPABASE_SERVICE_ROLE_KEY: string;
+    DATABASE_URL: string;
+    JWT_SECRET: string;
+    ENCRYPTION_KEY: string;
+    NEXT_PUBLIC_SITE_URL?: string | undefined;
+    NEXT_PUBLIC_APP_URL?: string | undefined;
+    NEXT_PUBLIC_SENTRY_DSN?: string | undefined;
     STRIPE_SECRET_KEY?: string | undefined;
     STRIPE_WEBHOOK_SECRET?: string | undefined;
-    NEXT_PUBLIC_SITE_URL?: string | undefined;
-    NEXT_PUBLIC_SENTRY_DSN?: string | undefined;
-    NEXT_PUBLIC_APP_URL?: string | undefined;
+    RESEND_API_KEY?: string | undefined;
+    RESEND_FROM_EMAIL?: string | undefined;
+    REDIS_URL?: string | undefined;
+    UPSTASH_REDIS_REST_URL?: string | undefined;
+    UPSTASH_REDIS_REST_TOKEN?: string | undefined;
+    SENTRY_DSN?: string | undefined;
 }>;
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
 export type ClientEnv = z.infer<typeof clientEnvSchema>;

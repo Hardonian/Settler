@@ -149,8 +149,7 @@ function validateClientEnv(input = process.env, mode = "runtime") {
 }
 function validateServerEnv(mode, input = process.env) {
     const buildTime = mode === "build";
-    const allowMissingBuildKeys = buildTime &&
-        (input.SKIP_ENV_VALIDATION === "true" || input.CI === "true" || input.CI === "1");
+    const allowMissingBuildKeys = buildTime && (input.SKIP_ENV_VALIDATION === "true" || input.CI === "true" || input.CI === "1");
     const schema = buildTime ? serverEnvBuildSchema : serverEnvSchema;
     const result = schema.safeParse(pickEnv(input, exports.SERVER_ENV_KEYS));
     if (!result.success) {
@@ -166,7 +165,9 @@ function validateServerEnv(mode, input = process.env) {
             return {
                 valid: true,
                 errors: [],
-                warnings: missingBuildKeys.map((key) => allowMissingBuildKeys ? `${key} is required at runtime` : `${key} is required during build`),
+                warnings: missingBuildKeys.map((key) => allowMissingBuildKeys
+                    ? `${key} is required at runtime`
+                    : `${key} is required during build`),
             };
         }
         const missingRuntimeKeys = exports.RUNTIME_REQUIRED_SERVER_KEYS.filter((key) => !input[key]);

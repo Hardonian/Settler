@@ -14,23 +14,24 @@ const db_1 = require("../db");
 async function tenantMiddleware(req, res, next) {
     try {
         const container = Container_1.Container.getInstance();
-        const tenantRepo = container.get('ITenantRepository');
+        const tenantRepo = container.get("ITenantRepository");
         let tenant = null;
         // 1. Check custom domain
-        const host = req.get('host') || '';
+        const rawHost = req.get("host") || "";
+        const host = rawHost.split(":")[0] ?? "";
         if (host) {
             tenant = await tenantRepo.findByCustomDomain(host);
         }
         // 2. Check subdomain (e.g., tenant-slug.api.settler.io)
-        if (!tenant && host.includes('.')) {
-            const subdomain = host.split('.')[0];
-            if (subdomain && subdomain !== 'api' && subdomain !== 'www') {
+        if (!tenant && host.includes(".")) {
+            const subdomain = host.split(".")[0];
+            if (subdomain && subdomain !== "api" && subdomain !== "www") {
                 tenant = await tenantRepo.findBySlug(subdomain);
             }
         }
         // 3. Check X-Tenant-ID header
         if (!tenant) {
-            const tenantId = req.get('X-Tenant-ID');
+            const tenantId = req.get("X-Tenant-ID");
             if (tenantId) {
                 tenant = await tenantRepo.findById(tenantId);
             }
@@ -45,16 +46,16 @@ async function tenantMiddleware(req, res, next) {
         }
         if (!tenant) {
             res.status(403).json({
-                error: 'TenantNotFound',
-                message: 'Unable to determine tenant context',
+                error: "TenantNotFound",
+                message: "Unable to determine tenant context",
             });
             return;
         }
         // Check tenant status
-        if (tenant.status === 'suspended' || tenant.status === 'cancelled') {
+        if (tenant.status === "suspended" || tenant.status === "cancelled") {
             res.status(403).json({
-                error: 'TenantSuspended',
-                message: 'Tenant account is suspended or cancelled',
+                error: "TenantSuspended",
+                message: "Tenant account is suspended or cancelled",
             });
             return;
         }

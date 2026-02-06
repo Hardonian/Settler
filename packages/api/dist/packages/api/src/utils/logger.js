@@ -60,7 +60,15 @@ function createPrintfFormat() {
         const span_id = info.span_id;
         const tenant_id = info.tenant_id;
         const user_id = info.user_id;
-        const { timestamp: _ts, level: _lvl, message: _msg, request_id: _req, trace_id: _trace, span_id: _span, tenant_id: _tenant, user_id: _user, ...meta } = info;
+        const meta = { ...info };
+        delete meta.timestamp;
+        delete meta.level;
+        delete meta.message;
+        delete meta.request_id;
+        delete meta.trace_id;
+        delete meta.span_id;
+        delete meta.tenant_id;
+        delete meta.user_id;
         const metaStr = Object.keys(meta).length ? JSON.stringify((0, redaction_1.redact)(meta)) : "";
         const requestInfo = request_id && typeof request_id === "string" ? `[req=${request_id.substring(0, 8)}]` : "";
         const traceInfo = trace_id && typeof trace_id === "string" ? `[trace=${trace_id.substring(0, 8)}]` : "";

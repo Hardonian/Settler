@@ -155,7 +155,6 @@ if (!isBuild && (exports.env.NODE_ENV === "production" || exports.env.NODE_ENV =
         throw new Error(`DB_PASSWORD must be set in ${exports.env.NODE_ENV}. Current value: build placeholder (not set)`);
     }
     if (exports.env.ALLOWED_ORIGINS === "*") {
-        // eslint-disable-next-line no-console
         console.warn(`WARNING: CORS allows all origins in ${exports.env.NODE_ENV}. Consider restricting ALLOWED_ORIGINS.`, {
             nodeEnv: exports.env.NODE_ENV,
         });
