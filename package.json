@@ -71,6 +71,8 @@
     "dev:clean": "node scripts/clean.mjs",
     "clean:deps": "node scripts/clean.mjs --deps",
     "clean:all": "node scripts/clean.mjs --all",
+    "demo:seed": "npx tsx scripts/seed-demo.ts",
+    "demo:seed:reset": "npx tsx scripts/seed-demo.ts --reset",
     "verify": "node scripts/verify.mjs --full",
     "verify:fast": "node scripts/verify.mjs --fast",
     "verify:full": "node scripts/verify.mjs --full",

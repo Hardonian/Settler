@@ -1,0 +1,233 @@
+[
+  {
+    "id": "e2cb42e1-4979-bc93-4e49-a477decfaed2",
+    "externalId": "txn_41f7f764",
+    "amount": 33.91,
+    "currency": "USD",
+    "date": "2025-01-04T18:13:22.000Z",
+    "description": "STRIPE TRANSFER bbbf7137",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "0a3c5522-f11b-86a2-b3b1-310c3b60b591",
+    "externalId": "txn_04c0db36",
+    "amount": 39.19,
+    "currency": "USD",
+    "date": "2025-01-05T17:07:14.000Z",
+    "description": "STRIPE TRANSFER 8460a574",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "4c9fb0f9-a3f2-1bab-fac1-7b0798de1fe2",
+    "externalId": "txn_f9f13473",
+    "amount": 14.24,
+    "currency": "USD",
+    "date": "2025-01-12T16:45:58.000Z",
+    "description": "STRIPE TRANSFER 91214486",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "a8038a6c-7b82-50e1-8a52-919564b572dc",
+    "externalId": "txn_d765caba",
+    "amount": 43.8,
+    "currency": "USD",
+    "date": "2025-01-23T17:45:41.000Z",
+    "description": "STRIPE TRANSFER d1ae99ec",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "5fdaa1da-208d-6697-6a20-750cf72ad055",
+    "externalId": "txn_b51bedbf",
+    "amount": 66.96,
+    "currency": "USD",
+    "date": "2025-01-12T22:17:13.000Z",
+    "description": "STRIPE TRANSFER 8b308af3",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "043b68f7-af4e-8bae-c42b-8ee974e02704",
+    "externalId": "txn_fbf39270",
+    "amount": 59.07,
+    "currency": "USD",
+    "date": "2025-01-10T10:02:02.000Z",
+    "description": "STRIPE TRANSFER cf8a2c65",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "cb8de79f-92cb-2ac9-6315-da1ff522944d",
+    "externalId": "txn_72d3646f",
+    "amount": 30.03,
+    "currency": "USD",
+    "date": "2025-01-29T12:19:17.000Z",
+    "description": "STRIPE TRANSFER 5c621895",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "08edebf5-8867-dd77-61e5-1aba7faa8144",
+    "externalId": "txn_84c29009",
+    "amount": 69.49,
+    "currency": "USD",
+    "date": "2025-01-19T13:46:48.000Z",
+    "description": "STRIPE TRANSFER c839e0a1",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "a1cba776-fdff-2ae7-3d64-c73ddfa954fd",
+    "externalId": "txn_beab1b30",
+    "amount": 95.64,
+    "currency": "USD",
+    "date": "2025-01-31T15:32:06.000Z",
+    "description": "STRIPE TRANSFER 8d152798",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "ce7942c1-45fc-0309-b49e-dc30dbe0a21b",
+    "externalId": "txn_1d9e7f1d",
+    "amount": 49.3,
+    "currency": "USD",
+    "date": "2025-01-11T09:53:30.000Z",
+    "description": "STRIPE TRANSFER 4924cea8",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "183d6be1-bd42-59bb-2654-ed9623a62df0",
+    "externalId": "txn_ff7bdb02",
+    "amount": 95.61,
+    "currency": "USD",
+    "date": "2025-01-29T19:32:26.000Z",
+    "description": "STRIPE TRANSFER ca4c3f61",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "97612316-5a6f-3a5a-4398-6f9732b2c2fc",
+    "externalId": "txn_436713b6",
+    "amount": 66.19,
+    "currency": "USD",
+    "date": "2025-01-27T21:08:48.000Z",
+    "description": "STRIPE TRANSFER c41b9f10",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "995091c7-4e4f-e252-0f40-20a198648e01",
+    "externalId": "txn_2c5ca009",
+    "amount": 56.67,
+    "currency": "USD",
+    "date": "2025-01-19T09:24:13.000Z",
+    "description": "STRIPE TRANSFER 78ec4a20",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "088b44c4-6f77-c7a0-db57-b27c73779afe",
+    "externalId": "txn_1a649011",
+    "amount": 46.81,
+    "currency": "USD",
+    "date": "2025-01-18T16:34:54.000Z",
+    "description": "STRIPE TRANSFER 0d33b740",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "f2544c02-81d7-512e-9cd8-7a1626422c41",
+    "externalId": "txn_329dc97d",
+    "amount": 96.65,
+    "currency": "USD",
+    "date": "2025-01-20T20:38:55.000Z",
+    "description": "STRIPE TRANSFER 72415a1b",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "f81291e0-5f0c-5267-79a5-17b5a1c7b93a",
+    "externalId": "txn_d71b62d2",
+    "amount": 79.69,
+    "currency": "USD",
+    "date": "2025-01-26T21:26:12.000Z",
+    "description": "STRIPE TRANSFER 7a7bbf4b",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "174e90e1-8e0d-79c5-18e0-38e41a33d0e6",
+    "externalId": "txn_a0d1aa2b",
+    "amount": 31.68,
+    "currency": "USD",
+    "date": "2025-01-21T03:01:51.000Z",
+    "description": "STRIPE TRANSFER 8142cf11",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "83456ae1-7a5d-c450-6280-e557427e5111",
+    "externalId": "txn_e41925ad",
+    "amount": 48.96,
+    "currency": "USD",
+    "date": "2025-01-19T18:29:10.000Z",
+    "description": "STRIPE TRANSFER 846c8cf4",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "2da6d8f4-9c09-3e00-efaf-0a3af30de677",
+    "externalId": "txn_0bee3cd3",
+    "amount": 90.46,
+    "currency": "USD",
+    "date": "2025-01-13T03:20:44.000Z",
+    "description": "STRIPE TRANSFER e9650a47",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "09c54474-23cb-2f7d-4c49-e7bed1cea854",
+    "externalId": "txn_0f7fbc9f",
+    "amount": 76.93,
+    "currency": "USD",
+    "date": "2025-01-04T17:53:37.000Z",
+    "description": "STRIPE TRANSFER 7dbe82b6",
+    "type": "transfer",
+    "source": "bank",
+    "status": "posted"
+  },
+  {
+    "id": "f41c11df-1c52-76d7-212d-bb25d8daaf54",
+    "externalId": "txn_fee_bd29b1f3",
+    "amount": 15,
+    "currency": "USD",
+    "date": "2025-01-04T22:54:55.000Z",
+    "description": "MONTHLY SERVICE FEE",
+    "type": "fee",
+    "source": "bank",
+    "status": "posted"
+  }
+]
