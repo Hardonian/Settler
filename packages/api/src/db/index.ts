@@ -1,8 +1,9 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import { Pool, PoolClient } from 'pg';
-import { config } from '../config';
-import { logError, logWarn } from '../utils/logger';
+import fs from "node:fs";
+import path from "node:path";
+import { Pool, PoolClient } from "pg";
+import { config } from "../config";
+import { logError, logWarn } from "../utils/logger";
+import { TenantContext } from "../infrastructure/tenancy/TenantContext";
 
 // Database connection pool with proper configuration
 export const pool = new Pool({
@@ -17,23 +18,42 @@ export const pool = new Pool({
   connectionTimeoutMillis: config.database.connectionTimeout,
   statement_timeout: config.database.statementTimeout,
   query_timeout: config.database.statementTimeout,
-  ssl: config.database.ssl ? {
-    rejectUnauthorized: config.nodeEnv === 'production' || config.nodeEnv === 'preview',
-  } : false,
+  ssl: config.database.ssl
+    ? {
+        rejectUnauthorized: config.nodeEnv === "production" || config.nodeEnv === "preview",
+      }
+    : false,
 });
 
-pool.on('error', (err) => {
-  logError('Unexpected error on idle client', err);
+pool.on("error", (err) => {
+  logError("Unexpected error on idle client", err);
   process.exit(-1);
 });
 
 // Helper function to execute queries
 type QueryParam = string | number | boolean | null | Date | string[];
 
+/**
+ * @deprecated WARNING: This function does NOT enforce tenant isolation!
+ * It bypasses RLS policies and should only be used for:
+ * - Admin/schema operations
+ * - Tenant management queries (where tenant context doesn't exist yet)
+ * - Migrations
+ *
+ * For all tenant-scoped data access, use queryWithTenant() from TenantEnforcement
+ * or use the TenantScopedRepository base class.
+ *
+ * See docs/SECURITY_INVARIANTS.md for details.
+ */
 export async function query<T = Record<string, unknown>>(
   text: string,
   params?: QueryParam[]
 ): Promise<T[]> {
+  // Log warning in development to help identify unscoped queries
+  if (config.nodeEnv === "development") {
+    console.warn(`[SECURITY WARNING] Unscoped query() called. Stack: ${new Error().stack}`);
+  }
+
   const client = await pool.connect();
   try {
     const result = await client.query(text, params);
@@ -43,29 +63,88 @@ export async function query<T = Record<string, unknown>>(
   }
 }
 
-// Transaction helper
-export async function transaction<T>(
-  callback: (client: PoolClient) => Promise<T>
-): Promise<T> {
+/**
+ * Execute a query with mandatory tenant context
+ * This is the REQUIRED way to query tenant-scoped data
+ */
+export async function queryWithTenant<T = Record<string, unknown>>(
+  tenantId: string,
+  text: string,
+  params?: QueryParam[]
+): Promise<T[]> {
+  // Validate tenant ID
+  if (
+    !tenantId ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(tenantId)
+  ) {
+    throw new Error(`[TENANT ISOLATION VIOLATION] Invalid or missing tenantId: ${tenantId}`);
+  }
+
   const client = await pool.connect();
   try {
-    await client.query('BEGIN');
+    // Set tenant context for RLS
+    await TenantContext.setTenantContext(client, tenantId);
+    const result = await client.query(text, params);
+    return result.rows;
+  } finally {
+    await TenantContext.clearTenantContext(client);
+    client.release();
+  }
+}
+
+// Transaction helper
+export async function transaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
     const result = await callback(client);
-    await client.query('COMMIT');
+    await client.query("COMMIT");
     return result;
   } catch (error) {
-    await client.query('ROLLBACK');
+    await client.query("ROLLBACK");
     throw error;
   } finally {
     client.release();
   }
 }
 
+/**
+ * Execute a transaction with mandatory tenant context
+ * This is the REQUIRED way to execute tenant-scoped transactions
+ */
+export async function transactionWithTenant<T>(
+  tenantId: string,
+  callback: (client: PoolClient) => Promise<T>
+): Promise<T> {
+  // Validate tenant ID
+  if (
+    !tenantId ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(tenantId)
+  ) {
+    throw new Error(`[TENANT ISOLATION VIOLATION] Invalid or missing tenantId: ${tenantId}`);
+  }
+
+  const client = await pool.connect();
+  try {
+    await TenantContext.setTenantContext(client, tenantId);
+    await client.query("BEGIN");
+    const result = await callback(client);
+    await client.query("COMMIT");
+    return result;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    await TenantContext.clearTenantContext(client);
+    client.release();
+  }
+}
+
 // Initialize database schema
 export async function initDatabase(): Promise<void> {
-  const migrationModule = await import('./migrate').catch((error: unknown) => {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    logWarn('Migration runner failed, falling back to basic schema', { message });
+  const migrationModule = await import("./migrate").catch((error: unknown) => {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    logWarn("Migration runner failed, falling back to basic schema", { message });
     return null;
   });
 
@@ -75,29 +154,31 @@ export async function initDatabase(): Promise<void> {
       await migrationModule.runMigrations();
       return;
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      logWarn('Migration runner failed, falling back to basic schema', { message });
+      const message = error instanceof Error ? error.message : "Unknown error";
+      logWarn("Migration runner failed, falling back to basic schema", { message });
     }
   }
 
   // Fallback to basic schema if migration runner fails
   // Run consolidated initial schema migration
-  const migrationPath = path.join(__dirname, 'migrations', '001-initial-schema.sql');
+  const migrationPath = path.join(__dirname, "migrations", "001-initial-schema.sql");
   if (fs.existsSync(migrationPath)) {
-    const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
+    const migrationSQL = fs.readFileSync(migrationPath, "utf8");
     // Split by semicolon and execute each statement
-    const statements = migrationSQL.split(';').filter((s: string) => s.trim().length > 0);
+    const statements = migrationSQL.split(";").filter((s: string) => s.trim().length > 0);
     for (const statement of statements) {
-      if (statement.trim() && !statement.trim().startsWith('--')) {
+      if (statement.trim() && !statement.trim().startsWith("--")) {
         try {
           await query(statement);
         } catch (error: unknown) {
           // Ignore "already exists" errors (idempotent migration)
           const errorMessage = error instanceof Error ? error.message : String(error);
-          if (!errorMessage.includes('already exists') &&
-              !errorMessage.includes('duplicate') &&
-              !errorMessage.includes('already enabled')) {
-            logWarn('Migration warning', { errorMessage });
+          if (
+            !errorMessage.includes("already exists") &&
+            !errorMessage.includes("duplicate") &&
+            !errorMessage.includes("already enabled")
+          ) {
+            logWarn("Migration warning", { errorMessage });
           }
         }
       }
