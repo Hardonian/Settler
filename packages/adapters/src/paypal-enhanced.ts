@@ -38,7 +38,7 @@ export class PayPalEnhancedAdapter implements EnhancedAdapter {
       // In production, verify using PayPal's webhook verification API
       // For now, verify webhook_id matches expected
       return !!webhookId;
-    } catch (_error) {
+    } catch {
       return false;
     }
   }

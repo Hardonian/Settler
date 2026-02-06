@@ -47,7 +47,7 @@ export class StripeEnhancedAdapter implements EnhancedAdapter {
       return signatures.some((sig) =>
         crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSignature))
       );
-    } catch (_error) {
+    } catch {
       return false;
     }
   }

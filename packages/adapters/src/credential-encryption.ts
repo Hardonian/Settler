@@ -75,7 +75,7 @@ export async function decryptCredentials(
     if (!error && data) {
       return JSON.parse(data as string) as Record<string, unknown>;
     }
-  } catch (_error) {
+  } catch {
     // Not a vault reference, try application-level decryption
   }
 
@@ -109,7 +109,7 @@ export async function decryptCredentials(
       string,
       unknown
     >;
-  } catch (_error) {
+  } catch {
     throw new Error("Failed to decode credentials");
   }
 }

@@ -41,7 +41,7 @@ export class SquareEnhancedAdapter implements EnhancedAdapter {
         .digest("base64");
 
       return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature));
-    } catch (_error) {
+    } catch {
       return false;
     }
   }

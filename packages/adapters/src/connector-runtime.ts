@@ -91,7 +91,7 @@ export class ConnectorRuntime {
           this.config.supabaseUrl,
           this.config.supabaseServiceKey
         );
-      } catch (_error) {
+      } catch {
         // Fallback: use as-is if decryption fails (backwards compatibility)
         decrypted = creds.encrypted_credentials as Record<string, unknown>;
       }
@@ -104,7 +104,7 @@ export class ConnectorRuntime {
           this.config.supabaseUrl,
           this.config.supabaseServiceKey
         );
-      } catch (_error) {
+      } catch {
         decrypted.access_token = creds.access_token_encrypted;
       }
     }
@@ -116,7 +116,7 @@ export class ConnectorRuntime {
           this.config.supabaseUrl,
           this.config.supabaseServiceKey
         );
-      } catch (_error) {
+      } catch {
         decrypted.refresh_token = creds.refresh_token_encrypted;
       }
     }
