@@ -134,12 +134,12 @@ function parseSize(size: string): number {
   };
 
   const match = size.toLowerCase().match(/^(\d+)(b|kb|mb|gb|tb)?$/);
-  if (!match) {
+  if (!match || !match[1]) {
     return 1024 * 1024; // Default 1MB
   }
 
   const value = parseInt(match[1], 10);
-  const unit = match[2] || "b";
+  const unit = (match[2] || "b") as keyof typeof units;
   return value * (units[unit] || 1);
 }
 
@@ -313,6 +313,10 @@ export async function verifyStripeSignature(
       .createHmac("sha256", secret)
       .update(signedPayload)
       .digest("hex");
+
+    if (!sig || !expectedSignature) {
+      return false;
+    }
 
     const sigBuffer = Buffer.from(sig);
     const expectedBuffer = Buffer.from(expectedSignature);

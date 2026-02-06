@@ -70,6 +70,9 @@ export async function checkIdempotency(
   }
 
   const delivery = existing[0];
+  if (!delivery) {
+    return { shouldProcess: true };
+  }
 
   // If already delivered successfully, skip processing
   if (delivery.status === "delivered") {
