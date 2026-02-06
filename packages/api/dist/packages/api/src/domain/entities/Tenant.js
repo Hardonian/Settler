@@ -97,7 +97,6 @@ class Tenant {
         this.props.config = { ...this.props.config, ...config };
         this.props.updatedAt = new Date();
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateMetadata(metadata) {
         this.props.metadata = { ...this.props.metadata, ...metadata };
         this.props.updatedAt = new Date();

@@ -5,7 +5,7 @@
  * Part 8: Self-Rewriting OS & Meta-Orchestration
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 import { PrismaClient } from '@prisma/client';
 import { logInfo } from '../../utils/logger';
 

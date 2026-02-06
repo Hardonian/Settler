@@ -5,7 +5,7 @@
  * Part of Phase VII: Platform Intelligence
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 import { PrismaClient } from '@prisma/client';
 import { logInfo } from '../../utils/logger';
 

@@ -5,7 +5,7 @@
  * Supports multiple channels (Email, Slack, Webhook) and severity levels.
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 import { PrismaClient } from '@prisma/client';
 import { sendEmail } from '../../lib/email';
 import { logError, logInfo } from '../../utils/logger';

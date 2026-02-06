@@ -4,7 +4,7 @@
  * Part of Phase IV: Vertical Modules
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 import { PrismaClient } from '@prisma/client';
 import { logInfo } from '../../../utils/logger';
 

@@ -29,7 +29,6 @@ class NetSuiteDriver {
         }
         return `https://${accountId}.suitetalk.api.netsuite.com`;
     }
-    // eslint-disable-next-line @typescript-eslint/require-await
     async getAccessToken(_credentials) {
         // NetSuite OAuth 1.0 credentials are used in signature generation
         // but the actual implementation would use them here

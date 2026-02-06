@@ -16,7 +16,7 @@ import { calculateConfidenceScore } from "../services/confidence-scoring";
 const router: Router = Router();
 
 // Reserved for future rule creation endpoint
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 const _createRuleSchema = z.object({
   body: z.object({
     name: z.string().min(1).max(255),

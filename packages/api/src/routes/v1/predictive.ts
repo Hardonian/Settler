@@ -5,8 +5,8 @@
  */
 
 import { Router, Response } from 'express';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
+ 
 import { PrismaClient } from '@prisma/client';
 import { authMiddleware } from '../../middleware/auth';
 import { tenantMiddleware, TenantRequest } from '../../middleware/tenant';

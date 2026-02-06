@@ -6,8 +6,6 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 const client_1 = require("@prisma/client");
 const auth_1 = require("../../middleware/auth");
 const tenant_1 = require("../../middleware/tenant");

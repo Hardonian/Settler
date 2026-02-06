@@ -565,9 +565,7 @@ router.post("/webhook", async (req, res) => {
     }
 });
 // Helper function to handle subscription updates
-async function handleSubscriptionUpdate(
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-supabase, subscription) {
+async function handleSubscriptionUpdate(supabase, subscription) {
     const { error } = await supabase
         .from("subscriptions")
         .update({

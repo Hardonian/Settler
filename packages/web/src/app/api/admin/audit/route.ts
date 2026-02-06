@@ -108,7 +108,7 @@ export const GET = withSecurity(
         limit: params.limit,
         offset: params.offset,
       });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
       } catch (error) {
       appLogger.error("[Admin Audit] Error", error);
 

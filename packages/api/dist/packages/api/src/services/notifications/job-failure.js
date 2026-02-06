@@ -118,7 +118,6 @@ async function notifyJobFailure(prisma, params) {
         // Note: Audit logger may not exist in API package - this is optional
         try {
             // Use dynamic import with error suppression for optional module
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let auditModule = null;
             try {
                 // @ts-expect-error - Module may not exist in API package

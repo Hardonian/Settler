@@ -49,7 +49,6 @@ router.post("/addons", auth_1.authMiddleware, (0, authorization_1.requirePermiss
                 errors: validation.errors,
             });
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const addOnId = await (0, addon_config_1.createAddOnFromConfig)(config, client_1.supabase);
         if (!addOnId) {
             return res.status(500).json({

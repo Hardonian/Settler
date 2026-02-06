@@ -4,7 +4,7 @@ const SENSITIVE_FIELDS = [
   'passwordHash', 'keyHash', 'secret', 'webhookSecret',
 ];
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 export function redact(obj: any, additionalFields: string[] = []): any {
   if (obj === null || obj === undefined) {
     return obj;
@@ -19,7 +19,7 @@ export function redact(obj: any, additionalFields: string[] = []): any {
   }
 
   const sensitiveFields = [...SENSITIVE_FIELDS, ...additionalFields];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const redacted: any = {};
 
   for (const [key, value] of Object.entries(obj)) {

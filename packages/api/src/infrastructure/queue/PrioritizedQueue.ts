@@ -46,7 +46,7 @@ export class PrioritizedQueue {
         host: string;
         port: number;
         password?: string;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         tls?: any;
       } = {
         host: config.redis.host,
@@ -195,7 +195,7 @@ export class PrioritizedQueue {
         logError(`Job ${job?.id} failed in queue ${this.queueName}`, err);
       }).catch(() => {
         // Fallback if logger fails
-        // eslint-disable-next-line no-console
+         
         console.error(`Job ${job?.id} failed in queue ${this.queueName}`, err, { jobId: job?.id, queueName: this.queueName });
       });
     });

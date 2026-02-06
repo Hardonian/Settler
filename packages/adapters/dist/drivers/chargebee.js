@@ -186,7 +186,6 @@ class ChargebeeDriver {
             throw new connector_driver_1.ConnectorError(`Chargebee sync failed: ${error instanceof Error ? error.message : String(error)}`, "CHARGEBEE_SYNC_FAILED", "chargebee", error instanceof Error ? error : undefined);
         }
     }
-    // eslint-disable-next-line @typescript-eslint/require-await
     async handleWebhook(_payload, _credentials) {
         // Chargebee webhooks indicate when to sync
         return {

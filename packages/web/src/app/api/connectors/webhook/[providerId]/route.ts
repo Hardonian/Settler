@@ -83,7 +83,7 @@ export const POST = withUniversalBillingGate(async function POST(
       success: true,
       message: 'Webhook received',
     });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
       } catch (error) {
     appLogger.error('Error in webhook route', error);
     // Never return 500 - return graceful error response (webhooks should retry via their own mechanism)

@@ -5,7 +5,7 @@
  * Part of Phase V: AIOS
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 import { PrismaClient, Prisma } from '@prisma/client';
 import { logInfo } from '../../utils/logger';
 

@@ -13,7 +13,6 @@ const auth_1 = require("../../../middleware/auth");
 const tenant_1 = require("../../../middleware/tenant");
 const router = (0, express_1.Router)();
 // Prisma client will be initialized at runtime
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const prisma = {};
 const reconEngine = new recon_core_1.ReconCoreEngine(prisma);
 /**

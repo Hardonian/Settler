@@ -10,7 +10,7 @@
  * Part of Phase I: Platform Audit + Recon Core Foundation
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 import { PrismaClient, Prisma } from '@prisma/client';
 import fs from 'fs';
 import path from 'path';

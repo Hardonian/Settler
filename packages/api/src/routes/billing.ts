@@ -632,7 +632,7 @@ router.post("/webhook", async (req: AuthRequest, res: Response) => {
 
 // Helper function to handle subscription updates
 async function handleSubscriptionUpdate(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   supabase: any,
   subscription: Stripe.Subscription
 ) {

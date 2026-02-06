@@ -18,9 +18,9 @@ import type { CircuitBreaker } from 'opossum';
 import { logError } from '../../utils/logger';
 
 export class ShopifyStripeReconciliationSaga {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private shopifyCircuitBreaker: CircuitBreaker<any>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private stripeCircuitBreaker: CircuitBreaker<any>;
 
   constructor(
@@ -30,12 +30,12 @@ export class ShopifyStripeReconciliationSaga {
   ) {
     // Initialize circuit breakers
     this.shopifyCircuitBreaker = createCircuitBreaker(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       async (options: any) => this.shopifyAdapter.fetch(options),
       { name: 'shopify-api' }
     );
     this.stripeCircuitBreaker = createCircuitBreaker(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       async (options: any) => this.stripeAdapter.fetch(options),
       { name: 'stripe-api' }
     );

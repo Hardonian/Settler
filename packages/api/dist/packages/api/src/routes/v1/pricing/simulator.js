@@ -11,7 +11,6 @@ const tenant_1 = require("../../../middleware/tenant");
 const usage_simulator_1 = require("../../../services/pricing/usage-simulator");
 const router = (0, express_1.Router)();
 // Prisma client will be initialized at runtime
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const prisma = {};
 const simulator = new usage_simulator_1.UsageSimulator(prisma);
 /**

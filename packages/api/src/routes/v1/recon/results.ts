@@ -7,8 +7,8 @@
 
 import { Router, Response } from 'express';
 import { ReconCoreEngine } from '../../../services/recon-core';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
+ 
 import type { PrismaClient } from '@prisma/client';
 import { handleRouteError } from '../../../utils/error-handler';
 import { authMiddleware } from '../../../middleware/auth';
@@ -17,7 +17,7 @@ import type { TenantRequest } from '../../../middleware/tenant';
 
 const router: Router = Router();
 // Prisma client will be initialized at runtime
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 const prisma = {} as PrismaClient;
 const reconEngine = new ReconCoreEngine(prisma);
 

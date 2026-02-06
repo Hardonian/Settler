@@ -46,7 +46,7 @@ export const POST = withSecurity(
     }
     
     return NextResponse.json({ success: true });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
       } catch (error) {
     appLogger.error('[Acknowledge Alert API] Error', error);
     return NextResponse.json(

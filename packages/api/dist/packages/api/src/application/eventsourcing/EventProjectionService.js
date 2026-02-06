@@ -20,7 +20,6 @@ class EventProjectionService {
         // Subscribe to domain events from event bus
         this.eventBus.subscribe('reconciliation.started', async (event) => {
             // Fetch full event from event store
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const events = await this.eventStore.getEvents(event.reconciliationId, 'reconciliation');
             const startedEvent = events.find((e) => e.event_type === 'ReconciliationStarted');
             if (startedEvent) {
@@ -36,7 +35,6 @@ class EventProjectionService {
     async processEvent(eventEnvelope) {
         switch (eventEnvelope.event_type) {
             case 'ReconciliationStarted':
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 await this.projectionHandlers.handleReconciliationStarted(eventEnvelope);
                 break;
             case 'OrdersFetched':

@@ -5,7 +5,7 @@
  * Part of Phase II: Billing Expansion
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 import { PrismaClient, Prisma } from '@prisma/client';
 import { logError } from '../../utils/logger';
 

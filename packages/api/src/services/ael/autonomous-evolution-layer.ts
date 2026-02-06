@@ -5,7 +5,7 @@
  * Part 7: Autonomous AIOS Evolution
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 import type { PrismaClient } from '@prisma/client';
 import { logInfo } from '../../utils/logger';
 import { PatternExtractor } from '../intelligence/pattern-extractor';

@@ -87,7 +87,6 @@ class UserRepository {
         }
         return parseInt(rows[0].count, 10);
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mapRowToProps(row) {
         const props = {
             id: row.id,

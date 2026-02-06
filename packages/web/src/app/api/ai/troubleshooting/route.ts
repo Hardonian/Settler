@@ -50,7 +50,7 @@ export const POST = withSecurity(
     }
 
     return NextResponse.json({ solution });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
       } catch (error) {
     appLogger.error("Error in troubleshooting POST", error);
     return NextResponse.json(

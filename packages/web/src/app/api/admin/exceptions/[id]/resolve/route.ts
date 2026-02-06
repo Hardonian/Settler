@@ -55,7 +55,7 @@ export const POST = withSecurity(async function POST(
     });
 
     return NextResponse.json({ success: true });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
       } catch (error) {
     appLogger.error('[Resolve Exception] Error', error);
     return NextResponse.json(

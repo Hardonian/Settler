@@ -16,7 +16,7 @@
  * - Graceful shutdown
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 import { PrismaClient } from '@prisma/client';
 import { logInfo, logError, logWarn } from '../../utils/logger';
 import { ReconCoreEngine } from '../../services/recon-core';
@@ -25,7 +25,7 @@ import { ReconCoreEngine } from '../../services/recon-core';
 let cron: typeof import('node-cron') | null = null;
 
 try {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+   
   cron = require('node-cron');
 } catch (error) {
   logWarn('[JobScheduler] node-cron not installed. Scheduled jobs will not run.');
@@ -45,7 +45,7 @@ interface ScheduledJob {
 export class JobSchedulerService {
   private prisma: PrismaClient;
   private reconEngine: ReconCoreEngine;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private cronJobs: Map<string, { task: any; job: ScheduledJob }> = new Map();
   private isRunning = false;
   private healthCheckInterval: NodeJS.Timeout | null = null;

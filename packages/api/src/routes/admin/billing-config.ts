@@ -67,7 +67,7 @@ router.post(
         });
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const addOnId = await createAddOnFromConfig(config, supabase as any);
 
       if (!addOnId) {

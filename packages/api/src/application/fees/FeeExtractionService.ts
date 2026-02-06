@@ -218,7 +218,7 @@ export class FeeExtractionService {
   /**
    * Calculate FX fee for Stripe
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private calculateFXFee(transaction: Transaction, balanceTx: any): Money | null {
     // Stripe doesn't always explicitly show FX fees
     // This is a simplified calculation
@@ -237,7 +237,7 @@ export class FeeExtractionService {
   /**
    * Calculate FX fee for PayPal
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private calculatePayPalFXFee(transaction: Transaction, payload: any): Money | null {
     if (!payload.exchange_rate || payload.exchange_rate === 1) {
       return null;

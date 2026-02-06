@@ -70,11 +70,11 @@ export class ReconciliationProjectionHandlers {
     `;
 
     // Extract from event metadata
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const tenantId = (event as any).tenantId || 'unknown';
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const reconciliationId = (event as any).reconciliationId;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const jobId = (event as any).jobId;
 
     await this.db.query(query, [
@@ -91,7 +91,7 @@ export class ReconciliationProjectionHandlers {
    * Handle OrdersFetched event
    */
   async handleOrdersFetched(eventEnvelope: EventEnvelope): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const data = eventEnvelope.data as any;
     const query = `
       UPDATE reconciliation_summary
@@ -108,7 +108,7 @@ export class ReconciliationProjectionHandlers {
    * Handle PaymentsFetched event
    */
   async handlePaymentsFetched(eventEnvelope: EventEnvelope): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const data = eventEnvelope.data as any;
     const query = `
       UPDATE reconciliation_summary
@@ -125,7 +125,7 @@ export class ReconciliationProjectionHandlers {
    * Handle RecordMatched event
    */
   async handleRecordMatched(eventEnvelope: EventEnvelope): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const data = eventEnvelope.data as any;
     const query = `
       UPDATE reconciliation_summary
@@ -142,7 +142,7 @@ export class ReconciliationProjectionHandlers {
    * Handle RecordUnmatched event
    */
   async handleRecordUnmatched(eventEnvelope: EventEnvelope): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const data = eventEnvelope.data as any;
     const query = `
       UPDATE reconciliation_summary
@@ -167,7 +167,7 @@ export class ReconciliationProjectionHandlers {
    * Handle ReconciliationCompleted event
    */
   async handleReconciliationCompleted(eventEnvelope: EventEnvelope): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const data = eventEnvelope.data as any;
     const query = `
       UPDATE reconciliation_summary
@@ -203,7 +203,7 @@ export class ReconciliationProjectionHandlers {
    * Handle ReconciliationFailed event
    */
   async handleReconciliationFailed(eventEnvelope: EventEnvelope): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const data = eventEnvelope.data as any;
     const query = `
       UPDATE reconciliation_summary
@@ -244,7 +244,7 @@ export class ReconciliationProjectionHandlers {
         success_count = tenant_usage_view.success_count + 1
     `;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const data = eventEnvelope.data as any;
     await this.db.query(query, [
       tenantId,
@@ -257,7 +257,7 @@ export class ReconciliationProjectionHandlers {
    * Update error hotspots view
    */
   private async updateErrorHotspots(eventEnvelope: EventEnvelope): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const data = eventEnvelope.data as any;
     const tenantId = eventEnvelope.metadata.tenant_id;
 
@@ -279,7 +279,7 @@ export class ReconciliationProjectionHandlers {
 
     await this.db.query(query, [
       data.reconciliation_id,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       (data).job_id || 'unknown',
       data.error.type,
       data.step || 'unknown',

@@ -68,7 +68,6 @@ function createSupabaseClient() {
         }
         // In development, create a mock client that will fail gracefully
         // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
-        // eslint-disable-next-line no-console
         console.warn('⚠️  Supabase not configured. Some features may not work.');
         return (0, supabase_js_1.createClient)('https://placeholder.supabase.co', 'placeholder-key', {
             db: { schema: 'public' },
@@ -205,7 +204,6 @@ async function executeSQL(query, params) {
         maxTimeout: 5000,
         onFailedAttempt: (error) => {
             // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
-            // eslint-disable-next-line no-console
             console.warn(`Supabase query retry attempt ${error.attemptNumber}: ${error.message}`);
         },
     });
@@ -235,7 +233,6 @@ async function initializeSupabaseExtensions() {
             catch {
                 // Extension might already exist or not be available
                 // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
-                // eslint-disable-next-line no-console
                 console.warn('pgvector extension not available or already enabled');
             }
             // Enable uuid-ossp extension (if not already enabled)
@@ -246,7 +243,6 @@ async function initializeSupabaseExtensions() {
             }
             catch {
                 // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
-                // eslint-disable-next-line no-console
                 console.warn('uuid-ossp extension not available or already enabled');
             }
         }, {
@@ -255,14 +251,12 @@ async function initializeSupabaseExtensions() {
             maxTimeout: 5000,
             onFailedAttempt: (error) => {
                 // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
-                // eslint-disable-next-line no-console
                 console.warn(`Supabase extension initialization retry ${error.attemptNumber}: ${error.message}`);
             },
         });
     }
     catch (error) {
         // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
-        // eslint-disable-next-line no-console
         console.warn('Failed to initialize Supabase extensions after retries:', error);
         // Don't throw - extensions may already exist
     }

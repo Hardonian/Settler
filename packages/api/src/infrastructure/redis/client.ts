@@ -16,7 +16,7 @@ const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.REDIS_TOK
 
 if (!redisUrl || !redisToken) {
   // Note: Can't use logger here as it may depend on Redis - use console for initialization only
-  // eslint-disable-next-line no-console
+   
   console.warn('Redis not configured. Some features will be disabled.');
 }
 
@@ -33,7 +33,7 @@ export const redis = redisUrl && redisToken
 /**
  * Fallback Redis client using ioredis (for local development)
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 let ioredisClient: any = null;
 
 async function initializeIoredis(): Promise<void> {
@@ -43,7 +43,7 @@ async function initializeIoredis(): Promise<void> {
 
   const ioredisModule = await import('ioredis').catch((error: unknown) => {
     // Note: Can't use logger here as it may depend on Redis - use console for initialization only
-    // eslint-disable-next-line no-console
+     
     console.warn('Failed to load Redis client module:', error);
     return null;
   });
@@ -68,12 +68,12 @@ async function initializeIoredis(): Promise<void> {
 
     ioredisClient.on('error', (err: Error) => {
       // Note: Can't use logger here as it may depend on Redis - use console for initialization only
-      // eslint-disable-next-line no-console
+       
       console.error('Redis connection error:', err);
     });
   } catch (error) {
     // Note: Can't use logger here as it may depend on Redis - use console for initialization only
-    // eslint-disable-next-line no-console
+     
     console.warn('Failed to initialize Redis client:', error);
   }
 }
@@ -83,7 +83,7 @@ void initializeIoredis();
 /**
  * Get Redis client (Upstash or ioredis fallback)
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 export function getRedisClient(): Redis | any {
   return redis || ioredisClient;
 }

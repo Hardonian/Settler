@@ -43,7 +43,7 @@ export class EbayDriver implements ConnectorDriver {
     return (urls[env] ?? urls.sandbox) as string;
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
+   
   async getAuthUrl(options: AuthUrlOptions): Promise<string> {
     const config = options as unknown as {
       clientId: string;

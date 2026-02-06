@@ -12,21 +12,15 @@ class ShopifyStripeReconciliationSaga {
     eventStore;
     shopifyAdapter;
     stripeAdapter;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     shopifyCircuitBreaker;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     stripeCircuitBreaker;
     constructor(eventStore, shopifyAdapter, stripeAdapter) {
         this.eventStore = eventStore;
         this.shopifyAdapter = shopifyAdapter;
         this.stripeAdapter = stripeAdapter;
         // Initialize circuit breakers
-        this.shopifyCircuitBreaker = (0, circuit_breaker_1.createCircuitBreaker)(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        async (options) => this.shopifyAdapter.fetch(options), { name: 'shopify-api' });
-        this.stripeCircuitBreaker = (0, circuit_breaker_1.createCircuitBreaker)(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        async (options) => this.stripeAdapter.fetch(options), { name: 'stripe-api' });
+        this.shopifyCircuitBreaker = (0, circuit_breaker_1.createCircuitBreaker)(async (options) => this.shopifyAdapter.fetch(options), { name: 'shopify-api' });
+        this.stripeCircuitBreaker = (0, circuit_breaker_1.createCircuitBreaker)(async (options) => this.stripeAdapter.fetch(options), { name: 'stripe-api' });
     }
     /**
      * Create saga definition

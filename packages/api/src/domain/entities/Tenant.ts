@@ -34,7 +34,7 @@ export interface TenantConfig {
   enableMLFeatures: boolean;
   webhookTimeout: number; // milliseconds
   maxRetries: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   [key: string]: any; // Allow extensible config
 }
 
@@ -47,7 +47,7 @@ export interface TenantProps {
   status: TenantStatus;
   quotas: TenantQuotas;
   config: TenantConfig;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   metadata: Record<string, any>;
   createdAt: Date;
   updatedAt: Date;
@@ -150,7 +150,7 @@ export class Tenant {
     this.props.updatedAt = new Date();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   updateMetadata(metadata: Record<string, any>): void {
     this.props.metadata = { ...this.props.metadata, ...metadata };
     this.props.updatedAt = new Date();

@@ -10,7 +10,7 @@
  *   node dist/index-scheduler.js
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 import { PrismaClient } from '@prisma/client';
 import { getJobSchedulerService } from './infrastructure/jobs/scheduler-service';
 import { logInfo, logError } from './utils/logger';

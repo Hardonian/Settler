@@ -5,7 +5,7 @@
  * Part of Section 6: Multi-Agent Evolution Layer
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 import { PrismaClient } from "@prisma/client";
 // logInfo imported but unused - may be used in future
 

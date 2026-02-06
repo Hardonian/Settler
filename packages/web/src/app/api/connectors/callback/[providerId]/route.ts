@@ -188,7 +188,7 @@ export const GET = withUniversalBillingGate(
       return NextResponse.redirect(
         new URL("/dashboard/integrations?success=provider_connected", request.url)
       );
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
       } catch (error) {
       appLogger.error("Error in callback route", error);
       // Sanitize error message before redirecting

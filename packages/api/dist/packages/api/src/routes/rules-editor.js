@@ -16,7 +16,6 @@ const confidence_scoring_1 = require("../services/confidence-scoring");
 const router = (0, express_1.Router)();
 exports.rulesEditorRouter = router;
 // Reserved for future rule creation endpoint
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const _createRuleSchema = zod_1.z.object({
     body: zod_1.z.object({
         name: zod_1.z.string().min(1).max(255),

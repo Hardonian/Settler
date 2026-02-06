@@ -113,7 +113,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
         'X-RateLimit-Reset': String(rateLimit.resetAt),
       },
     });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
       } catch (error) {
     adminLogger.error('Failed to retrieve metrics', error);
     

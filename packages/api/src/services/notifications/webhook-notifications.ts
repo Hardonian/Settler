@@ -4,7 +4,7 @@
  * Sends webhook notifications for job events
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 import { PrismaClient, Prisma } from '@prisma/client';
 import { logInfo, logError } from '../../utils/logger';
 

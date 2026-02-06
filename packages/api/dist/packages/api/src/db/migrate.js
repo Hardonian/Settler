@@ -258,24 +258,20 @@ if (require.main === module) {
         const failed = results.filter(r => !r.success);
         if (failed.length > 0) {
             // CLI usage - console is acceptable here
-            // eslint-disable-next-line no-console
             console.error('Some migrations failed:');
             failed.forEach(r => {
-                // eslint-disable-next-line no-console
                 console.error(`  - ${r.migration}: ${r.error}`);
             });
             process.exit(1);
         }
         else {
             // CLI usage - console is acceptable here
-            // eslint-disable-next-line no-console
             (0, logger_1.logInfo)('All migrations completed successfully');
             process.exit(0);
         }
     })
         .catch((error) => {
         // CLI usage - console is acceptable here
-        // eslint-disable-next-line no-console
         (0, logger_1.logError)('Migration process failed', error);
         process.exit(1);
     });

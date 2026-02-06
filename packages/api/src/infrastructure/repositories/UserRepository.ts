@@ -116,7 +116,7 @@ export class UserRepository implements IUserRepository {
     return parseInt(rows[0].count, 10);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private mapRowToProps(row: any): UserProps {
     const props: UserProps = {
       id: row.id,

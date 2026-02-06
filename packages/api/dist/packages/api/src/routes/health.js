@@ -9,7 +9,6 @@ const router = (0, express_1.Router)();
 exports.healthRouter = router;
 const healthCheckService = new health_1.HealthCheckService();
 // Reserved for future detailed health checks
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function _checkDatabase() {
     const start = Date.now();
     try {
@@ -23,7 +22,6 @@ async function _checkDatabase() {
     }
 }
 // Reserved for future detailed health checks
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function _checkConnectionPool() {
     try {
         const totalConnections = db_2.pool.totalCount;

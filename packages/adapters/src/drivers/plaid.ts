@@ -129,7 +129,7 @@ export class PlaidDriver implements ConnectorDriver {
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
+   
   async refreshToken(
     _refreshToken: string,
     _config?: Record<string, unknown>

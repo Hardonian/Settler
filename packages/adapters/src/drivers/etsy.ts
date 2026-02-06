@@ -34,7 +34,7 @@ export class EtsyDriver implements ConnectorDriver {
     optionalConfig: ["redirect_uri", "webhook_secret"],
   };
 
-  // eslint-disable-next-line @typescript-eslint/require-await
+   
   async getAuthUrl(options: AuthUrlOptions): Promise<string> {
     const config = options as unknown as { clientId: string; redirectUri: string };
     const params = new URLSearchParams({

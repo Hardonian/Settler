@@ -147,7 +147,7 @@ export const GET = withSecurity(
           },
         }
       );
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
       } catch (error) {
       adminLogger.error("Failed to retrieve exceptions", error);
 

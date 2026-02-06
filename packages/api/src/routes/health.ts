@@ -13,7 +13,7 @@ interface HealthCheck {
 }
 
 // Reserved for future detailed health checks
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 async function _checkDatabase(): Promise<HealthCheck> {
   const start = Date.now();
   try {
@@ -27,7 +27,7 @@ async function _checkDatabase(): Promise<HealthCheck> {
 }
 
 // Reserved for future detailed health checks
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 async function _checkConnectionPool(): Promise<HealthCheck> {
   try {
     const totalConnections = pool.totalCount;

@@ -5,7 +5,7 @@
  * Part 12: Economic & Marketplace Intelligence Engine
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 import { PrismaClient } from '@prisma/client';
 // logInfo imported but unused - may be used in future
 

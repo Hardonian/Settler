@@ -27,7 +27,7 @@ export const GET = withSecurity(
     const alerts = await getActiveAlerts(user.id);
 
     return NextResponse.json({ alerts });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
       } catch (error) {
     appLogger.error('[Alerts API] Error', error);
     return NextResponse.json({ alerts: [] });

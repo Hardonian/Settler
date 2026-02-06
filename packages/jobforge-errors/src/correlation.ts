@@ -41,7 +41,7 @@ let correlationStorage: {
 
 try {
   // AsyncLocalStorage is available in Node.js 12.17.0+
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+   
   const { AsyncLocalStorage } = require('async_hooks') as {
     AsyncLocalStorage: new <T>() => {
       getStore: () => T | undefined

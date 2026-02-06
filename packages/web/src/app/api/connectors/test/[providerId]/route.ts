@@ -61,7 +61,7 @@ export const POST = withUniversalBillingGate(async function POST(
     });
 
     return NextResponse.json(result);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
       } catch (error) {
     appLogger.error('Error in test route', error);
     // Never return 500 - return graceful error response

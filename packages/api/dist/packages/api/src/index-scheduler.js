@@ -11,7 +11,6 @@
  *   node dist/index-scheduler.js
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 const client_1 = require("@prisma/client");
 const scheduler_service_1 = require("./infrastructure/jobs/scheduler-service");
 const logger_1 = require("./utils/logger");

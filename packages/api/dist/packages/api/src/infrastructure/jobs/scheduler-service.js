@@ -57,7 +57,6 @@ const recon_core_1 = require("../../services/recon-core");
 // Dynamic import for node-cron (allows graceful degradation)
 let cron = null;
 try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     cron = require('node-cron');
 }
 catch (error) {
@@ -67,7 +66,6 @@ catch (error) {
 class JobSchedulerService {
     prisma;
     reconEngine;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cronJobs = new Map();
     isRunning = false;
     healthCheckInterval = null;

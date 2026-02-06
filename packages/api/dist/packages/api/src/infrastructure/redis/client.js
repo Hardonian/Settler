@@ -51,7 +51,6 @@ const redisUrl = process.env.UPSTASH_REDIS_REST_URL || process.env.REDIS_URL;
 const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.REDIS_TOKEN;
 if (!redisUrl || !redisToken) {
     // Note: Can't use logger here as it may depend on Redis - use console for initialization only
-    // eslint-disable-next-line no-console
     console.warn('Redis not configured. Some features will be disabled.');
 }
 /**
@@ -66,7 +65,6 @@ exports.redis = redisUrl && redisToken
 /**
  * Fallback Redis client using ioredis (for local development)
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let ioredisClient = null;
 async function initializeIoredis() {
     if (ioredisClient || exports.redis || !process.env.REDIS_HOST) {
@@ -74,7 +72,6 @@ async function initializeIoredis() {
     }
     const ioredisModule = await Promise.resolve().then(() => __importStar(require('ioredis'))).catch((error) => {
         // Note: Can't use logger here as it may depend on Redis - use console for initialization only
-        // eslint-disable-next-line no-console
         console.warn('Failed to load Redis client module:', error);
         return null;
     });
@@ -95,13 +92,11 @@ async function initializeIoredis() {
         });
         ioredisClient.on('error', (err) => {
             // Note: Can't use logger here as it may depend on Redis - use console for initialization only
-            // eslint-disable-next-line no-console
             console.error('Redis connection error:', err);
         });
     }
     catch (error) {
         // Note: Can't use logger here as it may depend on Redis - use console for initialization only
-        // eslint-disable-next-line no-console
         console.warn('Failed to initialize Redis client:', error);
     }
 }
@@ -109,7 +104,6 @@ void initializeIoredis();
 /**
  * Get Redis client (Upstash or ioredis fallback)
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getRedisClient() {
     return exports.redis || ioredisClient;
 }

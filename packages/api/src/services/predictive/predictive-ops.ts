@@ -5,7 +5,7 @@
  * Part 9: Predictive Ops, Meta-Models & Next-Gen Pipelines
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 import { PrismaClient } from '@prisma/client';
 import { logWarn } from '../../utils/logger';
 

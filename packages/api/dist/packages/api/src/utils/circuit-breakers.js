@@ -18,7 +18,6 @@ const logger_1 = require("./logger");
  */
 function createCircuitBreaker(fn, options = {}) {
     const { timeout = 10000, errorThresholdPercentage = 50, resetTimeout = 30000, name = "circuit-breaker", } = options;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const breaker = new opossum_1.default(fn, {
         timeout,
         errorThresholdPercentage,

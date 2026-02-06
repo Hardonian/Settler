@@ -106,7 +106,7 @@ export const GET = withSecurity(async function GET(_request: NextRequest) {
         ...(retryBacklog > 100 ? [{ type: 'retry_backlog', severity: 'medium', count: retryBacklog }] : []),
       ],
     });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
       } catch (error) {
     appLogger.error('Failed to get admin health', error);
     return NextResponse.json(
@@ -123,7 +123,7 @@ async function checkDatabaseHealth(): Promise<'operational' | 'degraded' | 'down
   try {
     await prisma.$queryRaw`SELECT 1`;
     return 'operational';
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
       } catch (error) {
     appLogger.error('Database health check failed', error);
     return 'degraded';

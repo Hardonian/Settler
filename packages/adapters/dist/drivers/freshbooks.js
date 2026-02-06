@@ -23,7 +23,6 @@ class FreshBooksDriver {
         optionalConfig: ["redirect_uri"],
     };
     apiUrl = "https://api.freshbooks.com";
-    // eslint-disable-next-line @typescript-eslint/require-await
     async getAuthUrl(options) {
         const config = options;
         const params = new URLSearchParams({

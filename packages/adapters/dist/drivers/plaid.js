@@ -90,7 +90,6 @@ class PlaidDriver {
             },
         };
     }
-    // eslint-disable-next-line @typescript-eslint/require-await
     async refreshToken(_refreshToken, _config) {
         // Plaid doesn't use refresh tokens in the traditional sense
         // Access tokens are long-lived, but we can refresh via item/get
