@@ -1,0 +1,180 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (Local)",
+      "options": {
+        "baseURL": "http://localhost:11434/v1",
+        "timeout": 600000
+      },
+      "models": {
+        "qwen3-coder-next": { "name": "Qwen3 Coder Next (local)" }
+      }
+    }
+  },
+
+  "model": "ollama/qwen3-coder-next",
+  "small_model": "ollama/qwen3-coder-next",
+
+  "tui": {
+    "scroll_speed": 3,
+    "scroll_acceleration": { "enabled": true },
+    "diff_style": "auto"
+  },
+
+  "watcher": {
+    "ignore": [
+      "node_modules/**",
+      ".next/**",
+      "dist/**",
+      "build/**",
+      "coverage/**",
+      ".turbo/**",
+      ".git/**",
+      "**/*.log",
+      "**/*.tmp"
+    ]
+  },
+
+  "compaction": {
+    "auto": true,
+    "prune": true
+  },
+
+  "formatter": {
+    "prettier": { "disabled": false },
+    "eslint": { "disabled": false }
+  },
+
+  "instructions": [
+    "AGENTS.md",
+    "README.md",
+    "CONTRIBUTING.md",
+    "docs/**/*.md",
+    ".cursor/rules/*.md"
+  ],
+
+  "permission": {
+    "edit": "allow",
+    "webfetch": "allow",
+    "bash": {
+      "*": "ask",
+      "ls*": "allow",
+      "pwd*": "allow",
+      "cat *": "allow",
+      "sed *": "allow",
+      "grep *": "allow",
+      "rg *": "allow",
+      "find *": "allow",
+      "git status*": "allow",
+      "git diff*": "allow",
+      "git log*": "allow",
+      "git show*": "allow",
+      "git branch*": "allow",
+      "git rev-parse*": "allow",
+      "git fetch*": "ask",
+      "git pull*": "ask",
+      "git checkout*": "ask",
+      "git commit*": "ask",
+      "git push*": "ask",
+      "pnpm -v*": "allow",
+      "node -v*": "allow",
+      "pnpm lint*": "allow",
+      "pnpm typecheck*": "allow",
+      "pnpm test*": "allow",
+      "pnpm build*": "allow",
+      "pnpm verify*": "allow",
+      "turbo *": "allow",
+      "npx *": "ask",
+      "bash *": "ask"
+    }
+  },
+
+  "agent": {
+    "plan": {
+      "description": "Read-only planning & investigation (no edits).",
+      "mode": "primary",
+      "temperature": 0.1,
+      "maxSteps": 12,
+      "model": "ollama/qwen3-coder-next",
+      "tools": {
+        "write": false,
+        "edit": false,
+        "bash": true,
+        "webfetch": true
+      },
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "ask",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow",
+          "git show*": "allow",
+          "pnpm -v*": "allow",
+          "node -v*": "allow",
+          "pnpm verify:fast*": "allow",
+          "pnpm verify:full*": "allow"
+        }
+      },
+      "prompt": "You are a planning agent. You must not propose changes you cannot justify with concrete evidence from the repo. Prefer minimal diffs. Produce a clear plan, risks, and verification steps."
+    },
+
+    "build": {
+      "description": "Primary implementation agent (edits allowed; guarded bash).",
+      "mode": "primary",
+      "temperature": 0.2,
+      "maxSteps": 30,
+      "model": "ollama/qwen3-coder-next",
+      "prompt": "You are a production engineering agent. You must keep builds green and avoid partial fixes. Always run the repo's verification commands and report results. No TODOs."
+    },
+
+    "reviewer": {
+      "description": "Subagent: code review + risk scan + test plan (no edits).",
+      "mode": "subagent",
+      "temperature": 0.1,
+      "maxSteps": 10,
+      "model": "ollama/qwen3-coder-next",
+      "tools": {
+        "write": false,
+        "edit": false,
+        "bash": true,
+        "webfetch": true
+      },
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "ask",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow",
+          "git show*": "allow",
+          "pnpm verify:fast*": "allow",
+          "pnpm verify:full*": "allow",
+          "pnpm lint*": "allow",
+          "pnpm typecheck*": "allow",
+          "pnpm test*": "allow",
+          "pnpm build*": "allow"
+        }
+      },
+      "prompt": "You are a strict reviewer. Identify concrete failure modes, missing env vars, App Router export issues, Prisma pitfalls, and CI risks. Output a checklist and exact commands to verify."
+    }
+  },
+
+  "command": {
+    "verify_fast": {
+      "description": "Run the fast verification gate (local=CI sanity).",
+      "agent": "build",
+      "model": "ollama/qwen3-coder-next",
+      "template": "Run: pnpm verify:fast\nIf it fails, fix the root cause(s) and re-run until green. Summarize: failure -> fix -> verification."
+    },
+    "verify_full": {
+      "description": "Run the full CI-grade verification gate.",
+      "agent": "build",
+      "model": "ollama/qwen3-coder-next",
+      "template": "Run: pnpm verify:full\nIf it fails, fix the root cause(s) and re-run until green. Then provide a minimal changelog and exact commands executed."
+    }
+  }
+}
