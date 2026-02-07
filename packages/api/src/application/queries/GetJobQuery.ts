@@ -6,6 +6,7 @@
 export interface GetJobQuery {
   jobId: string;
   userId: string;
+  tenantId: string;
 }
 
 export interface GetJobQueryResult {

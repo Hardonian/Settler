@@ -46,6 +46,7 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const userId = req.userId!;
+      const tenantId = req.tenantId!;
 
       const keys = await query<{
         id: string;
@@ -60,9 +61,9 @@ router.get(
       }>(
         `SELECT id, name, scopes, rate_limit, revoked_at, expires_at, last_used_at, created_at, key_prefix
          FROM api_keys
-         WHERE user_id = $1
+         WHERE user_id = $1 AND tenant_id = $2
          ORDER BY created_at DESC`,
-        [userId]
+        [userId, tenantId]
       );
 
       const maskedKeys = keys.map((key) => ({
@@ -99,6 +100,7 @@ router.get(
         return;
       }
       const userId = req.userId!;
+      const tenantId = req.tenantId!;
 
       const keys = await query<{
         id: string;
@@ -113,8 +115,8 @@ router.get(
       }>(
         `SELECT id, name, scopes, rate_limit, revoked_at, expires_at, last_used_at, created_at, key_prefix
          FROM api_keys
-         WHERE id = $1 AND user_id = $2`,
-        [id, userId]
+         WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
+        [id, userId, tenantId]
       );
 
       if (keys.length === 0 || !keys[0]) {
@@ -164,7 +166,7 @@ router.post(
           prefix,
           keyHash,
           name,
-          scopes || ['jobs:read', 'jobs:write', 'reports:read'],
+          scopes || ["jobs:read", "jobs:write", "reports:read"],
           rateLimit || 1000,
           expiresAt ? new Date(expiresAt) : null,
         ]
@@ -174,11 +176,7 @@ router.post(
       await query(
         `INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`,
-        [
-          'api_key_created',
-          userId,
-          JSON.stringify({ apiKeyId: result[0]?.id || '', name }),
-        ]
+        ["api_key_created", userId, JSON.stringify({ apiKeyId: result[0]?.id || "", name })]
       );
 
       // Log business event
@@ -187,10 +185,10 @@ router.post(
          VALUES ($1, $2, $3)`,
         [
           userId,
-          'APIKeyCreated',
+          "APIKeyCreated",
           JSON.stringify({
-            apiKeyId: result[0]?.id || '',
-            keyType: 'live',
+            apiKeyId: result[0]?.id || "",
+            keyType: "live",
             name,
           }),
         ]
@@ -199,17 +197,17 @@ router.post(
       });
 
       if (!result[0]) {
-        throw new Error('Failed to create API key');
+        throw new Error("Failed to create API key");
       }
-      logInfo('API key created', { userId, apiKeyId: result[0].id });
+      logInfo("API key created", { userId, apiKeyId: result[0].id });
 
       // Return key only once (never again)
       res.status(201).json({
         data: {
-          id: result[0]?.id || '',
+          id: result[0]?.id || "",
           key, // Only returned on creation
           name,
-          scopes: scopes || ['jobs:read', 'jobs:write', 'reports:read'],
+          scopes: scopes || ["jobs:read", "jobs:write", "reports:read"],
           rateLimit: rateLimit || 1000,
           createdAt: new Date().toISOString(),
         },
@@ -236,10 +234,12 @@ router.patch(
       const { name, scopes, rateLimit, revoked } = req.body;
       const userId = req.userId!;
 
+      const tenantId = req.tenantId!;
+
       // Verify ownership
       const existing = await query<{ id: string; revoked_at: Date | null }>(
-        `SELECT id, revoked_at FROM api_keys WHERE id = $1 AND user_id = $2`,
-        [id, userId]
+        `SELECT id, revoked_at FROM api_keys WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
+        [id, userId, tenantId]
       );
 
       if (existing.length === 0) {
@@ -279,8 +279,9 @@ router.patch(
       updates.push(`updated_at = NOW()`);
       values.push(id, userId);
 
+      values.push(tenantId);
       await query(
-        `UPDATE api_keys SET ${updates.join(', ')} WHERE id = $${paramCount++} AND user_id = $${paramCount++}`,
+        `UPDATE api_keys SET ${updates.join(", ")} WHERE id = $${paramCount++} AND user_id = $${paramCount++} AND tenant_id = $${paramCount++}`,
         values
       );
 
@@ -289,13 +290,13 @@ router.patch(
         `INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`,
         [
-          'api_key_updated',
+          "api_key_updated",
           userId,
           JSON.stringify({ apiKeyId: id, updates: { name, scopes, rateLimit, revoked } }),
         ]
       );
 
-      logInfo('API key updated', { userId, apiKeyId: id });
+      logInfo("API key updated", { userId, apiKeyId: id });
 
       res.json({
         message: "API key updated successfully",
@@ -320,6 +321,8 @@ router.post(
       }
       const userId = req.userId!;
 
+      const tenantId = req.tenantId!;
+
       // Verify ownership
       const existing = await query<{
         id: string;
@@ -330,8 +333,8 @@ router.post(
       }>(
         `SELECT id, name, scopes, rate_limit, expires_at
          FROM api_keys
-         WHERE id = $1 AND user_id = $2`,
-        [id, userId]
+         WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
+        [id, userId, tenantId]
       );
 
       if (existing.length === 0 || !existing[0]) {
@@ -371,32 +374,34 @@ router.post(
           `INSERT INTO audit_logs (event, user_id, metadata)
            VALUES ($1, $2, $3)`,
           [
-            'api_key_regenerated',
+            "api_key_regenerated",
             userId,
-            JSON.stringify({ oldApiKeyId: id, newApiKeyId: result.rows[0]?.id || '' }),
+            JSON.stringify({ oldApiKeyId: id, newApiKeyId: result.rows[0]?.id || "" }),
           ]
         );
 
         // Log business event
-        await client.query(
-          `INSERT INTO events (user_id, event_name, properties)
+        await client
+          .query(
+            `INSERT INTO events (user_id, event_name, properties)
            VALUES ($1, $2, $3)`,
-          [
-            userId,
-            'APIKeyRegenerated',
-            JSON.stringify({
-              oldApiKeyId: id,
-              newApiKeyId: result.rows[0]?.id || '',
-            }),
-          ]
-        ).catch(() => {
-          // Events table might not exist yet, ignore
-        });
+            [
+              userId,
+              "APIKeyRegenerated",
+              JSON.stringify({
+                oldApiKeyId: id,
+                newApiKeyId: result.rows[0]?.id || "",
+              }),
+            ]
+          )
+          .catch(() => {
+            // Events table might not exist yet, ignore
+          });
 
         if (!result.rows[0]) {
-          throw new Error('Failed to regenerate API key');
+          throw new Error("Failed to regenerate API key");
         }
-        logInfo('API key regenerated', { userId, oldApiKeyId: id, newApiKeyId: result.rows[0].id });
+        logInfo("API key regenerated", { userId, oldApiKeyId: id, newApiKeyId: result.rows[0].id });
         res.status(201).json({
           data: {
             id: result.rows[0].id,
@@ -428,10 +433,12 @@ router.delete(
       }
       const userId = req.userId!;
 
+      const tenantId = req.tenantId!;
+
       // Verify ownership
       const existing = await query<{ id: string }>(
-        `SELECT id FROM api_keys WHERE id = $1 AND user_id = $2`,
-        [id, userId]
+        `SELECT id FROM api_keys WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
+        [id, userId, tenantId]
       );
 
       if (existing.length === 0) {
@@ -439,23 +446,18 @@ router.delete(
       }
 
       // Revoke instead of delete (soft delete)
-      await query(
-        `UPDATE api_keys SET revoked_at = NOW(), updated_at = NOW() WHERE id = $1`,
-        [id || null]
-      );
+      await query(`UPDATE api_keys SET revoked_at = NOW(), updated_at = NOW() WHERE id = $1`, [
+        id || null,
+      ]);
 
       // Log audit event
       await query(
         `INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`,
-        [
-          'api_key_deleted',
-          userId,
-          JSON.stringify({ apiKeyId: id }),
-        ]
+        ["api_key_deleted", userId, JSON.stringify({ apiKeyId: id })]
       );
 
-      logInfo('API key deleted', { userId, apiKeyId: id });
+      logInfo("API key deleted", { userId, apiKeyId: id });
 
       res.json({
         message: "API key revoked successfully",

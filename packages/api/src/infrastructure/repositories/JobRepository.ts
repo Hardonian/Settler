@@ -11,18 +11,36 @@
 import { queryWithTenant } from "../../db";
 import { IJobRepository } from "../../domain/repositories/IJobRepository";
 
-export interface Job {
+interface JobRow {
   id: string;
-  userId: string;
+  user_id: string;
+  tenant_id: string;
   name: string;
-  source: Record<string, unknown>;
-  target: Record<string, unknown>;
-  rules: Record<string, unknown>;
-  schedule?: string | null;
+  source: string;
+  target: string;
+  rules: string;
+  schedule: string | null;
   status: string;
   version: number;
-  createdAt: Date;
-  updatedAt: Date;
+  created_at: Date;
+  updated_at: Date;
+}
+
+function mapRowToJob(row: JobRow): Job {
+  return {
+    id: row.id,
+    userId: row.user_id,
+    tenantId: row.tenant_id,
+    name: row.name,
+    source: JSON.parse(row.source),
+    target: JSON.parse(row.target),
+    rules: JSON.parse(row.rules),
+    schedule: row.schedule,
+    status: row.status,
+    version: row.version,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
 }
 
 export class JobRepository implements IJobRepository {
@@ -43,28 +61,15 @@ export class JobRepository implements IJobRepository {
       tenantId,
       `SELECT id, user_id, name, source, target, rules, schedule, status, version, created_at, updated_at
        FROM jobs
-       WHERE id = $1 AND user_id = $2`,
-      [id, userId]
+       WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
+      [id, userId, tenantId]
     );
 
     if (results.length === 0 || !results[0]) {
       return null;
     }
 
-    const row = results[0];
-    return {
-      id: row.id,
-      userId: row.user_id,
-      name: row.name,
-      source: JSON.parse(row.source),
-      target: JSON.parse(row.target),
-      rules: JSON.parse(row.rules),
-      schedule: row.schedule,
-      status: row.status,
-      version: row.version,
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
-    };
+    return mapRowToJob(results[0]);
   }
 
   async findByUserId(
@@ -92,10 +97,10 @@ export class JobRepository implements IJobRepository {
         tenantId,
         `SELECT id, user_id, name, source, target, rules, schedule, status, version, created_at, updated_at
          FROM jobs
-         WHERE user_id = $1
+         WHERE user_id = $1 AND tenant_id = $2
          ORDER BY created_at DESC
-         LIMIT $2 OFFSET $3`,
-        [userId, limit, offset]
+         LIMIT $3 OFFSET $4`,
+        [userId, tenantId, limit, offset]
       ),
       queryWithTenant<{ count: string }>(
         tenantId,

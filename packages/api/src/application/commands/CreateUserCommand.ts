@@ -4,6 +4,7 @@
  */
 
 export interface CreateUserCommand {
+  tenantId: string;
   email: string;
   password: string;
   name?: string;

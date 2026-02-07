@@ -29,11 +29,12 @@ router.get(
     try {
       const userId = req.userId!;
 
+      const tenantId = req.tenantId!;
       const users = await query<{ test_mode_enabled: boolean }>(
         `SELECT COALESCE(test_mode_enabled, false) as test_mode_enabled
          FROM users
-         WHERE id = $1`,
-        [userId]
+         WHERE id = $1 AND tenant_id = $2`,
+        [userId, tenantId]
       );
 
       if (users.length === 0 || !users[0]) {
@@ -65,15 +66,16 @@ router.post(
 
       // Update user test mode setting
       // Add test_mode_enabled column if it doesn't exist (migration handles this)
+      const tenantId = req.tenantId!;
       await query(
         `UPDATE users
          SET test_mode_enabled = $1, updated_at = NOW()
-         WHERE id = $2`,
-        [enabled, userId]
+         WHERE id = $2 AND tenant_id = $3`,
+        [enabled, userId, tenantId]
       );
 
       // Track event
-      trackEventAsync(userId, 'TestModeToggled', {
+      trackEventAsync(userId, "TestModeToggled", {
         enabled,
       });
 
@@ -81,7 +83,7 @@ router.post(
         data: {
           enabled,
         },
-        message: `Test mode ${enabled ? 'enabled' : 'disabled'}`,
+        message: `Test mode ${enabled ? "enabled" : "disabled"}`,
       });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to toggle test mode", 500, { userId: req.userId });

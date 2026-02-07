@@ -32,7 +32,11 @@ router.get(
       const userId = req.userId!;
 
       if (!executionId || !userId) {
-        throw new NotFoundError("Execution ID and User ID are required", "execution", executionId || "unknown");
+        throw new NotFoundError(
+          "Execution ID and User ID are required",
+          "execution",
+          executionId || "unknown"
+        );
       }
 
       // Get execution details
@@ -48,8 +52,8 @@ router.get(
         `SELECT e.id, e.job_id, e.status, e.started_at, e.completed_at, e.summary, e.error
          FROM executions e
          JOIN jobs j ON e.job_id = j.id
-         WHERE e.id = $1 AND j.user_id = $2`,
-        [executionId, userId]
+         WHERE e.id = $1 AND j.user_id = $2 AND j.tenant_id = $3`,
+        [executionId, userId, req.tenantId!]
       );
 
       if (executions.length === 0 || !executions[0]) {
@@ -78,8 +82,8 @@ router.get(
 
       // Get match count (if available)
       const matchCount = await query<{ count: string }>(
-        `SELECT COUNT(*) as count FROM matches WHERE execution_id = $1`,
-        [executionId]
+        `SELECT COUNT(*) as count FROM matches WHERE execution_id = $1 AND tenant_id = $2`,
+        [executionId, req.tenantId!]
       );
 
       const summary = execution.summary as {

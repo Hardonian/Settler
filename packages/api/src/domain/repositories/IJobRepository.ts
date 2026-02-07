@@ -1,11 +1,15 @@
 /**
  * Job Repository Interface
  * Defines data access contract for Job entities
+ *
+ * INVARIANT: All methods require tenantId to enforce tenant isolation.
+ * userId alone is NOT sufficient — tenantId is the isolation boundary.
  */
 
 export interface Job {
   id: string;
   userId: string;
+  tenantId: string;
   name: string;
   source: Record<string, unknown>;
   target: Record<string, unknown>;
@@ -31,6 +35,7 @@ export interface IJobRepository {
    * Find all jobs for a user within a tenant with pagination
    * @param tenantId - Tenant ID (required for isolation)
    * @param userId - User ID
+   * @param tenantId - Tenant ID (isolation boundary)
    * @param page - Page number (1-indexed)
    * @param limit - Items per page
    * @returns Jobs and total count
@@ -55,6 +60,7 @@ export interface IJobRepository {
    * @param id - Job ID
    * @param tenantId - Tenant ID (required for isolation)
    * @param userId - User ID
+   * @param tenantId - Tenant ID (isolation boundary)
    * @param status - New status
    * @param expectedVersion - Expected version for optimistic locking
    * @returns Updated job or null if version mismatch
@@ -72,6 +78,7 @@ export interface IJobRepository {
    * @param id - Job ID
    * @param tenantId - Tenant ID (required for isolation)
    * @param userId - User ID
+   * @param tenantId - Tenant ID (isolation boundary)
    * @returns True if deleted, false if not found
    */
   delete(id: string, tenantId: string, userId: string): Promise<boolean>;

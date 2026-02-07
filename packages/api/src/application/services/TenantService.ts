@@ -3,13 +3,19 @@
  * Business logic for tenant management and onboarding
  */
 
-import { Tenant, TenantTier, TenantStatus, TenantQuotas, TenantProps } from '../../domain/entities/Tenant';
-import { ITenantRepository } from '../../domain/repositories/ITenantRepository';
-import { IUserRepository } from '../../domain/repositories/IUserRepository';
-import { User, UserRole, UserProps } from '../../domain/entities/User';
-import { config } from '../../config';
-import { query } from '../../db';
-import { logInfo } from '../../utils/logger';
+import {
+  Tenant,
+  TenantTier,
+  TenantStatus,
+  TenantQuotas,
+  TenantProps,
+} from "../../domain/entities/Tenant";
+import { ITenantRepository } from "../../domain/repositories/ITenantRepository";
+import { IUserRepository } from "../../domain/repositories/IUserRepository";
+import { User, UserRole, UserProps } from "../../domain/entities/User";
+import { config } from "../../config";
+import { query } from "../../db";
+import { logInfo } from "../../utils/logger";
 
 export class TenantService {
   constructor(
@@ -32,7 +38,7 @@ export class TenantService {
     const tier = data.tier || TenantTier.FREE;
     const quotas = this.getDefaultQuotas(tier);
 
-    const tenantProps: Omit<TenantProps, 'id' | 'createdAt' | 'updatedAt'> = {
+    const tenantProps: Omit<TenantProps, "id" | "createdAt" | "updatedAt"> = {
       name: data.name,
       slug: data.slug,
       tier,
@@ -40,7 +46,7 @@ export class TenantService {
       quotas,
       config: {
         customDomainVerified: false,
-        dataResidencyRegion: 'us',
+        dataResidencyRegion: "us",
         enableAdvancedMatching: false,
         enableMLFeatures: false,
         webhookTimeout: 30000,
@@ -61,12 +67,12 @@ export class TenantService {
     }
 
     // Create owner user
-    const userProps: Omit<UserProps, 'id' | 'createdAt' | 'updatedAt'> = {
+    const userProps: Omit<UserProps, "id" | "createdAt" | "updatedAt"> = {
       tenantId: tenant.id,
       email: data.ownerEmail,
       passwordHash: data.ownerPasswordHash,
       role: UserRole.OWNER,
-      dataResidencyRegion: 'us',
+      dataResidencyRegion: "us",
       dataRetentionDays: 365,
     };
     if (data.ownerName !== undefined) {
@@ -74,7 +80,7 @@ export class TenantService {
     }
     const owner = User.create(userProps);
 
-    await this.userRepo.save(owner);
+    await this.userRepo.save(owner, tenant.id);
 
     // Initialize quota usage tracking
     await query(
@@ -84,7 +90,7 @@ export class TenantService {
       [tenant.id]
     );
 
-    logInfo('Tenant created', { tenantId: tenant.id, slug: data.slug });
+    logInfo("Tenant created", { tenantId: tenant.id, slug: data.slug });
 
     return { tenant, owner };
   }
@@ -140,7 +146,7 @@ export class TenantService {
   async upgradeTier(tenantId: string, newTier: TenantTier): Promise<Tenant> {
     const tenant = await this.tenantRepo.findById(tenantId);
     if (!tenant) {
-      throw new Error('Tenant not found');
+      throw new Error("Tenant not found");
     }
 
     const newQuotas = this.getDefaultQuotas(newTier);
@@ -148,7 +154,7 @@ export class TenantService {
     tenant.updateQuotas(newQuotas);
 
     await this.tenantRepo.save(tenant);
-    logInfo('Tenant tier upgraded', { tenantId, newTier });
+    logInfo("Tenant tier upgraded", { tenantId, newTier });
 
     return tenant;
   }
@@ -159,7 +165,7 @@ export class TenantService {
   async verifyCustomDomain(tenantId: string, domain: string): Promise<void> {
     const tenant = await this.tenantRepo.findById(tenantId);
     if (!tenant) {
-      throw new Error('Tenant not found');
+      throw new Error("Tenant not found");
     }
 
     // In production, this would verify DNS records
@@ -167,7 +173,7 @@ export class TenantService {
     tenant.setCustomDomain(domain, true);
     await this.tenantRepo.save(tenant);
 
-    logInfo('Custom domain verified', { tenantId, domain });
+    logInfo("Custom domain verified", { tenantId, domain });
   }
 
   /**
@@ -185,11 +191,11 @@ export class TenantService {
   ): Promise<{ tenant: Tenant; owner: User }> {
     const parentTenant = await this.tenantRepo.findById(parentTenantId);
     if (!parentTenant) {
-      throw new Error('Parent tenant not found');
+      throw new Error("Parent tenant not found");
     }
 
     if (!parentTenant.isEnterprise()) {
-      throw new Error('Only enterprise tenants can create sub-accounts');
+      throw new Error("Only enterprise tenants can create sub-accounts");
     }
 
     return this.createTenant({
