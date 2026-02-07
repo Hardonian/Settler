@@ -3,6 +3,7 @@ import path from "node:path";
 import { Pool, PoolClient } from "pg";
 import { config } from "../config";
 import { logError, logWarn } from "../utils/logger";
+import { TenantContext } from "../infrastructure/tenancy/TenantContext";
 
 // Database connection pool with proper configuration
 export const pool = new Pool({
@@ -32,15 +33,61 @@ pool.on("error", (err) => {
 // Helper function to execute queries
 type QueryParam = string | number | boolean | null | Date | string[];
 
+/**
+ * @deprecated WARNING: This function does NOT enforce tenant isolation!
+ * It bypasses RLS policies and should only be used for:
+ * - Admin/schema operations
+ * - Tenant management queries (where tenant context doesn't exist yet)
+ * - Migrations
+ *
+ * For all tenant-scoped data access, use queryWithTenant() from TenantEnforcement
+ * or use the TenantScopedRepository base class.
+ *
+ * See docs/SECURITY_INVARIANTS.md for details.
+ */
 export async function query<T = Record<string, unknown>>(
   text: string,
   params?: QueryParam[]
 ): Promise<T[]> {
+  // Log warning in development to help identify unscoped queries
+  if (config.nodeEnv === "development") {
+    console.warn(`[SECURITY WARNING] Unscoped query() called. Stack: ${new Error().stack}`);
+  }
+
   const client = await pool.connect();
   try {
     const result = await client.query(text, params);
     return result.rows;
   } finally {
+    client.release();
+  }
+}
+
+/**
+ * Execute a query with mandatory tenant context
+ * This is the REQUIRED way to query tenant-scoped data
+ */
+export async function queryWithTenant<T = Record<string, unknown>>(
+  tenantId: string,
+  text: string,
+  params?: QueryParam[]
+): Promise<T[]> {
+  // Validate tenant ID
+  if (
+    !tenantId ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(tenantId)
+  ) {
+    throw new Error(`[TENANT ISOLATION VIOLATION] Invalid or missing tenantId: ${tenantId}`);
+  }
+
+  const client = await pool.connect();
+  try {
+    // Set tenant context for RLS
+    await TenantContext.setTenantContext(client, tenantId);
+    const result = await client.query(text, params);
+    return result.rows;
+  } finally {
+    await TenantContext.clearTenantContext(client);
     client.release();
   }
 }
@@ -142,6 +189,38 @@ export async function transaction<T>(callback: (client: PoolClient) => Promise<T
     await client.query("ROLLBACK");
     throw error;
   } finally {
+    client.release();
+  }
+}
+
+/**
+ * Execute a transaction with mandatory tenant context
+ * This is the REQUIRED way to execute tenant-scoped transactions
+ */
+export async function transactionWithTenant<T>(
+  tenantId: string,
+  callback: (client: PoolClient) => Promise<T>
+): Promise<T> {
+  // Validate tenant ID
+  if (
+    !tenantId ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(tenantId)
+  ) {
+    throw new Error(`[TENANT ISOLATION VIOLATION] Invalid or missing tenantId: ${tenantId}`);
+  }
+
+  const client = await pool.connect();
+  try {
+    await TenantContext.setTenantContext(client, tenantId);
+    await client.query("BEGIN");
+    const result = await callback(client);
+    await client.query("COMMIT");
+    return result;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    await TenantContext.clearTenantContext(client);
     client.release();
   }
 }

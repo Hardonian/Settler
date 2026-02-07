@@ -23,16 +23,17 @@ export interface Job {
 
 export interface IJobRepository {
   /**
-   * Find job by ID scoped to tenant
+   * Find job by ID, scoped to tenant and user
    * @param id - Job ID
+   * @param tenantId - Tenant ID (required for isolation)
    * @param userId - User ID
-   * @param tenantId - Tenant ID (isolation boundary)
    * @returns Job or null if not found
    */
-  findById(id: string, userId: string, tenantId: string): Promise<Job | null>;
+  findById(id: string, tenantId: string, userId: string): Promise<Job | null>;
 
   /**
-   * Find all jobs for a user within a tenant
+   * Find all jobs for a user within a tenant with pagination
+   * @param tenantId - Tenant ID (required for isolation)
    * @param userId - User ID
    * @param tenantId - Tenant ID (isolation boundary)
    * @param page - Page number (1-indexed)
@@ -40,22 +41,24 @@ export interface IJobRepository {
    * @returns Jobs and total count
    */
   findByUserId(
-    userId: string,
     tenantId: string,
+    userId: string,
     page: number,
     limit: number
   ): Promise<{ jobs: Job[]; total: number }>;
 
   /**
    * Create a new job within a tenant
-   * @param job - Job entity to create (must include tenantId)
+   * @param tenantId - Tenant ID (required for isolation)
+   * @param job - Job entity to create
    * @returns Created job with ID
    */
-  create(job: Omit<Job, "id" | "createdAt" | "updatedAt">): Promise<Job>;
+  create(tenantId: string, job: Omit<Job, "id" | "createdAt" | "updatedAt">): Promise<Job>;
 
   /**
    * Update job status atomically with optimistic locking
    * @param id - Job ID
+   * @param tenantId - Tenant ID (required for isolation)
    * @param userId - User ID
    * @param tenantId - Tenant ID (isolation boundary)
    * @param status - New status
@@ -64,8 +67,8 @@ export interface IJobRepository {
    */
   updateStatus(
     id: string,
-    userId: string,
     tenantId: string,
+    userId: string,
     status: string,
     expectedVersion: number
   ): Promise<Job | null>;
@@ -73,9 +76,10 @@ export interface IJobRepository {
   /**
    * Delete job by ID within a tenant
    * @param id - Job ID
+   * @param tenantId - Tenant ID (required for isolation)
    * @param userId - User ID
    * @param tenantId - Tenant ID (isolation boundary)
    * @returns True if deleted, false if not found
    */
-  delete(id: string, userId: string, tenantId: string): Promise<boolean>;
+  delete(id: string, tenantId: string, userId: string): Promise<boolean>;
 }

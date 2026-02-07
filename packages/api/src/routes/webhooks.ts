@@ -12,6 +12,7 @@ import { logInfo, logError, logWarn } from "../utils/logger";
 import { handleRouteError } from "../utils/error-handler";
 import rateLimit from "express-rate-limit";
 import { isValidEventType, getPublicEvents } from "../services/webhooks/event-registry";
+import { createRawBodyMiddleware, RawBodyRequest } from "../middleware/raw-body";
 
 const router: Router = Router();
 
@@ -187,71 +188,78 @@ router.get(
 );
 
 // Webhook endpoint for receiving external webhooks with signature verification
-router.post("/receive/:adapter", webhookReceiveLimiter, async (req: Request, res: Response) => {
-  try {
-    const { adapter } = req.params;
-    const signature = req.headers["x-webhook-signature"] as string;
-    const timestamp = req.headers["x-webhook-timestamp"] as string;
-
-    // Get raw body for signature verification
-    const rawBody = JSON.stringify(req.body);
-
-    // Verify timestamp (prevent replay attacks)
-    if (timestamp) {
-      const requestTime = parseInt(timestamp);
-      const currentTime = Math.floor(Date.now() / 1000);
-      const timeDiff = Math.abs(currentTime - requestTime);
-
-      if (timeDiff > 300) {
-        // 5 minutes
-        logWarn("Webhook timestamp too old", { adapter, timeDiff });
-        return res.status(401).json({ error: "Request timestamp too old" });
-      }
-    }
-
-    // Verify webhook signature
-    if (!signature) {
-      logWarn("Missing webhook signature", { adapter, ip: req.ip });
-      return res.status(401).json({ error: "Missing webhook signature" });
-    }
-
+router.post(
+  "/receive/:adapter",
+  webhookReceiveLimiter,
+  createRawBodyMiddleware(),
+  async (req: RawBodyRequest, res: Response) => {
     try {
-      if (!adapter) {
-        return res.status(400).json({ error: "Adapter is required" });
+      const { adapter } = req.params;
+      const signature = req.headers["x-webhook-signature"] as string;
+      const timestamp = req.headers["x-webhook-timestamp"] as string;
+
+      // Get raw body for signature verification
+      const rawBody = req.rawBodyString || JSON.stringify(req.body);
+
+      // Verify timestamp (prevent replay attacks)
+      if (timestamp) {
+        const requestTime = parseInt(timestamp);
+        const currentTime = Math.floor(Date.now() / 1000);
+        const timeDiff = Math.abs(currentTime - requestTime);
+
+        if (timeDiff > 300) {
+          // 5 minutes
+          logWarn("Webhook timestamp too old", { adapter, timeDiff });
+          return res.status(401).json({ error: "Request timestamp too old" });
+        }
       }
-      const isValid = await verifyWebhookSignature(adapter, rawBody, signature);
-      if (!isValid) {
-        logWarn("Invalid webhook signature", { adapter, ip: req.ip });
-        return res.status(401).json({ error: "Invalid webhook signature" });
+
+      // Verify webhook signature
+      if (!signature) {
+        logWarn("Missing webhook signature", { adapter, ip: req.ip });
+        return res.status(401).json({ error: "Missing webhook signature" });
       }
+
+      try {
+        if (!adapter) {
+          return res.status(400).json({ error: "Adapter is required" });
+        }
+        const isValid = await verifyWebhookSignature(adapter, rawBody, signature);
+        if (!isValid) {
+          logWarn("Invalid webhook signature", { adapter, ip: req.ip });
+          return res.status(401).json({ error: "Invalid webhook signature" });
+        }
+      } catch (error: unknown) {
+        const message =
+          error instanceof Error ? error.message : "Webhook signature verification failed";
+        logError("Webhook signature verification failed", error, { adapter });
+        return res.status(400).json({ error: message });
+      }
+
+      // Store webhook payload for async processing
+      await query(
+        `INSERT INTO webhook_payloads (adapter, payload, signature, received_at)
+           VALUES ($1, $2, $3, NOW())`,
+        [adapter || "", JSON.stringify(req.body), signature || ""]
+      );
+
+      // Queue for async processing (in production, use Bull/Redis queue)
+      // For now, acknowledge immediately
+      logInfo("Webhook received", { adapter, ip: req.ip });
+
+      res.status(202).json({
+        received: true,
+        message: "Webhook received and queued for processing",
+      });
+      return;
     } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : "Webhook signature verification failed";
-      logError("Webhook signature verification failed", error, { adapter });
-      return res.status(400).json({ error: message });
+      handleRouteError(res, error, "Failed to process webhook", 500, {
+        adapter: req.params.adapter,
+      });
+      return;
     }
-
-    // Store webhook payload for async processing
-    await query(
-      `INSERT INTO webhook_payloads (adapter, payload, signature, received_at)
-         VALUES ($1, $2, $3, NOW())`,
-      [adapter || "", JSON.stringify(req.body), signature || ""]
-    );
-
-    // Queue for async processing (in production, use Bull/Redis queue)
-    // For now, acknowledge immediately
-    logInfo("Webhook received", { adapter, ip: req.ip });
-
-    res.status(202).json({
-      received: true,
-      message: "Webhook received and queued for processing",
-    });
-    return;
-  } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to process webhook", 500, { adapter: req.params.adapter });
-    return;
   }
-});
+);
 
 // Delete webhook
 router.delete(

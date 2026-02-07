@@ -124,13 +124,13 @@ router.get("/playground/demo-dataset", (async (_req: Request, res: Response): Pr
     }
 
     const stripeData = JSON.parse(
-      fs.readFileSync(path.join(demoDir, "stripe_normalized.json"), "utf-8")
+      fs.readFileSync(path.join(demoDir, "demo_stripe_transactions.json"), "utf-8")
     );
     const bankData = JSON.parse(
-      fs.readFileSync(path.join(demoDir, "bank_normalized.json"), "utf-8")
+      fs.readFileSync(path.join(demoDir, "demo_bank_transactions.json"), "utf-8")
     );
     const expected = JSON.parse(
-      fs.readFileSync(path.join(demoDir, "expected_matches.json"), "utf-8")
+      fs.readFileSync(path.join(demoDir, "demo_expected_matches.json"), "utf-8")
     );
 
     res.json({
@@ -154,10 +154,10 @@ router.post("/playground/demo-run", (async (_req: Request, res: Response): Promi
 
     // 1. Load Data
     const sourceData = JSON.parse(
-      fs.readFileSync(path.join(demoDir, "stripe_normalized.json"), "utf-8")
+      fs.readFileSync(path.join(demoDir, "demo_stripe_transactions.json"), "utf-8")
     ) as NormalizedRecord[];
     const targetData = JSON.parse(
-      fs.readFileSync(path.join(demoDir, "bank_normalized.json"), "utf-8")
+      fs.readFileSync(path.join(demoDir, "demo_bank_transactions.json"), "utf-8")
     ) as NormalizedRecord[];
 
     const prismaClient = getPrismaClient();

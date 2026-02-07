@@ -1,0 +1,82 @@
+[
+  {
+    "stripeId": "7370f1ac-a69a-64e2-5558-521db769a7a7",
+    "bankId": "e2cb42e1-4979-bc93-4e49-a477decfaed2"
+  },
+  {
+    "stripeId": "032b96d3-7b0f-ebdf-00d3-a9d7f6a8112b",
+    "bankId": "0a3c5522-f11b-86a2-b3b1-310c3b60b591"
+  },
+  {
+    "stripeId": "0c2ad1da-2a14-98da-d340-0cfcfa93f4ce",
+    "bankId": "4c9fb0f9-a3f2-1bab-fac1-7b0798de1fe2"
+  },
+  {
+    "stripeId": "98f2585d-71eb-4567-819d-0522d3a1fbb8",
+    "bankId": "a8038a6c-7b82-50e1-8a52-919564b572dc"
+  },
+  {
+    "stripeId": "12184634-093f-0ba8-3a19-f4479de6dee0",
+    "bankId": "5fdaa1da-208d-6697-6a20-750cf72ad055"
+  },
+  {
+    "stripeId": "77379ebb-412a-1db0-73e9-b1801adeb21b",
+    "bankId": "043b68f7-af4e-8bae-c42b-8ee974e02704"
+  },
+  {
+    "stripeId": "e5ebc456-b66e-dc4f-2023-d6593973bacf",
+    "bankId": "cb8de79f-92cb-2ac9-6315-da1ff522944d"
+  },
+  {
+    "stripeId": "2bc5f6c2-794a-caf7-8812-84668069f520",
+    "bankId": "08edebf5-8867-dd77-61e5-1aba7faa8144"
+  },
+  {
+    "stripeId": "2a691412-d966-70f7-40e4-a0b2aeaff232",
+    "bankId": "a1cba776-fdff-2ae7-3d64-c73ddfa954fd"
+  },
+  {
+    "stripeId": "637e739e-db19-ba6f-83ca-957f0dd14bd7",
+    "bankId": "ce7942c1-45fc-0309-b49e-dc30dbe0a21b"
+  },
+  {
+    "stripeId": "a8ae4fba-6e12-6d1c-ca16-84350f048683",
+    "bankId": "183d6be1-bd42-59bb-2654-ed9623a62df0"
+  },
+  {
+    "stripeId": "2f972a5d-7bbc-afbd-b001-33b6feea8a96",
+    "bankId": "97612316-5a6f-3a5a-4398-6f9732b2c2fc"
+  },
+  {
+    "stripeId": "8c089877-94bf-9f8e-c0d6-0bfad09e5702",
+    "bankId": "995091c7-4e4f-e252-0f40-20a198648e01"
+  },
+  {
+    "stripeId": "a7977580-936b-9ebb-8ad2-0d4eb3a90fc5",
+    "bankId": "088b44c4-6f77-c7a0-db57-b27c73779afe"
+  },
+  {
+    "stripeId": "06198105-de9f-162f-ea56-de3b9e5edc60",
+    "bankId": "f2544c02-81d7-512e-9cd8-7a1626422c41"
+  },
+  {
+    "stripeId": "543af2fe-d2b2-b076-72b6-c89c324b2a51",
+    "bankId": "f81291e0-5f0c-5267-79a5-17b5a1c7b93a"
+  },
+  {
+    "stripeId": "daa8d256-d688-4339-f33a-dc8737aa70a6",
+    "bankId": "174e90e1-8e0d-79c5-18e0-38e41a33d0e6"
+  },
+  {
+    "stripeId": "0553a2a1-1970-a371-9f3d-9e68423e813b",
+    "bankId": "83456ae1-7a5d-c450-6280-e557427e5111"
+  },
+  {
+    "stripeId": "c0efa87c-8554-c036-f92d-59d3dd3900cc",
+    "bankId": "2da6d8f4-9c09-3e00-efaf-0a3af30de677"
+  },
+  {
+    "stripeId": "8b349dc8-4daa-f821-f84c-dbb140551bb6",
+    "bankId": "09c54474-23cb-2f7d-4c49-e7bed1cea854"
+  }
+]

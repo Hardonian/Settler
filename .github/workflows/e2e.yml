@@ -123,6 +123,50 @@ jobs:
             test-results/
           retention-days: 7
 
+  demo-mode:
+    name: Demo Mode Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Build application
+        run: npx turbo run build
+
+      - name: Generate demo data
+        run: npx tsx scripts/seed-demo.ts
+        env:
+          DEMO_MODE: true
+          DEMO_SEED: 42
+
+      - name: Run demo mode E2E tests
+        run: npm run test:e2e -- --project=chromium --grep="Demo Mode"
+        env:
+          DEMO_MODE: true
+          E2E_API_KEY: demo-key-for-testing-only
+          E2E_BASE_URL: http://localhost:3000
+
+      - name: Upload demo test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: demo-mode-test-results
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+
   visual-regression:
     name: Visual Regression Tests
     runs-on: ubuntu-latest

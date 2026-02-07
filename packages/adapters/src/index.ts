@@ -27,6 +27,7 @@ export * from "./enhanced-paypal";
 export * from "./xero";
 export * from "./netsuite";
 export * from "./woocommerce";
+export * from "./demo";
 
 // New connector framework - use connector-driver exports (preferred)
 export {

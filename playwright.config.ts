@@ -175,6 +175,16 @@ export default defineConfig({
         viewport: { width: 1280, height: 720 },
       },
     },
+
+    // Demo Mode Tests
+    {
+      name: "demo-mode",
+      testMatch: /.*demo-mode.*\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 1280, height: 720 },
+      },
+    },
   ],
 
   // Local dev server configuration
