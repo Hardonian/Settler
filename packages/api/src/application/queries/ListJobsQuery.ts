@@ -5,6 +5,7 @@
 
 export interface ListJobsQuery {
   userId: string;
+  tenantId: string;
   limit: number;
   offset: number;
   status?: string;

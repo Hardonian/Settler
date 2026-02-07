@@ -35,35 +35,41 @@ router.delete(
       const userId = req.userId!;
       const { password } = req.body;
 
+      const tenantId = req.tenantId!;
+
       // Users can only delete their own data (or admins)
       if (id !== userId) {
         // Check if user is admin
         const users = await query<{ role: UserRole }>(
-          'SELECT role FROM users WHERE id = $1',
-          [userId]
+          "SELECT role FROM users WHERE id = $1 AND tenant_id = $2",
+          [userId, tenantId]
         );
-        if (users.length === 0 || !users[0] || (users[0].role !== UserRole.ADMIN && users[0].role !== UserRole.OWNER)) {
-          return res.status(403).json({ error: 'Forbidden' });
+        if (
+          users.length === 0 ||
+          !users[0] ||
+          (users[0].role !== UserRole.ADMIN && users[0].role !== UserRole.OWNER)
+        ) {
+          return res.status(403).json({ error: "Forbidden" });
         }
       }
 
       if (!id || !userId) {
-        return res.status(400).json({ error: 'User ID is required' });
+        return res.status(400).json({ error: "User ID is required" });
       }
 
       // Verify password
       const targetUsers = await query<{ password_hash: string }>(
-        'SELECT password_hash FROM users WHERE id = $1',
-        [id]
+        "SELECT password_hash FROM users WHERE id = $1 AND tenant_id = $2",
+        [id, tenantId]
       );
 
       if (targetUsers.length === 0 || !targetUsers[0]) {
-        return res.status(404).json({ error: 'User not found' });
+        return res.status(404).json({ error: "User not found" });
       }
 
       const isValid = await verifyPassword(password, targetUsers[0].password_hash);
       if (!isValid) {
-        return res.status(401).json({ error: 'Invalid password' });
+        return res.status(401).json({ error: "Invalid password" });
       }
 
       // Soft delete with 30-day grace period
@@ -75,8 +81,8 @@ router.delete(
                deletion_scheduled_at = NOW() + INTERVAL '30 days',
                email = $1,
                name = 'Deleted User'
-           WHERE id = $2`,
-          [`deleted-${id}@settler.io`, id]
+           WHERE id = $2 AND tenant_id = $3`,
+          [`deleted-${id}@settler.io`, id, tenantId]
         );
 
         // Schedule hard deletion
@@ -84,7 +90,7 @@ router.delete(
           `INSERT INTO audit_logs (event, user_id, metadata)
            VALUES ($1, $2, $3)`,
           [
-            'user_deletion_scheduled',
+            "user_deletion_scheduled",
             id,
             JSON.stringify({ scheduledAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) }),
           ]
@@ -95,17 +101,13 @@ router.delete(
       await query(
         `INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`,
-        [
-          'user_data_deletion_requested',
-          userId,
-          JSON.stringify({ targetUserId: id }),
-        ]
+        ["user_data_deletion_requested", userId, JSON.stringify({ targetUserId: id })]
       );
 
-      logInfo('User data deletion scheduled', { userId: id, requestedBy: userId });
+      logInfo("User data deletion scheduled", { userId: id, requestedBy: userId });
 
       res.json({
-        message: 'Deletion scheduled. Data will be permanently deleted in 30 days.',
+        message: "Deletion scheduled. Data will be permanently deleted in 30 days.",
         deletionDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       });
       return;
@@ -128,45 +130,47 @@ router.get(
 
       // Users can only export their own data
       if (id !== userId) {
-        return res.status(403).json({ error: 'Forbidden' });
+        return res.status(403).json({ error: "Forbidden" });
       }
 
-      // Fetch all user data
+      const tenantId = req.tenantId!;
+
+      // Fetch all user data — scoped by tenant_id
       const [users, jobs, reports, webhooks, apiKeys, auditLogs] = await Promise.all([
         query(
           `SELECT id, email, name, role, data_residency_region, created_at, updated_at
-           FROM users WHERE id = $1`,
-          [userId]
+           FROM users WHERE id = $1 AND tenant_id = $2`,
+          [userId, tenantId]
         ),
         query(
           `SELECT id, name, source_adapter, target_adapter, rules, schedule, status, created_at, updated_at
-           FROM jobs WHERE user_id = $1`,
-          [userId]
+           FROM jobs WHERE user_id = $1 AND tenant_id = $2`,
+          [userId, tenantId]
         ),
         query(
           `SELECT r.id, r.job_id, r.summary, r.generated_at
            FROM reports r
            JOIN jobs j ON r.job_id = j.id
-           WHERE j.user_id = $1`,
-          [userId]
+           WHERE j.user_id = $1 AND j.tenant_id = $2`,
+          [userId, tenantId]
         ),
         query(
           `SELECT id, url, events, status, created_at, updated_at
-           FROM webhooks WHERE user_id = $1`,
-          [userId]
+           FROM webhooks WHERE user_id = $1 AND tenant_id = $2`,
+          [userId, tenantId]
         ),
         query(
           `SELECT id, name, scopes, rate_limit, created_at, last_used_at
-           FROM api_keys WHERE user_id = $1`,
-          [userId]
+           FROM api_keys WHERE user_id = $1 AND tenant_id = $2`,
+          [userId, tenantId]
         ),
         query(
           `SELECT event, metadata, timestamp
            FROM audit_logs
-           WHERE user_id = $1
+           WHERE user_id = $1 AND tenant_id = $2
            ORDER BY timestamp DESC
            LIMIT 1000`,
-          [userId]
+          [userId, tenantId]
         ),
       ]);
 
@@ -175,7 +179,7 @@ router.get(
         jobs: jobs,
         reports: reports,
         webhooks: webhooks,
-        apiKeys: apiKeys.map(k => ({
+        apiKeys: apiKeys.map((k) => ({
           id: k.id,
           name: k.name,
           scopes: k.scopes,
@@ -191,14 +195,10 @@ router.get(
       await query(
         `INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`,
-        [
-          'user_data_exported',
-          userId,
-          JSON.stringify({ exportedAt: new Date() }),
-        ]
+        ["user_data_exported", userId, JSON.stringify({ exportedAt: new Date() })]
       );
 
-      logInfo('User data exported', { userId });
+      logInfo("User data exported", { userId });
 
       res.json({ data: exportData });
       return;

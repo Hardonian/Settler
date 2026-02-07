@@ -1,17 +1,20 @@
 /**
  * User Repository Implementation
  * PostgreSQL implementation of IUserRepository
+ *
+ * INVARIANT: Every query is scoped by tenant_id. No cross-tenant data access is possible.
  */
 
-import { User, UserRole, UserProps } from '../../domain/entities/User';
-import { IUserRepository } from '../../domain/repositories/IUserRepository';
-import { query } from '../../db';
+import { User, UserRole, UserProps } from "../../domain/entities/User";
+import { IUserRepository } from "../../domain/repositories/IUserRepository";
+import { query } from "../../db";
 
 export class UserRepository implements IUserRepository {
-  async findById(id: string): Promise<User | null> {
+  async findById(id: string, tenantId: string): Promise<User | null> {
+    if (!tenantId) throw new Error("tenantId is required for findById");
     const rows = await query<UserProps>(
-      `SELECT * FROM users WHERE id = $1 AND deleted_at IS NULL`,
-      [id]
+      `SELECT * FROM users WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
+      [id, tenantId]
     );
 
     if (rows.length === 0) {
@@ -21,10 +24,11 @@ export class UserRepository implements IUserRepository {
     return User.fromPersistence(this.mapRowToProps(rows[0]));
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: string, tenantId: string): Promise<User | null> {
+    if (!tenantId) throw new Error("tenantId is required for findByEmail");
     const rows = await query<UserProps>(
-      `SELECT * FROM users WHERE email = $1 AND deleted_at IS NULL`,
-      [email]
+      `SELECT * FROM users WHERE email = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
+      [email, tenantId]
     );
 
     if (rows.length === 0) {
@@ -34,27 +38,32 @@ export class UserRepository implements IUserRepository {
     return User.fromPersistence(this.mapRowToProps(rows[0]));
   }
 
-  async save(user: User): Promise<User> {
+  async save(user: User, tenantId: string): Promise<User> {
+    if (!tenantId) throw new Error("tenantId is required for save");
     const props = user.toPersistence();
-    const existing = await this.findById(props.id);
+
+    // Enforce: the user's tenantId must match the scoped tenantId
+    if (props.tenantId && props.tenantId !== tenantId) {
+      throw new Error("Tenant mismatch: cannot save user to a different tenant");
+    }
+
+    const existing = await this.findById(props.id, tenantId);
 
     if (existing) {
-      // Update
+      // Update — scoped by both id AND tenant_id
       await query(
         `UPDATE users SET
-          tenant_id = $1,
-          email = $2,
-          password_hash = $3,
-          name = $4,
-          role = $5,
-          data_residency_region = $6,
-          data_retention_days = $7,
-          deleted_at = $8,
-          deletion_scheduled_at = $9,
+          email = $1,
+          password_hash = $2,
+          name = $3,
+          role = $4,
+          data_residency_region = $5,
+          data_retention_days = $6,
+          deleted_at = $7,
+          deletion_scheduled_at = $8,
           updated_at = NOW()
-        WHERE id = $10`,
+        WHERE id = $9 AND tenant_id = $10`,
         [
-          props.tenantId,
           props.email,
           props.passwordHash,
           props.name ?? null,
@@ -64,6 +73,7 @@ export class UserRepository implements IUserRepository {
           props.deletedAt ?? null,
           props.deletionScheduledAt ?? null,
           props.id,
+          tenantId,
         ]
       );
     } else {
@@ -76,7 +86,7 @@ export class UserRepository implements IUserRepository {
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())`,
         [
           props.id,
-          props.tenantId,
+          tenantId,
           props.email,
           props.passwordHash,
           props.name ?? null,
@@ -92,23 +102,30 @@ export class UserRepository implements IUserRepository {
     return user;
   }
 
-  async delete(id: string): Promise<void> {
-    await query(`UPDATE users SET deleted_at = NOW() WHERE id = $1`, [id]);
+  async delete(id: string, tenantId: string): Promise<void> {
+    if (!tenantId) throw new Error("tenantId is required for delete");
+    await query(`UPDATE users SET deleted_at = NOW() WHERE id = $1 AND tenant_id = $2`, [
+      id,
+      tenantId,
+    ]);
   }
 
-  async findAll(limit: number, offset: number): Promise<User[]> {
+  async findAll(tenantId: string, limit: number, offset: number): Promise<User[]> {
+    if (!tenantId) throw new Error("tenantId is required for findAll");
     const rows = await query<UserProps>(
-      `SELECT * FROM users WHERE deleted_at IS NULL
-       ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
-      [limit, offset]
+      `SELECT * FROM users WHERE tenant_id = $1 AND deleted_at IS NULL
+       ORDER BY created_at DESC LIMIT $2 OFFSET $3`,
+      [tenantId, limit, offset]
     );
 
     return rows.map((row) => User.fromPersistence(this.mapRowToProps(row)));
   }
 
-  async count(): Promise<number> {
+  async count(tenantId: string): Promise<number> {
+    if (!tenantId) throw new Error("tenantId is required for count");
     const rows = await query<{ count: string }>(
-      `SELECT COUNT(*) as count FROM users WHERE deleted_at IS NULL`
+      `SELECT COUNT(*) as count FROM users WHERE tenant_id = $1 AND deleted_at IS NULL`,
+      [tenantId]
     );
     if (!rows[0]) {
       return 0;
@@ -116,7 +133,6 @@ export class UserRepository implements IUserRepository {
     return parseInt(rows[0].count, 10);
   }
 
-   
   private mapRowToProps(row: any): UserProps {
     const props: UserProps = {
       id: row.id,

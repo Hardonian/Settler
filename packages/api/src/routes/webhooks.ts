@@ -134,6 +134,8 @@ router.get(
       const limit = Math.min(parseInt(req.query.limit as string) || 100, 1000);
       const offset = (page - 1) * limit;
 
+      const tenantId = req.tenantId!;
+
       const [webhooks, totalResult] = await Promise.all([
         query<{
           id: string;
@@ -144,14 +146,15 @@ router.get(
         }>(
           `SELECT id, url, events, status, created_at
            FROM webhooks
-           WHERE user_id = $1
+           WHERE user_id = $1 AND tenant_id = $2
            ORDER BY created_at DESC
-           LIMIT $2 OFFSET $3`,
-          [userId, limit, offset]
+           LIMIT $3 OFFSET $4`,
+          [userId, tenantId, limit, offset]
         ),
-        query<{ count: string }>(`SELECT COUNT(*) as count FROM webhooks WHERE user_id = $1`, [
-          userId,
-        ]),
+        query<{ count: string }>(
+          `SELECT COUNT(*) as count FROM webhooks WHERE user_id = $1 AND tenant_id = $2`,
+          [userId, tenantId]
+        ),
       ]);
 
       if (!totalResult[0]) {
@@ -274,7 +277,12 @@ router.delete(
         );
       });
 
-      await query(`DELETE FROM webhooks WHERE id = $1 AND user_id = $2`, [id || "", userId]);
+      const tenantId = req.tenantId!;
+      await query(`DELETE FROM webhooks WHERE id = $1 AND user_id = $2 AND tenant_id = $3`, [
+        id || "",
+        userId,
+        tenantId,
+      ]);
 
       // Log audit event
       await query(

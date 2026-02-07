@@ -37,7 +37,9 @@ router.get(
         throw new NotFoundError("Match ID and User ID are required", "match", matchId || "unknown");
       }
 
-      // Get match details
+      const tenantId = req.tenantId!;
+
+      // Get match details — scoped by tenant_id
       const matches = await query<{
         id: string;
         job_id: string;
@@ -51,8 +53,8 @@ router.get(
                 m.source_data, m.target_data
          FROM matches m
          JOIN jobs j ON m.job_id = j.id
-         WHERE m.id = $1 AND j.user_id = $2`,
-        [matchId, userId]
+         WHERE m.id = $1 AND j.user_id = $2 AND j.tenant_id = $3`,
+        [matchId, userId, tenantId]
       );
 
       if (matches.length === 0 || !matches[0]) {
@@ -61,10 +63,10 @@ router.get(
 
       const match = matches[0];
 
-      // Get job rules
+      // Get job rules — scoped by tenant_id
       const jobs = await query<{ rules: unknown }>(
-        `SELECT rules FROM jobs WHERE id = $1`,
-        [match.job_id]
+        `SELECT rules FROM jobs WHERE id = $1 AND tenant_id = $2`,
+        [match.job_id, tenantId]
       );
 
       if (jobs.length === 0 || !jobs[0]) {
@@ -119,10 +121,12 @@ router.get(
         throw new NotFoundError("Job ID is required", "job", "unknown");
       }
 
-      // Verify job ownership
+      const tenantId = req.tenantId!;
+
+      // Verify job ownership — scoped by tenant_id
       const jobs = await query<{ id: string }>(
-        `SELECT id FROM jobs WHERE id = $1 AND user_id = $2`,
-        [jobId, userId]
+        `SELECT id FROM jobs WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
+        [jobId, userId, tenantId]
       );
 
       if (jobs.length === 0) {
@@ -146,8 +150,8 @@ router.get(
            AVG(confidence) as avg_confidence,
            (COUNT(*) FILTER (WHERE confidence >= 0.95)::float / NULLIF(COUNT(*), 0)) * 100 as accuracy
          FROM matches
-         WHERE job_id = $1`,
-        [jobId]
+         WHERE job_id = $1 AND tenant_id = $2`,
+        [jobId, tenantId]
       );
 
       const m = metrics[0] || {

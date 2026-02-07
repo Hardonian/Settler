@@ -35,26 +35,32 @@ export async function getAuditLogs(
     limit?: number;
     offset?: number;
   } = {}
-): Promise<Array<{
-  id: number;
-  at: Date;
-  actor?: string;
-  action: string;
-  schemaName: string;
-  tableName: string;
-  rowPk?: string;
-  details: Record<string, unknown>;
-  ipAddress?: string;
-  userAgent?: string;
-  complianceTags?: string[];
-}>> {
+): Promise<
+  Array<{
+    id: number;
+    at: Date;
+    actor?: string;
+    action: string;
+    schemaName: string;
+    tableName: string;
+    rowPk?: string;
+    details: Record<string, unknown>;
+    ipAddress?: string;
+    userAgent?: string;
+    complianceTags?: string[];
+  }>
+> {
   try {
+    if (!tenantId) throw new Error("tenantId is required for getAuditLogs");
+
     const conditions: string[] = [];
     const params: unknown[] = [];
     let paramIndex = 1;
 
-    // Note: audit_log is in app_private schema, so we need to handle tenant filtering differently
-    // This is a simplified version - actual implementation would need proper RLS or tenant context
+    // INVARIANT: tenant_id is always the first filter — no cross-tenant audit log access
+    conditions.push(`tenant_id = $${paramIndex}`);
+    params.push(tenantId);
+    paramIndex++;
 
     if (filters.actor) {
       conditions.push(`actor = $${paramIndex}`);
@@ -101,7 +107,8 @@ export async function getAuditLogs(
     const limit = options.limit || 100;
     const offset = options.offset || 0;
 
-    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+    // conditions always has at least tenant_id — no unscoped queries possible
+    const whereClause = `WHERE ${conditions.join(" AND ")}`;
 
     const result = await query<Record<string, unknown>>(
       `SELECT id, at, actor, action, schema_name, table_name, row_pk, details,
@@ -150,10 +157,16 @@ export async function createAuditExport(
         tenant_id, exported_by, export_format, filters, expires_at
       ) VALUES ($1, $2, $3, $4, $5)
       RETURNING id`,
-      [tenantId, exportedBy, exportFormat, JSON.stringify(filters), expiresAt] as (string | number | boolean | null | Date)[]
+      [tenantId, exportedBy, exportFormat, JSON.stringify(filters), expiresAt] as (
+        | string
+        | number
+        | boolean
+        | null
+        | Date
+      )[]
     );
 
-    const exportId = result[0]?.id || '';
+    const exportId = result[0]?.id || "";
 
     // TODO: Generate actual export file (CSV, JSON, etc.)
     // For now, just log it

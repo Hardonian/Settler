@@ -85,22 +85,14 @@ function stringSimilarity(str1: string, str2: string): number {
 /**
  * Check if two amounts match within tolerance
  */
-function amountsMatch(
-  amount1: number,
-  amount2: number,
-  tolerance: number
-): boolean {
+function amountsMatch(amount1: number, amount2: number, tolerance: number): boolean {
   return Math.abs(amount1 - amount2) <= tolerance;
 }
 
 /**
  * Check if two dates are within window
  */
-function datesWithinWindow(
-  date1: Date,
-  date2: Date,
-  windowDays: number
-): boolean {
+function datesWithinWindow(date1: Date, date2: Date, windowDays: number): boolean {
   const diffMs = Math.abs(date1.getTime() - date2.getTime());
   const diffDays = diffMs / (1000 * 60 * 60 * 24);
   return diffDays <= windowDays;
@@ -116,20 +108,24 @@ function daysDifference(date1: Date, date2: Date): number {
 
 /**
  * Match source transaction to target transactions
+ *
+ * INVARIANT: tenantId is required. All queries are scoped to the tenant boundary.
  */
 export async function matchTransaction(
   sourceTransactionId: string,
   targetTransactionIds: string[],
+  tenantId: string,
   config: ReconciliationConfig = {}
 ): Promise<MatchResult | null> {
+  if (!tenantId) throw new Error("tenantId is required for matchTransaction");
   const opts = { ...DEFAULT_CONFIG, ...config };
 
-  // Get source transaction
+  // Get source transaction — scoped by tenant_id
   const sourceResults = await query(
     `SELECT id, amount, currency, date, description, external_id
     FROM normalized_transactions
-    WHERE id = $1`,
-    [sourceTransactionId]
+    WHERE id = $1 AND tenant_id = $2`,
+    [sourceTransactionId, tenantId]
   );
 
   if (sourceResults.length === 0) {
@@ -155,12 +151,12 @@ export async function matchTransaction(
     };
   }
 
-  const placeholders = targetTransactionIds.map((_, i) => `$${i + 2}`).join(", ");
+  const placeholders = targetTransactionIds.map((_, i) => `$${i + 3}`).join(", ");
   const targetResults = await query(
     `SELECT id, amount, currency, date, description, external_id
     FROM normalized_transactions
-    WHERE id IN (${placeholders})`,
-    [sourceTransactionId, ...targetTransactionIds]
+    WHERE id IN (${placeholders}) AND tenant_id = $2`,
+    [sourceTransactionId, tenantId, ...targetTransactionIds]
   );
 
   const targets = targetResults as Array<{
@@ -174,9 +170,7 @@ export async function matchTransaction(
 
   // Try exact match first (same external ID)
   if (source.external_id) {
-    const exactMatch = targets.find(
-      (t) => t.external_id === source.external_id
-    );
+    const exactMatch = targets.find((t) => t.external_id === source.external_id);
     if (exactMatch) {
       return {
         sourceTransactionId: source.id,
@@ -193,26 +187,24 @@ export async function matchTransaction(
   // Try ML matching engine (proprietary, creates data moat)
   // This uses historical match data and cross-customer intelligence
   try {
-    const sourceAdapter = await getSourceAdapter(sourceTransactionId);
+    const sourceAdapter = await getSourceAdapter(sourceTransactionId, tenantId);
     const targetAdapters = await Promise.all(
-      targetTransactionIds.map((id) => getSourceAdapter(id))
+      targetTransactionIds.map((id) => getSourceAdapter(id, tenantId))
     );
-    
+
     // Use ML engine for first target adapter (most common case)
     if (targetAdapters.length > 0) {
       const mlPrediction = await mlMatchingEngine.predictMatch(
         sourceTransactionId,
         targetTransactionIds,
-        "", // tenantId will be extracted from transaction
+        tenantId,
         sourceAdapter || "unknown",
         targetAdapters[0] || "unknown"
       );
 
       if (mlPrediction && mlPrediction.confidence > 0.7) {
         // ML prediction is confident, use it
-        const bestTarget = targets.find((t) =>
-          targetTransactionIds.includes(t.id)
-        );
+        const bestTarget = targets.find((t) => targetTransactionIds.includes(t.id));
         if (bestTarget) {
           return {
             sourceTransactionId: source.id,
@@ -300,12 +292,10 @@ export async function matchTransaction(
     const dateScore = 1 - Math.min(dateDiff / dateWindowDaysForScoring, 1);
 
     const amountDiff = Math.abs(source.amount - target.amount);
-    const amountScore =
-      amountDiff === 0 ? 1 : 1 - Math.min(amountDiff / source.amount, 1);
+    const amountScore = amountDiff === 0 ? 1 : 1 - Math.min(amountDiff / source.amount, 1);
 
     // Weighted confidence score
-    const confidence =
-      descSimilarity * 0.5 + dateScore * 0.25 + amountScore * 0.25;
+    const confidence = descSimilarity * 0.5 + dateScore * 0.25 + amountScore * 0.25;
 
     return {
       target,
@@ -371,15 +361,7 @@ export async function runReconciliation(
         id, ingestion_id, tenant_id, user_id, status, started_at,
         trace_id, metadata, created_at, updated_at
       ) VALUES ($1, $2, $3, $4, $5, NOW(), $6, $7, NOW(), NOW())`,
-      [
-        runId,
-        ingestionId,
-        tenantId,
-        userId,
-        "running",
-        traceId,
-        JSON.stringify(config),
-      ]
+      [runId, ingestionId, tenantId, userId, "running", traceId, JSON.stringify(config)]
     );
 
     // Get source transactions (from this ingestion)
@@ -399,12 +381,8 @@ export async function runReconciliation(
       [tenantId, ingestionId]
     );
 
-    const sourceIds = (sourceTransactions as Array<{ id: string }>).map(
-      (t) => t.id
-    );
-    const targetIds = (targetTransactions as Array<{ id: string }>).map(
-      (t) => t.id
-    );
+    const sourceIds = (sourceTransactions as Array<{ id: string }>).map((t) => t.id);
+    const targetIds = (targetTransactions as Array<{ id: string }>).map((t) => t.id);
 
     logInfo("Starting reconciliation", {
       runId,
@@ -420,7 +398,7 @@ export async function runReconciliation(
     let totalConfidence = 0;
 
     for (const sourceId of sourceIds) {
-      const match = await matchTransaction(sourceId, targetIds, config);
+      const match = await matchTransaction(sourceId, targetIds, tenantId, config);
       if (match) {
         matches.push(match);
         if (match.targetTransactionId) {
@@ -460,8 +438,7 @@ export async function runReconciliation(
     });
 
     // Update reconciliation run
-    const avgConfidence =
-      matchedCount > 0 ? totalConfidence / matchedCount : 0;
+    const avgConfidence = matchedCount > 0 ? totalConfidence / matchedCount : 0;
 
     await query(
       `UPDATE reconciliation_runs SET
@@ -513,7 +490,7 @@ export async function runReconciliation(
           runId,
           tenantId,
           alertCount: alerts.length,
-          alerts: alerts.map(a => ({ type: a.alertType, severity: a.severity })),
+          alerts: alerts.map((a) => ({ type: a.alertType, severity: a.severity })),
           traceId,
         });
       }
@@ -530,21 +507,18 @@ export async function runReconciliation(
     for (const match of matches) {
       if (match.targetTransactionId && match.matchType !== "unmatched") {
         try {
-          const sourceAdapter = await getSourceAdapter(match.sourceTransactionId);
-          const targetAdapter = await getSourceAdapter(match.targetTransactionId);
-          
+          const sourceAdapter = await getSourceAdapter(match.sourceTransactionId, tenantId);
+          const targetAdapter = await getSourceAdapter(match.targetTransactionId, tenantId);
+
           if (sourceAdapter && targetAdapter) {
-            await enhancedCrossCustomerIntelligence.recordPattern(
-              tenantId,
-              {
-                sourceAdapter,
-                targetAdapter,
-                matchType: match.matchType,
-                confidence: match.confidence,
-                amountDiff: match.amountDiff || 0,
-                dateDiff: match.dateDiff || 0,
-              }
-            );
+            await enhancedCrossCustomerIntelligence.recordPattern(tenantId, {
+              sourceAdapter,
+              targetAdapter,
+              matchType: match.matchType,
+              confidence: match.confidence,
+              amountDiff: match.amountDiff || 0,
+              dateDiff: match.dateDiff || 0,
+            });
           }
         } catch (error) {
           // Non-fatal - continue even if pattern recording fails
@@ -563,27 +537,24 @@ export async function runReconciliation(
         error_message = $1,
         updated_at = NOW()
       WHERE id = $2`,
-      [
-        error instanceof Error ? error.message : String(error),
-        runId,
-      ]
+      [error instanceof Error ? error.message : String(error), runId]
     );
     throw error;
   }
 }
 
 /**
- * Get source adapter for transaction
+ * Get source adapter for transaction — scoped by tenant_id
  */
-async function getSourceAdapter(transactionId: string): Promise<string | null> {
+async function getSourceAdapter(transactionId: string, tenantId: string): Promise<string | null> {
   try {
     const result = await query(
       `SELECT si.connector_type
       FROM normalized_transactions nt
       JOIN ingestion_sources si ON si.id = nt.source_id
-      WHERE nt.id = $1
+      WHERE nt.id = $1 AND nt.tenant_id = $2
       LIMIT 1`,
-      [transactionId]
+      [transactionId, tenantId]
     );
 
     if (result.length > 0) {

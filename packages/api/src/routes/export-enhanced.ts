@@ -77,10 +77,12 @@ router.get(
         throw new NotFoundError("Job ID and User ID are required", "job", jobId || "unknown");
       }
 
-      // Verify job ownership
+      const tenantId = req.tenantId!;
+
+      // Verify job ownership — scoped by tenant_id
       const jobs = await query<{ id: string; name: string }>(
-        `SELECT id, name FROM jobs WHERE id = $1 AND user_id = $2`,
-        [jobId, userId]
+        `SELECT id, name FROM jobs WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
+        [jobId, userId, tenantId]
       );
 
       if (jobs.length === 0 || !jobs[0]) {
@@ -95,9 +97,9 @@ router.get(
       // Get execution
       const executions = await query<{ id: string }>(
         `SELECT id FROM executions
-         WHERE job_id = $1 AND started_at >= $2 AND started_at <= $3
+         WHERE job_id = $1 AND tenant_id = $2 AND started_at >= $3 AND started_at <= $4
          ORDER BY started_at DESC LIMIT 1`,
-        [jobId, start.toISOString(), end.toISOString()]
+        [jobId, tenantId, start.toISOString(), end.toISOString()]
       );
 
       if (executions.length === 0 || !executions[0]) {
@@ -118,8 +120,8 @@ router.get(
               matched_at: Date;
             }>(
               `SELECT source_id, target_id, amount, currency, confidence, matched_at
-               FROM matches WHERE execution_id = $1`,
-              [executionId]
+               FROM matches WHERE execution_id = $1 AND tenant_id = $2`,
+              [executionId, tenantId]
             )
           : [];
 
@@ -131,8 +133,8 @@ router.get(
               severity: string;
             }>(
               `SELECT source_id, category, description, severity
-               FROM exceptions WHERE execution_id = $1`,
-              [executionId]
+               FROM exceptions WHERE execution_id = $1 AND tenant_id = $2`,
+              [executionId, tenantId]
             )
           : [];
 
@@ -201,11 +203,17 @@ router.get(
 
       // JSON format
       const matches = includeMatched
-        ? await query(`SELECT * FROM matches WHERE execution_id = $1`, [executionId])
+        ? await query(`SELECT * FROM matches WHERE execution_id = $1 AND tenant_id = $2`, [
+            executionId,
+            tenantId,
+          ])
         : [];
 
       const exceptions = includeExceptions
-        ? await query(`SELECT * FROM exceptions WHERE execution_id = $1`, [executionId])
+        ? await query(`SELECT * FROM exceptions WHERE execution_id = $1 AND tenant_id = $2`, [
+            executionId,
+            tenantId,
+          ])
         : [];
 
       res.json({
@@ -242,10 +250,12 @@ router.post(
         throw new NotFoundError("Job ID and User ID are required", "job", jobId || "unknown");
       }
 
-      // Verify job ownership
+      const tenantId = req.tenantId!;
+
+      // Verify job ownership — scoped by tenant_id
       const jobs = await query<{ id: string }>(
-        `SELECT id FROM jobs WHERE id = $1 AND user_id = $2`,
-        [jobId, userId]
+        `SELECT id FROM jobs WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
+        [jobId, userId, tenantId]
       );
 
       if (jobs.length === 0 || !jobs[0]) {

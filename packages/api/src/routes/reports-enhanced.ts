@@ -45,10 +45,12 @@ router.get(
         throw new NotFoundError("Job ID and User ID are required", "job", jobId || "unknown");
       }
 
-      // Verify job ownership
+      const tenantId = req.tenantId!;
+
+      // Verify job ownership — scoped by tenant_id
       const jobs = await query<{ user_id: string; name: string }>(
-        `SELECT user_id, name FROM jobs WHERE id = $1`,
-        [jobId]
+        `SELECT user_id, name FROM jobs WHERE id = $1 AND tenant_id = $2`,
+        [jobId, tenantId]
       );
 
       if (jobs.length === 0 || !jobs[0] || jobs[0].user_id !== userId) {
@@ -81,8 +83,8 @@ router.get(
            SUM((summary->>'matchedAmount')::decimal) as matched_amount,
            SUM((summary->>'unmatchedAmount')::decimal) as unmatched_amount
          FROM executions
-         WHERE job_id = $1 AND started_at >= $2 AND started_at <= $3`,
-        [jobId, start.toISOString(), end.toISOString()]
+         WHERE job_id = $1 AND tenant_id = $2 AND started_at >= $3 AND started_at <= $4`,
+        [jobId, tenantId, start.toISOString(), end.toISOString()]
       );
 
       const stats = summary[0] || {
@@ -106,10 +108,10 @@ router.get(
       }>(
         `SELECT id, status, started_at, completed_at, summary
          FROM executions
-         WHERE job_id = $1 AND started_at >= $2 AND started_at <= $3
+         WHERE job_id = $1 AND tenant_id = $2 AND started_at >= $3 AND started_at <= $4
          ORDER BY started_at DESC
          LIMIT 10`,
-        [jobId, start.toISOString(), end.toISOString()]
+        [jobId, tenantId, start.toISOString(), end.toISOString()]
       );
 
       // Get exception count
@@ -185,10 +187,10 @@ router.get(
         }>(
           `SELECT id, summary, generated_at
            FROM reports
-           WHERE job_id = $1 AND generated_at >= $2 AND generated_at <= $3
+           WHERE job_id = $1 AND tenant_id = $2 AND generated_at >= $3 AND generated_at <= $4
            ORDER BY generated_at DESC
            LIMIT 1`,
-          [jobId, start, end]
+          [jobId, tenantId, start, end]
         );
 
         if (report.length === 0) {
