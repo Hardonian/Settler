@@ -1,0 +1,4 @@
+reference,amount,currency,status
+pay_1001,125.50,USD,matched
+pay_1002,80.00,USD,missing
+pay_1003,99.20,USD,drift

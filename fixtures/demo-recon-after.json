@@ -1,0 +1,43 @@
+{
+  "runId": "fixture-after",
+  "status": "completed",
+  "startedAt": "2024-09-02T08:00:00Z",
+  "completedAt": "2024-09-02T08:01:00Z",
+  "summary": {
+    "totalItems": 2,
+    "matched": 2,
+    "missing": 0,
+    "drift": 0,
+    "mismatched": 0
+  },
+  "items": [
+    {
+      "id": "after-1",
+      "status": "match",
+      "reasonCategory": "match",
+      "reason": "Invoices reconciled.",
+      "amount": 120,
+      "currency": "USD",
+      "sourceTrace": {
+        "source": "after.csv",
+        "recordId": "inv_01",
+        "line": 2,
+        "column": "amount"
+      }
+    },
+    {
+      "id": "after-2",
+      "status": "match",
+      "reasonCategory": "match",
+      "reason": "New rule resolved missing settlement.",
+      "amount": 75,
+      "currency": "USD",
+      "sourceTrace": {
+        "source": "after.csv",
+        "recordId": "inv_02",
+        "line": 3,
+        "column": "reference"
+      }
+    }
+  ]
+}
