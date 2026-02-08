@@ -1,0 +1,43 @@
+{
+  "runId": "fixture-before",
+  "status": "completed",
+  "startedAt": "2024-09-01T08:00:00Z",
+  "completedAt": "2024-09-01T08:01:00Z",
+  "summary": {
+    "totalItems": 2,
+    "matched": 1,
+    "missing": 1,
+    "drift": 0,
+    "mismatched": 0
+  },
+  "items": [
+    {
+      "id": "before-1",
+      "status": "match",
+      "reasonCategory": "match",
+      "reason": "Invoices reconciled.",
+      "amount": 120,
+      "currency": "USD",
+      "sourceTrace": {
+        "source": "before.csv",
+        "recordId": "inv_01",
+        "line": 2,
+        "column": "amount"
+      }
+    },
+    {
+      "id": "before-2",
+      "status": "missing",
+      "reasonCategory": "missing",
+      "reason": "Missing settlement reference.",
+      "amount": 75,
+      "currency": "USD",
+      "sourceTrace": {
+        "source": "before.csv",
+        "recordId": "inv_02",
+        "line": 3,
+        "column": "reference"
+      }
+    }
+  ]
+}

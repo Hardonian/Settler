@@ -1,0 +1,60 @@
+{
+  "runId": "demo-run-2024-09-14",
+  "status": "completed",
+  "startedAt": "2024-09-14T10:00:00Z",
+  "completedAt": "2024-09-14T10:02:15Z",
+  "summary": {
+    "totalItems": 3,
+    "matched": 1,
+    "missing": 1,
+    "drift": 1,
+    "mismatched": 0
+  },
+  "items": [
+    {
+      "id": "item-1001",
+      "status": "match",
+      "reasonCategory": "match",
+      "reason": "Payment and ledger entry line up exactly.",
+      "amount": 125.5,
+      "currency": "USD",
+      "sourceTrace": {
+        "source": "payments.csv",
+        "recordId": "pay_1001",
+        "line": 2,
+        "column": "amount"
+      }
+    },
+    {
+      "id": "item-1002",
+      "status": "missing",
+      "reasonCategory": "missing",
+      "reason": "Ledger entry missing for payment reference.",
+      "amount": 80,
+      "currency": "USD",
+      "sourceTrace": {
+        "source": "payments.csv",
+        "recordId": "pay_1002",
+        "line": 3,
+        "column": "reference"
+      }
+    },
+    {
+      "id": "item-1003",
+      "status": "drift",
+      "reasonCategory": "drift",
+      "reason": "Amount differs by settlement fee.",
+      "amount": 99.2,
+      "currency": "USD",
+      "sourceTrace": {
+        "source": "payments.csv",
+        "recordId": "pay_1003",
+        "line": 4,
+        "column": "amount"
+      }
+    }
+  ],
+  "raw": {
+    "log": "Recon run demo-run-2024-09-14 completed with 3 items."
+  }
+}
