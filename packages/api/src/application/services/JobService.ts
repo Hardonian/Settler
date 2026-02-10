@@ -42,7 +42,7 @@ export class JobService {
     // Convert to repository format and save — tenantId is required
     if (!command.tenantId) throw new Error("tenantId is required");
     const persistedJobProps = job.toPersistence();
-    const savedJob = await this.jobRepository.create({
+    const savedJob = await this.jobRepository.create(command.tenantId, {
       userId: persistedJobProps.userId,
       tenantId: command.tenantId,
       name: persistedJobProps.name,
@@ -72,7 +72,7 @@ export class JobService {
 
   async getJob(query: GetJobQuery): Promise<GetJobQueryResult> {
     if (!query.tenantId) throw new Error("tenantId is required");
-    const jobData = await this.jobRepository.findById(query.jobId, query.userId, query.tenantId);
+    const jobData = await this.jobRepository.findById(query.jobId, query.tenantId, query.userId);
 
     if (!jobData) {
       throw new Error("Job not found");
@@ -104,8 +104,8 @@ export class JobService {
     if (!query.tenantId) throw new Error("tenantId is required");
     const page = Math.floor(query.offset / query.limit) + 1;
     const result = await this.jobRepository.findByUserId(
-      query.userId,
       query.tenantId,
+      query.userId,
       page,
       query.limit
     );
@@ -143,7 +143,7 @@ export class JobService {
     }>
   ): Promise<void> {
     if (!tenantId) throw new Error("tenantId is required");
-    const jobData = await this.jobRepository.findById(jobId, userId, tenantId);
+    const jobData = await this.jobRepository.findById(jobId, tenantId, userId);
     if (!jobData) {
       throw new Error("Job not found");
     }
@@ -206,8 +206,8 @@ export class JobService {
     const jobProps = job.toPersistence();
     await this.jobRepository.updateStatus(
       jobProps.id,
-      jobProps.userId,
       tenantId,
+      jobProps.userId,
       jobProps.status,
       jobProps.version
     );
@@ -218,7 +218,7 @@ export class JobService {
 
   async deleteJob(jobId: string, userId: string, tenantId: string): Promise<void> {
     if (!tenantId) throw new Error("tenantId is required");
-    const deleted = await this.jobRepository.delete(jobId, userId, tenantId);
+    const deleted = await this.jobRepository.delete(jobId, tenantId, userId);
     if (!deleted) {
       throw new Error("Job not found");
     }

@@ -20,7 +20,10 @@
     "test": "jest --passWithNoTests",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "perf:hot-path": "node scripts/perf-hot-path.mjs",
+    "mcp:smoke": "tsx src/index.ts mcp ping",
+    "test:mcp-smoke": "node --test tests/mcp-smoke.test.mjs"
   },
   "dependencies": {
     "@jobforge/sdk-ts": "workspace:*",

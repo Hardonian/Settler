@@ -114,6 +114,20 @@ function getWorkspaceFilters(files) {
   return Array.from(filters);
 }
 
+/**
+ * @param {string[]} files
+ * @returns {boolean}
+ */
+function shouldRunTenantSafetyContracts(files) {
+  return files.some(
+    (file) =>
+      file.startsWith("packages/api/src/") ||
+      file === "packages/api/package.json" ||
+      file === "scripts/verify.mjs" ||
+      file === ".github/workflows/tenant-safety-contracts.yml"
+  );
+}
+
 console.log("🔍 Settler Verify - Running Quality Pipeline\n");
 console.log(`Working directory: ${rootDir}`);
 const modeLabel = changedOnly ? "CHANGED" : fast ? "FAST" : "FULL";
@@ -143,6 +157,12 @@ if (fast) {
 
   const changedFiles = getChangedFiles({ staged: changedOnly });
   const workspaceFilters = getWorkspaceFilters(changedFiles);
+
+  if (shouldRunTenantSafetyContracts(changedFiles)) {
+    runStep("Tenant Safety Contract Tests", "pnpm --filter @settler/api test:tenant-safety", true);
+  } else {
+    console.log("ℹ️  No API tenant-safety changes detected. Skipping tenant contract tests.");
+  }
 
   if (workspaceFilters.length > 0) {
     // Simplify fast-typecheck invocation to avoid passing unsupported flags to tsc
@@ -183,6 +203,7 @@ if (fast) {
 
   if (full && !skipTests) {
     runStep("Tests (Jest)", "pnpm run test -- --no-cache", true);
+    runStep("Tenant Safety Contract Tests", "pnpm --filter @settler/api test:tenant-safety", true);
   }
 
   // Python Full Verification

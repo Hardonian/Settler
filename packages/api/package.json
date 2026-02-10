@@ -85,7 +85,8 @@
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "operator-mode:daily": "tsx src/jobs/operator-mode-daily.ts"
+    "operator-mode:daily": "tsx src/jobs/operator-mode-daily.ts",
+    "test:tenant-safety": "jest src/__tests__/application/job-service-invocation-order.test.ts src/__tests__/application/user-service-invocation-order.test.ts src/__tests__/application/webhook-ingestion-invocation-order.test.ts src/__tests__/repositories/job-repository-tenant-contract.test.ts src/__tests__/repositories/user-repository-tenant-contract.test.ts src/__tests__/repositories/tenant-repository-tenant-contract.test.ts src/__tests__/eventsourcing/event-store-tenant-contract.test.ts src/__tests__/services/quota-service-tenant-safety.test.ts src/__tests__/services/audit-trail-tenant-safety.test.ts"
   },
   "dependencies": {
     "@opentelemetry/api": "^1.9.0",
