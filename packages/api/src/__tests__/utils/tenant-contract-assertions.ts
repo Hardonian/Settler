@@ -50,12 +50,3 @@ export function assertTenantEntityId<T extends { id: string }>(
   expect(entity.id).toBeDefined();
   expect(entity.id).toBe(expectedTenantId);
 }
-
-export function assertTenantFirstSqlParam(
-  params: unknown[] | undefined,
-  expectedTenantId: string
-): void {
-  expect(params).toBeDefined();
-  expect(Array.isArray(params)).toBe(true);
-  expect(params?.[0]).toBe(expectedTenantId);
-}
