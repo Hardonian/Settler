@@ -9,7 +9,7 @@
  */
 
 import { queryWithTenant } from "../../db";
-import { IJobRepository } from "../../domain/repositories/IJobRepository";
+import { IJobRepository, type Job } from "../../domain/repositories/IJobRepository";
 
 interface JobRow {
   id: string;
@@ -48,6 +48,7 @@ export class JobRepository implements IJobRepository {
     const results = await queryWithTenant<{
       id: string;
       user_id: string;
+      tenant_id: string;
       name: string;
       source: string;
       target: string;
@@ -59,7 +60,7 @@ export class JobRepository implements IJobRepository {
       updated_at: Date;
     }>(
       tenantId,
-      `SELECT id, user_id, name, source, target, rules, schedule, status, version, created_at, updated_at
+      `SELECT id, user_id, tenant_id, name, source, target, rules, schedule, status, version, created_at, updated_at
        FROM jobs
        WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
       [id, userId, tenantId]
@@ -84,6 +85,7 @@ export class JobRepository implements IJobRepository {
       queryWithTenant<{
         id: string;
         user_id: string;
+        tenant_id: string;
         name: string;
         source: string;
         target: string;
@@ -95,7 +97,7 @@ export class JobRepository implements IJobRepository {
         updated_at: Date;
       }>(
         tenantId,
-        `SELECT id, user_id, name, source, target, rules, schedule, status, version, created_at, updated_at
+        `SELECT id, user_id, tenant_id, name, source, target, rules, schedule, status, version, created_at, updated_at
          FROM jobs
          WHERE user_id = $1 AND tenant_id = $2
          ORDER BY created_at DESC
@@ -113,6 +115,7 @@ export class JobRepository implements IJobRepository {
       jobs: jobs.map((row) => ({
         id: row.id,
         userId: row.user_id,
+        tenantId: row.tenant_id,
         name: row.name,
         source: JSON.parse(row.source),
         target: JSON.parse(row.target),
@@ -131,6 +134,7 @@ export class JobRepository implements IJobRepository {
     const result = await queryWithTenant<{
       id: string;
       user_id: string;
+      tenant_id: string;
       name: string;
       source: string;
       target: string;
@@ -144,7 +148,7 @@ export class JobRepository implements IJobRepository {
       tenantId,
       `INSERT INTO jobs (user_id, tenant_id, name, source_adapter, target_adapter, source_config_encrypted, target_config_encrypted, rules)
        VALUES ($1, $2, $3, 'stripe', 'shopify', $4, $5, $6)
-       RETURNING id, user_id, name, source_adapter as source, target_adapter as target, rules, schedule, status, version, created_at, updated_at`,
+       RETURNING id, user_id, tenant_id, source_adapter as source, target_adapter as target, name, rules, schedule, status, version, created_at, updated_at`,
       [
         job.userId,
         tenantId,
@@ -162,6 +166,7 @@ export class JobRepository implements IJobRepository {
     return {
       id: row.id,
       userId: row.user_id,
+      tenantId: row.tenant_id,
       name: row.name,
       source: JSON.parse(row.source || "{}"),
       target: JSON.parse(row.target || "{}"),
@@ -184,6 +189,7 @@ export class JobRepository implements IJobRepository {
     const result = await queryWithTenant<{
       id: string;
       user_id: string;
+      tenant_id: string;
       name: string;
       source: string;
       target: string;
@@ -198,7 +204,7 @@ export class JobRepository implements IJobRepository {
       `UPDATE jobs
        SET status = $1, version = version + 1, updated_at = NOW()
        WHERE id = $2 AND user_id = $3 AND version = $4
-       RETURNING id, user_id, name, source_adapter as source, target_adapter as target, rules, schedule, status, version, created_at, updated_at`,
+       RETURNING id, user_id, tenant_id, source_adapter as source, target_adapter as target, name, rules, schedule, status, version, created_at, updated_at`,
       [status, id, userId, expectedVersion]
     );
 
@@ -210,6 +216,7 @@ export class JobRepository implements IJobRepository {
     return {
       id: row.id,
       userId: row.user_id,
+      tenantId: row.tenant_id,
       name: row.name,
       source: JSON.parse(row.source || "{}"),
       target: JSON.parse(row.target || "{}"),
