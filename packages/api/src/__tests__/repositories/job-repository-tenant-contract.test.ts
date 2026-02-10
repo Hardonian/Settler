@@ -2,18 +2,13 @@ import { JobRepository } from "../../infrastructure/repositories/JobRepository";
 import type { Job as RepositoryJob } from "../../domain/repositories/IJobRepository";
 
 import { queryWithTenant } from "../../db";
+import { assertTenantScopedRecord } from "../utils/tenant-contract-assertions";
 
 jest.mock("../../db", () => ({
   queryWithTenant: jest.fn(),
 }));
 
 const queryWithTenantMock = queryWithTenant as jest.MockedFunction<typeof queryWithTenant>;
-
-function assertTenantContract(job: RepositoryJob): void {
-  const typedJob: RepositoryJob = job;
-  expect(typedJob.tenantId).toBeDefined();
-  expect(typedJob.tenantId).toBe("tenant-1");
-}
 
 describe("JobRepository tenantId contract", () => {
   beforeEach(() => {
@@ -42,7 +37,7 @@ describe("JobRepository tenantId contract", () => {
 
     const found = await repository.findById("job-1", "tenant-1", "user-1");
     expect(found).not.toBeNull();
-    assertTenantContract(found as RepositoryJob);
+    assertTenantScopedRecord(found as RepositoryJob, "tenant-1");
 
     queryWithTenantMock.mockResolvedValueOnce([
       {
@@ -64,7 +59,7 @@ describe("JobRepository tenantId contract", () => {
 
     const listResult = await repository.findByUserId("tenant-1", "user-1", 1, 10);
     expect(listResult.jobs).toHaveLength(1);
-    assertTenantContract(listResult.jobs[0] as RepositoryJob);
+    assertTenantScopedRecord(listResult.jobs[0] as RepositoryJob, "tenant-1");
 
     queryWithTenantMock.mockResolvedValueOnce([
       {
@@ -94,7 +89,7 @@ describe("JobRepository tenantId contract", () => {
       status: "active",
       version: 1,
     });
-    assertTenantContract(created);
+    assertTenantScopedRecord(created, "tenant-1");
 
     queryWithTenantMock.mockResolvedValueOnce([
       {
@@ -115,6 +110,6 @@ describe("JobRepository tenantId contract", () => {
 
     const updated = await repository.updateStatus("job-1", "tenant-1", "user-1", "paused", 1);
     expect(updated).not.toBeNull();
-    assertTenantContract(updated as RepositoryJob);
+    assertTenantScopedRecord(updated as RepositoryJob, "tenant-1");
   });
 });
