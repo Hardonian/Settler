@@ -5,9 +5,20 @@ const MONOREPO_CWD = "/workspace/Settler";
 const WEB_PACKAGE_CWD = "/workspace/Settler/packages/web";
 
 describe("getContentPage content directory resolution", () => {
+  const warnMock = jest.fn();
+
+  beforeEach(() => {
+    jest.doMock("@/lib/utils/logger", () => ({
+      appLogger: {
+        warn: warnMock,
+      },
+    }));
+  });
+
   afterEach(() => {
     jest.restoreAllMocks();
     jest.resetModules();
+    jest.clearAllMocks();
   });
 
   it("resolves content pages from packages/web/content/pages when running at monorepo root", async () => {
@@ -69,19 +80,21 @@ describe("getContentPage content directory resolution", () => {
     });
   });
 
-  it("logs a non-sensitive warning if no content directory is found", async () => {
+  it("logs a non-sensitive warning through structured logger if no content directory is found", async () => {
     jest.spyOn(process, "cwd").mockReturnValue(MONOREPO_CWD);
     jest.spyOn(fs, "existsSync").mockReturnValue(false);
     jest.spyOn(fs, "readFileSync").mockImplementation(() => {
       throw new Error("missing file");
     });
 
-    const warnSpy = jest.spyOn(console, "warn").mockImplementation(() => undefined);
-
     const { getContentPage } = await import("@/lib/content/pages");
 
-    expect(warnSpy).toHaveBeenCalledWith(
-      "[content] Content pages directory not found. Static content routes may return not found responses."
+    expect(warnMock).toHaveBeenCalledWith(
+      "Content pages directory not found. Static content routes may return not found responses.",
+      {
+        scope: "content-pages",
+        cwd: MONOREPO_CWD,
+      }
     );
     expect(getContentPage("product")).toBeNull();
   });

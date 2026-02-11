@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import { appLogger } from "@/lib/utils/logger";
 
 function resolveContentDirectory(): string {
   const cwd = process.cwd();
@@ -15,8 +16,12 @@ function resolveContentDirectory(): string {
     }
   }
 
-  console.warn(
-    "[content] Content pages directory not found. Static content routes may return not found responses."
+  appLogger.warn(
+    "Content pages directory not found. Static content routes may return not found responses.",
+    {
+      scope: "content-pages",
+      cwd,
+    }
   );
 
   // Fallback keeps behavior deterministic for environments where content is unavailable.
