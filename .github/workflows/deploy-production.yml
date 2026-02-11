@@ -63,6 +63,9 @@ jobs:
       - run: npm ci
       - name: Run tests
         run: npm run test -- --coverage
+
+      - name: Verify content routes in production mode
+        run: npm run test --workspace=packages/web -- src/__tests__/integration/content-pages.production.test.ts
       - name: Check coverage threshold
         run: |
           COVERAGE_FILE=./packages/api/coverage/coverage-summary.json

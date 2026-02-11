@@ -6,14 +6,12 @@ import { spawn, type ChildProcessWithoutNullStreams } from "child_process";
 const WEB_PACKAGE_DIR = path.resolve(__dirname, "../../..");
 const PRODUCTION_PORT = 3301;
 const BASE_URL = `http://127.0.0.1:${PRODUCTION_PORT}`;
-const ROUTES = [
-  "/product",
-  "/open-source",
-  "/integrations",
-  "/security-and-audit",
-  "/about",
-  "/enterprise",
-];
+const CONTENT_PAGES_DIR = path.join(WEB_PACKAGE_DIR, "content", "pages");
+const ROUTES = fs
+  .readdirSync(CONTENT_PAGES_DIR)
+  .filter((fileName) => fileName.endsWith(".mdx"))
+  .map((fileName) => `/${fileName.replace(/\.mdx$/, "")}`)
+  .sort();
 
 function runCommand(command: string, args: string[], cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -89,7 +87,7 @@ describe("content pages in production build mode", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
-  it("serves top navigation content routes without hard-500 errors", async () => {
+  it("serves all MDX-backed content routes without hard-500 errors", async () => {
     const failures: Array<{ route: string; status: number; bodySnippet: string }> = [];
 
     for (const route of ROUTES) {

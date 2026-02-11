@@ -71,6 +71,9 @@ jobs:
           }
           echo "✅ Verification tests completed"
 
+      - name: Verify content routes in production mode
+        run: npm run test --workspace=packages/web -- src/__tests__/integration/content-pages.production.test.ts
+
       - name: Test Daily Intelligence
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}

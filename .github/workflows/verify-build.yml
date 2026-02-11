@@ -47,6 +47,9 @@ jobs:
       - name: Test
         run: npm test -- --passWithNoTests
 
+      - name: Verify content routes in production mode
+        run: npm run test --workspace=packages/web -- src/__tests__/integration/content-pages.production.test.ts
+
       - name: Validate
         run: npm run validate
 
