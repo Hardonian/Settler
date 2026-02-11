@@ -40,5 +40,8 @@ jobs:
       - name: Tests
         run: pnpm run test
 
+      - name: Verify content routes in production mode
+        run: pnpm --filter @settler/web test -- src/__tests__/integration/content-pages.production.test.ts
+
       - name: Build
         run: pnpm run build
