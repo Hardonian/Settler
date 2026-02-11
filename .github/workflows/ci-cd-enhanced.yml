@@ -73,8 +73,11 @@ jobs:
         with:
           node-version: "20"
       - run: npm ci
-      - run: npm test
-        name: Run Tests
+      - name: Run Tests
+        run: npm test
+
+      - name: Verify content routes in production mode
+        run: npm run test --workspace=packages/web -- src/__tests__/integration/content-pages.production.test.ts
 
   deploy:
     needs: [type-check, security-scan, lint, performance-budget, test]

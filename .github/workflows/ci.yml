@@ -314,6 +314,8 @@ jobs:
           ENCRYPTION_KEY: test-encryption-key-32-chars-long!!
         continue-on-error: true
       - run: npm run test -- --coverage
+      - name: Verify content routes in production mode
+        run: pnpm --filter @settler/web test -- src/__tests__/integration/content-pages.production.test.ts
       - name: Check coverage threshold
         run: |
           COVERAGE_FILE=./packages/api/coverage/coverage-summary.json

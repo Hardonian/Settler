@@ -70,6 +70,9 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Verify content routes in production mode
+        run: npm run test --workspace=packages/web -- src/__tests__/integration/content-pages.production.test.ts
+
       - name: Run build
         run: npx turbo run build
 
