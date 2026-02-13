@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { MDXRemote } from 'next-mdx-remote/rsc';
+import { MdxPlainRenderer } from '@/components/content/MdxPlainRenderer';
 import { PageLayout } from '@/components/content/PageLayout';
 import { getContentPage } from '@/lib/content/pages';
 
@@ -25,7 +25,7 @@ export default function SecurityAndAuditPage() {
 
   return (
     <PageLayout title={page.title} description={page.description}>
-      <MDXRemote source={page.content} />
+      <MdxPlainRenderer source={page.content} />
     </PageLayout>
   );
 }
