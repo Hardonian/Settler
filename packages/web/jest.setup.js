@@ -1,5 +1,14 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+import { TextDecoder, TextEncoder } from 'util';
+
+if (typeof global.TextEncoder === 'undefined') {
+  global.TextEncoder = TextEncoder;
+}
+
+if (typeof global.TextDecoder === 'undefined') {
+  global.TextDecoder = TextDecoder;
+}
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
@@ -33,7 +42,8 @@ beforeAll(() => {
     if (
       typeof args[0] === 'string' &&
       (args[0].includes('Warning: ReactDOM.render') ||
-        args[0].includes('Warning: validateDOMNesting'))
+        args[0].includes('Warning: validateDOMNesting') ||
+        args[0].includes('Warning: useLayoutEffect does nothing on the server'))
     ) {
       return;
     }

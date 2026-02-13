@@ -85,7 +85,7 @@
     "validate:env": "tsx scripts/check-env.ts production",
     "validate:env:build": "npx tsx scripts/validate-env-build.ts --build",
     "validate:env:runtime": "npx tsx scripts/validate-env-build.ts --runtime",
-    "validate:eslint-config": "test -f scripts/validate-eslint-config.ts && npx tsx scripts/validate-eslint-config.ts || (echo '⚠️  ESLint config validation script not found (expected in Vercel builds), skipping...' && exit 0)",
+    "validate:eslint-config": "test -f scripts/validate-eslint-config.ts && npx tsx scripts/validate-eslint-config.ts || (echo '\u26a0\ufe0f  ESLint config validation script not found (expected in Vercel builds), skipping...' && exit 0)",
     "validate:build-safety": "npx tsx scripts/validate-build-safety.ts",
     "validate:nextjs": "npx tsx scripts/validate-nextjs-build.ts",
     "validate:lint-config": "npx tsx scripts/validate-lint-config.ts",
@@ -119,8 +119,8 @@
     "prisma:status": "prisma migrate status",
     "preinstall": "export SENTRY_SKIP_AUTO_INSTALL=1 || set SENTRY_SKIP_AUTO_INSTALL=1 || true",
     "postinstall": "test -f scripts/vercel-prisma-postinstall.js && node scripts/vercel-prisma-postinstall.js || echo 'Skipping postinstall: script not found (expected in Vercel builds)'",
-    "verify:build": "test -f scripts/verify-build-setup.sh && bash scripts/verify-build-setup.sh || echo '⚠️  Build verification script not available'",
-    "setup:turbo": "test -f scripts/setup-vercel-turbo-cache.sh && bash scripts/setup-vercel-turbo-cache.sh || echo '⚠️  Turbo setup script not available'",
+    "verify:build": "test -f scripts/verify-build-setup.sh && bash scripts/verify-build-setup.sh || echo '\u26a0\ufe0f  Build verification script not available'",
+    "setup:turbo": "test -f scripts/setup-vercel-turbo-cache.sh && bash scripts/setup-vercel-turbo-cache.sh || echo '\u26a0\ufe0f  Turbo setup script not available'",
     "demo:setup": "tsx scripts/generate-demo-data.ts",
     "demo:reset": "tsx scripts/generate-demo-data.ts",
     "demo:start": "pnpm run demo:setup && turbo run dev --filter @settler/web",
@@ -165,7 +165,11 @@
     "workhorse:dev": "cd packages/workhorse && python -m settler_workhorse.cli worker --poll-interval 2",
     "pnpm:clean": "pnpm run clean:all",
     "pnpm:ci:install": "corepack enable && corepack prepare pnpm@10.13.1 --activate && pnpm install --frozen-lockfile",
-    "ci:install": "corepack enable && corepack prepare pnpm@10.13.1 --activate && pnpm install --frozen-lockfile"
+    "ci:install": "corepack enable && corepack prepare pnpm@10.13.1 --activate && pnpm install --frozen-lockfile",
+    "verify:globals-css-import-order": "node scripts/validate-globals-css-import-order.mjs",
+    "test:web:offline-harness": "pnpm --filter @settler/web test -- offline-prerender-compat.test.ts offline-render-harness.test.tsx",
+    "verify:route-boundaries": "node scripts/verify-route-boundaries.mjs",
+    "test:web:middleware-gating": "pnpm --filter @settler/web test -- app-auth-gating.test.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

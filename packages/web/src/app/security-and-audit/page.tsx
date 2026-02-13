@@ -4,6 +4,8 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import { PageLayout } from '@/components/content/PageLayout';
 import { getContentPage } from '@/lib/content/pages';
 
+export const dynamic = 'force-dynamic';
+
 export function generateMetadata(): Metadata {
   const page = getContentPage('security-and-audit');
   if (!page) {

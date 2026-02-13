@@ -11,6 +11,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { addSecurityHeaders } from "./src/middleware/security-headers";
 import { generateTraceId } from "./src/lib/observability/trace";
+import { isAppAuthRequiredRoute } from "./src/lib/auth/route-gating";
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   // CRITICAL: Wrap entire middleware in try-catch to prevent any 500 errors
@@ -46,25 +47,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
     const isApiRoute = pathname.startsWith('/api');
 
-    const authRequiredPrefixes = [
-      '/app',
-      '/console',
-      '/dashboard',
-      '/admin',
-      '/billing',
-      '/enterprise/dashboard',
-      '/review',
-      '/investor',
-      '/edge-ai/nodes',
-      '/realtime-dashboard',
-      '/ux-playground',
-    ];
-
-    const isAuthRequiredRoute =
-      !isApiRoute &&
-      authRequiredPrefixes.some((prefix) =>
-        pathname === prefix || pathname.startsWith(`${prefix}/`)
-      );
+    const isAuthRequiredRoute = !isApiRoute && isAppAuthRequiredRoute(pathname);
 
     let response = NextResponse.next({
       request: {
@@ -83,7 +66,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       // If Supabase not configured, skip auth middleware for public/API routes
       // Public routes should still work; protected routes fail closed.
       if (isAuthRequiredRoute) {
-        const redirectUrl = new URL('/signup', request.url);
+        const redirectUrl = new URL('/login', request.url);
         redirectUrl.searchParams.set('next', pathname);
         const redirectResponse = NextResponse.redirect(redirectUrl);
         redirectResponse.headers.set('x-trace-id', traceId);
@@ -148,7 +131,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       try {
         const { data, error } = await supabase.auth.getUser();
         if (isAuthRequiredRoute && (error || !data?.user)) {
-          const redirectUrl = new URL('/signup', request.url);
+          const redirectUrl = new URL('/login', request.url);
           redirectUrl.searchParams.set('next', pathname);
           const redirectResponse = NextResponse.redirect(redirectUrl);
           redirectResponse.headers.set('x-trace-id', traceId);
@@ -161,7 +144,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
           authError instanceof Error ? authError.message : "Unknown error"
         );
         if (isAuthRequiredRoute) {
-          const redirectUrl = new URL('/signup', request.url);
+          const redirectUrl = new URL('/login', request.url);
           redirectUrl.searchParams.set('next', pathname);
           const redirectResponse = NextResponse.redirect(redirectUrl);
           redirectResponse.headers.set('x-trace-id', traceId);
@@ -176,7 +159,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
         error instanceof Error ? error.message : "Unknown error"
       );
       if (isAuthRequiredRoute) {
-        const redirectUrl = new URL('/signup', request.url);
+        const redirectUrl = new URL('/login', request.url);
         redirectUrl.searchParams.set('next', pathname);
         const redirectResponse = NextResponse.redirect(redirectUrl);
         redirectResponse.headers.set('x-trace-id', traceId);

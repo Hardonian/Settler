@@ -13,18 +13,18 @@ import { SETTLER_IMAGES } from "@/lib/images/image-config";
 
 // Primary navigation items (always visible on desktop)
 const primaryNavigationItems = [
-  { href: "/product", label: "Product" },
-  { href: "/open-source", label: "Open Source" },
+  { href: "/platform", label: "Platform" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/security", label: "Security" },
   { href: "/docs", label: "Docs" },
-  { href: "/integrations", label: "Integrations" },
-  { href: "/security-and-audit", label: "Security & Audit" },
+  { href: "/about", label: "About" },
 ];
 
 // Secondary navigation items (in "More" dropdown on desktop, accordion on mobile)
 const secondaryNavigationItems = [
-  { href: "/enterprise", label: "Enterprise" },
-  { href: "/changelog", label: "Changelog" },
-  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+  { href: "/privacy", label: "Privacy" },
+  { href: "/terms", label: "Terms" },
 ];
 
 export function Navigation() {
@@ -239,9 +239,12 @@ export function Navigation() {
               {/* Right side actions */}
               <div className="flex items-center gap-3 ml-2">
                 <DarkModeToggle />
+                <Link href="/login" className="text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400">
+                  Login
+                </Link>
                 <Button asChild variant="default" size="default" className="whitespace-nowrap">
-                  <Link href="/docs/quickstart" aria-label="Read the Settler quickstart">
-                    Quickstart
+                  <Link href="/signup" aria-label="Get started with Settler">
+                    Get Started
                   </Link>
                 </Button>
               </div>
@@ -273,8 +276,9 @@ export function Navigation() {
               })}
               <div className="flex items-center gap-2 ml-2">
                 <DarkModeToggle />
+                <Link href="/login" className="text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400">Login</Link>
                 <Button asChild variant="default" size="sm" className="whitespace-nowrap">
-                  <Link href="/docs/quickstart">Quickstart</Link>
+                  <Link href="/signup">Get Started</Link>
                 </Button>
               </div>
             </nav>
@@ -381,8 +385,8 @@ export function Navigation() {
                         size="lg"
                         className="w-full min-h-[48px] text-base font-semibold"
                       >
-                        <Link href="/docs/quickstart" aria-label="Read the Settler quickstart">
-                          Quickstart
+                        <Link href="/signup" aria-label="Get started with Settler">
+                          Get Started
                         </Link>
                       </Button>
                     </div>

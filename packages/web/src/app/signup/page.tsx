@@ -191,10 +191,10 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
             <p className="text-sm text-slate-600 dark:text-slate-400">
               Already have an account?{' '}
               <Link
-                href="/dashboard"
+                href="/login"
                 className="text-blue-600 dark:text-electric-cyan hover:underline font-medium"
               >
-                Sign in to Dashboard
+                Log in
               </Link>
             </p>
           </div>

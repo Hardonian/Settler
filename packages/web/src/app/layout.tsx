@@ -10,8 +10,6 @@ import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { QueryProvider } from "@/lib/providers/query-provider";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import { TenantThemeProvider } from "@/components/tenant/TenantThemeProvider";
-import { getTenantContext } from "@/lib/tenant/server";
-import { requireEnvironment } from "@/lib/env/validation";
 import { ToastContainer } from "@/components/ux/ToastContainer";
 import { initSentry } from "@/lib/monitoring/sentry";
 import { getImageUrl, SETTLER_IMAGES } from "@/lib/images/image-config";
@@ -144,45 +142,6 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-// Force dynamic rendering since getTenantContext uses headers()
-// This ensures tenant context is resolved at request time
-export const dynamic = "force-dynamic";
-// Revalidate every 60 seconds to balance freshness with performance
-export const revalidate = 60;
-
-// Validate environment on server startup (non-blocking)
-// CRITICAL: Never throw here - allow graceful degradation
-if (typeof window === "undefined") {
-  try {
-    requireEnvironment();
-  } catch (error) {
-    // Log but never throw - allow app to render even with missing env vars
-    console.warn(
-      "Environment validation warning (non-fatal):",
-      error instanceof Error ? error.message : "Unknown error"
-    );
-    // Continue execution - pages will handle missing env vars gracefully
-  }
-
-  // Check Node version (non-blocking, logs warning if mismatch)
-  // Use synchronous import since this runs at module load time
-  try {
-     
-    const { checkNodeVersion } = require("@/lib/env/node-version-check");
-    const nodeCheck = checkNodeVersion();
-    if (!nodeCheck.valid) {
-      console.warn("[Node Version]", nodeCheck.error);
-      // Don't throw - allow app to run but log warning
-    }
-  } catch (error) {
-    // Node version check failed - non-fatal
-    console.warn(
-      "Node version check failed (non-fatal):",
-      error instanceof Error ? error.message : "Unknown error"
-    );
-  }
-}
-
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Initialize Sentry (non-blocking, graceful failure)
   if (typeof window === "undefined") {
@@ -190,42 +149,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       // Sentry initialization failed (package not available or not configured)
       // This is expected during builds without Sentry configured
     });
-  }
-
-  // Get tenant context for theme - gracefully handles build-time and errors
-  // CRITICAL: Never throw - always return valid context
-  let tenantContext;
-  try {
-    tenantContext = await getTenantContext();
-  } catch (error) {
-    // Fallback to default context if tenant resolution fails
-    // This ensures the app still renders even if tenant service is unavailable
-    tenantContext = {
-      tenantId: "",
-      tenantSlug: "default",
-      theme: null,
-      branding: null,
-      navigation: null,
-    };
-
-    // Only log errors in development to avoid build noise
-    if (process.env.NODE_ENV === "development") {
-      console.warn(
-        "Failed to get tenant context, using defaults:",
-        error instanceof Error ? error.message : "Unknown error"
-      );
-    }
-  }
-
-  // Ensure tenantContext is never null/undefined
-  if (!tenantContext) {
-    tenantContext = {
-      tenantId: "",
-      tenantSlug: "default",
-      theme: null,
-      branding: null,
-      navigation: null,
-    };
   }
 
   return (
@@ -255,9 +178,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <ErrorBoundary componentName="RootLayout">
           <TenantThemeProvider
-            theme={tenantContext.theme}
-            tenantId={tenantContext.tenantId || null}
-            tenantSlug={tenantContext.tenantSlug || null}
+            theme={null}
+            tenantId={null}
+            tenantSlug={null}
           >
             <RuntimeUiConfigProvider>
               <QueryProvider>
