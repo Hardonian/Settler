@@ -5,6 +5,10 @@ import { spawnSync } from "child_process";
 const rootDir = process.cwd();
 const checks = [
   ["Lint", ["run", "lint"]],
+  ["Globals CSS import order", ["run", "verify:globals-css-import-order"]],
+  ["Route boundaries smoke", ["run", "verify:route-boundaries"]],
+  ["Offline prerender harness", ["run", "test:web:offline-harness"]],
+  ["Middleware /app gating tests", ["run", "test:web:middleware-gating"]],
   ["Typecheck", ["run", "typecheck"]],
   ["Docs parity", ["run", "verify:docs"]],
   ["Build", ["run", "build"]],

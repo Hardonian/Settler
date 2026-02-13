@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { StatusIndicator } from "@/components/monitoring/StatusIndicator";
-import { getImageUrl } from "@/lib/images/image-config";
+import { SETTLER_IMAGES } from "@/lib/images/image-config";
 
 export function Footer() {
   return (
@@ -19,7 +19,7 @@ export function Footer() {
               aria-label="Settler homepage"
             >
               <Image
-                src={getImageUrl("logoMain", undefined, true)}
+                src={SETTLER_IMAGES.logoMain.webpPath || SETTLER_IMAGES.logoMain.path}
                 alt="Settler Logo"
                 width={130}
                 height={34}
@@ -39,18 +39,18 @@ export function Footer() {
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
-                  href="/product"
+                  href="/platform"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
-                  Product Overview
+                  Platform
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/open-source"
+                  href="/pricing"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
-                  Open Source
+                  Pricing
                 </Link>
               </li>
               <li>
@@ -63,34 +63,34 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/integrations"
+                  href="/security"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
-                  Integrations
+                  Security
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/security-and-audit"
+                  href="/login"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
-                  Security & Audit
+                  Login
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/enterprise"
+                  href="/signup"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
-                  Enterprise
+                  Get Started
                 </Link>
               </li>
             </ul>
           </nav>
 
-          {/* Resources */}
+          {/* Company */}
           <nav aria-label="Resources navigation">
-            <h3 className="font-semibold text-foreground mb-4">Resources</h3>
+            <h3 className="font-semibold text-foreground mb-4">Company</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
@@ -102,10 +102,10 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/changelog"
+                  href="/contact"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
-                  Changelog
+                  Contact
                 </Link>
               </li>
               <li>
@@ -141,56 +141,56 @@ export function Footer() {
             </ul>
           </nav>
 
-          {/* Legal */}
+          {/* Resources */}
           <nav aria-label="Legal navigation">
-            <h3 className="font-semibold text-foreground mb-4">Legal</h3>
+            <h3 className="font-semibold text-foreground mb-4">Resources</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
-                  href="/legal/terms"
+                  href="/docs"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
-                  Terms of Service
+                  Docs
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/legal/privacy"
+                  href="/status"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
-                  Privacy Policy
+                  Status
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/legal/license"
+                  href="/terms"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
-                  License
+                  Terms
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/legal/cookies"
+                  href="/privacy"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
-                  Cookie Policy
+                  Privacy
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/legal/aup"
+                  href="/about"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
-                  Acceptable Use Policy
+                  About
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/legal/dpa"
+                  href="/platform"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
-                  Data Processing Agreement
+                  Platform
                 </Link>
               </li>
             </ul>

@@ -26,8 +26,8 @@ export default function OfflinePage() {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4">
-          <Button onClick={() => window.location.reload()} size="lg" className="bg-blue-600 hover:bg-blue-700">
-            Try Again
+          <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">
+            <Link href="/offline">Try Again</Link>
           </Button>
           <Button asChild size="lg" variant="outline">
             <Link href="/">Return Home</Link>
