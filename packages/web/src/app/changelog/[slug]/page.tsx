@@ -4,7 +4,7 @@ import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { getChangelogPost, getAllChangelogPosts } from '@/lib/changelog';
 import { notFound } from 'next/navigation';
-import { MDXRemote } from 'next-mdx-remote/rsc';
+import { MdxPlainRenderer } from '@/components/content/MdxPlainRenderer';
 import { Metadata } from 'next';
 
 interface Props {
@@ -55,7 +55,7 @@ export default function ChangelogPostPage({ params }: Props) {
         </header>
         
         <div className="prose prose-slate dark:prose-invert max-w-none">
-          <MDXRemote source={post.content} />
+          <MdxPlainRenderer source={post.content} />
         </div>
       </article>
       <Footer />
