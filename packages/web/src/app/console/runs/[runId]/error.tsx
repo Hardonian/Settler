@@ -50,7 +50,7 @@ export default function RunError({
               Try Again
             </Button>
             <Button asChild variant="outline">
-              <Link href="/console/runs">Back to Runs</Link>
+              <Link href="/console/workflows">Back to Runs</Link>
             </Button>
           </div>
         </CardContent>

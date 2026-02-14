@@ -6,7 +6,7 @@
  * Outputs both JSON and TypeScript files for use in link checking.
  */
 
-import { readdir, stat } from 'fs/promises';
+import { readdir } from 'fs/promises';
 import { join, relative } from 'path';
 import { writeFile } from 'fs/promises';
 
@@ -19,10 +19,69 @@ interface RouteInfo {
   optional?: boolean;
 }
 
+interface SegmentMetadata {
+  segmentPath: string;
+  isDynamic: boolean;
+  isCatchAll: boolean;
+  isOptional: boolean;
+}
+
 const APP_DIR = join(process.cwd(), 'packages/web/src/app');
 const OUTPUT_DIR = join(process.cwd(), 'qa');
 
-async function scanDirectory(dir: string, basePath: string = ''): Promise<RouteInfo[]> {
+function parseSegment(segment: string): SegmentMetadata {
+  // Route groups like (marketing) should not affect URL path.
+  if (segment.startsWith('(') && segment.endsWith(')')) {
+    return {
+      segmentPath: '',
+      isDynamic: false,
+      isCatchAll: false,
+      isOptional: false,
+    };
+  }
+
+  if (!segment.startsWith('[') || !segment.endsWith(']')) {
+    return {
+      segmentPath: segment,
+      isDynamic: false,
+      isCatchAll: false,
+      isOptional: false,
+    };
+  }
+
+  const raw = segment.slice(1, -1);
+
+  if (raw.startsWith('...')) {
+    return {
+      segmentPath: `[...${raw.slice(3)}]`,
+      isDynamic: true,
+      isCatchAll: true,
+      isOptional: false,
+    };
+  }
+
+  if (raw.startsWith('[...') && raw.endsWith(']')) {
+    return {
+      segmentPath: `[[...${raw.slice(4, -1)}]]`,
+      isDynamic: true,
+      isCatchAll: true,
+      isOptional: true,
+    };
+  }
+
+  return {
+    segmentPath: `[${raw}]`,
+    isDynamic: true,
+    isCatchAll: false,
+    isOptional: false,
+  };
+}
+
+async function scanDirectory(
+  dir: string,
+  basePath: string = '',
+  parentMeta: Pick<RouteInfo, 'dynamic' | 'catchAll' | 'optional'> = {},
+): Promise<RouteInfo[]> {
   const routes: RouteInfo[] = [];
   
   try {
@@ -33,29 +92,15 @@ async function scanDirectory(dir: string, basePath: string = ''): Promise<RouteI
       const relativePath = relative(APP_DIR, fullPath);
       
       if (entry.isDirectory()) {
-        // Handle dynamic segments
-        let segmentPath = entry.name;
-        let isDynamic = false;
-        let isCatchAll = false;
-        let isOptional = false;
-        
-        if (segmentPath.startsWith('[') && segmentPath.endsWith(']')) {
-          isDynamic = true;
-          segmentPath = segmentPath.slice(1, -1);
-          
-          if (segmentPath.startsWith('...')) {
-            isCatchAll = true;
-            segmentPath = segmentPath.slice(3);
-          }
-          
-          if (segmentPath.startsWith('(') && segmentPath.endsWith(')')) {
-            isOptional = true;
-            segmentPath = segmentPath.slice(1, -1);
-          }
-        }
-        
-        const newBasePath = basePath ? `${basePath}/${segmentPath}` : segmentPath;
-        const subRoutes = await scanDirectory(fullPath, newBasePath);
+        const segmentMeta = parseSegment(entry.name);
+        const nextPath = segmentMeta.segmentPath
+          ? (basePath ? `${basePath}/${segmentMeta.segmentPath}` : segmentMeta.segmentPath)
+          : basePath;
+        const subRoutes = await scanDirectory(fullPath, nextPath, {
+          dynamic: Boolean(parentMeta.dynamic || segmentMeta.isDynamic),
+          catchAll: Boolean(parentMeta.catchAll || segmentMeta.isCatchAll),
+          optional: Boolean(parentMeta.optional || segmentMeta.isOptional),
+        });
         routes.push(...subRoutes);
       } else if (entry.isFile()) {
         const fileName = entry.name;
@@ -99,9 +144,9 @@ async function scanDirectory(dir: string, basePath: string = ''): Promise<RouteI
           path: routePath,
           type: routeType,
           file: relativePath,
-          dynamic: basePath.includes('['),
-          catchAll: basePath.includes('[...'),
-          optional: basePath.includes('(') && basePath.includes(')'),
+          dynamic: Boolean(parentMeta.dynamic),
+          catchAll: Boolean(parentMeta.catchAll),
+          optional: Boolean(parentMeta.optional),
         });
       }
     }
