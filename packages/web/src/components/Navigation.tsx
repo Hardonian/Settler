@@ -31,6 +31,7 @@ export function Navigation() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const hasSecondaryNavigationItems = secondaryNavigationItems.length > 0;
   const menuRef = useRef<HTMLDivElement>(null);
   const moreMenuRef = useRef<HTMLDivElement>(null);
 
@@ -175,65 +176,67 @@ export function Navigation() {
                 })}
 
                 {/* More dropdown menu */}
-                <div className="relative" ref={moreMenuRef}>
-                  <button
-                    type="button"
-                    onClick={() => setMoreMenuOpen(!moreMenuOpen)}
-                    className={cn(
-                      "text-sm xl:text-base text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap",
-                      "transition-colors duration-200 ease-out",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                      "focus-visible:ring-offset-background",
-                      "rounded px-2 py-1 flex items-center gap-1",
-                      "motion-reduce:transition-none",
-                      moreMenuOpen && "text-primary-600 dark:text-primary-400"
-                    )}
-                    aria-expanded={moreMenuOpen}
-                    aria-haspopup="true"
-                    aria-label="More navigation options"
-                  >
-                    More
-                    <ChevronDown
+                {hasSecondaryNavigationItems && (
+                  <div className="relative" ref={moreMenuRef}>
+                    <button
+                      type="button"
+                      onClick={() => setMoreMenuOpen(!moreMenuOpen)}
                       className={cn(
-                        "w-4 h-4 transition-transform duration-200",
-                        moreMenuOpen && "rotate-180"
+                        "text-sm xl:text-base text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap",
+                        "transition-colors duration-200 ease-out",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                        "focus-visible:ring-offset-background",
+                        "rounded px-2 py-1 flex items-center gap-1",
+                        "motion-reduce:transition-none",
+                        moreMenuOpen && "text-primary-600 dark:text-primary-400"
                       )}
-                      aria-hidden="true"
-                    />
-                  </button>
-
-                  {/* Dropdown menu */}
-                  {moreMenuOpen && (
-                    <div
-                      className="absolute top-full right-0 mt-2 w-56 bg-background border border-border rounded-lg shadow-lg py-2 z-50"
-                      role="menu"
-                      aria-orientation="vertical"
+                      aria-expanded={moreMenuOpen}
+                      aria-haspopup="true"
+                      aria-label="More navigation options"
                     >
-                      {secondaryNavigationItems.map((item) => {
-                        const isActive =
-                          pathname === item.href || pathname?.startsWith(item.href + "/");
-                        return (
-                          <Link
-                            key={item.href}
-                            href={item.href}
-                            className={cn(
-                              "block px-4 py-2 text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent",
-                              isActive &&
-                                "text-primary-600 dark:text-primary-400 font-medium bg-accent/50",
-                              "transition-colors duration-150 ease-out",
-                              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
-                            )}
-                            role="menuitem"
-                            onClick={() => setMoreMenuOpen(false)}
-                            aria-current={isActive ? "page" : undefined}
-                          >
-                            {item.label}
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                      More
+                      <ChevronDown
+                        className={cn(
+                          "w-4 h-4 transition-transform duration-200",
+                          moreMenuOpen && "rotate-180"
+                        )}
+                        aria-hidden="true"
+                      />
+                    </button>
+
+                    {/* Dropdown menu */}
+                    {moreMenuOpen && (
+                      <div
+                        className="absolute top-full right-0 mt-2 w-56 bg-background border border-border rounded-lg shadow-lg py-2 z-50"
+                        role="menu"
+                        aria-orientation="vertical"
+                      >
+                        {secondaryNavigationItems.map((item) => {
+                          const isActive =
+                            pathname === item.href || pathname?.startsWith(item.href + "/");
+                          return (
+                            <Link
+                              key={item.href}
+                              href={item.href}
+                              className={cn(
+                                "block px-4 py-2 text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent",
+                                isActive &&
+                                  "text-primary-600 dark:text-primary-400 font-medium bg-accent/50",
+                                "transition-colors duration-150 ease-out",
+                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                              )}
+                              role="menuitem"
+                              onClick={() => setMoreMenuOpen(false)}
+                              aria-current={isActive ? "page" : undefined}
+                            >
+                              {item.label}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
               </>
 
               {/* Right side actions */}
@@ -344,39 +347,41 @@ export function Navigation() {
                     </nav>
 
                     {/* Secondary Navigation */}
-                    <nav
-                      className="flex flex-col space-y-1 pt-6 border-t border-border"
-                      aria-label="Mobile secondary navigation"
-                    >
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 mb-2">
-                        More
-                      </p>
-                      {secondaryNavigationItems.map((item) => {
-                        const isActive =
-                          pathname === item.href || pathname?.startsWith(item.href + "/");
-                        return (
-                          <Link
-                            key={item.href}
-                            href={item.href}
-                            className={cn(
-                              "text-base text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400",
-                              isActive &&
-                                "text-primary-600 dark:text-primary-400 font-medium bg-accent/50",
-                              "transition-colors duration-200 ease-out",
-                              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                              "focus-visible:ring-offset-background",
-                              "rounded-lg px-4 py-3 min-h-[48px] flex items-center",
-                              "hover:bg-accent/50",
-                              "motion-reduce:transition-none"
-                            )}
-                            onClick={() => setMobileMenuOpen(false)}
-                            aria-current={isActive ? "page" : undefined}
-                          >
-                            {item.label}
-                          </Link>
-                        );
-                      })}
-                    </nav>
+                    {hasSecondaryNavigationItems && (
+                      <nav
+                        className="flex flex-col space-y-1 pt-6 border-t border-border"
+                        aria-label="Mobile secondary navigation"
+                      >
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 mb-2">
+                          More
+                        </p>
+                        {secondaryNavigationItems.map((item) => {
+                          const isActive =
+                            pathname === item.href || pathname?.startsWith(item.href + "/");
+                          return (
+                            <Link
+                              key={item.href}
+                              href={item.href}
+                              className={cn(
+                                "text-base text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400",
+                                isActive &&
+                                  "text-primary-600 dark:text-primary-400 font-medium bg-accent/50",
+                                "transition-colors duration-200 ease-out",
+                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                                "focus-visible:ring-offset-background",
+                                "rounded-lg px-4 py-3 min-h-[48px] flex items-center",
+                                "hover:bg-accent/50",
+                                "motion-reduce:transition-none"
+                              )}
+                              onClick={() => setMobileMenuOpen(false)}
+                              aria-current={isActive ? "page" : undefined}
+                            >
+                              {item.label}
+                            </Link>
+                          );
+                        })}
+                      </nav>
+                    )}
 
                     <div className="pt-4 border-t border-border">
                       <Button
