@@ -34,8 +34,9 @@ router.get("/reports/:jobId/enhanced", (0, authorization_1.requirePermission)(Pe
         if (!jobId || !userId) {
             throw new typed_errors_1.NotFoundError("Job ID and User ID are required", "job", jobId || "unknown");
         }
-        // Verify job ownership
-        const jobs = await (0, db_1.query)(`SELECT user_id, name FROM jobs WHERE id = $1`, [jobId]);
+        const tenantId = req.tenantId;
+        // Verify job ownership — scoped by tenant_id
+        const jobs = await (0, db_1.query)(`SELECT user_id, name FROM jobs WHERE id = $1 AND tenant_id = $2`, [jobId, tenantId]);
         if (jobs.length === 0 || !jobs[0] || jobs[0].user_id !== userId) {
             throw new typed_errors_1.NotFoundError("Job not found", "job", jobId);
         }
@@ -54,7 +55,7 @@ router.get("/reports/:jobId/enhanced", (0, authorization_1.requirePermission)(Pe
            SUM((summary->>'matchedAmount')::decimal) as matched_amount,
            SUM((summary->>'unmatchedAmount')::decimal) as unmatched_amount
          FROM executions
-         WHERE job_id = $1 AND started_at >= $2 AND started_at <= $3`, [jobId, start.toISOString(), end.toISOString()]);
+         WHERE job_id = $1 AND tenant_id = $2 AND started_at >= $3 AND started_at <= $4`, [jobId, tenantId, start.toISOString(), end.toISOString()]);
         const stats = summary[0] || {
             total: 0,
             matched: 0,
@@ -68,9 +69,9 @@ router.get("/reports/:jobId/enhanced", (0, authorization_1.requirePermission)(Pe
         // Get recent executions
         const recentExecutions = await (0, db_1.query)(`SELECT id, status, started_at, completed_at, summary
          FROM executions
-         WHERE job_id = $1 AND started_at >= $2 AND started_at <= $3
+         WHERE job_id = $1 AND tenant_id = $2 AND started_at >= $3 AND started_at <= $4
          ORDER BY started_at DESC
-         LIMIT 10`, [jobId, start.toISOString(), end.toISOString()]);
+         LIMIT 10`, [jobId, tenantId, start.toISOString(), end.toISOString()]);
         // Get exception count
         const exceptionCount = await (0, db_1.query)(`SELECT COUNT(*) as count
          FROM exceptions e
@@ -136,9 +137,9 @@ router.get("/reports/:jobId/enhanced", (0, authorization_1.requirePermission)(Pe
             // Return standard report format
             const report = await (0, db_1.query)(`SELECT id, summary, generated_at
            FROM reports
-           WHERE job_id = $1 AND generated_at >= $2 AND generated_at <= $3
+           WHERE job_id = $1 AND tenant_id = $2 AND generated_at >= $3 AND generated_at <= $4
            ORDER BY generated_at DESC
-           LIMIT 1`, [jobId, start, end]);
+           LIMIT 1`, [jobId, tenantId, start, end]);
             if (report.length === 0) {
                 throw new typed_errors_1.NotFoundError("Report not found", "report", jobId);
             }

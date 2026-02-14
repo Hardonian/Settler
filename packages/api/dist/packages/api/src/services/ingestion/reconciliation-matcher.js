@@ -130,13 +130,17 @@ function daysDifference(date1, date2) {
 }
 /**
  * Match source transaction to target transactions
+ *
+ * INVARIANT: tenantId is required. All queries are scoped to the tenant boundary.
  */
-async function matchTransaction(sourceTransactionId, targetTransactionIds, config = {}) {
+async function matchTransaction(sourceTransactionId, targetTransactionIds, tenantId, config = {}) {
+    if (!tenantId)
+        throw new Error("tenantId is required for matchTransaction");
     const opts = { ...DEFAULT_CONFIG, ...config };
-    // Get source transaction
+    // Get source transaction — scoped by tenant_id
     const sourceResults = await (0, db_1.query)(`SELECT id, amount, currency, date, description, external_id
     FROM normalized_transactions
-    WHERE id = $1`, [sourceTransactionId]);
+    WHERE id = $1 AND tenant_id = $2`, [sourceTransactionId, tenantId]);
     if (sourceResults.length === 0) {
         throw new Error(`Source transaction ${sourceTransactionId} not found`);
     }
@@ -150,10 +154,10 @@ async function matchTransaction(sourceTransactionId, targetTransactionIds, confi
             matchReason: "No target transactions available",
         };
     }
-    const placeholders = targetTransactionIds.map((_, i) => `$${i + 2}`).join(", ");
+    const placeholders = targetTransactionIds.map((_, i) => `$${i + 3}`).join(", ");
     const targetResults = await (0, db_1.query)(`SELECT id, amount, currency, date, description, external_id
     FROM normalized_transactions
-    WHERE id IN (${placeholders})`, [sourceTransactionId, ...targetTransactionIds]);
+    WHERE id IN (${placeholders}) AND tenant_id = $2`, [sourceTransactionId, tenantId, ...targetTransactionIds]);
     const targets = targetResults;
     // Try exact match first (same external ID)
     if (source.external_id) {
@@ -173,12 +177,11 @@ async function matchTransaction(sourceTransactionId, targetTransactionIds, confi
     // Try ML matching engine (proprietary, creates data moat)
     // This uses historical match data and cross-customer intelligence
     try {
-        const sourceAdapter = await getSourceAdapter(sourceTransactionId);
-        const targetAdapters = await Promise.all(targetTransactionIds.map((id) => getSourceAdapter(id)));
+        const sourceAdapter = await getSourceAdapter(sourceTransactionId, tenantId);
+        const targetAdapters = await Promise.all(targetTransactionIds.map((id) => getSourceAdapter(id, tenantId)));
         // Use ML engine for first target adapter (most common case)
         if (targetAdapters.length > 0) {
-            const mlPrediction = await ml_matching_engine_1.mlMatchingEngine.predictMatch(sourceTransactionId, targetTransactionIds, "", // tenantId will be extracted from transaction
-            sourceAdapter || "unknown", targetAdapters[0] || "unknown");
+            const mlPrediction = await ml_matching_engine_1.mlMatchingEngine.predictMatch(sourceTransactionId, targetTransactionIds, tenantId, sourceAdapter || "unknown", targetAdapters[0] || "unknown");
             if (mlPrediction && mlPrediction.confidence > 0.7) {
                 // ML prediction is confident, use it
                 const bestTarget = targets.find((t) => targetTransactionIds.includes(t.id));
@@ -307,15 +310,7 @@ async function runReconciliation(ingestionId, tenantId, userId, config = {}) {
         await (0, db_1.query)(`INSERT INTO reconciliation_runs (
         id, ingestion_id, tenant_id, user_id, status, started_at,
         trace_id, metadata, created_at, updated_at
-      ) VALUES ($1, $2, $3, $4, $5, NOW(), $6, $7, NOW(), NOW())`, [
-            runId,
-            ingestionId,
-            tenantId,
-            userId,
-            "running",
-            traceId,
-            JSON.stringify(config),
-        ]);
+      ) VALUES ($1, $2, $3, $4, $5, NOW(), $6, $7, NOW(), NOW())`, [runId, ingestionId, tenantId, userId, "running", traceId, JSON.stringify(config)]);
         // Get source transactions (from this ingestion)
         const sourceTransactions = await (0, db_1.query)(`SELECT id FROM normalized_transactions
       WHERE ingestion_id = $1 AND tenant_id = $2
@@ -339,7 +334,7 @@ async function runReconciliation(ingestionId, tenantId, userId, config = {}) {
         let unmatchedCount = 0;
         let totalConfidence = 0;
         for (const sourceId of sourceIds) {
-            const match = await matchTransaction(sourceId, targetIds, config);
+            const match = await matchTransaction(sourceId, targetIds, tenantId, config);
             if (match) {
                 matches.push(match);
                 if (match.targetTransactionId) {
@@ -420,7 +415,7 @@ async function runReconciliation(ingestionId, tenantId, userId, config = {}) {
                     runId,
                     tenantId,
                     alertCount: alerts.length,
-                    alerts: alerts.map(a => ({ type: a.alertType, severity: a.severity })),
+                    alerts: alerts.map((a) => ({ type: a.alertType, severity: a.severity })),
                     traceId,
                 });
             }
@@ -437,8 +432,8 @@ async function runReconciliation(ingestionId, tenantId, userId, config = {}) {
         for (const match of matches) {
             if (match.targetTransactionId && match.matchType !== "unmatched") {
                 try {
-                    const sourceAdapter = await getSourceAdapter(match.sourceTransactionId);
-                    const targetAdapter = await getSourceAdapter(match.targetTransactionId);
+                    const sourceAdapter = await getSourceAdapter(match.sourceTransactionId, tenantId);
+                    const targetAdapter = await getSourceAdapter(match.targetTransactionId, tenantId);
                     if (sourceAdapter && targetAdapter) {
                         await enhanced_cross_customer_intelligence_1.enhancedCrossCustomerIntelligence.recordPattern(tenantId, {
                             sourceAdapter,
@@ -465,23 +460,20 @@ async function runReconciliation(ingestionId, tenantId, userId, config = {}) {
         completed_at = NOW(),
         error_message = $1,
         updated_at = NOW()
-      WHERE id = $2`, [
-            error instanceof Error ? error.message : String(error),
-            runId,
-        ]);
+      WHERE id = $2`, [error instanceof Error ? error.message : String(error), runId]);
         throw error;
     }
 }
 /**
- * Get source adapter for transaction
+ * Get source adapter for transaction — scoped by tenant_id
  */
-async function getSourceAdapter(transactionId) {
+async function getSourceAdapter(transactionId, tenantId) {
     try {
         const result = await (0, db_1.query)(`SELECT si.connector_type
       FROM normalized_transactions nt
       JOIN ingestion_sources si ON si.id = nt.source_id
-      WHERE nt.id = $1
-      LIMIT 1`, [transactionId]);
+      WHERE nt.id = $1 AND nt.tenant_id = $2
+      LIMIT 1`, [transactionId, tenantId]);
         if (result.length > 0) {
             return result[0].connector_type;
         }

@@ -51,10 +51,10 @@ class ReconCoreEngine {
                     mappingTemplateId: input.mappingTemplateId,
                     transformRecipeId: input.transformRecipeId,
                     validationRules: (input.validationRules || []),
-                    reconStrategy: input.reconStrategy || 'deterministic',
+                    reconStrategy: input.reconStrategy || "deterministic",
                     scheduleCron: input.scheduleCron,
-                    scheduleTimezone: input.scheduleTimezone || 'UTC',
-                    status: 'active',
+                    scheduleTimezone: input.scheduleTimezone || "UTC",
+                    status: "active",
                     metadata: (input.metadata || {}),
                 },
             });
@@ -63,16 +63,16 @@ class ReconCoreEngine {
                 tenantId,
                 userId,
                 reconJobId: reconJob.id,
-                auditType: 'job_created',
-                action: 'create',
-                entityType: 'recon_job',
+                auditType: "job_created",
+                action: "create",
+                entityType: "recon_job",
                 entityId: reconJob.id,
                 afterState: reconJob,
             });
             return reconJob;
         }
         catch (error) {
-            (0, logger_1.logError)('Failed to create recon job', { error, tenantId, userId, input });
+            (0, logger_1.logError)("Failed to create recon job", { error, tenantId, userId, input });
             throw error;
         }
     }
@@ -86,7 +86,7 @@ class ReconCoreEngine {
             where: {
                 id: reconJobId,
                 tenantId,
-                status: 'active',
+                status: "active",
                 deletedAt: null,
             },
         });
@@ -98,22 +98,22 @@ class ReconCoreEngine {
             data: {
                 reconJobId,
                 tenantId,
-                status: 'running',
+                status: "running",
                 startedAt: new Date(),
             },
         });
         try {
             // Update progress: Starting ingestion
             await this.updateProgress(reconResult.id, {
-                stage: 'ingesting',
+                stage: "ingesting",
                 percentage: 10,
-                message: 'Fetching data from source and target adapters...',
+                message: "Fetching data from source and target adapters...",
             });
             // Step 1: Ingest data from source and target
             const { sourceData, targetData } = await this.ingestData(reconJob);
             // Update progress: Data ingested
             await this.updateProgress(reconResult.id, {
-                stage: 'transforming',
+                stage: "transforming",
                 percentage: 30,
                 message: `Ingested ${sourceData.length} source and ${targetData.length} target records`,
             });
@@ -137,7 +137,7 @@ class ReconCoreEngine {
                 : transformedTarget;
             // Update progress: Starting reconciliation
             await this.updateProgress(reconResult.id, {
-                stage: 'matching',
+                stage: "matching",
                 percentage: 60,
                 message: `Matching ${mappedSource.length} source transactions against ${mappedTarget.length} target transactions...`,
             });
@@ -145,7 +145,7 @@ class ReconCoreEngine {
             const reconMatches = await this.performReconciliation(mappedSource, mappedTarget, reconJob.reconStrategy, reconJob);
             // Update progress: Reconciliation complete
             await this.updateProgress(reconResult.id, {
-                stage: 'calculating',
+                stage: "calculating",
                 percentage: 90,
                 message: `Reconciliation complete. Processing ${reconMatches.length} matches...`,
             });
@@ -156,7 +156,7 @@ class ReconCoreEngine {
             const updatedResult = await this.prisma.reconResult.update({
                 where: { id: reconResult.id },
                 data: {
-                    status: 'completed',
+                    status: "completed",
                     completedAt: new Date(),
                     sourceCount: mappedSource.length,
                     targetCount: mappedTarget.length,
@@ -181,9 +181,9 @@ class ReconCoreEngine {
                 tenantId,
                 reconJobId,
                 reconResultId: updatedResult.id,
-                auditType: 'recon_completed',
-                action: 'execute',
-                entityType: 'recon_result',
+                auditType: "recon_completed",
+                action: "execute",
+                entityType: "recon_result",
                 entityId: updatedResult.id,
                 afterState: updatedResult,
             });
@@ -195,26 +195,28 @@ class ReconCoreEngine {
             // Step 9.5: Record value events (reconciliation completed, anomalies detected)
             if (billingAccount) {
                 try {
-                    await event_bus_1.eventBus.emitEvent('value.reconciliation_completed', tenantId, {
+                    await event_bus_1.eventBus.emitEvent("value.reconciliation_completed", tenantId, {
                         billingAccountId: billingAccount.id,
                         tenantId,
                         userId: reconJob.userId,
                         matchedCount: results.matchedCount,
                         unmatchedCount: results.unmatchedSourceCount + results.unmatchedTargetCount,
-                        totalAmount: results.totalAmountMatched ? Number(results.totalAmountMatched) : undefined,
+                        totalAmount: results.totalAmountMatched
+                            ? Number(results.totalAmountMatched)
+                            : undefined,
                         jobId: reconJobId,
                         runId: updatedResult.id,
                     });
                     const totalUnmatched = results.unmatchedSourceCount + results.unmatchedTargetCount;
                     if (totalUnmatched > 0) {
-                        await event_bus_1.eventBus.emitEvent('value.errors_prevented', tenantId, {
+                        await event_bus_1.eventBus.emitEvent("value.errors_prevented", tenantId, {
                             billingAccountId: billingAccount.id,
                             tenantId,
                             userId: reconJob.userId,
                             quantity: totalUnmatched,
-                            unit: 'anomaly',
+                            unit: "anomaly",
                             metadata: {
-                                source: 'reconciliation_completed',
+                                source: "reconciliation_completed",
                                 runId: updatedResult.id,
                                 jobId: reconJobId,
                                 matchedCount: results.matchedCount,
@@ -223,18 +225,18 @@ class ReconCoreEngine {
                     }
                 }
                 catch (valueError) {
-                    (0, logger_1.logError)('[ReconCoreEngine] Failed to emit value events', valueError);
+                    (0, logger_1.logError)("[ReconCoreEngine] Failed to emit value events", valueError);
                 }
             }
             // Step 10: Fire webhook
-            await this.webhookService.queueWebhook(tenantId, 'recon.completed', {
+            await this.webhookService.queueWebhook(tenantId, "recon.completed", {
                 reconJobId,
                 reconResultId: updatedResult.id,
-                status: 'completed',
+                status: "completed",
                 summary: results.summary,
             });
             // Step 11: Emit event
-            await event_bus_1.eventBus.emitEvent('recon.completed', tenantId, {
+            await event_bus_1.eventBus.emitEvent("recon.completed", tenantId, {
                 reconJobId,
                 reconResultId: updatedResult.id,
                 summary: results.summary,
@@ -243,7 +245,11 @@ class ReconCoreEngine {
             if (results.unmatchedSourceCount > 0 || results.unmatchedTargetCount > 0) {
                 try {
                     const accuracy = results.matchedCount > 0
-                        ? (results.matchedCount / (results.matchedCount + results.unmatchedSourceCount + results.unmatchedTargetCount)) * 100
+                        ? (results.matchedCount /
+                            (results.matchedCount +
+                                results.unmatchedSourceCount +
+                                results.unmatchedTargetCount)) *
+                            100
                         : 0;
                     await (0, job_failure_1.notifyJobCompletion)(this.prisma, {
                         jobId: reconJobId,
@@ -255,14 +261,14 @@ class ReconCoreEngine {
                     });
                 }
                 catch (notificationError) {
-                    (0, logger_1.logError)('[ReconCoreEngine] Failed to send completion notification', notificationError);
+                    (0, logger_1.logError)("[ReconCoreEngine] Failed to send completion notification", notificationError);
                 }
             }
             return updatedResult;
         }
         catch (error) {
             const durationMs = Date.now() - startTime;
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            const errorMessage = error instanceof Error ? error.message : "Unknown error";
             const errorStack = error instanceof Error ? error.stack : undefined;
             // Send failure notification
             try {
@@ -276,13 +282,13 @@ class ReconCoreEngine {
                 });
             }
             catch (notificationError) {
-                (0, logger_1.logError)('[ReconCoreEngine] Failed to send failure notification', notificationError);
+                (0, logger_1.logError)("[ReconCoreEngine] Failed to send failure notification", notificationError);
             }
             // Update result with error
             const failedResult = await this.prisma.reconResult.update({
                 where: { id: reconResult.id },
                 data: {
-                    status: 'failed',
+                    status: "failed",
                     completedAt: new Date(),
                     durationMs: BigInt(durationMs),
                     errorMessage,
@@ -294,26 +300,26 @@ class ReconCoreEngine {
                 tenantId,
                 reconJobId,
                 reconResultId: failedResult.id,
-                auditType: 'recon_failed',
-                action: 'execute',
-                entityType: 'recon_result',
+                auditType: "recon_failed",
+                action: "execute",
+                entityType: "recon_result",
                 entityId: failedResult.id,
                 metadata: { error: errorMessage },
             });
             // Fire webhook for failure
-            await this.webhookService.queueWebhook(tenantId, 'recon.failed', {
+            await this.webhookService.queueWebhook(tenantId, "recon.failed", {
                 reconJobId,
                 reconResultId: failedResult.id,
-                status: 'failed',
+                status: "failed",
                 error: errorMessage,
             });
             // Emit event
-            await event_bus_1.eventBus.emitEvent('recon.failed', tenantId, {
+            await event_bus_1.eventBus.emitEvent("recon.failed", tenantId, {
                 reconJobId,
                 reconResultId: failedResult.id,
                 error: errorMessage,
             });
-            (0, logger_1.logError)('Recon job execution failed', { error, reconJobId, tenantId });
+            (0, logger_1.logError)("Recon job execution failed", { error, reconJobId, tenantId });
             throw error;
         }
     }
@@ -322,18 +328,18 @@ class ReconCoreEngine {
      */
     async ingestData(reconJob) {
         // 1. DEMO MODE
-        if (reconJob.sourceAdapter === 'DEMO_STRIPE' && reconJob.targetAdapter === 'DEMO_BANK') {
-            const demoDir = path_1.default.join(process.cwd(), 'demo/data');
+        if (reconJob.sourceAdapter === "DEMO_STRIPE" && reconJob.targetAdapter === "DEMO_BANK") {
+            const demoDir = path_1.default.join(process.cwd(), "demo/data");
             if (!fs_1.default.existsSync(demoDir)) {
-                throw new Error('Demo data not found. Please run scripts/generate-demo-data.ts first.');
+                throw new Error("Demo data not found. Please run scripts/seed-demo.ts first.");
             }
-            const sourceData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, 'stripe_normalized.json'), 'utf-8'));
-            const targetData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, 'bank_normalized.json'), 'utf-8'));
+            const sourceData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, "demo_stripe_transactions.json"), "utf-8"));
+            const targetData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, "demo_bank_transactions.json"), "utf-8"));
             return { sourceData, targetData };
         }
         // 2. REAL ADAPTERS (Placeholder for now)
         // In a real implementation, we would use the AdapterFactory here
-        if (reconJob.sourceAdapter && reconJob.sourceAdapter !== 'DEMO_STRIPE') {
+        if (reconJob.sourceAdapter && reconJob.sourceAdapter !== "DEMO_STRIPE") {
             // Check if we have credentials
             if (!reconJob.sourceConfigEncrypted) {
                 (0, logger_1.logWarn)(`Missing credentials for ${reconJob.sourceAdapter}, returning empty dataset`);
@@ -349,23 +355,23 @@ class ReconCoreEngine {
     /**
      * Export reconciliation results to CSV
      */
-    async exportResults(_reconResultId, format = 'csv') {
+    async exportResults(_reconResultId, format = "csv") {
         // TODO: Fix this - reconMatch model doesn't exist in Prisma schema
         // Temporarily using empty array to fix typecheck errors
         const matches = []; // await this.prisma.reconMatch.findMany({ where: { executionId: _reconResultId } });
-        if (format === 'json') {
+        if (format === "json") {
             return JSON.stringify(matches, null, 2);
         }
         const csvStringifier = (0, csv_writer_1.createObjectCsvStringifier)({
             header: [
-                { id: 'id', title: 'Match ID' },
-                { id: 'sourceId', title: 'Source ID' },
-                { id: 'targetId', title: 'Target ID' },
-                { id: 'amount', title: 'Amount' },
-                { id: 'currency', title: 'Currency' },
-                { id: 'confidence', title: 'Confidence' },
-                { id: 'matchedAt', title: 'Matched At' }
-            ]
+                { id: "id", title: "Match ID" },
+                { id: "sourceId", title: "Source ID" },
+                { id: "targetId", title: "Target ID" },
+                { id: "amount", title: "Amount" },
+                { id: "currency", title: "Currency" },
+                { id: "confidence", title: "Confidence" },
+                { id: "matchedAt", title: "Matched At" },
+            ],
         });
         return csvStringifier.getHeaderString() + csvStringifier.stringifyRecords(matches);
     }
@@ -376,10 +382,7 @@ class ReconCoreEngine {
         const recipe = await this.prisma.transformRecipe.findFirst({
             where: {
                 id: transformRecipeId,
-                OR: [
-                    { tenantId },
-                    { isPublic: true, deletedAt: null },
-                ],
+                OR: [{ tenantId }, { isPublic: true, deletedAt: null }],
             },
         });
         if (!recipe) {
@@ -404,10 +407,7 @@ class ReconCoreEngine {
         const template = await this.prisma.mappingTemplate.findFirst({
             where: {
                 id: mappingTemplateId,
-                OR: [
-                    { tenantId },
-                    { isPublic: true, deletedAt: null },
-                ],
+                OR: [{ tenantId }, { isPublic: true, deletedAt: null }],
             },
         });
         if (!template) {
@@ -432,7 +432,7 @@ class ReconCoreEngine {
         const targets = targetData;
         // 1. DETERMINISTIC: Exact External ID Match (Payouts)
         const targetMapByExternalId = new Map();
-        targets.forEach(t => {
+        targets.forEach((t) => {
             if (t.externalId)
                 targetMapByExternalId.set(t.externalId, t);
         });
@@ -440,7 +440,7 @@ class ReconCoreEngine {
         for (const source of sources) {
             if (matchedSourceIds.has(source.id))
                 continue;
-            if (source.type === 'PAYOUT' || source.type === 'TRANSFER') {
+            if (source.type === "PAYOUT" || source.type === "TRANSFER") {
                 for (const target of targets) {
                     if (matchedTargetIds.has(target.id))
                         continue;
@@ -461,11 +461,11 @@ class ReconCoreEngine {
                             matchedFields: {
                                 externalId: source.externalId,
                                 amount: source.amount,
-                                date: source.occurredAt
+                                date: source.occurredAt,
                             },
                             metadata: {
-                                reason: 'Deterministic Payout Match (ID + Amount + Date)'
-                            }
+                                reason: "Deterministic Payout Match (ID + Amount + Date)",
+                            },
                         });
                         matchedSourceIds.add(source.id);
                         matchedTargetIds.add(target.id);
@@ -494,11 +494,11 @@ class ReconCoreEngine {
                         currency: source.currency,
                         matchedFields: {
                             amount: source.amount,
-                            date: source.occurredAt
+                            date: source.occurredAt,
                         },
                         metadata: {
-                            reason: 'Strong Match (Exact Amount + Date < 24h)'
-                        }
+                            reason: "Strong Match (Exact Amount + Date < 24h)",
+                        },
                     });
                     matchedSourceIds.add(source.id);
                     matchedTargetIds.add(target.id);
@@ -526,11 +526,11 @@ class ReconCoreEngine {
                         currency: source.currency,
                         matchedFields: {
                             amount: source.amount,
-                            date: source.occurredAt
+                            date: source.occurredAt,
                         },
                         metadata: {
-                            reason: 'Fuzzy Match (Exact Amount + Date < 3d)'
-                        }
+                            reason: "Fuzzy Match (Exact Amount + Date < 3d)",
+                        },
                     });
                     matchedSourceIds.add(source.id);
                     matchedTargetIds.add(target.id);
@@ -545,22 +545,26 @@ class ReconCoreEngine {
      */
     calculateResults(matches, sourceData, targetData) {
         const matchedCount = matches.length;
-        const matchedSourceIds = new Set(matches.map(m => m.sourceId));
-        const matchedTargetIds = new Set(matches.map(m => m.targetId));
+        const matchedSourceIds = new Set(matches.map((m) => m.sourceId));
+        const matchedTargetIds = new Set(matches.map((m) => m.targetId));
         const unmatchedSourceCount = sourceData.length - matchedSourceIds.size;
         const unmatchedTargetCount = targetData.length - matchedTargetIds.size;
-        const conflictCount = matches.filter(m => m.confidence < 0.8).length;
+        const conflictCount = matches.filter((m) => m.confidence < 0.8).length;
         const totalAmountSource = this.calculateTotalAmount(sourceData);
         const totalAmountTarget = this.calculateTotalAmount(targetData);
         const totalAmountMatched = matches.reduce((sum, m) => sum + (m.amount || 0), 0);
         const totalAmountUnmatched = (totalAmountSource || 0) + (totalAmountTarget || 0) - totalAmountMatched;
-        const confidences = matches.map(m => m.confidence).filter(c => c !== null && c !== undefined);
+        const confidences = matches
+            .map((m) => m.confidence)
+            .filter((c) => c !== null && c !== undefined);
         const confidenceAvg = confidences.length > 0
             ? confidences.reduce((sum, c) => sum + c, 0) / confidences.length
             : null;
         const confidenceMin = confidences.length > 0 ? Math.min(...confidences) : null;
         const confidenceMax = confidences.length > 0 ? Math.max(...confidences) : null;
-        const currency = (sourceData[0]?.currency || targetData[0]?.currency || matches[0]?.currency);
+        const currency = (sourceData[0]?.currency ||
+            targetData[0]?.currency ||
+            matches[0]?.currency);
         const currencyValue = currency ? String(currency) : null;
         return {
             matchedCount,
@@ -580,9 +584,9 @@ class ReconCoreEngine {
                 matchedRecords: matchedCount,
                 unmatchedRecords: unmatchedSourceCount + unmatchedTargetCount,
                 confidenceDistribution: {
-                    high: matches.filter(m => m.confidence >= 0.9).length,
-                    medium: matches.filter(m => m.confidence >= 0.7 && m.confidence < 0.9).length,
-                    low: matches.filter(m => m.confidence < 0.7).length,
+                    high: matches.filter((m) => m.confidence >= 0.9).length,
+                    medium: matches.filter((m) => m.confidence >= 0.7 && m.confidence < 0.9).length,
+                    low: matches.filter((m) => m.confidence < 0.7).length,
                 },
                 amountBreakdown: {
                     matched: totalAmountMatched,
@@ -602,7 +606,7 @@ class ReconCoreEngine {
         const amounts = data
             .map((item) => {
             const amount = item.amount ?? item.total ?? item.value;
-            return typeof amount === 'number' ? amount : null;
+            return typeof amount === "number" ? amount : null;
         })
             .filter((amount) => amount !== null);
         if (amounts.length === 0)
@@ -624,15 +628,21 @@ class ReconCoreEngine {
                     action: params.action,
                     entityType: params.entityType,
                     entityId: params.entityId,
-                    beforeState: params.beforeState ? params.beforeState : undefined,
-                    afterState: params.afterState ? params.afterState : undefined,
-                    changes: params.changes ? params.changes : undefined,
+                    beforeState: params.beforeState
+                        ? params.beforeState
+                        : undefined,
+                    afterState: params.afterState
+                        ? params.afterState
+                        : undefined,
+                    changes: params.changes
+                        ? params.changes
+                        : undefined,
                     metadata: (params.metadata || {}),
                 },
             });
         }
         catch (error) {
-            (0, logger_1.logError)('Failed to log audit event', { error, params });
+            (0, logger_1.logError)("Failed to log audit event", { error, params });
         }
     }
     /**
@@ -664,7 +674,7 @@ class ReconCoreEngine {
             },
             take: options?.limit || 100,
             skip: options?.offset || 0,
-            orderBy: { createdAt: 'desc' },
+            orderBy: { createdAt: "desc" },
         });
     }
     /**
@@ -692,7 +702,7 @@ class ReconCoreEngine {
             },
             take: options?.limit || 100,
             skip: options?.offset || 0,
-            orderBy: { startedAt: 'desc' },
+            orderBy: { startedAt: "desc" },
         });
     }
     /**
@@ -702,7 +712,7 @@ class ReconCoreEngine {
         return this.prisma.billingAccount.findFirst({
             where: {
                 tenantId,
-                status: 'active',
+                status: "active",
             },
         });
     }

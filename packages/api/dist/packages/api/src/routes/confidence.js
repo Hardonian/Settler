@@ -29,18 +29,19 @@ router.get("/matches/:matchId/confidence", (0, authorization_1.requirePermission
         if (!matchId || !userId) {
             throw new typed_errors_1.NotFoundError("Match ID and User ID are required", "match", matchId || "unknown");
         }
-        // Get match details
+        const tenantId = req.tenantId;
+        // Get match details — scoped by tenant_id
         const matches = await (0, db_1.query)(`SELECT m.id, m.job_id, m.source_id, m.target_id, m.confidence,
                 m.source_data, m.target_data
          FROM matches m
          JOIN jobs j ON m.job_id = j.id
-         WHERE m.id = $1 AND j.user_id = $2`, [matchId, userId]);
+         WHERE m.id = $1 AND j.user_id = $2 AND j.tenant_id = $3`, [matchId, userId, tenantId]);
         if (matches.length === 0 || !matches[0]) {
             throw new typed_errors_1.NotFoundError("Match not found", "match", matchId);
         }
         const match = matches[0];
-        // Get job rules
-        const jobs = await (0, db_1.query)(`SELECT rules FROM jobs WHERE id = $1`, [match.job_id]);
+        // Get job rules — scoped by tenant_id
+        const jobs = await (0, db_1.query)(`SELECT rules FROM jobs WHERE id = $1 AND tenant_id = $2`, [match.job_id, tenantId]);
         if (jobs.length === 0 || !jobs[0]) {
             throw new typed_errors_1.NotFoundError("Job not found", "job", match.job_id);
         }
@@ -80,8 +81,9 @@ router.get("/jobs/:jobId/accuracy", (0, authorization_1.requirePermission)(Permi
         if (!jobId) {
             throw new typed_errors_1.NotFoundError("Job ID is required", "job", "unknown");
         }
-        // Verify job ownership
-        const jobs = await (0, db_1.query)(`SELECT id FROM jobs WHERE id = $1 AND user_id = $2`, [jobId, userId]);
+        const tenantId = req.tenantId;
+        // Verify job ownership — scoped by tenant_id
+        const jobs = await (0, db_1.query)(`SELECT id FROM jobs WHERE id = $1 AND user_id = $2 AND tenant_id = $3`, [jobId, userId, tenantId]);
         if (jobs.length === 0) {
             throw new typed_errors_1.NotFoundError("Job not found", "job", jobId);
         }
@@ -94,7 +96,7 @@ router.get("/jobs/:jobId/accuracy", (0, authorization_1.requirePermission)(Permi
            AVG(confidence) as avg_confidence,
            (COUNT(*) FILTER (WHERE confidence >= 0.95)::float / NULLIF(COUNT(*), 0)) * 100 as accuracy
          FROM matches
-         WHERE job_id = $1`, [jobId]);
+         WHERE job_id = $1 AND tenant_id = $2`, [jobId, tenantId]);
         const m = metrics[0] || {
             total_matches: 0,
             high_confidence: 0,

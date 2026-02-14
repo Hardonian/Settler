@@ -12,11 +12,11 @@ import { ParallaxBackground, ParallaxBlobs } from "@/components/ui/ParallaxBackg
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { FeatureShowcase } from "@/components/landing/FeatureShowcase";
 import { ComparisonTable } from "@/components/landing/ComparisonTable";
-import { 
+import {
   TestimonialCarousel,
   ROICalculator,
 } from "@/components/marketing";
-import { 
+import {
   Database,
   ArrowRight,
   Shield,
@@ -38,11 +38,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import Image from "next/image";
 
 // Dynamic imports for heavy components with loading fallback
 const AnimatedCodeBlock = dynamic(
-  () => import("@/components/AnimatedCodeBlock").then(mod => ({ default: mod.AnimatedCodeBlock })), 
-  { 
+  () => import("@/components/AnimatedCodeBlock").then(mod => ({ default: mod.AnimatedCodeBlock })),
+  {
     ssr: false,
     loading: () => (
       <div className="bg-slate-900 rounded-xl p-6 min-h-[300px] flex items-center justify-center">
@@ -51,6 +52,7 @@ const AnimatedCodeBlock = dynamic(
     )
   }
 );
+
 
 export default function HomePage() {
   // OSS/Developer-first workflow steps
@@ -61,6 +63,7 @@ export default function HomePage() {
       description: "npm install @settler/sdk. No complex setup, no vendor lock-in.",
       icon: Terminal,
       code: "npm install @settler/sdk",
+      illustration: "/illustrations/feature-integration.svg",
     },
     {
       number: 2,
@@ -68,6 +71,7 @@ export default function HomePage() {
       description: "Write deterministic matching rules in code. Version control them.",
       icon: FileCode,
       code: "rules: { matching: [{ field: 'amount', tolerance: 0.01 }] }",
+      illustration: "/illustrations/feature-deterministic.svg",
     },
     {
       number: 3,
@@ -75,6 +79,7 @@ export default function HomePage() {
       description: "Execute via API or CLI. Same inputs always produce same outputs.",
       icon: Play,
       code: "await client.reconciliations.create(config)",
+      illustration: "/illustrations/feature-audit.svg",
     },
     {
       number: 4,
@@ -82,39 +87,40 @@ export default function HomePage() {
       description: "Inspect variance sets with full audit trail. Export to JSON/CSV.",
       icon: GitBranch,
       code: "Evidence: SHA256 hash chain",
+      illustration: "/illustrations/feature-human.svg",
     },
   ];
 
   // OSS value drivers
   const ossBenefits = [
-    { 
-      icon: Code2, 
-      title: "Fully Open Source", 
+    {
+      icon: Code2,
+      title: "Fully Open Source",
       description: "Apache 2.0 licensed. Audit, modify, self-host."
     },
-    { 
-      icon: Shield, 
-      title: "Deterministic Output", 
+    {
+      icon: Shield,
+      title: "Deterministic Output",
       description: "Same data + same rules = same results. Always."
     },
-    { 
-      icon: Terminal, 
-      title: "CLI & API First", 
+    {
+      icon: Terminal,
+      title: "CLI & API First",
       description: "Programmatic reconciliation. CI/CD integration ready."
     },
-    { 
-      icon: Database, 
-      title: "Data Sovereignty", 
+    {
+      icon: Database,
+      title: "Data Sovereignty",
       description: "Your data stays in your infrastructure."
     },
-    { 
-      icon: Cpu, 
-      title: "Replayable Runs", 
+    {
+      icon: Cpu,
+      title: "Replayable Runs",
       description: "Re-run any reconciliation with identical results."
     },
-    { 
-      icon: GitBranch, 
-      title: "Version Controlled Rules", 
+    {
+      icon: GitBranch,
+      title: "Version Controlled Rules",
       description: "Rules as code. Review, test, deploy like software."
     },
   ];
@@ -122,8 +128,8 @@ export default function HomePage() {
   const codeExample = `import { SettlerClient } from "@settler/sdk";
 
 // Initialize with your API key
-const client = new SettlerClient({ 
-  apiKey: process.env.SETTLER_API_KEY 
+const client = new SettlerClient({
+  apiKey: process.env.SETTLER_API_KEY
 });
 
 // Define deterministic reconciliation rules
@@ -156,7 +162,7 @@ console.log(\`Evidence hash: \${variances.evidenceHash}\`);`;
 
   return (
     <ErrorBoundary context="Home Page">
-      <main 
+      <main
         id="main-content"
         className="min-h-screen bg-slate-50 dark:bg-slate-950 antialiased"
         role="main"
@@ -165,110 +171,95 @@ console.log(\`Evidence hash: \${variances.evidenceHash}\`);`;
         <Navigation />
 
         {/* Hero Section - OSS First Message */}
-        <section 
+        <section
           className="relative pt-20 sm:pt-24 lg:pt-32 pb-16 sm:pb-20 lg:pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden"
           aria-labelledby="hero-heading"
         >
           <ParallaxBackground>
             <ParallaxBlobs count={3} />
           </ParallaxBackground>
-          
+
           {/* Grid pattern background */}
-          <div 
+          <div
             className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] -z-10"
             aria-hidden="true"
           />
-          
+
           <div className="max-w-7xl mx-auto relative z-10">
-            <HeroAnimationWrapper>
-              <div className="text-center max-w-4xl mx-auto">
-                {/* OSS Badge */}
-                <div className="mb-6 flex justify-center">
-                  <Badge 
-                    className="bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 text-sm font-medium inline-flex items-center gap-2"
-                  >
-                    <Github className="w-4 h-4" aria-hidden="true" />
-                    Open Source Reconciliation Engine
-                  </Badge>
-                </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <HeroAnimationWrapper>
+                <div className="text-left max-w-2xl">
+                  {/* OSS Badge */}
+                  <div className="mb-6 flex justify-start">
+                    <Badge
+                      className="bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 text-sm font-medium inline-flex items-center gap-2"
+                    >
+                      <Github className="w-4 h-4" aria-hidden="true" />
+                      Open Source Reconciliation Engine
+                    </Badge>
+                  </div>
 
-                {/* Main headline - Dev focused */}
-                <div className="mb-6 sm:mb-8">
-                  <TextRevealHeading
-                    as="h1"
-                    id="hero-heading"
-                    text="Reconciliation as Code"
-                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 text-slate-900 dark:text-white tracking-tight leading-[1.1]"
-                    delay={0}
-                    staggerDelay={0.02}
-                    splitBy="words"
-                  />
-                </div>
-                
-                {/* Subheadline - OSS/Dev value proposition */}
-                <div className="mb-10 sm:mb-12">
-                  <p className="text-lg sm:text-xl md:text-2xl text-slate-700 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
-                    Deterministic financial reconciliation you can audit, version control, and self-host. 
-                    Built for developers who demand inspectability.
-                  </p>
-                </div>
-                
-                {/* CTA buttons - Dev focused */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 sm:mb-16">
-                  <Button 
-                    size="lg" 
-                    asChild 
-                    className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 px-8 py-6 text-lg font-semibold shadow-xl transition-all duration-200 min-h-[48px] min-w-[180px]"
-                  >
-                    <Link href="/docs/quickstart" className="flex items-center justify-center gap-3">
-                      <BookOpen className="w-5 h-5" aria-hidden="true" />
-                      <span>Read Quickstart</span>
-                    </Link>
-                  </Button>
-                  
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    asChild 
-                    className="w-full sm:w-auto px-8 py-6 text-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200 min-h-[48px] min-w-[180px]"
-                  >
-                    <Link href="https://github.com/settler-dev/settler" className="flex items-center justify-center gap-3" target="_blank" rel="noopener noreferrer">
-                      <Github className="w-5 h-5" aria-hidden="true" />
-                      <span>View on GitHub</span>
-                    </Link>
-                  </Button>
-                  
-                  <Button 
-                    size="lg" 
-                    variant="ghost" 
-                    asChild 
-                    className="w-full sm:w-auto px-8 py-6 text-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 min-h-[48px] min-w-[160px]"
-                  >
-                    <Link href="/console" className="flex items-center justify-center gap-2">
-                      <Play className="w-5 h-5" aria-hidden="true" />
-                      <span>Live Demo</span>
-                      <ArrowRight className="w-4 h-4" aria-hidden="true" />
-                    </Link>
-                  </Button>
-                </div>
+                  {/* Main headline - Dev focused */}
+                  <div className="mb-6 sm:mb-8 text-left">
+                    <TextRevealHeading
+                      as="h1"
+                      id="hero-heading"
+                      text="Reconciliation as Code"
+                      className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 text-slate-900 dark:text-white tracking-tight leading-[1.1]"
+                      delay={0}
+                      staggerDelay={0.02}
+                      splitBy="words"
+                    />
+                  </div>
 
-                {/* Social Proof - OSS focused */}
-                <div className="flex flex-wrap justify-center gap-6 sm:gap-8 text-sm text-slate-600 dark:text-slate-400">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600" aria-hidden="true" />
-                    <span>Apache 2.0 Licensed</span>
+                  {/* Subheadline - OSS/Dev value proposition */}
+                  <div className="mb-10 sm:mb-12">
+                    <p className="text-lg sm:text-xl text-slate-700 dark:text-slate-300 leading-relaxed">
+                      Deterministic financial reconciliation you can audit, version control, and self-host.
+                      Built for developers who demand inspectability.
+                    </p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600" aria-hidden="true" />
-                    <span>Self-Hostable</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600" aria-hidden="true" />
-                    <span>Deterministic Output</span>
+
+                  {/* CTA buttons - Dev focused */}
+                  <div className="flex flex-col sm:flex-row gap-4 justify-start items-center mb-12 sm:mb-16">
+                    <Button
+                      size="lg"
+                      asChild
+                      className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 px-8 py-6 text-lg font-semibold shadow-xl transition-all duration-200"
+                    >
+                      <Link href="/docs/quickstart" className="flex items-center justify-center gap-3">
+                        <BookOpen className="w-5 h-5" aria-hidden="true" />
+                        <span>Read Quickstart</span>
+                      </Link>
+                    </Button>
+
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      asChild
+                      className="w-full sm:w-auto px-8 py-6 text-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200"
+                    >
+                      <Link href="https://github.com/settler-dev/settler" className="flex items-center justify-center gap-3" target="_blank" rel="noopener noreferrer">
+                        <Github className="w-5 h-5" aria-hidden="true" />
+                        <span>GitHub</span>
+                      </Link>
+                    </Button>
                   </div>
                 </div>
+              </HeroAnimationWrapper>
+
+              <div className="hidden lg:block relative">
+                <div className="absolute inset-0 bg-blue-500/10 blur-3xl rounded-full -z-10" />
+                <Image
+                  src="/illustrations/hero-visual.svg"
+                  alt="Settler Reconciliation Engine Visualization"
+                  width={600}
+                  height={500}
+                  priority
+                  className="w-full h-auto drop-shadow-2xl"
+                />
               </div>
-            </HeroAnimationWrapper>
+            </div>
           </div>
         </section>
 
@@ -286,13 +277,13 @@ console.log(\`Evidence hash: \${variances.evidenceHash}\`);`;
                 No black boxes. No vendor lock-in. Just clean, deterministic code that runs where you want it.
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
               {ossBenefits.map((benefit, index) => {
                 const Icon = benefit.icon;
                 return (
-                  <SpotlightCard 
-                    key={index} 
+                  <SpotlightCard
+                    key={index}
                     className="p-6 sm:p-8 h-full transition-all duration-300 hover:shadow-xl"
                   >
                     <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
@@ -325,23 +316,31 @@ console.log(\`Evidence hash: \${variances.evidenceHash}\`);`;
                 Install the SDK, define your rules, run reconciliation, review evidence. No complex setup required.
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {devWorkflowSteps.map((step, index) => {
                 const Icon = step.icon;
                 return (
-                  <div 
-                    key={index} 
-                    className="relative p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800"
+                  <div
+                    key={index}
+                    className="relative p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col items-center text-center"
                   >
                     <div className="absolute -top-3 left-6 w-8 h-8 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center text-sm font-bold">
                       {step.number}
                     </div>
-                    <div className="pt-4">
-                      <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+
+                    <div className="w-full aspect-square relative mb-6 p-4">
+                      <Image
+                        src={step.illustration}
+                        alt={step.title}
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+
+                    <div className="pt-2">
+                       <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white flex items-center justify-center gap-2">
                         <Icon className="w-5 h-5 text-slate-700 dark:text-slate-300" aria-hidden="true" />
-                      </div>
-                      <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">
                         {step.title}
                       </h3>
                       <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
@@ -372,7 +371,7 @@ console.log(\`Evidence hash: \${variances.evidenceHash}\`);`;
                 Your reconciliation rules are code. Review them in PRs, test them in CI, deploy them with confidence.
               </p>
             </div>
-            
+
             <div className="rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl">
               <div className="flex items-center gap-2 px-4 py-3 bg-slate-900 border-b border-slate-800">
                 <div className="w-3 h-3 rounded-full bg-red-500" aria-hidden="true" />
@@ -389,7 +388,7 @@ console.log(\`Evidence hash: \${variances.evidenceHash}\`);`;
                 />
               </div>
             </div>
-            
+
             {/* Code features */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10">
               {[
@@ -491,7 +490,7 @@ console.log(\`Evidence hash: \${variances.evidenceHash}\`);`;
                   Settler is an open-source reconciliation engine that normalizes financial data, applies deterministic matching rules, and surfaces variances for human review. It&apos;s designed for teams who need transparency and auditability in their financial workflows.
                 </AccordionContent>
               </AccordionItem>
-              
+
               <AccordionItem value="oss" className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6">
                 <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
                   Is it really open source?
@@ -500,7 +499,7 @@ console.log(\`Evidence hash: \${variances.evidenceHash}\`);`;
                   Yes. Settler is licensed under Apache 2.0. You can self-host it, modify it, and contribute back. The core reconciliation engine, SDK, and all adapters are fully open source. We also offer managed cloud hosting for teams who prefer it.
                 </AccordionContent>
               </AccordionItem>
-              
+
               <AccordionItem value="deterministic" className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6">
                 <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
                   What does &quot;deterministic&quot; mean?
@@ -509,7 +508,7 @@ console.log(\`Evidence hash: \${variances.evidenceHash}\`);`;
                   Deterministic means the same inputs always produce the same outputs. Given the same data sources and matching rules, Settler will always identify the same variances. This makes debugging, testing, and auditing possible.
                 </AccordionContent>
               </AccordionItem>
-              
+
               <AccordionItem value="self-host" className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6">
                 <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
                   Can I self-host Settler?
@@ -518,7 +517,7 @@ console.log(\`Evidence hash: \${variances.evidenceHash}\`);`;
                   Absolutely. Self-hosting is a first-class use case. Settler runs on Node.js and connects to your existing Postgres database. Your data never leaves your infrastructure unless you choose to use our managed cloud service.
                 </AccordionContent>
               </AccordionItem>
-              
+
               <AccordionItem value="not" className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6">
                 <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
                   What is Settler NOT?
@@ -544,9 +543,9 @@ console.log(\`Evidence hash: \${variances.evidenceHash}\`);`;
               Stop relying on black boxes. Deploy reconciliation you can audit, test, and version control. Start free, self-host when ready.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button 
-                size="lg" 
-                asChild 
+              <Button
+                size="lg"
+                asChild
                 className="w-full sm:w-auto bg-white text-slate-900 hover:bg-slate-100 px-10 py-7 text-lg font-semibold shadow-2xl transition-all duration-200 min-h-[56px] min-w-[200px]"
               >
                 <Link href="/docs/quickstart" className="flex items-center justify-center gap-3">
@@ -554,11 +553,11 @@ console.log(\`Evidence hash: \${variances.evidenceHash}\`);`;
                   Read Quickstart
                 </Link>
               </Button>
-              
-              <Button 
-                size="lg" 
-                variant="outline" 
-                asChild 
+
+              <Button
+                size="lg"
+                variant="outline"
+                asChild
                 className="w-full sm:w-auto px-10 py-7 text-lg border-2 border-slate-600 text-white hover:bg-slate-800 transition-all duration-200 min-h-[56px] min-w-[200px]"
               >
                 <Link href="https://github.com/settler-dev/settler" className="flex items-center justify-center gap-3" target="_blank" rel="noopener noreferrer">

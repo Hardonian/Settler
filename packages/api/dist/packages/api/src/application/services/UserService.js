@@ -49,10 +49,12 @@ class UserService {
         this.eventBus = eventBus;
     }
     async createUser(command) {
-        // Check if user already exists
-        const existing = await this.userRepository.findByEmail(command.email);
+        if (!command.tenantId)
+            throw new Error("tenantId is required");
+        // Check if user already exists within this tenant
+        const existing = await this.userRepository.findByEmail(command.email, command.tenantId);
         if (existing) {
-            throw new Error('User with this email already exists');
+            throw new Error("User with this email already exists");
         }
         // Hash password
         const passwordHash = await (0, password_1.hashPassword)(command.password);
@@ -60,17 +62,17 @@ class UserService {
         const userProps = {
             email: command.email,
             passwordHash,
-            tenantId: 'default', // TODO: Get from context
+            tenantId: command.tenantId,
             role: command.role || User_1.UserRole.DEVELOPER,
-            dataResidencyRegion: command.dataResidencyRegion || 'us',
+            dataResidencyRegion: command.dataResidencyRegion || "us",
             dataRetentionDays: 365,
         };
         if (command.name !== undefined) {
             userProps.name = command.name;
         }
         const user = User_1.User.create(userProps);
-        // Save user
-        const savedUser = await this.userRepository.save(user);
+        // Save user scoped to tenant
+        const savedUser = await this.userRepository.save(user, command.tenantId);
         // Emit domain event
         await this.eventBus.publish(new DomainEvent_1.UserCreatedEvent(savedUser.id, savedUser.email));
         return {
@@ -78,33 +80,41 @@ class UserService {
             email: savedUser.email,
         };
     }
-    async getUserById(userId) {
-        return this.userRepository.findById(userId);
+    async getUserById(userId, tenantId) {
+        if (!tenantId)
+            throw new Error("tenantId is required");
+        return this.userRepository.findById(userId, tenantId);
     }
-    async getUserByEmail(email) {
-        return this.userRepository.findByEmail(email);
+    async getUserByEmail(email, tenantId) {
+        if (!tenantId)
+            throw new Error("tenantId is required");
+        return this.userRepository.findByEmail(email, tenantId);
     }
-    async deleteUser(userId, password) {
-        const user = await this.userRepository.findById(userId);
+    async deleteUser(userId, tenantId, password) {
+        if (!tenantId)
+            throw new Error("tenantId is required");
+        const user = await this.userRepository.findById(userId, tenantId);
         if (!user) {
-            throw new Error('User not found');
+            throw new Error("User not found");
         }
         // Verify password
-        const { verifyPassword } = await Promise.resolve().then(() => __importStar(require('../../infrastructure/security/password')));
+        const { verifyPassword } = await Promise.resolve().then(() => __importStar(require("../../infrastructure/security/password")));
         const isValid = await verifyPassword(password, user.passwordHash);
         if (!isValid) {
-            throw new Error('Invalid password');
+            throw new Error("Invalid password");
         }
         // Schedule deletion with 30-day grace period
         user.scheduleDeletion(30);
-        await this.userRepository.save(user);
+        await this.userRepository.save(user, tenantId);
         // Emit domain event
         await this.eventBus.publish(new DomainEvent_1.UserDeletedEvent(userId));
     }
-    async exportUserData(userId) {
-        const user = await this.userRepository.findById(userId);
+    async exportUserData(userId, tenantId) {
+        if (!tenantId)
+            throw new Error("tenantId is required");
+        const user = await this.userRepository.findById(userId, tenantId);
         if (!user) {
-            throw new Error('User not found');
+            throw new Error("User not found");
         }
         // In a real implementation, this would gather data from multiple repositories
         return {

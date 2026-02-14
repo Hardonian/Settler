@@ -17,6 +17,7 @@ const logger_1 = require("../utils/logger");
 const error_handler_1 = require("../utils/error-handler");
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const event_registry_1 = require("../services/webhooks/event-registry");
+const raw_body_1 = require("../middleware/raw-body");
 const router = (0, express_1.Router)();
 exports.webhooksRouter = router;
 // Rate limiting for webhook receive endpoint
@@ -112,15 +113,14 @@ router.get("/", (0, authorization_1.requirePermission)(Permissions_1.Permission.
         const page = parseInt(req.query.page) || 1;
         const limit = Math.min(parseInt(req.query.limit) || 100, 1000);
         const offset = (page - 1) * limit;
+        const tenantId = req.tenantId;
         const [webhooks, totalResult] = await Promise.all([
             (0, db_1.query)(`SELECT id, url, events, status, created_at
            FROM webhooks
-           WHERE user_id = $1
+           WHERE user_id = $1 AND tenant_id = $2
            ORDER BY created_at DESC
-           LIMIT $2 OFFSET $3`, [userId, limit, offset]),
-            (0, db_1.query)(`SELECT COUNT(*) as count FROM webhooks WHERE user_id = $1`, [
-                userId,
-            ]),
+           LIMIT $3 OFFSET $4`, [userId, tenantId, limit, offset]),
+            (0, db_1.query)(`SELECT COUNT(*) as count FROM webhooks WHERE user_id = $1 AND tenant_id = $2`, [userId, tenantId]),
         ]);
         if (!totalResult[0]) {
             throw new Error("Failed to get webhook count");
@@ -150,13 +150,13 @@ router.get("/", (0, authorization_1.requirePermission)(Permissions_1.Permission.
     }
 });
 // Webhook endpoint for receiving external webhooks with signature verification
-router.post("/receive/:adapter", webhookReceiveLimiter, async (req, res) => {
+router.post("/receive/:adapter", webhookReceiveLimiter, (0, raw_body_1.createRawBodyMiddleware)(), async (req, res) => {
     try {
         const { adapter } = req.params;
         const signature = req.headers["x-webhook-signature"];
         const timestamp = req.headers["x-webhook-timestamp"];
         // Get raw body for signature verification
-        const rawBody = JSON.stringify(req.body);
+        const rawBody = req.rawBodyString || JSON.stringify(req.body);
         // Verify timestamp (prevent replay attacks)
         if (timestamp) {
             const requestTime = parseInt(timestamp);
@@ -190,7 +190,7 @@ router.post("/receive/:adapter", webhookReceiveLimiter, async (req, res) => {
         }
         // Store webhook payload for async processing
         await (0, db_1.query)(`INSERT INTO webhook_payloads (adapter, payload, signature, received_at)
-         VALUES ($1, $2, $3, NOW())`, [adapter || "", JSON.stringify(req.body), signature || ""]);
+           VALUES ($1, $2, $3, NOW())`, [adapter || "", JSON.stringify(req.body), signature || ""]);
         // Queue for async processing (in production, use Bull/Redis queue)
         // For now, acknowledge immediately
         (0, logger_1.logInfo)("Webhook received", { adapter, ip: req.ip });
@@ -201,7 +201,9 @@ router.post("/receive/:adapter", webhookReceiveLimiter, async (req, res) => {
         return;
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to process webhook", 500, { adapter: req.params.adapter });
+        (0, error_handler_1.handleRouteError)(res, error, "Failed to process webhook", 500, {
+            adapter: req.params.adapter,
+        });
         return;
     }
 });
@@ -219,7 +221,12 @@ router.delete("/:id", (0, authorization_1.requirePermission)(Permissions_1.Permi
                     resolve();
             }, "webhook", id || "");
         });
-        await (0, db_1.query)(`DELETE FROM webhooks WHERE id = $1 AND user_id = $2`, [id || "", userId]);
+        const tenantId = req.tenantId;
+        await (0, db_1.query)(`DELETE FROM webhooks WHERE id = $1 AND user_id = $2 AND tenant_id = $3`, [
+            id || "",
+            userId,
+            tenantId,
+        ]);
         // Log audit event
         await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`, ["webhook_deleted", userId, JSON.stringify({ webhookId: id })]);

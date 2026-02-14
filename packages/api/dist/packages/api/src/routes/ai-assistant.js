@@ -17,11 +17,13 @@ exports.aiAssistantRouter = router;
 const aiQuerySchema = zod_1.z.object({
     body: zod_1.z.object({
         query: zod_1.z.string().min(1).max(1000),
-        context: zod_1.z.object({
+        context: zod_1.z
+            .object({
             jobId: zod_1.z.string().uuid().optional(),
             adapter: zod_1.z.string().optional(),
             error: zod_1.z.string().optional(),
-        }).optional(),
+        })
+            .optional(),
     }),
 });
 // AI assistant chat endpoint
@@ -42,7 +44,9 @@ router.post("/ai/assistant", (0, authorization_1.requirePermission)(Permissions_
         });
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to get AI assistant response", 500, { userId: req.userId });
+        (0, error_handler_1.handleRouteError)(res, error, "Failed to get AI assistant response", 500, {
+            userId: req.userId,
+        });
     }
 });
 // AI-powered optimization suggestions
@@ -50,8 +54,9 @@ router.get("/jobs/:jobId/ai-optimize", (0, authorization_1.requirePermission)(Pe
     try {
         const { jobId } = req.params;
         const userId = req.userId;
-        // Get job details
-        const jobs = await (0, db_1.query)(`SELECT id, rules, source_adapter, target_adapter FROM jobs WHERE id = $1 AND user_id = $2`, [jobId || null, userId]);
+        const tenantId = req.tenantId;
+        // Get job details — scoped by tenant_id
+        const jobs = await (0, db_1.query)(`SELECT id, rules, source_adapter, target_adapter FROM jobs WHERE id = $1 AND user_id = $2 AND tenant_id = $3`, [jobId || null, userId, tenantId]);
         if (jobs.length === 0 || !jobs[0]) {
             res.status(404).json({ error: "Job not found" });
             return;
@@ -64,7 +69,7 @@ router.get("/jobs/:jobId/ai-optimize", (0, authorization_1.requirePermission)(Pe
            COUNT(*) FILTER (WHERE EXISTS (SELECT 1 FROM exceptions WHERE execution_id = e.id))::float / NULLIF(COUNT(*), 0) as exception_rate,
            AVG((summary->>'matched')::int::float / NULLIF((summary->>'total')::int, 0)) as match_rate
          FROM executions e
-         WHERE job_id = $1`, [jobId || null]);
+         WHERE job_id = $1 AND tenant_id = $2`, [jobId || null, tenantId]);
         const m = metrics[0] || {
             avg_accuracy: 0,
             avg_confidence: 0,
@@ -87,14 +92,18 @@ router.get("/jobs/:jobId/ai-optimize", (0, authorization_1.requirePermission)(Pe
         });
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to get AI optimization suggestions", 500, { userId: req.userId });
+        (0, error_handler_1.handleRouteError)(res, error, "Failed to get AI optimization suggestions", 500, {
+            userId: req.userId,
+        });
     }
 });
 // Helper functions
 async function generateAIResponse(query, _context, _userId) {
     const lowerQuery = query.toLowerCase();
     // Pattern matching for common queries (in production, would use LLM API)
-    if (lowerQuery.includes("how to") || lowerQuery.includes("setup") || lowerQuery.includes("configure")) {
+    if (lowerQuery.includes("how to") ||
+        lowerQuery.includes("setup") ||
+        lowerQuery.includes("configure")) {
         return {
             answer: "To set up reconciliation, create a job with source and target adapters, then configure matching rules. Here's a quick example:",
             suggestions: [
@@ -118,7 +127,9 @@ async function generateAIResponse(query, _context, _userId) {
             docLinks: ["https://docs.settler.io/getting-started", "https://docs.settler.io/api/jobs"],
         };
     }
-    if (lowerQuery.includes("error") || lowerQuery.includes("problem") || lowerQuery.includes("issue")) {
+    if (lowerQuery.includes("error") ||
+        lowerQuery.includes("problem") ||
+        lowerQuery.includes("issue")) {
         return {
             answer: "Let me help troubleshoot. Common issues include invalid API keys, adapter configuration errors, or matching rule problems.",
             suggestions: [
@@ -141,7 +152,9 @@ const exceptions = await settler.exceptions.list({
             docLinks: ["https://docs.settler.io/troubleshooting", "https://docs.settler.io/api/errors"],
         };
     }
-    if (lowerQuery.includes("optimize") || lowerQuery.includes("improve") || lowerQuery.includes("accuracy")) {
+    if (lowerQuery.includes("optimize") ||
+        lowerQuery.includes("improve") ||
+        lowerQuery.includes("accuracy")) {
         return {
             answer: "To optimize reconciliation accuracy, consider:",
             suggestions: [
@@ -175,7 +188,7 @@ const optimizations = await settler.jobs.aiOptimize("job_abc123");`,
 function generateOptimizationSuggestions(job, metrics) {
     const suggestions = [];
     // Low accuracy suggestions
-    if (metrics.avg_accuracy < 0.90) {
+    if (metrics.avg_accuracy < 0.9) {
         suggestions.push({
             type: "matching",
             priority: "high",
@@ -197,7 +210,7 @@ function generateOptimizationSuggestions(job, metrics) {
         });
     }
     // High exception rate
-    if (metrics.exception_rate > 0.10) {
+    if (metrics.exception_rate > 0.1) {
         suggestions.push({
             type: "tolerance",
             priority: "high",
@@ -208,7 +221,7 @@ function generateOptimizationSuggestions(job, metrics) {
         });
     }
     // Low match rate
-    if (metrics.match_rate < 0.80) {
+    if (metrics.match_rate < 0.8) {
         suggestions.push({
             type: "matching",
             priority: "high",

@@ -38,7 +38,7 @@ const features: Feature[] = [
     link: "/console/changes",
     color: "blue",
     gradient: "from-blue-500 to-cyan-500",
-    screenshot: "/assets/marketing/hero-image-1.png",
+    screenshot: "/illustrations/feature-deterministic.svg",
   },
   {
     id: "reconciliation",
@@ -50,7 +50,7 @@ const features: Feature[] = [
     link: "/console/reconciliation-view",
     color: "green",
     gradient: "from-green-500 to-emerald-500",
-    screenshot: "/assets/marketing/hero-image-2.png",
+    screenshot: "/illustrations/how-settler-works.svg",
   },
   {
     id: "receipts",
@@ -61,7 +61,7 @@ const features: Feature[] = [
     link: "/console/receipts-hash",
     color: "purple",
     gradient: "from-purple-500 to-pink-500",
-    screenshot: "/assets/marketing/hero-image-3.png",
+    screenshot: "/illustrations/feature-audit.svg",
   },
   {
     id: "alerts",
@@ -73,7 +73,7 @@ const features: Feature[] = [
     link: "/console/alerts-view",
     color: "orange",
     gradient: "from-orange-500 to-red-500",
-    screenshot: "/assets/marketing/feature-1.svg",
+    screenshot: "/illustrations/feature-human.svg",
   },
   {
     id: "ai-analysis",
@@ -81,11 +81,11 @@ const features: Feature[] = [
     title: "AI-Powered Analysis",
     description:
       "Advanced AI analysis for deeper insights. Understand patterns, predict issues, get recommendations.",
-    highlight: "Growth & Enterprise tiers with token management",
+    highlight: "Growth & Enterprise tiers",
     link: "/console/ai-analysis",
     color: "indigo",
     gradient: "from-indigo-500 to-purple-500",
-    screenshot: "/assets/marketing/feature-2.svg",
+    screenshot: "/illustrations/feature-integration.svg",
   },
 ];
 

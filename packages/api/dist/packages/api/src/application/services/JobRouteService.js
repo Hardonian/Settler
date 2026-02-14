@@ -13,16 +13,19 @@ class JobRouteService {
     /**
      * Create a new reconciliation job
      */
-    async createJob(userId, request) {
+    async createJob(userId, tenantId, request) {
+        if (!tenantId)
+            throw new Error("tenantId is required");
         try {
             const { name, source, target, rules, schedule } = request;
             // Encrypt API keys in configs
             const encryptedSourceConfig = (0, encryption_1.encrypt)(JSON.stringify(source.config));
             const encryptedTargetConfig = (0, encryption_1.encrypt)(JSON.stringify(target.config));
-            const result = await (0, db_1.query)(`INSERT INTO jobs (user_id, name, source_adapter, source_config_encrypted, target_adapter, target_config_encrypted, rules, schedule)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            const result = await (0, db_1.query)(`INSERT INTO jobs (user_id, tenant_id, name, source_adapter, source_config_encrypted, target_adapter, target_config_encrypted, rules, schedule)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
          RETURNING id`, [
                 userId,
+                tenantId,
                 name,
                 source.adapter,
                 encryptedSourceConfig,
@@ -32,17 +35,13 @@ class JobRouteService {
                 schedule || null,
             ]);
             if (!result[0]) {
-                throw new Error('Failed to create job');
+                throw new Error("Failed to create job");
             }
             const jobId = result[0].id;
             // Log audit event
-            await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, metadata)
-         VALUES ($1, $2, $3)`, [
-                'job_created',
-                userId,
-                JSON.stringify({ jobId, name }),
-            ]);
-            (0, logger_1.logInfo)('Job created', { jobId, userId, name });
+            await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, tenant_id, metadata)
+         VALUES ($1, $2, $3, $4)`, ["job_created", userId, tenantId, JSON.stringify({ jobId, name })]);
+            (0, logger_1.logInfo)("Job created", { jobId, userId, name });
             const response = {
                 id: jobId,
                 userId,
@@ -50,7 +49,7 @@ class JobRouteService {
                 source: { adapter: source.adapter },
                 target: { adapter: target.adapter },
                 rules,
-                status: 'active',
+                status: "active",
                 createdAt: new Date().toISOString(),
             };
             if (schedule !== undefined) {
@@ -59,18 +58,20 @@ class JobRouteService {
             return response;
         }
         catch (error) {
-            (0, logger_1.logError)('Failed to create job', error, { userId });
-            const message = error instanceof Error ? error.message : 'Failed to create reconciliation job';
+            (0, logger_1.logError)("Failed to create job", error, { userId });
+            const message = error instanceof Error ? error.message : "Failed to create reconciliation job";
             throw new Error(message);
         }
     }
     /**
      * Get job by ID
      */
-    async getJob(jobId, userId) {
+    async getJob(jobId, userId, tenantId) {
+        if (!tenantId)
+            throw new Error("tenantId is required");
         const jobs = await (0, db_1.query)(`SELECT id, user_id, name, source_adapter, source_config_encrypted, target_adapter, target_config_encrypted, rules, schedule, status, created_at
        FROM jobs
-       WHERE id = $1 AND user_id = $2`, [jobId, userId]);
+       WHERE id = $1 AND user_id = $2 AND tenant_id = $3`, [jobId, userId, tenantId]);
         if (jobs.length === 0) {
             return null;
         }
@@ -84,15 +85,11 @@ class JobRouteService {
         // Redact sensitive fields
         const redactedSourceConfig = Object.fromEntries(Object.entries(sourceConfig).map(([key, value]) => [
             key,
-            key.toLowerCase().includes('key') || key.toLowerCase().includes('secret')
-                ? '***'
-                : value,
+            key.toLowerCase().includes("key") || key.toLowerCase().includes("secret") ? "***" : value,
         ]));
         const redactedTargetConfig = Object.fromEntries(Object.entries(targetConfig).map(([key, value]) => [
             key,
-            key.toLowerCase().includes('key') || key.toLowerCase().includes('secret')
-                ? '***'
-                : value,
+            key.toLowerCase().includes("key") || key.toLowerCase().includes("secret") ? "***" : value,
         ]));
         const response = {
             id: job.id,
@@ -118,15 +115,17 @@ class JobRouteService {
     /**
      * List jobs with pagination
      */
-    async listJobs(userId, page = 1, limit = 100) {
+    async listJobs(userId, tenantId, page = 1, limit = 100) {
+        if (!tenantId)
+            throw new Error("tenantId is required");
         const offset = (page - 1) * limit;
         const [jobs, totalResult] = await Promise.all([
             (0, db_1.query)(`SELECT id, user_id, name, source_adapter, target_adapter, status, created_at
          FROM jobs
-         WHERE user_id = $1
+         WHERE user_id = $1 AND tenant_id = $2
          ORDER BY created_at DESC
-         LIMIT $2 OFFSET $3`, [userId, limit, offset]),
-            (0, db_1.query)(`SELECT COUNT(*) as count FROM jobs WHERE user_id = $1`, [userId]),
+         LIMIT $3 OFFSET $4`, [userId, tenantId, limit, offset]),
+            (0, db_1.query)(`SELECT COUNT(*) as count FROM jobs WHERE user_id = $1 AND tenant_id = $2`, [userId, tenantId]),
         ]);
         if (!totalResult[0]) {
             return { jobs: [], total: 0 };
@@ -155,21 +154,19 @@ class JobRouteService {
     /**
      * Delete a job
      */
-    async deleteJob(jobId, userId) {
+    async deleteJob(jobId, userId, tenantId) {
+        if (!tenantId)
+            throw new Error("tenantId is required");
         const result = await (0, db_1.query)(`DELETE FROM jobs
-       WHERE id = $1 AND user_id = $2
-       RETURNING id`, [jobId, userId]);
+       WHERE id = $1 AND user_id = $2 AND tenant_id = $3
+       RETURNING id`, [jobId, userId, tenantId]);
         if (result.length === 0) {
             return false;
         }
         // Log audit event
-        await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, metadata)
-       VALUES ($1, $2, $3)`, [
-            'job_deleted',
-            userId,
-            JSON.stringify({ jobId }),
-        ]);
-        (0, logger_1.logInfo)('Job deleted', { jobId, userId });
+        await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, tenant_id, metadata)
+       VALUES ($1, $2, $3, $4)`, ["job_deleted", userId, tenantId, JSON.stringify({ jobId })]);
+        (0, logger_1.logInfo)("Job deleted", { jobId, userId });
         return true;
     }
 }

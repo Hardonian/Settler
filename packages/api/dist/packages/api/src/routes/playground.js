@@ -116,9 +116,9 @@ router.get("/playground/demo-dataset", (async (_req, res) => {
             res.status(404).json({ error: "Demo data not generated yet." });
             return;
         }
-        const stripeData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, "stripe_normalized.json"), "utf-8"));
-        const bankData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, "bank_normalized.json"), "utf-8"));
-        const expected = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, "expected_matches.json"), "utf-8"));
+        const stripeData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, "demo_stripe_transactions.json"), "utf-8"));
+        const bankData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, "demo_bank_transactions.json"), "utf-8"));
+        const expected = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, "demo_expected_matches.json"), "utf-8"));
         res.json({
             source: { name: "Stripe (Demo)", count: stripeData.length, data: stripeData },
             target: { name: "Bank (Demo)", count: bankData.length, data: bankData },
@@ -138,8 +138,8 @@ router.post("/playground/demo-run", (async (_req, res) => {
             return;
         }
         // 1. Load Data
-        const sourceData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, "stripe_normalized.json"), "utf-8"));
-        const targetData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, "bank_normalized.json"), "utf-8"));
+        const sourceData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, "demo_stripe_transactions.json"), "utf-8"));
+        const targetData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, "demo_bank_transactions.json"), "utf-8"));
         const prismaClient = getPrismaClient();
         if (!prismaClient) {
             res.status(503).json({ error: "Database not configured for playground." });

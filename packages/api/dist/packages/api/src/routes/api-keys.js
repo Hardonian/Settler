@@ -41,10 +41,11 @@ const regenerateApiKeySchema = zod_1.z.object({
 router.get("/api-keys", (0, authorization_1.requirePermission)(Permissions_1.Permission.USERS_WRITE), async (req, res) => {
     try {
         const userId = req.userId;
+        const tenantId = req.tenantId;
         const keys = await (0, db_1.query)(`SELECT id, name, scopes, rate_limit, revoked_at, expires_at, last_used_at, created_at, key_prefix
          FROM api_keys
-         WHERE user_id = $1
-         ORDER BY created_at DESC`, [userId]);
+         WHERE user_id = $1 AND tenant_id = $2
+         ORDER BY created_at DESC`, [userId, tenantId]);
         const maskedKeys = keys.map((key) => ({
             id: key.id,
             name: key.name,
@@ -74,9 +75,10 @@ router.get("/api-keys/:id", (0, authorization_1.requirePermission)(Permissions_1
             return;
         }
         const userId = req.userId;
+        const tenantId = req.tenantId;
         const keys = await (0, db_1.query)(`SELECT id, name, scopes, rate_limit, revoked_at, expires_at, last_used_at, created_at, key_prefix
          FROM api_keys
-         WHERE id = $1 AND user_id = $2`, [id, userId]);
+         WHERE id = $1 AND user_id = $2 AND tenant_id = $3`, [id, userId, tenantId]);
         if (keys.length === 0 || !keys[0]) {
             throw new typed_errors_1.NotFoundError("API key not found", "api_key", id);
         }
@@ -113,41 +115,37 @@ router.post("/api-keys", (0, authorization_1.requirePermission)(Permissions_1.Pe
             prefix,
             keyHash,
             name,
-            scopes || ['jobs:read', 'jobs:write', 'reports:read'],
+            scopes || ["jobs:read", "jobs:write", "reports:read"],
             rateLimit || 1000,
             expiresAt ? new Date(expiresAt) : null,
         ]);
         // Log audit event
         await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, metadata)
-         VALUES ($1, $2, $3)`, [
-            'api_key_created',
-            userId,
-            JSON.stringify({ apiKeyId: result[0]?.id || '', name }),
-        ]);
+         VALUES ($1, $2, $3)`, ["api_key_created", userId, JSON.stringify({ apiKeyId: result[0]?.id || "", name })]);
         // Log business event
         await (0, db_1.query)(`INSERT INTO events (user_id, event_name, properties)
          VALUES ($1, $2, $3)`, [
             userId,
-            'APIKeyCreated',
+            "APIKeyCreated",
             JSON.stringify({
-                apiKeyId: result[0]?.id || '',
-                keyType: 'live',
+                apiKeyId: result[0]?.id || "",
+                keyType: "live",
                 name,
             }),
         ]).catch(() => {
             // Events table might not exist yet, ignore
         });
         if (!result[0]) {
-            throw new Error('Failed to create API key');
+            throw new Error("Failed to create API key");
         }
-        (0, logger_1.logInfo)('API key created', { userId, apiKeyId: result[0].id });
+        (0, logger_1.logInfo)("API key created", { userId, apiKeyId: result[0].id });
         // Return key only once (never again)
         res.status(201).json({
             data: {
-                id: result[0]?.id || '',
+                id: result[0]?.id || "",
                 key, // Only returned on creation
                 name,
-                scopes: scopes || ['jobs:read', 'jobs:write', 'reports:read'],
+                scopes: scopes || ["jobs:read", "jobs:write", "reports:read"],
                 rateLimit: rateLimit || 1000,
                 createdAt: new Date().toISOString(),
             },
@@ -168,8 +166,9 @@ router.patch("/api-keys/:id", (0, authorization_1.requirePermission)(Permissions
         }
         const { name, scopes, rateLimit, revoked } = req.body;
         const userId = req.userId;
+        const tenantId = req.tenantId;
         // Verify ownership
-        const existing = await (0, db_1.query)(`SELECT id, revoked_at FROM api_keys WHERE id = $1 AND user_id = $2`, [id, userId]);
+        const existing = await (0, db_1.query)(`SELECT id, revoked_at FROM api_keys WHERE id = $1 AND user_id = $2 AND tenant_id = $3`, [id, userId, tenantId]);
         if (existing.length === 0) {
             throw new typed_errors_1.NotFoundError("API key not found", "api_key", id);
         }
@@ -199,15 +198,16 @@ router.patch("/api-keys/:id", (0, authorization_1.requirePermission)(Permissions
         }
         updates.push(`updated_at = NOW()`);
         values.push(id, userId);
-        await (0, db_1.query)(`UPDATE api_keys SET ${updates.join(', ')} WHERE id = $${paramCount++} AND user_id = $${paramCount++}`, values);
+        values.push(tenantId);
+        await (0, db_1.query)(`UPDATE api_keys SET ${updates.join(", ")} WHERE id = $${paramCount++} AND user_id = $${paramCount++} AND tenant_id = $${paramCount++}`, values);
         // Log audit event
         await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`, [
-            'api_key_updated',
+            "api_key_updated",
             userId,
             JSON.stringify({ apiKeyId: id, updates: { name, scopes, rateLimit, revoked } }),
         ]);
-        (0, logger_1.logInfo)('API key updated', { userId, apiKeyId: id });
+        (0, logger_1.logInfo)("API key updated", { userId, apiKeyId: id });
         res.json({
             message: "API key updated successfully",
         });
@@ -225,10 +225,11 @@ router.post("/api-keys/:id/regenerate", (0, authorization_1.requirePermission)(P
             return;
         }
         const userId = req.userId;
+        const tenantId = req.tenantId;
         // Verify ownership
         const existing = await (0, db_1.query)(`SELECT id, name, scopes, rate_limit, expires_at
          FROM api_keys
-         WHERE id = $1 AND user_id = $2`, [id, userId]);
+         WHERE id = $1 AND user_id = $2 AND tenant_id = $3`, [id, userId, tenantId]);
         if (existing.length === 0 || !existing[0]) {
             throw new typed_errors_1.NotFoundError("API key not found", "api_key", id);
         }
@@ -253,26 +254,28 @@ router.post("/api-keys/:id/regenerate", (0, authorization_1.requirePermission)(P
             // Log audit event
             await client.query(`INSERT INTO audit_logs (event, user_id, metadata)
            VALUES ($1, $2, $3)`, [
-                'api_key_regenerated',
+                "api_key_regenerated",
                 userId,
-                JSON.stringify({ oldApiKeyId: id, newApiKeyId: result.rows[0]?.id || '' }),
+                JSON.stringify({ oldApiKeyId: id, newApiKeyId: result.rows[0]?.id || "" }),
             ]);
             // Log business event
-            await client.query(`INSERT INTO events (user_id, event_name, properties)
+            await client
+                .query(`INSERT INTO events (user_id, event_name, properties)
            VALUES ($1, $2, $3)`, [
                 userId,
-                'APIKeyRegenerated',
+                "APIKeyRegenerated",
                 JSON.stringify({
                     oldApiKeyId: id,
-                    newApiKeyId: result.rows[0]?.id || '',
+                    newApiKeyId: result.rows[0]?.id || "",
                 }),
-            ]).catch(() => {
+            ])
+                .catch(() => {
                 // Events table might not exist yet, ignore
             });
             if (!result.rows[0]) {
-                throw new Error('Failed to regenerate API key');
+                throw new Error("Failed to regenerate API key");
             }
-            (0, logger_1.logInfo)('API key regenerated', { userId, oldApiKeyId: id, newApiKeyId: result.rows[0].id });
+            (0, logger_1.logInfo)("API key regenerated", { userId, oldApiKeyId: id, newApiKeyId: result.rows[0].id });
             res.status(201).json({
                 data: {
                     id: result.rows[0].id,
@@ -299,21 +302,20 @@ router.delete("/api-keys/:id", (0, authorization_1.requirePermission)(Permission
             return;
         }
         const userId = req.userId;
+        const tenantId = req.tenantId;
         // Verify ownership
-        const existing = await (0, db_1.query)(`SELECT id FROM api_keys WHERE id = $1 AND user_id = $2`, [id, userId]);
+        const existing = await (0, db_1.query)(`SELECT id FROM api_keys WHERE id = $1 AND user_id = $2 AND tenant_id = $3`, [id, userId, tenantId]);
         if (existing.length === 0) {
             throw new typed_errors_1.NotFoundError("API key not found", "api_key", id);
         }
         // Revoke instead of delete (soft delete)
-        await (0, db_1.query)(`UPDATE api_keys SET revoked_at = NOW(), updated_at = NOW() WHERE id = $1`, [id || null]);
+        await (0, db_1.query)(`UPDATE api_keys SET revoked_at = NOW(), updated_at = NOW() WHERE id = $1`, [
+            id || null,
+        ]);
         // Log audit event
         await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, metadata)
-         VALUES ($1, $2, $3)`, [
-            'api_key_deleted',
-            userId,
-            JSON.stringify({ apiKeyId: id }),
-        ]);
-        (0, logger_1.logInfo)('API key deleted', { userId, apiKeyId: id });
+         VALUES ($1, $2, $3)`, ["api_key_deleted", userId, JSON.stringify({ apiKeyId: id })]);
+        (0, logger_1.logInfo)("API key deleted", { userId, apiKeyId: id });
         res.json({
             message: "API key revoked successfully",
         });

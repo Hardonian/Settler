@@ -32,7 +32,7 @@ router.get("/executions/:executionId/status", (0, authorization_1.requirePermiss
         const executions = await (0, db_1.query)(`SELECT e.id, e.job_id, e.status, e.started_at, e.completed_at, e.summary, e.error
          FROM executions e
          JOIN jobs j ON e.job_id = j.id
-         WHERE e.id = $1 AND j.user_id = $2`, [executionId, userId]);
+         WHERE e.id = $1 AND j.user_id = $2 AND j.tenant_id = $3`, [executionId, userId, req.tenantId]);
         if (executions.length === 0 || !executions[0]) {
             throw new typed_errors_1.NotFoundError("Execution not found", "execution", executionId);
         }
@@ -56,7 +56,7 @@ router.get("/executions/:executionId/status", (0, authorization_1.requirePermiss
             progressMessage = "Reconciliation in progress...";
         }
         // Get match count (if available)
-        const matchCount = await (0, db_1.query)(`SELECT COUNT(*) as count FROM matches WHERE execution_id = $1`, [executionId]);
+        const matchCount = await (0, db_1.query)(`SELECT COUNT(*) as count FROM matches WHERE execution_id = $1 AND tenant_id = $2`, [executionId, req.tenantId]);
         const summary = execution.summary;
         const matchCountValue = matchCount[0]?.count || "0";
         res.json({

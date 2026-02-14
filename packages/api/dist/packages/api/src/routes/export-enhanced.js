@@ -62,8 +62,9 @@ router.get("/jobs/:jobId/export", (0, authorization_1.requirePermission)(Permiss
         if (!jobId || !userId) {
             throw new typed_errors_1.NotFoundError("Job ID and User ID are required", "job", jobId || "unknown");
         }
-        // Verify job ownership
-        const jobs = await (0, db_1.query)(`SELECT id, name FROM jobs WHERE id = $1 AND user_id = $2`, [jobId, userId]);
+        const tenantId = req.tenantId;
+        // Verify job ownership — scoped by tenant_id
+        const jobs = await (0, db_1.query)(`SELECT id, name FROM jobs WHERE id = $1 AND user_id = $2 AND tenant_id = $3`, [jobId, userId, tenantId]);
         if (jobs.length === 0 || !jobs[0]) {
             throw new typed_errors_1.NotFoundError("Job not found", "job", jobId);
         }
@@ -73,8 +74,8 @@ router.get("/jobs/:jobId/export", (0, authorization_1.requirePermission)(Permiss
         const end = endDate ? new Date(endDate) : new Date();
         // Get execution
         const executions = await (0, db_1.query)(`SELECT id FROM executions
-         WHERE job_id = $1 AND started_at >= $2 AND started_at <= $3
-         ORDER BY started_at DESC LIMIT 1`, [jobId, start.toISOString(), end.toISOString()]);
+         WHERE job_id = $1 AND tenant_id = $2 AND started_at >= $3 AND started_at <= $4
+         ORDER BY started_at DESC LIMIT 1`, [jobId, tenantId, start.toISOString(), end.toISOString()]);
         if (executions.length === 0 || !executions[0]) {
             throw new typed_errors_1.NotFoundError("No execution found for date range", "execution", jobId);
         }
@@ -83,11 +84,11 @@ router.get("/jobs/:jobId/export", (0, authorization_1.requirePermission)(Permiss
         if (format === "csv" || format === "xlsx") {
             const matches = includeMatched
                 ? await (0, db_1.query)(`SELECT source_id, target_id, amount, currency, confidence, matched_at
-               FROM matches WHERE execution_id = $1`, [executionId])
+               FROM matches WHERE execution_id = $1 AND tenant_id = $2`, [executionId, tenantId])
                 : [];
             const exceptions = includeExceptions
                 ? await (0, db_1.query)(`SELECT source_id, category, description, severity
-               FROM exceptions WHERE execution_id = $1`, [executionId])
+               FROM exceptions WHERE execution_id = $1 AND tenant_id = $2`, [executionId, tenantId])
                 : [];
             // Generate CSV
             if (format === "csv") {
@@ -132,10 +133,16 @@ router.get("/jobs/:jobId/export", (0, authorization_1.requirePermission)(Permiss
         }
         // JSON format
         const matches = includeMatched
-            ? await (0, db_1.query)(`SELECT * FROM matches WHERE execution_id = $1`, [executionId])
+            ? await (0, db_1.query)(`SELECT * FROM matches WHERE execution_id = $1 AND tenant_id = $2`, [
+                executionId,
+                tenantId,
+            ])
             : [];
         const exceptions = includeExceptions
-            ? await (0, db_1.query)(`SELECT * FROM exceptions WHERE execution_id = $1`, [executionId])
+            ? await (0, db_1.query)(`SELECT * FROM exceptions WHERE execution_id = $1 AND tenant_id = $2`, [
+                executionId,
+                tenantId,
+            ])
             : [];
         res.json({
             data: {
@@ -164,8 +171,9 @@ router.post("/jobs/:jobId/exports/schedule", (0, authorization_1.requirePermissi
         if (!jobId || !userId) {
             throw new typed_errors_1.NotFoundError("Job ID and User ID are required", "job", jobId || "unknown");
         }
-        // Verify job ownership
-        const jobs = await (0, db_1.query)(`SELECT id FROM jobs WHERE id = $1 AND user_id = $2`, [jobId, userId]);
+        const tenantId = req.tenantId;
+        // Verify job ownership — scoped by tenant_id
+        const jobs = await (0, db_1.query)(`SELECT id FROM jobs WHERE id = $1 AND user_id = $2 AND tenant_id = $3`, [jobId, userId, tenantId]);
         if (jobs.length === 0 || !jobs[0]) {
             throw new typed_errors_1.NotFoundError("Job not found", "job", jobId);
         }

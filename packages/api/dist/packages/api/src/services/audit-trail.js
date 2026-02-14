@@ -14,11 +14,15 @@ const logger_1 = require("../utils/logger");
  */
 async function getAuditLogs(tenantId, filters = {}, options = {}) {
     try {
+        if (!tenantId)
+            throw new Error("tenantId is required for getAuditLogs");
         const conditions = [];
         const params = [];
         let paramIndex = 1;
-        // Note: audit_log is in app_private schema, so we need to handle tenant filtering differently
-        // This is a simplified version - actual implementation would need proper RLS or tenant context
+        // INVARIANT: tenant_id is always the first filter — no cross-tenant audit log access
+        conditions.push(`tenant_id = $${paramIndex}`);
+        params.push(tenantId);
+        paramIndex++;
         if (filters.actor) {
             conditions.push(`actor = $${paramIndex}`);
             params.push(filters.actor);
@@ -56,7 +60,8 @@ async function getAuditLogs(tenantId, filters = {}, options = {}) {
         }
         const limit = options.limit || 100;
         const offset = options.offset || 0;
-        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+        // conditions always has at least tenant_id — no unscoped queries possible
+        const whereClause = `WHERE ${conditions.join(" AND ")}`;
         const result = await (0, db_1.query)(`SELECT id, at, actor, action, schema_name, table_name, row_pk, details,
               ip_address, user_agent, compliance_tags
        FROM app_private.audit_log
@@ -92,7 +97,7 @@ async function createAuditExport(tenantId, exportedBy, filters, exportFormat = "
         tenant_id, exported_by, export_format, filters, expires_at
       ) VALUES ($1, $2, $3, $4, $5)
       RETURNING id`, [tenantId, exportedBy, exportFormat, JSON.stringify(filters), expiresAt]);
-        const exportId = result[0]?.id || '';
+        const exportId = result[0]?.id || "";
         // TODO: Generate actual export file (CSV, JSON, etc.)
         // For now, just log it
         (0, logger_1.logInfo)("Audit export created", {

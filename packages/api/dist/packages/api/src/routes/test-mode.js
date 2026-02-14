@@ -24,9 +24,10 @@ const toggleTestModeSchema = zod_1.z.object({
 router.get("/test-mode", (0, authorization_1.requirePermission)(Permissions_1.Permission.USERS_READ), async (req, res) => {
     try {
         const userId = req.userId;
+        const tenantId = req.tenantId;
         const users = await (0, db_1.query)(`SELECT COALESCE(test_mode_enabled, false) as test_mode_enabled
          FROM users
-         WHERE id = $1`, [userId]);
+         WHERE id = $1 AND tenant_id = $2`, [userId, tenantId]);
         if (users.length === 0 || !users[0]) {
             return res.status(404).json({ error: "User not found" });
         }
@@ -49,18 +50,19 @@ router.post("/test-mode", (0, authorization_1.requirePermission)(Permissions_1.P
         const userId = req.userId;
         // Update user test mode setting
         // Add test_mode_enabled column if it doesn't exist (migration handles this)
+        const tenantId = req.tenantId;
         await (0, db_1.query)(`UPDATE users
          SET test_mode_enabled = $1, updated_at = NOW()
-         WHERE id = $2`, [enabled, userId]);
+         WHERE id = $2 AND tenant_id = $3`, [enabled, userId, tenantId]);
         // Track event
-        (0, event_tracker_1.trackEventAsync)(userId, 'TestModeToggled', {
+        (0, event_tracker_1.trackEventAsync)(userId, "TestModeToggled", {
             enabled,
         });
         res.json({
             data: {
                 enabled,
             },
-            message: `Test mode ${enabled ? 'enabled' : 'disabled'}`,
+            message: `Test mode ${enabled ? "enabled" : "disabled"}`,
         });
     }
     catch (error) {

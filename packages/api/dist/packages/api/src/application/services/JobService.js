@@ -33,10 +33,13 @@ class JobService {
             jobProps.schedule = command.schedule;
         }
         const job = Job_1.Job.create(jobProps);
-        // Convert to repository format and save
+        // Convert to repository format and save — tenantId is required
+        if (!command.tenantId)
+            throw new Error("tenantId is required");
         const persistedJobProps = job.toPersistence();
-        const savedJob = await this.jobRepository.create({
+        const savedJob = await this.jobRepository.create(command.tenantId, {
             userId: persistedJobProps.userId,
+            tenantId: command.tenantId,
             name: persistedJobProps.name,
             source: {
                 adapter: persistedJobProps.sourceAdapter,
@@ -60,9 +63,11 @@ class JobService {
         };
     }
     async getJob(query) {
-        const jobData = await this.jobRepository.findById(query.jobId, query.userId);
+        if (!query.tenantId)
+            throw new Error("tenantId is required");
+        const jobData = await this.jobRepository.findById(query.jobId, query.tenantId, query.userId);
         if (!jobData) {
-            throw new Error('Job not found');
+            throw new Error("Job not found");
         }
         // Convert repository format to domain format
         const source = jobData.source;
@@ -85,8 +90,10 @@ class JobService {
         return result;
     }
     async listJobs(query) {
+        if (!query.tenantId)
+            throw new Error("tenantId is required");
         const page = Math.floor(query.offset / query.limit) + 1;
-        const result = await this.jobRepository.findByUserId(query.userId, page, query.limit);
+        const result = await this.jobRepository.findByUserId(query.tenantId, query.userId, page, query.limit);
         return {
             jobs: result.jobs.map((jobData) => {
                 const source = jobData.source;
@@ -106,10 +113,12 @@ class JobService {
             offset: query.offset,
         };
     }
-    async updateJob(jobId, userId, updates) {
-        const jobData = await this.jobRepository.findById(jobId, userId);
+    async updateJob(jobId, userId, tenantId, updates) {
+        if (!tenantId)
+            throw new Error("tenantId is required");
+        const jobData = await this.jobRepository.findById(jobId, tenantId, userId);
         if (!jobData) {
-            throw new Error('Job not found');
+            throw new Error("Job not found");
         }
         // Convert repository format to domain entity
         const source = jobData.source;
@@ -154,19 +163,21 @@ class JobService {
                 ? await (0, encryption_1.encrypt)(JSON.stringify(updates.targetConfig))
                 : job.targetConfigEncrypted;
             job.updateConfigs(sourceConfigEncrypted, targetConfigEncrypted);
-            changes.configs = 'updated';
+            changes.configs = "updated";
         }
         // Note: Repository doesn't have update method, so we'd need to implement it
         // For now, this is a placeholder
         const jobProps = job.toPersistence();
-        await this.jobRepository.updateStatus(jobProps.id, jobProps.userId, jobProps.status, jobProps.version);
+        await this.jobRepository.updateStatus(jobProps.id, tenantId, jobProps.userId, jobProps.status, jobProps.version);
         // Emit domain event
         await this.eventBus.publish(new DomainEvent_1.JobUpdatedEvent(jobProps.id, jobProps.userId, changes));
     }
-    async deleteJob(jobId, userId) {
-        const deleted = await this.jobRepository.delete(jobId, userId);
+    async deleteJob(jobId, userId, tenantId) {
+        if (!tenantId)
+            throw new Error("tenantId is required");
+        const deleted = await this.jobRepository.delete(jobId, tenantId, userId);
         if (!deleted) {
-            throw new Error('Job not found');
+            throw new Error("Job not found");
         }
     }
 }
