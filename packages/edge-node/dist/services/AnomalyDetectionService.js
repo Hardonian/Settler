@@ -9,9 +9,7 @@ const logger_1 = require("../utils/logger");
 class AnomalyDetectionService {
     db;
     _modelManager;
-    constructor(db, 
-    // @ts-expect-error - Reserved for future use
-    _modelManager) {
+    constructor(db, _modelManager) {
         this.db = db;
         this._modelManager = _modelManager;
     }
@@ -67,7 +65,7 @@ class AnomalyDetectionService {
     }
     checkDuplicate(transaction) {
         const rawId = transaction.id || transaction.transaction_id;
-        const id = typeof rawId === 'string' || typeof rawId === 'number' ? String(rawId) : "";
+        const id = typeof rawId === "string" || typeof rawId === "number" ? String(rawId) : "";
         if (!id)
             return false;
         const result = this.db

@@ -9,9 +9,7 @@ const logger_1 = require("../utils/logger");
 class IngestionService {
     _db;
     piiRedaction;
-    constructor(
-    // @ts-expect-error - Reserved for future use
-    _db, piiRedaction) {
+    constructor(_db, piiRedaction) {
         this._db = _db;
         this.piiRedaction = piiRedaction;
     }
