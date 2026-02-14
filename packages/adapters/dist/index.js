@@ -30,6 +30,7 @@ __exportStar(require("./enhanced-paypal"), exports);
 __exportStar(require("./xero"), exports);
 __exportStar(require("./netsuite"), exports);
 __exportStar(require("./woocommerce"), exports);
+__exportStar(require("./demo"), exports);
 // New connector framework - use connector-driver exports (preferred)
 var connector_driver_1 = require("./connector-driver");
 Object.defineProperty(exports, "DriverConnectorError", { enumerable: true, get: function () { return connector_driver_1.ConnectorError; } });

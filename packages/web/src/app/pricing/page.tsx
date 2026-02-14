@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { PricingCalculator } from "@/components/pricing/PricingCalculator";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { TrustBadges } from "@/components/shared/trust-badges";
@@ -199,16 +200,30 @@ export default function Pricing() {
                       for automated processing.
                     </p>
                   </div>
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 md:p-4">
-                    <p className="text-blue-800 dark:text-blue-200">
-                      <strong>Example:</strong> Process 10,000 transactions/month. 95% match
-                      instantly (9,500 transactions). 1% included exceptions (100 transactions). If
-                      you have 150 exceptions total, you pay for 50 extra: $99 + (50 × $0.10) =
-                      $104/month.
-                      <strong className="block mt-2">ROI:</strong> If manual reconciliation takes 8
-                      hours/month at $50/hour = $400/month. Settler costs $104/month.{" "}
-                      <strong>You save $296/month ($3,552/year).</strong>
-                    </p>
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                      <div>
+                        <p className="text-blue-800 dark:text-blue-200 text-sm md:text-base mb-4">
+                          <strong>Example:</strong> Process 10,000 transactions/month. 95% match
+                          instantly (9,500 transactions). 1% included exceptions (100 transactions). If
+                          you have 150 exceptions total, you pay for 50 extra: $99 + (50 × $0.10) =
+                          $104/month.
+                        </p>
+                        <p className="text-blue-800 dark:text-blue-200 font-bold">
+                          ROI: Manual takes 8h/mo @ $50/h = $400/mo. Settler is $104/mo. You save $296/mo.
+                        </p>
+                      </div>
+                      <div className="relative aspect-video rounded-lg overflow-hidden bg-white/50 dark:bg-slate-800/50 p-2">
+                        <Image
+                          src="/assets/infographics/roi-comparison.svg"
+                          alt="ROI Comparison Chart"
+                          width={400}
+                          height={225}
+                          className="w-full h-auto"
+                          loading="lazy"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </AccordionContent>
               </AccordionItem>

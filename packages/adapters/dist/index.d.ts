@@ -15,6 +15,7 @@ export * from "./enhanced-paypal";
 export * from "./xero";
 export * from "./netsuite";
 export * from "./woocommerce";
+export * from "./demo";
 export { ConnectorError as DriverConnectorError, ValidationError as DriverValidationError, } from "./connector-driver";
 export type { ConnectorDriver, ConnectorMetadata as DriverConnectorMetadata, NormalizedAccount, NormalizedTransaction, NormalizedBalance, NormalizedPayout, NormalizedInvoice, NormalizedSubscription, NormalizedTaxEstimate, SyncOptions, SyncResult, AuthUrlOptions, AuthCallbackResult, TestConnectionOptions, TestConnectionResult, WebhookPayload, } from "./connector-driver";
 export * from "./connector-runtime";

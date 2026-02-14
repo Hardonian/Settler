@@ -14,10 +14,10 @@ import { SETTLER_IMAGES } from "@/lib/images/image-config";
 // Primary navigation items (always visible on desktop)
 const primaryNavigationItems = [
   { href: "/platform", label: "Platform" },
+  { href: "/enterprise", label: "Enterprise" },
   { href: "/pricing", label: "Pricing" },
   { href: "/security", label: "Security" },
   { href: "/docs", label: "Docs" },
-  { href: "/about", label: "About" },
 ];
 
 // Secondary navigation items (in "More" dropdown on desktop, accordion on mobile)
