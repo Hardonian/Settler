@@ -9,7 +9,6 @@ import { BuilderComponent, builder, useIsPreviewing } from '@builder.io/react';
 import { builderModels } from '@/lib/builder/config';
 import '@/lib/builder/component-registry'; // Auto-register components
 import { useEffect, useState } from 'react';
-import Head from 'next/head';
 
 interface BuilderPageProps {
   model?: string;
@@ -118,29 +117,8 @@ export default function BuilderPage({
   );
 }
 
-// SEO helper component for Builder pages
-export function BuilderPageWithSEO({ content, model }: BuilderPageProps) {
-  // Extract SEO data from Builder content
-  const title = content?.data?.title || 'Settler';
-  const description = content?.data?.description || '';
-  const keywords = content?.data?.keywords || '';
-  const ogImage = content?.data?.ogImage || '/og-image.png';
-
-  return (
-    <>
-      <Head>
-        <title>{title}</title>
-        {description && <meta name="description" content={description} />}
-        {keywords && <meta name="keywords" content={keywords} />}
-        <meta property="og:title" content={title} />
-        {description && <meta property="og:description" content={description} />}
-        <meta property="og:image" content={ogImage} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={title} />
-        {description && <meta name="twitter:description" content={description} />}
-        <meta name="twitter:image" content={ogImage} />
-      </Head>
-      <BuilderPage content={content} model={model} />
-    </>
-  );
+// SEO helper component for Builder pages - DEPRECATED in App Router
+// SEO is now handled via generateMetadata in the page.tsx file
+export function BuilderPageWithSEO({ content, model, apiKey }: BuilderPageProps) {
+  return <BuilderPage content={content} model={model} apiKey={apiKey} />;
 }

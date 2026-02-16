@@ -180,21 +180,21 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   } catch (error) {
     // CRITICAL: Middleware must NEVER throw - always return a valid response
     // Log error but continue with basic response
-    console.error('[Middleware] Unexpected error (non-fatal):', 
+    console.error('[Middleware] Unexpected error (non-fatal):',
       error instanceof Error ? error.message : 'Unknown error'
     );
-    
+
     // Return a basic response with security headers
     const fallbackResponse = NextResponse.next({
       request: {
         headers: new Headers(request.headers),
       },
     });
-    
+
     // Generate trace ID even on error
     const traceId = generateTraceId();
     fallbackResponse.headers.set("x-trace-id", traceId);
-    
+
     return addSecurityHeaders(fallbackResponse);
   }
 }
@@ -202,13 +202,14 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     * - api/stripe/webhook (handled explicitly in middleware)
+     * Scope middleware explicitly to authenticated routes and API
+     * Marketing routes (/, /home, /pricing, etc.) are excluded to
+     * ensure zero auth/env assumptions and maximum performance.
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/app/:path*",
+    "/admin/:path*",
+    "/console/:path*",
+    "/dashboard/:path*",
+    "/api/:path*",
   ],
 };

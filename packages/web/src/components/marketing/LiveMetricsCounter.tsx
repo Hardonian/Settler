@@ -1,6 +1,6 @@
 /**
  * Live Metrics Counter
- * 
+ *
  * Animated counter showing real-time usage metrics.
  * Creates urgency and social proof.
  */
@@ -9,7 +9,7 @@
 
 import { useEffect, useState } from 'react';
 import { Activity, Zap, TrendingUp } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, formatNumber } from '@/lib/utils';
 
 interface Metric {
   label: string;
@@ -77,7 +77,7 @@ function AnimatedCounter({
 
   return (
     <span className={className}>
-      {displayValue.toLocaleString()}
+      {formatNumber(displayValue)}
       {suffix}
     </span>
   );

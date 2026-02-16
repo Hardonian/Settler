@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Users, TrendingUp, Zap, CheckCircle2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatNumber } from "@/lib/utils";
 
 interface Stat {
   icon: React.ReactNode;
@@ -91,14 +91,14 @@ export function SocialProofCounter() {
   const stats: Stat[] = [
     {
       icon: <Users className="w-6 h-6" />,
-      value: counts.customers.toLocaleString(),
+      value: formatNumber(counts.customers),
       label: "Companies Trust Us",
       suffix: "+",
       color: "from-blue-500 to-indigo-600",
     },
     {
       icon: <TrendingUp className="w-6 h-6" />,
-      value: counts.transactions.toLocaleString(),
+      value: formatNumber(counts.transactions),
       label: "Transactions Reconciled",
       suffix: "+",
       color: "from-green-500 to-emerald-600",
@@ -139,7 +139,7 @@ export function SocialProofCounter() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6" role="list">
           {stats.map((stat, index) => (
             <div
               key={index}

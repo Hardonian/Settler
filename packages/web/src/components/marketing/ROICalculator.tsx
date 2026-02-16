@@ -1,6 +1,6 @@
 /**
  * ROI Calculator Component
- * 
+ *
  * Interactive calculator showing ROI from using Settler.
  * Helps subscribers understand value proposition.
  */
@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Calculator, TrendingUp, DollarSign, Clock } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, formatNumber } from '@/lib/utils';
 
 interface ROICalculatorProps {
   className?: string;
@@ -148,7 +148,7 @@ export function ROICalculator({ className }: ROICalculatorProps) {
               </span>
             </div>
             <div className="text-3xl font-bold text-green-600">
-              ${calculations.savings.annual.toLocaleString()}
+              ${formatNumber(calculations.savings.annual)}
             </div>
           </div>
           <div className="text-center p-4 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
@@ -184,7 +184,7 @@ export function ROICalculator({ className }: ROICalculatorProps) {
                 Current Cost
               </div>
               <div className="text-2xl font-bold text-red-600">
-                ${calculations.current.total.toLocaleString()}
+                ${formatNumber(calculations.current.total)}
                 <span className="text-sm font-normal text-slate-500">/month</span>
               </div>
             </div>
@@ -193,7 +193,7 @@ export function ROICalculator({ className }: ROICalculatorProps) {
                 With Settler
               </div>
               <div className="text-2xl font-bold text-green-600">
-                ${calculations.settler.total.toLocaleString()}
+                ${formatNumber(calculations.settler.total)}
                 <span className="text-sm font-normal text-slate-500">/month</span>
               </div>
             </div>

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Download, Upload, RotateCcw, Clock, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDate } from "@/lib/utils";
 
 interface ProjectSnapshot {
   id: string;
@@ -191,7 +192,7 @@ export function ProjectSnapshotManager({ projectId, projectType }: ProjectSnapsh
                     </h4>
                     <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mt-1">
                       <Clock className="w-3 h-3" />
-                      <span>{new Date(snapshot.createdAt).toLocaleString()}</span>
+                      <span>{formatDate(snapshot.createdAt)}</span>
                     </div>
                   </div>
                 </div>
