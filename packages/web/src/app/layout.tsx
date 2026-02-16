@@ -143,13 +143,11 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  // Initialize Sentry (non-blocking, graceful failure)
-  if (typeof window === "undefined") {
-    initSentry().catch(() => {
-      // Sentry initialization failed (package not available or not configured)
-      // This is expected during builds without Sentry configured
-    });
-  }
+  // Initialize Sentry on the server (non-blocking, graceful failure)
+  initSentry().catch(() => {
+    // Sentry initialization failed (package not available or not configured)
+    // This is expected during builds without Sentry configured
+  });
 
   return (
     <html lang="en" suppressHydrationWarning>
