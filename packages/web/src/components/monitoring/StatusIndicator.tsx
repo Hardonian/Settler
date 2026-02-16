@@ -18,53 +18,10 @@ export function StatusIndicator() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    let cancelled = false;
-
-    // Check status from status page API
-    const checkStatus = async () => {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-        const response = await fetch("https://status.settler.dev/api/v2/status.json", {
-          method: "GET",
-          headers: { Accept: "application/json" },
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-
-        if (cancelled) return;
-
-        if (response.ok) {
-          try {
-            const data = await response.json();
-            const pageStatus = data?.status?.indicator || "operational";
-            setStatus(
-              pageStatus === "none" ? "operational" : pageStatus === "minor" ? "degraded" : "down"
-            );
-          } catch {
-            setStatus("operational");
-          }
-        } else {
-          setStatus("operational");
-        }
-      } catch {
-        // Network error, CSP block, abort, or any other failure — default to operational
-        if (!cancelled) {
-          setStatus("operational");
-        }
-      }
-      if (!cancelled) {
-        setIsVisible(true);
-      }
-    };
-
-    checkStatus();
-    const interval = setInterval(checkStatus, 5 * 60 * 1000);
-    return () => {
-      cancelled = true;
-      clearInterval(interval);
-    };
+    // Default to operational — the status page link itself provides live details.
+    // Avoids unreliable cross-origin fetch that throws in sandboxed/dev environments.
+    setStatus("operational");
+    setIsVisible(true);
   }, []);
 
   if (!isVisible) {
