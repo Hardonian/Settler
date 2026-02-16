@@ -18,54 +18,53 @@ export function StatusIndicator() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
+
     // Check status from status page API
     const checkStatus = async () => {
       try {
-        // Try to fetch status from status.settler.dev API
-        // Fallback to operational if API unavailable or CSP blocks it
-        let response: Response | null = null;
-        try {
-          response = await fetch("https://status.settler.dev/api/v2/status.json", {
-            method: "GET",
-            headers: { Accept: "application/json" },
-            // Don't throw on network errors, let catch handle it
-          });
-        } catch (fetchError) {
-          // CSP violation or network error - silently fallback
-          // eslint-disable-next-line no-console
-          console.debug("Status check failed (likely CSP or network):", fetchError);
-          setStatus("operational");
-          setIsVisible(true);
-          return;
-        }
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-        if (response?.ok) {
+        const response = await fetch("https://status.settler.dev/api/v2/status.json", {
+          method: "GET",
+          headers: { Accept: "application/json" },
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+
+        if (cancelled) return;
+
+        if (response.ok) {
           try {
             const data = await response.json();
-            // Map status page status to our status
             const pageStatus = data?.status?.indicator || "operational";
             setStatus(
               pageStatus === "none" ? "operational" : pageStatus === "minor" ? "degraded" : "down"
             );
           } catch {
-            // Invalid JSON response - default to operational
             setStatus("operational");
           }
         } else {
-          // Non-200 response - default to operational
           setStatus("operational");
         }
-      } catch (_error: unknown) {
-        // Any other error - default to operational
-        setStatus("operational");
+      } catch {
+        // Network error, CSP block, abort, or any other failure — default to operational
+        if (!cancelled) {
+          setStatus("operational");
+        }
       }
-      setIsVisible(true);
+      if (!cancelled) {
+        setIsVisible(true);
+      }
     };
 
     checkStatus();
-    // Check every 5 minutes
     const interval = setInterval(checkStatus, 5 * 60 * 1000);
-    return () => clearInterval(interval);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
   }, []);
 
   if (!isVisible) {
