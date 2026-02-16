@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 interface AnimatedCounterProps {
   value: string | number;
@@ -25,13 +26,9 @@ export function AnimatedCounter({
 }: AnimatedCounterProps) {
   const [displayValue, setDisplayValue] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
   const counterRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
-
-  // Check for reduced motion preference
-  const prefersReducedMotion =
-    typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -124,7 +121,7 @@ export function AnimatedCounter({
       return `${(val / 1000000).toFixed(1)}M+`;
     }
     
-    return Math.round(val).toLocaleString();
+    return Math.round(val).toLocaleString('en-US');
   };
 
   return (

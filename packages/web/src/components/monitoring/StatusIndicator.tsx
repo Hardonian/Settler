@@ -18,54 +18,10 @@ export function StatusIndicator() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Check status from status page API
-    const checkStatus = async () => {
-      try {
-        // Try to fetch status from status.settler.dev API
-        // Fallback to operational if API unavailable or CSP blocks it
-        let response: Response | null = null;
-        try {
-          response = await fetch("https://status.settler.dev/api/v2/status.json", {
-            method: "GET",
-            headers: { Accept: "application/json" },
-            // Don't throw on network errors, let catch handle it
-          });
-        } catch (fetchError) {
-          // CSP violation or network error - silently fallback
-          // eslint-disable-next-line no-console
-          console.debug("Status check failed (likely CSP or network):", fetchError);
-          setStatus("operational");
-          setIsVisible(true);
-          return;
-        }
-
-        if (response?.ok) {
-          try {
-            const data = await response.json();
-            // Map status page status to our status
-            const pageStatus = data?.status?.indicator || "operational";
-            setStatus(
-              pageStatus === "none" ? "operational" : pageStatus === "minor" ? "degraded" : "down"
-            );
-          } catch {
-            // Invalid JSON response - default to operational
-            setStatus("operational");
-          }
-        } else {
-          // Non-200 response - default to operational
-          setStatus("operational");
-        }
-      } catch (_error: unknown) {
-        // Any other error - default to operational
-        setStatus("operational");
-      }
-      setIsVisible(true);
-    };
-
-    checkStatus();
-    // Check every 5 minutes
-    const interval = setInterval(checkStatus, 5 * 60 * 1000);
-    return () => clearInterval(interval);
+    // Default to operational — the status page link itself provides live details.
+    // Avoids unreliable cross-origin fetch that throws in sandboxed/dev environments.
+    setStatus("operational");
+    setIsVisible(true);
   }, []);
 
   if (!isVisible) {

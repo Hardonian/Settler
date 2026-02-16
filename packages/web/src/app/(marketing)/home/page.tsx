@@ -165,7 +165,6 @@ console.log(\`Evidence hash: \${variances.evidenceHash}\`);`;
       <main
         id="main-content"
         className="min-h-screen bg-slate-50 dark:bg-slate-950 antialiased"
-        role="main"
         aria-label="Settler homepage"
       >
         <Navigation />
@@ -558,7 +557,7 @@ console.log(\`Evidence hash: \${variances.evidenceHash}\`);`;
                 size="lg"
                 variant="outline"
                 asChild
-                className="w-full sm:w-auto px-10 py-7 text-lg border-2 border-slate-600 text-white hover:bg-slate-800 transition-all duration-200 min-h-[56px] min-w-[200px]"
+                className="w-full sm:w-auto px-10 py-7 text-lg border-2 border-slate-600 bg-transparent text-white hover:bg-slate-800 transition-all duration-200 min-h-[56px] min-w-[200px]"
               >
                 <Link href="https://github.com/settler-dev/settler" className="flex items-center justify-center gap-3" target="_blank" rel="noopener noreferrer">
                   <Github className="w-5 h-5" aria-hidden="true" />

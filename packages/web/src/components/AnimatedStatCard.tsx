@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { AnimatedCounter } from './AnimatedCounter';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 interface AnimatedStatCardProps {
   value: string | number;
@@ -47,9 +48,7 @@ export function AnimatedStatCard({
     };
   }, []);
 
-  const prefersReducedMotion =
-    typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const prefersReducedMotion = useReducedMotion();
 
   const animationDelay = prefersReducedMotion ? 0 : delay + index * 50;
 
