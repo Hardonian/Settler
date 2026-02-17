@@ -143,8 +143,8 @@ export default function InspectorPage() {
                       className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700"
                     >
                       <div className="flex items-start justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <code className="text-sm bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded">
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <code className="text-sm bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded truncate">
                             {attempt.url}
                           </code>
                           <Badge variant={attempt.status >= 400 ? 'destructive' : 'default'}>
@@ -216,8 +216,8 @@ export default function InspectorPage() {
                       className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700"
                     >
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <code className="text-sm bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded">
+                        <div className="flex items-center gap-4 min-w-0 flex-1">
+                          <code className="text-sm bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded truncate">
                             {attempt.runId}
                           </code>
                           <Badge variant={attempt.status === 'failed' ? 'destructive' : 'default'}>

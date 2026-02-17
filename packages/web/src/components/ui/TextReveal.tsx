@@ -52,7 +52,8 @@ export function TextReveal({
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className={cn('inline-block', className)}
+      className={cn('inline', className)}
+      style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }}
     >
       {splitText.map((item, index) => {
         // For words, add a space after each word except the last
@@ -89,7 +90,7 @@ export function TextRevealHeading({
   id?: string;
 } & React.HTMLAttributes<HTMLHeadingElement>) {
   return (
-    <Component className={className} {...props}>
+    <Component className={className} style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }} {...props}>
       <TextReveal
         text={text}
         delay={delay}

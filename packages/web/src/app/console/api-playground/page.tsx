@@ -209,8 +209,8 @@ export default function ApiPlaygroundPage() {
                 ))}
               </SelectContent>
             </Select>
-            <div className="text-sm text-slate-600 dark:text-slate-400">
-              Base URL: <code className="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
+            <div className="text-sm text-slate-600 dark:text-slate-400 min-w-0">
+              Base URL: <code className="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded break-all">
                 {activeEnvironment?.baseUrl || 'https://api.settler.dev'}
               </code>
             </div>
@@ -410,7 +410,7 @@ export default function ApiPlaygroundPage() {
                     <Badge variant={item.status && item.status >= 400 ? 'destructive' : 'default'}>
                       {item.method}
                     </Badge>
-                    <code className="text-sm">{item.url}</code>
+                    <code className="text-sm truncate">{item.url}</code>
                   </div>
                   <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
                     {item.status && (

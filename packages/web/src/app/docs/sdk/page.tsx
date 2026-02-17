@@ -106,7 +106,7 @@ export default function DocsSdkPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold mb-2">Installation</h3>
-                    <code className="block p-2 bg-slate-100 dark:bg-slate-800 rounded text-sm">
+                    <code className="block p-2 bg-slate-100 dark:bg-slate-800 rounded text-sm overflow-x-auto whitespace-nowrap">
                       {sdk.install}
                     </code>
                   </div>

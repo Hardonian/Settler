@@ -4,13 +4,25 @@ import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { HeroAnimationWrapper } from "@/components/HeroAnimationWrapper";
 import { TextReveal, TextRevealHeading } from "@/components/ui/TextReveal";
 import { ParallaxBackground, ParallaxBlobs } from "@/components/ui/ParallaxBackground";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
-import { Database, Sliders, AlertTriangle, Eye, ArrowRight } from "lucide-react";
+import {
+  Database,
+  Sliders,
+  Eye,
+  AlertTriangle,
+  ArrowRight,
+  Shield,
+  Target,
+  Layers,
+  GitBranch,
+  CheckCircle,
+} from "lucide-react";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import {
   Accordion,
@@ -19,29 +31,37 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-// Dynamic imports for heavy components
-const AnimatedCodeBlock = dynamic(() => import("@/components/AnimatedCodeBlock").then(mod => ({ default: mod.AnimatedCodeBlock })), { ssr: false });
+const AnimatedCodeBlock = dynamic(
+  () =>
+    import("@/components/AnimatedCodeBlock").then((mod) => ({
+      default: mod.AnimatedCodeBlock,
+    })),
+  { ssr: false }
+);
 
 export default function Home() {
   const howItWorksSteps = [
     {
       number: 1,
       title: "Ingest Data",
-      description: "Bring data in through adapters, files, or your own pipelines.",
+      description:
+        "Bring data in through adapters, files, or your own pipelines.",
       icon: Database,
       illustration: "/illustrations/feature-integration.svg",
     },
     {
       number: 2,
       title: "Normalize",
-      description: "Map records into a canonical schema with explicit, inspectable transforms.",
+      description:
+        "Map records into a canonical schema with explicit, inspectable transforms.",
       icon: Sliders,
       illustration: "/illustrations/feature-deterministic.svg",
     },
     {
       number: 3,
       title: "Apply Rules",
-      description: "Run deterministic matching rules and tolerances you define.",
+      description:
+        "Run deterministic matching rules and tolerances you define.",
       icon: Eye,
       illustration: "/illustrations/feature-audit.svg",
     },
@@ -58,7 +78,7 @@ export default function Home() {
 
 const client = new SettlerClient({ apiKey: "sk_live_..." });
 
-// Run a deterministic reconciliation
+// Deterministic reconciliation with inspectable rules
 const reconciliation = await client.reconciliations.create({
   source: { adapter: "stripe" },
   target: { adapter: "database" },
@@ -69,29 +89,22 @@ const reconciliation = await client.reconciliations.create({
     <ErrorBoundary context="Home Page">
       <main
         id="main-content"
-        className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black"
+        className="min-h-screen bg-slate-50 dark:bg-slate-950"
         aria-label="Settler homepage"
       >
         <Navigation />
 
         {/* Hero Section */}
         <section
-          className="relative pt-12 sm:pt-20 lg:pt-24 pb-20 sm:pb-24 lg:pb-32 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[85vh] sm:min-h-[90vh] lg:min-h-[92vh] flex items-center"
+          className="relative pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 px-4 sm:px-6 lg:px-8 overflow-hidden"
           aria-labelledby="hero-heading"
         >
           <ParallaxBackground>
             <ParallaxBlobs count={3} />
           </ParallaxBackground>
 
-          {/* Grid pattern background */}
           <div
-            className="absolute inset-0 bg-grid-slate-200 dark:bg-grid-slate-800 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.3))] -z-10"
-            aria-hidden="true"
-          />
-
-          {/* Subtle gradient overlay for depth */}
-          <div
-            className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-50/50 dark:to-slate-900/30 -z-10"
+            className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] -z-10"
             aria-hidden="true"
           />
 
@@ -99,62 +112,71 @@ const reconciliation = await client.reconciliations.create({
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <HeroAnimationWrapper>
                 <div className="text-left max-w-2xl">
-                  {/* Main headline with constrained width for readability */}
+                  <div className="mb-6 flex justify-start">
+                    <Badge className="bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 text-sm font-medium">
+                      Deterministic Reconciliation Engine
+                    </Badge>
+                  </div>
+
                   <div className="mb-6 sm:mb-8 lg:mb-10">
                     <TextRevealHeading
                       as="h1"
                       id="hero-heading"
-                      text="Open-Source Reconciliation Engine for Financial Data"
-                      className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 dark:from-white dark:via-slate-100 dark:to-white bg-clip-text text-transparent leading-[1.1] tracking-tight"
+                      text="Reconciliation Infrastructure for Financial Operations"
+                      className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-white leading-[1.1] tracking-tight"
                       delay={0}
                       staggerDelay={0.02}
                       splitBy="words"
                     />
                   </div>
 
-                  {/* Subheadline with optimal reading width */}
                   <div className="mb-10 sm:mb-12 lg:mb-14">
                     <TextReveal
-                      text="Settler normalizes data, applies explicit rules, and surfaces variances for review. Deterministic, inspectable, and designed for human-in-the-loop workflows."
-                      className="text-lg sm:text-xl text-slate-700 dark:text-slate-300 leading-relaxed font-normal"
+                      text="Normalize data, apply explicit rules, and surface variances for review. Deterministic, inspectable, and designed for teams that require operational confidence."
+                      className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 leading-relaxed font-normal"
                       delay={0.2}
                       staggerDelay={0.01}
                       splitBy="words"
                     />
                   </div>
 
-                  {/* CTA buttons with clear hierarchy */}
                   <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 justify-start items-center mb-12 px-0">
                     <Button
                       size="lg"
                       asChild
-                      className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-10 py-6 text-lg font-semibold shadow-2xl transition-all"
+                      className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 text-white px-10 py-6 text-lg font-semibold shadow-xl transition-all"
                     >
                       <Link
                         href="/docs/quickstart"
                         className="flex items-center justify-center gap-2"
                       >
                         <span>Get Started</span>
-                        <ArrowRight className="w-5 h-5" aria-hidden="true" />
+                        <ArrowRight
+                          className="w-5 h-5"
+                          aria-hidden="true"
+                        />
                       </Link>
                     </Button>
                     <Button
                       size="lg"
                       variant="outline"
                       asChild
-                      className="w-full sm:w-auto px-10 py-6 text-lg border-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm font-medium"
+                      className="w-full sm:w-auto px-10 py-6 text-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium transition-all"
                     >
-                      <Link href="/open-source">Explore OSS</Link>
+                      <Link href="/contact">Discuss Your Architecture</Link>
                     </Button>
                   </div>
                 </div>
               </HeroAnimationWrapper>
 
               <div className="hidden lg:block relative">
-                <div className="absolute inset-0 bg-blue-500/10 blur-3xl rounded-full -z-10" />
+                <div
+                  className="absolute inset-0 bg-blue-500/10 blur-3xl rounded-full -z-10"
+                  aria-hidden="true"
+                />
                 <Image
                   src="/illustrations/hero-visual.svg"
-                  alt="Settler Reconciliation Engine Visualization"
+                  alt="Settler deterministic reconciliation engine visualization showing data flow through rules-based matching pipeline"
                   width={600}
                   height={500}
                   priority
@@ -166,23 +188,26 @@ const reconciliation = await client.reconciliations.create({
         </section>
 
         {/* How It Works Section with Diagram */}
-        <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 border-y border-slate-200/60 dark:border-slate-800/60 bg-white/30 dark:bg-slate-900/30">
+        <section
+          className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900"
+          aria-label="How Settler works"
+        >
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-slate-900 dark:text-white">
-                How Settler Works
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-slate-900 dark:text-white tracking-tight">
+                A Deterministic Pipeline
               </h2>
               <Image
                 src="/illustrations/how-settler-works.svg"
-                alt="Settler Reconciliation Pipeline Diagram"
+                alt="Settler reconciliation pipeline diagram showing data flow from ingestion through normalization and rule application to variance surfacing"
                 width={800}
                 height={300}
                 className="mx-auto w-full max-w-4xl h-auto mb-12 drop-shadow-sm"
                 loading="lazy"
               />
-              <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
-                A deterministic pipeline that turns messy financial inputs into traceable variances
-                your team can review.
+              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+                Turns messy financial inputs into traceable variances your team
+                can review. Same inputs, same rules, same results.
               </p>
             </div>
 
@@ -195,7 +220,10 @@ const reconciliation = await client.reconciliations.create({
                     className="p-8 flex flex-col items-center text-center group"
                   >
                     <div className="relative mb-6">
-                      <div className="absolute inset-0 bg-blue-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div
+                        className="absolute inset-0 bg-blue-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-hidden="true"
+                      />
                       <Image
                         src={step.illustration}
                         alt={step.title}
@@ -206,7 +234,10 @@ const reconciliation = await client.reconciliations.create({
                       />
                     </div>
                     <div className="w-10 h-10 mx-auto mb-4 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                      <Icon className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                      <Icon
+                        className="w-5 h-5 text-slate-600 dark:text-slate-400"
+                        aria-hidden="true"
+                      />
                     </div>
                     <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">
                       {step.title}
@@ -221,16 +252,19 @@ const reconciliation = await client.reconciliations.create({
           </div>
         </section>
 
-        {/* Product in Motion - Code Example */}
-        <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900/50">
+        {/* Code Example */}
+        <section
+          className="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950"
+          aria-label="Code example"
+        >
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-10 md:mb-12">
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4 text-slate-900 dark:text-white">
-                Deterministic Rules You Can Inspect
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4 text-slate-900 dark:text-white tracking-tight">
+                Inspectable Rules You Can Version Control
               </h2>
-              <p className="text-base md:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                Every reconciliation run is explainable and replayable. No hidden heuristics, no
-                silent edits.
+              <p className="text-base md:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+                Every reconciliation run is explainable and replayable. No hidden
+                heuristics, no silent edits.
               </p>
             </div>
             <SpotlightCard className="p-0 overflow-hidden shadow-xl md:shadow-2xl">
@@ -244,63 +278,211 @@ const reconciliation = await client.reconciliations.create({
           </div>
         </section>
 
-        {/* Details Accordion */}
-        <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 md:mb-8 text-center text-slate-900 dark:text-white">
-              Details
+        {/* Enterprise Inevitability Narrative */}
+        <section
+          className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900"
+          aria-label="Why this matters"
+        >
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12 md:mb-16">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
+                What Mature Financial Infrastructure Evolves Toward
+              </h2>
+              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+                Manual reconciliation is a phase. Deterministic, API-based
+                reconciliation is the stable end-state.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+              {[
+                {
+                  icon: Target,
+                  title: "Failure Surface Reduction",
+                  description:
+                    "Reconciliation is not a task. It is a structural risk surface. Determinism reduces that surface by eliminating probabilistic drift.",
+                },
+                {
+                  icon: Eye,
+                  title: "Reviewable Decisions",
+                  description:
+                    "AI compresses uncertainty. Humans retain authority. Every flagged variance includes evidence and confidence context for informed review.",
+                },
+                {
+                  icon: Layers,
+                  title: "Operational Maturity",
+                  description:
+                    "From manual exports to version-controlled rules. From fragile scripts to deterministic pipelines. From hope to operational confidence.",
+                },
+              ].map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={idx}
+                    className="p-6 md:p-8 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-800"
+                  >
+                    <Icon
+                      className="w-10 h-10 text-slate-700 dark:text-slate-300 mb-4"
+                      aria-hidden="true"
+                    />
+                    <h3 className="text-xl font-semibold mb-3 text-slate-900 dark:text-white">
+                      {item.title}
+                    </h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                      {item.description}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* Before vs Controlled State */}
+        <section
+          className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950"
+          aria-label="Before and after comparison"
+        >
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
+                The Operational Shift
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <div className="flex items-center gap-3 mb-6">
+                  <AlertTriangle
+                    className="w-6 h-6 text-slate-400"
+                    aria-hidden="true"
+                  />
+                  <h3 className="text-xl font-semibold text-slate-500 dark:text-slate-400">
+                    Before
+                  </h3>
+                </div>
+                <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+                  {[
+                    "Manual CSV exports and spreadsheet matching",
+                    "Fragile scripts that fail silently at scale",
+                    "Untracked variances accumulating risk",
+                    "No audit trail for reconciliation decisions",
+                    "Failure surfaces expanding with transaction volume",
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5">
+                      <span
+                        className="text-slate-400 mt-0.5 flex-shrink-0"
+                        aria-hidden="true"
+                      >
+                        --
+                      </span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="p-8 bg-white dark:bg-slate-900 rounded-2xl border-2 border-slate-900 dark:border-white shadow-lg">
+                <div className="flex items-center gap-3 mb-6">
+                  <CheckCircle
+                    className="w-6 h-6 text-slate-900 dark:text-white"
+                    aria-hidden="true"
+                  />
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
+                    Controlled State
+                  </h3>
+                </div>
+                <ul className="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                  {[
+                    "Deterministic rules applied programmatically via API",
+                    "Version-controlled matching logic reviewed in PRs",
+                    "Every variance traceable with evidence hashing",
+                    "Complete audit trail for every reconciliation run",
+                    "Failure surface compressed through governance boundaries",
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5">
+                      <span
+                        className="text-slate-900 dark:text-white mt-0.5 flex-shrink-0 font-medium"
+                        aria-hidden="true"
+                      >
+                        --
+                      </span>
+                      <span className="font-medium">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section
+          className="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900"
+          aria-label="Common questions"
+        >
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center text-slate-900 dark:text-white tracking-tight">
+              Common Questions
             </h2>
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="features">
-                <AccordionTrigger className="text-base md:text-lg font-semibold">
+            <Accordion type="single" collapsible className="w-full space-y-3">
+              <AccordionItem
+                value="features"
+                className="bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800 px-6"
+              >
+                <AccordionTrigger className="text-base md:text-lg font-semibold py-4 hover:no-underline">
                   What Settler Does
                 </AccordionTrigger>
-                <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-300 space-y-2 leading-relaxed">
+                <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed space-y-2">
                   <p>
-                    <strong>Surfaces discrepancies:</strong> Outputs variance sets instead of
-                    silently resolving them.
+                    <strong>Surfaces discrepancies:</strong> Outputs variance
+                    sets instead of silently resolving them.
                   </p>
                   <p>
-                    <strong>Deterministic and inspectable:</strong> Same inputs produce the same
-                    outputs, with traceable rule paths.
+                    <strong>Deterministic and inspectable:</strong> Same inputs
+                    produce the same outputs, with traceable rule paths.
                   </p>
                   <p>
-                    <strong>Provider-agnostic:</strong> Normalize from any adapter or file format
-                    into a canonical model.
+                    <strong>Provider-agnostic:</strong> Normalize from any
+                    adapter or file format into a canonical model.
                   </p>
                   <p>
-                    <strong>Human-in-the-loop:</strong> Review and resolve exceptions with evidence
-                    attached.
+                    <strong>Human-in-the-loop:</strong> Review and resolve
+                    exceptions with evidence attached.
                   </p>
                 </AccordionContent>
               </AccordionItem>
-              <AccordionItem value="integrations">
-                <AccordionTrigger className="text-base md:text-lg font-semibold">
+              <AccordionItem
+                value="not"
+                className="bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800 px-6"
+              >
+                <AccordionTrigger className="text-base md:text-lg font-semibold py-4 hover:no-underline">
                   What Settler Is Not
                 </AccordionTrigger>
-                <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-                  <p>
-                    Settler is not accounting software, an audit, or compliance tooling. It does not
-                    guarantee correctness, and it does not automate judgment.
-                  </p>
+                <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
+                  Settler is not accounting software, an audit tool, or
+                  compliance certification. It does not make decisions or
+                  automate judgment. It surfaces variances and evidence for human
+                  review.
                 </AccordionContent>
               </AccordionItem>
-              <AccordionItem value="security">
-                <AccordionTrigger className="text-base md:text-lg font-semibold">
-                  Security & Audit Notes
+              <AccordionItem
+                value="security"
+                className="bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800 px-6"
+              >
+                <AccordionTrigger className="text-base md:text-lg font-semibold py-4 hover:no-underline">
+                  Security and Audit
                 </AccordionTrigger>
-                <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-                  <p>
-                    Audit evidence is produced as deterministic outputs. You decide how to review
-                    and certify results. See the{" "}
-                    <Link
-                      href="/security-and-audit"
-                      className="text-blue-600 dark:text-blue-400 hover:underline"
-                    >
-                      Security & Audit
-                    </Link>{" "}
-                    page for disclosure and limits.
-                  </p>
+                <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
+                  Audit evidence is produced as deterministic outputs with
+                  SHA256 hashing. You decide how to review and certify results.
+                  See the{" "}
+                  <Link
+                    href="/security-and-audit"
+                    className="text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    Security and Audit
+                  </Link>{" "}
+                  page for full disclosure and operational limits.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
@@ -308,32 +490,48 @@ const reconciliation = await client.reconciliations.create({
         </section>
 
         {/* Final CTA */}
-        <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800">
+        <section
+          className="py-20 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 bg-slate-900 text-white"
+          aria-label="Get started"
+        >
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4 text-slate-900 dark:text-white">
-              Explore the OSS Engine
+            <Badge className="mb-6 bg-slate-800 text-slate-200 px-4 py-2 border border-slate-700">
+              Open Source - Apache 2.0
+            </Badge>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-6 tracking-tight">
+              Own Your Reconciliation Logic
             </h2>
-            <p className="text-base md:text-lg text-slate-600 dark:text-slate-400 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
-              Start with the quickstart and review how determinism and variance reporting work in
-              practice.
+            <p className="text-lg sm:text-xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+              Deploy reconciliation you can audit, test, and version control.
+              Start with the documentation or discuss your architecture with our
+              team.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
                 size="lg"
                 asChild
-                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-5 sm:py-6 text-base sm:text-lg font-semibold shadow-xl hover:shadow-2xl transition-all transform hover:scale-[1.02]"
+                className="w-full sm:w-auto bg-white text-slate-900 hover:bg-slate-100 px-10 py-7 text-lg font-semibold shadow-2xl transition-all min-h-[56px] min-w-[200px]"
               >
-                <Link href="/docs/quickstart" className="flex items-center justify-center gap-2">
-                  Read Quickstart <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Link
+                  href="/docs/quickstart"
+                  className="flex items-center justify-center gap-2"
+                >
+                  Read Quickstart{" "}
+                  <ArrowRight className="w-5 h-5" aria-hidden="true" />
                 </Link>
               </Button>
               <Button
                 size="lg"
                 variant="outline"
                 asChild
-                className="w-full sm:w-auto px-8 py-5 sm:py-6 text-base sm:text-lg border-2 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
+                className="w-full sm:w-auto px-10 py-7 text-lg border-2 border-slate-600 bg-transparent text-white hover:bg-slate-800 transition-all min-h-[56px] min-w-[200px]"
               >
-                <Link href="/open-source">Open Source</Link>
+                <Link
+                  href="/contact"
+                  className="flex items-center justify-center gap-2"
+                >
+                  Discuss Your Architecture
+                </Link>
               </Button>
             </div>
           </div>
