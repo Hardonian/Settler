@@ -15,6 +15,14 @@ describe('middleware /app-only auth gating', () => {
     expect(isAppAuthRequiredRoute('/dashboard')).toBe(false);
   });
 
+
+  it('keeps middleware matcher scoped to /app and /api only', () => {
+    const middlewareSource = readFileSync(resolve(process.cwd(), 'middleware.ts'), 'utf-8');
+
+    expect(middlewareSource).toContain('"/app/:path*"');
+    expect(middlewareSource).toContain('"/api/:path*"');
+  });
+
   it('keeps /app unauthenticated redirects targeting /login with next param', () => {
     const middlewareSource = readFileSync(resolve(process.cwd(), 'middleware.ts'), 'utf-8');
 

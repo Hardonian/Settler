@@ -7,6 +7,8 @@ import { createHmac, timingSafeEqual } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 
+export const runtime = 'nodejs';
+
 function normalizeSignature(signature: string): string {
   return signature.startsWith('sha256=') ? signature.slice('sha256='.length) : signature;
 }
@@ -38,7 +40,12 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const body = JSON.parse(rawBody);
+    let body: { model?: string; url?: string };
+    try {
+      body = JSON.parse(rawBody) as { model?: string; url?: string };
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 });
+    }
 
     // Extract the model and URL from the webhook payload
     const { model, url } = body;
@@ -69,12 +76,11 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 }
     );
-   
-      } catch (error) {
+  } catch (error) {
     console.error('Error processing Builder.io webhook:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: 'Failed to process webhook' },
+      { status: 503 }
     );
   }
 }
