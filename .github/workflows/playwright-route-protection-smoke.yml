@@ -1,0 +1,40 @@
+name: Playwright Route Protection Smoke
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'packages/web/**'
+      - 'tests/e2e/**'
+      - 'playwright.config.ts'
+      - '.github/workflows/playwright-route-protection-smoke.yml'
+  push:
+    branches: [main]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run route-protection smoke suite
+        run: pnpm exec playwright test tests/e2e/route-protection-smoke.spec.ts --project=chromium
+        env:
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: anon-key-for-ci
