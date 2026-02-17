@@ -235,7 +235,7 @@ const nextConfig = {
             value: "geolocation=(), microphone=(), camera=()",
           },
           {
-            key: "Content-Security-Policy",
+            key: "Content-Security-Policy-Report-Only",
             value: [
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",

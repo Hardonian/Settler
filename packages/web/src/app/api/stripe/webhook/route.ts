@@ -22,6 +22,7 @@ import { logger } from "@/lib/observability/logger";
 import { emitLifecycleEventSafe, LifecycleEventType } from "@/lib/ops/lifecycle-events";
 import { safeLogger } from "@/lib/observability/safe-logger";
 import { safeJsonParseWithDefault } from "@/lib/utils/safe-parse";
+import { serverLogger } from "@/lib/observability/server-logger";
 // NOTE: Webhooks don't use billing gates - they're authenticated via Stripe signature
 
 export const dynamic = "force-dynamic";
@@ -181,6 +182,12 @@ function extractBillingAccountId(event: Stripe.Event): string | null {
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   const traceId = await getTraceId(request);
+
+  serverLogger.info("stripe_webhook.received", {
+    trace_id: traceId,
+    method: request.method,
+    path: request.nextUrl.pathname,
+  });
 
   // Check request size (max 500KB for webhooks)
   const sizeCheck = requestSizeLimits.webhook(request);
@@ -522,6 +529,7 @@ export async function POST(request: NextRequest) {
 
     const response = NextResponse.json({ received: true, trace_id: traceId });
     response.headers.set("x-trace-id", traceId);
+    serverLogger.info("stripe_webhook.processed", { trace_id: traceId, eventId: event.id, eventType: event.type, duration_ms: Date.now() - startTime });
     return response;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";

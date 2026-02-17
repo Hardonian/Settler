@@ -7,7 +7,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import { logger } from '@/lib/logging/logger';
 
 export default function GlobalError({
   error,
@@ -17,14 +16,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log critical error
-    logger.critical('Global error handler caught error', error, {
-      digest: error.digest,
-      name: error.name,
-      message: error.message,
-      stack: error.stack,
-    });
-
+    console.error('Global error handler caught error', { digest: error.digest, name: error.name });
   }, [error]);
 
   return (
