@@ -274,11 +274,7 @@ const nextConfig = {
         destination: "/security-and-audit",
         permanent: true,
       },
-      {
-        source: "/pricing",
-        destination: "/product",
-        permanent: true,
-      },
+      // /pricing is a standalone page — no redirect needed
       {
         source: "/demo",
         destination: "/product",
