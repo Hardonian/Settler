@@ -253,8 +253,8 @@ export default function WebhooksPage() {
                   {webhooks.map((webhook) => (
                     <TableRow key={webhook.id}>
                       <TableCell>
-                        <div className="flex items-center gap-2">
-                          <code className="text-sm">{webhook.url}</code>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <code className="text-sm truncate">{webhook.url}</code>
                           <a
                             href={webhook.url}
                             target="_blank"

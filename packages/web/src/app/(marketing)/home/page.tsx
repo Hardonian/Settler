@@ -303,7 +303,7 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
                 return (
                   <div
                     key={index}
-                    className="relative p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col items-center text-center"
+                    className="relative p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col items-center text-center overflow-hidden"
                   >
                     <div className="absolute -top-3 left-6 w-8 h-8 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center text-sm font-bold">
                       {step.number}
@@ -318,7 +318,7 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
                       />
                     </div>
 
-                    <div className="pt-2">
+                    <div className="pt-2 w-full min-w-0">
                        <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white flex items-center justify-center gap-2">
                         <Icon className="w-5 h-5 text-slate-700 dark:text-slate-300" aria-hidden="true" />
                         {step.title}
@@ -326,7 +326,7 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
                       <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
                         {step.description}
                       </p>
-                      <code className="block text-xs bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded text-slate-700 dark:text-slate-300 font-mono">
+                      <code className="block text-xs bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded text-slate-700 dark:text-slate-300 font-mono overflow-hidden text-ellipsis whitespace-nowrap max-w-full" title={step.code}>
                         {step.code}
                       </code>
                     </div>
