@@ -49,7 +49,7 @@ export default function GlobalError({
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-slate-600 dark:text-slate-400">
-                {error.message || 'An unexpected error occurred. Please try again.'}
+                An unexpected error occurred. Please try again.
               </p>
               {error.digest && (
                 <p className="text-xs text-slate-500 dark:text-slate-500 font-mono">

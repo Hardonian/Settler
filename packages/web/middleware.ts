@@ -13,6 +13,7 @@ import { addSecurityHeaders } from "./src/middleware/security-headers";
 import { generateTraceId } from "./src/lib/observability/trace";
 import { isAppAuthRequiredRoute } from "./src/lib/auth/route-gating";
 import { getAppEnvStatus } from "./src/lib/env/runtime-access";
+import { serverLogger } from "./src/lib/observability/server-logger";
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   // CRITICAL: Wrap entire middleware in try-catch to prevent any 500 errors
@@ -29,6 +30,12 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       maxAge: 60 * 60 * 24 * 7,
       path: "/",
     };
+    serverLogger.info("middleware.request", {
+      trace_id: traceId,
+      method: request.method,
+      path: pathname,
+    });
+
     const applyTraceContext = (nextResponse: NextResponse): NextResponse => {
       nextResponse.headers.set("x-trace-id", traceId);
       nextResponse.headers.set("x-request-id", traceId);
@@ -144,10 +151,11 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
         }
       } catch (authError) {
         // Log but don't fail - let the route handler deal with auth
-        console.warn(
-          "[Middleware] Auth refresh failed (non-fatal):",
-          authError instanceof Error ? authError.message : "Unknown error"
-        );
+        serverLogger.warn("middleware.auth_refresh_failed", {
+          trace_id: traceId,
+          path: pathname,
+          error: authError instanceof Error ? authError.message : "Unknown error",
+        });
         if (isAuthRequiredRoute) {
           const redirectUrl = new URL('/login', request.url);
           redirectUrl.searchParams.set('next', pathname);
@@ -160,10 +168,11 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     } catch (error) {
       // If Supabase client creation fails, log but continue
       // Routes will handle auth errors themselves
-      console.error(
-        "[Middleware] Failed to create Supabase client (non-fatal):",
-        error instanceof Error ? error.message : "Unknown error"
-      );
+      serverLogger.error("middleware.supabase_client_failed", {
+        trace_id: traceId,
+        path: pathname,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
       if (isAuthRequiredRoute) {
         const redirectUrl = new URL('/login', request.url);
         redirectUrl.searchParams.set('next', pathname);
@@ -187,9 +196,10 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   } catch (error) {
     // CRITICAL: Middleware must NEVER throw - always return a valid response
     // Log error but continue with basic response
-    console.error('[Middleware] Unexpected error (non-fatal):',
-      error instanceof Error ? error.message : 'Unknown error'
-    );
+    serverLogger.error("middleware.unexpected_error", {
+      error: error instanceof Error ? error.message : "Unknown error",
+      path: request.nextUrl.pathname,
+    });
 
     // Return a basic response with security headers
     const fallbackResponse = NextResponse.next({
