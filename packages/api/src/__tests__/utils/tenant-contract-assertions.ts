@@ -50,3 +50,9 @@ export function assertTenantEntityId<T extends { id: string }>(
   expect(entity.id).toBeDefined();
   expect(entity.id).toBe(expectedTenantId);
 }
+
+export function assertTenantFirstSqlParam(params: unknown[], expectedTenantId: string): void {
+  expect(Array.isArray(params)).toBe(true);
+  expect(params.length).toBeGreaterThan(0);
+  expect(params[0]).toBe(expectedTenantId);
+}

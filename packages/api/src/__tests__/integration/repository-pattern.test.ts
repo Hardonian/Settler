@@ -40,7 +40,7 @@ describeRepositoryTests("Repository Pattern Integration", () => {
 
   describe("JobRepository", () => {
     it("should create a job", async () => {
-      const job = await repository.create({
+      const job = await repository.create(testTenantId, {
         userId: testUserId,
         tenantId: testTenantId,
         name: "Test Job",
@@ -57,7 +57,7 @@ describeRepositoryTests("Repository Pattern Integration", () => {
     });
 
     it("should find job by ID", async () => {
-      const created = await repository.create({
+      const created = await repository.create(testTenantId, {
         userId: testUserId,
         tenantId: testTenantId,
         name: "Find Test Job",
@@ -68,7 +68,7 @@ describeRepositoryTests("Repository Pattern Integration", () => {
         version: 1,
       });
 
-      const found = await repository.findById(created.id, testUserId, testTenantId);
+      const found = await repository.findById(created.id, testTenantId, testUserId);
       expect(found).not.toBeNull();
       expect(found?.id).toBe(created.id);
     });
@@ -76,15 +76,15 @@ describeRepositoryTests("Repository Pattern Integration", () => {
     it("should return null for non-existent job", async () => {
       const found = await repository.findById(
         "00000000-0000-0000-0000-000000000000",
-        testUserId,
-        testTenantId
+        testTenantId,
+        testUserId
       );
       expect(found).toBeNull();
     });
 
     it("should list jobs for user", async () => {
       // Create multiple jobs
-      await repository.create({
+      await repository.create(testTenantId, {
         userId: testUserId,
         tenantId: testTenantId,
         name: "Job 1",
@@ -95,13 +95,13 @@ describeRepositoryTests("Repository Pattern Integration", () => {
         version: 1,
       });
 
-      const result = await repository.findByUserId(testUserId, testTenantId, 1, 10);
+      const result = await repository.findByUserId(testTenantId, testUserId, 1, 10);
       expect(result.jobs.length).toBeGreaterThan(0);
       expect(result.total).toBeGreaterThan(0);
     });
 
     it("should update job status with optimistic locking", async () => {
-      const created = await repository.create({
+      const created = await repository.create(testTenantId, {
         userId: testUserId,
         tenantId: testTenantId,
         name: "Update Test Job",
@@ -114,8 +114,8 @@ describeRepositoryTests("Repository Pattern Integration", () => {
 
       const updated = await repository.updateStatus(
         created.id,
-        testUserId,
         testTenantId,
+        testUserId,
         "running",
         created.version
       );
@@ -124,7 +124,7 @@ describeRepositoryTests("Repository Pattern Integration", () => {
     });
 
     it("should return null on version mismatch", async () => {
-      const created = await repository.create({
+      const created = await repository.create(testTenantId, {
         userId: testUserId,
         tenantId: testTenantId,
         name: "Version Test Job",
@@ -138,8 +138,8 @@ describeRepositoryTests("Repository Pattern Integration", () => {
       // Try with wrong version
       const updated = await repository.updateStatus(
         created.id,
-        testUserId,
         testTenantId,
+        testUserId,
         "running",
         999
       );
@@ -147,7 +147,7 @@ describeRepositoryTests("Repository Pattern Integration", () => {
     });
 
     it("should delete job", async () => {
-      const created = await repository.create({
+      const created = await repository.create(testTenantId, {
         userId: testUserId,
         tenantId: testTenantId,
         name: "Delete Test Job",
@@ -158,10 +158,10 @@ describeRepositoryTests("Repository Pattern Integration", () => {
         version: 1,
       });
 
-      const deleted = await repository.delete(created.id, testUserId, testTenantId);
+      const deleted = await repository.delete(created.id, testTenantId, testUserId);
       expect(deleted).toBe(true);
 
-      const found = await repository.findById(created.id, testUserId, testTenantId);
+      const found = await repository.findById(created.id, testTenantId, testUserId);
       expect(found).toBeNull();
     });
   });
