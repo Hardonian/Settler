@@ -12,6 +12,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { addSecurityHeaders } from "./src/middleware/security-headers";
 import { generateTraceId } from "./src/lib/observability/trace";
 import { isAppAuthRequiredRoute } from "./src/lib/auth/route-gating";
+import { getAppEnvStatus } from "./src/lib/env/runtime-access";
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   // CRITICAL: Wrap entire middleware in try-catch to prevent any 500 errors
@@ -30,6 +31,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     };
     const applyTraceContext = (nextResponse: NextResponse): NextResponse => {
       nextResponse.headers.set("x-trace-id", traceId);
+      nextResponse.headers.set("x-request-id", traceId);
       nextResponse.cookies.set("trace-id", traceId, traceCookieOptions);
       return nextResponse;
     };
@@ -42,6 +44,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
         },
       });
       response.headers.set("x-trace-id", traceId);
+      response.headers.set("x-request-id", traceId);
       return addSecurityHeaders(response);
     }
 
@@ -58,11 +61,11 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     // Add trace_id to response headers
     applyTraceContext(response);
 
+    const appEnvStatus = getAppEnvStatus();
     const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey =
-      process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-    if (!supabaseUrl || !supabaseAnonKey) {
+    if (!appEnvStatus.ok || !supabaseUrl || !supabaseAnonKey) {
       // If Supabase not configured, skip auth middleware for public/API routes
       // Public routes should still work; protected routes fail closed.
       if (isAuthRequiredRoute) {
@@ -70,6 +73,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
         redirectUrl.searchParams.set('next', pathname);
         const redirectResponse = NextResponse.redirect(redirectUrl);
         redirectResponse.headers.set('x-trace-id', traceId);
+        redirectResponse.headers.set('x-request-id', traceId);
         return addSecurityHeaders(redirectResponse);
       }
       return addSecurityHeaders(response);
@@ -135,6 +139,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
           redirectUrl.searchParams.set('next', pathname);
           const redirectResponse = NextResponse.redirect(redirectUrl);
           redirectResponse.headers.set('x-trace-id', traceId);
+          redirectResponse.headers.set('x-request-id', traceId);
           return addSecurityHeaders(redirectResponse);
         }
       } catch (authError) {
@@ -148,6 +153,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
           redirectUrl.searchParams.set('next', pathname);
           const redirectResponse = NextResponse.redirect(redirectUrl);
           redirectResponse.headers.set('x-trace-id', traceId);
+          redirectResponse.headers.set('x-request-id', traceId);
           return addSecurityHeaders(redirectResponse);
         }
       }
@@ -163,6 +169,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
         redirectUrl.searchParams.set('next', pathname);
         const redirectResponse = NextResponse.redirect(redirectUrl);
         redirectResponse.headers.set('x-trace-id', traceId);
+        redirectResponse.headers.set('x-request-id', traceId);
         return addSecurityHeaders(redirectResponse);
       }
     }
@@ -194,6 +201,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     // Generate trace ID even on error
     const traceId = generateTraceId();
     fallbackResponse.headers.set("x-trace-id", traceId);
+    fallbackResponse.headers.set("x-request-id", traceId);
 
     return addSecurityHeaders(fallbackResponse);
   }
@@ -207,9 +215,6 @@ export const config = {
      * ensure zero auth/env assumptions and maximum performance.
      */
     "/app/:path*",
-    "/admin/:path*",
-    "/console/:path*",
-    "/dashboard/:path*",
     "/api/:path*",
   ],
 };

@@ -47,6 +47,12 @@ jobs:
       - name: Test
         run: npm test -- --passWithNoTests
 
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Marketing crawl regression guard
+        run: npm run test:e2e:marketing:prod
+
       - name: Verify content routes in production mode
         run: npm run test --workspace=packages/web -- src/__tests__/integration/content-pages.production.test.ts
 
