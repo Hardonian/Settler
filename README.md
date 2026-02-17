@@ -137,7 +137,7 @@ pnpm run lint
 pnpm run typecheck
 pnpm run test
 pnpm run build
-pnpm run test:e2e:marketing:prod
+pnpm run test:e2e -- --project=chromium tests/e2e/marketing-crawl.spec.ts
 ```
 
 Interpretation:
