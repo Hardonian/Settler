@@ -41,27 +41,20 @@ describe("UserRepository tenant isolation", () => {
     dataRetentionDays: 365,
   });
 
-  const userB = User.create({
-    tenantId: TENANT_B,
-    email: "bob@tenant-b.com",
-    passwordHash: "$2b$10$fakehash",
-    role: UserRole.DEVELOPER,
-    dataResidencyRegion: "us",
-    dataRetentionDays: 365,
-  });
+
 
   // --- Guard rail tests (no DB needed) ---
 
   it("findById rejects missing tenantId", async () => {
-    await expect(repo.findById("any-id", "")).rejects.toThrow("tenantId is required");
+    await expect(repo.findById("any-id", "")).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
   });
 
   it("findByEmail rejects missing tenantId", async () => {
-    await expect(repo.findByEmail("a@b.com", "")).rejects.toThrow("tenantId is required");
+    await expect(repo.findByEmail("a@b.com", "")).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
   });
 
   it("save rejects missing tenantId", async () => {
-    await expect(repo.save(userA, "")).rejects.toThrow("tenantId is required");
+    await expect(repo.save(userA, "")).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
   });
 
   it("save rejects tenant mismatch", async () => {
@@ -70,15 +63,15 @@ describe("UserRepository tenant isolation", () => {
   });
 
   it("delete rejects missing tenantId", async () => {
-    await expect(repo.delete("any-id", "")).rejects.toThrow("tenantId is required");
+    await expect(repo.delete("any-id", "")).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
   });
 
   it("findAll rejects missing tenantId", async () => {
-    await expect(repo.findAll("", 10, 0)).rejects.toThrow("tenantId is required");
+    await expect(repo.findAll("", 10, 0)).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
   });
 
   it("count rejects missing tenantId", async () => {
-    await expect(repo.count("")).rejects.toThrow("tenantId is required");
+    await expect(repo.count("")).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
   });
 });
 
@@ -89,16 +82,16 @@ describe("JobRepository tenant isolation", () => {
   const repo = new JobRepository();
 
   it("findById rejects missing tenantId", async () => {
-    await expect(repo.findById("any-id", "any-user", "")).rejects.toThrow("tenantId is required");
+    await expect(repo.findById("any-id", "", "any-user")).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
   });
 
   it("findByUserId rejects missing tenantId", async () => {
-    await expect(repo.findByUserId("any-user", "", 1, 10)).rejects.toThrow("tenantId is required");
+    await expect(repo.findByUserId("", "any-user", 1, 10)).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
   });
 
   it("create rejects missing tenantId", async () => {
     await expect(
-      repo.create({
+      repo.create("", {
         userId: "uid",
         tenantId: "",
         name: "test",
@@ -108,17 +101,17 @@ describe("JobRepository tenant isolation", () => {
         status: "active",
         version: 1,
       })
-    ).rejects.toThrow("tenantId is required");
+    ).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
   });
 
   it("updateStatus rejects missing tenantId", async () => {
-    await expect(repo.updateStatus("id", "uid", "", "active", 1)).rejects.toThrow(
-      "tenantId is required"
+    await expect(repo.updateStatus("id", "", "uid", "active", 1)).rejects.toThrow(
+      /tenantId is required|Invalid or missing tenantId/
     );
   });
 
   it("delete rejects missing tenantId", async () => {
-    await expect(repo.delete("id", "uid", "")).rejects.toThrow("tenantId is required");
+    await expect(repo.delete("id", "", "uid")).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
   });
 });
 
@@ -216,7 +209,7 @@ describe("Cross-tenant data access prevention", () => {
 
     // Attempt to create job with TENANT_A but passing empty tenantId — must reject
     await expect(
-      repo.create({
+      repo.create("", {
         userId: "uid",
         tenantId: "",
         name: "cross-tenant-job",
@@ -226,7 +219,7 @@ describe("Cross-tenant data access prevention", () => {
         status: "active",
         version: 1,
       })
-    ).rejects.toThrow("tenantId is required");
+    ).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
   });
 });
 
@@ -238,7 +231,7 @@ describe("matchTransaction tenant isolation", () => {
     // Dynamic import to avoid module-level DB connection issues in unit tests
     const { matchTransaction } = await import("../../services/ingestion/reconciliation-matcher");
     await expect(matchTransaction("src-id", ["tgt-id"], "", {})).rejects.toThrow(
-      "tenantId is required"
+      /tenantId is required|Invalid or missing tenantId/
     );
   });
 });
@@ -249,6 +242,6 @@ describe("matchTransaction tenant isolation", () => {
 describe("getAuditLogs tenant isolation", () => {
   it("rejects missing tenantId", async () => {
     const { getAuditLogs } = await import("../../services/audit-trail");
-    await expect(getAuditLogs("", {})).rejects.toThrow("tenantId is required");
+    await expect(getAuditLogs("", {})).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
   });
 });
