@@ -169,7 +169,8 @@
     "verify:globals-css-import-order": "node scripts/validate-globals-css-import-order.mjs",
     "test:web:offline-harness": "pnpm --filter @settler/web test -- offline-prerender-compat.test.ts offline-render-harness.test.tsx",
     "verify:route-boundaries": "node scripts/verify-route-boundaries.mjs",
-    "test:web:middleware-gating": "pnpm --filter @settler/web test -- app-auth-gating.test.ts"
+    "test:web:middleware-gating": "pnpm --filter @settler/web test -- app-auth-gating.test.ts",
+    "test:e2e:marketing:prod": "pnpm --filter @settler/web build && playwright test -c playwright.prod.config.ts tests/e2e/marketing-crawl.spec.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
