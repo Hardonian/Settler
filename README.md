@@ -110,6 +110,41 @@ Common pitfalls:
 - Background jobs follow retry rules defined in JobForge configuration; failed jobs are surfaced for review.
 - Settler surfaces discrepancies but does not auto-resolve correctness disputes.
 
+## Deploy Assumptions (Vercel-safe)
+
+- Marketing routes are static-first and must render without auth/session/database assumptions.
+- `/app/*` routes are auth-gated in middleware and redirect unauthenticated traffic to `/login?next=...`.
+- Stripe/Supabase are optional for public routes. Missing env vars on marketing pages must degrade gracefully (never hard-500).
+- Stripe webhooks are handled in Node runtime with raw request body signature verification (`request.text()` + `stripe.webhooks.constructEvent`).
+- Security headers and request identifiers are attached at middleware level for observability and safe defaults.
+
+## Env Matrix
+
+| Scope | Variables | Required | Behavior when missing |
+| --- | --- | --- | --- |
+| Public marketing | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | No | Public pages still render; integrations/features degrade safely |
+| App-gated routes (`/app/*`) | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Requests are redirected to login/fail-closed paths |
+| Stripe webhook | `STRIPE_WEBHOOK_SECRET`, `STRIPE_SECRET_KEY` | Yes (for webhook processing) | Webhook endpoint returns configuration error response (non-500) |
+| Server data layer | `DATABASE_URL` (or supported DB fallback vars) | Yes | API/data-backed operations fail closed with structured errors |
+
+## Verification
+
+Run from repo root:
+
+```bash
+pnpm install
+pnpm run lint
+pnpm run typecheck
+pnpm run test
+pnpm run build
+pnpm run test:e2e -- --project=chromium tests/e2e/marketing-crawl.spec.ts
+```
+
+Interpretation:
+- Lint/typecheck/test/build must pass before release.
+- Marketing crawl must show no 500 responses and no hydration-related console errors.
+- Any failure here should block deploy/merge until fixed.
+
 ## Security & Safety Considerations
 
 - Treat service-role credentials and database URLs as high-privilege secrets.
