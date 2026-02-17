@@ -17,6 +17,10 @@ test.describe('marketing crawl regression guard', () => {
     test(`renders ${route} without 500s or hydration issues`, async ({ page }) => {
       const consoleIssues: string[] = [];
 
+      page.on('pageerror', (error) => {
+        consoleIssues.push(`pageerror: ${error.message}`);
+      });
+
       page.on('console', (message) => {
         const text = message.text();
         const type = message.type();
@@ -28,7 +32,7 @@ test.describe('marketing crawl regression guard', () => {
       const response = await page.goto(route, { waitUntil: 'networkidle' });
 
       expect(response, `missing response for route ${route}`).not.toBeNull();
-      expect(response!.status(), `route ${route} returned non-success`).toBeLessThan(500);
+      expect(response!.status(), `route ${route} must return 200`).toBe(200);
 
       await expect(page.locator('body')).toBeVisible();
       expect(consoleIssues, `console issues detected for route ${route}`).toEqual([]);

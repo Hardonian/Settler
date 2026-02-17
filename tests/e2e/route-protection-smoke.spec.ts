@@ -7,6 +7,10 @@ test.describe('route protection smoke', () => {
     test(`marketing route ${route} renders without 500 or hydration errors`, async ({ page }) => {
       const consoleErrors: string[] = [];
 
+      page.on('pageerror', (error) => {
+        consoleErrors.push(`pageerror: ${error.message}`);
+      });
+
       page.on('console', (message) => {
         const text = message.text();
         if (message.type() === 'error' || /hydration/i.test(text)) {
@@ -17,7 +21,7 @@ test.describe('route protection smoke', () => {
       const response = await page.goto(route, { waitUntil: 'networkidle' });
 
       expect(response, `expected HTTP response for ${route}`).not.toBeNull();
-      expect(response!.status(), `${route} should not 500`).toBeLessThan(500);
+      expect(response!.status(), `${route} should return 200`).toBe(200);
       await expect(page.locator('body')).toBeVisible();
       expect(consoleErrors).toEqual([]);
     });
