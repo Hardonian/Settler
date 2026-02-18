@@ -8,14 +8,15 @@
 import { Suspense } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  DollarSign, 
-  Users, 
-  TrendingUp, 
+import {
+  DollarSign,
+  Users,
+  TrendingUp,
   AlertTriangle,
   CheckCircle,
   Loader2
 } from 'lucide-react';
+import { getInvestorRealityData } from '@/lib/investor/reality-data';
 
 export const revalidate = 300;
 
@@ -40,6 +41,23 @@ const FALLBACK_DASHBOARD_DATA: InvestorRealityPayload = {
 };
 
 async function InvestorDashboardContent() {
+<<<<<<< codex/add-hybrid-intelligence-layer-to-settler
+  const data = await getInvestorRealityData();
+
+  if (!data) {
+    return (
+      <div className="p-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Error</CardTitle>
+            <CardDescription>Failed to load investor metrics. Please try again later.</CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
+=======
   let data: InvestorRealityPayload = FALLBACK_DASHBOARD_DATA;
   let usingFallback = false;
 
@@ -56,6 +74,7 @@ async function InvestorDashboardContent() {
   } catch {
     usingFallback = true;
   }
+>>>>>>> main
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {

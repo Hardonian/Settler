@@ -2,7 +2,7 @@
  * Pivot Engine Tests
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from '@jest/globals';
 import { validatePivotQuery, PivotQuery } from '@/lib/services/pivot-engine';
 
 describe('Pivot Engine', () => {

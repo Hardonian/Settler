@@ -1,3 +1,4 @@
+/** @jest-environment node */
 import { enforceUsageLimit } from '@/middleware/usage-enforcement';
 import type { ApiKeyAuthContext } from '@/shared/auth/apiKey';
 import type { NextRequest } from 'next/server';

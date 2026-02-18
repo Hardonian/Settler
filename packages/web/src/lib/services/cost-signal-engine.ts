@@ -31,7 +31,7 @@ const COST_BASELINES = {
   },
 } as any;
 
-function getCostBaseline(category: string, type: string): any {
+export function getCostBaseline(category: string, type: string): any {
   const cat = (COST_BASELINES as any)[category];
   return cat?.[type] || null;
 }
@@ -39,7 +39,7 @@ function getCostBaseline(category: string, type: string): any {
 // Ensure COST_BASELINES is considered used
 void COST_BASELINES;
 
-function calculateCost(unitCount: number, baseline: any): { totalCost: number; confidence: number } {
+export function calculateCost(unitCount: number, baseline: any): { totalCost: number; confidence: number } {
   if (!baseline) return { totalCost: 0, confidence: 0 };
   return {
     totalCost: unitCount * baseline.costPerUnit,

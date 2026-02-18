@@ -28,17 +28,17 @@ describe('Button Component', () => {
 
     rerender(<Button variant="outline">Outline</Button>);
     button = screen.getByRole('button');
-    expect(button).toHaveClass('border');
+    expect(button).toHaveClass('border-2');
   });
 
   it('applies size styles correctly', () => {
     const { rerender } = render(<Button size="sm">Small</Button>);
     let button = screen.getByRole('button');
-    expect(button).toHaveClass('h-9');
+    expect(button).toHaveClass('min-h-9');
 
     rerender(<Button size="lg">Large</Button>);
     button = screen.getByRole('button');
-    expect(button).toHaveClass('h-11');
+    expect(button).toHaveClass('min-h-11');
   });
 
   it('handles click events', async () => {

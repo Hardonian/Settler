@@ -1,9 +1,10 @@
+/** @jest-environment node */
 /**
  * Cost Signal Engine Tests
  */
 
-import { describe, it, expect } from 'vitest';
-import { calculateCost, getCostBaseline } from '../../../../ops/cost_baselines';
+import { describe, it, expect } from '@jest/globals';
+import { calculateCost, getCostBaseline } from '@/lib/services/cost-signal-engine';
 
 describe('Cost Signal Engine', () => {
   describe('getCostBaseline', () => {

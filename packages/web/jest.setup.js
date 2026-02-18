@@ -10,6 +10,35 @@ if (typeof global.TextDecoder === 'undefined') {
   global.TextDecoder = TextDecoder;
 }
 
+if (typeof global.Headers === 'undefined') {
+  global.Headers = class Headers {};
+}
+if (typeof global.Request === 'undefined') {
+  global.Request = class Request {
+    constructor(input, init = {}) {
+      this.url = typeof input === 'string' ? input : input?.url || '';
+      this.method = init.method || 'GET';
+      this.headers = init.headers || {};
+    }
+  };
+}
+if (typeof global.Response === 'undefined') {
+  global.Response = class Response {
+    constructor(body = null, init = {}) {
+      this.body = body;
+      this.status = init.status || 200;
+      this.headers = init.headers || {};
+    }
+    static json(body, init = {}) {
+      return new global.Response(body, init);
+    }
+  };
+}
+if (typeof global.fetch === 'undefined') {
+  global.fetch = jest.fn(async () => new global.Response(null));
+}
+
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {
