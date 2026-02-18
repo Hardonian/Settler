@@ -40,41 +40,21 @@ const FALLBACK_DASHBOARD_DATA: InvestorRealityPayload = {
   week_start: null,
 };
 
-async function InvestorDashboardContent() {
-<<<<<<< codex/add-hybrid-intelligence-layer-to-settler
-  const data = await getInvestorRealityData();
-
-  if (!data) {
-    return (
-      <div className="p-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Error</CardTitle>
-            <CardDescription>Failed to load investor metrics. Please try again later.</CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
-  }
-
-=======
+export async function InvestorDashboardContent() {
   let data: InvestorRealityPayload = FALLBACK_DASHBOARD_DATA;
   let usingFallback = false;
 
   try {
-    const response = await fetch('/api/investor/reality', {
-      next: { revalidate },
-    });
+    const liveData = await getInvestorRealityData();
 
-    if (!response.ok) {
-      usingFallback = true;
+    if (liveData) {
+      data = liveData;
     } else {
-      data = (await response.json()) as InvestorRealityPayload;
+      usingFallback = true;
     }
   } catch {
     usingFallback = true;
   }
->>>>>>> main
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {

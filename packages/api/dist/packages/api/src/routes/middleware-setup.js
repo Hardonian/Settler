@@ -45,6 +45,7 @@ const cli_wizard_1 = require("./cli-wizard");
 const export_enhanced_1 = require("./export-enhanced");
 const ai_assistant_1 = require("./ai-assistant");
 const audit_trail_1 = require("./audit-trail");
+const export_1 = require("./export");
 const v1_1 = require("./v1");
 const v2_1 = require("./v2");
 const reconciliation_summary_1 = require("./reconciliation-summary");
@@ -113,6 +114,8 @@ function setupMiddlewareAndRoutes(app) {
     (0, route_helpers_1.mountVersionedRoutes)(app, '/export-enhanced', export_enhanced_1.exportEnhancedRouter, auth_1.authMiddleware);
     (0, route_helpers_1.mountVersionedRoutes)(app, '/ai-assistant', ai_assistant_1.aiAssistantRouter, auth_1.authMiddleware);
     (0, route_helpers_1.mountVersionedRoutes)(app, '/audit-trail', audit_trail_1.auditTrailRouter, auth_1.authMiddleware);
+    // Portable reconciliation export contract
+    app.use('/api/export', auth_1.authMiddleware, export_1.exportRouter);
     // Playground routes (no auth, rate-limited)
     app.use('/api/v1/playground', playground_1.playgroundRouter);
     app.use('/api/v2/playground', playground_1.playgroundRouter);

@@ -41,6 +41,7 @@ import { cliWizardRouter } from './cli-wizard';
 import { exportEnhancedRouter } from './export-enhanced';
 import { aiAssistantRouter } from './ai-assistant';
 import { auditTrailRouter } from './audit-trail';
+import { exportRouter } from './export';
 import { v1Router } from './v1';
 import { v2Router } from './v2';
 import { reconciliationSummaryRouter } from './reconciliation-summary';
@@ -125,6 +126,9 @@ export function setupMiddlewareAndRoutes(app: Express): void {
   mountVersionedRoutes(app, '/export-enhanced', exportEnhancedRouter, authMiddleware);
   mountVersionedRoutes(app, '/ai-assistant', aiAssistantRouter, authMiddleware);
   mountVersionedRoutes(app, '/audit-trail', auditTrailRouter, authMiddleware);
+
+  // Portable reconciliation export contract
+  app.use('/api/export', authMiddleware, exportRouter);
 
   // Playground routes (no auth, rate-limited)
   app.use('/api/v1/playground', playgroundRouter);

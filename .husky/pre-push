@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+echo "🔍 Checking for unresolved merge conflicts..."
+pnpm verify:conflict-markers || exit 1
+
 echo "🔍 Running fast verification gate..."
 pnpm verify:fast
