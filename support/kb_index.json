@@ -1,0 +1,20 @@
+[
+  {
+    "id": "tenant-isolation",
+    "question": "How does Settler prevent cross-tenant access?",
+    "answer": "Settler enforces tenant-scoped identifiers on run artifacts and verification commands. Always pass tenant-scoped artifacts and run tenant isolation checks before exports.",
+    "keywords": ["tenant", "isolation", "cross-tenant", "security"]
+  },
+  {
+    "id": "proof-verify",
+    "question": "How do I verify a reconciliation proof?",
+    "answer": "Create a capsule with `settler capsule create <runId>` and verify using `settler proof verify <capsule.json>`. This validates audit roots and deterministic integrity roots.",
+    "keywords": ["proof", "verify", "capsule", "audit"]
+  },
+  {
+    "id": "determinism",
+    "question": "How do I confirm deterministic replay?",
+    "answer": "Run `settler capsule replay <capsule.json>` to confirm stable event ordering and hash-linked audit chain verification.",
+    "keywords": ["deterministic", "replay", "stable", "hash"]
+  }
+]

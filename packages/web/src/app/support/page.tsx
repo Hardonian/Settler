@@ -51,6 +51,14 @@ export default function Support() {
       tier: 'All Plans',
     },
     {
+      icon: '🧭',
+      title: 'Future-Proof Suite',
+      description: 'Explore the complete milestone view across proof, lineage, arena, and operator panels',
+      link: '/future-proof',
+      linkText: 'Open Suite',
+      tier: 'All Plans',
+    },
+    {
       icon: '📧',
       title: 'Email Support',
       description: 'Get help via email (response within 24 hours)',
