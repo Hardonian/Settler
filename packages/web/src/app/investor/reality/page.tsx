@@ -8,25 +8,23 @@
 import { Suspense } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  DollarSign, 
-  Users, 
-  TrendingUp, 
+import {
+  DollarSign,
+  Users,
+  TrendingUp,
   AlertTriangle,
   CheckCircle,
   Loader2
 } from 'lucide-react';
+import { getInvestorRealityData } from '@/lib/investor/reality-data';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 async function InvestorDashboardContent() {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-  const response = await fetch(`${baseUrl}/api/investor/reality`, {
-    cache: 'no-store',
-  });
+  const data = await getInvestorRealityData();
 
-  if (!response.ok) {
+  if (!data) {
     return (
       <div className="p-8">
         <Card>
@@ -39,7 +37,6 @@ async function InvestorDashboardContent() {
     );
   }
 
-  const data = await response.json();
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {

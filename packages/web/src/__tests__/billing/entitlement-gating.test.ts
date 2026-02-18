@@ -1,3 +1,4 @@
+/** @jest-environment node */
 /**
  * Integration Test: Entitlement Gating
  *
@@ -7,7 +8,11 @@
 import { checkEntitlement, canUseService } from "@/domain/billing/entitlements";
 import { prisma } from "@/shared/db/prismaClient";
 
-describe("Entitlement Gating", () => {
+const hasDatabaseUrl = Boolean(process.env.DATABASE_URL || process.env.SUPABASE_DATABASE_URL || process.env.DIRECT_URL);
+
+const describeIfDatabase = hasDatabaseUrl ? describe : describe.skip;
+
+describeIfDatabase("Entitlement Gating", () => {
   let testBillingAccountId: string;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let testUserId: string;

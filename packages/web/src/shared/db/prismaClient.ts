@@ -308,8 +308,10 @@ if (typeof setInterval !== "undefined" && nodeEnv === "production") {
 // Graceful shutdown handler
 if (typeof process !== "undefined") {
   const shutdown = async () => {
-    // eslint-disable-next-line no-console
-    console.log("[Prisma] Closing database connections...");
+    if (nodeEnv !== "test") {
+      // eslint-disable-next-line no-console
+      console.log("[Prisma] Closing database connections...");
+    }
     await prismaInstance.$disconnect().catch((error) => {
       console.error("[Prisma] Error disconnecting:", error);
     });

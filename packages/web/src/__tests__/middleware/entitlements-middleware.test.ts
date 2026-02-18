@@ -1,3 +1,4 @@
+/** @jest-environment node */
 import { checkRequestEntitlement, createEntitlementErrorResponse } from '@/shared/middleware/entitlements';
 import type { ApiKeyAuthContext } from '@/shared/auth/apiKey';
 

@@ -1,3 +1,4 @@
+/** @jest-environment node */
 /**
  * Job Queue Tests
  *
@@ -12,7 +13,10 @@ import type { Database } from "@/types/database.types";
 
 type SupabaseDb = SupabaseClient<Database>;
 
-describe("Job Queue RLS and Concurrency", () => {
+const hasSupabaseAdminEnv = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.NEXT_PUBLIC_SUPABASE_URL);
+const describeIfSupabase = hasSupabaseAdminEnv ? describe : describe.skip;
+
+describeIfSupabase("Job Queue RLS and Concurrency", () => {
   let adminClient: SupabaseDb;
   let tenantAId: string;
   let tenantBId: string;
