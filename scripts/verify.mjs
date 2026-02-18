@@ -11,6 +11,7 @@ const checks = [
   ["Offline prerender harness", ["run", "test:web:offline-harness"]],
   ["Middleware /app gating tests", ["run", "test:web:middleware-gating"]],
   ["Typecheck", ["run", "typecheck"]],
+  ["Red-team controls", ["run", "verify:red-team"]],
   ["Docs parity", ["run", "verify:docs"]],
   ["Build", ["run", "build"]],
   ["Audit (high/critical threshold)", ["audit", "--audit-level=high", "--prod"]],

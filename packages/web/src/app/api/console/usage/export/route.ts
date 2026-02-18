@@ -10,6 +10,7 @@ import { prisma } from "@/shared/db/prismaClient";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { withSecurity } from "@/lib/middleware/api-security";
 import { appLogger } from "@/lib/utils/logger";
+import { signExportPayload } from "@/lib/security/export-signature";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -91,10 +92,29 @@ export const GET = withSecurity(
             }),
           ].join("\n");
 
+          let signed;
+          try {
+            signed = signExportPayload(csv);
+          } catch {
+            return NextResponse.json(
+              {
+                code: "EXPORT_SIGNING_KEY_MISSING",
+                message: "Signed exports are required but signing key is not configured",
+                traceId: `export-signature-${Date.now()}`,
+                retryable: false,
+              },
+              { status: 503 }
+            );
+          }
+
           return new NextResponse(csv, {
             headers: {
               "Content-Type": "text/csv",
               "Content-Disposition": `attachment; filename="settler-usage-${days}d.csv"`,
+              "X-Settler-Export-Signature": signed.signature,
+              "X-Settler-Export-Key-Id": signed.keyId,
+              "X-Settler-Export-Algorithm": signed.algorithm,
+              "X-Settler-Export-Signed": "true",
             },
           });
         } else {
@@ -114,10 +134,29 @@ export const GET = withSecurity(
             2
           );
 
+          let signed;
+          try {
+            signed = signExportPayload(json);
+          } catch {
+            return NextResponse.json(
+              {
+                code: "EXPORT_SIGNING_KEY_MISSING",
+                message: "Signed exports are required but signing key is not configured",
+                traceId: `export-signature-${Date.now()}`,
+                retryable: false,
+              },
+              { status: 503 }
+            );
+          }
+
           return new NextResponse(json, {
             headers: {
               "Content-Type": "application/json",
               "Content-Disposition": `attachment; filename="settler-usage-${days}d.json"`,
+              "X-Settler-Export-Signature": signed.signature,
+              "X-Settler-Export-Key-Id": signed.keyId,
+              "X-Settler-Export-Algorithm": signed.algorithm,
+              "X-Settler-Export-Signed": "true",
             },
           });
         }

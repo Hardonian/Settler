@@ -1,62 +1,40 @@
 # Security Policy
 
 ## Reporting a Vulnerability
+If you believe you have found a security issue, report it responsibly.
 
-If you believe you have found a security issue, please report it responsibly.
-
-**Preferred contact:** security@settler.dev
-
-Include the following details in your report:
-
-- Description of the vulnerability
-- Steps to reproduce
-- Potential impact
-- Any proposed mitigations
+- **Email:** security@settler.dev
+- **Include:** impact, reproduction steps, affected scope, and suggested mitigations.
 
 ## Supported Versions
+Security fixes are prioritized on the active default branch and currently supported release lines.
 
-Only the `main` branch receives active security updates. If you are running a fork, please keep it current.
+## Security Posture Summary
+Settler is designed as a multi-tenant reconciliation platform with tenant-scoped access controls, deterministic reconciliation pathways, and tamper-evident audit/evidence mechanisms.
 
-## Threat Model (Summary)
+## Core Controls
+- **Tenant Isolation:** Tenant context + row-level security policies on critical tables.
+- **Access Control:** RBAC permissions and route-level authorization checks.
+- **Input Safety:** Runtime validation and structured error envelopes.
+- **Webhook Security:** Signature verification + replay/idempotency controls.
+- **Auditability:** Audit logging and integrity verification patterns.
+- **Secrets Hygiene:** No credential commits; environment templates for configuration.
 
-**Primary assets**
+## Security Claims Language
+To avoid overclaiming:
+- Settler uses **tamper-evident** controls for audit/evidence integrity.
+- “Immutable” claims are only valid where append-only + storage governance controls are enforced and auditable.
 
-- Tenant-scoped financial records and reconciliation runs
-- API keys, webhook secrets, and service-role credentials
-- Billing and subscription state
+## Incident Handling
+- Triage severity based on tenant impact, exploitability, and data exposure.
+- Contain, remediate, and communicate with affected stakeholders.
+- Publish post-incident corrective actions for material incidents.
 
-**Key threat vectors**
+## Hardening Priorities
+1. Continuous RLS/policy drift detection.
+2. Append-only enforcement for audit-critical stores.
+3. Privileged-access governance (JIT + full audit trail).
+4. Signed export verification in enterprise workflows.
 
-- Unauthorized tenant access (broken RLS or missing tenant filters)
-- Webhook replay or forgery (Stripe/PayPal/etc.)
-- Abuse of public endpoints (rate-limit bypass, resource exhaustion)
-- Secret leakage in logs, configs, or commits
-
-**Controls in place**
-
-- RLS + tenant-scoped queries
-- Structured error envelopes (no stack leaks in user responses)
-- Auth + billing gates for paid features
-- Runtime validation of external inputs (Zod schemas)
-
-## Webhooks
-
-- **Runtime:** Webhook handlers must use Node.js runtime.
-- **Verification:** Raw body signature verification is required.
-- **Replay protection:** Use event IDs for idempotency; reject duplicate event IDs.
-- **Failure behavior:** Return safe errors with `{ code, message, traceId, retryable }`.
-
-## Rate Limiting
-
-- Public endpoints are rate limited with in-memory limits for OSS/local usage.
-- **Upgrade path:** Use Redis or a managed rate-limit service for production-scale deployments.
-
-## Secrets Hygiene
-
-- Never commit secrets or credentials.
-- Use `.env.example` as the template for required variables.
-- Rotate service-role keys immediately if exposure is suspected.
-
-## Handling and Disclosure
-
-We acknowledge reports and coordinate fixes as quickly as possible. Please do not publicly disclose vulnerabilities before a fix is available.
+## Safe Disclosure
+Please do not publicly disclose vulnerabilities before remediation is available.

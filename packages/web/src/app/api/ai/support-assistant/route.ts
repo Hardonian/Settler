@@ -8,6 +8,10 @@ import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
 import { withSecurity } from '@/lib/middleware/api-security';
+import {
+  assertNoAutonomousFinancialAction,
+  buildAdvisoryPolicyMetadata,
+} from '@/lib/ai/advisory-policy';
 
 interface SupportRequest {
   question: string;
@@ -29,6 +33,7 @@ export const POST = withSecurity(
 
     const body: SupportRequest = await request.json();
     const { question, context } = body;
+    assertNoAutonomousFinancialAction(body as unknown as Record<string, unknown>);
 
     if (!question || question.trim().length === 0) {
       return NextResponse.json(
@@ -82,10 +87,18 @@ export const POST = withSecurity(
       }
     }
 
+    const advisoryPolicy = buildAdvisoryPolicyMetadata({
+      question,
+      context,
+      userId: user?.id ?? null,
+      route: 'support-assistant',
+    });
+
     return NextResponse.json({
       answer: aiResponse.answer,
       suggestions: aiResponse.suggestions,
       related_docs: aiResponse.relatedDocs,
+      advisoryPolicy,
     });
    
       } catch (error) {

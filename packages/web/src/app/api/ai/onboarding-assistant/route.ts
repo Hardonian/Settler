@@ -4,6 +4,10 @@ import { parseRequestBody } from "@/types/api";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
 import { withSecurity } from '@/lib/middleware/api-security';
+import {
+  assertNoAutonomousFinancialAction,
+  buildAdvisoryPolicyMetadata,
+} from '@/lib/ai/advisory-policy';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
@@ -31,6 +35,7 @@ export const POST = withSecurity(
 
     const body = await parseRequestBody<OnboardingRequestBody>(request);
     const { message } = body;
+    assertNoAutonomousFinancialAction(body);
 
     // Get user context
     const { data: lifecycle } = await supabase
@@ -75,7 +80,8 @@ export const POST = withSecurity(
         " I notice you haven't completed your first reconciliation yet. Would you like me to guide you through that?";
     }
 
-    return NextResponse.json({ response });
+    const advisoryPolicy = buildAdvisoryPolicyMetadata({ message, userId: user.id, route: 'onboarding-assistant' });
+    return NextResponse.json({ response, advisoryPolicy });
    
       } catch (error) {
     appLogger.error("Error in onboarding-assistant POST", error);

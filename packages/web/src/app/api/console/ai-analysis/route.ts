@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireActiveSubscription } from '@/lib/security/billing-enforcement';
 import { withSecurity } from '@/lib/middleware/api-security';
+import { buildAdvisoryPolicyMetadata } from '@/lib/ai/advisory-policy';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,7 +13,13 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
       { status: 403 }
     );
   }
-  return NextResponse.json({ message: 'Feature temporarily unavailable' }, { status: 503 });
+  return NextResponse.json(
+    {
+      message: 'Feature temporarily unavailable',
+      advisoryPolicy: buildAdvisoryPolicyMetadata({ route: 'console-ai-analysis', method: 'GET' }),
+    },
+    { status: 503 }
+  );
 },
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
 );
@@ -25,7 +32,13 @@ export const POST = withSecurity(async function POST(request: NextRequest) {
       { status: 403 }
     );
   }
-  return NextResponse.json({ message: 'Feature temporarily unavailable' }, { status: 503 });
+  return NextResponse.json(
+    {
+      message: 'Feature temporarily unavailable',
+      advisoryPolicy: buildAdvisoryPolicyMetadata({ route: 'console-ai-analysis', method: 'POST' }),
+    },
+    { status: 503 }
+  );
 },
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
 );
