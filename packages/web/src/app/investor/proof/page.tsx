@@ -9,59 +9,84 @@
 
 import { Suspense } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { createClient } from '@/lib/supabase/server';
-import { prisma } from '@/shared/db/prismaClient';
 import { Badge } from '@/components/ui/badge';
 import { Shield, TrendingUp, Zap, Lock } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const revalidate = 3600;
+
+type InvestorMetrics = {
+  totalTenants: number;
+  totalReconciliations: number;
+  totalRecords: number;
+  activeSubscriptions: number;
+  source: "live" | "fallback";
+};
+
+const FALLBACK_METRICS: InvestorMetrics = {
+  totalTenants: 0,
+  totalReconciliations: 0,
+  totalRecords: 0,
+  activeSubscriptions: 0,
+  source: "fallback",
+};
+
+async function loadInvestorMetrics(): Promise<InvestorMetrics> {
+  try {
+    const { prisma } = await import('@/shared/db/prismaClient');
+
+    const [
+      totalTenants,
+      totalReconciliations,
+      totalRecordsProcessed,
+      activeSubscriptions,
+    ] = await Promise.all([
+      prisma.tenant.count({
+        where: { isActive: true },
+      }),
+      prisma.reconResult.count({
+        where: {
+          status: 'completed',
+          createdAt: {
+            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+          },
+        },
+      }),
+      prisma.usageEvent.aggregate({
+        where: {
+          eventType: {
+            startsWith: 'value:records_processed',
+          },
+          timestamp: {
+            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+          },
+        },
+        _sum: {
+          quantity: true,
+        },
+      }),
+      prisma.subscription.count({
+        where: {
+          status: {
+            in: ['active', 'trialing'],
+          },
+        },
+      }),
+    ]);
+
+    return {
+      totalTenants,
+      totalReconciliations,
+      totalRecords: Number(totalRecordsProcessed._sum.quantity) || 0,
+      activeSubscriptions,
+      source: 'live',
+    };
+  } catch {
+    return FALLBACK_METRICS;
+  }
+}
 
 async function InvestorProofContent() {
-  const supabase = await createClient();
-  await supabase.auth.getUser();
-
-  // Get aggregate metrics (redacted for privacy)
-  const [
-    totalTenants,
-    totalReconciliations,
-    totalRecordsProcessed,
-    activeSubscriptions,
-  ] = await Promise.all([
-    prisma.tenant.count({
-      where: { isActive: true },
-    }),
-    prisma.reconResult.count({
-      where: {
-        status: 'completed',
-        createdAt: {
-          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-        },
-      },
-    }),
-    prisma.usageEvent.aggregate({
-      where: {
-        eventType: {
-          startsWith: 'value:records_processed',
-        },
-        timestamp: {
-          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-        },
-      },
-      _sum: {
-        quantity: true,
-      },
-    }),
-    prisma.subscription.count({
-      where: {
-        status: {
-          in: ['active', 'trialing'],
-        },
-      },
-    }),
-  ]);
-
-  const totalRecords = Number(totalRecordsProcessed._sum.quantity) || 0;
+  const metrics = await loadInvestorMetrics();
 
   return (
     <div className="space-y-8">
@@ -80,7 +105,7 @@ async function InvestorProofContent() {
           <CardHeader className="pb-3">
             <CardDescription>Active Tenants</CardDescription>
             <CardTitle className="text-3xl">
-              {totalTenants.toLocaleString()}
+              {metrics.totalTenants.toLocaleString()}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -94,7 +119,7 @@ async function InvestorProofContent() {
           <CardHeader className="pb-3">
             <CardDescription>Reconciliations Completed</CardDescription>
             <CardTitle className="text-3xl">
-              {totalReconciliations.toLocaleString()}
+              {metrics.totalReconciliations.toLocaleString()}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -108,7 +133,7 @@ async function InvestorProofContent() {
           <CardHeader className="pb-3">
             <CardDescription>Records Processed</CardDescription>
             <CardTitle className="text-3xl">
-              {totalRecords.toLocaleString()}
+              {metrics.totalRecords.toLocaleString()}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -122,7 +147,7 @@ async function InvestorProofContent() {
           <CardHeader className="pb-3">
             <CardDescription>Active Subscriptions</CardDescription>
             <CardTitle className="text-3xl">
-              {activeSubscriptions.toLocaleString()}
+              {metrics.activeSubscriptions.toLocaleString()}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -132,6 +157,19 @@ async function InvestorProofContent() {
           </CardContent>
         </Card>
       </div>
+
+
+
+      {metrics.source === "fallback" && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Live metrics unavailable</CardTitle>
+            <CardDescription>
+              Rendering fallback values because optional data services are not configured in this environment.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      )}
 
       {/* Defensibility */}
       <Card>

@@ -18,10 +18,30 @@ import {
 } from 'lucide-react';
 import { getInvestorRealityData } from '@/lib/investor/reality-data';
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const revalidate = 300;
+
+type InvestorRealityPayload = {
+  revenue: { mrr: number; mrr_growth: number | null; active_subscriptions: number; churn: number | null; status: string };
+  usage: { dau: number; wau: number; active_tenants: number; status: string };
+  reliability: { uptime_proxy: number | null; failure_events: number };
+  risk_index: number;
+  evidence_index: number;
+  last_updated: string;
+  week_start: string | null;
+};
+
+const FALLBACK_DASHBOARD_DATA: InvestorRealityPayload = {
+  revenue: { mrr: 0, mrr_growth: null, active_subscriptions: 0, churn: null, status: 'assumed' },
+  usage: { dau: 0, wau: 0, active_tenants: 0, status: 'assumed' },
+  reliability: { uptime_proxy: null, failure_events: 0 },
+  risk_index: 0,
+  evidence_index: 0,
+  last_updated: new Date(0).toISOString(),
+  week_start: null,
+};
 
 async function InvestorDashboardContent() {
+<<<<<<< codex/add-hybrid-intelligence-layer-to-settler
   const data = await getInvestorRealityData();
 
   if (!data) {
@@ -37,6 +57,24 @@ async function InvestorDashboardContent() {
     );
   }
 
+=======
+  let data: InvestorRealityPayload = FALLBACK_DASHBOARD_DATA;
+  let usingFallback = false;
+
+  try {
+    const response = await fetch('/api/investor/reality', {
+      next: { revalidate },
+    });
+
+    if (!response.ok) {
+      usingFallback = true;
+    } else {
+      data = (await response.json()) as InvestorRealityPayload;
+    }
+  } catch {
+    usingFallback = true;
+  }
+>>>>>>> main
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -74,6 +112,17 @@ async function InvestorDashboardContent() {
           Key performance indicators powered by the Reality System. Evidence-based metrics for investor review.
         </p>
       </div>
+
+      {usingFallback && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Live metrics unavailable</CardTitle>
+            <CardDescription>
+              Rendering fallback values because optional runtime services are unavailable in this environment.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      )}
 
       {/* Key Metrics Row */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
