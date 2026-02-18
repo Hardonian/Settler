@@ -89,6 +89,13 @@ const commandRegistry: Record<
       return { command: mcpCommand };
     },
   },
+  "tenant-check": {
+    description: "Run multi-tenant isolation integrity checks",
+    load: async () => {
+      const { tenantCheckCommand } = await import("./commands/tenant-check");
+      return { command: tenantCheckCommand };
+    },
+  },
 };
 
 const aliasMap = new Map<string, string>();

@@ -80,6 +80,9 @@ export async function queryWithTenant<T = Record<string, unknown>>(
     throw new Error(`[TENANT ISOLATION VIOLATION] Invalid or missing tenantId: ${tenantId}`);
   }
 
+  // Runtime assertion to prevent unscoped tenant-table access.
+  assertTenantScoped(text);
+
   const client = await pool.connect();
   try {
     // Set tenant context for RLS

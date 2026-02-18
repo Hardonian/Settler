@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { query } from "../../db";
+import { assertTenantOwnership, validateTenantId } from "../../infrastructure/tenancy/TenantEnforcement";
 import { logError, logInfo } from "../../utils/logger";
 
 export interface ReconciliationRunForIntegrity {
@@ -101,6 +102,7 @@ export function verifyIntegrityChain(
 }
 
 async function loadRun(runId: string, tenantId: string): Promise<ReconciliationRunForIntegrity | null> {
+  validateTenantId(tenantId, "loadRun");
   const rows = await query<Record<string, unknown>>(
     `SELECT id, tenant_id, ingestion_id, status, source_count, target_count,
             matched_count, unmatched_source_count, unmatched_target_count,
@@ -120,6 +122,8 @@ async function loadRun(runId: string, tenantId: string): Promise<ReconciliationR
     return null;
   }
 
+  assertTenantOwnership(row as { tenant_id?: string | null }, tenantId, "reconciliation_runs");
+
   return {
     id: String(row.id),
     tenantId: String(row.tenant_id),
@@ -137,13 +141,16 @@ async function loadRun(runId: string, tenantId: string): Promise<ReconciliationR
 }
 
 async function loadMatches(runId: string, tenantId: string): Promise<ReconciliationMatchForIntegrity[]> {
+  validateTenantId(tenantId, "loadMatches");
   const rows = await query<Record<string, unknown>>(
-    `SELECT id, source_transaction_id, target_transaction_id,
+    `SELECT id, tenant_id, source_transaction_id, target_transaction_id,
             match_type, confidence, amount_diff, date_diff
      FROM reconciliation_matches
      WHERE run_id = $1 AND tenant_id = $2`,
     [runId, tenantId]
   );
+
+  assertTenantOwnership(rows as Array<{ tenant_id?: string | null }>, tenantId, "reconciliation_matches");
 
   return rows.map((row) => ({
     id: String(row.id),
@@ -160,6 +167,7 @@ export async function appendRunIntegrityEntry(
   runId: string,
   tenantId: string
 ): Promise<IntegrityMetadata | null> {
+  validateTenantId(tenantId, "appendRunIntegrityEntry");
   const run = await loadRun(runId, tenantId);
   if (!run) {
     return null;
@@ -214,6 +222,8 @@ export async function verifyTenantIntegrityChain(tenantId: string): Promise<{
   checkedRuns: number;
   brokenRunId: string | null;
 }> {
+  validateTenantId(tenantId, "verifyTenantIntegrityChain");
+
   const rows = await query<Record<string, unknown>>(
     `SELECT id, metadata
      FROM reconciliation_runs
