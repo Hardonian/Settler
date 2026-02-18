@@ -1,4 +1,5 @@
 import { query } from "../../db";
+import { assertTenantOwnership, validateTenantId } from "../../infrastructure/tenancy/TenantEnforcement";
 import {
   computeReconciliationHash,
   verifyIntegrityChain,
@@ -34,6 +35,7 @@ export async function buildReconciliationExport(
   tenantId: string,
   runId: string
 ): Promise<ReconciliationExportDocument | null> {
+  validateTenantId(tenantId, "buildReconciliationExport");
   const runRows = await query<Record<string, unknown>>(
     `SELECT id, tenant_id, ingestion_id, status, source_count, target_count,
             matched_count, unmatched_source_count, unmatched_target_count,
@@ -52,6 +54,8 @@ export async function buildReconciliationExport(
   if (!runRow) {
     return null;
   }
+
+  assertTenantOwnership(runRow as { tenant_id?: string | null }, tenantId, "reconciliation_runs");
   const run: ReconciliationRunForIntegrity = {
     id: String(runRow.id),
     tenantId: String(runRow.tenant_id),
@@ -68,12 +72,14 @@ export async function buildReconciliationExport(
   };
 
   const matchRows = await query<Record<string, unknown>>(
-    `SELECT id, source_transaction_id, target_transaction_id, match_type, confidence, amount_diff, date_diff
+    `SELECT id, tenant_id, source_transaction_id, target_transaction_id, match_type, confidence, amount_diff, date_diff
      FROM reconciliation_matches
      WHERE run_id = $1 AND tenant_id = $2
      ORDER BY id ASC`,
     [runId, tenantId]
   );
+
+  assertTenantOwnership(matchRows as Array<{ tenant_id?: string | null }>, tenantId, "reconciliation_matches");
 
   const matches: ReconciliationMatchForIntegrity[] = matchRows.map((row) => ({
     id: String(row.id),
