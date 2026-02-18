@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" fill="none">
+<rect width="1200" height="675" fill="url(#g)"/>
+<g opacity="0.28">
+  <circle cx="180" cy="120" r="180" fill="white"/>
+  <circle cx="1020" cy="560" r="240" fill="white"/>
+  <path d="M0 520C180 440 300 430 450 470C640 522 760 525 1200 390V675H0V520Z" fill="white"/>
+</g>
+<g opacity="0.9" stroke="white" stroke-width="2">
+  <path d="M130 504L280 404L410 458L560 326L730 372L890 238L1060 286"/>
+  <circle cx="280" cy="404" r="10" fill="white"/>
+  <circle cx="560" cy="326" r="10" fill="white"/>
+  <circle cx="890" cy="238" r="10" fill="white"/>
+</g>
+<text x="68" y="92" fill="white" font-family="Inter,Arial,sans-serif" font-size="42" font-weight="700">Governance Templates</text>
+<defs>
+  <linearGradient id="g" x1="0" y1="0" x2="1200" y2="675" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#14b8a6"/>
+    <stop offset="1" stop-color="#042f2e"/>
+  </linearGradient>
+</defs>
+</svg>

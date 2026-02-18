@@ -1,0 +1,9 @@
+[
+  {
+    "name": "strict-amount-match",
+    "version": "1.0.0",
+    "license": "Apache-2.0",
+    "compatibility": ">=1.0.0",
+    "provenance": "git+https://example.invalid/settler-registry/strict-amount-match"
+  }
+]

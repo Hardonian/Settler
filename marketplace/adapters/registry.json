@@ -1,0 +1,9 @@
+[
+  {
+    "name": "stripe-basic-adapter",
+    "version": "1.0.0",
+    "license": "MIT",
+    "compatibility": ">=1.0.0",
+    "provenance": "git+https://example.invalid/settler-registry/stripe-basic-adapter"
+  }
+]
