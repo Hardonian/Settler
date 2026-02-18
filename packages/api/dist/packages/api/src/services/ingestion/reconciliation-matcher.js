@@ -45,6 +45,7 @@ const db_1 = require("../../db");
 const logger_1 = require("../../utils/logger");
 const ml_matching_engine_1 = require("../matching/ml-matching-engine");
 const enhanced_cross_customer_intelligence_1 = require("../matching/enhanced-cross-customer-intelligence");
+const integrity_1 = require("../reconciliation/integrity");
 const DEFAULT_CONFIG = {
     dateWindowDays: 7,
     amountTolerance: 0.01,
@@ -390,6 +391,7 @@ async function runReconciliation(ingestionId, tenantId, userId, config = {}) {
             avgConfidence,
             runId,
         ]);
+        await (0, integrity_1.appendRunIntegrityEntry)(runId, tenantId);
         (0, logger_1.logInfo)("Reconciliation completed", {
             runId,
             matchedCount,
@@ -461,6 +463,7 @@ async function runReconciliation(ingestionId, tenantId, userId, config = {}) {
         error_message = $1,
         updated_at = NOW()
       WHERE id = $2`, [error instanceof Error ? error.message : String(error), runId]);
+        await (0, integrity_1.appendRunIntegrityEntry)(runId, tenantId);
         throw error;
     }
 }

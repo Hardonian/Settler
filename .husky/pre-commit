@@ -38,6 +38,12 @@ pnpm validate:lint-config || {
   exit 1
 }
 
+# Block unresolved merge conflict markers
+pnpm verify:conflict-markers || {
+  echo "❌ Unresolved merge conflict markers detected. Please resolve them before committing."
+  exit 1
+}
+
 # Run fast verification for staged files
 echo "🔍 Running fast verification for staged files..."
 pnpm verify:fast --changed || {

@@ -4,6 +4,7 @@ import { spawnSync } from "child_process";
 
 const rootDir = process.cwd();
 const checks = [
+  ["Conflict markers", ["run", "verify:conflict-markers"]],
   ["Lint", ["run", "lint"]],
   ["Globals CSS import order", ["run", "verify:globals-css-import-order"]],
   ["Route boundaries smoke", ["run", "verify:route-boundaries"]],

@@ -96,6 +96,20 @@ const commandRegistry = {
             return { command: createAdminCommands() };
         },
     },
+    export: {
+        description: "Export portability contract data",
+        load: async () => {
+            const { exportCommand } = await Promise.resolve().then(() => __importStar(require("./commands/export")));
+            return { command: exportCommand };
+        },
+    },
+    "verify-export": {
+        description: "Verify exported portability contract files",
+        load: async () => {
+            const { verifyExportCommand } = await Promise.resolve().then(() => __importStar(require("./commands/export")));
+            return { command: verifyExportCommand };
+        },
+    },
     mcp: {
         description: "Model Context Protocol server utilities",
         load: async () => {

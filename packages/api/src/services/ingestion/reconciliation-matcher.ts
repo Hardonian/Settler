@@ -10,6 +10,7 @@ import { logError, logInfo } from "../../utils/logger";
 import { MatchResult, ReconciliationConfig } from "./types";
 import { mlMatchingEngine } from "../matching/ml-matching-engine";
 import { enhancedCrossCustomerIntelligence } from "../matching/enhanced-cross-customer-intelligence";
+import { appendRunIntegrityEntry } from "../reconciliation/integrity";
 
 const DEFAULT_CONFIG: Required<ReconciliationConfig> = {
   dateWindowDays: 7,
@@ -463,6 +464,8 @@ export async function runReconciliation(
       ]
     );
 
+    await appendRunIntegrityEntry(runId, tenantId);
+
     logInfo("Reconciliation completed", {
       runId,
       matchedCount,
@@ -539,6 +542,7 @@ export async function runReconciliation(
       WHERE id = $2`,
       [error instanceof Error ? error.message : String(error), runId]
     );
+    await appendRunIntegrityEntry(runId, tenantId);
     throw error;
   }
 }
