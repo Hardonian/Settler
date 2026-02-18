@@ -3,6 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
 import { withSecurity } from '@/lib/middleware/api-security';
+import {
+  assertNoAutonomousFinancialAction,
+  buildAdvisoryPolicyMetadata,
+} from '@/lib/ai/advisory-policy';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
@@ -21,6 +25,7 @@ export const POST = withSecurity(
 
     const body = await request.json();
     const { answers } = body;
+    assertNoAutonomousFinancialAction(body as Record<string, unknown>);
 
     // Generate solution based on answers (in production, use AI/LLM)
     let solution = "";
@@ -49,7 +54,13 @@ export const POST = withSecurity(
       solution = `I understand you're experiencing an issue. To help you better:\n\n1. Check the error logs in your dashboard\n2. Review the documentation for your specific use case\n3. Try the troubleshooting steps in our help center\n4. Contact support with:\n   - What you were trying to do\n   - The exact error message\n   - Steps to reproduce the issue\n\nOur support team can help resolve this quickly.`;
     }
 
-    return NextResponse.json({ solution });
+    const advisoryPolicy = buildAdvisoryPolicyMetadata({
+      answers,
+      userId: user.id,
+      route: "troubleshooting",
+    });
+
+    return NextResponse.json({ solution, advisoryPolicy });
    
       } catch (error) {
     appLogger.error("Error in troubleshooting POST", error);

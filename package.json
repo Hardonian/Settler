@@ -79,6 +79,7 @@
     "verify:app-router": "tsx scripts/validate-app-router.ts",
     "verify:env:typed": "tsx scripts/validate-typed-env.ts",
     "verify:docs": "node scripts/verify-docs.mjs",
+    "verify:red-team": "node scripts/verify-red-team-controls.mjs",
     "verify:skip-tests": "node scripts/verify.mjs --skip-tests",
     "verify:skip-build": "node scripts/verify.mjs --skip-build",
     "validate": "pnpm run lint && pnpm run typecheck && pnpm run format:check",

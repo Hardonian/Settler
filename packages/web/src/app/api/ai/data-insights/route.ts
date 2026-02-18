@@ -8,6 +8,10 @@ import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
 import { withSecurity } from '@/lib/middleware/api-security';
+import {
+  assertNoAutonomousFinancialAction,
+  buildAdvisoryPolicyMetadata,
+} from '@/lib/ai/advisory-policy';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -26,6 +30,7 @@ export const GET = withSecurity(
 
     const { searchParams } = new URL(request.url);
     const dataType = searchParams.get("type") || "receipts";
+    assertNoAutonomousFinancialAction({ requestedAction: searchParams.get("requestedAction") || undefined });
 
     let insights: {
       summary: string;
@@ -127,7 +132,16 @@ export const GET = withSecurity(
       }
     }
 
-    return NextResponse.json(insights);
+    const advisoryPolicy = buildAdvisoryPolicyMetadata({
+      dataType,
+      userId: user.id,
+      route: "data-insights",
+    });
+
+    return NextResponse.json({
+      ...insights,
+      advisoryPolicy,
+    });
    
       } catch (error) {
     appLogger.error("AI data insights error", error);
