@@ -16,11 +16,12 @@
 Settler automates order reconciliation for Shopify stores. Match Shopify orders with Stripe payments, PayPal transactions, and QuickBooks accounting—all automatically. No more manual spreadsheets.
 
 **Key Features:**
-- Automatic order-to-payment matching
+- Deterministic order-to-payment matching
+- Audit-ready proof capsules (RPC) for every job
 - Exception queue for unmatched orders
 - Real-time reconciliation via webhooks
 - Export to QuickBooks/Xero
-- Complete audit trail
+- Tamper-evident audit trail
 
 **Pricing:**
 - Free: 1,000 reconciliations/month

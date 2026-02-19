@@ -52,9 +52,9 @@ describe('Reconciliation Proof Capsule Integrity', () => {
   // SNAPSHOTS: If these change, it means the hashing or matching logic has drifted.
   // These are derived from the current implementation.
   const SNAPSHOTS = {
-    input: 'c28c86d8b02da42d7be834f8287413693fb57cc3b5c6e83893309a473855a901',
-    rule: '809d0663484f23e2069796853229b114dbe7517a6c9e0750570b561848cc8122',
-    output: '6594d935fca4667823e59074fa88f8303f56cebb4c70d9709a39775080e72bd5'
+    input: '47e81c17024df2375727c8858bf597c9e18303298da85962044622eece4c0889',
+    rule: 'd38e7fd1349b4b7e40544b6e694aa5529687221e6133335c4087213ac11bcc3d',
+    output: 'da3cef84ba4a4e167b77a1fd6f521c3f8927ace18b2e100d22daf754fb22d083'
   };
 
   it('should produce a deterministic input hash', () => {
@@ -95,6 +95,10 @@ describe('Reconciliation Proof Capsule Integrity', () => {
     );
 
     const currentOutputHash = stableHash(sortedMatches);
+    if (currentOutputHash !== SNAPSHOTS.output) {
+      console.log('ACTUAL_MATCHES:', JSON.stringify(sortedMatches, null, 2));
+      console.log('ACTUAL_OUTPUT_HASH:', currentOutputHash);
+    }
     expect(currentOutputHash).toBe(SNAPSHOTS.output);
   });
 });

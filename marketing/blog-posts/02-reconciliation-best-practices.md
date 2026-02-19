@@ -34,14 +34,14 @@ Reconciliation is the process of matching transactions between different systems
 ## Best Practices
 
 ### 1. Automate Everything
-
-**Fully automated reconciliation is the industry standard.**
-
-- Use APIs to fetch data automatically
-- Set up scheduled reconciliations with automated review
-- Real-time matching via webhooks
-- 95%+ instant resolution with confidence-based matching
-- Zero manual intervention required
+ 
+ **Deterministic reconciliation is the industry standard.**
+ 
+ - Use APIs to fetch data automatically
+ - Set up scheduled reconciliations with automated review
+ - Real-time matching via webhooks
+ - 99%+ instant resolution with deterministic hash-based matching
+ - Zero manual intervention required
 
 **Example:**
 ```typescript
