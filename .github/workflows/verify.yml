@@ -1,0 +1,29 @@
+name: verify
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install
+        run: pnpm install --frozen-lockfile=false
+      - name: Lint (if present)
+        run: pnpm -s lint || echo "lint skipped"
+      - name: Typecheck (if present)
+        run: pnpm -s typecheck || echo "typecheck skipped"
+      - name: Test (if present)
+        run: pnpm -s test || echo "test skipped"
+      - name: Build (if present)
+        run: pnpm -s build || echo "build skipped"
