@@ -28,90 +28,85 @@
 :root {
   /* === CORE COLORS === */
 
-  /* Primary brand color (blue palette) */
-  --color-primary-50: #f0f9ff;
-  --color-primary-100: #e0f2fe;
-  --color-primary-200: #bae6fd;
-  --color-primary-300: #7dd3fc;
-  --color-primary-400: #38bdf8;
-  --color-primary-500: #0ea5e9;
-  --color-primary-600: #0284c7;
-  --color-primary-700: #0369a1;
-  --color-primary-800: #075985;
-  --color-primary-900: #0c4a6e;
+  /* Neutral Palette (Foundation) */
+  --color-neutral-10: #0b0f14;
+  --color-neutral-20: #111827;
+  --color-neutral-30: #1f2937;
+  --color-neutral-40: #374151;
+  --color-neutral-50: #4b5563;
+  --color-neutral-100: #9ca3af;
+  --color-neutral-200: #d1d5db;
+  --color-neutral-300: #e5e7eb;
+  --color-neutral-400: #f3f4f6;
+  --color-neutral-white: #ffffff;
 
-  /* Accent colors (electric palette) */
-  --color-electric-cyan: #06b6d4;
-  --color-electric-purple: #a855f7;
-  --color-electric-neon: #00ff88;
-  --color-electric-blue: #3b82f6;
-  --color-electric-indigo: #6366f1;
+  /* Accent: Muted Teal */
+  --color-teal-50: #f0fdfa;
+  --color-teal-100: #ccfbf1;
+  --color-teal-500: #14b8a6;
+  --color-teal-600: #0d9488;
+  --color-teal-700: #0f766e;
+
+  /* Highlight: Calm Blue */
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
 
   /* Semantic Colors */
-  --color-success-500: #22c55e;
-  --color-warning-500: #f59e0b;
-  --color-error-500: #ef4444;
-
-  /* Neutral palette */
-  --color-neutral-white: #ffffff;
-  --color-neutral-black: #000000;
-  --color-neutral-gray-50: #f9fafb;
-  --color-neutral-gray-100: #f3f4f6;
-  --color-neutral-gray-200: #e5e7eb;
-  --color-neutral-gray-300: #d1d5db;
-  --color-neutral-gray-400: #9ca3af;
-  --color-neutral-gray-500: #6b7280;
-  --color-neutral-gray-600: #4b5563;
-  --color-neutral-gray-700: #374151;
-  --color-neutral-gray-800: #1f2937;
-  --color-neutral-gray-900: #111827;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
 
   /* ============================================
      SEMANTIC TOKENS — Mapped to Components
      ============================================ */
 
-  /* Background */
-  --bg: var(--color-neutral-white);
-  --bg-muted: var(--color-neutral-gray-50);
-  --bg-subtle: var(--color-neutral-gray-100);
+  /* Theme: Dark-First (Calm Fintech) */
+  --bg: #0b0f14;
+  --bg-muted: #111827;
+  --bg-subtle: #1f2937;
 
-  /* Surface */
-  --surface: var(--color-neutral-white);
-  --surface-muted: var(--color-neutral-gray-50);
-  --surface-elevated: var(--color-neutral-white);
+  --surface: #111827;
+  --surface-muted: #0b0f14;
+  --surface-elevated: #1f2937;
 
   /* Text */
-  --text: var(--color-neutral-gray-900);
-  --text-muted: var(--color-neutral-gray-600);
-  --text-subtle: var(--color-neutral-gray-400);
-  --text-inverse: var(--color-neutral-white);
+  --text: #f9faf9;
+  --text-muted: #9ca3af;
+  --text-subtle: #4b5563;
+  --text-inverse: #0b0f14;
 
-  /* Primary interactive */
-  --primary: var(--color-primary-600);
-  --primary-hover: var(--color-primary-700);
-  --primary-light: var(--color-primary-100);
-  --primary-foreground: var(--color-neutral-white);
+  /* Brand/Action */
+  --primary: var(--color-teal-500);
+  --primary-hover: var(--color-teal-600);
+  --primary-light: rgba(20, 184, 166, 0.1);
+  --primary-foreground: #ffffff;
+
+  /* Highlight/Blue */
+  --highlight: var(--color-blue-400);
+  --highlight-hover: var(--color-blue-500);
 
   /* Border */
-  --border: var(--color-neutral-gray-200);
-  --border-muted: var(--color-neutral-gray-100);
-  --border-focus: var(--color-primary-500);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-muted: rgba(255, 255, 255, 0.04);
+  --border-focus: var(--color-teal-500);
 
-  /* Focus ring — WCAG AA compliant */
-  --focus-ring: 0 0 0 3px rgba(14, 165, 233, 0.4);
-  --focus-ring-offset: 0 0 0 2px var(--color-neutral-white);
+  /* Focus ring */
+  --focus-ring: 0 0 0 3px rgba(20, 184, 166, 0.3);
 
-  /* Status colors */
-  --status-success: var(--color-success-500);
-  --status-warning: var(--color-warning-500);
-  --status-error: var(--color-error-500);
+  /* Status */
+  --status-success: var(--color-success);
+  --status-warning: var(--color-warning);
+  --status-error: var(--color-error);
 
   /* ============================================
      TYPOGRAPHY TOKENS
      ============================================ */
 
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  --font-mono: "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", monospace;
 
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
@@ -132,7 +127,7 @@
   --leading-relaxed: 1.75;
 
   /* ============================================
-     SPACING TOKENS
+     SPACING & RADIUS
      ============================================ */
 
   --space-0: 0;
@@ -140,76 +135,43 @@
   --space-2: 0.5rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
-  --space-5: 1.25rem;
   --space-6: 1.5rem;
   --space-8: 2rem;
   --space-10: 2.5rem;
   --space-12: 3rem;
   --space-16: 4rem;
-  --space-20: 5rem;
 
-  /* ============================================
-     RADIUS TOKENS
-     ============================================ */
-
-  --radius-none: 0;
-  --radius-sm: 0.125rem;
-  --radius-base: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
-  --radius-2xl: 1rem;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
   --radius-full: 9999px;
 
   /* ============================================
-     ELEVATION/SHADOW TOKENS
+     SHADOWS
      ============================================ */
 
-  --shadow-none: none;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-
-  /* ============================================
-     UI POLISH TOKENS
-     ============================================ */
-
-  --ui-card-padding: 1.5rem;
-  --ui-control-height: 2.5rem;
-  --ui-radius-md: 0.375rem;
-  --ui-radius-lg: 0.5rem;
-  --ui-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.14);
 }
 
-/* ============================================
-   LEGACY TOKEN ALIASES (for backward compatibility)
-   Maps old token names to canonical names
-   ============================================ */
-
+/* Backward compatibility aliases */
 :root {
-  /* Aliases for semantic naming */
-  --color-background: var(--bg);
-  --color-foreground: var(--text);
-  --color-card: var(--surface);
-  --color-muted: var(--surface-muted);
-  --color-accent: var(--color-electric-cyan);
-  --color-border: var(--border);
-  --color-input: var(--color-neutral-gray-200);
-  --color-ring: var(--color-primary-500);
+  --color-primary-500: var(--color-teal-500);
+  --color-electric-cyan: var(--color-teal-500);
+  --color-electric-blue: var(--color-blue-400);
+  --color-electric-purple: #8b5cf6; /* Muted purple if needed */
+  --color-electric-neon: var(--color-teal-500); /* Overwrite loud neon with teal */
 
-  /* HSL aliases for globals.css compatibility */
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222.2 47.4% 11.2%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 222.2 84% 4.9%;
+  --background: 210 30% 6%; /* #0B0F14 */
+  --foreground: 210 10% 98%; /* Close to white */
+  --card: 210 30% 9%; /* #111827 */
+  --card-foreground: 210 10% 98%;
+  --muted: 210 30% 15%;
+  --muted-foreground: 210 10% 60%;
+  --accent: 171 77% 40%; /* Teal */
+  --accent-foreground: 210 10% 98%;
+  --border: 210 30% 15% / 0.1;
+  --input: 210 30% 15% / 0.1;
+  --ring: 171 77% 40%;
 }
