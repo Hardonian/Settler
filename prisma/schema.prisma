@@ -516,31 +516,265 @@ model WorkflowRun {
 }
 
 // ============================================================================
-// RECEIPTS API MODELS
-// Receipt parsing and storage for Settler Receipts API
+// ANALYTICS AND CHATBOT TABLES
 // ============================================================================
 
-model ReceiptUpload {
+// 1. Analytics Events Table
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  type      String
+  data      Json     @default("{}")
+  userId    String?  // UUID
+  sessionId String?
+  timestamp DateTime @default(now())
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now()) @updatedAt
+
+  @@index([type])
+  @@index([userId])
+  @@index([sessionId])
+  @@index([timestamp])
+}
+
+model SDKDownload {
+  id             String   @id @default(cuid())
+  packageName    String
+  version        String
+  packageManager String
+  userId         String?
+  sessionId      String?
+  userAgent      String?
+  referrer       String?
+  ipAddress      String?
+  timestamp      DateTime @default(now())
+  createdAt      DateTime @default(now()) @updatedAt
+
+  @@index([packageName])
+  @@index([timestamp])
+  @@index([userId])
+}
+
+model PlaygroundUsage {
+  id           String   @id @default(cuid())
+  feature      String
+  action       String
+  integration  String?
+  durationMs   Int?
+  success      Boolean?
+  userId       String?
+  sessionId    String?
+  metadata     Json     @default("{}")
+  timestamp    DateTime @default(now())
+  createdAt    DateTime @default(now()) @updatedAt
+
+  @@index([feature])
+  @@index([timestamp])
+  @@index([userId])
+}
+
+model ChatbotConversation {
+  id            String   @id @default(cuid())
+  conversationId String
+  message       String
+  response      String
+  userId        String?
+  sessionId     String?
+  deviceInfo    Json     @default("{}")
+  metadata      Json     @default("{}")
+  timestamp     DateTime @default(now())
+  createdAt     DateTime @default(now()) @updatedAt
+
+  @@index([conversationId])
+  @@index([timestamp])
+  @@index([userId])
+}
+
+model ChatbotAnalytics {
+  id        String   @id @default(cuid())
+  type      String
+  data      Json     @default("{}")
+  sessionId String?
+  userId    String?
+  timestamp DateTime @default(now())
+  createdAt DateTime @default(now()) @updatedAt
+
+  @@index([type])
+  @@index([timestamp])
+  @@index([sessionId])
+}
+
+model NewsletterSubscription {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  name            String?
+  source          String?
+  tags            String[]
+  resendContactId String?
+  subscribed      Boolean   @default(true)
+  unsubscribedAt  DateTime?
+  metadata        Json      @default("{}")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([email])
+  @@index([subscribed])
+}
+
+model TenantBranding {
   id                String    @id @default(uuid())
-  apiKeyId          String?   @db.Uuid // Optional: can be created without API key for testing
-  billingAccountId  String?   @db.Uuid // Optional: for usage tracking
-  storageLocation   String    // URL or storage key
-  originalFilename  String
-  mimeType          String
-  sizeBytes         Int
-  status            String    @default("pending") // pending, processing, completed, failed
-  errorMessage      String?   @db.Text
+  tenantId          String    @db.Uuid @unique
+  logoUrl           String?
+  faviconUrl        String?
+  primaryColor      String    @default("#2563eb")
+  secondaryColor    String    @default("#7c3aed")
+  accentColor       String    @default("#06b6d4")
+  backgroundColor   String    @default("#ffffff")
+  borderRadiusScale Decimal?  @db.Decimal(3, 2)
+  fontFamilyPrimary String?
+  fontFamilySecondary String?
+  metadata          Json      @default("{}")
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
-  receipt           Receipt?
+  tenant            Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  @@index([apiKeyId])
-  @@index([billingAccountId])
-  @@index([status])
-  @@index([createdAt])
-  @@map("receipt_uploads")
+  @@index([tenantId])
+  @@map("tenant_branding")
 }
+
+model TenantNavigation {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid @unique
+  navItems          Json      @default("[]")
+  footerItems       Json      @default("[]")
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant            Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("tenant_navigation")
+}
+
+model TenantPage {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  slug              String
+  pageType          String
+  schemaVersion     String    @default("1.0")
+  blocks            Json      @default("[]")
+  seoTitle          String?
+  seoDescription    String?
+  seoImageUrl       String?
+  isDraft           Boolean   @default(false)
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant            Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  revisions         TenantPageRevision[]
+  experiments       Experiment[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@index([slug])
+  @@index([pageType])
+  @@index([isDraft])
+  @@map("tenant_pages")
+}
+
+model TenantPageRevision {
+  id                String    @id @default(uuid())
+  tenantPageId      String    @db.Uuid
+  editorUserId      String?   @db.Uuid
+  snapshot          Json
+  comment           String?
+  approvedByUserId  String?   @db.Uuid
+  approvedAt        DateTime?
+  createdAt         DateTime  @default(now())
+
+  tenantPage        TenantPage @relation(fields: [tenantPageId], references: [id], onDelete: Cascade)
+
+  @@index([tenantPageId])
+  @@index([editorUserId])
+  @@index([approvedByUserId])
+  @@index([createdAt(sort: Desc)])
+  @@map("tenant_page_revisions")
+}
+
+model Experiment {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  targetPageId      String    @db.Uuid
+  name              String
+  slug              String
+  status            String    @default("draft")
+  trafficSplit      Json      @default("{}")
+  primaryMetric     String    @default("click_through")
+  startsAt          DateTime?
+  endsAt            DateTime?
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant            Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  targetPage        TenantPage @relation(fields: [targetPageId], references: [id], onDelete: Cascade)
+  variants          ExperimentVariant[]
+  metricEvents      ExperimentMetricEvent[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@index([targetPageId])
+  @@index([status])
+  @@index([startsAt])
+  @@index([endsAt])
+  @@map("experiments")
+}
+
+model ExperimentVariant {
+  id                String    @id @default(uuid())
+  experimentId      String    @db.Uuid
+  key               String
+  label             String
+  blocksOverride    Json      @default("{}")
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  experiment        Experiment @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+
+  @@unique([experimentId, key])
+  @@index([experimentId])
+  @@index([key])
+  @@map("experiment_variants")
+}
+
+model ExperimentMetricEvent {
+  id                String    @id @default(uuid())
+  experimentId      String    @db.Uuid
+  variantKey        String
+  tenantId          String    @db.Uuid
+  pageId            String    @db.Uuid
+  eventType         String    // "view" | "click" | "conversion" | "custom"
+  sessionId         String?
+  userId            String?   @db.Uuid
+  meta              Json      @default("{}")
+  createdAt         DateTime  @default(now())
+
+  experiment        Experiment @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+
+  @@index([experimentId])
+  @@index([variantKey])
+  @@index([tenantId])
+  @@index([pageId])
+  @@index([eventType])
+  @@index([sessionId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("experiment_metric_events")
+}
+
 
 model Receipt {
   id                String    @id @default(uuid())
