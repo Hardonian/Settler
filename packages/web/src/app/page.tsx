@@ -39,7 +39,16 @@ const AnimatedCodeBlock = dynamic(
   { ssr: false }
 );
 
+import { HeroMedia } from "@/components/HeroMedia";
+
 export default function Home() {
+  const dashboardRoutes = [
+    { name: "Reconciliation", path: "/reconcile", icon: Layers },
+    { name: "Receipt Parser", path: "/parser", icon: Database },
+    { name: "Categorization", path: "/categorize", icon: Sliders },
+    { name: "Data Exports", path: "/exports", icon: GitBranch },
+  ];
+
   const howItWorksSteps = [
     {
       number: 1,
@@ -89,103 +98,118 @@ const reconciliation = await client.reconciliations.create({
     <ErrorBoundary context="Home Page">
       <main
         id="main-content"
-        className="min-h-screen bg-slate-50 dark:bg-slate-950"
+        className="min-h-screen bg-bg text-foreground"
         aria-label="Settler homepage"
       >
         <Navigation />
 
         {/* Hero Section */}
         <section
-          className="relative pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 px-4 sm:px-6 lg:px-8 overflow-hidden"
+          className="relative min-h-[90vh] flex items-center pt-24 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
           aria-labelledby="hero-heading"
         >
-          <ParallaxBackground>
-            <ParallaxBlobs count={3} />
-          </ParallaxBackground>
-
-          <div
-            className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] -z-10"
-            aria-hidden="true"
-          />
+          <div className="absolute inset-0 bg-grid-quiet [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)] -z-10" />
 
           <div className="max-w-7xl mx-auto relative z-10 w-full">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <HeroAnimationWrapper>
                 <div className="text-left max-w-2xl">
-                  <div className="mb-6 flex justify-start">
-                    <Badge className="bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 text-sm font-medium">
-                      Deterministic Reconciliation Engine
+                  <div className="mb-8 flex justify-start">
+                    <Badge className="bg-teal-500/10 text-teal-500 border-teal-500/20 px-3 py-1 text-xs font-bold uppercase tracking-wider">
+                      Deterministic Infrastructure
                     </Badge>
                   </div>
 
-                  <div className="mb-6 sm:mb-8 lg:mb-10">
+                  <div className="mb-6">
                     <TextRevealHeading
                       as="h1"
                       id="hero-heading"
-                      text="Reconciliation Infrastructure for Financial Operations"
-                      className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-white leading-[1.1] tracking-tight"
+                      text="Reconciliation at Financial Grade"
+                      className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 text-foreground leading-[1.05] tracking-tight"
                       delay={0}
                       staggerDelay={0.02}
                       splitBy="words"
                     />
                   </div>
 
-                  <div className="mb-10 sm:mb-12 lg:mb-14">
+                  <div className="mb-10">
                     <TextReveal
-                      text="Normalize data, apply explicit rules, and surface variances for review. Deterministic, inspectable, and designed for teams that require operational confidence."
-                      className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 leading-relaxed font-normal"
+                      text="Normalize data, apply explicit rules, and surface variances with precision. Settler provides the audit-ready backbone for your financial operations."
+                      className="text-lg md:text-xl text-muted leading-relaxed font-normal max-w-xl"
                       delay={0.2}
                       staggerDelay={0.01}
                       splitBy="words"
                     />
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 justify-start items-center mb-12 px-0">
+                  <div className="flex flex-col sm:flex-row gap-4 mb-12">
                     <Button
                       size="lg"
                       asChild
-                      className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 text-white px-10 py-6 text-lg font-semibold shadow-xl transition-all"
+                      className="bg-teal-500 hover:bg-teal-600 text-white px-8 py-6 rounded-md shadow-lg shadow-teal-500/20 transition-all font-semibold"
                     >
-                      <Link
-                        href="/docs/quickstart"
-                        className="flex items-center justify-center gap-2"
-                      >
-                        <span>Get Started</span>
-                        <ArrowRight
-                          className="w-5 h-5"
-                          aria-hidden="true"
-                        />
+                      <Link href="/reconcile" className="flex items-center gap-2">
+                        Get Started <ArrowRight className="w-4 h-4" />
                       </Link>
                     </Button>
                     <Button
                       size="lg"
                       variant="outline"
                       asChild
-                      className="w-full sm:w-auto px-10 py-6 text-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium transition-all"
+                      className="border-border bg-transparent text-foreground hover:bg-neutral-20 px-8 py-6"
                     >
-                      <Link href="/contact">Discuss Your Architecture</Link>
+                      <Link href="/contact">Discuss Architecture</Link>
                     </Button>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8 border-t border-border/50">
+                    {dashboardRoutes.map((route) => {
+                      const Icon = route.icon;
+                      return (
+                        <Link
+                          key={route.path}
+                          href={route.path}
+                          className="group flex flex-col gap-2"
+                        >
+                          <div className="w-8 h-8 rounded bg-neutral-20 flex items-center justify-center group-hover:bg-teal-500/10 transition-colors">
+                            <Icon className="w-4 h-4 text-muted group-hover:text-teal-500 transition-colors" />
+                          </div>
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-muted group-hover:text-foreground transition-colors">
+                            {route.name}
+                          </span>
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
               </HeroAnimationWrapper>
 
-              <div className="hidden lg:block relative">
-                <div
-                  className="absolute inset-0 bg-blue-500/10 blur-3xl rounded-full -z-10"
-                  aria-hidden="true"
+              <div className="relative group">
+                <div className="absolute inset-0 bg-teal-500/5 blur-3xl rounded-full -z-10 animate-pulse" />
+                <HeroMedia
+                  className="rounded-2xl border border-border shadow-2xl aspect-[4/3] w-full"
+                  videoSrc="/hero/settler-hero.mp4"
+                  fallbackSrc="/hero/settler-hero-fallback.png"
+                  poster="/hero/settler-hero-fallback.png"
                 />
-                <Image
-                  src="/illustrations/hero-visual.svg"
-                  alt="Settler deterministic reconciliation engine visualization showing data flow through rules-based matching pipeline"
-                  width={600}
-                  height={500}
-                  priority
-                  className="w-full h-auto drop-shadow-2xl"
-                />
+
+                {/* Floating Metric Card */}
+                <div className="absolute -bottom-6 -left-6 bg-card border border-border p-4 rounded-xl shadow-xl animate-float hidden md:block">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-teal-500/10 flex items-center justify-center">
+                      <CheckCircle className="w-5 h-5 text-teal-500" />
+                    </div>
+                    <div>
+                      <div className="text-[10px] font-bold text-muted uppercase tracking-wider">Reliability</div>
+                      <div className="text-lg font-mono font-bold">99.98% Confidence</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </section>
+
 
         {/* How It Works Section with Diagram */}
         <section
