@@ -285,8 +285,9 @@ model ReconResult {
   errorMessage          String?   @db.Text
   errorStack            String?   @db.Text
   summary               Json      @default("{}")
-  metadata              Json      @default("{}")
-  createdAt             DateTime  @default(now())
+metadata          Json      @default("{}")
+proofCapsule     Json?     @default("{}")
+createdAt         DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
   reconJob              ReconJob @relation(fields: [reconJobId], references: [id], onDelete: Cascade)
