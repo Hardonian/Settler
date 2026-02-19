@@ -174,6 +174,13 @@ const commandRegistry: Record<
       return { command: tenantCheckCommand };
     },
   },
+  verify: {
+    description: "Verify a Reconciliation Proof Capsule (RPC)",
+    load: async () => {
+      const { verifyCommand } = await import("./commands/verify");
+      return { command: verifyCommand };
+    },
+  },
 };
 
 const aliasMap = new Map<string, string>();

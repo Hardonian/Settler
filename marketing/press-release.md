@@ -2,7 +2,7 @@
 
 ## Settler Launches Reconciliation-as-a-Service API, Reduces Manual Payment Reconciliation
 
-**Developer-first API automates reconciliation across Stripe, Shopify, QuickBooks, and 50+ platforms**
+### Developer-first API automates reconciliation across Stripe, Shopify, QuickBooks, and 50+ platforms
 
 ---
 
@@ -15,11 +15,12 @@ Settler solves the problem of multi-platform reconciliation—matching transacti
 ### Key Features
 
 - **5-Minute Integration:** Simple API, no complex setup
-- **99%+ Accuracy:** Automated matching with confidence scoring
+- **Deterministic Reconciliation:** 99%+ accuracy via hash-based matching engine
+- **Tamper-Evident Proofs:** Verifiable Reconciliation Proof Capsules (RPC) for every job
+- **Audit-Ready Output:** Complete audit trail for SOC 2, PCI-DSS compliance
 - **Real-Time Reconciliation:** Webhook-based, not batch processing
-- **Exception Queue:** Review and resolve unmatched transactions
-- **Complete Audit Trail:** Compliance-ready for SOC 2, PCI-DSS
 - **Multi-Currency Support:** Automatic FX conversion
+
 
 ### Pricing
 
@@ -37,6 +38,7 @@ Settler targets mid-market e-commerce and SaaS companies ($1M-$50M ARR) processi
 ### Availability
 
 Settler is available now at [settler.io](https://settler.io). The platform includes:
+
 - REST API with TypeScript SDK
 - Interactive documentation
 - Code examples and tutorials
@@ -50,9 +52,9 @@ Settler is reconciliation-as-a-service for modern businesses. Founded in 2026, S
 
 Scott Hardie  
 Founder & CEO  
-Email: scottrmhardie@gmail.com  
+Email: <scottrmhardie@gmail.com>  
 Website: [settler.io](https://settler.io)
 
 ---
 
-**###**
+### ###

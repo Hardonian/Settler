@@ -235,17 +235,11 @@ export function stableStringify(value: unknown): string {
   return JSON.stringify(normalize(value));
 }
 
+import crypto from 'node:crypto';
+
 /**
  * Compute SHA-256 hash of data
  */
 export function stableHash(value: unknown): string {
-  // Use node:crypto if available (backend), fallback to simple hash if not (unlikely for proof generation)
-  try {
-    const crypto = require('node:crypto');
-    return crypto.createHash('sha256').update(stableStringify(value)).digest('hex');
-  } catch {
-    // If require fails (browser), we'd need SubtleCrypto, but for now we prioritize the backend requirement
-    // In a real monorepo, we'd have a core-crypto package that abstraction this
-    throw new Error('stableHash requires node:crypto. Browser support not implemented in this layer.');
-  }
+  return crypto.createHash('sha256').update(stableStringify(value)).digest('hex');
 }

@@ -186,8 +186,14 @@ export async function runReconciliation(
       requireExactMerchant: true,
     });
 
-    const outputHash = stableHash(matchResult.matches);
-    const versionHash = stableHash({ version: SETTLER_VERSION });
+    const outputHash = stableHash(
+      [...matchResult.matches].sort((a, b) => a.sourceTransactionId.localeCompare(b.sourceTransactionId))
+    );
+    const versionHash = stableHash({
+      name: "Settler",
+      version: SETTLER_VERSION,
+      build: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA || "local",
+    });
 
     const proofCapsule: ReconciliationProofCapsule = {
       capsuleVersion: "1.0.0",
