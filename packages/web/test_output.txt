@@ -1,0 +1,65 @@
+npm WARN config optional Use `--omit=optional` to exclude optional dependencies, or
+npm WARN config `--include=optional` to include them.
+npm WARN config 
+npm WARN config     Default value does install optional deps unless otherwise omitted.
+  Using tsconfig file: ./tsconfig.json
+FAIL src/lib/reconciliation/__tests__/capsule-integrity.test.ts
+  Reconciliation Proof Capsule Integrity
+    ΓêÜ should produce a deterministic input hash (6 ms)
+    ΓêÜ should produce a deterministic rule hash (1 ms)
+    ├ù should produce a deterministic output hash matching the snapshot (8 ms)
+
+  ΓùÅ Reconciliation Proof Capsule Integrity ΓÇ║ should produce a deterministic output hash matching the snapshot
+
+    Hash mismatch. Actual sorted matches: [
+      {
+        "sourceTransactionId": "src_1",
+        "targetTransactionId": "tgt_1",
+        "matchType": "fuzzy",
+        "confidence": 0.8,
+        "amountDiff": 0,
+        "dateDiff": 0,
+        "matchReason": "Matched by amount (0.00 diff), date (0 days), no merchant match"
+      },
+      {
+        "sourceTransactionId": "src_2",
+        "targetTransactionId": "tgt_2",
+        "matchType": "fuzzy",
+        "confidence": 0.8,
+        "amountDiff": 0,
+        "dateDiff": 0,
+        "matchReason": "Matched by amount (0.00 diff), date (0 days), no merchant match"
+      }
+    ]
+
+       97 |     const currentOutputHash = stableHash(sortedMatches);
+       98 |     if (currentOutputHash !== SNAPSHOTS.output) {
+    >  99 |       throw new Error(`Hash mismatch. Actual sorted matches: ${JSON.stringify(sortedMatches, null, 2)}`);
+          |             ^
+      100 |     }
+      101 |     expect(currentOutputHash).toBe(SNAPSHOTS.output);
+      102 |   });
+
+      at Object.<anonymous> (src/lib/reconciliation/__tests__/capsule-integrity.test.ts:99:13)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 2 passed, 3 total
+Snapshots:   0 total
+Time:        0.875 s, estimated 1 s
+Ran all test suites matching /src\\lib\\reconciliation\\__tests__\\capsule-integrity.test.ts/i.
+C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@16.1.6_@babel+core@7.2_194bfff1fdbc90f171039b10cd4e6339\node_modules\next\dist\server\node-environment-extensions\unhandled-rejection.js:479
+                throw error;
+                ^
+
+RangeError: Maximum call stack size exceeded
+    at hasHooks (node:internal/async_hooks:479:18)
+    at initHooksExist (node:internal/async_hooks:488:10)
+    at initAsyncResource (node:internal/timers:169:7)
+    at new Immediate (node:internal/timers:660:5)
+    at setImmediate (node:timers:209:10)
+    at apply (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@16.1.6_@babel+core@7.2_194bfff1fdbc90f171039b10cd4e6339\node_modules\next\src\server\node-environment-extensions\fast-set-immediate.external.ts:573:33)
+    at setImmediate (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@16.1.6_@babel+core@7.2_194bfff1fdbc90f171039b10cd4e6339\node_modules\next\src\server\node-environment-extensions\unhandled-rejection.tsx:639:7)
+    at listener (C:\Users\scott\Documents\GitHub\Settler\node_modules\.pnpm\next@16.1.6_@babel+core@7.2_194bfff1fdbc90f171039b10cd4e6339\node_modules\next\src\server\node-environment-extensions\unhandled-rejection.tsx:635:9)
+    ... collapsed 92 duplicate lines matching above 1 lines 92 times...
+
+Node.js v25.5.0

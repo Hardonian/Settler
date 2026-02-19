@@ -11,7 +11,7 @@
 **Name:** Settler - Reconciliation-as-a-Service API
 
 **Description:**
-Automate payment reconciliation across Stripe, Shopify, QuickBooks, and 50+ platforms. Real-time matching, exception handling, and complete audit trails.
+Automate payment reconciliation across Stripe, Shopify, QuickBooks, and 50+ platforms. Deterministic hash-based matching, exception handling, and tamper-evident proof capsules (RPC).
 
 **Category:** Finance, Payments, Accounting
 
@@ -22,9 +22,11 @@ Automate payment reconciliation across Stripe, Shopify, QuickBooks, and 50+ plat
 
 **Features:**
 - Real-time reconciliation
+- Deterministic match engine
+- Proof Capsule verification
 - Exception queue
 - Multi-currency support
-- Complete audit trail
+- Tamper-evident audit trail
 
 **Documentation:** [docs.settler.io](https://docs.settler.io)
 
@@ -39,7 +41,7 @@ Automate payment reconciliation across Stripe, Shopify, QuickBooks, and 50+ plat
 **Name:** Settler API
 
 **Description:**
-Reconciliation-as-a-Service API for automating payment reconciliation across multiple platforms.
+Deterministic Reconciliation-as-a-Service API with hash-based proof capsules for enterprise audit compliance.
 
 **Collection:**
 - Jobs (create, list, get, run, delete)

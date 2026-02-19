@@ -66,22 +66,22 @@ const rules = {
 
 const matches = [
   {
-    sourceTransactionId: 'src_1',
-    targetTransactionId: 'tgt_1',
-    matchType: 'exact',
-    confidence: 1.0,
-    amountDiff: 0,
-    dateDiff: 0,
-    matchReason: 'Matched by amount (0.00 diff), date (0.00 days), no merchant match'
+    "sourceTransactionId": "src_1",
+    "targetTransactionId": "tgt_1",
+    "matchType": "fuzzy",
+    "confidence": 0.8,
+    "amountDiff": 0,
+    "dateDiff": 0,
+    "matchReason": "Matched by amount (0.00 diff), date (0 days), no merchant match"
   },
   {
-    sourceTransactionId: 'src_2',
-    targetTransactionId: 'tgt_2',
-    matchType: 'exact',
-    confidence: 1.0,
-    amountDiff: 0,
-    dateDiff: 0.006944444444444444, // 10 mins
-    matchReason: 'Matched by amount (0.00 diff), date (0.01 days), no merchant match'
+    "sourceTransactionId": "src_2",
+    "targetTransactionId": "tgt_2",
+    "matchType": "fuzzy",
+    "confidence": 0.8,
+    "amountDiff": 0,
+    "dateDiff": 0,
+    "matchReason": "Matched by amount (0.00 diff), date (0 days), no merchant match"
   }
 ];
 

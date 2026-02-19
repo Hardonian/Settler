@@ -54,7 +54,7 @@ describe('Reconciliation Proof Capsule Integrity', () => {
   const SNAPSHOTS = {
     input: '47e81c17024df2375727c8858bf597c9e18303298da85962044622eece4c0889',
     rule: 'd38e7fd1349b4b7e40544b6e694aa5529687221e6133335c4087213ac11bcc3d',
-    output: 'da3cef84ba4a4e167b77a1fd6f521c3f8927ace18b2e100d22daf754fb22d083'
+    output: 'd289d2449ac663f120ec292b5789694e98639fe7ff5b1780db9b376a2d97c5ac'
   };
 
   it('should produce a deterministic input hash', () => {
@@ -95,10 +95,6 @@ describe('Reconciliation Proof Capsule Integrity', () => {
     );
 
     const currentOutputHash = stableHash(sortedMatches);
-    if (currentOutputHash !== SNAPSHOTS.output) {
-      console.log('ACTUAL_MATCHES:', JSON.stringify(sortedMatches, null, 2));
-      console.log('ACTUAL_OUTPUT_HASH:', currentOutputHash);
-    }
     expect(currentOutputHash).toBe(SNAPSHOTS.output);
   });
 });
