@@ -43,4 +43,12 @@ export declare function generateSecureId(prefix?: string): string;
  * Deep clone object (for immutable updates)
  */
 export declare function deepClone<T>(obj: T): T;
+/**
+ * Deterministically stringify data
+ */
+export declare function stableStringify(value: unknown): string;
+/**
+ * Compute SHA-256 hash of data
+ */
+export declare function stableHash(value: unknown): string;
 //# sourceMappingURL=utils.d.ts.map

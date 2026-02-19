@@ -14,6 +14,8 @@ exports.validateTransactionId = validateTransactionId;
 exports.maskPII = maskPII;
 exports.generateSecureId = generateSecureId;
 exports.deepClone = deepClone;
+exports.stableStringify = stableStringify;
+exports.stableHash = stableHash;
 /**
  * Sanitize string input to prevent XSS
  */
@@ -179,5 +181,49 @@ function deepClone(obj) {
         return cloned;
     }
     return obj;
+}
+/**
+ * Deterministically normalize data for hashing
+ */
+function normalize(value) {
+    if (value === null || value === undefined) {
+        return null;
+    }
+    if (Array.isArray(value)) {
+        return value.map((entry) => normalize(entry));
+    }
+    if (value instanceof Date) {
+        return value.toISOString();
+    }
+    if (typeof value === 'object') {
+        return Object.keys(value)
+            .sort()
+            .reduce((acc, key) => {
+            acc[key] = normalize(value[key]);
+            return acc;
+        }, {});
+    }
+    return value;
+}
+/**
+ * Deterministically stringify data
+ */
+function stableStringify(value) {
+    return JSON.stringify(normalize(value));
+}
+/**
+ * Compute SHA-256 hash of data
+ */
+function stableHash(value) {
+    // Use node:crypto if available (backend), fallback to simple hash if not (unlikely for proof generation)
+    try {
+        const crypto = require('node:crypto');
+        return crypto.createHash('sha256').update(stableStringify(value)).digest('hex');
+    }
+    catch {
+        // If require fails (browser), we'd need SubtleCrypto, but for now we prioritize the backend requirement
+        // In a real monorepo, we'd have a core-crypto package that abstraction this
+        throw new Error('stableHash requires node:crypto. Browser support not implemented in this layer.');
+    }
 }
 //# sourceMappingURL=utils.js.map

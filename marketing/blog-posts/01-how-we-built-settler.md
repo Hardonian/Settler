@@ -195,7 +195,7 @@ Developers need to test without affecting production. Test mode was one of our m
 
 - **Multi-currency support** (FX conversion)
 - **More adapters** (Xero, NetSuite, etc.)
-- **AI-powered matching** (learn from resolutions)
+- **Deterministic reconciliation engine** (audit-ready verification)
 - **Real-time dashboards** (visualize reconciliation)
 
 ---

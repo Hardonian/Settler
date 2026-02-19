@@ -14,6 +14,9 @@ import type {
 } from "@/lib/domain/types";
 import { calculateImpact, generateExplanation } from "@/lib/judgment/rules";
 import { safeLogger } from "@/lib/observability/safe-logger";
+import { stableHash, type ReconciliationProofCapsule } from "@settler/protocol";
+
+const SETTLER_VERSION = "1.0.0";
 
 export interface ReconciliationParams {
   sourceId: SourceId;
@@ -158,6 +161,44 @@ export async function runReconciliation(
       },
     });
 
+    // Generate Reconciliation Proof Capsule (RPC)
+    const inputHash = stableHash({
+      tenantId,
+      sourceTransactions: sourceTransactions.map((t: any) => ({
+        id: t.id,
+        amount: Number(t.amount),
+        date: t.date.toISOString(),
+        currency: t.currency,
+      })),
+      targetTransactions: targetTransactions.map((t: any) => ({
+        id: t.id,
+        amount: Number(t.amount),
+        date: t.date.toISOString(),
+        currency: t.currency,
+      })),
+    });
+
+    const ruleHash = stableHash({
+      amountTolerance: params.rules?.find((r) => r.field === "amount")?.tolerance || 0.01,
+      dateWindowDays: params.rules?.find((r) => r.field === "date")?.window
+        ? parseInt(params.rules.find((r) => r.field === "date")!.window!.replace("days", ""))
+        : 3,
+      requireExactMerchant: true,
+    });
+
+    const outputHash = stableHash(matchResult.matches);
+    const versionHash = stableHash({ version: SETTLER_VERSION });
+
+    const proofCapsule: ReconciliationProofCapsule = {
+      capsuleVersion: "1.0.0",
+      jobId: result.id,
+      inputHash,
+      ruleHash,
+      outputHash,
+      versionHash,
+      createdAt: new Date().toISOString(),
+    };
+
     // Track usage: Reconciliation job execution
     try {
       const { trackReconciliationTransaction } = await import("@/middleware/usage-tracking");
@@ -199,6 +240,7 @@ export async function runReconciliation(
       mismatchCount: matchResult.unmatchedCount,
       startedAt: result.startedAt,
       completedAt: result.completedAt || undefined,
+      proofCapsule,
     };
   } catch (error) {
     await safeLogger.error("[runReconciliation] Unexpected error", {

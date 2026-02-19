@@ -68,6 +68,19 @@ export interface ReconciliationMatch {
     confidence: number;
     matchedAt: string;
 }
+/**
+ * Reconciliation Proof Capsule (RPC)
+ * Verifiable, hash-based proof bundle for a reconciliation job.
+ */
+export interface ReconciliationProofCapsule {
+    capsuleVersion: string;
+    jobId: string;
+    inputHash: string;
+    ruleHash: string;
+    outputHash: string;
+    versionHash: string;
+    createdAt: string;
+}
 export interface Money {
     value: number;
     currency: string;
@@ -177,5 +190,5 @@ export type { SecurityPolicy, SecurityContext, AuditLogEntry, AuditEvent, Conten
 export type { ValidationResult, ValidationError, ValidationWarning, ValidationRules, TransactionValidationRules, SettlementValidationRules, ExceptionValidationRules, RuleValidationRules, MoneyValidationRules, SchemaValidator } from './validation';
 export type { TelemetryEvent, TelemetryEventType, TelemetryContext, PerformanceMetrics, ErrorTelemetry, TelemetryConfig, TelemetryProvider } from './telemetry';
 export { ReconciliationError, ValidationError as ProtocolValidationError, SecurityError, CompilationError, ConfigurationError } from './errors';
-export { sanitizeString, isValidISODate, isValidCurrency, isValidMoney, formatMoney, sanitizeTransactionMetadata, validateTransactionId, maskPII, generateSecureId, deepClone } from './utils';
+export { sanitizeString, isValidISODate, isValidCurrency, isValidMoney, formatMoney, sanitizeTransactionMetadata, validateTransactionId, maskPII, generateSecureId, deepClone, stableHash, stableStringify } from './utils';
 //# sourceMappingURL=index.d.ts.map

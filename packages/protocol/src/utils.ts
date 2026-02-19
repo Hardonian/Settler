@@ -14,7 +14,7 @@ export function sanitizeString(input: string): string {
   if (typeof input !== 'string') {
     return '';
   }
-  
+
   // Remove potentially dangerous characters
   return input
     .replace(/[<>]/g, '') // Remove < and >
@@ -30,7 +30,7 @@ export function isValidISODate(dateString: string): boolean {
   if (!dateString || typeof dateString !== 'string') {
     return false;
   }
-  
+
   const date = new Date(dateString);
   return date instanceof Date && !isNaN(date.getTime()) && date.toISOString() === dateString;
 }
@@ -42,7 +42,7 @@ export function isValidCurrency(currency: string): boolean {
   if (!currency || typeof currency !== 'string') {
     return false;
   }
-  
+
   // Basic ISO 4217 validation (3 uppercase letters)
   return /^[A-Z]{3}$/.test(currency);
 }
@@ -54,15 +54,15 @@ export function isValidMoney(money: Money): boolean {
   if (!money || typeof money !== 'object') {
     return false;
   }
-  
+
   if (typeof money.value !== 'number' || isNaN(money.value) || !isFinite(money.value)) {
     return false;
   }
-  
+
   if (money.value < 0) {
     return false; // Negative amounts not allowed by default
   }
-  
+
   return isValidCurrency(money.currency);
 }
 
@@ -73,7 +73,7 @@ export function formatMoney(money: Money, locale: string = 'en-US'): string {
   if (!isValidMoney(money)) {
     return 'Invalid';
   }
-  
+
   try {
     return new Intl.NumberFormat(locale, {
       style: 'currency',
@@ -93,14 +93,14 @@ export function sanitizeTransactionMetadata(
   if (!metadata || typeof metadata !== 'object') {
     return undefined;
   }
-  
+
   const sanitized: Record<string, unknown> = {};
-  
+
   for (const [key, value] of Object.entries(metadata)) {
     // Sanitize keys
     const sanitizedKey = sanitizeString(key);
     if (!sanitizedKey) continue;
-    
+
     // Sanitize values
     if (typeof value === 'string') {
       sanitized[sanitizedKey] = sanitizeString(value);
@@ -111,7 +111,7 @@ export function sanitizeTransactionMetadata(
     }
     // Skip objects and arrays for security
   }
-  
+
   return sanitized;
 }
 
@@ -122,7 +122,7 @@ export function validateTransactionId(id: string): boolean {
   if (!id || typeof id !== 'string') {
     return false;
   }
-  
+
   // Basic validation: non-empty, reasonable length
   return id.length > 0 && id.length <= 255 && /^[a-zA-Z0-9_-]+$/.test(id);
 }
@@ -134,19 +134,19 @@ export function maskPII(input: string, maskChar: string = '*'): string {
   if (!input || typeof input !== 'string') {
     return '';
   }
-  
+
   // Mask email addresses
   input = input.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, (email) => {
     const [local, domain] = email.split('@');
     if (!local || !domain) return email;
     return `${local[0]}${maskChar.repeat(Math.max(0, local.length - 2))}@${domain}`;
   });
-  
+
   // Mask credit card numbers (basic)
   input = input.replace(/\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/g, (card) => {
     return `****-****-****-${card.slice(-4)}`;
   });
-  
+
   return input;
 }
 
@@ -163,11 +163,11 @@ export function generateSecureId(prefix: string = 'id'): string {
       randomBytes[i] = Math.floor(Math.random() * 256);
     }
   }
-  
+
   const hex = Array.from(randomBytes)
     .map(b => b.toString(16).padStart(2, '0'))
     .join('');
-  
+
   return `${prefix}_${hex}`;
 }
 
@@ -178,15 +178,15 @@ export function deepClone<T>(obj: T): T {
   if (obj === null || typeof obj !== 'object') {
     return obj;
   }
-  
+
   if (obj instanceof Date) {
     return new Date(obj.getTime()) as unknown as T;
   }
-  
+
   if (obj instanceof Array) {
     return obj.map(item => deepClone(item)) as unknown as T;
   }
-  
+
   if (typeof obj === 'object') {
     const cloned = {} as T;
     for (const key in obj) {
@@ -196,6 +196,56 @@ export function deepClone<T>(obj: T): T {
     }
     return cloned;
   }
-  
+
   return obj;
+}
+
+/**
+ * Deterministically normalize data for hashing
+ */
+function normalize(value: unknown): unknown {
+  if (value === null || value === undefined) {
+    return null;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((entry) => normalize(entry));
+  }
+
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+
+  if (typeof value === 'object') {
+    return Object.keys(value as Record<string, unknown>)
+      .sort()
+      .reduce<Record<string, unknown>>((acc, key) => {
+        acc[key] = normalize((value as Record<string, unknown>)[key]);
+        return acc;
+      }, {});
+  }
+
+  return value;
+}
+
+/**
+ * Deterministically stringify data
+ */
+export function stableStringify(value: unknown): string {
+  return JSON.stringify(normalize(value));
+}
+
+/**
+ * Compute SHA-256 hash of data
+ */
+export function stableHash(value: unknown): string {
+  // Use node:crypto if available (backend), fallback to simple hash if not (unlikely for proof generation)
+  try {
+    const crypto = require('node:crypto');
+    return crypto.createHash('sha256').update(stableStringify(value)).digest('hex');
+  } catch {
+    // If require fails (browser), we'd need SubtleCrypto, but for now we prioritize the backend requirement
+    // In a real monorepo, we'd have a core-crypto package that abstraction this
+    throw new Error('stableHash requires node:crypto. Browser support not implemented in this layer.');
+  }
 }

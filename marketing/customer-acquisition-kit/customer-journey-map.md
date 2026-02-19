@@ -379,7 +379,7 @@ High │                    ╱───╲ Power User
 
 ### High Impact, High Effort
 1. **Personalized onboarding** based on use case
-2. **AI-powered matching** rule suggestions
+2. **Deterministic reconciliation engine** rule suggestions
 3. **Automated accuracy** optimization
 4. **Proactive support** based on usage patterns
 

@@ -1,6 +1,6 @@
 /**
  * Settler Domain Types
- * 
+ *
  * Core domain model types aligned to product tenets:
  * - Change detection WITH meaning (not raw diffs)
  * - Actionable reconciliation (impact-first, ownership, urgency)
@@ -100,6 +100,8 @@ export interface ReconciliationItem {
   createdAt: Date;
 }
 
+import type { ReconciliationProofCapsule } from '@settler/protocol';
+
 export interface ReconciliationSummary {
   id: ReconciliationId;
   tenantId: TenantId;
@@ -111,6 +113,7 @@ export interface ReconciliationSummary {
   highestRiskItem?: ReconciliationItem;
   startedAt: Date;
   completedAt?: Date;
+  proofCapsule?: ReconciliationProofCapsule;
 }
 
 // ============================================================================

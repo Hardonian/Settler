@@ -119,7 +119,7 @@ app.post("/webhooks/settler", async (req, res) => {
 
 - **🔌 15+ Built-in Adapters**: Stripe, Shopify, QuickBooks, PayPal, Square, NetSuite, Xero, and more
 - **⚡ Real-Time Processing**: Webhook-driven reconciliation as events happen
-- **🎯 Smart Matching**: Exact, fuzzy, and custom matching rules
+- **🎯 Deterministic Matching**: Exact, fuzzy, and custom matching rules
 - **🔄 Automatic Retries**: Built-in exponential backoff and error handling
 - **📊 Rich Reports**: JSON, CSV, and PDF exports with detailed insights
 - **🔐 Enterprise Security**: SOC 2 Type II, GDPR, PCI-DSS ready

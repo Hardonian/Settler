@@ -1,14 +1,14 @@
 /**
  * @settler/protocol
- * 
+ *
  * Framework-agnostic protocol types for reconciliation workflows.
- * 
+ *
  * This package defines the core types and JSON schema for reconciliation
  * UI definitions and rules. It is designed to be consumed by any reconciliation
  * backend, not just Settler's proprietary engine.
- * 
+ *
  * Enterprise-grade security, validation, and observability built-in.
- * 
+ *
  * @license MIT
  */
 
@@ -77,6 +77,20 @@ export interface ReconciliationMatch {
   matchedAt: string; // ISO 8601 date string
 }
 
+/**
+ * Reconciliation Proof Capsule (RPC)
+ * Verifiable, hash-based proof bundle for a reconciliation job.
+ */
+export interface ReconciliationProofCapsule {
+  capsuleVersion: string;
+  jobId: string;
+  inputHash: string;
+  ruleHash: string;
+  outputHash: string;
+  versionHash: string;
+  createdAt: string;
+}
+
 // ============================================================================
 // Supporting Types
 // ============================================================================
@@ -89,11 +103,11 @@ export interface Money {
 export type TransactionStatus = 'pending' | 'succeeded' | 'failed' | 'refunded' | 'disputed';
 export type SettlementStatus = 'pending' | 'completed' | 'failed';
 export type MatchType = '1-to-1' | '1-to-many' | 'many-to-1';
-export type ExceptionCategory = 
-  | 'amount_mismatch' 
-  | 'date_mismatch' 
-  | 'missing_transaction' 
-  | 'missing_settlement' 
+export type ExceptionCategory =
+  | 'amount_mismatch'
+  | 'date_mismatch'
+  | 'missing_transaction'
+  | 'missing_settlement'
   | 'duplicate'
   | 'currency_mismatch'
   | 'status_mismatch';
@@ -118,7 +132,7 @@ export interface ReconciliationRule {
   enabled?: boolean;
 }
 
-export type RuleField = 
+export type RuleField =
   | 'transactionId'
   | 'amount'
   | 'date'
@@ -174,7 +188,7 @@ export interface WidgetConfig {
   position?: WidgetPosition;
 }
 
-export type WidgetType = 
+export type WidgetType =
   | 'transaction-table'
   | 'exception-table'
   | 'metric-card'
@@ -297,5 +311,7 @@ export {
   validateTransactionId,
   maskPII,
   generateSecureId,
-  deepClone
+  deepClone,
+  stableHash,
+  stableStringify
 } from './utils';
