@@ -18,9 +18,13 @@ const ReceiptParser: React.FC = () => {
       {/* Upload Area */}
       <div className="lg:col-span-1 rounded-xl border-2 border-dashed border-border p-8 flex flex-col items-center justify-center text-center bg-neutral-10/30 hover:border-teal-500/50 transition-colors cursor-pointer group">
         <div className="w-12 h-12 rounded-full bg-teal-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-          <svg className="w-6 h-6 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-          </svg>
+          {isUploading ? (
+            <div className="w-6 h-6 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <svg className="w-6 h-6 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+          )}
         </div>
         <h4 className="text-sm font-semibold text-foreground mb-1">Click to upload</h4>
         <p className="text-xs text-muted px-4">PDF, PNG, JPG (Max 10MB). Multi-page receipts supported.</p>
@@ -52,26 +56,29 @@ const ReceiptParser: React.FC = () => {
 
         <div className="grid grid-cols-2 gap-y-6 gap-x-8 flex-1">
           <div className="space-y-1.5">
-            <label className="text-[10px] uppercase font-bold text-muted tracking-wider">Vendor</label>
+            <label htmlFor="vendor" className="text-[10px] uppercase font-bold text-muted tracking-wider">Vendor</label>
             <input
+              id="vendor"
               readOnly
               value={extractedData.vendor}
               className="w-full bg-neutral-10 border-b border-border py-1 text-sm text-foreground focus:outline-none focus:border-teal-500"
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-[10px] uppercase font-bold text-muted tracking-wider">Date</label>
+            <label htmlFor="date" className="text-[10px] uppercase font-bold text-muted tracking-wider">Date</label>
             <input
+              id="date"
               readOnly
               value={extractedData.date}
               className="w-full bg-neutral-10 border-b border-border py-1 text-sm text-foreground focus:outline-none focus:border-teal-500"
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-[10px] uppercase font-bold text-muted tracking-wider">Total Amount</label>
+            <label htmlFor="amount" className="text-[10px] uppercase font-bold text-muted tracking-wider">Total Amount</label>
             <div className="relative">
                <span className="absolute left-0 top-1 text-sm text-muted">$</span>
                <input
+                id="amount"
                 readOnly
                 value={extractedData.amount}
                 className="w-full bg-neutral-10 border-b border-border py-1 pl-4 text-sm text-foreground focus:outline-none focus:border-teal-500"
@@ -79,10 +86,11 @@ const ReceiptParser: React.FC = () => {
             </div>
           </div>
           <div className="space-y-1.5">
-            <label className="text-[10px] uppercase font-bold text-muted tracking-wider">Tax</label>
+            <label htmlFor="tax" className="text-[10px] uppercase font-bold text-muted tracking-wider">Tax</label>
             <div className="relative">
                <span className="absolute left-0 top-1 text-sm text-muted">$</span>
                <input
+                id="tax"
                 readOnly
                 value={extractedData.tax}
                 className="w-full bg-neutral-10 border-b border-border py-1 pl-4 text-sm text-foreground focus:outline-none focus:border-teal-500"
@@ -92,8 +100,16 @@ const ReceiptParser: React.FC = () => {
         </div>
 
         <div className="mt-8 flex justify-end items-center gap-4">
-          <button className="text-xs text-muted hover:text-error transition-colors font-medium">Discard</button>
-          <button className="px-5 py-2 text-sm font-semibold bg-teal-500 text-white rounded-md hover:bg-teal-600 shadow-sm">
+          <button
+            type="button"
+            onClick={() => setIsUploading(false)}
+            className="text-xs text-muted hover:text-error transition-colors font-medium">
+            Discard
+          </button>
+          <button
+            type="button"
+            onClick={() => setExtractedData({...extractedData, confidence: 1.0})}
+            className="px-5 py-2 text-sm font-semibold bg-teal-500 text-white rounded-md hover:bg-teal-600 shadow-sm">
             Save Entry
           </button>
         </div>

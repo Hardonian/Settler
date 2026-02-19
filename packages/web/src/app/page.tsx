@@ -9,6 +9,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { HeroAnimationWrapper } from "@/components/HeroAnimationWrapper";
 import { TextReveal, TextRevealHeading } from "@/components/ui/TextReveal";
+import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import {
   Database,
   Sliders,

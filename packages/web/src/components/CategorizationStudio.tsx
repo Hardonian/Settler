@@ -21,24 +21,24 @@ const CategorizationStudio: React.FC = () => {
           <div className="space-y-6">
             <div className="flex gap-4 items-end">
               <div className="flex-1 space-y-2">
-                <label className="text-xs font-bold text-muted uppercase">If Statement</label>
-                <select className="w-full bg-neutral-10 border border-border rounded-md px-3 py-2 text-sm text-foreground focus:ring-1 focus:ring-teal-500">
+                <label htmlFor="if-statement" className="text-xs font-bold text-muted uppercase">If Statement</label>
+                <select id="if-statement" className="w-full bg-neutral-10 border border-border rounded-md px-3 py-2 text-sm text-foreground focus:ring-1 focus:ring-teal-500">
                   <option>Vendor Name</option>
                   <option>Amount</option>
                   <option>Description Pattern</option>
                 </select>
               </div>
               <div className="flex-1 space-y-2">
-                <label className="text-xs font-bold text-muted uppercase">Operator</label>
-                <select className="w-full bg-neutral-10 border border-border rounded-md px-3 py-2 text-sm text-foreground">
+                <label htmlFor="operator" className="text-xs font-bold text-muted uppercase">Operator</label>
+                <select id="operator" className="w-full bg-neutral-10 border border-border rounded-md px-3 py-2 text-sm text-foreground">
                   <option>contains</option>
                   <option>matches exactly</option>
                   <option>is greater than</option>
                 </select>
               </div>
               <div className="flex-[2] space-y-2">
-                <label className="text-xs font-bold text-muted uppercase">Value</label>
-                <input type="text" placeholder="e.g. AWS" className="w-full bg-neutral-10 border border-border rounded-md px-3 py-2 text-sm text-foreground focus:ring-1 focus:ring-teal-500" />
+                <label htmlFor="value" className="text-xs font-bold text-muted uppercase">Value</label>
+                <input id="value" type="text" placeholder="e.g. AWS" className="w-full bg-neutral-10 border border-border rounded-md px-3 py-2 text-sm text-foreground focus:ring-1 focus:ring-teal-500" />
               </div>
             </div>
 
@@ -49,15 +49,15 @@ const CategorizationStudio: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-bold text-muted uppercase">Category</label>
+              <label htmlFor="category" className="text-xs font-bold text-muted uppercase">Category</label>
               <div className="flex gap-3">
-                <select className="flex-1 bg-neutral-10 border border-border rounded-md px-3 py-2 text-sm text-foreground">
+                <select id="category" className="flex-1 bg-neutral-10 border border-border rounded-md px-3 py-2 text-sm text-foreground">
                   <option>Infrastructure</option>
                   <option>Marketing</option>
                   <option>Operations</option>
                   <option>Travel</option>
                 </select>
-                <button className="px-6 py-2 bg-teal-500 text-white font-semibold rounded-md text-sm hover:bg-teal-600 shadow-sm shadow-teal-500/10">
+                <button type="button" className="px-6 py-2 bg-teal-500 text-white font-semibold rounded-md text-sm hover:bg-teal-600 shadow-sm shadow-teal-500/10">
                   Apply Rule
                 </button>
               </div>
