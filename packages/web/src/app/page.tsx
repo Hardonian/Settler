@@ -9,15 +9,12 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { HeroAnimationWrapper } from "@/components/HeroAnimationWrapper";
 import { TextReveal, TextRevealHeading } from "@/components/ui/TextReveal";
-import { ParallaxBackground, ParallaxBlobs } from "@/components/ui/ParallaxBackground";
-import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import {
   Database,
   Sliders,
   Eye,
   AlertTriangle,
   ArrowRight,
-  Shield,
   Target,
   Layers,
   GitBranch,
