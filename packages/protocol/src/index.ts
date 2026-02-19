@@ -88,6 +88,8 @@ export interface ReconciliationProofCapsule {
   ruleHash: string;
   outputHash: string;
   versionHash: string;
+  signature?: string; // HMAC or Digital Signature
+  signer?: string;    // ID of the signing entity (e.g., "Settler-Core")
   createdAt: string;
 }
 
