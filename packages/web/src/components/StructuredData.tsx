@@ -44,7 +44,7 @@ export function OrganizationSchema() {
     },
   };
 
-  return <StructuredData data={schema} />;
+  return <StructuredData data={schema} id="organization-schema" />;
 }
 
 export function SoftwareApplicationSchema() {
@@ -68,7 +68,7 @@ export function FAQSchema({ faqs }: { faqs: Array<{ question: string; answer: st
     })),
   };
 
-  return <StructuredData data={schema} />;
+  return <StructuredData data={schema} id="faq-schema" />;
 }
 
 export function WebSiteSchema() {
@@ -89,5 +89,6 @@ export function WebSiteSchema() {
     },
   };
 
-  return <StructuredData data={schema} />;
+  return <StructuredData data={schema} id="website-schema" />;
 }
+
