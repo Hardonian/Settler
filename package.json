@@ -21,6 +21,7 @@
     "validate:billing": "tsx scripts/validate-billing-reality.ts",
     "validate:onboarding": "tsx scripts/validate-onboarding-reality.ts",
     "validate:tenant-isolation": "tsx scripts/validate-tenant-isolation.ts",
+    "eval:arch-compliance": "tsx scripts/architectural-compliance-evaluator.ts",
     "validate:failure-injection": "tsx scripts/validate-failure-injection.ts",
     "validate:all": "pnpm run validate:eslint-config && pnpm run validate:build-safety && pnpm run validate:nextjs && pnpm run validate:lint-config && pnpm run validate:comprehensive",
     "doctor": "node scripts/doctor.mjs",
