@@ -1,5 +1,6 @@
 import { stableHash } from '@settler/protocol';
 import { matchTransactions } from '../deterministic-matcher';
+import { seal, verify } from '../trust-envelope';
 
 /**
  * Reconciliation Capsule Integrity Test
@@ -96,5 +97,48 @@ describe('Reconciliation Proof Capsule Integrity', () => {
 
     const currentOutputHash = stableHash(sortedMatches);
     expect(currentOutputHash).toBe(SNAPSHOTS.output);
+  });
+
+  it('should produce a verifiable capsule via TrustEnvelope.seal()', () => {
+    const matches = matchTransactions(
+      fixture.sourceTransactions,
+      fixture.targetTransactions,
+      fixture.rules
+    );
+
+    const sortedMatches = [...matches].sort((a, b) =>
+      a.sourceTransactionId.localeCompare(b.sourceTransactionId)
+    );
+
+    const sealInput = {
+      jobId: 'capsule_integrity_job',
+      tenantId: fixture.tenantId,
+      sourceTransactions: fixture.sourceTransactions.map(t => ({
+        id: t.id,
+        amount: t.amount,
+        date: t.date.toISOString(),
+        currency: t.currency,
+      })),
+      targetTransactions: fixture.targetTransactions.map(t => ({
+        id: t.id,
+        amount: t.amount,
+        date: t.date.toISOString(),
+        currency: t.currency,
+      })),
+      rules: fixture.rules,
+      matches: sortedMatches,
+      engine: { name: 'Settler', version: '1.0.0', build: 'ci' },
+    };
+
+    const capsule = seal(sealInput);
+
+    // The capsule's hashes must match the raw stableHash snapshots
+    expect(capsule.inputHash).toBe(SNAPSHOTS.input);
+    expect(capsule.ruleHash).toBe(SNAPSHOTS.rule);
+    expect(capsule.outputHash).toBe(SNAPSHOTS.output);
+
+    // Round-trip verification must pass
+    const result = verify(capsule, sealInput);
+    expect(result.valid).toBe(true);
   });
 });

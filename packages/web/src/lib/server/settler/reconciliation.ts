@@ -14,7 +14,7 @@ import type {
 } from "@/lib/domain/types";
 import { calculateImpact, generateExplanation } from "@/lib/judgment/rules";
 import { safeLogger } from "@/lib/observability/safe-logger";
-import { stableHash, type ReconciliationProofCapsule } from "@settler/protocol";
+import { seal } from "@/lib/reconciliation/trust-envelope";
 
 const SETTLER_VERSION = "1.0.0";
 
@@ -161,8 +161,13 @@ export async function runReconciliation(
       },
     });
 
-    // Generate Reconciliation Proof Capsule (RPC)
-    const inputHash = stableHash({
+    // Generate Reconciliation Proof Capsule via Trust Envelope
+    const sortedMatches = [...matchResult.matches].sort((a, b) =>
+      a.sourceTransactionId.localeCompare(b.sourceTransactionId)
+    );
+
+    const proofCapsule = seal({
+      jobId: result.id,
       tenantId,
       sourceTransactions: sourceTransactions.map((t: any) => ({
         id: t.id,
@@ -176,34 +181,25 @@ export async function runReconciliation(
         date: t.date.toISOString(),
         currency: t.currency,
       })),
+      rules: {
+        amountTolerance:
+          params.rules?.find((r) => r.field === "amount")?.tolerance || 0.01,
+        dateWindowDays: params.rules?.find((r) => r.field === "date")?.window
+          ? parseInt(
+              params.rules
+                .find((r) => r.field === "date")!
+                .window!.replace("days", "")
+            )
+          : 3,
+        requireExactMerchant: true,
+      },
+      matches: sortedMatches,
+      engine: {
+        name: "Settler",
+        version: SETTLER_VERSION,
+        build: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA || "local",
+      },
     });
-
-    const ruleHash = stableHash({
-      amountTolerance: params.rules?.find((r) => r.field === "amount")?.tolerance || 0.01,
-      dateWindowDays: params.rules?.find((r) => r.field === "date")?.window
-        ? parseInt(params.rules.find((r) => r.field === "date")!.window!.replace("days", ""))
-        : 3,
-      requireExactMerchant: true,
-    });
-
-    const outputHash = stableHash(
-      [...matchResult.matches].sort((a, b) => a.sourceTransactionId.localeCompare(b.sourceTransactionId))
-    );
-    const versionHash = stableHash({
-      name: "Settler",
-      version: SETTLER_VERSION,
-      build: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA || "local",
-    });
-
-    const proofCapsule: ReconciliationProofCapsule = {
-      capsuleVersion: "1.0.0",
-      jobId: result.id,
-      inputHash,
-      ruleHash,
-      outputHash,
-      versionHash,
-      createdAt: new Date().toISOString(),
-    };
 
     // Track usage: Reconciliation job execution
     try {
