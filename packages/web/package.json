@@ -9,6 +9,7 @@
     "dev": "next dev",
     "clean:build": "rm -rf .next dist out .next/tsconfig.tsbuildinfo",
     "validate:api-routes": "test -f ../../scripts/validate-api-routes.ts && tsx ../../scripts/validate-api-routes.ts || echo '\u26a0\ufe0f  API route validation skipped (script not found)'",
+    "validate:boundary": "tsx ./scripts/check-public-route-boundary.ts",
     "build": "next build --webpack",
     "build:vercel": "next build --webpack",
     "postinstall": "export SENTRY_SKIP_AUTO_INSTALL=1 || set SENTRY_SKIP_AUTO_INSTALL=1 || true",

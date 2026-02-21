@@ -1,4 +1,4 @@
-"use strict";
+"use client";
 
 import React from "react";
 import AppPageLayout from "@/components/AppPageLayout";
