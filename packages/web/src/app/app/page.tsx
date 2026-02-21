@@ -1,5 +1,6 @@
-import { redirect } from 'next/navigation';
 
-export default function AppEntryPage() {
-  redirect('/console');
+import ControlPlaneOverview from '@/components/stitch-import/ControlPlaneOverview';
+
+export default function AppPage() {
+  return <ControlPlaneOverview />;
 }
