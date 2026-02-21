@@ -146,6 +146,20 @@ const nextConfig = {
         new NormalModuleReplacementPlugin(/shared[\\/]db[\\/]prismaClient/, stubPath)
       );
 
+      // Handle node: URI scheme for packages like @settler/protocol that use node:crypto.
+      // Webpack cannot resolve node: protocol URIs in client bundles; strip the prefix so
+      // webpack falls through to its built-in Node.js polyfill layer instead.
+      config.plugins.push(
+        new NormalModuleReplacementPlugin(/^node:/, (resource) => {
+          resource.request = resource.request.replace(/^node:/, "");
+        })
+      );
+      // Polyfill or stub Node.js built-ins that @settler/protocol pulls in
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        crypto: false,
+      };
+
       // Also mark Prisma packages as externals to prevent bundling
       config.externals = config.externals || [];
       if (typeof config.externals === "function") {
