@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Reconciliation Results - Settler</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-dark": "#16202a", 
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for horizontal scroll areas */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-col antialiased selection:bg-primary selection:text-white overflow-hidden">
+<!-- Top Navigation / Header -->
+<header class="sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-800 pt-11 pb-2 px-4 transition-colors">
+<div class="flex items-center justify-between mb-4">
+<h1 class="text-xl font-bold tracking-tight">Reconciliation Results</h1>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-surface-dark transition-colors text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[24px]">ios_share</span>
+</button>
+<button class="p-2 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-[24px]">download</span>
+</button>
+</div>
+</div>
+<!-- Search Bar -->
+<div class="relative w-full">
+<span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</span>
+<input class="w-full bg-slate-100 dark:bg-surface-dark border-none rounded-lg py-2.5 pl-10 pr-4 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-primary focus:outline-none transition-shadow" placeholder="Search by Trace ID..." type="text"/>
+</div>
+</header>
+<!-- Main Scrollable Content -->
+<main class="flex-1 overflow-y-auto overflow-x-hidden pb-24">
+<!-- Filter Pills -->
+<div class="flex gap-2 px-4 py-4 overflow-x-auto no-scrollbar whitespace-nowrap">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary text-white text-sm font-medium shadow-sm shadow-primary/20">
+<span>All Status</span>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-200 dark:bg-surface-dark border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-medium">
+<span class="material-symbols-outlined text-[16px] text-slate-400">calendar_today</span>
+<span>Last 24h</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-200 dark:bg-surface-dark border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-medium">
+<span class="material-symbols-outlined text-[16px] text-slate-400">alt_route</span>
+<span>Payments_v2</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-200 dark:bg-surface-dark border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-medium">
+<span class="material-symbols-outlined text-[16px] text-slate-400">filter_list</span>
+<span>More</span>
+</button>
+</div>
+<!-- Summary Statistics -->
+<div class="grid grid-cols-3 gap-3 px-4 mb-6">
+<div class="flex flex-col gap-1 p-3 rounded-xl bg-white dark:bg-surface-dark border border-emerald-500/20 shadow-sm relative overflow-hidden group">
+<div class="absolute right-0 top-0 p-2 opacity-10">
+<span class="material-symbols-outlined text-4xl text-emerald-500">check_circle</span>
+</div>
+<span class="text-xs text-slate-500 dark:text-slate-400 font-medium z-10">Matched</span>
+<span class="text-xl font-bold text-slate-900 dark:text-white z-10">982</span>
+<span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-0.5 z-10">
+<span class="material-symbols-outlined text-[12px]">trending_up</span> 12%
+                </span>
+</div>
+<div class="flex flex-col gap-1 p-3 rounded-xl bg-white dark:bg-surface-dark border border-rose-500/20 shadow-sm relative overflow-hidden">
+<div class="absolute right-0 top-0 p-2 opacity-10">
+<span class="material-symbols-outlined text-4xl text-rose-500">cancel</span>
+</div>
+<span class="text-xs text-slate-500 dark:text-slate-400 font-medium z-10">Mismatch</span>
+<span class="text-xl font-bold text-slate-900 dark:text-white z-10">14</span>
+<span class="text-[10px] text-rose-600 dark:text-rose-400 font-medium flex items-center gap-0.5 z-10">
+<span class="material-symbols-outlined text-[12px]">trending_up</span> 2%
+                </span>
+</div>
+<div class="flex flex-col gap-1 p-3 rounded-xl bg-white dark:bg-surface-dark border border-amber-500/20 shadow-sm relative overflow-hidden">
+<div class="absolute right-0 top-0 p-2 opacity-10">
+<span class="material-symbols-outlined text-4xl text-amber-500">warning</span>
+</div>
+<span class="text-xs text-slate-500 dark:text-slate-400 font-medium z-10">Review</span>
+<span class="text-xl font-bold text-slate-900 dark:text-white z-10">244</span>
+<span class="text-[10px] text-amber-600 dark:text-amber-400 font-medium flex items-center gap-0.5 z-10">
+<span class="material-symbols-outlined text-[12px]">trending_down</span> 5%
+                </span>
+</div>
+</div>
+<!-- Results List -->
+<div class="px-4 space-y-3">
+<h2 class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Recent Transactions</h2>
+<!-- Card Item: Mismatch (Active/Open State Simulation) -->
+<div class="relative bg-white dark:bg-surface-dark rounded-xl p-4 shadow-sm border-l-4 border-rose-500 active:scale-[0.99] transition-transform">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-rose-500 text-[20px]">error</span>
+<span class="text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-100 dark:bg-rose-500/10 px-2 py-0.5 rounded">Mismatched</span>
+</div>
+<span class="text-xs text-slate-400">10:42 AM</span>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<div class="text-sm text-slate-500 dark:text-slate-400 font-mono mb-1">Trace: <span class="text-slate-900 dark:text-white font-medium">8a9f...2b1</span></div>
+<div class="text-sm font-medium text-slate-900 dark:text-white">Tx Ref: #STR-29384</div>
+<div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Pipeline: Payments_v2</div>
+</div>
+<button class="text-primary text-sm font-medium flex items-center">
+                        Details <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Card Item: Review Needed -->
+<div class="relative bg-white dark:bg-surface-dark rounded-xl p-4 shadow-sm border-l-4 border-amber-500 active:scale-[0.99] transition-transform">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-amber-500 text-[20px]">warning</span>
+<span class="text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-500/10 px-2 py-0.5 rounded">Needs Review</span>
+</div>
+<span class="text-xs text-slate-400">10:38 AM</span>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<div class="text-sm text-slate-500 dark:text-slate-400 font-mono mb-1">Trace: <span class="text-slate-900 dark:text-white font-medium">7c2d...9a4</span></div>
+<div class="text-sm font-medium text-slate-900 dark:text-white">Tx Ref: #INT-99210</div>
+<div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Pipeline: Ledger_Main</div>
+</div>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Card Item: Matched -->
+<div class="relative bg-white dark:bg-surface-dark rounded-xl p-4 shadow-sm border-l-4 border-emerald-500 active:scale-[0.99] transition-transform">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-500 text-[20px]">check_circle</span>
+<span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-500/10 px-2 py-0.5 rounded">Matched</span>
+</div>
+<span class="text-xs text-slate-400">10:35 AM</span>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<div class="text-sm text-slate-500 dark:text-slate-400 font-mono mb-1">Trace: <span class="text-slate-900 dark:text-white font-medium">b41e...0f2</span></div>
+<div class="text-sm font-medium text-slate-900 dark:text-white">Tx Ref: #STR-29383</div>
+<div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Pipeline: Payments_v2</div>
+</div>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Card Item: Matched -->
+<div class="relative bg-white dark:bg-surface-dark rounded-xl p-4 shadow-sm border-l-4 border-emerald-500 active:scale-[0.99] transition-transform">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-500 text-[20px]">check_circle</span>
+<span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-500/10 px-2 py-0.5 rounded">Matched</span>
+</div>
+<span class="text-xs text-slate-400">10:31 AM</span>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<div class="text-sm text-slate-500 dark:text-slate-400 font-mono mb-1">Trace: <span class="text-slate-900 dark:text-white font-medium">a12d...8c3</span></div>
+<div class="text-sm font-medium text-slate-900 dark:text-white">Tx Ref: #STR-29382</div>
+<div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Pipeline: Payments_v2</div>
+</div>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<div class="h-24 w-full"></div> <!-- Spacer for bottom sheet / nav -->
+</div>
+</main>
+<!-- Bottom Sheet (Evidence Viewer) - Simulated as overlaid fixed container -->
+<div class="fixed inset-x-0 bottom-[72px] z-30 transform transition-transform duration-300 ease-out translate-y-0 shadow-[0_-8px_30px_rgba(0,0,0,0.5)] bg-background-light dark:bg-surface-dark rounded-t-2xl border-t border-slate-200 dark:border-slate-700 max-h-[70vh] flex flex-col">
+<!-- Drag Handle -->
+<div class="w-full flex justify-center pt-3 pb-1 cursor-grab active:cursor-grabbing">
+<div class="w-12 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600"></div>
+</div>
+<!-- Sheet Header -->
+<div class="px-5 pb-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+<div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Evidence Viewer</h3>
+<p class="text-xs text-rose-500 font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">error</span> Mismatched · Trace 8a9f...2b1
+                </p>
+</div>
+<button class="text-slate-400 hover:text-white">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+</div>
+<!-- Sheet Content -->
+<div class="flex-1 overflow-y-auto p-5 space-y-5">
+<!-- Comparison View -->
+<div class="flex flex-col gap-3">
+<div class="flex justify-between items-center">
+<span class="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider">Comparison</span>
+<span class="text-xs text-primary font-medium cursor-pointer hover:underline">View Raw JSON</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<!-- Source A -->
+<div class="flex flex-col gap-2">
+<div class="text-xs font-medium text-slate-500 flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-blue-500"></span> Source: Stripe API
+                        </div>
+<div class="p-3 bg-white dark:bg-[#0c1219] border border-slate-200 dark:border-slate-700 rounded-lg">
+<div class="text-[10px] text-slate-400 uppercase">Amount</div>
+<div class="font-mono text-sm text-slate-900 dark:text-slate-100">100.00 USD</div>
+<div class="w-full h-px bg-slate-100 dark:bg-slate-800 my-2"></div>
+<div class="text-[10px] text-slate-400 uppercase">Status</div>
+<div class="font-mono text-sm text-slate-900 dark:text-slate-100">succeeded</div>
+</div>
+</div>
+<!-- Source B -->
+<div class="flex flex-col gap-2">
+<div class="text-xs font-medium text-slate-500 flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-purple-500"></span> Source: Internal DB
+                        </div>
+<div class="p-3 bg-white dark:bg-[#0c1219] border border-rose-500/50 rounded-lg relative overflow-hidden">
+<!-- Highlight mismatch -->
+<div class="absolute inset-0 bg-rose-500/5 pointer-events-none"></div>
+<div class="text-[10px] text-slate-400 uppercase">Amount</div>
+<div class="font-mono text-sm text-rose-500 font-bold">99.00 USD</div>
+<div class="w-full h-px bg-slate-100 dark:bg-slate-800 my-2"></div>
+<div class="text-[10px] text-slate-400 uppercase">Status</div>
+<div class="font-mono text-sm text-slate-900 dark:text-slate-100">completed</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Rules Applied -->
+<div>
+<span class="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider mb-2 block">Logic Trace</span>
+<div class="space-y-2">
+<div class="flex items-center gap-3 p-3 bg-white dark:bg-[#0c1219] border border-emerald-500/30 rounded-lg">
+<span class="material-symbols-outlined text-emerald-500 text-[20px]">check_circle</span>
+<div class="flex-1">
+<div class="text-sm font-medium text-slate-900 dark:text-slate-200">Currency Match</div>
+<div class="text-xs text-slate-500">Both sources are USD</div>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 bg-white dark:bg-[#0c1219] border border-rose-500/30 rounded-lg">
+<span class="material-symbols-outlined text-rose-500 text-[20px]">cancel</span>
+<div class="flex-1">
+<div class="text-sm font-medium text-slate-900 dark:text-slate-200">Exact Amount Match</div>
+<div class="text-xs text-rose-400">Values differ by &gt; 0.00</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sheet Footer Actions -->
+<div class="p-5 border-t border-slate-200 dark:border-slate-700 bg-background-light dark:bg-surface-dark flex gap-3">
+<button class="flex-1 py-3 px-4 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-semibold text-sm hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
+                Ignore Mismatch
+            </button>
+<button class="flex-1 py-3 px-4 rounded-lg bg-primary text-white font-semibold text-sm hover:bg-blue-600 transition-colors shadow-lg shadow-primary/25">
+                Open in Review Queue
+            </button>
+</div>
+</div>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 z-40 w-full bg-surface-dark border-t border-slate-800 px-4 pb-4 pt-2">
+<div class="flex gap-2">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">bar_chart</span>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Dashboard</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 rounded-full text-primary" href="#">
+<span class="material-symbols-outlined text-[24px] fill-current">table_chart</span>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Results</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">call_merge</span>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Pipelines</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Settings</p>
+</a>
+</div>
+</nav>
+</body></html>

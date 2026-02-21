@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Command Palette &amp; Global Search</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for horizontal scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-slate-100">
+<div class="relative mx-auto h-screen max-w-md w-full bg-white dark:bg-slate-900 overflow-hidden flex flex-col shadow-2xl">
+<!-- Status Bar Placeholder (iOS Safe Area) -->
+<div class="h-12 w-full bg-white dark:bg-slate-900 shrink-0"></div>
+<!-- Header / Search Section -->
+<div class="sticky top-0 z-10 bg-white dark:bg-slate-900 px-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<div class="flex-1 relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-primary">
+<span class="material-symbols-outlined text-[24px]">search</span>
+</div>
+<input autofocus="" class="block w-full rounded-xl border-none bg-slate-100 dark:bg-slate-800 py-3.5 pl-10 pr-4 text-base text-slate-900 dark:text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-primary/20 focus:bg-white dark:focus:bg-slate-800 transition-all shadow-sm" placeholder="Search Traceability Spine..." type="text"/>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+<button class="p-1 rounded-md text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">mic</span>
+</button>
+</div>
+</div>
+<button class="text-base font-medium text-primary hover:text-primary/80 transition-colors">
+                    Cancel
+                </button>
+</div>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto overflow-x-hidden pb-24">
+<!-- Quick Actions -->
+<div class="pt-5 pb-2">
+<div class="px-4 mb-3 flex items-center justify-between">
+<h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Quick Actions</h3>
+</div>
+<div class="flex gap-3 px-4 overflow-x-auto no-scrollbar pb-2">
+<!-- Action: Scan QR -->
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary/10 hover:bg-primary/20 active:bg-primary/30 text-primary px-4 transition-colors">
+<span class="material-symbols-outlined text-[20px]">qr_code_scanner</span>
+<span class="text-sm font-semibold">Scan QR</span>
+</button>
+<!-- Action: New Report -->
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-4 transition-colors">
+<span class="material-symbols-outlined text-[20px]">post_add</span>
+<span class="text-sm font-medium">New Report</span>
+</button>
+<!-- Action: Audit Log -->
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-4 transition-colors">
+<span class="material-symbols-outlined text-[20px]">history</span>
+<span class="text-sm font-medium">Audit Log</span>
+</button>
+<!-- Action: Verify -->
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-4 transition-colors">
+<span class="material-symbols-outlined text-[20px]">verified_user</span>
+<span class="text-sm font-medium">Verify</span>
+</button>
+</div>
+</div>
+<!-- Divider -->
+<div class="h-px w-full bg-slate-100 dark:bg-slate-800 my-2"></div>
+<!-- Recent Activity Section -->
+<div class="px-4 py-2">
+<h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Recent Activity</h3>
+<div class="space-y-1">
+<!-- Item 1 -->
+<div class="group flex items-center gap-4 p-3 -mx-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 active:bg-slate-100 transition-colors cursor-pointer">
+<div class="flex items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/20 text-primary shrink-0 w-10 h-10">
+<span class="material-symbols-outlined text-[24px]">inventory_2</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<p class="text-slate-900 dark:text-white text-sm font-semibold truncate">Batch #4920 - Processing</p>
+<span class="text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700">ITEM</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs truncate">Last viewed 2 mins ago • Line 4</p>
+</div>
+<span class="material-symbols-outlined text-slate-300 dark:text-slate-600 text-[20px]">chevron_right</span>
+</div>
+<!-- Item 2 -->
+<div class="group flex items-center gap-4 p-3 -mx-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 active:bg-slate-100 transition-colors cursor-pointer">
+<div class="flex items-center justify-center rounded-lg bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 shrink-0 w-10 h-10">
+<span class="material-symbols-outlined text-[24px]">warehouse</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<p class="text-slate-900 dark:text-white text-sm font-semibold truncate">Warehouse A - Zone 3</p>
+<span class="text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700">LOC</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs truncate">Last viewed 1 hour ago • Seattle, WA</p>
+</div>
+<span class="material-symbols-outlined text-slate-300 dark:text-slate-600 text-[20px]">chevron_right</span>
+</div>
+<!-- Item 3 -->
+<div class="group flex items-center gap-4 p-3 -mx-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 active:bg-slate-100 transition-colors cursor-pointer">
+<div class="flex items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 shrink-0 w-10 h-10">
+<span class="material-symbols-outlined text-[24px]">local_shipping</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<p class="text-slate-900 dark:text-white text-sm font-semibold truncate">Shipment #TR-8821</p>
+<span class="text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700">SHIP</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs truncate">Updated yesterday • In Transit</p>
+</div>
+<span class="material-symbols-outlined text-slate-300 dark:text-slate-600 text-[20px]">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Divider -->
+<div class="h-px w-full bg-slate-100 dark:bg-slate-800 my-2"></div>
+<!-- Suggested Commands -->
+<div class="px-4 py-2">
+<h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Suggested</h3>
+<div class="space-y-1">
+<!-- Command 1 -->
+<div class="group flex items-center gap-3 p-2 -mx-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer">
+<span class="material-symbols-outlined text-slate-400 text-[20px]">terminal</span>
+<span class="text-slate-700 dark:text-slate-300 text-sm">Jump to <span class="font-semibold text-slate-900 dark:text-white">System Settings</span></span>
+<div class="ml-auto text-[10px] text-slate-400 border border-slate-200 dark:border-slate-700 rounded px-1.5">CMD+S</div>
+</div>
+<!-- Command 2 -->
+<div class="group flex items-center gap-3 p-2 -mx-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer">
+<span class="material-symbols-outlined text-slate-400 text-[20px]">download</span>
+<span class="text-slate-700 dark:text-slate-300 text-sm">Export <span class="font-semibold text-slate-900 dark:text-white">Monthly Report</span></span>
+</div>
+<!-- Command 3 -->
+<div class="group flex items-center gap-3 p-2 -mx-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer">
+<span class="material-symbols-outlined text-slate-400 text-[20px]">person_add</span>
+<span class="text-slate-700 dark:text-slate-300 text-sm">Invite <span class="font-semibold text-slate-900 dark:text-white">New User</span></span>
+</div>
+</div>
+</div>
+<!-- Map Preview (Contextual) -->
+<div class="px-4 py-4 mt-2">
+<h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Nearby Locations</h3>
+<div class="relative w-full h-32 rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-700">
+<img alt="Minimalist abstract map view with blue location markers" class="w-full h-full object-cover opacity-80" data-alt="Minimalist abstract map view with blue location markers" data-location="Global View" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAo8o72SMW9gDC5UN6Nd7REsLz1DXrsuZSGs9U7z3KytT8-PKLPXEa7Sz4kMGEMeHXhskzmAtkboKKeknrC-ZGTWIcy8v5AdB9bTus7C5a9Ej8iH260cKUiKbYyqQCkw7T-BOCtAjyMwOZMiHqeYNa5adXLyzfZz8RooBDqvZwafnF67iNgHwEIcFa0gPD80Srd-7BllMHWB-O4zqefJ8jJaEtHyA2NHVZAAh9lzmOob_GY6z3DqGGFF3RZb9Ig4AuAwcM5Ylm-enPZ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent flex items-end p-3">
+<div class="flex items-center gap-2 text-white">
+<span class="material-symbols-outlined text-[18px]">near_me</span>
+<span class="text-xs font-medium">3 Active Nodes nearby</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Keyboard Accessory View (Simulated) -->
+<div class="bg-slate-100 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 px-2 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar">
+<button class="bg-white dark:bg-slate-700 text-xs font-medium px-3 py-1.5 rounded-md shadow-sm border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 whitespace-nowrap active:bg-slate-50">
+                Filter by Date
+             </button>
+<button class="bg-white dark:bg-slate-700 text-xs font-medium px-3 py-1.5 rounded-md shadow-sm border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 whitespace-nowrap active:bg-slate-50">
+                Filter by Location
+             </button>
+<button class="bg-white dark:bg-slate-700 text-xs font-medium px-3 py-1.5 rounded-md shadow-sm border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 whitespace-nowrap active:bg-slate-50">
+                Only Active
+             </button>
+<div class="w-px h-4 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+<button class="bg-primary/10 text-xs font-medium px-3 py-1.5 rounded-md text-primary whitespace-nowrap">
+                # Tag
+             </button>
+</div>
+<!-- Simulated Keyboard Area -->
+<div class="h-[280px] bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-slate-400 text-sm">
+<div class="flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-4xl opacity-20">keyboard</span>
+<span class="opacity-50">Keyboard Area</span>
+</div>
+</div>
+</div>
+</body></html>

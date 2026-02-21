@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Enterprise Security &amp; Trust</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for badge row */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Custom details marker styling */
+        details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased selection:bg-primary/30">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto border-x border-slate-200 dark:border-slate-800">
+<!-- Top Navigation -->
+<div class="sticky top-0 z-50 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md p-4 pb-3 justify-between border-b border-slate-200 dark:border-slate-800">
+<div class="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Security &amp; Trust</h2>
+<div class="flex size-10 items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[24px]">shield</span>
+</div>
+</div>
+<!-- Main Scrollable Content -->
+<div class="flex-1 flex flex-col pb-24"> <!-- Padding bottom for sticky CTA -->
+<!-- Hero Section -->
+<div class="px-4 py-6">
+<div class="relative flex flex-col justify-end overflow-hidden rounded-xl min-h-[220px] shadow-lg ring-1 ring-slate-900/5 dark:ring-white/10 group">
+<!-- Background Image -->
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Abstract cyber security digital padlock network visualization" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuALPiVz3Jg9c8b5SLOu2XynRYAHzhr4JqPYR2IQNocgmKJ5rl4yp6bcjcM0jWcCnBsQivRzTEvufjSlgAh5mKGEjYY9pwfQCx2_OFvG_GN2yOgiM9b7NXzC4yxkv-27jF7zilFvgPD985aLqGtOobBGz7ywu3v0bUKxMgfwoAOnNf3VWjs3smXXsKHjOV60chmlHwW_rmiP-9hgwG68mxD-G25AfngY44-uxY7YqB_KecuXvLWEtwkdpLiH0d0E2rFbYVBLN4NJFMJk");'>
+</div>
+<!-- Gradient Overlay -->
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/70 to-transparent"></div>
+<!-- Content -->
+<div class="relative p-5 z-10">
+<div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-primary/20 backdrop-blur-sm border border-primary/30 mb-3 w-fit">
+<span class="size-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-xs font-semibold text-primary uppercase tracking-wider">System Operational</span>
+</div>
+<h1 class="text-white text-3xl font-bold leading-tight mb-2 tracking-tight">Enterprise-Grade Security</h1>
+<p class="text-slate-300 text-sm leading-relaxed max-w-[90%]">
+                            Built for trust, isolation, and total visibility. We ensure your data remains secure with industry-leading standards.
+                        </p>
+</div>
+</div>
+</div>
+<!-- Certifications Scroller -->
+<div class="w-full overflow-hidden py-2 mb-2">
+<p class="px-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">Compliance &amp; Standards</p>
+<div class="flex overflow-x-auto gap-3 px-4 no-scrollbar pb-2">
+<!-- Badge 1 -->
+<div class="flex shrink-0 items-center gap-2 rounded-lg bg-white dark:bg-slate-800 px-3 py-2 border border-slate-200 dark:border-slate-700 shadow-sm">
+<span class="material-symbols-outlined text-green-500 text-[20px]">verified_user</span>
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-200">SOC2 Type II</span>
+</div>
+<!-- Badge 2 -->
+<div class="flex shrink-0 items-center gap-2 rounded-lg bg-white dark:bg-slate-800 px-3 py-2 border border-slate-200 dark:border-slate-700 shadow-sm">
+<span class="material-symbols-outlined text-blue-500 text-[20px]">lock</span>
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-200">ISO 27001</span>
+</div>
+<!-- Badge 3 -->
+<div class="flex shrink-0 items-center gap-2 rounded-lg bg-white dark:bg-slate-800 px-3 py-2 border border-slate-200 dark:border-slate-700 shadow-sm">
+<span class="material-symbols-outlined text-purple-500 text-[20px]">vpn_key</span>
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-200">GDPR Ready</span>
+</div>
+<!-- Badge 4 -->
+<div class="flex shrink-0 items-center gap-2 rounded-lg bg-white dark:bg-slate-800 px-3 py-2 border border-slate-200 dark:border-slate-700 shadow-sm">
+<span class="material-symbols-outlined text-orange-500 text-[20px]">security</span>
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-200">AES-256</span>
+</div>
+</div>
+</div>
+<!-- Core Pillars Section -->
+<div class="px-4 pt-4">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">encrypted</span>
+                    Core Security Pillars
+                </h3>
+<div class="flex flex-col gap-3">
+<!-- Accordion 1: Tenant Isolation -->
+<details class="group flex flex-col rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#16202a] transition-all duration-300 open:ring-1 open:ring-primary/50 overflow-hidden" open="">
+<summary class="flex cursor-pointer items-center justify-between gap-4 px-4 py-3 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center size-8 rounded-md bg-blue-500/10 text-blue-500 dark:bg-blue-400/10 dark:text-blue-400">
+<span class="material-symbols-outlined text-[20px]">domain</span>
+</div>
+<p class="text-slate-900 dark:text-white text-sm font-medium leading-normal">Tenant Isolation</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 group-open:rotate-180 transition-transform duration-300">expand_more</span>
+</summary>
+<div class="px-4 py-3 border-t border-slate-100 dark:border-slate-800/50">
+<!-- Visual Graphic -->
+<div class="mb-3 rounded-md bg-slate-100 dark:bg-slate-900 p-3 flex justify-center items-center gap-4 border border-slate-200 dark:border-slate-800">
+<div class="flex flex-col items-center gap-1 opacity-40 grayscale">
+<div class="size-8 rounded-full bg-slate-500"></div>
+<div class="h-1 w-6 bg-slate-500 rounded-full"></div>
+</div>
+<div class="w-px h-10 bg-slate-300 dark:bg-slate-700"></div>
+<div class="flex flex-col items-center gap-1 relative">
+<div class="absolute -top-1 -right-1 size-2 rounded-full bg-green-500 animate-pulse"></div>
+<div class="size-10 rounded-full bg-primary/20 border border-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[20px]">lock</span>
+</div>
+<div class="h-1.5 w-8 bg-primary rounded-full mt-1"></div>
+</div>
+<div class="w-px h-10 bg-slate-300 dark:bg-slate-700"></div>
+<div class="flex flex-col items-center gap-1 opacity-40 grayscale">
+<div class="size-8 rounded-full bg-slate-500"></div>
+<div class="h-1 w-6 bg-slate-500 rounded-full"></div>
+</div>
+</div>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                Our architecture ensures complete workspace and organization scoping. Data is logically isolated to prevent unauthorized cross-tenant access, backed by rigorous access controls.
+                            </p>
+</div>
+</details>
+<!-- Accordion 2: Immutable Audit History -->
+<details class="group flex flex-col rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#16202a] transition-all duration-300 open:ring-1 open:ring-primary/50 overflow-hidden">
+<summary class="flex cursor-pointer items-center justify-between gap-4 px-4 py-3 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center size-8 rounded-md bg-purple-500/10 text-purple-500 dark:bg-purple-400/10 dark:text-purple-400">
+<span class="material-symbols-outlined text-[20px]">history_edu</span>
+</div>
+<p class="text-slate-900 dark:text-white text-sm font-medium leading-normal">Immutable Audit History</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 group-open:rotate-180 transition-transform duration-300">expand_more</span>
+</summary>
+<div class="px-4 py-3 border-t border-slate-100 dark:border-slate-800/50">
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-3">
+                                Every action is recorded in a write-once log that cannot be altered. This ensures full accountability for compliance audits.
+                            </p>
+<div class="flex items-center gap-2 text-xs font-mono text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 p-2 rounded border border-slate-200 dark:border-slate-800">
+<span class="material-symbols-outlined text-[14px]">terminal</span>
+<span>log_id: 8f92a...verified</span>
+</div>
+</div>
+</details>
+<!-- Accordion 3: Traceability Spine -->
+<details class="group flex flex-col rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#16202a] transition-all duration-300 open:ring-1 open:ring-primary/50 overflow-hidden">
+<summary class="flex cursor-pointer items-center justify-between gap-4 px-4 py-3 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center size-8 rounded-md bg-teal-500/10 text-teal-500 dark:bg-teal-400/10 dark:text-teal-400">
+<span class="material-symbols-outlined text-[20px]">hub</span>
+</div>
+<p class="text-slate-900 dark:text-white text-sm font-medium leading-normal">Traceability Spine</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 group-open:rotate-180 transition-transform duration-300">expand_more</span>
+</summary>
+<div class="px-4 py-3 border-t border-slate-100 dark:border-slate-800/50">
+<div class="relative h-12 w-full mb-3 overflow-hidden rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center px-4 gap-1">
+<div class="size-2 rounded-full bg-teal-500"></div>
+<div class="h-0.5 w-8 bg-teal-500/30"></div>
+<div class="size-2 rounded-full bg-teal-500"></div>
+<div class="h-0.5 flex-1 bg-teal-500/30 relative">
+<div class="absolute inset-y-0 left-0 bg-teal-500 w-1/2 opacity-50"></div>
+</div>
+<div class="size-2 rounded-full bg-teal-500"></div>
+</div>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                End-to-end request tracing via unique Trace IDs allows for granular debugging and forensic analysis of every transaction.
+                            </p>
+</div>
+</details>
+<!-- Accordion 4: Safe Ops -->
+<details class="group flex flex-col rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#16202a] transition-all duration-300 open:ring-1 open:ring-primary/50 overflow-hidden">
+<summary class="flex cursor-pointer items-center justify-between gap-4 px-4 py-3 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center size-8 rounded-md bg-orange-500/10 text-orange-500 dark:bg-orange-400/10 dark:text-orange-400">
+<span class="material-symbols-outlined text-[20px]">bolt</span>
+</div>
+<p class="text-slate-900 dark:text-white text-sm font-medium leading-normal">Safe Ops</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 group-open:rotate-180 transition-transform duration-300">expand_more</span>
+</summary>
+<div class="px-4 py-3 border-t border-slate-100 dark:border-slate-800/50">
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                Automated circuit breakers and graceful degradation protocols ensure system stability even under attack or high load conditions.
+                            </p>
+</div>
+</details>
+</div>
+</div>
+<!-- Additional Info / Links -->
+<div class="mt-8 px-4 pb-4">
+<div class="rounded-xl bg-slate-100 dark:bg-slate-800/50 p-4 border border-slate-200 dark:border-slate-800">
+<h4 class="text-sm font-bold text-slate-900 dark:text-white mb-3">Documentation</h4>
+<ul class="space-y-3">
+<li class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500">description</span>
+<span class="text-sm text-slate-600 dark:text-slate-300 group-hover:text-primary transition-colors">Security Whitepaper</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-[18px]">open_in_new</span>
+</li>
+<li class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500">policy</span>
+<span class="text-sm text-slate-600 dark:text-slate-300 group-hover:text-primary transition-colors">Privacy Policy</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-[18px]">open_in_new</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Sticky Bottom CTA -->
+<div class="fixed bottom-0 left-0 right-0 p-4 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 max-w-md mx-auto z-50">
+<button class="w-full bg-primary hover:bg-blue-600 text-white font-bold py-3.5 px-6 rounded-lg shadow-lg shadow-primary/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">gpp_maybe</span>
+                Contact Security Team
+            </button>
+</div>
+</div>
+</body></html>

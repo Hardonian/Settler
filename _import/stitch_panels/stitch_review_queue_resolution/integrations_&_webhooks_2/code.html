@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settler - Integrations &amp; Webhooks</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-dark": "#1a2634",
+                        "surface-highlight": "#233648",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem", 
+                        lg: "0.75rem", 
+                        xl: "1rem", 
+                        full: "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #101922;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #233648;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #137fec;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col font-display selection:bg-primary/30">
+<!-- Header / Status Bar Area -->
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-surface-highlight">
+<div class="px-5 pt-12 pb-4 flex justify-between items-end">
+<div>
+<h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Integrations</h1>
+<p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage your active connectors</p>
+</div>
+<button class="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 hover:bg-primary/20 text-primary transition-colors">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 px-4 py-6 space-y-8 pb-24">
+<!-- Section: Active Connectors -->
+<section class="space-y-4">
+<div class="flex items-center justify-between px-1">
+<h2 class="text-lg font-semibold text-slate-800 dark:text-slate-200">Active Services</h2>
+<button class="text-xs font-medium text-primary hover:text-primary/80">View All</button>
+</div>
+<!-- GitHub Card -->
+<div class="group bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-surface-highlight overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
+<div class="p-5">
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-slate-900 flex items-center justify-center text-white">
+<!-- GitHub Icon Placeholder -->
+<svg fill="currentColor" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.285 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"></path>
+</svg>
+</div>
+<div>
+<h3 class="font-semibold text-slate-900 dark:text-white">GitHub</h3>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-500">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                        Healthy
+                                    </span>
+<span class="text-xs text-slate-500 dark:text-slate-400">• Repo:Read</span>
+</div>
+</div>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 cursor-pointer hover:text-white transition-colors">more_vert</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3 mb-4">
+<div class="bg-background-light dark:bg-background-dark p-3 rounded-lg border border-slate-100 dark:border-surface-highlight">
+<p class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold mb-1">Expires</p>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-200">28 days</p>
+</div>
+<div class="bg-background-light dark:bg-background-dark p-3 rounded-lg border border-slate-100 dark:border-surface-highlight">
+<p class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold mb-1">Privilege</p>
+<div class="flex items-center gap-1 text-amber-500">
+<span class="material-symbols-outlined text-[14px]">shield</span>
+<span class="text-xs font-medium">Read-Only</span>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 h-9 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary text-xs font-semibold transition-colors flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">refresh</span>
+                            Rotate Token
+                        </button>
+<button class="flex-1 h-9 rounded-lg bg-surface-highlight hover:bg-surface-highlight/80 text-slate-300 text-xs font-medium transition-colors border border-slate-600/30 flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">settings_ethernet</span>
+                            Test
+                        </button>
+</div>
+</div>
+<!-- Accordion / Audit Log Preview -->
+<div class="border-t border-slate-200 dark:border-surface-highlight bg-slate-50 dark:bg-[#15202b]">
+<details class="group/accordion">
+<summary class="flex items-center justify-between px-5 py-3 cursor-pointer list-none">
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">history</span>
+                                Recent Activity
+                            </span>
+<span class="material-symbols-outlined text-slate-400 text-[18px] transition-transform group-open/accordion:rotate-180">expand_more</span>
+</summary>
+<div class="px-5 pb-4 space-y-2">
+<div class="flex justify-between items-center text-xs">
+<span class="text-slate-400 font-mono">2023-10-24 14:32:01</span>
+<span class="text-emerald-500 font-mono">200 OK</span>
+</div>
+<div class="flex justify-between items-center text-xs">
+<span class="text-slate-400 font-mono">2023-10-24 12:15:44</span>
+<span class="text-emerald-500 font-mono">200 OK</span>
+</div>
+<div class="flex justify-between items-center text-xs">
+<span class="text-slate-400 font-mono">2023-10-23 09:10:12</span>
+<span class="text-amber-500 font-mono">429 Rate Limit</span>
+</div>
+<a class="block pt-2 text-center text-xs text-primary hover:underline" href="#">View Full Audit Log</a>
+</div>
+</details>
+</div>
+</div>
+<!-- Slack Card -->
+<div class="group bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-surface-highlight overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
+<div class="p-5">
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-[#4A154B] flex items-center justify-center text-white">
+<!-- Slack Icon Placeholder -->
+<svg fill="currentColor" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.52v-6.315zm8.834-5.04a2.528 2.528 0 0 1 2.521-2.521A2.528 2.528 0 0 1 20.211 10.124a2.528 2.528 0 0 1-2.521 2.521h-2.522v-2.52zm-1.263 0a2.528 2.528 0 0 1-2.521 2.521 2.527 2.527 0 0 1-2.52-2.521V5.042a2.528 2.528 0 0 1 2.52-2.52 2.528 2.528 0 0 1 2.521 2.52v6.314zM8.834 3.79a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.52v2.523H8.834zM10.1 5.042a2.528 2.528 0 0 1 2.52-2.52 2.528 2.528 0 0 1 2.522 2.52v6.313A2.528 2.528 0 0 1 12.62 13.894a2.528 2.528 0 0 1-2.52-2.52V5.042zM15.165 8.834a2.528 2.528 0 0 1 2.52 2.521A2.528 2.528 0 0 1 15.165 13.876a2.528 2.528 0 0 1-2.52-2.521v-2.522h2.52zM13.894 10.1a2.528 2.528 0 0 1-2.52 2.52 2.527 2.527 0 0 1-2.521-2.52v-6.313A2.528 2.528 0 0 1 11.374 1.264a2.528 2.528 0 0 1 2.52 2.521v6.313z"></path>
+</svg>
+</div>
+<div>
+<h3 class="font-semibold text-slate-900 dark:text-white">Slack</h3>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-500/10 text-amber-500">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                        Degraded
+                                    </span>
+<span class="text-xs text-slate-500 dark:text-slate-400">• Webhook</span>
+</div>
+</div>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 cursor-pointer hover:text-white transition-colors">more_vert</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3 mb-4">
+<div class="bg-background-light dark:bg-background-dark p-3 rounded-lg border border-slate-100 dark:border-surface-highlight">
+<p class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold mb-1">Expires</p>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-200">Never</p>
+</div>
+<div class="bg-background-light dark:bg-background-dark p-3 rounded-lg border border-slate-100 dark:border-surface-highlight">
+<p class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold mb-1">Privilege</p>
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-[14px]">lock_open</span>
+<span class="text-xs font-medium">Write-Only</span>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 h-9 rounded-lg bg-primary hover:bg-primary/90 text-white text-xs font-semibold transition-colors flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">send</span>
+                            Test Message
+                        </button>
+<button class="flex-1 h-9 rounded-lg bg-surface-highlight hover:bg-surface-highlight/80 text-slate-300 text-xs font-medium transition-colors border border-slate-600/30 flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+                            Config
+                        </button>
+</div>
+</div>
+</div>
+<!-- Generic Webhook Card -->
+<div class="group bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-surface-highlight overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 opacity-90">
+<div class="p-5">
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-2xl">webhook</span>
+</div>
+<div>
+<h3 class="font-semibold text-slate-900 dark:text-white">Custom Hook</h3>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-500/10 text-red-500">
+<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                                        Expired
+                                    </span>
+</div>
+</div>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 cursor-pointer hover:text-white transition-colors">more_vert</span>
+</div>
+</div>
+<div class="mb-4">
+<div class="flex items-center gap-2 mb-1">
+<p class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">Endpoint</p>
+</div>
+<div class="flex items-center gap-2 bg-background-light dark:bg-background-dark p-2 rounded border border-slate-100 dark:border-surface-highlight">
+<code class="text-xs font-mono text-slate-600 dark:text-slate-300 truncate flex-1">https://api.mysite.com/hook/v1/payment_events</code>
+<span class="material-symbols-outlined text-slate-500 text-[14px] cursor-pointer">content_copy</span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 h-9 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 border border-red-500/20">
+<span class="material-symbols-outlined text-[16px]">key_off</span>
+                            Renew Secret
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Divider -->
+<hr class="border-slate-200 dark:border-surface-highlight"/>
+<!-- Section: Available Integrations -->
+<section class="space-y-4">
+<h2 class="text-lg font-semibold text-slate-800 dark:text-slate-200 px-1">Available to Connect</h2>
+<div class="grid grid-cols-2 gap-4">
+<!-- New Connection Card -->
+<button class="flex flex-col items-center justify-center p-6 bg-white dark:bg-surface-dark border border-slate-200 dark:border-surface-highlight rounded-xl hover:bg-slate-50 dark:hover:bg-surface-highlight transition-colors group text-center">
+<div class="w-10 h-10 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+<!-- Jira Icon Placeholder -->
+<svg fill="currentColor" height="20" viewbox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg">
+<path d="M11.53 2C6.454 1.96 2.073 5.923 2 11h9.53V2zM12.47 2v9h9.53C21.93 5.96 17.546 2.077 12.47 2zM2 13c.073 5.077 4.454 9.04 9.53 9V13H2zm19.47 0H12.47l.06 9C17.576 21.93 21.96 18.01 22 13z"></path>
+</svg>
+</div>
+<span class="text-sm font-medium text-slate-900 dark:text-white">Jira</span>
+<span class="text-xs text-slate-500 dark:text-slate-400 mt-1">Issue Tracking</span>
+</button>
+<!-- New Connection Card -->
+<button class="flex flex-col items-center justify-center p-6 bg-white dark:bg-surface-dark border border-slate-200 dark:border-surface-highlight rounded-xl hover:bg-slate-50 dark:hover:bg-surface-highlight transition-colors group text-center">
+<div class="w-10 h-10 rounded-full bg-orange-500/10 text-orange-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">cloud_queue</span>
+</div>
+<span class="text-sm font-medium text-slate-900 dark:text-white">AWS</span>
+<span class="text-xs text-slate-500 dark:text-slate-400 mt-1">Cloud Watch</span>
+</button>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar (reused style, adapted for mobile) -->
+<nav class="fixed bottom-0 w-full bg-surface-dark border-t border-surface-highlight px-6 pb-6 pt-3 z-50">
+<div class="flex justify-between items-center max-w-lg mx-auto">
+<a class="flex flex-col items-center justify-end gap-1 text-slate-400 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">bar_chart</span>
+<p class="text-[10px] font-medium">Dashboard</p>
+</a>
+<a class="flex flex-col items-center justify-end gap-1 text-primary" href="#">
+<span class="material-symbols-outlined text-[24px] fill-current">hub</span>
+<p class="text-[10px] font-medium">Integrations</p>
+</a>
+<a class="flex flex-col items-center justify-end gap-1 text-slate-400 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">key</span>
+<p class="text-[10px] font-medium">API Keys</p>
+</a>
+<a class="flex flex-col items-center justify-end gap-1 text-slate-400 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+<p class="text-[10px] font-medium">Settings</p>
+</a>
+</div>
+</nav>
+<!-- Modal Overlay (Hidden by default, for demonstration of "Rotate Token" action) -->
+<!-- Ideally controlled by JS, here just static hidden markup for structure -->
+<div class="hidden fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-4">
+<div class="bg-surface-dark w-full max-w-sm rounded-t-2xl sm:rounded-2xl border border-surface-highlight p-6 space-y-4 animate-slide-up">
+<div class="w-12 h-12 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-2">
+<span class="material-symbols-outlined text-3xl">warning</span>
+</div>
+<div class="text-center">
+<h3 class="text-lg font-bold text-white">Rotate Token?</h3>
+<p class="text-sm text-slate-400 mt-2">This will invalidate the current token immediately. Any services using the old token will lose access.</p>
+</div>
+<div class="grid grid-cols-2 gap-3 pt-2">
+<button class="h-10 rounded-lg bg-surface-highlight text-white text-sm font-medium">Cancel</button>
+<button class="h-10 rounded-lg bg-red-600 text-white text-sm font-medium">Yes, Rotate</button>
+</div>
+</div>
+</div>
+</body></html>

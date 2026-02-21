@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bulk Manual Override Decision</title>
+<!-- Fonts and Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "primary-dark": "#0b63c1",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e2936",
+                        "text-main": "#0d141b",
+                        "text-sub": "#4c739a",
+                        "border-color": "#e2e8f0",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hide for cleaner mobile look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light text-slate-900 font-display min-h-screen flex justify-center">
+<!-- Mobile Container -->
+<div class="relative flex h-full min-h-screen w-full max-w-md flex-col bg-surface-light shadow-xl overflow-x-hidden pb-24">
+<!-- Navigation Bar -->
+<div class="sticky top-0 z-50 flex items-center bg-surface-light/95 backdrop-blur-sm border-b border-border-color p-4">
+<button class="text-text-main flex size-10 shrink-0 items-center justify-center hover:bg-slate-100 rounded-full transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h2 class="text-text-main text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Bulk Manual Override</h2>
+<button class="flex w-16 items-center justify-end text-primary hover:text-primary-dark transition-colors">
+<span class="text-base font-semibold leading-normal">Cancel</span>
+</button>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto no-scrollbar">
+<!-- Header Section -->
+<div class="px-5 pt-6 pb-2">
+<h1 class="text-text-main text-2xl font-bold leading-tight tracking-tight mb-2">Resolving 1,200 Mismatches</h1>
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">TRC-992-X</span>
+<span class="text-text-sub text-sm font-medium">• 1,200 Records Selected</span>
+</div>
+</div>
+<!-- Decision Panel -->
+<div class="px-5 pt-6">
+<h3 class="text-text-main text-sm font-bold uppercase tracking-wider mb-3 ml-1 text-opacity-80">Select Decision Action</h3>
+<div class="flex flex-col gap-3">
+<!-- Option 1: Force Match -->
+<label class="group relative flex cursor-pointer rounded-xl border border-border-color bg-white p-4 transition-all hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-blue-50/30 has-[:checked]:shadow-sm">
+<input checked="" class="peer sr-only" name="decision" type="radio"/>
+<div class="flex w-full items-start gap-3">
+<div class="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-slate-300 peer-checked:border-primary peer-checked:after:block peer-checked:after:h-2.5 peer-checked:after:w-2.5 peer-checked:after:rounded-full peer-checked:after:bg-primary after:hidden"></div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<p class="font-semibold text-text-main">Force Match</p>
+<span class="material-symbols-outlined text-green-600 text-[20px]">check_circle</span>
+</div>
+<p class="mt-1 text-sm text-text-sub">Treat records as valid matches despite discrepancies.</p>
+</div>
+</div>
+</label>
+<!-- Option 2: Mark as Exception -->
+<label class="group relative flex cursor-pointer rounded-xl border border-border-color bg-white p-4 transition-all hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-blue-50/30 has-[:checked]:shadow-sm">
+<input class="peer sr-only" name="decision" type="radio"/>
+<div class="flex w-full items-start gap-3">
+<div class="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-slate-300 peer-checked:border-primary peer-checked:after:block peer-checked:after:h-2.5 peer-checked:after:w-2.5 peer-checked:after:rounded-full peer-checked:after:bg-primary after:hidden"></div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<p class="font-semibold text-text-main">Mark as Exception</p>
+<span class="material-symbols-outlined text-amber-500 text-[20px]">flag</span>
+</div>
+<p class="mt-1 text-sm text-text-sub">Flag for manual review by compliance team.</p>
+</div>
+</div>
+</label>
+<!-- Option 3: Request Re-sync -->
+<label class="group relative flex cursor-pointer rounded-xl border border-border-color bg-white p-4 transition-all hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-blue-50/30 has-[:checked]:shadow-sm">
+<input class="peer sr-only" name="decision" type="radio"/>
+<div class="flex w-full items-start gap-3">
+<div class="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-slate-300 peer-checked:border-primary peer-checked:after:block peer-checked:after:h-2.5 peer-checked:after:w-2.5 peer-checked:after:rounded-full peer-checked:after:bg-primary after:hidden"></div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<p class="font-semibold text-text-main">Request Re-sync</p>
+<span class="material-symbols-outlined text-blue-500 text-[20px]">sync</span>
+</div>
+<p class="mt-1 text-sm text-text-sub">Discard current state and re-fetch source data.</p>
+</div>
+</div>
+</label>
+</div>
+</div>
+<!-- Justification Input -->
+<div class="px-5 pt-8">
+<label class="block text-sm font-bold uppercase tracking-wider text-text-main mb-2 ml-1 text-opacity-80" for="reason">
+                    Reason for Manual Override <span class="text-red-500">*</span>
+</label>
+<div class="relative">
+<textarea class="block w-full rounded-xl border-0 py-3 px-4 text-text-main shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 bg-slate-50" id="reason" placeholder="Enter ticket #, Jira ID, or detailed explanation for this bulk action..." rows="4"></textarea>
+</div>
+<p class="mt-2 text-xs text-text-sub px-1">This explanation will be visible in the final reconciliation report.</p>
+</div>
+<!-- Compliance Warning -->
+<div class="px-5 py-8">
+<div class="rounded-xl bg-slate-50 border border-slate-200 p-4 flex gap-3 items-start">
+<span class="material-symbols-outlined text-slate-500 shrink-0 mt-0.5">lock</span>
+<div class="flex flex-col gap-1">
+<p class="text-sm font-semibold text-text-main">Compliance Notice</p>
+<p class="text-xs text-text-sub leading-relaxed">
+                            This action is irreversible and will be logged to the immutable audit ledger associated with your user ID. Ensure all 1,200 records conform to the chosen decision.
+                        </p>
+</div>
+</div>
+</div>
+<!-- Spacer for fixed footer -->
+<div class="h-20"></div>
+</div>
+<!-- Sticky Footer Action -->
+<div class="fixed bottom-0 left-0 right-0 z-40 w-full bg-surface-light border-t border-border-color p-4 pb-8 md:absolute md:rounded-b-lg">
+<!-- Note: Added max-w-md constraint to match the container simulation -->
+<div class="mx-auto w-full max-w-[calc(100%-2rem)] md:max-w-md">
+<button class="flex w-full items-center justify-center rounded-xl bg-primary px-6 py-3.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98]">
+                    Confirm Override (1,200)
+                </button>
+</div>
+</div>
+</div>
+</body></html>

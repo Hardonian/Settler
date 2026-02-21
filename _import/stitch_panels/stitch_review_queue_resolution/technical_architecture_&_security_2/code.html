@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Technical Architecture &amp; Security</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0f62fe","primary-dark": "#002d9c",
+                        "primary-light": "#e0eaff",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "border": "#e0e6ed",
+                        "text-main": "#161616",
+                        "text-sub": "#525252",
+                        "accent": "#0043ce", 
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    boxShadow: {
+                        "card": "0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03)",
+                        "floating": "0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025)"
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }.bg-grid-pattern {
+            background-image: linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(90deg, #e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background font-display text-text-main antialiased overflow-x-hidden">
+<div class="relative flex min-h-screen w-full flex-col max-w-md mx-auto bg-white shadow-2xl overflow-hidden border-x border-slate-100">
+<div class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
+<div class="flex items-center justify-between p-4">
+<button class="p-2 -ml-2 rounded-full hover:bg-slate-50 transition-colors text-slate-600">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="text-base font-semibold text-slate-900 tracking-tight">Technical Architecture</h1>
+<button class="p-2 -mr-2 rounded-full hover:bg-slate-50 transition-colors text-slate-600">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<div class="flex-1 flex flex-col pb-24 relative">
+<div class="absolute top-0 inset-x-0 h-96 bg-grid-pattern opacity-40 pointer-events-none z-0"></div>
+<div class="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-white/0 to-white pointer-events-none z-0"></div>
+<div class="px-6 pt-8 pb-4 relative z-10">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 mb-5 shadow-sm">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
+</span>
+<span class="text-xs font-semibold text-blue-700 uppercase tracking-wide">System Online • v2.4.0</span>
+</div>
+<h2 class="text-3xl font-bold tracking-tight mb-3 text-slate-900">System Architecture</h2>
+<p class="text-slate-600 text-sm leading-relaxed">
+                    Transparent, secure, and scalable design. Follow the flow below to understand how we process your data from ingestion to actionable artifacts.
+                </p>
+</div>
+<div class="mt-6 px-6 relative z-10">
+<div class="absolute left-[41px] top-6 bottom-6 w-[1px] bg-slate-200"></div>
+<div class="relative flex gap-5 mb-10 group cursor-pointer">
+<div class="relative z-10 flex-shrink-0 w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-card group-hover:border-blue-500 group-hover:shadow-md transition-all duration-300">
+<span class="material-symbols-outlined text-blue-600 text-[24px]">hub</span>
+</div>
+<div class="flex-1 pt-1 pb-4 border-b border-slate-100">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-base font-bold text-slate-900 group-hover:text-blue-700 transition-colors">Connections</h3>
+<p class="text-xs text-slate-500 mt-1">Secure ingestion from external sources.</p>
+</div>
+</div>
+<div class="mt-3 flex flex-wrap gap-2">
+<span class="px-2.5 py-1 text-[10px] font-medium rounded-md bg-slate-100 text-slate-600 border border-slate-200">REST API</span>
+<span class="px-2.5 py-1 text-[10px] font-medium rounded-md bg-slate-100 text-slate-600 border border-slate-200">Webhooks</span>
+</div>
+</div>
+</div>
+<div class="relative flex gap-5 mb-10 group cursor-pointer">
+<div class="relative z-10 flex-shrink-0 w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-card group-hover:border-blue-500 group-hover:shadow-md transition-all duration-300">
+<span class="material-symbols-outlined text-blue-600 text-[24px]">deployed_code</span>
+</div>
+<div class="flex-1 pt-1 pb-4 border-b border-slate-100">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-base font-bold text-slate-900 group-hover:text-blue-700 transition-colors">Canonical Primitives</h3>
+<p class="text-xs text-slate-500 mt-1">Standardizing raw data into usable blocks.</p>
+</div>
+</div>
+<div class="mt-3 bg-slate-50 rounded-lg p-3 border border-slate-200 shadow-sm">
+<div class="flex items-center gap-2">
+<span class="relative flex h-2 w-2">
+<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+</span>
+<span class="text-[11px] font-mono text-slate-600">Normalizing data structures...</span>
+</div>
+</div>
+</div>
+</div>
+<div class="relative flex gap-5 mb-4 group cursor-pointer">
+<div class="relative z-10 flex-shrink-0 w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-card group-hover:border-blue-500 group-hover:shadow-md transition-all duration-300">
+<span class="material-symbols-outlined text-blue-600 text-[24px]">description</span>
+</div>
+<div class="flex-1 pt-1 pb-2">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-base font-bold text-slate-900 group-hover:text-blue-700 transition-colors">Artifacts</h3>
+<p class="text-xs text-slate-500 mt-1">Generating actionable outputs &amp; reports.</p>
+</div>
+</div>
+<div class="mt-3 flex gap-2">
+<span class="px-2.5 py-1 text-[10px] font-bold rounded-md bg-blue-50 text-blue-700 border border-blue-100">PDF</span>
+<span class="px-2.5 py-1 text-[10px] font-bold rounded-md bg-blue-50 text-blue-700 border border-blue-100">JSON</span>
+</div>
+</div>
+</div>
+</div>
+<div class="h-px bg-slate-100 my-8 mx-6"></div>
+<div class="px-6 relative z-10">
+<div class="flex items-center justify-between mb-5">
+<h2 class="text-xl font-bold text-slate-900">Security Posture</h2>
+<a class="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1" href="#">
+                        View Compliance
+                        <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<div class="p-5 rounded-xl bg-white border border-slate-200 shadow-card hover:shadow-md transition-shadow">
+<div class="flex items-start gap-4">
+<div class="p-2.5 rounded-lg bg-indigo-50 text-indigo-600">
+<span class="material-symbols-outlined text-[24px]">lock_person</span>
+</div>
+<div>
+<h4 class="font-bold text-sm text-slate-900">Tenant Isolation</h4>
+<p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                                    Logical separation of customer data ensures your information remains private, even in a multi-tenant environment.
+                                </p>
+</div>
+</div>
+</div>
+<div class="p-5 rounded-xl bg-white border border-slate-200 shadow-card hover:shadow-md transition-shadow">
+<div class="flex items-start gap-4">
+<div class="p-2.5 rounded-lg bg-emerald-50 text-emerald-600">
+<span class="material-symbols-outlined text-[24px]">history_edu</span>
+</div>
+<div>
+<h4 class="font-bold text-sm text-slate-900">Full Auditability</h4>
+<p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                                    Immutable logs for all system actions. Every read, write, and modification is tracked with timestamp precision.
+                                </p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3 mt-2">
+<div class="flex items-center justify-center gap-2 p-3 rounded-lg border border-slate-200 bg-slate-50">
+<span class="material-symbols-outlined text-slate-400 text-[18px]">verified_user</span>
+<span class="text-xs font-semibold text-slate-600">SOC2 Type II</span>
+</div>
+<div class="flex items-center justify-center gap-2 p-3 rounded-lg border border-slate-200 bg-slate-50">
+<span class="material-symbols-outlined text-slate-400 text-[18px]">shield</span>
+<span class="text-xs font-semibold text-slate-600">ISO 27001</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 px-6 pb-6 relative z-10">
+<div class="rounded-xl bg-slate-900 border border-slate-800 p-6 relative overflow-hidden shadow-floating">
+<div class="absolute -top-10 -right-10 w-40 h-40 bg-blue-600/30 rounded-full blur-3xl"></div>
+<div class="absolute bottom-0 left-0 w-32 h-32 bg-indigo-600/20 rounded-full blur-2xl -ml-10 -mb-10"></div>
+<h3 class="relative text-white font-semibold text-base mb-1.5">Need technical due diligence?</h3>
+<p class="relative text-slate-400 text-xs mb-5 pr-4">Contact our engineering team for deep dives into our architecture.</p>
+<button class="relative w-full py-3 px-4 bg-white hover:bg-slate-50 text-slate-900 text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">mail</span>
+                        Contact Engineering
+                    </button>
+</div>
+</div>
+</div>
+<div class="fixed bottom-0 left-0 right-0 w-full max-w-md mx-auto z-40 bg-white border-t border-slate-200 px-4 pb-6 pt-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<div class="flex justify-between items-center">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 group py-1" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-blue-600 transition-colors">home</span>
+<span class="text-slate-400 text-[10px] font-medium group-hover:text-blue-600 transition-colors">Home</span>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 group py-1" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-blue-600 transition-colors">layers</span>
+<span class="text-slate-400 text-[10px] font-medium group-hover:text-blue-600 transition-colors">Product</span>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 group py-1" href="#">
+<div class="bg-blue-50 rounded-full px-4 py-1 mb-[-4px] border border-blue-100">
+<span class="material-symbols-outlined text-blue-600 text-[22px]">account_tree</span>
+</div>
+<span class="text-blue-600 text-[10px] font-bold mt-1">Architecture</span>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 group py-1" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-blue-600 transition-colors">mail</span>
+<span class="text-slate-400 text-[10px] font-medium group-hover:text-blue-600 transition-colors">Contact</span>
+</a>
+</div>
+</div>
+</div>
+
+</body></html>

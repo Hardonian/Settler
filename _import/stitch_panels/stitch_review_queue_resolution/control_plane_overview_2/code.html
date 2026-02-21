@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Control Plane Overview</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-dark": "#1e2933",
+                        "surface-darker": "#111a22",
+                        "border-dark": "#2a3b4d",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        /* Custom scrollbar for better look in containers */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col overflow-hidden">
+<!-- Main Scrollable Content -->
+<main class="flex-1 overflow-y-auto pb-24 no-scrollbar">
+<!-- Header / Workspace Switcher -->
+<header class="sticky top-0 z-20 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-gray-200 dark:border-border-dark px-4 py-3 flex items-center justify-between">
+<div class="flex items-center gap-2 cursor-pointer group">
+<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[18px]">domain</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider leading-none mb-0.5">Workspace</span>
+<div class="flex items-center gap-1 text-sm font-bold text-slate-900 dark:text-white leading-none">
+                        Acme Corp / Prod
+                        <span class="material-symbols-outlined text-[16px] text-slate-400 group-hover:text-primary transition-colors">expand_more</span>
+</div>
+</div>
+</div>
+<button class="w-9 h-9 rounded-full bg-slate-200 dark:bg-surface-dark border border-gray-300 dark:border-border-dark flex items-center justify-center text-slate-600 dark:text-slate-300 relative">
+<span class="material-symbols-outlined text-[20px]">account_circle</span>
+<span class="absolute top-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white dark:border-surface-dark rounded-full"></span>
+</button>
+</header>
+<!-- Pull to refresh hint -->
+<div class="w-full flex justify-center py-2 opacity-60">
+<div class="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-widest text-slate-400">
+<span class="material-symbols-outlined text-[12px] animate-spin">sync</span>
+                Live Updates
+            </div>
+</div>
+<!-- Critical Alert Banner -->
+<div class="px-4 mb-6">
+<div class="relative overflow-hidden rounded-xl bg-red-500/10 border border-red-500/20 p-4 flex items-start gap-3">
+<div class="bg-red-500/20 rounded-full p-1.5 shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-red-500 text-[20px]">emergency_home</span>
+</div>
+<div class="flex-1">
+<h3 class="text-sm font-bold text-red-600 dark:text-red-400 mb-0.5">CRITICAL ALERT</h3>
+<p class="text-xs text-red-700/80 dark:text-red-300/80 leading-relaxed">Webhook latency &gt; 500ms in EU-West region. Automatic scaling in progress.</p>
+</div>
+<button class="shrink-0 text-red-500 hover:text-red-600 dark:hover:text-red-300">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<!-- System Health Grid -->
+<div class="px-4 mb-8">
+<h2 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                System Health
+                <span class="px-2 py-0.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 text-[10px] font-bold uppercase tracking-wider border border-green-500/20">Stable</span>
+</h2>
+<div class="grid grid-cols-2 gap-3 mb-3">
+<!-- Uptime Card -->
+<div class="bg-white dark:bg-surface-dark rounded-xl p-4 border border-gray-100 dark:border-border-dark flex flex-col justify-between h-[120px] shadow-sm">
+<div class="flex justify-between items-start">
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Uptime (24h)</span>
+<span class="material-symbols-outlined text-primary text-[18px]">activity_zone</span>
+</div>
+<div>
+<div class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">99.98%</div>
+<div class="flex items-center gap-1 mt-1 text-xs font-medium text-green-600 dark:text-green-400">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+                            +0.01%
+                        </div>
+</div>
+</div>
+<!-- Backlog Card -->
+<div class="bg-white dark:bg-surface-dark rounded-xl p-4 border border-gray-100 dark:border-border-dark flex flex-col justify-between h-[120px] shadow-sm">
+<div class="flex justify-between items-start">
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Backlog Queue</span>
+<span class="material-symbols-outlined text-orange-500 text-[18px]">layers</span>
+</div>
+<div>
+<div class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">452</div>
+<div class="flex items-center gap-1 mt-1 text-xs font-medium text-green-600 dark:text-green-400">
+<span class="material-symbols-outlined text-[14px]">trending_down</span>
+                            -12% Items
+                        </div>
+</div>
+</div>
+</div>
+<!-- Anomaly Risk Card -->
+<div class="w-full bg-gradient-to-r from-orange-500/10 to-amber-500/5 dark:from-orange-500/20 dark:to-amber-500/5 rounded-xl p-4 border border-orange-500/20 shadow-sm relative overflow-hidden group">
+<div class="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-orange-500/10 to-transparent"></div>
+<div class="relative z-10 flex items-center justify-between mb-2">
+<span class="text-xs font-bold text-orange-700 dark:text-orange-400 uppercase tracking-wider flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+                        Mismatch Anomaly Risk
+                    </span>
+<span class="material-symbols-outlined text-orange-500 text-[20px]">warning</span>
+</div>
+<div class="relative z-10 flex items-end justify-between">
+<div>
+<div class="text-2xl font-bold text-slate-900 dark:text-white">12 Spikes</div>
+<div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Detected in last 60m</div>
+</div>
+<button class="bg-white dark:bg-background-dark text-slate-900 dark:text-white text-xs font-medium px-3 py-1.5 rounded-lg border border-gray-200 dark:border-border-dark shadow-sm hover:bg-gray-50 dark:hover:bg-surface-dark transition-colors">
+                        View Log
+                    </button>
+</div>
+</div>
+</div>
+<!-- Active Runs Section -->
+<div class="px-4">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-lg font-bold text-slate-900 dark:text-white">Active Runs</h2>
+<button class="text-primary text-sm font-medium hover:text-primary/80 transition-colors">See All (3)</button>
+</div>
+<div class="space-y-3">
+<!-- Run Card 1 -->
+<div class="bg-white dark:bg-surface-dark rounded-xl p-4 border border-gray-100 dark:border-border-dark shadow-sm">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+<span class="material-symbols-outlined">sync</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-slate-900 dark:text-white">Run #8821</h4>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300">Running</span>
+<span class="text-xs text-slate-400">•</span>
+<span class="text-xs text-slate-500 dark:text-slate-400 font-mono">2m 14s</span>
+</div>
+</div>
+</div>
+<button class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-4 py-3 border-t border-dashed border-gray-200 dark:border-border-dark mb-3">
+<div>
+<div class="text-[10px] uppercase text-slate-400 font-semibold tracking-wider mb-1">Volume</div>
+<div class="text-sm font-bold text-slate-900 dark:text-white">$1.2M</div>
+</div>
+<div>
+<div class="text-[10px] uppercase text-slate-400 font-semibold tracking-wider mb-1">Trace ID</div>
+<div class="text-sm font-mono text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                                trc_8a9...b2
+                                <button class="text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 h-9 rounded-lg border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 text-xs font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+                            Abort
+                        </button>
+<button class="flex-1 h-9 rounded-lg bg-slate-100 dark:bg-surface-darker text-slate-700 dark:text-slate-300 text-xs font-medium hover:bg-slate-200 dark:hover:bg-gray-800 transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+                            Details
+                        </button>
+</div>
+</div>
+<!-- Run Card 2 -->
+<div class="bg-white dark:bg-surface-dark rounded-xl p-4 border border-gray-100 dark:border-border-dark shadow-sm">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-amber-500/10 dark:bg-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
+<span class="material-symbols-outlined">replay</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-slate-900 dark:text-white">Run #8820</h4>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300">Retrying</span>
+<span class="text-xs text-slate-400">•</span>
+<span class="text-xs text-slate-500 dark:text-slate-400 font-mono">0m 45s</span>
+</div>
+</div>
+</div>
+<button class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-4 py-3 border-t border-dashed border-gray-200 dark:border-border-dark mb-3">
+<div>
+<div class="text-[10px] uppercase text-slate-400 font-semibold tracking-wider mb-1">Volume</div>
+<div class="text-sm font-bold text-slate-900 dark:text-white">$850K</div>
+</div>
+<div>
+<div class="text-[10px] uppercase text-slate-400 font-semibold tracking-wider mb-1">Trace ID</div>
+<div class="text-sm font-mono text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                                trc_2c4...e1
+                                <button class="text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 h-9 rounded-lg border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 text-xs font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+                            Abort
+                        </button>
+<button class="flex-1 h-9 rounded-lg bg-slate-100 dark:bg-surface-darker text-slate-700 dark:text-slate-300 text-xs font-medium hover:bg-slate-200 dark:hover:bg-gray-800 transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+                            Details
+                        </button>
+</div>
+</div>
+<!-- Run Card 3 -->
+<div class="bg-white dark:bg-surface-dark rounded-xl p-4 border border-gray-100 dark:border-border-dark shadow-sm opacity-70">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-slate-500/10 dark:bg-slate-500/20 flex items-center justify-center text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined">pending</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-slate-900 dark:text-white">Run #8819</h4>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300">Queued</span>
+<span class="text-xs text-slate-400">•</span>
+<span class="text-xs text-slate-500 dark:text-slate-400 font-mono">--:--</span>
+</div>
+</div>
+</div>
+<button class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-4 py-3 border-t border-dashed border-gray-200 dark:border-border-dark mb-3">
+<div>
+<div class="text-[10px] uppercase text-slate-400 font-semibold tracking-wider mb-1">Volume</div>
+<div class="text-sm font-bold text-slate-900 dark:text-white">$3.4M</div>
+</div>
+<div>
+<div class="text-[10px] uppercase text-slate-400 font-semibold tracking-wider mb-1">Trace ID</div>
+<div class="text-sm font-mono text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                                trc_x91...p0
+                                <button class="text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 h-9 rounded-lg bg-slate-100 dark:bg-surface-darker text-slate-700 dark:text-slate-300 text-xs font-medium hover:bg-slate-200 dark:hover:bg-gray-800 transition-colors flex items-center justify-center gap-1 w-full">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+                            Details
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full z-30 bg-white/95 dark:bg-surface-darker/95 backdrop-blur-lg border-t border-gray-200 dark:border-border-dark pb-safe">
+<div class="flex justify-around items-end h-16 pb-2">
+<a class="flex flex-col items-center justify-center w-full gap-1 text-primary" href="#">
+<span class="material-symbols-outlined text-[24px] fill-current">dashboard</span>
+<span class="text-[10px] font-medium">Overview</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">list_alt</span>
+<span class="text-[10px] font-medium">Runs</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">notifications_active</span>
+<span class="text-[10px] font-medium">Alerts</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</a>
+</div>
+</nav>
+</body></html>

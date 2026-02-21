@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>System Recovery Dashboard | Settler</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .status-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex h-auto min-h-screen w-full max-w-md mx-auto flex-col bg-white dark:bg-slate-900 shadow-xl overflow-x-hidden">
+<!-- Header -->
+<div class="flex items-center bg-white dark:bg-slate-900 p-4 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">arrow_back</span>
+</div>
+<div class="flex-1 px-3">
+<p class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Org / Settler-Prod-01</p>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight">System Recovery</h2>
+</div>
+<button class="flex size-10 items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">more_vert</span>
+</button>
+</div>
+<!-- Recovery Progress Section -->
+<div class="flex flex-col gap-4 p-6 bg-slate-50 dark:bg-slate-800/50">
+<div class="flex items-center justify-between">
+<div>
+<p class="text-slate-900 dark:text-white text-2xl font-bold">82% <span class="text-sm font-medium text-slate-500">Restored</span></p>
+<p class="text-slate-500 text-xs font-medium mt-1">Verifying final synchronization clusters</p>
+</div>
+<div class="flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full border border-primary/20">
+<span class="material-symbols-outlined text-sm status-pulse">sync</span>
+<span class="text-[10px] font-bold uppercase tracking-wide">In Progress</span>
+</div>
+</div>
+<div class="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full transition-all duration-1000" style="width: 82%;"></div>
+</div>
+</div>
+<!-- Core Metrics Grid -->
+<div class="p-4">
+<h3 class="text-slate-900 dark:text-white text-sm font-bold uppercase tracking-widest mb-4 px-1">Critical Metrics</h3>
+<div class="grid grid-cols-2 gap-4">
+<div class="flex flex-col gap-2 rounded-xl p-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-primary text-xl">router</span>
+<span class="text-green-600 dark:text-green-400 text-xs font-bold">+12%</span>
+</div>
+<p class="text-slate-500 text-xs font-medium">Connections</p>
+<p class="text-slate-900 dark:text-white text-xl font-bold leading-tight">94.2%</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-primary text-xl">stack</span>
+<span class="text-primary text-xs font-bold">-45%</span>
+</div>
+<p class="text-slate-500 text-xs font-medium">Backlog Queue</p>
+<p class="text-slate-900 dark:text-white text-xl font-bold leading-tight">12.4k</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm col-span-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">verified_user</span>
+<p class="text-slate-500 text-xs font-medium">Sync Integrity Check</p>
+</div>
+<span class="text-green-600 dark:text-green-400 text-xs font-bold">Passed</span>
+</div>
+<div class="flex items-end justify-between pt-1">
+<p class="text-slate-900 dark:text-white text-xl font-bold leading-tight">99.99%</p>
+<p class="text-[10px] text-slate-400">Checksum validated 2m ago</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Recovery Timeline -->
+<div class="p-4 flex-1">
+<h3 class="text-slate-900 dark:text-white text-sm font-bold uppercase tracking-widest mb-4 px-1">Recovery Timeline</h3>
+<div class="space-y-6 pl-2 relative before:content-[''] before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-100 dark:before:bg-slate-800">
+<div class="relative pl-8">
+<div class="absolute left-0 top-1 size-[24px] rounded-full bg-white dark:bg-slate-900 border-2 border-primary flex items-center justify-center z-10">
+<div class="size-2 rounded-full bg-primary status-pulse"></div>
+</div>
+<p class="text-slate-900 dark:text-white text-sm font-semibold">Final Sync Integrity Check</p>
+<p class="text-slate-500 text-xs">In progress • 14:42 UTC</p>
+</div>
+<div class="relative pl-8">
+<div class="absolute left-0 top-1 size-[24px] rounded-full bg-white dark:bg-slate-900 border-2 border-green-500 flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-green-500 text-xs font-bold">check</span>
+</div>
+<p class="text-slate-900 dark:text-white text-sm font-semibold">API Gateway Throttling Lifted</p>
+<p class="text-slate-500 text-xs">Completed • 14:15 UTC</p>
+</div>
+<div class="relative pl-8">
+<div class="absolute left-0 top-1 size-[24px] rounded-full bg-white dark:bg-slate-900 border-2 border-green-500 flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-green-500 text-xs font-bold">check</span>
+</div>
+<p class="text-slate-900 dark:text-white text-sm font-semibold">Database Cluster Re-sync</p>
+<p class="text-slate-500 text-xs">Completed • 13:50 UTC</p>
+</div>
+<div class="relative pl-8">
+<div class="absolute left-0 top-1 size-[24px] rounded-full bg-white dark:bg-slate-900 border-2 border-green-500 flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-green-500 text-xs font-bold">check</span>
+</div>
+<p class="text-slate-900 dark:text-white text-sm font-semibold">Edge Nodes Authentication Online</p>
+<p class="text-slate-500 text-xs">Completed • 13:12 UTC</p>
+</div>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="sticky bottom-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-4 space-y-3">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined">restart_alt</span>
+                Return to Normal Ops
+            </button>
+<a class="w-full text-center block text-slate-500 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors py-2" href="#">
+                View Incident Report (INC-492)
+            </a>
+</div>
+<!-- Navigation Bar Component Modification -->
+<div class="flex gap-2 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-4 pb-6 pt-2">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">dashboard</span>
+</div>
+<p class="text-xs font-medium leading-normal">Dashboard</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">report_problem</span>
+</div>
+<p class="text-xs font-medium leading-normal">Incidents</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">terminal</span>
+</div>
+<p class="text-xs font-medium leading-normal">Logs</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">settings</span>
+</div>
+<p class="text-xs font-medium leading-normal">Settings</p>
+</a>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Trace Explorer Forensics - Settler</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#137fec",
+              "primary-dark": "#0b5cb5",
+              "background-light": "#f6f7f8",
+              "background-dark": "#101922", // Deep charcoal
+              "surface-dark": "#1e2936",    // Slightly lighter for cards
+              "surface-darker": "#151f2b",  // Darker surface
+              "success": "#22c55e",
+              "error": "#ef4444",
+              "warning": "#f59e0b",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"],
+              "mono": ["JetBrains Mono", "monospace"],
+            },
+            borderRadius: {
+              "DEFAULT": "0.375rem", 
+              "lg": "0.5rem", 
+              "xl": "0.75rem", 
+              "2xl": "1rem",
+              "full": "9999px"
+            },
+            boxShadow: {
+              "glow": "0 0 15px rgba(19, 127, 236, 0.3)",
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom scrollbar for dark mode */
+        .dark ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #101922;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #2d3f52;
+            border-radius: 3px;
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #4b6584;
+        }
+        
+        /* Hide scrollbar for clean mobile look but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .timeline-line {
+            background: linear-gradient(to bottom, #137fec 0%, #22c55e 50%, #2d3f52 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display antialiased selection:bg-primary/30">
+<div class="relative min-h-screen w-full flex flex-col mx-auto max-w-md bg-background-light dark:bg-background-dark shadow-2xl overflow-hidden border-x border-slate-200 dark:border-slate-800">
+<!-- Header -->
+<header class="sticky top-0 z-50 backdrop-blur-md bg-background-light/90 dark:bg-background-dark/90 border-b border-slate-200 dark:border-slate-800 px-4 pt-12 pb-3">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<button class="text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight">Trace Explorer</h1>
+</div>
+<button class="text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-white transition-colors relative">
+<span class="material-symbols-outlined text-2xl">notifications</span>
+<span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-error"></span>
+</button>
+</div>
+<!-- Search -->
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="w-full bg-white dark:bg-surface-darker border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent block pl-10 p-2.5 placeholder-slate-400 transition-all shadow-sm" placeholder="Search Trace ID..." type="text" value="8f7a-2b1c"/>
+<div class="absolute inset-y-0 right-0 pr-1.5 flex items-center">
+<button class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-medium px-2 py-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                        Trace ID
+                    </button>
+</div>
+</div>
+<!-- Quick Filters -->
+<div class="flex gap-2 mt-3 overflow-x-auto no-scrollbar pb-1">
+<button class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary dark:text-primary-400 text-xs font-medium rounded-full border border-primary/20">
+<span class="material-symbols-outlined text-[16px]">filter_list</span>
+                    Workspace
+                </button>
+<button class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-surface-dark text-slate-600 dark:text-slate-400 text-xs font-medium rounded-full border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600">
+                    Pipeline
+                </button>
+<button class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-surface-dark text-slate-600 dark:text-slate-400 text-xs font-medium rounded-full border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600">
+                    Date Range
+                </button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto overflow-x-hidden pb-24">
+<!-- Trace Summary Card -->
+<div class="p-4">
+<div class="bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-slate-700/50 shadow-sm relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-50">
+<span class="material-symbols-outlined text-6xl text-slate-100 dark:text-slate-800 -rotate-12">fingerprint</span>
+</div>
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-2">
+<div>
+<p class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Trace ID</p>
+<div class="flex items-center gap-2">
+<h2 class="font-mono text-xl font-bold text-slate-900 dark:text-white">#8f7a-2b1c</h2>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-success/10 text-success border border-success/20">
+<span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+                                Success
+                            </span>
+</div>
+<div class="grid grid-cols-2 gap-4 mt-4">
+<div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Duration</p>
+<p class="text-sm font-semibold text-slate-900 dark:text-slate-200">420ms</p>
+</div>
+<div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Started</p>
+<p class="text-sm font-semibold text-slate-900 dark:text-slate-200">Today, 10:42:15 AM</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline Section -->
+<div class="px-4 pb-2">
+<h3 class="text-sm font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">timeline</span>
+                    Trace Journey
+                </h3>
+<div class="relative pl-3">
+<!-- Vertical Line -->
+<div class="absolute left-[19px] top-2 bottom-6 w-[2px] bg-slate-200 dark:bg-slate-700"></div>
+<!-- Step 1: Sync (Completed) -->
+<div class="relative flex gap-4 mb-6 group">
+<div class="absolute left-[19px] top-8 h-full w-[2px] bg-primary origin-top"></div>
+<div class="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center border-4 border-white dark:border-background-dark shadow-glow">
+<span class="material-symbols-outlined text-white text-[16px]">sync_alt</span>
+</div>
+<div class="flex-1 pt-1">
+<div class="flex justify-between items-center mb-1">
+<h4 class="text-sm font-semibold text-slate-900 dark:text-white">Sync</h4>
+<span class="text-xs font-mono text-slate-500 dark:text-slate-400">45ms</span>
+</div>
+<div class="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-surface-dark/50 rounded p-2 border border-slate-100 dark:border-slate-800">
+                                Source: <span class="font-mono text-primary">Postgres_Primary</span>
+</div>
+</div>
+</div>
+<!-- Step 2: Run (Completed) -->
+<div class="relative flex gap-4 mb-6">
+<div class="absolute left-[19px] top-8 h-full w-[2px] bg-primary origin-top"></div>
+<div class="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center border-4 border-white dark:border-background-dark shadow-glow">
+<span class="material-symbols-outlined text-white text-[16px]">play_arrow</span>
+</div>
+<div class="flex-1 pt-1">
+<div class="flex justify-between items-center mb-1">
+<h4 class="text-sm font-semibold text-slate-900 dark:text-white">Run</h4>
+<span class="text-xs font-mono text-slate-500 dark:text-slate-400">120ms</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400">Executed pipeline <span class="text-slate-700 dark:text-slate-300 font-medium">Daily_Recon_v2</span></p>
+</div>
+</div>
+<!-- Step 3: Rules (Completed) -->
+<div class="relative flex gap-4 mb-6">
+<div class="absolute left-[19px] top-8 h-full w-[2px] bg-success origin-top"></div>
+<div class="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center border-4 border-white dark:border-background-dark shadow-glow">
+<span class="material-symbols-outlined text-white text-[16px]">gavel</span>
+</div>
+<div class="flex-1 pt-1">
+<div class="flex justify-between items-center mb-1">
+<h4 class="text-sm font-semibold text-slate-900 dark:text-white">Rules</h4>
+<span class="text-xs font-mono text-slate-500 dark:text-slate-400">85ms</span>
+</div>
+<div class="flex flex-wrap gap-1">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-success/10 text-success border border-success/20">
+                                    Match: 100%
+                                </span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                                    3 Rules Applied
+                                </span>
+</div>
+</div>
+</div>
+<!-- Step 4: Results (Warning/Attention) -->
+<div class="relative flex gap-4 mb-6">
+<div class="absolute left-[19px] top-8 h-full w-[2px] bg-slate-200 dark:bg-slate-700"></div>
+<div class="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-success flex items-center justify-center border-4 border-white dark:border-background-dark">
+<span class="material-symbols-outlined text-white text-[16px]">check_circle</span>
+</div>
+<div class="flex-1 pt-1">
+<div class="flex justify-between items-center mb-1">
+<h4 class="text-sm font-semibold text-slate-900 dark:text-white">Results</h4>
+<span class="text-xs font-mono text-slate-500 dark:text-slate-400">150ms</span>
+</div>
+<div class="bg-surface-darker rounded-lg p-2 font-mono text-[10px] text-slate-300 border border-slate-700 overflow-x-auto">
+<pre>{"status": "ok", "matched": 452, "unmatched": 0}</pre>
+</div>
+</div>
+</div>
+<!-- Step 5: Review (Pending) -->
+<div class="relative flex gap-4 mb-6">
+<div class="absolute left-[19px] top-8 h-full w-[2px] bg-slate-200 dark:bg-slate-700"></div>
+<div class="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-surface-dark border border-slate-300 dark:border-slate-600 flex items-center justify-center border-4 border-white dark:border-background-dark">
+<span class="material-symbols-outlined text-slate-400 text-[16px]">visibility</span>
+</div>
+<div class="flex-1 pt-1 opacity-60">
+<h4 class="text-sm font-semibold text-slate-900 dark:text-white">Review</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400">Auto-approved based on rules</p>
+</div>
+</div>
+<!-- Step 6: Artifacts -->
+<div class="relative flex gap-4">
+<div class="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-surface-dark border border-slate-300 dark:border-slate-600 flex items-center justify-center border-4 border-white dark:border-background-dark">
+<span class="material-symbols-outlined text-slate-400 text-[16px]">description</span>
+</div>
+<div class="flex-1 pt-1 opacity-60">
+<h4 class="text-sm font-semibold text-slate-900 dark:text-white">Artifacts</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400">Generated 2 reports</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Related Objects -->
+<div class="p-4 mt-2">
+<h3 class="text-sm font-semibold text-slate-900 dark:text-white mb-3">Context &amp; Relations</h3>
+<div class="grid grid-cols-2 gap-3">
+<!-- Card 1 -->
+<div class="bg-white dark:bg-surface-dark p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-primary/50 transition-colors cursor-pointer">
+<div class="flex items-center gap-2 mb-2">
+<div class="w-6 h-6 rounded bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[16px]">database</span>
+</div>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Connection</span>
+</div>
+<p class="text-sm font-bold text-slate-900 dark:text-white truncate">Postgres_Primary</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+<span class="text-[10px] text-slate-500">Active</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white dark:bg-surface-dark p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-primary/50 transition-colors cursor-pointer">
+<div class="flex items-center gap-2 mb-2">
+<div class="w-6 h-6 rounded bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[16px]">hub</span>
+</div>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Pipeline</span>
+</div>
+<p class="text-sm font-bold text-slate-900 dark:text-white truncate">Daily_Recon_v2</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+<span class="text-[10px] text-slate-500">v2.1.0</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Raw Data Preview -->
+<div class="px-4 pb-4">
+<div class="flex justify-between items-center mb-3">
+<h3 class="text-sm font-semibold text-slate-900 dark:text-white">Payload Preview</h3>
+<button class="text-primary text-xs font-medium hover:underline">View Full Log</button>
+</div>
+<div class="bg-slate-900 rounded-lg p-3 border border-slate-700 font-mono text-xs text-slate-300 overflow-hidden relative">
+<div class="absolute top-2 right-2 flex gap-1">
+<span class="w-2 h-2 rounded-full bg-red-500/50"></span>
+<span class="w-2 h-2 rounded-full bg-yellow-500/50"></span>
+<span class="w-2 h-2 rounded-full bg-green-500/50"></span>
+</div>
+<pre class="overflow-x-auto no-scrollbar">{
+  "trace_id": "8f7a-2b1c",
+  "timestamp": "2023-10-27T10:42:15Z",
+  "source": "api_gateway",
+  "meta": {
+    "region": "us-east-1",
+    "retry_count": 0
+  },
+  "data": {
+    "records_processed": 1500,
+    "discrepancies": []
+  }
+}
+</pre>
+<div class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-slate-900 to-transparent pointer-events-none"></div>
+</div>
+</div>
+<!-- Bottom Spacer -->
+<div class="h-6"></div>
+</main>
+<!-- Floating Action Button -->
+<div class="absolute bottom-20 right-4 z-40">
+<button class="bg-primary hover:bg-primary-dark text-white rounded-full p-4 shadow-lg shadow-primary/40 transition-transform active:scale-95 flex items-center justify-center">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+<!-- Bottom Navigation Bar -->
+<nav class="absolute bottom-0 w-full bg-white/80 dark:bg-[#192633]/90 backdrop-blur-md border-t border-slate-200 dark:border-[#233648] pb-safe z-50">
+<div class="flex justify-around items-center h-16 px-2">
+<a class="flex flex-col items-center justify-center w-full h-full space-y-1 group" href="#">
+<span class="material-symbols-outlined text-[#92adc9] group-hover:text-primary text-[24px] transition-colors">home</span>
+<span class="text-[10px] font-medium text-[#92adc9] group-hover:text-primary transition-colors">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full space-y-1 group" href="#">
+<div class="relative">
+<span class="material-symbols-outlined text-primary text-[24px]">search</span>
+<span class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full"></span>
+</div>
+<span class="text-[10px] font-medium text-white">Traces</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full space-y-1 group" href="#">
+<span class="material-symbols-outlined text-[#92adc9] group-hover:text-primary text-[24px] transition-colors">notifications</span>
+<span class="text-[10px] font-medium text-[#92adc9] group-hover:text-primary transition-colors">Alerts</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full space-y-1 group" href="#">
+<span class="material-symbols-outlined text-[#92adc9] group-hover:text-primary text-[24px] transition-colors">settings</span>
+<span class="text-[10px] font-medium text-[#92adc9] group-hover:text-primary transition-colors">Settings</span>
+</a>
+</div>
+</nav>
+</div>
+</body></html>

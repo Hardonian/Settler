@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Internal Glossary (Dark)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-dark": "#192633",
+                        "border-dark": "#233648",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
+<div class="relative flex flex-col h-full min-h-screen max-w-md mx-auto bg-background-light dark:bg-background-dark border-x dark:border-border-dark shadow-2xl">
+<!-- Header -->
+<header class="sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b dark:border-border-dark px-4 pt-12 pb-4">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Glossary Mapping</h1>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Settler Control Plane</p>
+</div>
+<button class="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+<!-- Search Bar -->
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 group-focus-within:text-primary transition-colors">search</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-3 rounded-lg border-none bg-slate-200 dark:bg-surface-dark text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-primary focus:bg-white dark:focus:bg-surface-dark transition-all text-sm" placeholder="Search terms (e.g. DAG, Worker)..." type="text"/>
+</div>
+</header>
+<!-- Content List -->
+<main class="flex-1 px-4 py-6 space-y-4">
+<!-- List Item 1 -->
+<div class="group relative flex flex-col bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-border-dark shadow-sm hover:border-primary/50 dark:hover:border-primary/50 transition-all cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<div class="px-2.5 py-1 rounded bg-slate-100 dark:bg-background-dark border border-slate-200 dark:border-border-dark text-xs font-mono font-medium text-slate-600 dark:text-slate-300">
+                            DAG
+                        </div>
+<span class="material-symbols-outlined text-slate-400 text-[16px]">arrow_right_alt</span>
+<div class="px-2.5 py-1 rounded bg-primary/10 border border-primary/20 text-xs font-medium text-primary dark:text-primary">
+                            Pipeline
+                        </div>
+</div>
+<button class="text-slate-400 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+<div class="mb-3">
+<p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                        Directed Acyclic Graph definitions used for orchestration logic.
+                    </p>
+</div>
+<div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700/50">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span class="text-xs text-slate-500 dark:text-slate-400">Active</span>
+</div>
+<span class="text-xs text-slate-400 dark:text-slate-500">Edited 2h ago</span>
+</div>
+</div>
+<!-- List Item 2 -->
+<div class="group relative flex flex-col bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-border-dark shadow-sm hover:border-primary/50 dark:hover:border-primary/50 transition-all cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<div class="px-2.5 py-1 rounded bg-slate-100 dark:bg-background-dark border border-slate-200 dark:border-border-dark text-xs font-mono font-medium text-slate-600 dark:text-slate-300">
+                            Worker_Node
+                        </div>
+<span class="material-symbols-outlined text-slate-400 text-[16px]">arrow_right_alt</span>
+<div class="px-2.5 py-1 rounded bg-primary/10 border border-primary/20 text-xs font-medium text-primary dark:text-primary">
+                            Runner
+                        </div>
+</div>
+<button class="text-slate-400 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+<div class="mb-3">
+<p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                        The compute instance that executes individual steps.
+                    </p>
+</div>
+<div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700/50">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span class="text-xs text-slate-500 dark:text-slate-400">Active</span>
+</div>
+<span class="text-xs text-slate-400 dark:text-slate-500">Edited 5h ago</span>
+</div>
+</div>
+<!-- List Item 3 -->
+<div class="group relative flex flex-col bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-border-dark shadow-sm hover:border-primary/50 dark:hover:border-primary/50 transition-all cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<div class="px-2.5 py-1 rounded bg-slate-100 dark:bg-background-dark border border-slate-200 dark:border-border-dark text-xs font-mono font-medium text-slate-600 dark:text-slate-300">
+                            Ledger_Entry
+                        </div>
+<span class="material-symbols-outlined text-slate-400 text-[16px]">arrow_right_alt</span>
+<div class="px-2.5 py-1 rounded bg-primary/10 border border-primary/20 text-xs font-medium text-primary dark:text-primary">
+                            Transaction
+                        </div>
+</div>
+<button class="text-slate-400 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+<div class="mb-3">
+<p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                        Core immutable record of funds movement.
+                    </p>
+</div>
+<div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700/50">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+<span class="text-xs text-slate-500 dark:text-slate-400">Deprecated</span>
+</div>
+<span class="text-xs text-slate-400 dark:text-slate-500">Edited 1d ago</span>
+</div>
+</div>
+<!-- List Item 4 -->
+<div class="group relative flex flex-col bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-border-dark shadow-sm hover:border-primary/50 dark:hover:border-primary/50 transition-all cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<div class="px-2.5 py-1 rounded bg-slate-100 dark:bg-background-dark border border-slate-200 dark:border-border-dark text-xs font-mono font-medium text-slate-600 dark:text-slate-300">
+                            Recon_ID
+                        </div>
+<span class="material-symbols-outlined text-slate-400 text-[16px]">arrow_right_alt</span>
+<div class="px-2.5 py-1 rounded bg-primary/10 border border-primary/20 text-xs font-medium text-primary dark:text-primary">
+                            Match_Key
+                        </div>
+</div>
+<button class="text-slate-400 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+<div class="mb-3">
+<p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                        Unique identifier for matching external bank records.
+                    </p>
+</div>
+<div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700/50">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span class="text-xs text-slate-500 dark:text-slate-400">Active</span>
+</div>
+<span class="text-xs text-slate-400 dark:text-slate-500">Edited 3d ago</span>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation -->
+<nav class="sticky bottom-0 z-20 bg-background-light/95 dark:bg-surface-dark/95 backdrop-blur-md border-t dark:border-border-dark pb-6 pt-2 px-6">
+<div class="flex justify-between items-center">
+<a class="flex flex-col items-center gap-1 group" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">home</span>
+<span class="text-[10px] font-medium text-slate-400 group-hover:text-primary transition-colors">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 group" href="#">
+<span class="material-symbols-outlined text-primary fill-current">table_chart</span>
+<span class="text-[10px] font-medium text-primary">Glossary</span>
+</a>
+<a class="flex flex-col items-center gap-1 group" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">settings</span>
+<span class="text-[10px] font-medium text-slate-400 group-hover:text-primary transition-colors">Settings</span>
+</a>
+<a class="flex flex-col items-center gap-1 group" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">account_circle</span>
+<span class="text-[10px] font-medium text-slate-400 group-hover:text-primary transition-colors">Profile</span>
+</a>
+</div>
+</nav>
+</div>
+</body></html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Workspace Onboarding</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hide for cleaner mobile look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex justify-center">
+<div class="w-full max-w-md bg-background-light dark:bg-background-dark flex flex-col min-h-screen relative overflow-hidden shadow-2xl">
+<!-- Header -->
+<header class="flex items-center justify-between p-4 pb-2 bg-background-light dark:bg-background-dark sticky top-0 z-10">
+<button class="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h2 class="text-slate-900 dark:text-white text-base font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Setup Workspace</h2>
+<button class="flex w-12 items-center justify-end text-slate-500 dark:text-slate-400 text-sm font-medium hover:text-slate-900 dark:hover:text-white transition-colors">
+                Cancel
+            </button>
+</header>
+<!-- Progress Stepper -->
+<div class="px-6 py-4">
+<div class="flex items-center justify-between relative">
+<!-- Line background -->
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-0.5 bg-slate-200 dark:bg-slate-800 -z-0"></div>
+<!-- Step 1 (Active) -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ring-4 ring-background-light dark:ring-background-dark">
+<span class="material-symbols-outlined text-white text-[16px]">domain</span>
+</div>
+<span class="text-xs font-semibold text-primary absolute -bottom-6 w-20 text-center">Identity</span>
+</div>
+<!-- Step 2 -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 flex items-center justify-center ring-4 ring-background-light dark:ring-background-dark">
+<span class="material-symbols-outlined text-[16px]">hub</span>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 flex items-center justify-center ring-4 ring-background-light dark:ring-background-dark">
+<span class="material-symbols-outlined text-[16px]">security</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Scrollable Content -->
+<main class="flex-1 overflow-y-auto px-6 pb-24 no-scrollbar">
+<!-- Hero Text -->
+<div class="py-6">
+<h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">Name your workspace</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                    This will be the unique identifier for your team. Choose a name that represents your organization or project scope.
+                </p>
+</div>
+<!-- Form Section -->
+<div class="flex flex-col gap-6">
+<!-- Workspace Name Input -->
+<div class="space-y-2">
+<label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="workspace-name">
+                        Workspace Name
+                    </label>
+<div class="relative">
+<input class="block w-full rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-[#192633] text-slate-900 dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm py-3 px-4 placeholder:text-slate-400 dark:placeholder:text-slate-600" id="workspace-name" placeholder="e.g. Acme Production" type="text" value="Settler Corp"/>
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+<span class="material-symbols-outlined text-green-500 text-lg">check_circle</span>
+</div>
+</div>
+</div>
+<!-- Slug Preview -->
+<div class="p-4 rounded-lg bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex flex-col gap-1">
+<span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">URL Preview</span>
+<div class="flex items-center gap-1 text-sm font-mono text-slate-600 dark:text-slate-400 overflow-x-hidden whitespace-nowrap">
+<span class="opacity-50">app.settler.io/w/</span><span class="text-primary font-bold">settler-corp</span>
+</div>
+</div>
+<!-- Organization Scale -->
+<div class="space-y-3 pt-2">
+<div class="flex items-center justify-between">
+<label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                            Environment Scale
+                        </label>
+<button class="text-primary hover:text-primary/80 transition-colors">
+<span class="material-symbols-outlined text-lg">info</span>
+</button>
+</div>
+<div class="grid grid-cols-1 gap-3">
+<!-- Option 1: Selected -->
+<label class="relative flex cursor-pointer rounded-lg border border-primary bg-primary/10 p-4 shadow-sm focus:outline-none ring-1 ring-primary">
+<input checked="" class="sr-only" name="scale" type="radio" value="production"/>
+<span class="flex flex-1">
+<span class="flex flex-col">
+<span class="block text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">rocket_launch</span>
+                                        Production
+                                    </span>
+<span class="mt-1 flex items-center text-xs text-slate-500 dark:text-slate-400">
+                                        High availability, full redundancy.
+                                    </span>
+</span>
+</span>
+<span aria-hidden="true" class="material-symbols-outlined text-primary">radio_button_checked</span>
+</label>
+<!-- Option 2 -->
+<label class="relative flex cursor-pointer rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#192633] p-4 shadow-sm focus:outline-none hover:border-slate-300 dark:hover:border-slate-600 transition-all">
+<input class="sr-only" name="scale" type="radio" value="staging"/>
+<span class="flex flex-1">
+<span class="flex flex-col">
+<span class="block text-sm font-medium text-slate-900 dark:text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-400 text-lg">science</span>
+                                        Staging / Test
+                                    </span>
+<span class="mt-1 flex items-center text-xs text-slate-500 dark:text-slate-400">
+                                        For development and testing purposes.
+                                    </span>
+</span>
+</span>
+<span aria-hidden="true" class="material-symbols-outlined text-slate-400 dark:text-slate-600">radio_button_unchecked</span>
+</label>
+</div>
+</div>
+<!-- Info Note -->
+<div class="flex gap-3 bg-blue-500/10 p-3 rounded-lg border border-blue-500/20">
+<span class="material-symbols-outlined text-primary shrink-0 mt-0.5" style="font-size: 20px;">info</span>
+<p class="text-xs text-slate-600 dark:text-slate-300 leading-normal">
+                        Your workspace name cannot be changed after creation. Please ensure it aligns with your internal naming conventions.
+                    </p>
+</div>
+</div>
+</main>
+<!-- Bottom Action Bar -->
+<div class="absolute bottom-0 left-0 w-full p-4 bg-background-light dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 flex flex-col gap-3 backdrop-blur-xl bg-opacity-90 dark:bg-opacity-90">
+<button class="w-full bg-primary hover:bg-blue-600 text-white font-semibold py-3.5 px-4 rounded-lg shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                Continue to Connection
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</body></html>

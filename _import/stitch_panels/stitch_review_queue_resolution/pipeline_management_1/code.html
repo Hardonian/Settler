@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pipeline Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Hide scrollbar for chrome/safari/opera */
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+          -ms-overflow-style: none;  /* IE and Edge */
+          scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header & Workspace Selector -->
+<header class="sticky top-0 z-20 flex flex-col bg-background-light dark:bg-background-dark border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center justify-between px-4 py-3">
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined text-[20px]">menu</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight">Pipelines</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="relative p-2 text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-[#101922]"></span>
+</button>
+<div class="h-8 w-8 rounded-full bg-gradient-to-tr from-primary to-blue-400 flex items-center justify-center text-white text-xs font-bold">JD</div>
+</div>
+</div>
+<!-- Workspace Selector -->
+<div class="px-4 pb-3">
+<button class="flex w-full items-center justify-between rounded-xl bg-white dark:bg-[#192633] border border-slate-200 dark:border-slate-700 p-3 shadow-sm active:scale-[0.99] transition-transform">
+<div class="flex items-center gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[24px]">domain</span>
+</div>
+<div class="flex flex-col items-start">
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Workspace</span>
+<span class="text-sm font-semibold text-slate-900 dark:text-white">Production - US East</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400">expand_more</span>
+</button>
+</div>
+<!-- Quick Stats -->
+<div class="flex gap-4 px-4 pb-4 overflow-x-auto no-scrollbar">
+<div class="flex flex-col gap-1 min-w-[100px]">
+<span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Active</span>
+<span class="text-xl font-bold text-slate-900 dark:text-white">12</span>
+</div>
+<div class="h-8 w-[1px] bg-slate-200 dark:bg-slate-700 self-center"></div>
+<div class="flex flex-col gap-1 min-w-[100px]">
+<span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Error Rate</span>
+<span class="text-xl font-bold text-red-500">0.4%</span>
+</div>
+<div class="h-8 w-[1px] bg-slate-200 dark:bg-slate-700 self-center"></div>
+<div class="flex flex-col gap-1 min-w-[100px]">
+<span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Throughput</span>
+<span class="text-xl font-bold text-slate-900 dark:text-white">45k/s</span>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 px-4 py-4 pb-24 space-y-4">
+<!-- Search/Filter -->
+<div class="flex gap-2">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full rounded-lg bg-white dark:bg-[#192633] border border-slate-200 dark:border-slate-700 py-2.5 pl-10 pr-4 text-sm text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-slate-400 outline-none transition-all" placeholder="Search pipelines..." type="text"/>
+</div>
+<button class="flex items-center justify-center rounded-lg bg-white dark:bg-[#192633] border border-slate-200 dark:border-slate-700 px-3 text-slate-500 dark:text-slate-400 hover:text-primary hover:border-primary dark:hover:text-primary transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+<!-- Pipeline List -->
+<div class="flex flex-col gap-3">
+<!-- Pipeline Item 1: Active/Healthy -->
+<div class="group relative overflow-hidden rounded-xl bg-white dark:bg-[#192633] border border-slate-200 dark:border-slate-700 p-4 shadow-sm transition-all hover:border-primary/50">
+<div class="flex items-start justify-between mb-3">
+<div class="flex items-center gap-3">
+<div class="relative flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10 text-green-500">
+<span class="material-symbols-outlined">sync</span>
+<span class="absolute -right-1 -top-1 flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+</span>
+</div>
+<div>
+<h3 class="font-semibold text-slate-900 dark:text-white text-sm">payment_reconciliation_v2</h3>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="inline-flex items-center rounded-md bg-green-500/10 px-2 py-0.5 text-xs font-medium text-green-500 ring-1 ring-inset ring-green-500/20">Healthy</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">• 2m ago</span>
+</div>
+</div>
+</div>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-3">
+<div class="flex flex-col gap-1">
+<span class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Input</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">input</span>
+<span class="text-xs text-slate-700 dark:text-slate-300 truncate">Stripe Connect</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Output</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-purple-400">webhook</span>
+<span class="text-xs text-slate-700 dark:text-slate-300 truncate">S3: settled-trans</span>
+</div>
+</div>
+</div>
+<div class="flex items-end justify-between border-t border-slate-100 dark:border-slate-800 pt-3 mt-1">
+<div class="flex flex-col gap-1 w-full mr-4">
+<span class="text-[10px] text-slate-400">Error Trend (24h)</span>
+<!-- Sparkline (SVG) -->
+<svg class="h-6 w-full text-green-500 stroke-current" fill="none" preserveaspectratio="none" viewbox="0 0 100 20">
+<path d="M0 10 Q 10 15, 20 10 T 40 10 T 60 5 T 80 12 T 100 8" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="flex gap-2 shrink-0">
+<button class="flex items-center justify-center h-8 px-3 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                                History
+                            </button>
+<button class="flex items-center justify-center h-8 px-3 rounded-lg bg-primary/10 text-xs font-medium text-primary hover:bg-primary/20 transition-colors gap-1">
+<span class="material-symbols-outlined text-[14px]">terminal</span>
+                                Config
+                            </button>
+</div>
+</div>
+</div>
+<!-- Pipeline Item 2: Failed/Critical -->
+<div class="group relative overflow-hidden rounded-xl bg-white dark:bg-[#192633] border border-red-200 dark:border-red-900/30 p-4 shadow-sm transition-all">
+<div class="absolute inset-y-0 left-0 w-1 bg-red-500"></div>
+<div class="flex items-start justify-between mb-3 pl-2">
+<div class="flex items-center gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-red-500/10 text-red-500">
+<span class="material-symbols-outlined">warning</span>
+</div>
+<div>
+<h3 class="font-semibold text-slate-900 dark:text-white text-sm">ledger_sync_daily</h3>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="inline-flex items-center rounded-md bg-red-500/10 px-2 py-0.5 text-xs font-medium text-red-500 ring-1 ring-inset ring-red-500/20">Critical</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">• 15m ago</span>
+</div>
+</div>
+</div>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-3 pl-2">
+<div class="flex flex-col gap-1">
+<span class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Input</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">database</span>
+<span class="text-xs text-slate-700 dark:text-slate-300 truncate">Postgres DB</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Output</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-orange-400">api</span>
+<span class="text-xs text-slate-700 dark:text-slate-300 truncate">Internal API</span>
+</div>
+</div>
+</div>
+<div class="flex items-end justify-between border-t border-slate-100 dark:border-slate-800 pt-3 mt-1 pl-2">
+<div class="flex flex-col gap-1 w-full mr-4">
+<span class="text-[10px] text-slate-400">Error Trend (24h)</span>
+<svg class="h-6 w-full text-red-500 stroke-current" fill="none" preserveaspectratio="none" viewbox="0 0 100 20">
+<path d="M0 18 Q 20 18, 40 10 T 60 5 L 80 15 L 100 2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="flex gap-2 shrink-0">
+<button class="flex items-center justify-center h-8 px-3 rounded-lg bg-primary text-xs font-medium text-white shadow-sm hover:bg-blue-600 transition-colors gap-1">
+<span class="material-symbols-outlined text-[14px]">build</span>
+                                Fix
+                            </button>
+</div>
+</div>
+</div>
+<!-- Pipeline Item 3: Paused -->
+<div class="group relative overflow-hidden rounded-xl bg-white dark:bg-[#192633] border border-slate-200 dark:border-slate-700 p-4 shadow-sm opacity-75 hover:opacity-100 transition-all">
+<div class="flex items-start justify-between mb-3">
+<div class="flex items-center gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined">pause_circle</span>
+</div>
+<div>
+<h3 class="font-semibold text-slate-900 dark:text-white text-sm">fraud_detection_stream</h3>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="inline-flex items-center rounded-md bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400 ring-1 ring-inset ring-slate-500/10">Paused</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">• 4h ago</span>
+</div>
+</div>
+</div>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3 mt-3">
+<span class="text-xs text-slate-500 italic">Configuration frozen at v1.2.0</span>
+<button class="text-primary hover:text-primary/80 text-xs font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">play_arrow</span> Resume
+                        </button>
+</div>
+</div>
+<!-- Pipeline Item 4: Active/Degraded -->
+<div class="group relative overflow-hidden rounded-xl bg-white dark:bg-[#192633] border border-slate-200 dark:border-slate-700 p-4 shadow-sm transition-all hover:border-primary/50">
+<div class="flex items-start justify-between mb-3">
+<div class="flex items-center gap-3">
+<div class="relative flex h-10 w-10 items-center justify-center rounded-lg bg-yellow-500/10 text-yellow-500">
+<span class="material-symbols-outlined">troubleshoot</span>
+</div>
+<div>
+<h3 class="font-semibold text-slate-900 dark:text-white text-sm">inventory_aggregator</h3>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="inline-flex items-center rounded-md bg-yellow-500/10 px-2 py-0.5 text-xs font-medium text-yellow-500 ring-1 ring-inset ring-yellow-500/20">Degraded</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">• 5m ago</span>
+</div>
+</div>
+</div>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="flex items-end justify-between border-t border-slate-100 dark:border-slate-800 pt-3 mt-1">
+<div class="flex flex-col gap-1 w-full mr-4">
+<span class="text-[10px] text-slate-400">Error Trend (24h)</span>
+<svg class="h-6 w-full text-yellow-500 stroke-current" fill="none" preserveaspectratio="none" viewbox="0 0 100 20">
+<path d="M0 15 Q 15 15, 25 10 T 50 12 T 75 5 T 100 8" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="flex gap-2 shrink-0">
+<button class="flex items-center justify-center h-8 px-3 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                                History
+                            </button>
+<button class="flex items-center justify-center h-8 px-3 rounded-lg bg-primary/10 text-xs font-medium text-primary hover:bg-primary/20 transition-colors gap-1">
+<span class="material-symbols-outlined text-[14px]">terminal</span>
+                                Config
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-20 right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg hover:bg-blue-600 transition-all active:scale-95">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</button>
+<!-- Detail Sheet / Bottom Drawer (Simulated) -->
+<div class="fixed inset-x-0 bottom-0 z-40 transform rounded-t-3xl bg-background-light dark:bg-[#111a22] border-t border-slate-200 dark:border-slate-800 shadow-2xl transition-transform translate-y-[calc(100%-80px)] hover:translate-y-0 group">
+<!-- Drag Handle -->
+<div class="flex w-full justify-center pt-3 pb-1 cursor-grab">
+<div class="h-1.5 w-12 rounded-full bg-slate-300 dark:bg-slate-600"></div>
+</div>
+<div class="flex flex-col h-[85vh] overflow-y-auto px-5 pb-6">
+<!-- Header (Visible when collapsed) -->
+<div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800/50">
+<div class="flex flex-col">
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Selected Pipeline</span>
+<h2 class="text-lg font-bold text-slate-900 dark:text-white mt-1">payment_reconciliation_v2</h2>
+</div>
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center rounded-md bg-green-500/10 px-2 py-1 text-xs font-medium text-green-500 ring-1 ring-inset ring-green-500/20">Running</span>
+<div aria-checked="true" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-primary transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" role="switch">
+<span class="sr-only">Use setting</span>
+<span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-5"></span>
+</div>
+</div>
+</div>
+<!-- Detail Content -->
+<div class="space-y-6 pt-6 opacity-40 group-hover:opacity-100 transition-opacity duration-300">
+<!-- Stats Grid -->
+<div class="grid grid-cols-2 gap-3">
+<div class="rounded-xl bg-white dark:bg-[#192633] p-3 border border-slate-200 dark:border-slate-700">
+<div class="text-slate-500 dark:text-slate-400 text-xs mb-1">Latency (P99)</div>
+<div class="text-lg font-bold dark:text-white">245ms</div>
+</div>
+<div class="rounded-xl bg-white dark:bg-[#192633] p-3 border border-slate-200 dark:border-slate-700">
+<div class="text-slate-500 dark:text-slate-400 text-xs mb-1">Processed</div>
+<div class="text-lg font-bold dark:text-white">1.2M</div>
+</div>
+</div>
+<!-- Flow Visualization -->
+<div class="rounded-xl bg-white dark:bg-[#192633] p-4 border border-slate-200 dark:border-slate-700 flex flex-col items-center gap-4 relative">
+<!-- Connecting Line -->
+<div class="absolute left-[24px] top-8 bottom-8 w-0.5 bg-slate-200 dark:bg-slate-700"></div>
+<!-- Step 1 -->
+<div class="relative w-full flex items-center gap-4 z-10">
+<div class="h-12 w-12 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-500 shrink-0 bg-white dark:bg-[#192633]">
+<span class="material-symbols-outlined">input</span>
+</div>
+<div class="flex-1">
+<h4 class="text-sm font-semibold text-slate-900 dark:text-white">Stripe Connect</h4>
+<p class="text-xs text-slate-500">Source: API v2</p>
+</div>
+<button class="text-slate-400">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+<!-- Step 2 -->
+<div class="relative w-full flex items-center gap-4 z-10">
+<div class="h-12 w-12 rounded-full bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-500 shrink-0 bg-white dark:bg-[#192633]">
+<span class="material-symbols-outlined">transform</span>
+</div>
+<div class="flex-1">
+<h4 class="text-sm font-semibold text-slate-900 dark:text-white">Normalization</h4>
+<p class="text-xs text-slate-500">Map: standard_currency</p>
+</div>
+<button class="text-slate-400">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+<!-- Step 3 -->
+<div class="relative w-full flex items-center gap-4 z-10">
+<div class="h-12 w-12 rounded-full bg-green-500/10 border border-green-500/30 flex items-center justify-center text-green-500 shrink-0 bg-white dark:bg-[#192633]">
+<span class="material-symbols-outlined">output</span>
+</div>
+<div class="flex-1">
+<h4 class="text-sm font-semibold text-slate-900 dark:text-white">S3 Bucket</h4>
+<p class="text-xs text-slate-500">Destination: settled-trans</p>
+</div>
+<button class="text-slate-400">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+</div>
+<!-- Config as Code Action -->
+<div class="flex flex-col gap-3">
+<h3 class="text-sm font-semibold text-slate-900 dark:text-white">Configuration</h3>
+<button class="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg hover:bg-blue-600 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined">commit</span>
+                            Generate Patch / Open PR
+                        </button>
+<p class="text-xs text-center text-slate-500 px-4">This will generate a Terraform configuration patch based on current settings and open a PR in your connected repository.</p>
+</div>
+<!-- Version History -->
+<div class="flex flex-col gap-3 pt-2">
+<h3 class="text-sm font-semibold text-slate-900 dark:text-white">Deployment History</h3>
+<div class="flex flex-col rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#192633] divide-y divide-slate-100 dark:divide-slate-800">
+<!-- History Item 1 -->
+<div class="flex items-center justify-between p-3">
+<div class="flex items-center gap-3">
+<div class="h-2 w-2 rounded-full bg-green-500"></div>
+<div class="flex flex-col">
+<span class="text-sm font-medium text-slate-900 dark:text-white">v1.4.2</span>
+<span class="text-xs text-slate-500">Deployed by @jdoe</span>
+</div>
+</div>
+<span class="text-xs font-mono text-slate-400">2d ago</span>
+</div>
+<!-- History Item 2 -->
+<div class="flex items-center justify-between p-3">
+<div class="flex items-center gap-3">
+<div class="h-2 w-2 rounded-full bg-slate-400"></div>
+<div class="flex flex-col">
+<span class="text-sm font-medium text-slate-900 dark:text-white">v1.4.1</span>
+<span class="text-xs text-slate-500">Rolled back (Auto)</span>
+</div>
+</div>
+<span class="text-xs font-mono text-slate-400">5d ago</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Nav Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-50 flex border-t border-[#233648] bg-[#192633] px-4 pb-5 pt-2">
+<a class="just flex flex-1 flex-col items-center justify-end gap-1 text-[#92adc9] hover:text-white transition-colors" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">home</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Home</p>
+</a>
+<a class="just flex flex-1 flex-col items-center justify-end gap-1 rounded-full text-white" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined text-primary">cloud_done</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em] text-primary">Pipelines</p>
+</a>
+<a class="just flex flex-1 flex-col items-center justify-end gap-1 text-[#92adc9] hover:text-white transition-colors" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">notifications</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Alerts</p>
+</a>
+<a class="just flex flex-1 flex-col items-center justify-end gap-1 text-[#92adc9] hover:text-white transition-colors" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">settings</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Settings</p>
+</a>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settler | Unlock Sequence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between p-4 border-b border-primary/10 bg-background-light dark:bg-background-dark">
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-primary/10 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-slate-900 dark:text-slate-100">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight">System Freeze Lift</h1>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded">SETTLER SECURE NODE #042</span>
+<span class="material-symbols-outlined text-primary">verified_user</span>
+</div>
+</header>
+<main class="max-w-2xl mx-auto p-6 space-y-8">
+<!-- Status Header -->
+<section class="text-center space-y-3 py-6">
+<div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-2">
+<span class="material-symbols-outlined text-4xl text-primary">lock_open</span>
+</div>
+<h2 class="text-3xl font-bold tracking-tight">System Freeze Lift Initiated</h2>
+<div class="flex flex-col items-center gap-1">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-widest">Protocol: Omega-4</p>
+<p class="text-slate-400 dark:text-slate-500 text-xs font-mono">Timestamp: 2023-10-27 14:32:11 UTC</p>
+</div>
+</section>
+<!-- Progress Indicator -->
+<section class="bg-primary/5 border border-primary/20 rounded-xl p-6 space-y-4">
+<div class="flex justify-between items-end">
+<div>
+<p class="text-sm font-semibold text-primary uppercase">Authorization Status</p>
+<p class="text-2xl font-bold">1 of 2 Signatures Received</p>
+</div>
+<p class="text-sm font-medium text-slate-400">50% Complete</p>
+</div>
+<div class="w-full h-3 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-1/2 shadow-[0_0_10px_rgba(19,127,236,0.5)]"></div>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">info</span>
+                Secondary signature required from a level-4 security officer.
+            </p>
+</section>
+<!-- Reason Summary -->
+<section class="space-y-3">
+<h3 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 px-1">Reason for Unlock</h3>
+<div class="bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-lg p-4">
+<p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+                    Emergency reconciliation required for Ledger Batch #8829-X. Previous freeze was triggered by automated volatility threshold alert. Manual override authorized by Financial Operations for scheduled maintenance window recovery.
+                </p>
+</div>
+</section>
+<!-- Security Officers List -->
+<section class="space-y-3">
+<h3 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 px-1">Security Officers</h3>
+<div class="space-y-3">
+<!-- Verified Officer -->
+<div class="flex items-center justify-between p-4 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center border-2 border-primary">
+<span class="material-symbols-outlined text-primary">person</span>
+</div>
+<div>
+<p class="font-bold">Sarah Chen</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Chief Security Officer • Auth: 0092</p>
+</div>
+</div>
+<div class="flex items-center gap-2 text-primary font-bold text-sm">
+<span class="material-symbols-outlined">verified</span>
+<span>VERIFIED</span>
+</div>
+</div>
+<!-- Pending Officer -->
+<div class="flex items-center justify-between p-4 bg-slate-100 dark:bg-slate-900 border-2 border-dashed border-primary/30 rounded-lg">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-400">person</span>
+</div>
+<div>
+<p class="font-bold text-slate-400">Marcus Thorne</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 italic">Awaiting Signature...</p>
+</div>
+</div>
+<div class="flex items-center gap-2 text-slate-500 font-bold text-sm">
+<span class="material-symbols-outlined animate-pulse text-primary">pending</span>
+<span class="animate-pulse">PENDING</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Action Section -->
+<footer class="pt-8 space-y-6">
+<div class="p-4 bg-orange-500/10 border border-orange-500/20 rounded-lg flex gap-3">
+<span class="material-symbols-outlined text-orange-500 shrink-0">warning</span>
+<p class="text-xs text-orange-500/90 leading-tight">
+                    This action is being monitored by the Internal Audit Department. Lifting the system freeze will resume all pending financial transactions immediately. Accountability: Sarah Chen (Logged).
+                </p>
+</div>
+<div class="flex flex-col gap-3">
+<button class="w-full py-4 bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 font-bold rounded-xl cursor-not-allowed transition-all flex items-center justify-center gap-2 group" disabled="">
+<span class="material-symbols-outlined">lock</span>
+                    INITIATE UNLOCK
+                </button>
+<button class="w-full py-2 text-slate-500 hover:text-red-400 transition-colors text-sm font-semibold uppercase tracking-widest">
+                    Abort Sequence
+                </button>
+</div>
+</footer>
+</main>
+<!-- Bottom Metadata Bar -->
+<div class="fixed bottom-0 left-0 right-0 p-3 bg-background-light dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 flex justify-between items-center px-6">
+<div class="flex gap-4">
+<div class="flex items-center gap-1 text-[10px] text-slate-500 uppercase font-bold tracking-tighter">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+                Node Online
+            </div>
+<div class="flex items-center gap-1 text-[10px] text-slate-500 uppercase font-bold tracking-tighter">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                Encryption Active
+            </div>
+</div>
+<div class="text-[10px] font-mono text-slate-600">
+            CID: 8829-X-OMEGA-SETTLER-2023
+        </div>
+</div>
+</body></html>

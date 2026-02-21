@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Critical Alert - Settler</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec1313",
+                        "primary-dark": "#c50f0f",
+                        "primary-light": "#ff4d4d",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#1a0d0d", // Darkened slightly for better contrast
+                        "surface-dark": "#2a1515", // Slightly lighter than background for cards
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "sans": ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen text-slate-900 dark:text-slate-100 flex flex-col font-display antialiased overflow-x-hidden">
+<!-- Sticky Header -->
+<div class="sticky top-0 z-50 bg-background-dark/95 backdrop-blur-md border-b border-primary/20 pt-safe-top">
+<!-- Status Bar Placeholder for iOS feel -->
+<div class="h-12 flex items-center justify-between px-4">
+<button class="text-slate-400 hover:text-white transition-colors p-2 -ml-2 rounded-full active:bg-white/10">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="text-sm font-semibold tracking-wide uppercase text-primary/80">Incident #9241</h1>
+<button class="text-slate-400 hover:text-white transition-colors p-2 -mr-2 rounded-full active:bg-white/10">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col gap-6 p-4 pb-32 max-w-lg mx-auto w-full">
+<!-- Critical Alert Header Card -->
+<div class="flex flex-col gap-4">
+<div class="flex items-start justify-between">
+<div>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/20 border border-primary/30 text-primary text-xs font-bold mb-3 animate-pulse">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                        CRITICAL SEVERITY
+                    </div>
+<h2 class="text-3xl font-bold tracking-tight text-white leading-tight">High Mismatch Rate</h2>
+</div>
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0 border border-primary/20">
+<span class="material-symbols-outlined fill text-2xl">warning</span>
+</div>
+</div>
+<div class="text-slate-400 text-sm flex flex-col gap-1 pl-1 border-l-2 border-slate-700">
+<p>Detected in <span class="text-slate-200 font-medium">Settler-Prod-East</span></p>
+<p>Started 12m ago • <span class="text-slate-200">Active Incident</span></p>
+</div>
+</div>
+<!-- Metrics Section -->
+<section class="grid grid-cols-2 gap-3">
+<!-- Main Metric Card -->
+<div class="bg-surface-dark border border-primary/20 rounded-2xl p-5 flex flex-col gap-1 relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 w-20 h-20 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/20 transition-colors"></div>
+<p class="text-slate-400 text-xs font-medium uppercase tracking-wider z-10">Current Rate</p>
+<div class="flex items-baseline gap-1 z-10">
+<span class="text-4xl font-bold text-primary">24%</span>
+<span class="material-symbols-outlined text-primary text-lg font-bold">trending_up</span>
+</div>
+<p class="text-xs text-primary/80 mt-1 font-medium z-10">+19% over limit</p>
+</div>
+<!-- Threshold Metric Card -->
+<div class="bg-surface-dark border border-white/5 rounded-2xl p-5 flex flex-col gap-1 relative overflow-hidden">
+<p class="text-slate-400 text-xs font-medium uppercase tracking-wider z-10">Threshold Limit</p>
+<div class="flex items-baseline gap-1 z-10">
+<span class="text-4xl font-bold text-slate-200">5%</span>
+</div>
+<p class="text-xs text-slate-500 mt-1 z-10">Standard deviation</p>
+</div>
+</section>
+<!-- Visualization / Graph Placeholder -->
+<div class="bg-surface-dark border border-white/5 rounded-2xl p-5 w-full">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-sm font-semibold text-white">Trend Analysis (1h)</h3>
+<span class="text-xs text-slate-400">Live</span>
+</div>
+<!-- Custom CSS Chart Implementation -->
+<div class="h-32 w-full flex items-end gap-1 relative">
+<!-- Threshold Line -->
+<div class="absolute bottom-[20%] w-full border-t border-dashed border-slate-500 z-0"></div>
+<div class="absolute bottom-[22%] right-0 text-[10px] text-slate-500 bg-surface-dark px-1">Threshold (5%)</div>
+<!-- Bars -->
+<div class="flex-1 bg-slate-700/30 rounded-t-sm h-[10%]"></div>
+<div class="flex-1 bg-slate-700/30 rounded-t-sm h-[12%]"></div>
+<div class="flex-1 bg-slate-700/30 rounded-t-sm h-[15%]"></div>
+<div class="flex-1 bg-slate-700/30 rounded-t-sm h-[10%]"></div>
+<div class="flex-1 bg-slate-700/30 rounded-t-sm h-[18%]"></div>
+<div class="flex-1 bg-slate-700/30 rounded-t-sm h-[19%]"></div> <!-- Start of rise -->
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[25%]"></div>
+<div class="flex-1 bg-primary/60 rounded-t-sm h-[45%]"></div>
+<div class="flex-1 bg-primary/80 rounded-t-sm h-[70%]"></div>
+<div class="flex-1 bg-primary rounded-t-sm h-[85%] animate-pulse"></div> <!-- Current -->
+</div>
+</div>
+<!-- Affected Context -->
+<div class="bg-surface-dark border border-white/5 rounded-2xl overflow-hidden">
+<div class="px-5 py-3 border-b border-white/5 bg-white/5 flex justify-between items-center">
+<h3 class="text-sm font-semibold text-white">Affected Context</h3>
+<span class="bg-slate-800 text-slate-300 text-[10px] px-2 py-0.5 rounded border border-white/10">PROD</span>
+</div>
+<div class="p-4 flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<div class="bg-indigo-500/10 p-2 rounded-lg text-indigo-400">
+<span class="material-symbols-outlined">dns</span>
+</div>
+<div>
+<p class="text-xs text-slate-400 uppercase tracking-wide">Workspace</p>
+<p class="text-sm font-medium text-slate-100">Settler-Prod-East</p>
+</div>
+</div>
+<div class="h-px bg-white/5 w-full"></div>
+<div class="flex items-center gap-3">
+<div class="bg-teal-500/10 p-2 rounded-lg text-teal-400">
+<span class="material-symbols-outlined">account_tree</span>
+</div>
+<div>
+<p class="text-xs text-slate-400 uppercase tracking-wide">Pipeline</p>
+<p class="text-sm font-medium text-slate-100">Invoice-Reconciliation-v2</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Actions Grid -->
+<div class="grid grid-cols-2 gap-3">
+<button class="flex flex-col items-center justify-center gap-2 bg-surface-dark border border-white/5 hover:bg-white/5 active:scale-95 transition-all p-4 rounded-xl h-24">
+<span class="material-symbols-outlined text-green-500">check_circle</span>
+<span class="text-xs font-medium text-slate-200">Acknowledge</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-2 bg-surface-dark border border-primary/30 hover:bg-primary/10 active:scale-95 transition-all p-4 rounded-xl h-24 group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">pause_circle</span>
+<span class="text-xs font-medium text-primary">Pause Pipeline</span>
+</button>
+</div>
+</main>
+<!-- Fixed Bottom Actions -->
+<div class="fixed bottom-0 w-full left-0 right-0 p-4 pb-8 bg-gradient-to-t from-background-dark via-background-dark to-transparent z-40">
+<div class="max-w-lg mx-auto w-full">
+<button class="w-full bg-primary hover:bg-primary-dark active:bg-primary-dark text-white font-semibold py-4 px-6 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined">search</span>
+                Investigate via Trace Explorer
+            </button>
+</div>
+<!-- Bottom Nav Bar Component Integration -->
+<div class="max-w-lg mx-auto w-full mt-4 rounded-2xl overflow-hidden border border-white/5 shadow-2xl">
+<div class="flex gap-2 bg-[#2a1515] px-4 pb-3 pt-2 justify-around backdrop-blur-md">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 rounded-full text-primary group" href="#">
+<div class="text-primary group-hover:scale-110 transition-transform flex h-8 items-center justify-center">
+<span class="material-symbols-outlined fill">notifications</span>
+</div>
+<p class="text-primary text-[10px] font-medium leading-normal tracking-wide">Alerts</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 group" href="#">
+<div class="text-slate-400 group-hover:text-slate-200 transition-colors flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">account_tree</span>
+</div>
+<p class="text-slate-400 group-hover:text-slate-200 text-[10px] font-medium leading-normal tracking-wide">Pipelines</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 group" href="#">
+<div class="text-slate-400 group-hover:text-slate-200 transition-colors flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">support_agent</span>
+</div>
+<p class="text-slate-400 group-hover:text-slate-200 text-[10px] font-medium leading-normal tracking-wide">On-Call</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 group" href="#">
+<div class="text-slate-400 group-hover:text-slate-200 transition-colors flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">settings</span>
+</div>
+<p class="text-slate-400 group-hover:text-slate-200 text-[10px] font-medium leading-normal tracking-wide">Settings</p>
+</a>
+</div>
+</div>
+</div>
+</body></html>

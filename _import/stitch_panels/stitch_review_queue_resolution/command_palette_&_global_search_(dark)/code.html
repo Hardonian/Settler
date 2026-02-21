@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Command Palette &amp; Global Search</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922", // As requested in plan, a deep charcoal
+                        "surface-dark": "#192633",    // Slightly lighter for cards
+                        "border-dark": "#233648",     // Border color from component
+                        "text-secondary": "#92adc9",  // Muted text
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for horizontal lists */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased selection:bg-primary/30">
+<div class="relative mx-auto flex h-screen w-full max-w-md flex-col overflow-hidden bg-background-light dark:bg-background-dark shadow-2xl sm:border-x sm:border-gray-800">
+<!-- Header / Search Area -->
+<header class="sticky top-0 z-20 flex flex-col gap-2 bg-background-light dark:bg-background-dark px-4 pt-4 pb-2 border-b border-gray-200 dark:border-border-dark/50">
+<div class="flex items-center justify-between pb-2">
+<h1 class="text-lg font-bold tracking-tight">Command Palette</h1>
+<button class="text-sm font-medium text-primary hover:text-primary/80">Cancel</button>
+</div>
+<!-- Search Bar Component Adapted -->
+<label class="group relative flex w-full items-center">
+<div class="absolute left-3 flex items-center justify-center text-text-secondary transition-colors group-focus-within:text-primary">
+<span class="material-symbols-outlined" style="font-size: 24px;">search</span>
+</div>
+<input autofocus="" class="h-12 w-full rounded-lg border-none bg-slate-200 dark:bg-surface-dark pl-11 pr-10 text-base placeholder:text-text-secondary focus:ring-2 focus:ring-primary/50 dark:text-white" placeholder="Search Trace IDs, Pipelines..." type="text"/>
+<div class="absolute right-3 flex items-center justify-center">
+<button class="flex h-6 w-6 items-center justify-center rounded-full bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 opacity-0 transition-opacity group-focus-within:opacity-100 hover:text-white">
+<span class="material-symbols-outlined" style="font-size: 16px;">close</span>
+</button>
+</div>
+</label>
+<!-- Segmented Scope Filter -->
+<div class="flex w-full overflow-x-auto hide-scrollbar pt-2 pb-1 gap-2">
+<button class="flex h-8 shrink-0 items-center justify-center rounded-full bg-primary px-4 text-sm font-medium text-white shadow-sm transition-transform active:scale-95">
+                    All
+                </button>
+<button class="flex h-8 shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-surface-dark border border-transparent dark:border-border-dark px-4 text-sm font-medium text-slate-600 dark:text-text-secondary hover:bg-slate-300 dark:hover:bg-border-dark hover:text-slate-900 dark:hover:text-white transition-colors">
+                    Traces
+                </button>
+<button class="flex h-8 shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-surface-dark border border-transparent dark:border-border-dark px-4 text-sm font-medium text-slate-600 dark:text-text-secondary hover:bg-slate-300 dark:hover:bg-border-dark hover:text-slate-900 dark:hover:text-white transition-colors">
+                    Connections
+                </button>
+<button class="flex h-8 shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-surface-dark border border-transparent dark:border-border-dark px-4 text-sm font-medium text-slate-600 dark:text-text-secondary hover:bg-slate-300 dark:hover:bg-border-dark hover:text-slate-900 dark:hover:text-white transition-colors">
+                    Pipelines
+                </button>
+<button class="flex h-8 shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-surface-dark border border-transparent dark:border-border-dark px-4 text-sm font-medium text-slate-600 dark:text-text-secondary hover:bg-slate-300 dark:hover:bg-border-dark hover:text-slate-900 dark:hover:text-white transition-colors">
+                    Transx
+                </button>
+</div>
+</header>
+<!-- Main Content Scrollable Area -->
+<main class="flex-1 overflow-y-auto overflow-x-hidden pb-32">
+<!-- Quick Actions Section -->
+<section class="mt-4 px-4">
+<h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">Quick Actions</h3>
+<div class="grid grid-cols-2 gap-3">
+<!-- Action Card 1 -->
+<button class="group flex flex-col items-start justify-center gap-2 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark p-4 transition-all hover:border-primary/50 hover:bg-slate-50 dark:hover:bg-[#1f2e3d] active:scale-[0.98]">
+<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">play_circle</span>
+</div>
+<span class="text-sm font-bold text-slate-900 dark:text-white">Trigger Run</span>
+</button>
+<!-- Action Card 2 -->
+<button class="group flex flex-col items-start justify-center gap-2 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark p-4 transition-all hover:border-primary/50 hover:bg-slate-50 dark:hover:bg-[#1f2e3d] active:scale-[0.98]">
+<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">add_circle</span>
+</div>
+<span class="text-sm font-bold text-slate-900 dark:text-white">New Rule</span>
+</button>
+<!-- Action Card 3 -->
+<button class="group flex flex-col items-start justify-center gap-2 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark p-4 transition-all hover:border-primary/50 hover:bg-slate-50 dark:hover:bg-[#1f2e3d] active:scale-[0.98]">
+<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/10 text-purple-500 group-hover:bg-purple-500 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">receipt_long</span>
+</div>
+<span class="text-sm font-bold text-slate-900 dark:text-white">View Logs</span>
+</button>
+<!-- Action Card 4 -->
+<button class="group flex flex-col items-start justify-center gap-2 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark p-4 transition-all hover:border-primary/50 hover:bg-slate-50 dark:hover:bg-[#1f2e3d] active:scale-[0.98]">
+<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10 text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">terminal</span>
+</div>
+<span class="text-sm font-bold text-slate-900 dark:text-white">SSH Connect</span>
+</button>
+</div>
+</section>
+<!-- Recent Activity Section -->
+<section class="mt-8 px-4">
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-xs font-semibold uppercase tracking-wider text-text-secondary">Recent Activity</h3>
+<button class="text-xs font-medium text-primary hover:underline">Clear History</button>
+</div>
+<div class="flex flex-col gap-1 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark overflow-hidden">
+<!-- Recent Item 1 -->
+<button class="group flex w-full items-center gap-4 px-4 py-3 text-left hover:bg-slate-50 dark:hover:bg-[#1f2e3d] transition-colors border-b border-slate-100 dark:border-border-dark/50 last:border-0">
+<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-border-dark text-slate-500 dark:text-text-secondary">
+<span class="material-symbols-outlined text-[20px]">fingerprint</span>
+</div>
+<div class="flex min-w-0 flex-1 flex-col">
+<div class="flex items-center justify-between">
+<span class="truncate text-sm font-semibold text-slate-900 dark:text-white">Trace #8f92a</span>
+<span class="text-[10px] text-text-secondary">2m ago</span>
+</div>
+<div class="flex items-center gap-2 text-xs text-text-secondary">
+<span class="flex items-center gap-1 text-emerald-500">
+<span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> Success
+                                </span>
+<span>•</span>
+<span class="truncate">PaymentGateway_V2</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+<!-- Recent Item 2 -->
+<button class="group flex w-full items-center gap-4 px-4 py-3 text-left hover:bg-slate-50 dark:hover:bg-[#1f2e3d] transition-colors border-b border-slate-100 dark:border-border-dark/50 last:border-0">
+<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-border-dark text-slate-500 dark:text-text-secondary">
+<span class="material-symbols-outlined text-[20px]">hub</span>
+</div>
+<div class="flex min-w-0 flex-1 flex-col">
+<div class="flex items-center justify-between">
+<span class="truncate text-sm font-semibold text-slate-900 dark:text-white">AWS-Prod-East</span>
+<span class="text-[10px] text-text-secondary">15m ago</span>
+</div>
+<div class="flex items-center gap-2 text-xs text-text-secondary">
+<span class="flex items-center gap-1 text-primary">
+<span class="h-1.5 w-1.5 rounded-full bg-primary"></span> Active
+                                </span>
+<span>•</span>
+<span class="truncate">us-east-1</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+<!-- Recent Item 3 -->
+<button class="group flex w-full items-center gap-4 px-4 py-3 text-left hover:bg-slate-50 dark:hover:bg-[#1f2e3d] transition-colors border-b border-slate-100 dark:border-border-dark/50 last:border-0">
+<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-border-dark text-slate-500 dark:text-text-secondary">
+<span class="material-symbols-outlined text-[20px]">fingerprint</span>
+</div>
+<div class="flex min-w-0 flex-1 flex-col">
+<div class="flex items-center justify-between">
+<span class="truncate text-sm font-semibold text-slate-900 dark:text-white">Trace #b129c</span>
+<span class="text-[10px] text-text-secondary">1h ago</span>
+</div>
+<div class="flex items-center gap-2 text-xs text-text-secondary">
+<span class="flex items-center gap-1 text-red-500">
+<span class="h-1.5 w-1.5 rounded-full bg-red-500"></span> Failed
+                                </span>
+<span>•</span>
+<span class="truncate">UserAuthService</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+<!-- Recent Item 4 -->
+<button class="group flex w-full items-center gap-4 px-4 py-3 text-left hover:bg-slate-50 dark:hover:bg-[#1f2e3d] transition-colors last:border-0">
+<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-border-dark text-slate-500 dark:text-text-secondary">
+<span class="material-symbols-outlined text-[20px]">account_tree</span>
+</div>
+<div class="flex min-w-0 flex-1 flex-col">
+<div class="flex items-center justify-between">
+<span class="truncate text-sm font-semibold text-slate-900 dark:text-white">Pipeline: Data-Sync-V3</span>
+<span class="text-[10px] text-text-secondary">3h ago</span>
+</div>
+<div class="flex items-center gap-2 text-xs text-text-secondary">
+<span class="flex items-center gap-1 text-amber-500">
+<span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span> Paused
+                                </span>
+<span>•</span>
+<span class="truncate">ETL Process</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Suggestions Section (Contextual) -->
+<section class="mt-8 px-4 mb-4">
+<h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">Suggested</h3>
+<div class="flex flex-col gap-2">
+<button class="flex items-center justify-between rounded-lg bg-slate-100 dark:bg-surface-dark/50 px-4 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-surface-dark transition-colors">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-lg text-text-secondary">search</span>
+                            Show all failed traces today
+                        </span>
+<span class="rounded bg-slate-200 dark:bg-border-dark px-1.5 py-0.5 text-[10px] font-bold text-text-secondary">CMD+K</span>
+</button>
+<button class="flex items-center justify-between rounded-lg bg-slate-100 dark:bg-surface-dark/50 px-4 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-surface-dark transition-colors">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-lg text-text-secondary">settings</span>
+                            Configure notification rules
+                        </span>
+</button>
+</div>
+</section>
+</main>
+<!-- Keyboard Accessory View (Simulated fixed bottom bar) -->
+<div class="fixed bottom-0 z-30 w-full max-w-md bg-slate-100 dark:bg-[#1a202c] border-t border-gray-200 dark:border-border-dark/50 pb-safe">
+<div class="flex items-center gap-2 overflow-x-auto hide-scrollbar px-2 py-2">
+<button class="flex shrink-0 items-center gap-1 rounded bg-white dark:bg-surface-dark px-3 py-1.5 text-xs font-semibold shadow-sm border border-gray-200 dark:border-border-dark text-slate-700 dark:text-slate-300 active:bg-slate-100 dark:active:bg-border-dark">
+<span class="material-symbols-outlined text-[14px]">content_paste</span>
+                    Paste ID
+                </button>
+<button class="flex shrink-0 items-center gap-1 rounded bg-white dark:bg-surface-dark px-3 py-1.5 text-xs font-semibold shadow-sm border border-gray-200 dark:border-border-dark text-slate-700 dark:text-slate-300 active:bg-slate-100 dark:active:bg-border-dark">
+<span class="material-symbols-outlined text-[14px]">filter_list</span>
+                    Status: Failed
+                </button>
+<button class="flex shrink-0 items-center gap-1 rounded bg-white dark:bg-surface-dark px-3 py-1.5 text-xs font-semibold shadow-sm border border-gray-200 dark:border-border-dark text-slate-700 dark:text-slate-300 active:bg-slate-100 dark:active:bg-border-dark">
+                    #prod
+                </button>
+<button class="flex shrink-0 items-center gap-1 rounded bg-white dark:bg-surface-dark px-3 py-1.5 text-xs font-semibold shadow-sm border border-gray-200 dark:border-border-dark text-slate-700 dark:text-slate-300 active:bg-slate-100 dark:active:bg-border-dark">
+                    @me
+                </button>
+</div>
+<!-- Simulate iPhone Home Indicator Area -->
+<div class="flex h-6 w-full items-center justify-center">
+<div class="h-1 w-32 rounded-full bg-slate-300 dark:bg-slate-600"></div>
+</div>
+</div>
+</div>
+</body></html>

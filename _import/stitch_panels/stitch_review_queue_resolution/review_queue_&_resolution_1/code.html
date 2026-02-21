@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Review Queue &amp; Resolution</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "primary-dark": "#0b5cb5",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-dark": "#192633",
+                        "surface-darker": "#111a22",
+                        "border-dark": "#233648",
+                        "accent-success": "#22c55e",
+                        "accent-warning": "#f59e0b",
+                        "accent-danger": "#ef4444",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"],
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for horizontal scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-hidden flex flex-col h-screen">
+<!-- Mobile Status Bar Area (Mock) -->
+<div class="h-12 w-full bg-surface-darker flex items-end justify-between px-6 pb-2 text-xs font-medium text-slate-400 select-none">
+<span>9:41</span>
+<div class="flex gap-1.5">
+<span class="material-symbols-outlined text-sm">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-sm">wifi</span>
+<span class="material-symbols-outlined text-sm">battery_full</span>
+</div>
+</div>
+<!-- Header -->
+<header class="bg-surface-darker border-b border-border-dark px-4 py-3 flex items-center justify-between z-10">
+<div class="flex flex-col">
+<h1 class="text-lg font-bold text-white tracking-tight">Review Queue</h1>
+<span class="text-xs text-slate-400">12 Pending Reconciliation</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-border-dark/50 text-slate-300 hover:text-white transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto overflow-x-hidden pb-32">
+<!-- Triage Carousel (Horizontal Scroll) -->
+<div class="pt-4 pb-2">
+<div class="px-4 mb-2 flex items-center justify-between">
+<h2 class="text-xs font-semibold uppercase tracking-wider text-slate-500">Queue</h2>
+<span class="text-xs text-primary cursor-pointer hover:underline">View All</span>
+</div>
+<div class="flex overflow-x-auto gap-3 px-4 pb-4 no-scrollbar snap-x snap-mandatory">
+<!-- Card 1 (Active) -->
+<div class="snap-center shrink-0 w-[85%] bg-surface-dark border border-primary/50 shadow-[0_0_15px_rgba(19,127,236,0.15)] rounded-xl p-4 relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-accent-danger animate-pulse"></span>
+<span class="text-xs font-mono text-slate-400">REC-9021</span>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-accent-danger/20 text-accent-danger border border-accent-danger/30">HIGH SEVERITY</span>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<p class="text-sm text-slate-400 mb-0.5">Discrepancy</p>
+<p class="text-xl font-bold text-white font-mono">$4,500.00</p>
+</div>
+<div class="text-right">
+<p class="text-xs text-slate-500 mb-1">Confidence</p>
+<div class="flex items-center gap-1 text-accent-warning text-xs font-medium">
+<span class="material-symbols-outlined text-sm">warning</span>
+<span>Low Match</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="snap-center shrink-0 w-[85%] bg-surface-dark border border-border-dark rounded-xl p-4 relative overflow-hidden opacity-60 scale-95">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-accent-warning"></span>
+<span class="text-xs font-mono text-slate-400">REC-9022</span>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-accent-warning/20 text-accent-warning border border-accent-warning/30">MEDIUM</span>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<p class="text-sm text-slate-400 mb-0.5">Discrepancy</p>
+<p class="text-xl font-bold text-white font-mono">$120.50</p>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="snap-center shrink-0 w-[85%] bg-surface-dark border border-border-dark rounded-xl p-4 relative overflow-hidden opacity-60 scale-95">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-slate-500"></span>
+<span class="text-xs font-mono text-slate-400">REC-9023</span>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-700 text-slate-300 border border-slate-600">LOW</span>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<p class="text-sm text-slate-400 mb-0.5">Discrepancy</p>
+<p class="text-xl font-bold text-white font-mono">$0.05</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Evidence Viewer (Detail Section) -->
+<div class="px-4 mt-2">
+<div class="flex items-center justify-between mb-3">
+<h2 class="text-base font-semibold text-white">Evidence Viewer</h2>
+<div class="flex items-center gap-1.5 px-2 py-1 bg-surface-dark rounded text-xs text-slate-400 border border-border-dark cursor-copy" title="Copy Trace ID">
+<span class="material-symbols-outlined text-[14px]">fingerprint</span>
+<span class="font-mono">8a9f-2b3c...</span>
+</div>
+</div>
+<!-- Comparison Table -->
+<div class="bg-surface-dark rounded-lg border border-border-dark overflow-hidden">
+<!-- Headers -->
+<div class="grid grid-cols-2 divide-x divide-border-dark bg-surface-darker border-b border-border-dark">
+<div class="p-3 text-center">
+<p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Source A (ERP)</p>
+</div>
+<div class="p-3 text-center">
+<p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Source B (Bank)</p>
+</div>
+</div>
+<!-- Row 1: Match -->
+<div class="grid grid-cols-2 divide-x divide-border-dark border-b border-border-dark/50 hover:bg-white/5 transition-colors">
+<div class="p-3">
+<p class="text-[10px] text-slate-500 mb-0.5">Transaction ID</p>
+<p class="text-sm font-mono text-slate-300 truncate">TX_99283811</p>
+</div>
+<div class="p-3">
+<p class="text-[10px] text-slate-500 mb-0.5">Transaction ID</p>
+<p class="text-sm font-mono text-slate-300 truncate">TX_99283811</p>
+</div>
+</div>
+<!-- Row 2: Mismatch (Highlighted) -->
+<div class="grid grid-cols-2 divide-x divide-border-dark border-b border-border-dark/50 bg-accent-danger/5 relative">
+<!-- Mismatch Indicator Line -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-accent-danger"></div>
+<div class="p-3 relative">
+<p class="text-[10px] text-slate-500 mb-0.5">Amount</p>
+<p class="text-sm font-mono font-bold text-slate-300">500.00</p>
+</div>
+<div class="p-3 bg-accent-danger/10">
+<p class="text-[10px] text-accent-danger/80 mb-0.5 font-bold">Amount (Mismatch)</p>
+<div class="flex items-center justify-between">
+<p class="text-sm font-mono font-bold text-white">5,000.00</p>
+<span class="material-symbols-outlined text-accent-danger text-sm">error</span>
+</div>
+</div>
+</div>
+<!-- Row 3: Match -->
+<div class="grid grid-cols-2 divide-x divide-border-dark border-b border-border-dark/50 hover:bg-white/5 transition-colors">
+<div class="p-3">
+<p class="text-[10px] text-slate-500 mb-0.5">Currency</p>
+<p class="text-sm font-mono text-slate-300">USD</p>
+</div>
+<div class="p-3">
+<p class="text-[10px] text-slate-500 mb-0.5">Currency</p>
+<p class="text-sm font-mono text-slate-300">USD</p>
+</div>
+</div>
+<!-- Row 4: Match -->
+<div class="grid grid-cols-2 divide-x divide-border-dark hover:bg-white/5 transition-colors">
+<div class="p-3">
+<p class="text-[10px] text-slate-500 mb-0.5">Date</p>
+<p class="text-sm font-mono text-slate-300">2023-10-24</p>
+</div>
+<div class="p-3">
+<p class="text-[10px] text-slate-500 mb-0.5">Date</p>
+<p class="text-sm font-mono text-slate-300">2023-10-24</p>
+</div>
+</div>
+</div>
+<!-- Context Box -->
+<div class="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-lg flex gap-3 items-start">
+<span class="material-symbols-outlined text-primary mt-0.5">info</span>
+<div>
+<h3 class="text-sm font-semibold text-primary mb-1">AI Insight</h3>
+<p class="text-xs text-slate-300 leading-relaxed">
+                        The discrepancy appears to be a decimal placement error (10x difference). Historically, manual overrides favor Source B for this vendor.
+                    </p>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Bar (Sticky Footer) -->
+<div class="fixed bottom-0 left-0 w-full bg-surface-darker/90 backdrop-blur-md border-t border-border-dark pb-6 pt-3 px-4 z-20">
+<div class="grid grid-cols-3 gap-3 max-w-lg mx-auto">
+<button class="flex flex-col items-center justify-center gap-1 group">
+<div class="w-12 h-12 rounded-full bg-surface-dark border border-border-dark flex items-center justify-center group-hover:bg-accent-warning/20 group-hover:border-accent-warning/50 transition-all group-active:scale-95">
+<span class="material-symbols-outlined text-slate-300 group-hover:text-accent-warning">warning_amber</span>
+</div>
+<span class="text-[10px] font-medium text-slate-400 group-hover:text-slate-200">Exception</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1 group">
+<div class="w-12 h-12 rounded-full bg-surface-dark border border-border-dark flex items-center justify-center group-hover:bg-white/10 transition-all group-active:scale-95">
+<span class="material-symbols-outlined text-slate-300 group-hover:text-white">edit</span>
+</div>
+<span class="text-[10px] font-medium text-slate-400 group-hover:text-slate-200">Override</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1 group col-span-1">
+<div class="w-full h-12 px-6 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:bg-primary-dark transition-all group-active:scale-95">
+<span class="material-symbols-outlined text-white mr-1">check</span>
+<span class="text-sm font-bold text-white">Match</span>
+</div>
+<span class="text-[10px] font-medium text-transparent select-none">.</span> <!-- Spacing hack -->
+</button>
+</div>
+</div>
+<!-- Modal (Currently Hidden - to show visually for the prompt) -->
+<!-- In a real app this would be toggleable. Here we mock it as if "Override" was just clicked -->
+<div class="fixed inset-0 z-50 flex items-end justify-center sm:items-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300" id="reasonModal">
+<div class="w-full sm:max-w-md bg-surface-dark rounded-t-2xl sm:rounded-xl border border-border-dark shadow-2xl transform translate-y-full transition-transform duration-300" id="modalContent">
+<!-- Handle bar for mobile feel -->
+<div class="w-full flex justify-center pt-3 pb-1 sm:hidden">
+<div class="w-12 h-1.5 rounded-full bg-slate-600"></div>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-lg font-bold text-white">Manual Override</h3>
+<button class="text-slate-400 hover:text-white" onclick="document.getElementById('reasonModal').classList.remove('opacity-100', 'pointer-events-auto'); document.getElementById('modalContent').classList.add('translate-y-full')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="mb-5">
+<p class="text-sm text-slate-400 mb-3">Please explain why you are manually overriding this match. This will be logged for audit purposes.</p>
+<label class="block text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wide">Reason for Change <span class="text-accent-danger">*</span></label>
+<textarea class="w-full bg-background-dark border border-border-dark rounded-lg p-3 text-slate-200 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none resize-none placeholder-slate-600" placeholder="e.g., Bank statement confirms the extra zero was a clerical error in the ERP system..." rows="4"></textarea>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 py-3 px-4 rounded-lg border border-border-dark text-slate-300 font-medium hover:bg-white/5 transition-colors">
+                        Cancel
+                    </button>
+<button class="flex-1 py-3 px-4 rounded-lg bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-primary-dark transition-colors">
+                        Confirm Override
+                    </button>
+</div>
+</div>
+<!-- Bottom safe area padding -->
+<div class="h-6 w-full sm:hidden"></div>
+</div>
+</div>
+<!-- Temporary script to simulate modal opening for demonstration -->
+<script>
+        // Simulate click on Override button to show the modal
+        const overrideBtns = document.querySelectorAll('button');
+        // Just hooking up the middle button in the footer for demo
+        const footerButtons = document.querySelectorAll('.fixed.bottom-0 button');
+        if(footerButtons[1]) {
+            footerButtons[1].addEventListener('click', () => {
+                const modal = document.getElementById('reasonModal');
+                const content = document.getElementById('modalContent');
+                modal.classList.add('opacity-100', 'pointer-events-auto');
+                modal.classList.remove('pointer-events-none', 'opacity-0');
+                content.classList.remove('translate-y-full');
+            });
+        }
+    </script>
+</body></html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settler - Alerts &amp; Incidents</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#2563eb", // Deep blue for better contrast on white
+              "primary-light": "#eff6ff",
+              "background-light": "#ffffff",
+              "background-off": "#f8fafc",
+              "surface-white": "#ffffff",
+              "surface-subtle": "#f1f5f9",
+              "danger": "#dc2626", // Darker red for text contrast
+              "danger-bg": "#fef2f2",
+              "warning": "#d97706", // Darker amber for text contrast
+              "warning-bg": "#fffbeb",
+              "success": "#059669",
+              "success-bg": "#ecfdf5",
+              "info": "#0ea5e9", // Sky blue
+              "info-bg": "#f0f9ff",
+              "neutral-text": "#64748b",
+              "neutral-dark": "#0f172a",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"],
+              "mono": ["JetBrains Mono", "monospace"],
+            },
+            boxShadow: {
+              "card": "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+              "card-hover": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-off text-neutral-dark min-h-screen flex flex-col font-display antialiased selection:bg-primary/20">
+<header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 pt-12 pb-4 px-4 transition-all duration-200">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h1 class="text-3xl font-bold tracking-tight text-neutral-dark">Alerts</h1>
+<p class="text-sm text-neutral-text mt-0.5">Settler Reconciliation</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center w-10 h-10 rounded-full bg-slate-50 text-neutral-text hover:bg-slate-100 transition-colors border border-slate-200/50">
+<span class="material-symbols-outlined">search</span>
+</button>
+<div class="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-indigo-500 p-[2px]">
+<div class="w-full h-full rounded-full bg-white overflow-hidden">
+<img alt="User Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDceMIl2uLXPKGZXebgvec8QDWrQcNcQxEcdEx7AdSX-6XYoS1eupM437ykeGgB8CswxD1rNiYRV8Scjz4rCDE_2_vq87kimcIle-smZRfYr4xFydCXS8_2a5WWVnWSDmeTeQRaFYZWcoijTS2d0Ab9y8wQVhG2ZmioS4aoNGs-FyWKAeZE8eJGkEyhuf0QCI7m4qHxKyL8WgyL3ULv_J5TaGlqKGizeq_BPh_6F9ZeHsO-fAyNCr0d_NfqAbxOrbSkjv-ItJTVSFsJ"/>
+</div>
+</div>
+</div>
+</div>
+<div class="flex gap-3 overflow-x-auto hide-scrollbar pb-1">
+<div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-danger-bg border border-danger/20 min-w-[140px] flex-1 shadow-sm">
+<div class="w-2.5 h-2.5 rounded-full bg-danger animate-pulse shadow-[0_0_8px_rgba(220,38,38,0.4)]"></div>
+<div>
+<span class="block text-2xl font-bold text-danger leading-none">2</span>
+<span class="text-xs font-semibold text-danger/80 uppercase tracking-wider">Critical</span>
+</div>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-warning-bg border border-warning/20 min-w-[140px] flex-1 shadow-sm">
+<div class="w-2.5 h-2.5 rounded-full bg-warning"></div>
+<div>
+<span class="block text-2xl font-bold text-warning leading-none">5</span>
+<span class="text-xs font-semibold text-warning/80 uppercase tracking-wider">Warning</span>
+</div>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-info-bg border border-info/20 min-w-[140px] flex-1 shadow-sm">
+<div class="w-2.5 h-2.5 rounded-full bg-info"></div>
+<div>
+<span class="block text-2xl font-bold text-info leading-none">12</span>
+<span class="text-xs font-semibold text-info/80 uppercase tracking-wider">Info</span>
+</div>
+</div>
+</div>
+</header>
+<div class="sticky top-[168px] z-40 bg-background-off pt-2 pb-4 px-4 border-b border-transparent">
+<div class="flex p-1 bg-slate-200/60 rounded-lg backdrop-blur-sm">
+<button class="flex-1 py-1.5 px-3 rounded-md text-sm font-semibold bg-white text-primary shadow-sm transition-all border border-slate-100">
+            Open (14)
+        </button>
+<button class="flex-1 py-1.5 px-3 rounded-md text-sm font-medium text-neutral-text hover:text-neutral-dark hover:bg-white/50 transition-all">
+            Ack (4)
+        </button>
+<button class="flex-1 py-1.5 px-3 rounded-md text-sm font-medium text-neutral-text hover:text-neutral-dark hover:bg-white/50 transition-all">
+            Resolved
+        </button>
+</div>
+</div>
+<main class="flex-1 px-4 pb-24 space-y-4 pt-2">
+<div class="group relative overflow-hidden rounded-2xl bg-white shadow-card border border-slate-200 active:scale-[0.99] transition-all duration-200 hover:shadow-card-hover">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-danger"></div>
+<div class="p-5 pl-6">
+<div class="flex justify-between items-start mb-2.5">
+<div class="flex items-center gap-2 px-2 py-0.5 rounded-full bg-danger-bg border border-danger/10">
+<span class="material-symbols-outlined text-danger text-[18px]">error</span>
+<span class="text-[11px] font-bold text-danger uppercase tracking-wider">Critical</span>
+</div>
+<span class="text-xs text-neutral-text font-mono font-medium">2m ago</span>
+</div>
+<h3 class="text-lg font-bold leading-tight mb-1.5 text-neutral-dark">
+                Payment Gateway Timeout - 500 Error
+            </h3>
+<div class="flex items-center gap-2 text-sm text-neutral-text mb-5">
+<span class="material-symbols-outlined text-[18px]">dns</span>
+<span class="font-medium">api-gateway</span>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<span>us-east-1</span>
+</div>
+<div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-50">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 text-neutral-text text-xs font-mono font-medium border border-slate-200 hover:bg-slate-200 cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-[14px]">list_alt</span>
+                    TRC-9928-X
+                </span>
+<div class="flex gap-2">
+<button class="p-2 rounded-lg bg-slate-50 text-neutral-text hover:text-neutral-dark border border-slate-200 hover:bg-slate-100 transition-colors">
+<span class="material-symbols-outlined text-[20px]">notifications_paused</span>
+</button>
+<button class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold shadow-md shadow-primary/20 hover:bg-blue-700 transition-colors border border-transparent">
+                        Ack
+                    </button>
+</div>
+</div>
+</div>
+</div>
+<div class="rounded-2xl bg-white shadow-card border border-slate-200 overflow-hidden ring-1 ring-black/5">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-warning"></div>
+<div class="p-5 pl-6 border-l-[6px] border-warning">
+<div class="flex justify-between items-start mb-2.5">
+<div class="flex items-center gap-2 px-2 py-0.5 rounded-full bg-warning-bg border border-warning/10">
+<span class="material-symbols-outlined text-warning text-[18px]">warning</span>
+<span class="text-[11px] font-bold text-warning uppercase tracking-wider">Warning</span>
+</div>
+<span class="text-xs text-neutral-text font-mono font-medium">15m ago</span>
+</div>
+<h3 class="text-lg font-bold leading-tight mb-1.5 text-neutral-dark">
+                Reconciliation Delay &gt; 5m
+            </h3>
+<div class="flex items-center gap-2 text-sm text-neutral-text mb-4">
+<span class="material-symbols-outlined text-[18px]">account_balance</span>
+<span class="font-medium">ledger-service</span>
+</div>
+<div class="mt-4 pt-4 border-t border-slate-100 bg-slate-50/50 -mx-5 px-5 -mb-5 pb-5">
+<div class="flex items-center gap-2 mb-4">
+<div class="flex -space-x-2">
+<img alt="User 1" class="w-7 h-7 rounded-full border-2 border-white shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDd7DjtBcJu43UaG81CifrhIBbcqGdgXEAjTif-PWrd_fbwKBk0XuMB21DaHzTFDn3AJZFpejMqxiSqbWtiVct50ElN8pYVSlylYVbdCVfFYCroixf2nwNfB6-UPeb6m6NCbSSV7M3G9omtQNdnYE7_i3b7uUHHmzQ8_8HOiWjudDuBIaF-cyBpGEoDOxk72sHDgtH7YEkZzrmKBPNi0JBegO2fg3-ZDM6B9vST32wdfw6o6deTiWP3mej0U5G_11GMLse0MqVyrgX"/>
+<div class="w-7 h-7 rounded-full border-2 border-white bg-slate-200 flex items-center justify-center text-[10px] text-neutral-text font-bold shadow-sm">+1</div>
+</div>
+<span class="text-xs text-neutral-text ml-1">Ack by <span class="text-neutral-dark font-semibold">Jane Doe</span></span>
+</div>
+<div class="relative pl-3 space-y-4 mb-5 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-px before:bg-slate-300">
+<div class="relative pl-5">
+<div class="absolute left-[-4px] top-1.5 w-2 h-2 rounded-full bg-slate-400 ring-4 ring-white"></div>
+<p class="text-xs text-neutral-text leading-tight">Alert triggered based on <span class="font-mono bg-slate-100 px-1 py-0.5 rounded border border-slate-200">thresh_latency_high</span></p>
+</div>
+<div class="relative pl-5">
+<div class="absolute left-[-4px] top-1.5 w-2 h-2 rounded-full bg-primary ring-4 ring-primary/20"></div>
+<p class="text-xs text-neutral-dark font-semibold leading-tight mb-1">Runbook suggestion: Check DB locks</p>
+<button class="flex items-center gap-1.5 text-primary text-xs font-semibold hover:underline bg-primary-light px-2 py-1 rounded-md border border-primary/10 w-fit">
+<span class="material-symbols-outlined text-[14px]">menu_book</span>
+                            View SOP-Ledger-04
+                        </button>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 py-2.5 rounded-lg bg-white border border-slate-200 text-neutral-text text-sm font-semibold hover:bg-slate-50 hover:text-neutral-dark transition-colors shadow-sm">
+                        Escalate
+                    </button>
+<button class="flex-1 py-2.5 rounded-lg bg-primary/10 border border-primary/10 text-primary text-sm font-semibold hover:bg-primary/20 transition-colors">
+                        Resolve
+                    </button>
+</div>
+</div>
+</div>
+</div>
+<div class="rounded-2xl bg-white shadow-card border border-slate-200 active:scale-[0.99] transition-all duration-200 hover:shadow-card-hover">
+<div class="p-5 pl-6 border-l-[6px] border-info">
+<div class="flex justify-between items-start mb-2.5">
+<div class="flex items-center gap-2 px-2 py-0.5 rounded-full bg-info-bg border border-info/10">
+<span class="material-symbols-outlined text-info text-[18px]">info</span>
+<span class="text-[11px] font-bold text-info uppercase tracking-wider">Info</span>
+</div>
+<span class="text-xs text-neutral-text font-mono font-medium">1h ago</span>
+</div>
+<h3 class="text-lg font-bold leading-tight mb-1.5 text-neutral-dark">
+                Daily Settlement Report Generated
+            </h3>
+<div class="flex items-center gap-2 text-sm text-neutral-text mb-3">
+<span class="material-symbols-outlined text-[18px]">description</span>
+<span class="font-medium">reporting-service</span>
+</div>
+<div class="mt-3 pt-3 border-t border-slate-50">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-slate-50 text-neutral-text text-xs font-mono font-medium border border-slate-200 hover:text-primary hover:border-primary/30 hover:bg-primary-light transition-all cursor-pointer group">
+<span class="material-symbols-outlined text-[16px] text-neutral-text group-hover:text-primary transition-colors">download</span>
+                    RPT-2023-10-24.pdf
+                </span>
+</div>
+</div>
+</div>
+<div class="rounded-2xl bg-slate-50/80 shadow-none border border-slate-200 active:scale-[0.99] transition-all duration-200 opacity-75">
+<div class="p-5 pl-6 border-l-[6px] border-slate-300">
+<div class="flex justify-between items-start mb-2.5">
+<div class="flex items-center gap-2 px-2 py-0.5 rounded-full bg-slate-100 border border-slate-200">
+<span class="material-symbols-outlined text-neutral-text text-[18px]">error</span>
+<span class="text-[11px] font-bold text-neutral-text uppercase tracking-wider">Critical</span>
+</div>
+<span class="text-xs text-neutral-text font-mono font-medium">3h ago</span>
+</div>
+<h3 class="text-lg font-bold leading-tight mb-1.5 text-neutral-text line-through decoration-slate-400">
+                High Latency on Auth Service
+            </h3>
+<div class="flex items-center gap-2 text-sm text-neutral-text">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+<span class="font-medium">auth-service</span>
+<span class="ml-auto text-xs bg-slate-200 text-neutral-dark font-medium px-2.5 py-1 rounded-full border border-slate-300">Silenced</span>
+</div>
+</div>
+</div>
+</main>
+<nav class="fixed bottom-0 left-0 w-full z-50 border-t border-slate-200 bg-white/95 backdrop-blur-xl pb-safe pt-2 shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
+<div class="flex justify-around items-center px-2 pb-2">
+<a class="flex flex-col items-center justify-center gap-1 min-w-[64px] p-2 rounded-xl text-neutral-text hover:bg-slate-50 hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-[26px] group-hover:scale-110 transition-transform">analytics</span>
+<span class="text-[10px] font-semibold">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 min-w-[64px] p-2 rounded-xl text-primary bg-primary-light" href="#">
+<span class="material-symbols-outlined text-[26px] font-variation-settings-fill">notifications</span>
+<span class="text-[10px] font-bold">Alerts</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 min-w-[64px] p-2 rounded-xl text-neutral-text hover:bg-slate-50 hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-[26px] group-hover:scale-110 transition-transform">manage_search</span>
+<span class="text-[10px] font-semibold">Traces</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 min-w-[64px] p-2 rounded-xl text-neutral-text hover:bg-slate-50 hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-[26px] group-hover:scale-110 transition-transform">settings</span>
+<span class="text-[10px] font-semibold">Settings</span>
+</a>
+</div>
+<div class="h-1 w-full"></div>
+</nav>
+
+</body></html>
