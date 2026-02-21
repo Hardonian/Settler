@@ -70,7 +70,7 @@ export const POST = withSecurity(
 
       // For authenticated users, check billing account
       if (!auth?.billingAccountId) {
-        return NextResponse.json({ error: "Billing account required" }, { status: 400 });
+        return NextResponse.json({ error: "Billing account required" }, { status: 402 });
       }
 
       // Enforce usage limits (for authenticated users)

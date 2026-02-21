@@ -54,7 +54,7 @@ export const POST = withSecurity(
     if (!auth || !auth.billingAccountId) {
       return NextResponse.json(
         { error: 'Billing account required' },
-        { status: 400 }
+        { status: 402 }
       );
     }
 

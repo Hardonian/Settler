@@ -56,7 +56,7 @@ export const POST = withSecurity(async function POST(request: NextRequest) {
     if (!auth || !auth.billingAccountId) {
       return NextResponse.json(
         { error: 'Billing account required' },
-        { status: 400 }
+        { status: 402 }
       );
     }
 
@@ -156,7 +156,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
     if (!auth || !auth.billingAccountId) {
       return NextResponse.json(
         { error: 'Billing account required' },
-        { status: 400 }
+        { status: 402 }
       );
     }
 
