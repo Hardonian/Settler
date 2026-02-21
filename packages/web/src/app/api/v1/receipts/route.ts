@@ -161,7 +161,7 @@ export async function POST(request: NextRequest) {
     if (!auth || !auth.billingAccountId) {
       const response = NextResponse.json(
         createActionableErrorResponse("BILLING_ACCOUNT_REQUIRED"),
-        { status: 400 }
+        { status: 402 }
       );
       return addCorrelationHeaders(response, correlationId);
     }

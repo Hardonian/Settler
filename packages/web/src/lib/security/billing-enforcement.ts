@@ -34,8 +34,10 @@ export async function requireActiveSubscription(
     
     // Get authenticated user
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-    
-    if (authError || !user) {
+
+    // Support API key authenticated requests: when userId is explicitly provided
+    // (e.g. from validateApiKey), allow billing check without a session cookie.
+    if ((authError || !user) && !userId) {
       return {
         allowed: false,
         error: NextResponse.json(
@@ -50,7 +52,7 @@ export async function requireActiveSubscription(
       };
     }
 
-    const targetUserId = userId || user.id;
+    const targetUserId = userId || user!.id;
 
     // Get billing account
     const billingAccountResult = await supabaseClient
