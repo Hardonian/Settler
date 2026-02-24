@@ -186,7 +186,11 @@
     "verify:routes": "node scripts/verify-routes.mjs",
     "verify:oss": "node scripts/run-with-env.mjs --set SITE_MODE=oss --set NEXT_PUBLIC_SITE_MODE=oss --unset ENTERPRISE_SITE_URL --unset NEXT_PUBLIC_ENTERPRISE_SITE_URL -- pnpm verify",
     "verify:enterprise": "node scripts/run-with-env.mjs --set SITE_MODE=enterprise --set NEXT_PUBLIC_SITE_MODE=enterprise -- pnpm verify",
-    "verify:links": "pnpm qa:links"
+    "verify:links": "pnpm qa:links",
+    "verify:determinism": "node scripts/verify-determinism.mjs",
+    "verify:replay": "node scripts/verify-replay.mjs",
+    "verify:tenant-isolation": "node scripts/verify-tenant-isolation.mjs",
+    "settler demo": "node scripts/settler-demo.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
