@@ -5,6 +5,20 @@ import { Command } from "commander";
 
 import Settler from "@settler/sdk";
 import type { Adapter } from "@settler/sdk";
+import {
+  MAX_REGISTRY_BYTES,
+  assertSafePackageName,
+  readLimitedUtf8,
+  validateRegistryEntries,
+  requireUnsafeAcknowledgement,
+  resolveWithinCwd,
+} from "../lib/safety";
+
+async function readRegistry(file: string) {
+  const raw = await readLimitedUtf8(file, MAX_REGISTRY_BYTES);
+  const parsed = JSON.parse(raw) as unknown;
+  return validateRegistryEntries("adapters", parsed);
+}
 
 const adaptersCommand = new Command("adapters");
 
@@ -37,21 +51,14 @@ adaptersCommand
         console.log();
       });
     } catch (error) {
-      console.error(
-        chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
-      );
+      console.error(chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`));
       process.exit(1);
     }
   });
 
-async function readRegistry(file: string): Promise<Array<{ name: string; version: string; license: string; compatibility: string; provenance?: string }>> {
-  const raw = await fs.readFile(file, "utf8");
-  return JSON.parse(raw) as Array<{ name: string; version: string; license: string; compatibility: string; provenance?: string }>;
-}
-
 adaptersCommand
   .command("search")
-  .description("Search OSS-first adapter registry")
+  .description("Search metadata-only OSS adapter registry")
   .option("--registry <file>", "Registry manifest", "marketplace/adapters/registry.json")
   .argument("[query]", "Search query")
   .action(async (query, options) => {
@@ -63,10 +70,20 @@ adaptersCommand
 
 adaptersCommand
   .command("install")
-  .description("Install adapter from local git-style registry metadata")
+  .description("Install adapter metadata only (no code execution)")
   .requiredOption("--name <name>", "Adapter package name")
   .option("--registry <file>", "Registry manifest", "marketplace/adapters/registry.json")
+  .option("--allow-unsafe", "Acknowledge package metadata write to local filesystem")
   .action(async (options) => {
+    try {
+      requireUnsafeAcknowledgement(options.allowUnsafe);
+    } catch {
+      console.error(chalk.red("Refusing to install package metadata without explicit acknowledgement. Re-run with --allow-unsafe. See SECURITY.md."));
+      process.exit(1);
+    }
+
+    assertSafePackageName(options.name);
+
     const registry = await readRegistry(options.registry);
     const entry = registry.find((item) => item.name === options.name);
     if (!entry) {
@@ -86,8 +103,10 @@ adaptersCommand
   .requiredOption("--name <name>", "Adapter package name")
   .option("--installed-dir <dir>", "Installed package directory", "marketplace/installed/adapters")
   .action(async (options) => {
-    const installedFile = path.join(options.installedDir, `${options.name}.json`);
-    const raw = await fs.readFile(installedFile, "utf8");
+    assertSafePackageName(options.name);
+
+    const installedFile = resolveWithinCwd(path.join(options.installedDir, `${options.name}.json`));
+    const raw = await readLimitedUtf8(installedFile, MAX_REGISTRY_BYTES);
     const installed = JSON.parse(raw) as { name: string; license?: string; compatibility?: string; provenance?: string };
 
     if (!installed.license || !installed.compatibility) {
@@ -96,7 +115,9 @@ adaptersCommand
     }
 
     console.log(chalk.green(`Adapter package verified: ${installed.name}`));
-    console.log(`license=${installed.license} compatibility=${installed.compatibility} provenance=${installed.provenance ?? "none"}`);
+    console.log(
+      `license=${installed.license} compatibility=${installed.compatibility} provenance=${installed.provenance ?? "none"}`
+    );
   });
 
 export { adaptersCommand };

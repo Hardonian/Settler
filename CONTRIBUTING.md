@@ -137,3 +137,35 @@ pnpm --filter @settler/web test
 ## Support
 
 Need help? See [SUPPORT.md](SUPPORT.md).
+
+## Demo and Capsule Verification
+
+```bash
+settler demo
+```
+
+Capture the generated capsule path and verify with:
+
+```bash
+settler verify --file <capsule-path>
+```
+
+## Connector / Pack / Rule Contributions
+
+- Connector adapters live in `packages/adapters/src` and must include deterministic mapping behavior.
+- Marketplace rule metadata lives in `marketplace/rules/registry.json`.
+- Adapter registry metadata lives in `marketplace/adapters/registry.json`.
+- New connectors/rules must include tests and docs updates in `packages/web/content/pages/integrations.mdx` or related docs.
+
+## Docs and Link Integrity
+
+```bash
+pnpm run verify:docs
+pnpm run verify:links
+```
+
+## Release Workflow Overview
+
+- Tags (`vX.Y.Z`) trigger release workflows.
+- `.github/workflows/release-cli.yml` publishes OS/arch CLI artifacts and SHA256 checksum files.
+- Install smoke checks validate `settler version` and `settler doctor` from packaged artifacts.

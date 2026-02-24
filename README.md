@@ -67,6 +67,34 @@ pnpm --filter @settler/web dev
 
 Open `http://localhost:3000`.
 
+## CLI Install (release artifacts)
+
+Use signed release artifacts and SHA256 checksums for install.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/settler/settler/main/scripts/install/install.sh | bash
+settler version
+settler doctor
+```
+
+Windows PowerShell:
+
+```powershell
+irm https://raw.githubusercontent.com/settler/settler/main/scripts/install/install.ps1 | iex
+settler version
+settler doctor
+```
+
+See [`LAUNCHKIT.md`](LAUNCHKIT.md) for artifact naming, manual checksum verification, and release workflow details.
+
+## One-command demo
+
+```bash
+settler demo
+```
+
+The demo is local-only, deterministic, and writes evidence artifacts under an isolated temp directory.
+
 ## Environment Variables
 
 ### Minimal OSS

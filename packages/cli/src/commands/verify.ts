@@ -1,8 +1,8 @@
 import { Command } from 'commander';
-import fs from 'node:fs';
 import path from 'node:path';
 import { stableHash } from '@settler/protocol';
 import chalk from 'chalk';
+import { MAX_VERIFICATION_JSON_BYTES, readLimitedJsonSync } from '../lib/safety';
 
 export const verifyCommand = new Command('verify')
   .description('Verify a Reconciliation Proof Capsule (RPC) against source data')
@@ -15,16 +15,10 @@ export const verifyCommand = new Command('verify')
       console.log(chalk.blue('🔍 Verifying Reconciliation Proof...'));
 
       const fullCapsulePath = path.resolve(process.cwd(), capsulePath);
-      if (!fs.existsSync(fullCapsulePath)) {
-        console.error(chalk.red(`Error: Capsule file not found at ${fullCapsulePath}`));
-        process.exit(1);
-      }
+            const capsule = readLimitedJsonSync(fullCapsulePath, 'capsule', MAX_VERIFICATION_JSON_BYTES) as Record<string, unknown>;
 
-      const capsule = JSON.parse(fs.readFileSync(fullCapsulePath, 'utf-8'));
-
-      // Protocol validation: ReconciliationProofCapsule interface
       const requiredFields = ['capsuleVersion', 'jobId', 'inputHash', 'ruleHash', 'outputHash', 'versionHash', 'createdAt'];
-      const missingFields = requiredFields.filter(f => !capsule[f]);
+      const missingFields = requiredFields.filter((f) => !capsule[f]);
 
       if (missingFields.length > 0) {
         console.error(chalk.red(`Error: Invalid capsule format. Missing fields: ${missingFields.join(', ')}`));
@@ -40,9 +34,8 @@ export const verifyCommand = new Command('verify')
 
       let allMatch = true;
 
-      // 1. Verify Input Hash
       if (options.input) {
-        const inputData = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), options.input), 'utf-8'));
+        const inputData = readLimitedJsonSync(path.resolve(process.cwd(), options.input), 'input', MAX_VERIFICATION_JSON_BYTES);
         const computedInputHash = stableHash(inputData);
         if (computedInputHash === capsule.inputHash) {
           console.log(`${chalk.green('✓')} Input Hash: ${chalk.green('MATCH')}`);
@@ -56,9 +49,8 @@ export const verifyCommand = new Command('verify')
         console.log(`${chalk.yellow('?')} Input Hash: ${chalk.yellow('SKIPPED')} (No input data provided)`);
       }
 
-      // 2. Verify Rule Hash
       if (options.rules) {
-        const rulesData = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), options.rules), 'utf-8'));
+        const rulesData = readLimitedJsonSync(path.resolve(process.cwd(), options.rules), 'rules', MAX_VERIFICATION_JSON_BYTES);
         const computedRuleHash = stableHash(rulesData);
         if (computedRuleHash === capsule.ruleHash) {
           console.log(`${chalk.green('✓')} Rule Hash: ${chalk.green('MATCH')}`);
@@ -72,9 +64,8 @@ export const verifyCommand = new Command('verify')
         console.log(`${chalk.yellow('?')} Rule Hash: ${chalk.yellow('SKIPPED')} (No rules data provided)`);
       }
 
-      // 3. Verify Output Hash
       if (options.output) {
-        const outputData = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), options.output), 'utf-8'));
+        const outputData = readLimitedJsonSync(path.resolve(process.cwd(), options.output), 'output', MAX_VERIFICATION_JSON_BYTES);
         const computedOutputHash = stableHash(outputData);
         if (computedOutputHash === capsule.outputHash) {
           console.log(`${chalk.green('✓')} Output Hash: ${chalk.green('MATCH')}`);
@@ -95,9 +86,9 @@ export const verifyCommand = new Command('verify')
         console.log('\n' + chalk.green('✅ PROOF VERIFICATION SUCCESSFUL'));
         console.log(chalk.gray('The provided data matches the cryptographic signatures in this capsule.'));
       }
-
-    } catch (e: any) {
-      console.error(chalk.red(`\nVerification Error: ${e.message}`));
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Unknown error';
+      console.error(chalk.red(`\nVerification Error: ${message}`));
       process.exit(1);
     }
   });
