@@ -28,16 +28,77 @@ interface Capsule {
   integrityRoot: string;
 }
 
-async function readJsonFile<T>(file: string): Promise<T> {
-  const raw = await fs.readFile(file, "utf8");
+const MAX_JSON_BYTES = 5 * 1024 * 1024;
+const MAX_REGISTRY_BYTES = 512 * 1024;
+const MAX_RUN_FILES = 500;
+const SAFE_PACKAGE_NAME = /^[a-z0-9._-]+$/i;
+
+function assertSafePackageName(name: string): void {
+  if (!SAFE_PACKAGE_NAME.test(name)) {
+    throw new Error(`invalid package name: ${name}`);
+  }
+}
+
+function isAllowedProvenance(url: string): boolean {
+  return /^(https|git\+https):\/\/[a-z0-9.-]+\//i.test(url);
+}
+
+async function readLimitedUtf8(file: string, maxBytes: number): Promise<string> {
+  const resolved = path.resolve(process.cwd(), file);
+  const stat = await fs.stat(resolved);
+  if (stat.size > maxBytes) {
+    throw new Error(`file exceeds max size (${maxBytes} bytes): ${resolved}`);
+  }
+  return fs.readFile(resolved, "utf8");
+}
+
+function validateRegistryEntries(kind: "adapters" | "rules", payload: unknown): Array<{ name: string; version: string; license: string; compatibility: string; provenance?: string }> {
+  if (!Array.isArray(payload)) {
+    throw new Error(`${kind} registry must be an array`);
+  }
+
+  return payload.map((item) => {
+    if (!item || typeof item !== "object") {
+      throw new Error(`${kind} registry item must be an object`);
+    }
+
+    const candidate = item as Partial<{ name: string; version: string; license: string; compatibility: string; provenance?: string }>;
+    if (!candidate.name || !candidate.version || !candidate.license || !candidate.compatibility) {
+      throw new Error(`${kind} registry item missing required fields`);
+    }
+
+    assertSafePackageName(candidate.name);
+    if (candidate.provenance && !isAllowedProvenance(candidate.provenance)) {
+      throw new Error(`invalid provenance URL for ${candidate.name}: ${candidate.provenance}`);
+    }
+
+    return {
+      name: candidate.name,
+      version: candidate.version,
+      license: candidate.license,
+      compatibility: candidate.compatibility,
+      ...(candidate.provenance ? { provenance: candidate.provenance } : {}),
+    };
+  });
+}
+
+async function readJsonFile<T>(file: string, maxBytes = MAX_JSON_BYTES): Promise<T> {
+  const raw = await readLimitedUtf8(file, maxBytes);
   return JSON.parse(raw) as T;
 }
 
 function resolveRunPath(runIdOrPath: string): string {
   if (runIdOrPath.endsWith(".json")) {
-    return runIdOrPath;
+    const resolved = path.resolve(process.cwd(), runIdOrPath);
+    const rel = path.relative(process.cwd(), resolved);
+    if (rel.startsWith("..") || path.isAbsolute(rel)) {
+      throw new Error("run path escapes repository root");
+    }
+    return resolved;
   }
-  return path.join("recon_output", `${runIdOrPath}.json`);
+
+  assertSafePackageName(runIdOrPath);
+  return path.resolve(process.cwd(), path.join("recon_output", `${runIdOrPath}.json`));
 }
 
 async function loadRun(runIdOrPath: string): Promise<RunArtifact> {
@@ -212,7 +273,7 @@ lineageCommand
   .option("-o, --output <file>", "Output file")
   .action(async (options) => {
     const entries = await fs.readdir(options.runsDir);
-    const runFiles = entries.filter((entry) => entry.endsWith(".json"));
+    const runFiles = entries.filter((entry) => entry.endsWith(".json")).slice(0, MAX_RUN_FILES);
     const runs = await Promise.all(
       runFiles.map(async (entry) => readJsonFile<RunArtifact>(path.join(options.runsDir, entry)))
     );
@@ -328,7 +389,8 @@ function attachRegistryCommands(base: Command, kind: "adapters" | "rules"): void
     .option("--registry <file>", "Registry manifest", `marketplace/${kind}/registry.json`)
     .argument("[query]", "Search query")
     .action(async (query, options) => {
-      const registry = await readJsonFile<Array<{ name: string; version: string; license: string; compatibility: string }>>(options.registry);
+      const registryRaw = await readJsonFile<unknown>(options.registry, MAX_REGISTRY_BYTES);
+      const registry = validateRegistryEntries(kind, registryRaw);
       const q = String(query ?? "").toLowerCase();
       const filtered = registry.filter((item) => !q || item.name.toLowerCase().includes(q));
       console.log(JSON.stringify(filtered, null, 2));
@@ -338,8 +400,16 @@ function attachRegistryCommands(base: Command, kind: "adapters" | "rules"): void
     .command("install")
     .requiredOption("--name <name>", `${kind} package name`)
     .option("--registry <file>", "Registry manifest", `marketplace/${kind}/registry.json`)
+    .option("--allow-unsafe", "Acknowledge local filesystem write for package metadata install")
     .action(async (options) => {
-      const registry = await readJsonFile<Array<{ name: string; version: string; license: string; compatibility: string; provenance: string }>>(options.registry);
+      if (!options.allowUnsafe) {
+        console.error(chalk.red("Refusing install without --allow-unsafe acknowledgement. See SECURITY.md."));
+        process.exit(1);
+      }
+
+      assertSafePackageName(options.name);
+      const registryRaw = await readJsonFile<unknown>(options.registry, MAX_REGISTRY_BYTES);
+      const registry = validateRegistryEntries(kind, registryRaw);
       const entry = registry.find((item) => item.name === options.name);
       if (!entry) {
         console.error(chalk.red(`${kind} package not found: ${options.name}`));
@@ -356,8 +426,10 @@ function attachRegistryCommands(base: Command, kind: "adapters" | "rules"): void
     .requiredOption("--name <name>", `${kind} package name`)
     .option("--installed-dir <dir>", "Installed package directory", `marketplace/installed/${kind}`)
     .action(async (options) => {
+      assertSafePackageName(options.name);
       const installed = await readJsonFile<{ name: string; license: string; compatibility: string; provenance?: string }>(
-        path.join(options.installedDir, `${options.name}.json`)
+        path.join(options.installedDir, `${options.name}.json`),
+        MAX_REGISTRY_BYTES
       );
       if (!installed.license || !installed.compatibility) {
         console.error(chalk.red("license or compatibility metadata missing"));

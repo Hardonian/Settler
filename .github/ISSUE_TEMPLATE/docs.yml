@@ -1,0 +1,32 @@
+name: Documentation improvement
+description: Report incorrect, missing, or ambiguous documentation.
+title: "docs: "
+labels:
+  - documentation
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Settler docs. Include exact file paths and command examples.
+  - type: input
+    id: location
+    attributes:
+      label: Doc location
+      description: File path or URL.
+      placeholder: README.md or docs/OSS_VS_ENTERPRISE.md
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: What is wrong today?
+      description: Describe mismatch between docs and observed behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed correction
+      description: Provide precise wording or command output if possible.
+    validations:
+      required: true

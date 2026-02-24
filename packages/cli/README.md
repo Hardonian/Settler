@@ -74,6 +74,22 @@ settler console health
 
 ## All Commands
 
+### Runtime and support commands
+
+```bash
+settler version
+settler doctor
+settler demo
+settler bugreport --recent-command "settler jobs list" --exit-code 1
+```
+
+For marketplace metadata installs, explicitly acknowledge local filesystem writes:
+
+```bash
+settler adapters install --name <adapter> --allow-unsafe
+settler rules install --name <rule> --allow-unsafe
+```
+
 ### Jobs
 
 ```bash
@@ -192,6 +208,7 @@ See [SDK/CLI/Console Integration Guide](../../docs/SDK_CLI_CONSOLE_INTEGRATION.m
 ## Error Handling
 
 The CLI provides clear error messages:
+
 - **401**: Authentication failed - check your API key
 - **403**: Permission denied - check API key scopes
 - **404**: Resource not found
