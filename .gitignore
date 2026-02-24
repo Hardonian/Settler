@@ -83,6 +83,8 @@ __pycache__/
 # temporary JobForge integration artifacts
 .tmp/
 *.zip
+Gemini_Generated_Image_*.png
+Video_Generation_*.mp4
 
 # internal agent/planning/strategy docs (keep local, don't track)
 internal/

@@ -1,16 +1,16 @@
 /**
  * Anomaly & Exploit Detector Agent
- * 
+ *
  * Detects anomalies in reconciliation data, API usage patterns, and security threats.
  */
 
-import { BaseAgent } from './orchestrator';
-import { logInfo, logError, logWarn } from '../../utils/logger';
+import { BaseAgent } from "./orchestrator";
+import { logInfo, logError, logWarn } from "../../utils/logger";
 
 export interface Anomaly {
   id: string;
-  type: 'reconciliation' | 'security' | 'data_quality' | 'business_logic';
-  severity: 'critical' | 'high' | 'medium' | 'low';
+  type: "reconciliation" | "security" | "data_quality" | "business_logic";
+  severity: "critical" | "high" | "medium" | "low";
   title?: string;
   description: string;
   detectedAt: Date;
@@ -21,9 +21,9 @@ export interface Anomaly {
 }
 
 export class AnomalyDetectorAgent extends BaseAgent {
-  id = 'anomaly-detector';
-  name = 'Anomaly & Exploit Detector';
-  type = 'anomaly' as const;
+  id = "anomaly-detector";
+  name = "Anomaly & Exploit Detector";
+  type = "anomaly" as const;
 
   private detectedAnomalies: Anomaly[] = [];
   private lastDetection?: Date;
@@ -35,33 +35,35 @@ export class AnomalyDetectorAgent extends BaseAgent {
     this._detectionRules = await this.loadDetectionRules();
     void this._detectionRules;
 
-    // Start periodic anomaly detection
-    setInterval(() => {
-      if (this.enabled) {
-        this.detectAnomalies().catch(error => {
-          logError('Anomaly detection failed', error);
-        });
-      }
-    }, 60000); // Every minute
+    // Start periodic anomaly detection outside test environments
+    if (process.env.NODE_ENV !== "test") {
+      setInterval(() => {
+        if (this.enabled) {
+          this.detectAnomalies().catch((error) => {
+            logError("Anomaly detection failed", error);
+          });
+        }
+      }, 60000); // Every minute
+    }
 
     this.enabled = true;
   }
 
   async execute(action: string, params: Record<string, unknown>): Promise<unknown> {
     switch (action) {
-      case 'detect':
+      case "detect":
         return await this.detectAnomalies();
-      
-      case 'get_anomalies':
-        return this.detectedAnomalies.filter(a => {
+
+      case "get_anomalies":
+        return this.detectedAnomalies.filter((a) => {
           if (params.severity) return a.severity === params.severity;
           if (params.type) return a.type === params.type;
           return true;
         });
-      
-      case 'get_stats':
+
+      case "get_stats":
         return await this.getStatus();
-      
+
       default:
         throw new Error(`Unknown action: ${action}`);
     }
@@ -84,7 +86,7 @@ export class AnomalyDetectorAgent extends BaseAgent {
     }
     status.metrics = {
       totalAnomalies: this.detectedAnomalies.length,
-      criticalAnomalies: this.detectedAnomalies.filter(a => a.severity === 'critical').length,
+      criticalAnomalies: this.detectedAnomalies.filter((a) => a.severity === "critical").length,
       falsePositiveRate: 0.05, // TODO: Calculate actual rate
     };
     return status;
@@ -117,8 +119,8 @@ export class AnomalyDetectorAgent extends BaseAgent {
 
     // Alert on critical/high severity anomalies
     for (const anomaly of anomalies) {
-      if (anomaly.severity === 'critical' || anomaly.severity === 'high') {
-        this.emit('anomaly_detected', anomaly);
+      if (anomaly.severity === "critical" || anomaly.severity === "high") {
+        this.emit("anomaly_detected", anomaly);
         await this.sendAlert(anomaly);
       }
     }
@@ -132,22 +134,22 @@ export class AnomalyDetectorAgent extends BaseAgent {
   private async detectReconciliationAnomalies(): Promise<Anomaly[]> {
     // TODO: Query database for reconciliation patterns
     // Check for sudden drops in accuracy, unusual matching patterns, etc.
-    
+
     return [
       {
-        id: 'anom_recon_1',
-        type: 'reconciliation' as const,
-        severity: 'high' as const,
-        description: 'Sudden drop in reconciliation accuracy detected',
+        id: "anom_recon_1",
+        type: "reconciliation" as const,
+        severity: "high" as const,
+        description: "Sudden drop in reconciliation accuracy detected",
         detectedAt: new Date(),
         evidence: {
           previousAccuracy: 0.98,
           currentAccuracy: 0.85,
           dropPercentage: 13.3,
-          jobId: 'job_123',
+          jobId: "job_123",
         },
         confidence: 85,
-        recommendedAction: 'Review matching rules and data quality',
+        recommendedAction: "Review matching rules and data quality",
       },
     ];
   }
@@ -161,13 +163,13 @@ export class AnomalyDetectorAgent extends BaseAgent {
     try {
       // Analyze API logs for security threats
       // Check for API abuse, credential leaks, DDoS attacks, etc.
-      
+
       // Query recent API logs for suspicious patterns
       // Note: UsageEvent table may not have all API logs - this is a simplified check
       // Import PrismaClient dynamically to avoid circular dependencies
-      const { PrismaClient } = await import('@prisma/client');
+      const { PrismaClient } = await import("@prisma/client");
       const prisma = new PrismaClient();
-      
+
       const recentLogs = await prisma.usageEvent.findMany({
         where: {
           timestamp: {
@@ -183,24 +185,26 @@ export class AnomalyDetectorAgent extends BaseAgent {
           timestamp: true,
         },
         orderBy: {
-          timestamp: 'desc',
+          timestamp: "desc",
         },
         take: 1000,
       });
 
       // Check for rate limit violations (potential DDoS)
       const rateLimitViolations = recentLogs.filter((log: { tenantId: string | null }) => {
-        const sameTenant = recentLogs.filter((l: { tenantId: string | null }) => l.tenantId === log.tenantId);
+        const sameTenant = recentLogs.filter(
+          (l: { tenantId: string | null }) => l.tenantId === log.tenantId
+        );
         return sameTenant.length > 1000; // More than 1000 requests in 24h
       });
 
       if (rateLimitViolations.length > 0) {
         threats.push({
           id: `security-rate-limit-${Date.now()}`,
-          type: 'security',
-          severity: 'high',
-          title: 'Potential DDoS Attack Detected',
-          description: `Tenant ${rateLimitViolations[0]?.tenantId || 'unknown'} has exceeded rate limits`,
+          type: "security",
+          severity: "high",
+          title: "Potential DDoS Attack Detected",
+          description: `Tenant ${rateLimitViolations[0]?.tenantId || "unknown"} has exceeded rate limits`,
           detectedAt: new Date(),
           metadata: {
             tenantId: rateLimitViolations[0]?.tenantId,
@@ -211,16 +215,17 @@ export class AnomalyDetectorAgent extends BaseAgent {
       }
 
       // Check for authentication failures (potential brute force)
-      const authFailures = recentLogs.filter((log: { eventType?: string | null }) => 
-        log.eventType?.includes('auth_failed') || log.eventType?.includes('login_failed')
+      const authFailures = recentLogs.filter(
+        (log: { eventType?: string | null }) =>
+          log.eventType?.includes("auth_failed") || log.eventType?.includes("login_failed")
       );
 
       if (authFailures.length > 50) {
         threats.push({
           id: `security-auth-failures-${Date.now()}`,
-          type: 'security',
-          severity: 'medium',
-          title: 'Excessive Authentication Failures',
+          type: "security",
+          severity: "medium",
+          title: "Excessive Authentication Failures",
           description: `${authFailures.length} authentication failures detected in last 24 hours`,
           detectedAt: new Date(),
           metadata: {
@@ -233,19 +238,21 @@ export class AnomalyDetectorAgent extends BaseAgent {
       // Check metadata for potential credential leaks
       const potentialLeaks = recentLogs.filter((log: { metadata?: unknown }) => {
         const metadataStr = JSON.stringify(log.metadata || {});
-        return metadataStr.includes('password') || 
-               metadataStr.includes('api_key') || 
-               metadataStr.includes('secret') ||
-               metadataStr.includes('token');
+        return (
+          metadataStr.includes("password") ||
+          metadataStr.includes("api_key") ||
+          metadataStr.includes("secret") ||
+          metadataStr.includes("token")
+        );
       });
 
       if (potentialLeaks.length > 0) {
         threats.push({
           id: `security-credential-leak-${Date.now()}`,
-          type: 'security',
-          severity: 'critical',
-          title: 'Potential Credential Leak Detected',
-          description: 'API logs contain potential sensitive credentials',
+          type: "security",
+          severity: "critical",
+          title: "Potential Credential Leak Detected",
+          description: "API logs contain potential sensitive credentials",
           detectedAt: new Date(),
           metadata: {
             leakCount: potentialLeaks.length,
@@ -254,16 +261,16 @@ export class AnomalyDetectorAgent extends BaseAgent {
         });
       }
 
-      logInfo('Security threat detection completed', {
+      logInfo("Security threat detection completed", {
         threatCount: threats.length,
         rateLimitViolations: rateLimitViolations.length,
         authFailures: authFailures.length,
         potentialLeaks: potentialLeaks.length,
       });
-      
+
       await prisma.$disconnect();
     } catch (error) {
-      logError('Failed to detect security threats', error);
+      logError("Failed to detect security threats", error);
     }
 
     return threats;
@@ -275,7 +282,7 @@ export class AnomalyDetectorAgent extends BaseAgent {
   private async detectDataQualityIssues(): Promise<Anomaly[]> {
     // TODO: Analyze data for quality issues
     // Check for missing data, format changes, inconsistencies, etc.
-    
+
     return [];
   }
 
@@ -285,7 +292,7 @@ export class AnomalyDetectorAgent extends BaseAgent {
   private async detectBusinessLogicAnomalies(): Promise<Anomaly[]> {
     // TODO: Analyze business logic patterns
     // Check for unusual customer behavior, potential fraud, compliance violations, etc.
-    
+
     return [];
   }
 
@@ -296,16 +303,16 @@ export class AnomalyDetectorAgent extends BaseAgent {
     // TODO: Load from database or config
     return [
       {
-        id: 'rule_1',
-        type: 'reconciliation',
-        condition: 'accuracy < 0.9',
-        severity: 'high',
+        id: "rule_1",
+        type: "reconciliation",
+        condition: "accuracy < 0.9",
+        severity: "high",
       },
       {
-        id: 'rule_2',
-        type: 'security',
-        condition: 'api_calls_per_minute > 1000',
-        severity: 'medium',
+        id: "rule_2",
+        type: "security",
+        condition: "api_calls_per_minute > 1000",
+        severity: "medium",
       },
     ];
   }
@@ -320,7 +327,7 @@ export class AnomalyDetectorAgent extends BaseAgent {
       description: anomaly.description,
       anomalyId: anomaly.id,
     });
-    this.emit('alert_sent', anomaly);
+    this.emit("alert_sent", anomaly);
   }
 }
 
@@ -328,5 +335,5 @@ interface DetectionRule {
   id: string;
   type: string;
   condition: string;
-  severity: Anomaly['severity'];
+  severity: Anomaly["severity"];
 }
