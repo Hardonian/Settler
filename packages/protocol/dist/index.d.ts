@@ -79,6 +79,8 @@ export interface ReconciliationProofCapsule {
     ruleHash: string;
     outputHash: string;
     versionHash: string;
+    signature?: string;
+    signer?: string;
     createdAt: string;
 }
 export interface Money {

@@ -518,8 +518,8 @@ function computeResultsFingerprint(
  */
 export async function validateDeterminism(): Promise<{
   success: boolean;
-  golden_tests: ReturnType<typeof runAllGoldenTests>;
-  pressure_tests: ReturnType<typeof runPressureTestSuite>;
+  golden_tests: Awaited<ReturnType<typeof runAllGoldenTests>>;
+  pressure_tests: Awaited<ReturnType<typeof runPressureTestSuite>>;
 }> {
   logInfo('Starting determinism validation');
   

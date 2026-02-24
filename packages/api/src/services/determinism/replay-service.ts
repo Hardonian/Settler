@@ -15,8 +15,8 @@ import { logError, logInfo } from '../../utils/logger';
 import { createHash } from 'node:crypto';
 import { stableStringify } from './canonical-input';
 import { getRunSnapshot, RunSnapshot } from './run-snapshot';
-import { DeterministicMatchingEngine } from './deterministic-matcher';
-import { ExecutionOrchestrator, logExecutionStep } from './execution-orchestrator';
+import { DeterministicMatchingEngine, type DeterministicMatchResult } from './deterministic-matcher';
+import { logExecutionStep } from './execution-orchestrator';
 
 /**
  * Replay request
@@ -120,7 +120,6 @@ export async function executeReplay(request: ReplayRequest): Promise<ReplayResul
     const rules = await loadOriginalRules(snapshot);
     
     // Run matching with deterministic engine
-    const orchestrator = new ExecutionOrchestrator();
     const engine = new DeterministicMatchingEngine({
       snapshot: replaySnapshot,
       source_records: sourceRecords,
@@ -276,13 +275,7 @@ async function loadOriginalRules(snapshot: RunSnapshot): Promise<Array<{
 async function compareResults(
   originalRunId: string,
   replayRunId: string,
-  replayMatches: Array<{
-    stable_match_id: string;
-    left_record_id: string;
-    right_record_id: string;
-    confidence_score: number;
-    scoring_breakdown: Record<string, unknown>;
-  }>
+  replayMatches: DeterministicMatchResult[]
 ): Promise<{
   matches_identical: boolean;
   match_count_match: boolean;
@@ -421,7 +414,7 @@ async function getMatchOrdering(runId: string): Promise<string[]> {
  */
 async function compareScoreBreakdowns(
   runId: string,
-  replayMatches: Array<{ left_record_id: string; scoring_breakdown: Record<string, unknown> }>
+  replayMatches: DeterministicMatchResult[]
 ): Promise<boolean> {
   // This is a simplified check - in production would compare detailed breakdowns
   return true;

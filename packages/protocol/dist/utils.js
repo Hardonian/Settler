@@ -3,6 +3,9 @@
  * Protocol Utilities
  * Helper functions for working with protocol types
  */
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sanitizeString = sanitizeString;
 exports.isValidISODate = isValidISODate;
@@ -144,8 +147,8 @@ function maskPII(input, maskChar = '*') {
  */
 function generateSecureId(prefix = 'id') {
     const randomBytes = new Uint8Array(16);
-    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
-        crypto.getRandomValues(randomBytes);
+    if (typeof node_crypto_1.default !== 'undefined' && node_crypto_1.default.getRandomValues) {
+        node_crypto_1.default.getRandomValues(randomBytes);
     }
     else {
         // Fallback for environments without crypto
@@ -211,19 +214,11 @@ function normalize(value) {
 function stableStringify(value) {
     return JSON.stringify(normalize(value));
 }
+const node_crypto_1 = __importDefault(require("node:crypto"));
 /**
  * Compute SHA-256 hash of data
  */
 function stableHash(value) {
-    // Use node:crypto if available (backend), fallback to simple hash if not (unlikely for proof generation)
-    try {
-        const crypto = require('node:crypto');
-        return crypto.createHash('sha256').update(stableStringify(value)).digest('hex');
-    }
-    catch {
-        // If require fails (browser), we'd need SubtleCrypto, but for now we prioritize the backend requirement
-        // In a real monorepo, we'd have a core-crypto package that abstraction this
-        throw new Error('stableHash requires node:crypto. Browser support not implemented in this layer.');
-    }
+    return node_crypto_1.default.createHash('sha256').update(stableStringify(value)).digest('hex');
 }
 //# sourceMappingURL=utils.js.map

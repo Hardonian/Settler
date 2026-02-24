@@ -213,11 +213,12 @@ export async function getRunSnapshot(snapshotId: string): Promise<RunSnapshot | 
       [snapshotId]
     );
     
-    if (results.length === 0) {
+    const row = results[0];
+    if (!row) {
       return null;
     }
-    
-    return mapRowToSnapshot(results[0]);
+
+    return mapRowToSnapshot(row);
   } catch (error) {
     logError('Failed to get run snapshot', error, { snapshotId });
     throw error;
@@ -240,11 +241,12 @@ export async function getRunSnapshotByFingerprint(
       [tenantId, runFingerprint]
     );
     
-    if (results.length === 0) {
+    const row = results[0];
+    if (!row) {
       return null;
     }
-    
-    return mapRowToSnapshot(results[0]);
+
+    return mapRowToSnapshot(row);
   } catch (error) {
     logError('Failed to get run snapshot by fingerprint', error, { tenantId, runFingerprint });
     throw error;

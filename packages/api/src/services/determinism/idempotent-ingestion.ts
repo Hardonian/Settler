@@ -354,7 +354,7 @@ export async function upsertNormalizedTransaction(
   }
 ): Promise<{ id: string; created: boolean }> {
   const effectiveDate = new Date(date);
-  const dateStr = effectiveDate.toISOString().split('T')[0];
+  const dateStr = effectiveDate.toISOString().split('T')[0] ?? '';
   
   try {
     // Try to insert

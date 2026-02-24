@@ -47,7 +47,7 @@ export interface SealInput {
    * Sorted match results produced by the reconciliation engine.
    * Must already be sorted by `sourceTransactionId` for determinism.
    */
-  matches: ReadonlyArray<Record<string, unknown>>;
+  matches: ReadonlyArray<unknown>;
 
   /** Engine name + version + build SHA for the version hash. */
   engine: {
@@ -99,7 +99,7 @@ function buildRuleHash(rules: Record<string, unknown>): string {
 }
 
 function buildOutputHash(
-  matches: ReadonlyArray<Record<string, unknown>>
+  matches: ReadonlyArray<unknown>
 ): string {
   return stableHash(matches);
 }
