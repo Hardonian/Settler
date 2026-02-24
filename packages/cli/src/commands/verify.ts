@@ -1,20 +1,8 @@
 import { Command } from 'commander';
-import fs from 'node:fs';
 import path from 'node:path';
 import { stableHash } from '@settler/protocol';
 import chalk from 'chalk';
-
-const MAX_VERIFICATION_JSON_BYTES = 5 * 1024 * 1024;
-
-function readLimitedJson(filePath: string, label: string): unknown {
-  const stat = fs.statSync(filePath);
-  if (stat.size > MAX_VERIFICATION_JSON_BYTES) {
-    throw new Error(`${label} exceeds max size (${MAX_VERIFICATION_JSON_BYTES} bytes)`);
-  }
-
-  const raw = fs.readFileSync(filePath, 'utf-8');
-  return JSON.parse(raw);
-}
+import { MAX_VERIFICATION_JSON_BYTES, readLimitedJsonSync } from '../lib/safety';
 
 export const verifyCommand = new Command('verify')
   .description('Verify a Reconciliation Proof Capsule (RPC) against source data')
@@ -27,12 +15,7 @@ export const verifyCommand = new Command('verify')
       console.log(chalk.blue('🔍 Verifying Reconciliation Proof...'));
 
       const fullCapsulePath = path.resolve(process.cwd(), capsulePath);
-      if (!fs.existsSync(fullCapsulePath)) {
-        console.error(chalk.red(`Error: Capsule file not found at ${fullCapsulePath}`));
-        process.exit(1);
-      }
-
-      const capsule = readLimitedJson(fullCapsulePath, 'capsule') as Record<string, unknown>;
+            const capsule = readLimitedJsonSync(fullCapsulePath, 'capsule', MAX_VERIFICATION_JSON_BYTES) as Record<string, unknown>;
 
       const requiredFields = ['capsuleVersion', 'jobId', 'inputHash', 'ruleHash', 'outputHash', 'versionHash', 'createdAt'];
       const missingFields = requiredFields.filter((f) => !capsule[f]);
@@ -52,7 +35,7 @@ export const verifyCommand = new Command('verify')
       let allMatch = true;
 
       if (options.input) {
-        const inputData = readLimitedJson(path.resolve(process.cwd(), options.input), 'input');
+        const inputData = readLimitedJsonSync(path.resolve(process.cwd(), options.input), 'input', MAX_VERIFICATION_JSON_BYTES);
         const computedInputHash = stableHash(inputData);
         if (computedInputHash === capsule.inputHash) {
           console.log(`${chalk.green('✓')} Input Hash: ${chalk.green('MATCH')}`);
@@ -67,7 +50,7 @@ export const verifyCommand = new Command('verify')
       }
 
       if (options.rules) {
-        const rulesData = readLimitedJson(path.resolve(process.cwd(), options.rules), 'rules');
+        const rulesData = readLimitedJsonSync(path.resolve(process.cwd(), options.rules), 'rules', MAX_VERIFICATION_JSON_BYTES);
         const computedRuleHash = stableHash(rulesData);
         if (computedRuleHash === capsule.ruleHash) {
           console.log(`${chalk.green('✓')} Rule Hash: ${chalk.green('MATCH')}`);
@@ -82,7 +65,7 @@ export const verifyCommand = new Command('verify')
       }
 
       if (options.output) {
-        const outputData = readLimitedJson(path.resolve(process.cwd(), options.output), 'output');
+        const outputData = readLimitedJsonSync(path.resolve(process.cwd(), options.output), 'output', MAX_VERIFICATION_JSON_BYTES);
         const computedOutputHash = stableHash(outputData);
         if (computedOutputHash === capsule.outputHash) {
           console.log(`${chalk.green('✓')} Output Hash: ${chalk.green('MATCH')}`);

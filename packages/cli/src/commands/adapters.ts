@@ -5,75 +5,19 @@ import { Command } from "commander";
 
 import Settler from "@settler/sdk";
 import type { Adapter } from "@settler/sdk";
+import {
+  MAX_REGISTRY_BYTES,
+  assertSafePackageName,
+  readLimitedUtf8,
+  validateRegistryEntries,
+  requireUnsafeAcknowledgement,
+  resolveWithinCwd,
+} from "../lib/safety";
 
-const MAX_REGISTRY_BYTES = 512 * 1024;
-const SAFE_PACKAGE_NAME = /^[a-z0-9._-]+$/i;
-
-type RegistryEntry = {
-  name: string;
-  version: string;
-  license: string;
-  compatibility: string;
-  provenance?: string;
-};
-
-function assertSafePackageName(name: string): void {
-  if (!SAFE_PACKAGE_NAME.test(name)) {
-    throw new Error(`invalid package name: ${name}`);
-  }
-}
-
-function isAllowedProvenance(url: string): boolean {
-  return /^(https|git\+https):\/\/[a-z0-9.-]+\//i.test(url);
-}
-
-async function readLimitedUtf8(file: string, maxBytes: number): Promise<string> {
-  const stat = await fs.stat(file);
-  if (stat.size > maxBytes) {
-    throw new Error(`file exceeds max size (${maxBytes} bytes): ${file}`);
-  }
-  return fs.readFile(file, "utf8");
-}
-
-function validateRegistry(entries: unknown, manifestPath: string): RegistryEntry[] {
-  if (!Array.isArray(entries)) {
-    throw new Error(`registry must be an array: ${manifestPath}`);
-  }
-
-  const validated: RegistryEntry[] = [];
-  for (const item of entries) {
-    if (!item || typeof item !== "object") {
-      throw new Error(`registry item must be an object: ${manifestPath}`);
-    }
-
-    const candidate = item as Partial<RegistryEntry>;
-    if (!candidate.name || !candidate.version || !candidate.license || !candidate.compatibility) {
-      throw new Error(`registry item missing required fields: ${manifestPath}`);
-    }
-
-    assertSafePackageName(candidate.name);
-
-    if (candidate.provenance && !isAllowedProvenance(candidate.provenance)) {
-      throw new Error(`registry provenance must be https URL: ${candidate.provenance}`);
-    }
-
-    validated.push({
-      name: candidate.name,
-      version: candidate.version,
-      license: candidate.license,
-      compatibility: candidate.compatibility,
-      ...(candidate.provenance ? { provenance: candidate.provenance } : {}),
-    });
-  }
-
-  return validated;
-}
-
-async function readRegistry(file: string): Promise<RegistryEntry[]> {
-  const manifestPath = path.resolve(process.cwd(), file);
-  const raw = await readLimitedUtf8(manifestPath, MAX_REGISTRY_BYTES);
+async function readRegistry(file: string) {
+  const raw = await readLimitedUtf8(file, MAX_REGISTRY_BYTES);
   const parsed = JSON.parse(raw) as unknown;
-  return validateRegistry(parsed, manifestPath);
+  return validateRegistryEntries("adapters", parsed);
 }
 
 const adaptersCommand = new Command("adapters");
@@ -131,12 +75,10 @@ adaptersCommand
   .option("--registry <file>", "Registry manifest", "marketplace/adapters/registry.json")
   .option("--allow-unsafe", "Acknowledge package metadata write to local filesystem")
   .action(async (options) => {
-    if (!options.allowUnsafe) {
-      console.error(
-        chalk.red(
-          "Refusing to install package metadata without explicit acknowledgement. Re-run with --allow-unsafe. See SECURITY.md."
-        )
-      );
+    try {
+      requireUnsafeAcknowledgement(options.allowUnsafe);
+    } catch {
+      console.error(chalk.red("Refusing to install package metadata without explicit acknowledgement. Re-run with --allow-unsafe. See SECURITY.md."));
       process.exit(1);
     }
 
@@ -163,7 +105,7 @@ adaptersCommand
   .action(async (options) => {
     assertSafePackageName(options.name);
 
-    const installedFile = path.resolve(process.cwd(), options.installedDir, `${options.name}.json`);
+    const installedFile = resolveWithinCwd(path.join(options.installedDir, `${options.name}.json`));
     const raw = await readLimitedUtf8(installedFile, MAX_REGISTRY_BYTES);
     const installed = JSON.parse(raw) as { name: string; license?: string; compatibility?: string; provenance?: string };
 

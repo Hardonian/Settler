@@ -3,6 +3,16 @@ import path from "node:path";
 import { Command } from "commander";
 import chalk from "chalk";
 import { buildAuditChain, redactTenant, stableHash, stableStringify, type SettlerEvent } from "../lib/event-model";
+import {
+  MAX_JSON_BYTES,
+  MAX_REGISTRY_BYTES,
+  MAX_RUN_FILES,
+  assertSafePackageName,
+  readLimitedUtf8,
+  requireUnsafeAcknowledgement,
+  resolveWithinCwd,
+  validateRegistryEntries,
+} from "../lib/safety";
 
 interface RunArtifact {
   runId: string;
@@ -28,60 +38,6 @@ interface Capsule {
   integrityRoot: string;
 }
 
-const MAX_JSON_BYTES = 5 * 1024 * 1024;
-const MAX_REGISTRY_BYTES = 512 * 1024;
-const MAX_RUN_FILES = 500;
-const SAFE_PACKAGE_NAME = /^[a-z0-9._-]+$/i;
-
-function assertSafePackageName(name: string): void {
-  if (!SAFE_PACKAGE_NAME.test(name)) {
-    throw new Error(`invalid package name: ${name}`);
-  }
-}
-
-function isAllowedProvenance(url: string): boolean {
-  return /^(https|git\+https):\/\/[a-z0-9.-]+\//i.test(url);
-}
-
-async function readLimitedUtf8(file: string, maxBytes: number): Promise<string> {
-  const resolved = path.resolve(process.cwd(), file);
-  const stat = await fs.stat(resolved);
-  if (stat.size > maxBytes) {
-    throw new Error(`file exceeds max size (${maxBytes} bytes): ${resolved}`);
-  }
-  return fs.readFile(resolved, "utf8");
-}
-
-function validateRegistryEntries(kind: "adapters" | "rules", payload: unknown): Array<{ name: string; version: string; license: string; compatibility: string; provenance?: string }> {
-  if (!Array.isArray(payload)) {
-    throw new Error(`${kind} registry must be an array`);
-  }
-
-  return payload.map((item) => {
-    if (!item || typeof item !== "object") {
-      throw new Error(`${kind} registry item must be an object`);
-    }
-
-    const candidate = item as Partial<{ name: string; version: string; license: string; compatibility: string; provenance?: string }>;
-    if (!candidate.name || !candidate.version || !candidate.license || !candidate.compatibility) {
-      throw new Error(`${kind} registry item missing required fields`);
-    }
-
-    assertSafePackageName(candidate.name);
-    if (candidate.provenance && !isAllowedProvenance(candidate.provenance)) {
-      throw new Error(`invalid provenance URL for ${candidate.name}: ${candidate.provenance}`);
-    }
-
-    return {
-      name: candidate.name,
-      version: candidate.version,
-      license: candidate.license,
-      compatibility: candidate.compatibility,
-      ...(candidate.provenance ? { provenance: candidate.provenance } : {}),
-    };
-  });
-}
-
 async function readJsonFile<T>(file: string, maxBytes = MAX_JSON_BYTES): Promise<T> {
   const raw = await readLimitedUtf8(file, maxBytes);
   return JSON.parse(raw) as T;
@@ -89,16 +45,11 @@ async function readJsonFile<T>(file: string, maxBytes = MAX_JSON_BYTES): Promise
 
 function resolveRunPath(runIdOrPath: string): string {
   if (runIdOrPath.endsWith(".json")) {
-    const resolved = path.resolve(process.cwd(), runIdOrPath);
-    const rel = path.relative(process.cwd(), resolved);
-    if (rel.startsWith("..") || path.isAbsolute(rel)) {
-      throw new Error("run path escapes repository root");
-    }
-    return resolved;
+    return resolveWithinCwd(runIdOrPath);
   }
 
   assertSafePackageName(runIdOrPath);
-  return path.resolve(process.cwd(), path.join("recon_output", `${runIdOrPath}.json`));
+  return resolveWithinCwd(path.join("recon_output", `${runIdOrPath}.json`));
 }
 
 async function loadRun(runIdOrPath: string): Promise<RunArtifact> {
@@ -272,10 +223,11 @@ lineageCommand
   .option("--runs-dir <dir>", "Run artifact directory", "recon_output")
   .option("-o, --output <file>", "Output file")
   .action(async (options) => {
-    const entries = await fs.readdir(options.runsDir);
+    const runsDir = resolveWithinCwd(options.runsDir);
+  const entries = await fs.readdir(runsDir);
     const runFiles = entries.filter((entry) => entry.endsWith(".json")).slice(0, MAX_RUN_FILES);
     const runs = await Promise.all(
-      runFiles.map(async (entry) => readJsonFile<RunArtifact>(path.join(options.runsDir, entry)))
+      runFiles.map(async (entry) => readJsonFile<RunArtifact>(path.join(runsDir, entry)))
     );
     const tenantRuns = runs.filter((run) => run.tenantId === options.tenant);
     const nodes = tenantRuns.map((run) => ({ runId: run.runId, sources: run.events.filter((event) => event.stage === "ingest").length, outputs: run.events.filter((event) => event.stage === "export").length }));
@@ -309,9 +261,10 @@ explainCommand.argument("<runIdOrPath>", "Run id or file").action(async (runIdOr
 
 export const operatorCommand = new Command("operator").description("Local-first operator mode summary");
 operatorCommand.option("--runs-dir <dir>", "Run artifact directory", "recon_output").action(async (options) => {
-  const entries = await fs.readdir(options.runsDir);
+  const runsDir = resolveWithinCwd(options.runsDir);
+  const entries = await fs.readdir(runsDir);
   const runFiles = entries.filter((entry) => entry.endsWith(".json"));
-  const runs = await Promise.all(runFiles.map(async (entry) => readJsonFile<RunArtifact>(path.join(options.runsDir, entry))));
+  const runs = await Promise.all(runFiles.map(async (entry) => readJsonFile<RunArtifact>(path.join(runsDir, entry))));
   const tenants = Array.from(new Set(runs.map((run) => run.tenantId)));
   const warnings = runs.filter((run) => buildAuditChain(run.events).length !== run.events.length).length;
   console.log(chalk.bold("Operator Mode"));
@@ -368,9 +321,10 @@ supportCommand
 
 export const profileCommand = new Command("profile").description("Gamification profile (cosmetic only)");
 profileCommand.option("--runs-dir <dir>", "Run artifact directory", "recon_output").action(async (options) => {
-  const entries = await fs.readdir(options.runsDir);
+  const runsDir = resolveWithinCwd(options.runsDir);
+  const entries = await fs.readdir(runsDir);
   const runFiles = entries.filter((entry) => entry.endsWith(".json"));
-  const runs = await Promise.all(runFiles.map(async (entry) => readJsonFile<RunArtifact>(path.join(options.runsDir, entry))));
+  const runs = await Promise.all(runFiles.map(async (entry) => readJsonFile<RunArtifact>(path.join(runsDir, entry))));
   const verifiedExports = runs.filter((run) => Boolean(run.exportSchemaVersion)).length;
   const xp = verifiedExports * 25 + runs.length * 5;
   const badges = [
@@ -402,7 +356,9 @@ function attachRegistryCommands(base: Command, kind: "adapters" | "rules"): void
     .option("--registry <file>", "Registry manifest", `marketplace/${kind}/registry.json`)
     .option("--allow-unsafe", "Acknowledge local filesystem write for package metadata install")
     .action(async (options) => {
-      if (!options.allowUnsafe) {
+      try {
+        requireUnsafeAcknowledgement(options.allowUnsafe);
+      } catch {
         console.error(chalk.red("Refusing install without --allow-unsafe acknowledgement. See SECURITY.md."));
         process.exit(1);
       }
