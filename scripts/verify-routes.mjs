@@ -5,6 +5,16 @@ import { spawn } from "node:child_process";
 const port = Number(process.env.PORT || 3210);
 const base = `http://127.0.0.1:${port}`;
 
+const strict200Routes = ["/", "/docs"];
+const non500Routes = [
+  "/app",
+  "/app/assistant",
+  "/app/pipelines",
+  "/app/runs",
+  "/app/review-queue",
+  "/app/pipelines/demo-pipeline",
+];
+
 async function waitForServer(timeoutMs = 60000) {
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
@@ -43,21 +53,34 @@ function startWebServer() {
   return server;
 }
 
+async function assertRouteStatus(route, mode) {
+  const res = await fetch(`${base}${route}`, {
+    redirect: mode === "strict" ? "follow" : "manual",
+  });
+
+  if (mode === "strict") {
+    if (res.status !== 200) {
+      throw new Error(`${route} returned ${res.status} (expected 200)`);
+    }
+  } else if (res.status >= 500) {
+    throw new Error(`${route} returned ${res.status} (must not hard-500)`);
+  }
+
+  console.log(`✅ ${route} => ${res.status}`);
+}
+
 async function main() {
   const server = startWebServer();
 
   try {
     await waitForServer();
-    for (const route of ["/", "/docs"]) {
-      const res = await fetch(`${base}${route}`, { redirect: "follow" });
-      if (res.status !== 200) throw new Error(`${route} returned ${res.status}`);
-      console.log(`✅ ${route} => ${res.status}`);
+
+    for (const route of strict200Routes) {
+      await assertRouteStatus(route, "strict");
     }
 
-    for (const route of ["/app", "/app/pipelines/demo-pipeline"]) {
-      const res = await fetch(`${base}${route}`, { redirect: "manual" });
-      if (res.status >= 500) throw new Error(`${route} returned ${res.status}`);
-      console.log(`✅ ${route} => ${res.status}`);
+    for (const route of non500Routes) {
+      await assertRouteStatus(route, "non500");
     }
   } finally {
     server.kill("SIGTERM");
