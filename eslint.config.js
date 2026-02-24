@@ -69,6 +69,27 @@ module.exports = [
       ],
     },
   },
+
+  {
+    files: ["packages/web/src/app/(marketing)/**/*.{ts,tsx,js,jsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/app/app/**", "@/app/console/**", "@/app/admin/**", "@/app/dashboard/**"],
+              message: "Marketing surface cannot import app-shell modules.",
+            },
+            {
+              group: ["@/env/server", "@/env/server/**"],
+              message: "Marketing surface cannot import server-only env.",
+            },
+          ],
+        },
+      ],
+    },
+  },
   // CLI package: allow console.log for CLI output (must come after general config to override)
   {
     files: ["packages/cli/src/**/*.ts"],

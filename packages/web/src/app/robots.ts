@@ -1,41 +1,30 @@
-/**
- * Robots.txt Generator
- * 
- * Generates robots.txt for SEO.
- */
-
-import { MetadataRoute } from 'next';
+import { MetadataRoute } from "next";
+import { getSiteHost, getSiteMode } from "@/lib/site-mode";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://settler.dev';
+  const mode = getSiteMode();
+  const baseUrl = getSiteHost(mode);
+  const enterpriseStub = process.env.ENTERPRISE_INDEXING_POLICY === "noindex";
 
   return {
     rules: [
       {
-        userAgent: '*',
-        allow: '/',
+        userAgent: "*",
+        allow: "/",
         disallow: [
-          '/api/',
-          '/admin/',
-          '/console/',
-          '/dashboard/',
-          '/review/',
-          '/_next/',
-          '/static/',
+          "/api/",
+          "/admin/",
+          "/console/",
+          "/dashboard/",
+          "/app/",
+          "/review/",
+          "/_next/",
+          "/static/",
         ],
       },
-      {
-        userAgent: 'Googlebot',
-        allow: '/',
-        disallow: [
-          '/api/',
-          '/admin/',
-          '/console/',
-          '/dashboard/',
-          '/review/',
-        ],
-      },
+      ...(mode === "enterprise" && enterpriseStub ? [{ userAgent: "*", disallow: "/" }] : []),
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
+    host: baseUrl,
   };
 }

@@ -12,9 +12,11 @@ import { Menu, ChevronDown } from "lucide-react";
 import { SETTLER_IMAGES } from "@/lib/images/image-config";
 
 // Primary navigation items (always visible on desktop)
+const siteMode = process.env.NEXT_PUBLIC_SITE_MODE || "oss";
+
 const primaryNavigationItems = [
   { href: "/platform", label: "Platform" },
-  { href: "/enterprise", label: "Enterprise" },
+  ...(siteMode === "enterprise" ? [{ href: "/enterprise", label: "Enterprise" }] : []),
   { href: "/pricing", label: "Pricing" },
   { href: "/security", label: "Security" },
   { href: "/docs", label: "Docs" },
@@ -242,7 +244,10 @@ export function Navigation() {
               {/* Right side actions */}
               <div className="flex items-center gap-3 ml-2">
                 <DarkModeToggle />
-                <Link href="/login" className="text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400">
+                <Link
+                  href="/login"
+                  className="text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400"
+                >
                   Login
                 </Link>
                 <Button asChild variant="default" size="default" className="whitespace-nowrap">
@@ -279,7 +284,12 @@ export function Navigation() {
               })}
               <div className="flex items-center gap-2 ml-2">
                 <DarkModeToggle />
-                <Link href="/login" className="text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400">Login</Link>
+                <Link
+                  href="/login"
+                  className="text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400"
+                >
+                  Login
+                </Link>
                 <Button asChild variant="default" size="sm" className="whitespace-nowrap">
                   <Link href="/signup">Get Started</Link>
                 </Button>

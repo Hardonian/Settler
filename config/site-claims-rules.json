@@ -1,0 +1,15 @@
+{
+  "forbiddenTermsByMode": {
+    "oss": ["SLA-backed", "dedicated VPC", "enterprise SSO", "private cloud"],
+    "enterprise": ["fully open-core replacement"]
+  },
+  "allowedTermsByMode": {
+    "oss": ["enterprise", "contact sales"],
+    "enterprise": ["Roadmap", "Preview", "Stub"]
+  },
+  "requiredLabelsForEnterpriseClaims": ["Roadmap", "Preview", "Stub"],
+  "allowlists": {
+    "internalTerms": ["packages/web/src/app/docs", "docs/"]
+  },
+  "internalTerms": ["SUPABASE_SERVICE_ROLE_KEY", "internal-only", "control-plane secret"]
+}

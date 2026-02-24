@@ -1,6 +1,9 @@
 import { Metadata } from "next";
 import { SETTLER_IMAGES } from "@/lib/images/image-config";
 
+const getDefaultSiteUrl = () =>
+  process.env.NEXT_PUBLIC_SITE_URL || process.env.OSS_SITE_URL || "https://settler.dev";
+
 export interface PageMetadata {
   title: string;
   description: string;
@@ -22,7 +25,7 @@ export function generateMetadata({
   canonical,
   noindex = false,
 }: PageMetadata): Metadata {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://settler.dev";
+  const siteUrl = getDefaultSiteUrl();
   const fullTitle = title.includes("Settler") ? title : `${title} | Settler`;
   // canonical should always be provided by the caller for server components
   const canonicalUrl = canonical || siteUrl;
@@ -103,7 +106,7 @@ export function generatePricingMetadata(): Metadata {
     description:
       "Optional hosted infrastructure for organizations that want managed deployment and scale without changing core reconciliation logic.",
     keywords: ["enterprise hosting", "managed reconciliation", "infrastructure scale"],
-    canonical: "https://settler.dev/enterprise",
+    canonical: `${getDefaultSiteUrl()}/enterprise`,
   });
 }
 
@@ -123,7 +126,7 @@ export function generateDocsMetadata(section?: string): Metadata {
       "integration guide",
       "API reference",
     ],
-    canonical: section ? `https://settler.dev/docs/${section}` : "https://settler.dev/docs",
+    canonical: section ? `${getDefaultSiteUrl()}/docs/${section}` : `${getDefaultSiteUrl()}/docs`,
   });
 }
 
@@ -140,6 +143,6 @@ export function generateIntegrationMetadata(integrationName: string): Metadata {
       `reconcile ${integrationName}`,
       `${integrationName} API`,
     ],
-    canonical: `https://settler.dev/integrations/${integrationName.toLowerCase()}`,
+    canonical: `${getDefaultSiteUrl()}/integrations/${integrationName.toLowerCase()}`,
   });
 }
