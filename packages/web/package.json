@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "next dev",
     "clean:build": "rm -rf .next dist out .next/tsconfig.tsbuildinfo",
-    "validate:api-routes": "test -f ../../scripts/validate-api-routes.ts && tsx ../../scripts/validate-api-routes.ts || echo '\u26a0\ufe0f  API route validation skipped (script not found)'",
+    "validate:api-routes": "test -f ../../scripts/validate-api-routes.ts && tsx ../../scripts/validate-api-routes.ts || echo '⚠️  API route validation skipped (script not found)'",
     "validate:boundary": "tsx ./scripts/check-public-route-boundary.ts",
     "build": "next build --webpack",
     "build:vercel": "next build --webpack",
@@ -22,12 +22,12 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "analyze": "ANALYZE=true next build",
-    "analyze:bundle": "ANALYZE=true next build && echo '\n\ud83d\udce6 Bundle analysis complete. Open the generated HTML report to view details.'",
+    "analyze:bundle": "ANALYZE=true next build && echo '\n📦 Bundle analysis complete. Open the generated HTML report to view details.'",
     "bundle:size": "next build && du -sh .next && du -sh .next/static && du -sh .next/static/chunks",
-    "bundle:check": "echo '\u26a0\ufe0f  Run \"pnpm build\" first, then \"pnpm bundle:size\" to check bundle sizes'",
-    "test": "jest",
+    "bundle:check": "echo '⚠️  Run \"pnpm build\" first, then \"pnpm bundle:size\" to check bundle sizes'",
+    "test": "NODE_OPTIONS=--max-old-space-size=8192 jest --runInBand",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --runInBand"
   },
   "dependencies": {
     "@builder.io/react": "^9.1.0",
