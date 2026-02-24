@@ -11,7 +11,10 @@
  */
 
 import { Router } from "express";
-import { requireAuth } from "../../middleware/auth";
+import { authMiddleware } from "../middleware/auth";
+
+// For backwards compatibility
+export const requireAuth = authMiddleware;
 
 const router = Router();
 

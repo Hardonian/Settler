@@ -123,3 +123,23 @@ export function SheetContent({ side = "right", className, children, ...props }: 
     </div>
   );
 }
+
+interface SheetHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
+
+export function SheetHeader({ className, children, ...props }: SheetHeaderProps) {
+  return (
+    <div className={cn("flex flex-col space-y-2 text-center sm:text-left", className)} {...props}>
+      {children}
+    </div>
+  );
+}
+
+interface SheetTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {}
+
+export function SheetTitle({ className, children, ...props }: SheetTitleProps) {
+  return (
+    <h3 className={cn("text-lg font-semibold text-foreground", className)} {...props}>
+      {children}
+    </h3>
+  );
+}

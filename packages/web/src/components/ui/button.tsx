@@ -6,7 +6,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
    * Visual style variant
    * @default 'default'
    */
-  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link' | 'primary';
   
   /**
    * Size variant
@@ -106,6 +106,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         'hover:underline hover:text-primary-700',
         'active:text-primary-800',
         'focus-visible:ring-ring focus-visible:underline',
+      ],
+      primary: [
+        'bg-primary-600 text-white',
+        'hover:bg-primary-700 hover:shadow-md',
+        'active:bg-primary-800 active:shadow-sm',
+        'focus-visible:ring-primary-600',
       ],
     };
 

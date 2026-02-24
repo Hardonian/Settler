@@ -88,11 +88,11 @@ export function ReviewQueuePanel() {
               key={item.id}
               className={cn(
                 "snap-center shrink-0 w-[85%] sm:w-[350px] p-5 relative overflow-hidden transition-all duration-300 cursor-pointer shadow-lg",
-                activeItem.id === item.id ? "ring-2 ring-primary-500 shadow-primary-500/10" : "opacity-60 scale-95"
+                activeItem?.id === item.id ? "ring-2 ring-primary-500 shadow-primary-500/10" : "opacity-60 scale-95"
               )}
               onClick={() => setActiveItem(item)}
             >
-              {activeItem.id === item.id && <div className="absolute top-0 left-0 w-1.5 h-full bg-primary-600" />}
+              {activeItem?.id === item.id && <div className="absolute top-0 left-0 w-1.5 h-full bg-primary-600" />}
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-2">
                   <div className={cn("w-2 h-2 rounded-full", item.severity === "HIGH SEVERITY" ? "bg-red-500 animate-pulse" : "bg-amber-500")} />
@@ -125,7 +125,7 @@ export function ReviewQueuePanel() {
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Evidence Viewer</h2>
           <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-900 rounded-lg text-xs font-bold text-slate-500 border border-slate-200 dark:border-slate-800 cursor-copy group">
             <Fingerprint className="w-4 h-4 text-primary-500" />
-            <span className="font-mono">{activeItem.traceId}</span>
+            <span className="font-mono">{activeItem?.traceId}</span>
           </div>
         </div>
 
