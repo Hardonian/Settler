@@ -1,0 +1,42 @@
+name: Site Mode Matrix
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  verify-modes:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        site_mode: [oss, enterprise]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm lint
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Build
+        run: pnpm build
+      - name: Test
+        run: pnpm test
+      - name: Claims
+        run: pnpm verify:claims
+        env:
+          SITE_MODE: ${{ matrix.site_mode }}
+      - name: Boundaries
+        run: pnpm verify:boundaries
+      - name: Routes
+        run: pnpm verify:routes
+        env:
+          SITE_MODE: ${{ matrix.site_mode }}
+          NEXT_PUBLIC_SITE_MODE: ${{ matrix.site_mode }}

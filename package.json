@@ -180,7 +180,13 @@
     "benchmark:check": "tsx benchmarks/reconciliationBenchmark.ts",
     "verify:conflict-markers": "node scripts/check-conflict-markers.mjs",
     "smoke:m1": "tsx scripts/m1-smoke.ts",
-    "lint:boundaries": "node scripts/boundary-linter.mjs"
+    "lint:boundaries": "node scripts/boundary-linter.mjs",
+    "verify:claims": "node scripts/validate-site-claims.mjs",
+    "verify:boundaries": "node scripts/enforce-site-boundaries.mjs && node scripts/no-stubs-scan.mjs",
+    "verify:routes": "node scripts/verify-routes.mjs",
+    "verify:oss": "node scripts/run-with-env.mjs --set SITE_MODE=oss --set NEXT_PUBLIC_SITE_MODE=oss --unset ENTERPRISE_SITE_URL --unset NEXT_PUBLIC_ENTERPRISE_SITE_URL -- pnpm verify",
+    "verify:enterprise": "node scripts/run-with-env.mjs --set SITE_MODE=enterprise --set NEXT_PUBLIC_SITE_MODE=enterprise -- pnpm verify",
+    "verify:links": "pnpm qa:links"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
