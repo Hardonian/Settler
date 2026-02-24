@@ -80,6 +80,7 @@ export interface StructuredError {
   message: string;
   retryable: boolean;
   details?: Record<string, unknown>;
+  stack?: string;
 }
 
 /**

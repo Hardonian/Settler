@@ -44,9 +44,14 @@ pnpm verify:conflict-markers || {
   exit 1
 }
 
-# Run fast verification for staged files
-echo "🔍 Running fast verification for staged files..."
-pnpm verify:fast --changed || {
-  echo "❌ Fast verification failed. Please fix errors before committing."
+# Run staged-package verification for local reliability
+echo "🔍 Running staged-package verification..."
+pnpm lint-staged || {
+  echo "❌ lint-staged failed. Please fix errors before committing."
+  exit 1
+}
+
+node scripts/verify-staged-packages.mjs || {
+  echo "❌ Staged package verification failed. Please fix errors before committing."
   exit 1
 }
