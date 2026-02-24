@@ -3,6 +3,16 @@ import path from "node:path";
 import { Command } from "commander";
 import chalk from "chalk";
 import { buildAuditChain, redactTenant, stableHash, stableStringify, type SettlerEvent } from "../lib/event-model";
+import {
+  MAX_JSON_BYTES,
+  MAX_REGISTRY_BYTES,
+  MAX_RUN_FILES,
+  assertSafePackageName,
+  readLimitedUtf8,
+  requireUnsafeAcknowledgement,
+  resolveWithinCwd,
+  validateRegistryEntries,
+} from "../lib/safety";
 
 interface RunArtifact {
   runId: string;
@@ -28,16 +38,18 @@ interface Capsule {
   integrityRoot: string;
 }
 
-async function readJsonFile<T>(file: string): Promise<T> {
-  const raw = await fs.readFile(file, "utf8");
+async function readJsonFile<T>(file: string, maxBytes = MAX_JSON_BYTES): Promise<T> {
+  const raw = await readLimitedUtf8(file, maxBytes);
   return JSON.parse(raw) as T;
 }
 
 function resolveRunPath(runIdOrPath: string): string {
   if (runIdOrPath.endsWith(".json")) {
-    return runIdOrPath;
+    return resolveWithinCwd(runIdOrPath);
   }
-  return path.join("recon_output", `${runIdOrPath}.json`);
+
+  assertSafePackageName(runIdOrPath);
+  return resolveWithinCwd(path.join("recon_output", `${runIdOrPath}.json`));
 }
 
 async function loadRun(runIdOrPath: string): Promise<RunArtifact> {
@@ -211,10 +223,11 @@ lineageCommand
   .option("--runs-dir <dir>", "Run artifact directory", "recon_output")
   .option("-o, --output <file>", "Output file")
   .action(async (options) => {
-    const entries = await fs.readdir(options.runsDir);
-    const runFiles = entries.filter((entry) => entry.endsWith(".json"));
+    const runsDir = resolveWithinCwd(options.runsDir);
+  const entries = await fs.readdir(runsDir);
+    const runFiles = entries.filter((entry) => entry.endsWith(".json")).slice(0, MAX_RUN_FILES);
     const runs = await Promise.all(
-      runFiles.map(async (entry) => readJsonFile<RunArtifact>(path.join(options.runsDir, entry)))
+      runFiles.map(async (entry) => readJsonFile<RunArtifact>(path.join(runsDir, entry)))
     );
     const tenantRuns = runs.filter((run) => run.tenantId === options.tenant);
     const nodes = tenantRuns.map((run) => ({ runId: run.runId, sources: run.events.filter((event) => event.stage === "ingest").length, outputs: run.events.filter((event) => event.stage === "export").length }));
@@ -248,9 +261,10 @@ explainCommand.argument("<runIdOrPath>", "Run id or file").action(async (runIdOr
 
 export const operatorCommand = new Command("operator").description("Local-first operator mode summary");
 operatorCommand.option("--runs-dir <dir>", "Run artifact directory", "recon_output").action(async (options) => {
-  const entries = await fs.readdir(options.runsDir);
+  const runsDir = resolveWithinCwd(options.runsDir);
+  const entries = await fs.readdir(runsDir);
   const runFiles = entries.filter((entry) => entry.endsWith(".json"));
-  const runs = await Promise.all(runFiles.map(async (entry) => readJsonFile<RunArtifact>(path.join(options.runsDir, entry))));
+  const runs = await Promise.all(runFiles.map(async (entry) => readJsonFile<RunArtifact>(path.join(runsDir, entry))));
   const tenants = Array.from(new Set(runs.map((run) => run.tenantId)));
   const warnings = runs.filter((run) => buildAuditChain(run.events).length !== run.events.length).length;
   console.log(chalk.bold("Operator Mode"));
@@ -307,9 +321,10 @@ supportCommand
 
 export const profileCommand = new Command("profile").description("Gamification profile (cosmetic only)");
 profileCommand.option("--runs-dir <dir>", "Run artifact directory", "recon_output").action(async (options) => {
-  const entries = await fs.readdir(options.runsDir);
+  const runsDir = resolveWithinCwd(options.runsDir);
+  const entries = await fs.readdir(runsDir);
   const runFiles = entries.filter((entry) => entry.endsWith(".json"));
-  const runs = await Promise.all(runFiles.map(async (entry) => readJsonFile<RunArtifact>(path.join(options.runsDir, entry))));
+  const runs = await Promise.all(runFiles.map(async (entry) => readJsonFile<RunArtifact>(path.join(runsDir, entry))));
   const verifiedExports = runs.filter((run) => Boolean(run.exportSchemaVersion)).length;
   const xp = verifiedExports * 25 + runs.length * 5;
   const badges = [
@@ -328,7 +343,8 @@ function attachRegistryCommands(base: Command, kind: "adapters" | "rules"): void
     .option("--registry <file>", "Registry manifest", `marketplace/${kind}/registry.json`)
     .argument("[query]", "Search query")
     .action(async (query, options) => {
-      const registry = await readJsonFile<Array<{ name: string; version: string; license: string; compatibility: string }>>(options.registry);
+      const registryRaw = await readJsonFile<unknown>(options.registry, MAX_REGISTRY_BYTES);
+      const registry = validateRegistryEntries(kind, registryRaw);
       const q = String(query ?? "").toLowerCase();
       const filtered = registry.filter((item) => !q || item.name.toLowerCase().includes(q));
       console.log(JSON.stringify(filtered, null, 2));
@@ -338,8 +354,18 @@ function attachRegistryCommands(base: Command, kind: "adapters" | "rules"): void
     .command("install")
     .requiredOption("--name <name>", `${kind} package name`)
     .option("--registry <file>", "Registry manifest", `marketplace/${kind}/registry.json`)
+    .option("--allow-unsafe", "Acknowledge local filesystem write for package metadata install")
     .action(async (options) => {
-      const registry = await readJsonFile<Array<{ name: string; version: string; license: string; compatibility: string; provenance: string }>>(options.registry);
+      try {
+        requireUnsafeAcknowledgement(options.allowUnsafe);
+      } catch {
+        console.error(chalk.red("Refusing install without --allow-unsafe acknowledgement. See SECURITY.md."));
+        process.exit(1);
+      }
+
+      assertSafePackageName(options.name);
+      const registryRaw = await readJsonFile<unknown>(options.registry, MAX_REGISTRY_BYTES);
+      const registry = validateRegistryEntries(kind, registryRaw);
       const entry = registry.find((item) => item.name === options.name);
       if (!entry) {
         console.error(chalk.red(`${kind} package not found: ${options.name}`));
@@ -356,8 +382,10 @@ function attachRegistryCommands(base: Command, kind: "adapters" | "rules"): void
     .requiredOption("--name <name>", `${kind} package name`)
     .option("--installed-dir <dir>", "Installed package directory", `marketplace/installed/${kind}`)
     .action(async (options) => {
+      assertSafePackageName(options.name);
       const installed = await readJsonFile<{ name: string; license: string; compatibility: string; provenance?: string }>(
-        path.join(options.installedDir, `${options.name}.json`)
+        path.join(options.installedDir, `${options.name}.json`),
+        MAX_REGISTRY_BYTES
       );
       if (!installed.license || !installed.compatibility) {
         console.error(chalk.red("license or compatibility metadata missing"));

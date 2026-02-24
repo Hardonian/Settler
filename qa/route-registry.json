@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-02-14T04:35:08.672Z",
-  "totalRoutes": 369,
-  "pageRoutes": 200,
+  "generatedAt": "2026-02-24T20:23:11.601Z",
+  "totalRoutes": 387,
+  "pageRoutes": 218,
   "routes": [
     {
       "path": "/",
@@ -1556,6 +1556,102 @@
       "optional": false
     },
     {
+      "path": "/app/alerts",
+      "type": "page",
+      "file": "app/alerts/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/app/connections",
+      "type": "page",
+      "file": "app/connections/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/app/governance",
+      "type": "page",
+      "file": "app/governance/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/app/integrations",
+      "type": "page",
+      "file": "app/integrations/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/app/onboarding",
+      "type": "page",
+      "file": "app/onboarding/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/app/pipelines",
+      "type": "page",
+      "file": "app/pipelines/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/app/results",
+      "type": "page",
+      "file": "app/results/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/app/review",
+      "type": "page",
+      "file": "app/review/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/app/rules",
+      "type": "page",
+      "file": "app/rules/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/app/runs",
+      "type": "page",
+      "file": "app/runs/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/app/settings",
+      "type": "page",
+      "file": "app/settings/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/app/traces",
+      "type": "page",
+      "file": "app/traces/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/architecture",
       "type": "page",
       "file": "architecture/page.tsx",
@@ -1601,6 +1697,14 @@
       "file": "builder/[...page]/page.tsx",
       "dynamic": true,
       "catchAll": true,
+      "optional": false
+    },
+    {
+      "path": "/categorize",
+      "type": "page",
+      "file": "categorize/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
       "optional": false
     },
     {
@@ -2532,6 +2636,14 @@
       "optional": false
     },
     {
+      "path": "/exports",
+      "type": "page",
+      "file": "exports/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/feature-flags",
       "type": "page",
       "file": "feature-flags/page.tsx",
@@ -2543,6 +2655,14 @@
       "path": "/founder",
       "type": "page",
       "file": "founder/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/future-proof",
+      "type": "page",
+      "file": "future-proof/page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -2716,6 +2836,14 @@
       "optional": false
     },
     {
+      "path": "/parser",
+      "type": "page",
+      "file": "parser/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/platform",
       "type": "page",
       "file": "platform/page.tsx",
@@ -2783,6 +2911,14 @@
       "path": "/receipts",
       "type": "page",
       "file": "receipts/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/reconcile",
+      "type": "page",
+      "file": "reconcile/page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -2900,6 +3036,14 @@
       "optional": false
     },
     {
+      "path": "/transparency",
+      "type": "page",
+      "file": "transparency/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/trust",
       "type": "page",
       "file": "trust/page.tsx",
@@ -2984,11 +3128,24 @@
     "/admin/settings",
     "/admin/webhooks",
     "/app",
+    "/app/alerts",
+    "/app/connections",
+    "/app/governance",
+    "/app/integrations",
+    "/app/onboarding",
+    "/app/pipelines",
+    "/app/results",
+    "/app/review",
+    "/app/rules",
+    "/app/runs",
+    "/app/settings",
+    "/app/traces",
     "/architecture",
     "/benchmarks",
     "/billing/success",
     "/blog",
     "/builder/[...page]",
+    "/categorize",
     "/changelog",
     "/changelog/[slug]",
     "/community",
@@ -3104,8 +3261,10 @@
     "/engine/view-variances",
     "/enterprise",
     "/enterprise/dashboard",
+    "/exports",
     "/feature-flags",
     "/founder",
+    "/future-proof",
     "/home",
     "/how-it-works",
     "/integrations",
@@ -3127,6 +3286,7 @@
     "/open-source",
     "/oss",
     "/oss/stats",
+    "/parser",
     "/platform",
     "/playground",
     "/pricing",
@@ -3136,6 +3296,7 @@
     "/react-settler-demo",
     "/realtime-dashboard",
     "/receipts",
+    "/reconcile",
     "/review/polish",
     "/roadmap",
     "/roi-calculator",
@@ -3150,6 +3311,7 @@
     "/support/category/[categoryId]",
     "/support/contact",
     "/terms",
+    "/transparency",
     "/trust",
     "/use-cases/[slug]",
     "/ux-playground",

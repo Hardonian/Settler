@@ -12,10 +12,16 @@ function SignedOutScreen() {
           The Settler app shell requires an authenticated session. Sign in to continue.
         </p>
         <div className="mt-4 flex gap-3">
-          <Link href="/login" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white">
+          <Link
+            href="/login"
+            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white"
+          >
             Sign in
           </Link>
-          <Link href="/" className="rounded-md border border-border-light px-4 py-2 text-sm font-medium">
+          <Link
+            href="/"
+            className="rounded-md border border-border-light px-4 py-2 text-sm font-medium"
+          >
             Back to marketing site
           </Link>
         </div>
@@ -50,7 +56,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     { name: "Rules", href: "/app/rules" },
     { name: "Governance", href: "/app/governance" },
     { name: "Integrations", href: "/app/integrations" },
-    { name: "Artifacts", href: "/app/artifacts" },
     { name: "Alerts", href: "/app/alerts" },
     { name: "Traces", href: "/app/traces" },
     { name: "Settings", href: "/app/settings" },

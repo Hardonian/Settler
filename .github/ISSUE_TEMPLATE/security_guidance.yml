@@ -1,0 +1,26 @@
+name: Security report guidance
+description: Use this form when you need private disclosure instructions.
+title: "security: request private disclosure channel"
+labels:
+  - security
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ⚠️ Do not post vulnerabilities publicly.
+
+        For private reporting, email **security@settler.dev** with reproduction details.
+        Include impact, affected versions, and suggested mitigations.
+  - type: input
+    id: contact
+    attributes:
+      label: Preferred contact email
+      placeholder: you@example.com
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: High-level summary (no exploit details)
+    validations:
+      required: true

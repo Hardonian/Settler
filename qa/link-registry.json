@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-02-14T04:35:10.766Z",
-  "totalLinks": 494,
-  "uniquePaths": 131,
+  "generatedAt": "2026-02-24T20:23:13.209Z",
+  "totalLinks": 527,
+  "uniquePaths": 145,
   "links": [
     {
       "href": "/offline",
@@ -13,16 +13,30 @@
     {
       "href": "/docs/quickstart",
       "source": "/workspace/Settler/packages/web/src/app/(marketing)/home/page.tsx",
-      "line": 230,
+      "line": 214,
       "type": "link",
       "normalizedHref": "/docs/quickstart"
     },
     {
+      "href": "/contact",
+      "source": "/workspace/Settler/packages/web/src/app/(marketing)/home/page.tsx",
+      "line": 226,
+      "type": "link",
+      "normalizedHref": "/contact"
+    },
+    {
       "href": "/docs/quickstart",
       "source": "/workspace/Settler/packages/web/src/app/(marketing)/home/page.tsx",
-      "line": 551,
+      "line": 505,
       "type": "link",
       "normalizedHref": "/docs/quickstart"
+    },
+    {
+      "href": "/contact",
+      "source": "/workspace/Settler/packages/web/src/app/(marketing)/home/page.tsx",
+      "line": 517,
+      "type": "link",
+      "normalizedHref": "/contact"
     },
     {
       "href": "/admin/database",
@@ -317,6 +331,111 @@
       "line": 50,
       "type": "link",
       "normalizedHref": "/admin/runs"
+    },
+    {
+      "href": "/app",
+      "source": "/workspace/Settler/packages/web/src/app/app/error.tsx",
+      "line": 42,
+      "type": "link",
+      "normalizedHref": "/app"
+    },
+    {
+      "href": "/login",
+      "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+      "line": 15,
+      "type": "link",
+      "normalizedHref": "/login"
+    },
+    {
+      "href": "/",
+      "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+      "line": 18,
+      "type": "link",
+      "normalizedHref": "/"
+    },
+    {
+      "href": "/app",
+      "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+      "line": 44,
+      "type": "config",
+      "normalizedHref": "/app"
+    },
+    {
+      "href": "/app/connections",
+      "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+      "line": 45,
+      "type": "config",
+      "normalizedHref": "/app/connections"
+    },
+    {
+      "href": "/app/pipelines",
+      "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+      "line": 46,
+      "type": "config",
+      "normalizedHref": "/app/pipelines"
+    },
+    {
+      "href": "/app/runs",
+      "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+      "line": 47,
+      "type": "config",
+      "normalizedHref": "/app/runs"
+    },
+    {
+      "href": "/app/results",
+      "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+      "line": 48,
+      "type": "config",
+      "normalizedHref": "/app/results"
+    },
+    {
+      "href": "/app/review",
+      "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+      "line": 49,
+      "type": "config",
+      "normalizedHref": "/app/review"
+    },
+    {
+      "href": "/app/rules",
+      "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+      "line": 50,
+      "type": "config",
+      "normalizedHref": "/app/rules"
+    },
+    {
+      "href": "/app/governance",
+      "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+      "line": 51,
+      "type": "config",
+      "normalizedHref": "/app/governance"
+    },
+    {
+      "href": "/app/integrations",
+      "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+      "line": 52,
+      "type": "config",
+      "normalizedHref": "/app/integrations"
+    },
+    {
+      "href": "/app/alerts",
+      "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+      "line": 53,
+      "type": "config",
+      "normalizedHref": "/app/alerts"
+    },
+    {
+      "href": "/app/traces",
+      "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+      "line": 54,
+      "type": "config",
+      "normalizedHref": "/app/traces"
+    },
+    {
+      "href": "/app/settings",
+      "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+      "line": 55,
+      "type": "config",
+      "normalizedHref": "/app/settings"
     },
     {
       "href": "/pricing",
@@ -1726,6 +1845,27 @@
       "normalizedHref": "/contact"
     },
     {
+      "href": "/pricing",
+      "source": "/workspace/Settler/packages/web/src/app/enterprise/page.tsx",
+      "line": 134,
+      "type": "link",
+      "normalizedHref": "/pricing"
+    },
+    {
+      "href": "/contact",
+      "source": "/workspace/Settler/packages/web/src/app/enterprise/page.tsx",
+      "line": 384,
+      "type": "link",
+      "normalizedHref": "/contact"
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/Settler/packages/web/src/app/enterprise/page.tsx",
+      "line": 395,
+      "type": "link",
+      "normalizedHref": "/pricing"
+    },
+    {
       "href": "/",
       "source": "/workspace/Settler/packages/web/src/app/error.tsx",
       "line": 64,
@@ -1752,6 +1892,20 @@
       "line": 156,
       "type": "link",
       "normalizedHref": "/console/playground/flags"
+    },
+    {
+      "href": "/docs/cli",
+      "source": "/workspace/Settler/packages/web/src/app/future-proof/page.tsx",
+      "line": 129,
+      "type": "link",
+      "normalizedHref": "/docs/cli"
+    },
+    {
+      "href": "/support",
+      "source": "/workspace/Settler/packages/web/src/app/future-proof/page.tsx",
+      "line": 129,
+      "type": "link",
+      "normalizedHref": "/support"
     },
     {
       "href": "/signup",
@@ -1957,25 +2111,18 @@
       "normalizedHref": "/"
     },
     {
-      "href": "/open-source",
+      "href": "/reconcile",
       "source": "/workspace/Settler/packages/web/src/app/page.tsx",
-      "line": 148,
+      "line": 149,
       "type": "link",
-      "normalizedHref": "/open-source"
+      "normalizedHref": "/reconcile"
     },
     {
-      "href": "/docs/quickstart",
+      "href": "/contact",
       "source": "/workspace/Settler/packages/web/src/app/page.tsx",
-      "line": 327,
+      "line": 159,
       "type": "link",
-      "normalizedHref": "/docs/quickstart"
-    },
-    {
-      "href": "/open-source",
-      "source": "/workspace/Settler/packages/web/src/app/page.tsx",
-      "line": 337,
-      "type": "link",
-      "normalizedHref": "/open-source"
+      "normalizedHref": "/contact"
     },
     {
       "href": "/",
@@ -2412,6 +2559,104 @@
       "normalizedHref": "/pricing"
     },
     {
+      "href": "/platform",
+      "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+      "line": 10,
+      "type": "config",
+      "normalizedHref": "/platform"
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+      "line": 11,
+      "type": "config",
+      "normalizedHref": "/pricing"
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+      "line": 12,
+      "type": "config",
+      "normalizedHref": "/docs"
+    },
+    {
+      "href": "/security",
+      "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+      "line": 13,
+      "type": "config",
+      "normalizedHref": "/security"
+    },
+    {
+      "href": "/login",
+      "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+      "line": 14,
+      "type": "config",
+      "normalizedHref": "/login"
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+      "line": 15,
+      "type": "config",
+      "normalizedHref": "/signup"
+    },
+    {
+      "href": "/about",
+      "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+      "line": 21,
+      "type": "config",
+      "normalizedHref": "/about"
+    },
+    {
+      "href": "/contact",
+      "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+      "line": 22,
+      "type": "config",
+      "normalizedHref": "/contact"
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+      "line": 30,
+      "type": "config",
+      "normalizedHref": "/docs"
+    },
+    {
+      "href": "/status",
+      "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+      "line": 31,
+      "type": "config",
+      "normalizedHref": "/status"
+    },
+    {
+      "href": "/terms",
+      "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+      "line": 32,
+      "type": "config",
+      "normalizedHref": "/terms"
+    },
+    {
+      "href": "/privacy",
+      "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+      "line": 33,
+      "type": "config",
+      "normalizedHref": "/privacy"
+    },
+    {
+      "href": "/about",
+      "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+      "line": 34,
+      "type": "config",
+      "normalizedHref": "/about"
+    },
+    {
+      "href": "/platform",
+      "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+      "line": 35,
+      "type": "config",
+      "normalizedHref": "/platform"
+    },
+    {
       "href": "/console/playground",
       "source": "/workspace/Settler/packages/web/src/components/MobileMenu.tsx",
       "line": 57,
@@ -2421,91 +2666,77 @@
     {
       "href": "/platform",
       "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 16,
+      "line": 18,
       "type": "config",
       "normalizedHref": "/platform"
     },
     {
       "href": "/enterprise",
       "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 17,
+      "line": 19,
       "type": "config",
       "normalizedHref": "/enterprise"
     },
     {
       "href": "/pricing",
       "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 18,
+      "line": 20,
       "type": "config",
       "normalizedHref": "/pricing"
     },
     {
       "href": "/security",
       "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 19,
+      "line": 21,
       "type": "config",
       "normalizedHref": "/security"
     },
     {
       "href": "/docs",
       "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 20,
+      "line": 22,
       "type": "config",
       "normalizedHref": "/docs"
     },
     {
       "href": "/contact",
       "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 25,
+      "line": 27,
       "type": "config",
       "normalizedHref": "/contact"
     },
     {
       "href": "/privacy",
       "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 26,
+      "line": 28,
       "type": "config",
       "normalizedHref": "/privacy"
     },
     {
       "href": "/terms",
       "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 27,
+      "line": 29,
       "type": "config",
       "normalizedHref": "/terms"
     },
     {
-      "href": "/login",
-      "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 245,
-      "type": "link",
-      "normalizedHref": "/login"
-    },
-    {
       "href": "/signup",
       "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 249,
-      "type": "link",
-      "normalizedHref": "/signup"
-    },
-    {
-      "href": "/login",
-      "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 282,
-      "type": "link",
-      "normalizedHref": "/login"
-    },
-    {
-      "href": "/signup",
-      "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 284,
+      "line": 254,
       "type": "link",
       "normalizedHref": "/signup"
     },
     {
       "href": "/signup",
       "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 393,
+      "line": 294,
+      "type": "link",
+      "normalizedHref": "/signup"
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
+      "line": 403,
       "type": "link",
       "normalizedHref": "/signup"
     },
@@ -3464,6 +3695,7 @@
   ],
   "paths": [
     "/",
+    "/about",
     "/admin",
     "/admin/analytics",
     "/admin/audit",
@@ -3482,6 +3714,17 @@
     "/admin/settings",
     "/admin/webhooks",
     "/app",
+    "/app/alerts",
+    "/app/connections",
+    "/app/governance",
+    "/app/integrations",
+    "/app/pipelines",
+    "/app/results",
+    "/app/review",
+    "/app/rules",
+    "/app/runs",
+    "/app/settings",
+    "/app/traces",
     "/blog",
     "/changelog",
     "/community",
@@ -3578,10 +3821,12 @@
     "/pricing",
     "/privacy",
     "/receipts",
+    "/reconcile",
     "/runbooks",
     "/schematics",
     "/security",
     "/signup",
+    "/status",
     "/support",
     "/support/articles/billing",
     "/support/articles/first-job",
@@ -3616,14 +3861,14 @@
       {
         "href": "/docs/quickstart",
         "source": "/workspace/Settler/packages/web/src/app/(marketing)/home/page.tsx",
-        "line": 230,
+        "line": 214,
         "type": "link",
         "normalizedHref": "/docs/quickstart"
       },
       {
         "href": "/docs/quickstart",
         "source": "/workspace/Settler/packages/web/src/app/(marketing)/home/page.tsx",
-        "line": 551,
+        "line": 505,
         "type": "link",
         "normalizedHref": "/docs/quickstart"
       },
@@ -3638,13 +3883,6 @@
         "href": "/docs/quickstart",
         "source": "/workspace/Settler/packages/web/src/app/docs/page.tsx",
         "line": 65,
-        "type": "link",
-        "normalizedHref": "/docs/quickstart"
-      },
-      {
-        "href": "/docs/quickstart",
-        "source": "/workspace/Settler/packages/web/src/app/page.tsx",
-        "line": 327,
         "type": "link",
         "normalizedHref": "/docs/quickstart"
       },
@@ -3675,6 +3913,57 @@
         "line": 19,
         "type": "link",
         "normalizedHref": "/docs/quickstart"
+      }
+    ],
+    "/contact": [
+      {
+        "href": "/contact",
+        "source": "/workspace/Settler/packages/web/src/app/(marketing)/home/page.tsx",
+        "line": 226,
+        "type": "link",
+        "normalizedHref": "/contact"
+      },
+      {
+        "href": "/contact",
+        "source": "/workspace/Settler/packages/web/src/app/(marketing)/home/page.tsx",
+        "line": 517,
+        "type": "link",
+        "normalizedHref": "/contact"
+      },
+      {
+        "href": "/contact",
+        "source": "/workspace/Settler/packages/web/src/app/enterprise/page.tsx",
+        "line": 129,
+        "type": "link",
+        "normalizedHref": "/contact"
+      },
+      {
+        "href": "/contact",
+        "source": "/workspace/Settler/packages/web/src/app/enterprise/page.tsx",
+        "line": 384,
+        "type": "link",
+        "normalizedHref": "/contact"
+      },
+      {
+        "href": "/contact",
+        "source": "/workspace/Settler/packages/web/src/app/page.tsx",
+        "line": 159,
+        "type": "link",
+        "normalizedHref": "/contact"
+      },
+      {
+        "href": "/contact",
+        "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+        "line": 22,
+        "type": "config",
+        "normalizedHref": "/contact"
+      },
+      {
+        "href": "/contact",
+        "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
+        "line": 27,
+        "type": "config",
+        "normalizedHref": "/contact"
       }
     ],
     "/admin/database": [
@@ -3801,22 +4090,29 @@
       },
       {
         "href": "/signup",
+        "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+        "line": 15,
+        "type": "config",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
         "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 249,
+        "line": 254,
         "type": "link",
         "normalizedHref": "/signup"
       },
       {
         "href": "/signup",
         "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 284,
+        "line": 294,
         "type": "link",
         "normalizedHref": "/signup"
       },
       {
         "href": "/signup",
         "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 393,
+        "line": 403,
         "type": "link",
         "normalizedHref": "/signup"
       },
@@ -3924,6 +4220,13 @@
         "href": "/",
         "source": "/workspace/Settler/packages/web/src/app/admin/error.tsx",
         "line": 86,
+        "type": "link",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+        "line": 18,
         "type": "link",
         "normalizedHref": "/"
       },
@@ -4394,6 +4697,151 @@
         "normalizedHref": "/admin/pages/new"
       }
     ],
+    "/app": [
+      {
+        "href": "/app",
+        "source": "/workspace/Settler/packages/web/src/app/app/error.tsx",
+        "line": 42,
+        "type": "link",
+        "normalizedHref": "/app"
+      },
+      {
+        "href": "/app",
+        "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+        "line": 44,
+        "type": "config",
+        "normalizedHref": "/app"
+      },
+      {
+        "href": "/app",
+        "source": "/workspace/Settler/packages/web/src/app/docs/quickstart/page.tsx",
+        "line": 26,
+        "type": "config",
+        "normalizedHref": "/app"
+      }
+    ],
+    "/login": [
+      {
+        "href": "/login",
+        "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+        "line": 15,
+        "type": "link",
+        "normalizedHref": "/login"
+      },
+      {
+        "href": "/login",
+        "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+        "line": 14,
+        "type": "config",
+        "normalizedHref": "/login"
+      },
+      {
+        "href": "/login",
+        "source": "/workspace/Settler/packages/web/src/stitch_export/components/Header.tsx",
+        "line": 22,
+        "type": "link",
+        "normalizedHref": "/login"
+      }
+    ],
+    "/app/connections": [
+      {
+        "href": "/app/connections",
+        "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+        "line": 45,
+        "type": "config",
+        "normalizedHref": "/app/connections"
+      }
+    ],
+    "/app/pipelines": [
+      {
+        "href": "/app/pipelines",
+        "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+        "line": 46,
+        "type": "config",
+        "normalizedHref": "/app/pipelines"
+      }
+    ],
+    "/app/runs": [
+      {
+        "href": "/app/runs",
+        "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+        "line": 47,
+        "type": "config",
+        "normalizedHref": "/app/runs"
+      }
+    ],
+    "/app/results": [
+      {
+        "href": "/app/results",
+        "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+        "line": 48,
+        "type": "config",
+        "normalizedHref": "/app/results"
+      }
+    ],
+    "/app/review": [
+      {
+        "href": "/app/review",
+        "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+        "line": 49,
+        "type": "config",
+        "normalizedHref": "/app/review"
+      }
+    ],
+    "/app/rules": [
+      {
+        "href": "/app/rules",
+        "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+        "line": 50,
+        "type": "config",
+        "normalizedHref": "/app/rules"
+      }
+    ],
+    "/app/governance": [
+      {
+        "href": "/app/governance",
+        "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+        "line": 51,
+        "type": "config",
+        "normalizedHref": "/app/governance"
+      }
+    ],
+    "/app/integrations": [
+      {
+        "href": "/app/integrations",
+        "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+        "line": 52,
+        "type": "config",
+        "normalizedHref": "/app/integrations"
+      }
+    ],
+    "/app/alerts": [
+      {
+        "href": "/app/alerts",
+        "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+        "line": 53,
+        "type": "config",
+        "normalizedHref": "/app/alerts"
+      }
+    ],
+    "/app/traces": [
+      {
+        "href": "/app/traces",
+        "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+        "line": 54,
+        "type": "config",
+        "normalizedHref": "/app/traces"
+      }
+    ],
+    "/app/settings": [
+      {
+        "href": "/app/settings",
+        "source": "/workspace/Settler/packages/web/src/app/app/layout.tsx",
+        "line": 55,
+        "type": "config",
+        "normalizedHref": "/app/settings"
+      }
+    ],
     "/pricing": [
       {
         "href": "/pricing",
@@ -4432,6 +4880,20 @@
       },
       {
         "href": "/pricing",
+        "source": "/workspace/Settler/packages/web/src/app/enterprise/page.tsx",
+        "line": 134,
+        "type": "link",
+        "normalizedHref": "/pricing"
+      },
+      {
+        "href": "/pricing",
+        "source": "/workspace/Settler/packages/web/src/app/enterprise/page.tsx",
+        "line": 395,
+        "type": "link",
+        "normalizedHref": "/pricing"
+      },
+      {
+        "href": "/pricing",
         "source": "/workspace/Settler/packages/web/src/app/how-it-works/page.tsx",
         "line": 196,
         "type": "link",
@@ -4453,8 +4915,15 @@
       },
       {
         "href": "/pricing",
+        "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+        "line": 11,
+        "type": "config",
+        "normalizedHref": "/pricing"
+      },
+      {
+        "href": "/pricing",
         "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 18,
+        "line": 20,
         "type": "config",
         "normalizedHref": "/pricing"
       },
@@ -5047,8 +5516,22 @@
       },
       {
         "href": "/docs",
+        "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+        "line": 12,
+        "type": "config",
+        "normalizedHref": "/docs"
+      },
+      {
+        "href": "/docs",
+        "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+        "line": 30,
+        "type": "config",
+        "normalizedHref": "/docs"
+      },
+      {
+        "href": "/docs",
         "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 20,
+        "line": 22,
         "type": "config",
         "normalizedHref": "/docs"
       },
@@ -5212,7 +5695,7 @@
       {
         "href": "/enterprise",
         "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 17,
+        "line": 19,
         "type": "config",
         "normalizedHref": "/enterprise"
       },
@@ -5343,6 +5826,13 @@
         "href": "/docs/cli",
         "source": "/workspace/Settler/packages/web/src/app/console/docs/page.tsx",
         "line": 510,
+        "type": "link",
+        "normalizedHref": "/docs/cli"
+      },
+      {
+        "href": "/docs/cli",
+        "source": "/workspace/Settler/packages/web/src/app/future-proof/page.tsx",
+        "line": 129,
         "type": "link",
         "normalizedHref": "/docs/cli"
       },
@@ -6406,6 +6896,13 @@
       },
       {
         "href": "/support",
+        "source": "/workspace/Settler/packages/web/src/app/future-proof/page.tsx",
+        "line": 129,
+        "type": "link",
+        "normalizedHref": "/support"
+      },
+      {
+        "href": "/support",
         "source": "/workspace/Settler/packages/web/src/app/integrations/request/page.tsx",
         "line": 171,
         "type": "link",
@@ -6541,15 +7038,6 @@
         "normalizedHref": "/docs/auth"
       }
     ],
-    "/app": [
-      {
-        "href": "/app",
-        "source": "/workspace/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-        "line": 26,
-        "type": "config",
-        "normalizedHref": "/app"
-      }
-    ],
     "/integrations": [
       {
         "href": "/integrations",
@@ -6571,20 +7059,6 @@
         "href": "/open-source",
         "source": "/workspace/Settler/packages/web/src/app/docs/quickstart/page.tsx",
         "line": 144,
-        "type": "link",
-        "normalizedHref": "/open-source"
-      },
-      {
-        "href": "/open-source",
-        "source": "/workspace/Settler/packages/web/src/app/page.tsx",
-        "line": 148,
-        "type": "link",
-        "normalizedHref": "/open-source"
-      },
-      {
-        "href": "/open-source",
-        "source": "/workspace/Settler/packages/web/src/app/page.tsx",
-        "line": 337,
         "type": "link",
         "normalizedHref": "/open-source"
       }
@@ -6817,22 +7291,6 @@
         "normalizedHref": "/engine/import-results"
       }
     ],
-    "/contact": [
-      {
-        "href": "/contact",
-        "source": "/workspace/Settler/packages/web/src/app/enterprise/page.tsx",
-        "line": 129,
-        "type": "link",
-        "normalizedHref": "/contact"
-      },
-      {
-        "href": "/contact",
-        "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 25,
-        "type": "config",
-        "normalizedHref": "/contact"
-      }
-    ],
     "/support/contact": [
       {
         "href": "/support/contact",
@@ -6950,6 +7408,15 @@
         "line": 43,
         "type": "config",
         "normalizedHref": "/legal/license"
+      }
+    ],
+    "/reconcile": [
+      {
+        "href": "/reconcile",
+        "source": "/workspace/Settler/packages/web/src/app/page.tsx",
+        "line": 149,
+        "type": "link",
+        "normalizedHref": "/reconcile"
       }
     ],
     "/cookbook": [
@@ -7077,8 +7544,22 @@
     "/platform": [
       {
         "href": "/platform",
+        "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+        "line": 10,
+        "type": "config",
+        "normalizedHref": "/platform"
+      },
+      {
+        "href": "/platform",
+        "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+        "line": 35,
+        "type": "config",
+        "normalizedHref": "/platform"
+      },
+      {
+        "href": "/platform",
         "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 16,
+        "line": 18,
         "type": "config",
         "normalizedHref": "/platform"
       }
@@ -7086,51 +7567,74 @@
     "/security": [
       {
         "href": "/security",
+        "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+        "line": 13,
+        "type": "config",
+        "normalizedHref": "/security"
+      },
+      {
+        "href": "/security",
         "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 19,
+        "line": 21,
         "type": "config",
         "normalizedHref": "/security"
       }
     ],
-    "/privacy": [
+    "/about": [
       {
-        "href": "/privacy",
-        "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 26,
+        "href": "/about",
+        "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+        "line": 21,
         "type": "config",
-        "normalizedHref": "/privacy"
+        "normalizedHref": "/about"
+      },
+      {
+        "href": "/about",
+        "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+        "line": 34,
+        "type": "config",
+        "normalizedHref": "/about"
+      }
+    ],
+    "/status": [
+      {
+        "href": "/status",
+        "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+        "line": 31,
+        "type": "config",
+        "normalizedHref": "/status"
       }
     ],
     "/terms": [
       {
         "href": "/terms",
+        "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+        "line": 32,
+        "type": "config",
+        "normalizedHref": "/terms"
+      },
+      {
+        "href": "/terms",
         "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 27,
+        "line": 29,
         "type": "config",
         "normalizedHref": "/terms"
       }
     ],
-    "/login": [
+    "/privacy": [
       {
-        "href": "/login",
-        "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 245,
-        "type": "link",
-        "normalizedHref": "/login"
+        "href": "/privacy",
+        "source": "/workspace/Settler/packages/web/src/components/Footer.tsx",
+        "line": 33,
+        "type": "config",
+        "normalizedHref": "/privacy"
       },
       {
-        "href": "/login",
+        "href": "/privacy",
         "source": "/workspace/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 282,
-        "type": "link",
-        "normalizedHref": "/login"
-      },
-      {
-        "href": "/login",
-        "source": "/workspace/Settler/packages/web/src/stitch_export/components/Header.tsx",
-        "line": 22,
-        "type": "link",
-        "normalizedHref": "/login"
+        "line": 28,
+        "type": "config",
+        "normalizedHref": "/privacy"
       }
     ],
     "/legal/cookies": [

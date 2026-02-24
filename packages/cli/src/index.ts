@@ -167,6 +167,34 @@ const commandRegistry: Record<
       return { command: profileCommand };
     },
   },
+  version: {
+    description: "Print Settler CLI build metadata",
+    load: async () => {
+      const { versionCommand } = await import("./commands/runtime");
+      return { command: versionCommand };
+    },
+  },
+  doctor: {
+    description: "Run local environment diagnostics",
+    load: async () => {
+      const { doctorCommand } = await import("./commands/runtime");
+      return { command: doctorCommand };
+    },
+  },
+  demo: {
+    description: "Run deterministic one-command demo",
+    load: async () => {
+      const { demoCommand } = await import("./commands/runtime");
+      return { command: demoCommand };
+    },
+  },
+  bugreport: {
+    description: "Generate redacted support bundle",
+    load: async () => {
+      const { bugreportCommand } = await import("./commands/runtime");
+      return { command: bugreportCommand };
+    },
+  },
   "tenant-check": {
     description: "Run multi-tenant isolation integrity checks",
     load: async () => {
@@ -216,7 +244,7 @@ async function main(): Promise<void> {
   const program = new Command();
   const argv = process.argv.slice(2);
 
-  program.name("settler").description("CLI tool for Settler API").version("1.0.0");
+  program.name("settler").description("CLI tool for Settler API");
 
   program
     .option("-k, --api-key <key>", "API key")

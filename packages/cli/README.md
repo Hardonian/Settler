@@ -74,6 +74,22 @@ settler console health
 
 ## All Commands
 
+### Runtime and support commands
+
+```bash
+settler version
+settler doctor
+settler demo
+settler bugreport --recent-command "settler jobs list" --exit-code 1
+```
+
+For marketplace metadata installs, explicitly acknowledge local filesystem writes:
+
+```bash
+settler adapters install --name <adapter> --allow-unsafe
+settler rules install --name <rule> --allow-unsafe
+```
+
 ### Jobs
 
 ```bash
@@ -192,6 +208,7 @@ See [SDK/CLI/Console Integration Guide](../../docs/SDK_CLI_CONSOLE_INTEGRATION.m
 ## Error Handling
 
 The CLI provides clear error messages:
+
 - **401**: Authentication failed - check your API key
 - **403**: Permission denied - check API key scopes
 - **404**: Resource not found
@@ -237,3 +254,18 @@ settler --help
 - 📖 [Documentation](https://docs.settler.io)
 - 💬 [Discord Community](https://discord.gg/settler)
 - 🐛 [Issue Tracker](https://github.com/settler/settler/issues)
+
+## Developer: Centralized safety helpers
+
+When adding new CLI commands that read local files or write package metadata, use `src/lib/safety.ts` helpers instead of ad-hoc checks:
+
+- `resolveWithinCwd(path)` — blocks traversal outside repo root.
+- `readLimitedUtf8(path, maxBytes)` / `readLimitedJsonSync(path, label, maxBytes)` — enforce size ceilings before parse.
+- `validateRegistryEntries(kind, payload)` — strict manifest validation for adapters/rules registries.
+- `assertSafePackageName(name)` — package name/path injection guard.
+- `requireUnsafeAcknowledgement(flag)` — mandatory explicit acknowledgement for unsafe write paths.
+
+Required usage points:
+- Adapter/rule registry commands (`search/install/verify`) must use manifest validation + size limits.
+- Any run/capsule or user-provided file path must resolve via `resolveWithinCwd`.
+- Any command that mutates local package metadata/install state must require `--allow-unsafe`.
