@@ -1,4 +1,4 @@
-import { canonicalJson, stableSha256 } from "@/lib/determinism/core";
+import { canonicalJson, stableSha256 } from '@/lib/determinism/core';
 
 export interface RunInput {
   tenantId: string;
@@ -29,4 +29,3 @@ export function createDeterministicRun(input: RunInput): RunRecord {
     },
   };
 }
-

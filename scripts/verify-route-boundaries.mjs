@@ -16,6 +16,7 @@ const requiredRoutes = [
   'packages/web/src/app/signup/page.tsx',
   'packages/web/src/app/app/layout.tsx',
   'packages/web/src/app/app/page.tsx',
+  'packages/web/src/lib/routing/route-groups.ts',
 ];
 
 for (const file of requiredRoutes) {
@@ -26,8 +27,8 @@ for (const file of requiredRoutes) {
 }
 
 const routeGatingSource = readFileSync(resolve(process.cwd(), 'packages/web/src/lib/auth/route-gating.ts'), 'utf-8');
-if (!routeGatingSource.includes("export const APP_AUTH_PREFIXES = ['/app'] as const;")) {
-  console.error('❌ Route boundary smoke check failed: APP auth prefixes are not locked to /app.');
+if (!routeGatingSource.includes('export const APP_AUTH_PREFIXES = APP_ROUTE_PREFIXES;')) {
+  console.error('❌ Route boundary smoke check failed: APP auth prefixes are not derived from route-group architecture.');
   process.exit(1);
 }
 

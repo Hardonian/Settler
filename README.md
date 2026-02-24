@@ -118,6 +118,14 @@ Common pitfalls:
 - Stripe webhooks are handled in Node runtime with raw request body signature verification (`request.text()` + `stripe.webhooks.constructEvent`).
 - Security headers and request identifiers are attached at middleware level for observability and safe defaults.
 
+## How we avoid auth bleed + hard-500s
+
+- We keep marketing pages under `packages/web/src/app/(marketing)` and treat them as **public-only** code paths.
+- Marketing files are blocked in CI from importing auth, Supabase server clients, or strict env modules that can throw during import.
+- `/app/*` routes stay behind middleware auth gates, so auth/session checks happen only where they are expected.
+- Deterministic run logic (`packages/web/src/lib/determinism/*`) is statically linted against locale/time/random APIs (`localeCompare`, `Intl.Collator`, `Math.random`, `Date.now`, `new Date`) so replay output cannot drift silently.
+- `pnpm run verify` is the release gate: lint + typecheck + tests + build + M1 smoke + boundary linter must all pass before merge.
+
 ## Env Matrix
 
 | Scope | Variables | Required | Behavior when missing |
