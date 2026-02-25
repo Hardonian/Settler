@@ -190,7 +190,8 @@
     "verify:determinism": "node scripts/verify-determinism.mjs",
     "verify:replay": "node scripts/verify-replay.mjs",
     "verify:tenant-isolation": "node scripts/verify-tenant-isolation.mjs",
-    "settler demo": "node scripts/settler-demo.mjs"
+    "settler demo": "node scripts/settler-demo.mjs",
+    "verify:root": "node scripts/verify-root-cleanliness.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

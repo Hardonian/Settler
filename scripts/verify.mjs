@@ -2,6 +2,7 @@
 import { spawnSync } from "child_process";
 
 const checks = [
+  ["Root cleanliness", ["run", "verify:root"]],
   ["Lint", ["run", "lint"]],
   ["Typecheck", ["run", "typecheck"]],
   ["Build", ["run", "build"]],
@@ -23,4 +24,6 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("\n✅ verify passed: lint + typecheck + build + test + claims + boundaries + routes");
+console.log(
+  "\n✅ verify passed: root + lint + typecheck + build + test + claims + boundaries + routes"
+);

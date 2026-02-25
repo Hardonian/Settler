@@ -29,8 +29,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'pnpm'
+          cache: "pnpm"
       - name: Install
         run: pnpm install --frozen-lockfile
-      - name: Verify gate (lint + typecheck + test + build + smoke + boundaries)
+      - name: Verify gate
         run: pnpm run verify --skip-audit
+
+      - name: Verify OSS mode
+        run: pnpm run verify:oss
+
+      - name: Verify routes
+        run: pnpm run verify:routes
+
+      - name: Verify boundaries
+        run: pnpm run verify:boundaries
+
+      - name: Verify root cleanliness
+        run: pnpm run verify:root
