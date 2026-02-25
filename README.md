@@ -17,7 +17,7 @@ Settler is a deterministic reconciliation control plane for running auditable Co
 - Advanced governance/tenancy controls and premium operational panels.
 - Enterprise capabilities are optional; OSS build and public routes work without enterprise-only configuration.
 
-Detailed boundary notes: [`docs/OSS_VS_ENTERPRISE.md`](docs/OSS_VS_ENTERPRISE.md).
+Detailed boundary notes: [`docs/oss-vs-enterprise.md`](docs/oss-vs-enterprise.md).
 
 ## Architecture Overview
 
@@ -150,3 +150,9 @@ scripts/            # verification and release automation
 
 - License: [`LICENSE`](LICENSE)
 - Contributing: [`CONTRIBUTING.md`](CONTRIBUTING.md)
+
+## Support
+
+- Issues: open a GitHub issue with reproduction details.
+- Discussions: use GitHub Discussions for Q&A and architecture proposals.
+- Security reports: follow [`SECURITY.md`](SECURITY.md).
