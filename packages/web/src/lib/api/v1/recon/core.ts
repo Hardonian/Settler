@@ -44,6 +44,26 @@ const datasetStore = new Map<
 
 type ApiContext = { requestId: string; tenantId: string; userId: string; ip: string };
 
+type RunMetricsPayload = {
+  runId: string;
+  status: string;
+  durationMs: number;
+  fingerprint: string | null;
+  replayOk: boolean | null;
+  evidenceSizeBytes: number;
+  policyId: string;
+  policyHash: string;
+};
+
+type RequestMetricsPayload = {
+  route: string;
+  method: string;
+  statusCode: number;
+  latencyMs: number;
+  cacheHit: boolean;
+  rateLimited: boolean;
+};
+
 function problem(
   status: number,
   code: ProblemCode,
@@ -158,6 +178,7 @@ export function storeIdempotent(
 }
 
 export async function createRun(ctx: ApiContext, body: z.infer<typeof RunCreateSchema>) {
+  const startedAt = Date.now();
   const job = await prisma.reconJob.create({
     data: {
       tenantId: ctx.tenantId,
@@ -175,6 +196,7 @@ export async function createRun(ctx: ApiContext, body: z.infer<typeof RunCreateS
   });
 
   if (!body.async) {
+    const fingerprint = createHash("sha256").update(job.id).digest("hex");
     await prisma.reconResult.create({
       data: {
         reconJobId: job.id,
@@ -182,13 +204,96 @@ export async function createRun(ctx: ApiContext, body: z.infer<typeof RunCreateS
         status: "succeeded",
         completedAt: new Date(),
         summary: { message: "sync execution completed" },
-        metadata: { fingerprint: createHash("sha256").update(job.id).digest("hex") },
+        metadata: { fingerprint },
       },
     });
     await prisma.reconJob.update({ where: { id: job.id }, data: { status: "completed" } });
+
+    await recordRunMetrics(ctx, {
+      runId: job.id,
+      status: "succeeded",
+      durationMs: Date.now() - startedAt,
+      fingerprint,
+      replayOk: null,
+      evidenceSizeBytes: JSON.stringify(body).length,
+      policyId: "default",
+      policyHash: createHash("sha256").update("default-policy").digest("hex"),
+    });
+
+    await recordEconomicMetrics(ctx, job.id, {
+      computeUnits: 1,
+      memoryUnits: 1,
+      casIoUnits: 1,
+      replayCalls: 0,
+    });
   }
 
   return job;
+}
+
+export async function recordRequestMetrics(ctx: ApiContext, payload: RequestMetricsPayload) {
+  try {
+    await prisma.$executeRaw`
+      INSERT INTO request_metrics (tenant_id, route, method, status_code, latency_ms, cache_hit, rate_limited)
+      VALUES (${ctx.tenantId}, ${payload.route}, ${payload.method}, ${payload.statusCode}, ${payload.latencyMs}, ${payload.cacheHit}, ${payload.rateLimited})
+    `;
+  } catch (error) {
+    void error;
+  }
+}
+
+export async function recordRunMetrics(ctx: ApiContext, payload: RunMetricsPayload) {
+  try {
+    await prisma.$executeRaw`
+      INSERT INTO run_metrics (tenant_id, run_id, status, duration_ms, fingerprint, replay_ok, evidence_size_bytes, policy_id, policy_hash)
+      VALUES (${ctx.tenantId}, ${payload.runId}, ${payload.status}, ${payload.durationMs}, ${payload.fingerprint}, ${payload.replayOk}, ${payload.evidenceSizeBytes}, ${payload.policyId}, ${payload.policyHash})
+      ON CONFLICT (tenant_id, run_id) DO UPDATE SET
+        status = EXCLUDED.status,
+        duration_ms = EXCLUDED.duration_ms,
+        fingerprint = EXCLUDED.fingerprint,
+        replay_ok = EXCLUDED.replay_ok,
+        evidence_size_bytes = EXCLUDED.evidence_size_bytes,
+        policy_id = EXCLUDED.policy_id,
+        policy_hash = EXCLUDED.policy_hash,
+        created_at = NOW()
+    `;
+  } catch (error) {
+    void error;
+  }
+}
+
+export async function recordEconomicMetrics(
+  ctx: ApiContext,
+  runId: string,
+  payload: { computeUnits: number; memoryUnits: number; casIoUnits: number; replayCalls: number }
+) {
+  try {
+    await prisma.$executeRaw`
+      INSERT INTO economic_metrics (tenant_id, run_id, compute_units, memory_units, cas_io_units, replay_calls)
+      VALUES (${ctx.tenantId}, ${runId}, ${payload.computeUnits}, ${payload.memoryUnits}, ${payload.casIoUnits}, ${payload.replayCalls})
+    `;
+  } catch (error) {
+    void error;
+  }
+}
+
+export async function recordDriftMetric(
+  ctx: ApiContext,
+  payload: {
+    runId: string;
+    expectedFingerprint: string | null;
+    actualFingerprint: string;
+    replayVerification: boolean;
+  }
+) {
+  try {
+    await prisma.$executeRaw`
+      INSERT INTO drift_metrics (tenant_id, run_id, expected_fingerprint, actual_fingerprint, replay_verification)
+      VALUES (${ctx.tenantId}, ${payload.runId}, ${payload.expectedFingerprint}, ${payload.actualFingerprint}, ${payload.replayVerification})
+    `;
+  } catch (error) {
+    void error;
+  }
 }
 
 export async function getRun(ctx: ApiContext, id: string) {

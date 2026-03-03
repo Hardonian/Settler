@@ -18,14 +18,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateJobRequest'
+              $ref: "#/components/schemas/CreateJobRequest"
       responses:
-        '200':
+        "200":
           description: Job created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Job'
+                $ref: "#/components/schemas/Job"
   /v1/receipts/parse:
     post:
       summary: Parse a receipt
@@ -44,7 +44,7 @@ paths:
                 content:
                   type: string
       responses:
-        '200':
+        "200":
           description: Receipt parsed
   /v1/feature-flags/evaluate:
     post:
@@ -64,7 +64,7 @@ paths:
                 context:
                   type: object
       responses:
-        '200':
+        "200":
           description: Flag evaluated
   /v1/convert/currency:
     post:
@@ -86,8 +86,42 @@ paths:
                 to:
                   type: string
       responses:
-        '200':
+        "200":
           description: Conversion result
+  /api/v1/metrics/summary:
+    get:
+      summary: Metrics summary
+      tags: [Metrics]
+      responses:
+        "200":
+          description: Summary payload
+  /api/v1/metrics/timeseries:
+    get:
+      summary: Metrics time series
+      tags: [Metrics]
+      responses:
+        "200":
+          description: Time series payload
+  /api/v1/metrics/top:
+    get:
+      summary: Top metrics
+      tags: [Metrics]
+      responses:
+        "200":
+          description: Top-N payload
+  /api/v1/runs:
+    get:
+      summary: List runs
+      tags: [Runs]
+      responses:
+        "200":
+          description: Runs list
+    post:
+      summary: Create run
+      tags: [Runs]
+      responses:
+        "201":
+          description: Run created
 components:
   schemas:
     CreateJobRequest:
@@ -101,11 +135,11 @@ components:
         name:
           type: string
         source:
-          $ref: '#/components/schemas/AdapterConfig'
+          $ref: "#/components/schemas/AdapterConfig"
         target:
-          $ref: '#/components/schemas/AdapterConfig'
+          $ref: "#/components/schemas/AdapterConfig"
         rules:
-          $ref: '#/components/schemas/MatchingRules'
+          $ref: "#/components/schemas/MatchingRules"
     Job:
       type: object
       properties:
