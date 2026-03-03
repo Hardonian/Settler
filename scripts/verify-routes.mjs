@@ -4,8 +4,20 @@ import { spawn } from "node:child_process";
 
 const port = Number(process.env.PORT || 3210);
 const base = `http://127.0.0.1:${port}`;
-const strict200Routes = ["/", "/docs", "/open-source"];
-const appRoute = "/app";
+
+const strict200Routes = ["/", "/docs"];
+const non500Routes = [
+  "/api/v1/health",
+  "/api/v1/ready",
+  "/api/v1/meta",
+  "/openapi.json",
+  "/app",
+  "/app/assistant",
+  "/app/pipelines",
+  "/app/runs",
+  "/app/review-queue",
+  "/app/pipelines/demo-pipeline",
+];
 
 async function waitForServer(timeoutMs = 60000) {
   const start = Date.now();
