@@ -202,6 +202,13 @@ const commandRegistry: Record<
       return { command: tenantCheckCommand };
     },
   },
+  foundry: {
+    description: "Test data foundry dataset mining/generation/execution",
+    load: async () => {
+      const { foundryCommand } = await import("./commands/foundry");
+      return { command: foundryCommand };
+    },
+  },
   verify: {
     description: "Verify a Reconciliation Proof Capsule (RPC)",
     load: async () => {

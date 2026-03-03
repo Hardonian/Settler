@@ -194,7 +194,10 @@
     "verify:root": "node scripts/verify-root-cleanliness.mjs",
     "demo": "tsx scripts/settler-demo.ts",
     "settler:replay": "tsx scripts/settler-replay.ts",
-    "verify:policy": "tsx scripts/verify-policy.ts && tsx scripts/test-moat.ts && tsx scripts/settler-replay.ts examples/demo-output-fixtures/demo-run-1/evidence.json"
+    "verify:policy": "tsx scripts/verify-policy.ts && tsx scripts/test-moat.ts && tsx scripts/settler-replay.ts examples/demo-output-fixtures/demo-run-1/evidence.json",
+    "verify:foundry": "pnpm --filter @settler/cli exec tsx src/index.ts foundry vectors run --suite core --seeds 1,2",
+    "verify:foundry:metamorphic": "pnpm --filter @settler/cli exec tsx src/index.ts foundry metamorphic generate --base-suite core --per 1 --seed 1",
+    "verify:foundry:faults": "pnpm --filter @settler/cli exec tsx src/index.ts foundry generate --type faults --seeds 1 && FOUNDRY_FAULTS=1 pnpm --filter @settler/cli exec tsx src/index.ts foundry report --last 1",
     "verify:api": "node scripts/verify-api.mjs",
     "verify:security": "node scripts/verify-security.mjs"
   },
