@@ -1,6 +1,14 @@
 import { createHash } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { applyRateLimit, buildContext, fail, getLatestResult, ok } from "@/lib/api/v1/recon/core";
+import {
+  applyRateLimit,
+  buildContext,
+  fail,
+  getLatestResult,
+  ok,
+  recordDriftMetric,
+  recordRunMetrics,
+} from "@/lib/api/v1/recon/core";
 
 export const runtime = "nodejs";
 
@@ -25,6 +33,22 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const match = Boolean(expected && expected === actual);
 
     if (!match) {
+      await recordDriftMetric(ctx, {
+        runId: id,
+        expectedFingerprint: expected || null,
+        actualFingerprint: actual,
+        replayVerification: false,
+      });
+      await recordRunMetrics(ctx, {
+        runId: id,
+        status: "replay_failed",
+        durationMs: 0,
+        fingerprint: actual,
+        replayOk: false,
+        evidenceSizeBytes: 0,
+        policyId: "default",
+        policyHash: createHash("sha256").update("default-policy").digest("hex"),
+      });
       return ok(
         NextResponse.json(
           {
@@ -39,6 +63,17 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         ctx.requestId
       );
     }
+
+    await recordRunMetrics(ctx, {
+      runId: id,
+      status: "replay_succeeded",
+      durationMs: 0,
+      fingerprint: actual,
+      replayOk: true,
+      evidenceSizeBytes: 0,
+      policyId: "default",
+      policyHash: createHash("sha256").update("default-policy").digest("hex"),
+    });
 
     return ok(
       NextResponse.json({ expected_fingerprint: expected, actual_fingerprint: actual, match }),

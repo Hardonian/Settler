@@ -30,6 +30,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         id: run.id,
         status: result?.status || run.status,
         metadata: { sourceAdapter: run.sourceAdapter, targetAdapter: run.targetAdapter },
+        policy: { id: "default", hash: "default-policy" },
+        fingerprint: (result?.metadata as Record<string, unknown> | null)?.fingerprint || null,
+        compute_units: 0,
+        replay_ok: null,
         created_at: run.createdAt.toISOString(),
       }),
       ctx.requestId
