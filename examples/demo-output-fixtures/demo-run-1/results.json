@@ -1,0 +1,79 @@
+{
+  "output": {
+    "matches": 2,
+    "mismatches": 0,
+    "reviewQueue": 0,
+    "artifact_hash": "aa9467af657fccb4b5f2e3dbc271970e514b476577a9fbc93c09c36eb0d2c249",
+    "output_hash": "3616e7623ce00a8a9f03d85192a47a089005524e97b3f9d4081a75b9b6f7ffbe"
+  },
+  "compiled": {
+    "spec": {
+      "connections": [
+        {
+          "provider": "stripe",
+          "ref": "stripe-default"
+        },
+        {
+          "provider": "quickbooks",
+          "ref": "quickbooks-default"
+        }
+      ],
+      "matchRules": [
+        {
+          "type": "composite_match",
+          "fields": ["invoice_number", "amount"],
+          "tolerance": {
+            "type": "percentage",
+            "value": 0.01
+          },
+          "amount_field": "amount"
+        }
+      ],
+      "tolerance": {
+        "type": "percentage",
+        "value": 0.01
+      },
+      "riskPolicies": [
+        {
+          "kind": "high_value_without_memo",
+          "threshold": 10000,
+          "requiresField": "memo",
+          "severity": "high",
+          "escalationPath": "review_queue"
+        }
+      ],
+      "schedule": {
+        "cadence": "daily",
+        "timezone": "UTC"
+      },
+      "reviewFlow": {
+        "mode": "manual_review",
+        "reviewerGroup": "finance_ops"
+      },
+      "rolloutMode": "draft"
+    },
+    "spec_hash": "8a2e8ca26a773531d60d52f73490bf2bfac96ebace41750c7a577a5c8407c7e8",
+    "memory_influence": [],
+    "canonical": "{\"connections\":[{\"provider\":\"stripe\",\"ref\":\"stripe-default\"},{\"provider\":\"quickbooks\",\"ref\":\"quickbooks-default\"}],\"matchRules\":[{\"amount_field\":\"amount\",\"fields\":[\"invoice_number\",\"amount\"],\"tolerance\":{\"type\":\"percentage\",\"value\":0.01},\"type\":\"composite_match\"}],\"reviewFlow\":{\"mode\":\"manual_review\",\"reviewerGroup\":\"finance_ops\"},\"riskPolicies\":[{\"escalationPath\":\"review_queue\",\"kind\":\"high_value_without_memo\",\"requiresField\":\"memo\",\"severity\":\"high\",\"threshold\":10000}],\"rolloutMode\":\"draft\",\"schedule\":{\"cadence\":\"daily\",\"timezone\":\"UTC\"},\"tolerance\":{\"type\":\"percentage\",\"value\":0.01}}"
+  },
+  "artifacts": {
+    "artifact": {
+      "sqlFilter": "invoice_number IS NOT NULL AND amount IS NOT NULL",
+      "comparator": {
+        "type": "composite_match",
+        "fields": ["amount", "invoice_number"],
+        "tolerance": {
+          "type": "percentage",
+          "value": 0.01
+        },
+        "amount_field": "amount"
+      },
+      "reportTemplate": {
+        "title": "Daily Reconciliation Summary",
+        "sections": ["match_rate", "mismatches", "review_queue"]
+      }
+    },
+    "artifact_hash": "aa9467af657fccb4b5f2e3dbc271970e514b476577a9fbc93c09c36eb0d2c249",
+    "canonical": "{\"comparator\":{\"amount_field\":\"amount\",\"fields\":[\"amount\",\"invoice_number\"],\"tolerance\":{\"type\":\"percentage\",\"value\":0.01},\"type\":\"composite_match\"},\"reportTemplate\":{\"sections\":[\"match_rate\",\"mismatches\",\"review_queue\"],\"title\":\"Daily Reconciliation Summary\"},\"sqlFilter\":\"invoice_number IS NOT NULL AND amount IS NOT NULL\"}"
+  }
+}

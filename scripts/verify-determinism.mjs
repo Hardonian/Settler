@@ -1,15 +1,20 @@
 #!/usr/bin/env node
-import { compilePromptToSpec } from "./reconciliation-control-plane.mjs";
+import { spawnSync } from "node:child_process";
 
-const prompt = "Reconcile Stripe against QuickBooks daily. Match payouts within 2 cents tolerance.";
+const runA = spawnSync("pnpm", ["demo"], { encoding: "utf8", env: process.env });
+const runB = spawnSync("pnpm", ["demo"], { encoding: "utf8", env: process.env });
 
-const first = compilePromptToSpec({ prompt, orgId: "org-a", workspaceId: "ws-a" });
-const second = compilePromptToSpec({ prompt, orgId: "org-a", workspaceId: "ws-a" });
-
-if (first.spec_hash !== second.spec_hash) {
-  console.error("❌ Determinism check failed: NL input produced different spec hashes");
+if (runA.status !== 0 || runB.status !== 0) {
+  process.stderr.write(runA.stderr || runB.stderr || "demo execution failed\n");
   process.exit(1);
 }
 
-console.log("✅ Determinism verified");
-console.log(`spec_hash=${first.spec_hash}`);
+const a = (runA.stdout.match(/Run Fingerprint:\s*(\w+)/) || [])[1];
+const b = (runB.stdout.match(/Run Fingerprint:\s*(\w+)/) || [])[1];
+
+if (!a || !b || a !== b) {
+  console.error("❌ Determinism check failed: fingerprint drift detected");
+  process.exit(1);
+}
+
+console.log(`✅ Determinism verified: ${a}`);

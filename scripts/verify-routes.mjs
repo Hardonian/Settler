@@ -46,54 +46,33 @@ function startWebServer() {
         "--hostname",
         "127.0.0.1",
       ];
-
-  if (!hasBuild) {
-    console.log("ℹ️ No production build found; using next dev for route smoke verification.");
-  }
-
   const server = spawn("pnpm", args, { stdio: "pipe", env: process.env });
   server.stdout.on("data", (d) => process.stdout.write(d));
   server.stderr.on("data", (d) => process.stderr.write(d));
   return server;
 }
 
-async function assertRouteStatus(route, mode) {
-  const res = await fetch(`${base}${route}`, {
-    redirect: mode === "strict" ? "follow" : "manual",
-  });
-
-  if (mode === "strict") {
-    if (res.status !== 200) {
-      throw new Error(`${route} returned ${res.status} (expected 200)`);
-    }
-  } else if (res.status >= 500) {
-    throw new Error(`${route} returned ${res.status} (must not hard-500)`);
-  }
-
-  console.log(`✅ ${route} => ${res.status}`);
-}
-
 async function main() {
   const server = startWebServer();
-
   try {
     await waitForServer();
-
     for (const route of strict200Routes) {
-      await assertRouteStatus(route, "strict");
+      const res = await fetch(`${base}${route}`, { redirect: "follow" });
+      if (res.status !== 200) throw new Error(`${route} => ${res.status}, expected 200`);
+      console.log(`✅ ${route} => ${res.status}`);
     }
 
-    for (const route of non500Routes) {
-      await assertRouteStatus(route, "non500");
+    const appRes = await fetch(`${base}${appRoute}`, { redirect: "manual" });
+    if (![200, 302, 401].includes(appRes.status)) {
+      throw new Error(`${appRoute} => ${appRes.status}, expected 200/302/401 and never 500`);
     }
+    console.log(`✅ ${appRoute} => ${appRes.status}`);
   } finally {
     server.kill("SIGTERM");
   }
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(`❌ Route verification failed: ${error.message}`);
-    process.exit(1);
-  });
+main().catch((error) => {
+  console.error(`❌ Route verification failed: ${error.message}`);
+  process.exit(1);
+});

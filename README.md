@@ -90,10 +90,14 @@ See [`LAUNCHKIT.md`](LAUNCHKIT.md) for artifact naming, manual checksum verifica
 ## One-command demo
 
 ```bash
-settler demo
+pnpm demo
 ```
 
-The demo is local-only, deterministic, and writes evidence artifacts under an isolated temp directory.
+The demo is local-only, deterministic, and writes proof artifacts to `examples/demo-output` (`run.json`, `results.json`, `evidence.json`, `report.html`). Replay is first-class via:
+
+```bash
+pnpm settler:replay examples/demo-output/evidence.json
+```
 
 ## Environment Variables
 
@@ -156,3 +160,10 @@ scripts/            # verification and release automation
 - Issues: open a GitHub issue with reproduction details.
 - Discussions: use GitHub Discussions for Q&A and architecture proposals.
 - Security reports: follow [`SECURITY.md`](SECURITY.md).
+
+## Deterministic Proof Links
+
+- Demo guide: `docs/demo.md`
+- Determinism contract: `docs/determinism.md`
+- Policy compiler and runtime guards: `docs/policies.md`
+- Investor truth anchors: `docs/investor.md`

@@ -77,7 +77,7 @@
     "clean:all": "node scripts/clean.mjs --all",
     "demo:seed": "npx tsx scripts/seed-demo.ts",
     "demo:seed:reset": "npx tsx scripts/seed-demo.ts --reset",
-    "verify": "node scripts/verify.mjs",
+    "verify": "pnpm run lint && pnpm run typecheck && pnpm run build && pnpm run test:ci:verify && pnpm run verify:boundaries && pnpm run verify:policy && pnpm run verify:routes",
     "verify:fast": "node scripts/verify.mjs --fast",
     "verify:staged": "node scripts/verify-staged-packages.mjs",
     "verify:full": "node scripts/verify.mjs --full",
@@ -184,7 +184,7 @@
     "verify:claims": "node scripts/validate-site-claims.mjs",
     "verify:boundaries": "node scripts/enforce-site-boundaries.mjs && node scripts/no-stubs-scan.mjs",
     "verify:routes": "node scripts/verify-routes.mjs",
-    "verify:oss": "node scripts/run-with-env.mjs --set SITE_MODE=oss --set NEXT_PUBLIC_SITE_MODE=oss --unset ENTERPRISE_SITE_URL --unset NEXT_PUBLIC_ENTERPRISE_SITE_URL -- pnpm verify",
+    "verify:oss": "node scripts/run-with-env.mjs --set SITE_MODE=oss --set NEXT_PUBLIC_SITE_MODE=oss --unset ENTERPRISE_SITE_URL --unset NEXT_PUBLIC_ENTERPRISE_SITE_URL --unset STRIPE_SECRET_KEY -- pnpm run verify",
     "verify:enterprise": "node scripts/run-with-env.mjs --set SITE_MODE=enterprise --set NEXT_PUBLIC_SITE_MODE=enterprise -- pnpm verify",
     "verify:links": "pnpm qa:links",
     "verify:determinism": "node scripts/verify-determinism.mjs",
@@ -192,6 +192,9 @@
     "verify:tenant-isolation": "node scripts/verify-tenant-isolation.mjs",
     "settler demo": "node scripts/settler-demo.mjs",
     "verify:root": "node scripts/verify-root-cleanliness.mjs",
+    "demo": "tsx scripts/settler-demo.ts",
+    "settler:replay": "tsx scripts/settler-replay.ts",
+    "verify:policy": "tsx scripts/verify-policy.ts && tsx scripts/test-moat.ts && tsx scripts/settler-replay.ts examples/demo-output-fixtures/demo-run-1/evidence.json"
     "verify:api": "node scripts/verify-api.mjs",
     "verify:security": "node scripts/verify-security.mjs"
   },

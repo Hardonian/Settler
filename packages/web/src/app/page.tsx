@@ -51,24 +51,21 @@ export default function Home() {
     {
       number: 1,
       title: "Ingest Data",
-      description:
-        "Bring data in through adapters, files, or your own pipelines.",
+      description: "Bring data in through adapters, files, or your own pipelines.",
       icon: Database,
       illustration: "/illustrations/feature-integration.svg",
     },
     {
       number: 2,
       title: "Normalize",
-      description:
-        "Map records into a canonical schema with explicit, inspectable transforms.",
+      description: "Map records into a canonical schema with explicit, inspectable transforms.",
       icon: Sliders,
       illustration: "/illustrations/feature-deterministic.svg",
     },
     {
       number: 3,
       title: "Apply Rules",
-      description:
-        "Run deterministic matching rules and tolerances you define.",
+      description: "Run deterministic matching rules and tolerances you define.",
       icon: Eye,
       illustration: "/illustrations/feature-audit.svg",
     },
@@ -122,7 +119,7 @@ const reconciliation = await client.reconciliations.create({
                     <TextRevealHeading
                       as="h1"
                       id="hero-heading"
-                      text="Reconciliation at Financial Grade"
+                      text="Deterministic Reconciliation, Audit-Grade Evidence"
                       className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 text-foreground leading-[1.05] tracking-tight"
                       delay={0}
                       staggerDelay={0.02}
@@ -132,7 +129,7 @@ const reconciliation = await client.reconciliations.create({
 
                   <div className="mb-10">
                     <TextReveal
-                      text="Normalize data, apply explicit rules, and surface variances with precision. Settler provides the audit-ready backbone for your financial operations."
+                      text="Run deterministic reconciliation through policy-compiled guards, emit cryptographic evidence bundles, and replay every run with the same fingerprint."
                       className="text-lg md:text-xl text-muted leading-relaxed font-normal max-w-xl"
                       delay={0.2}
                       staggerDelay={0.01}
@@ -146,8 +143,8 @@ const reconciliation = await client.reconciliations.create({
                       asChild
                       className="bg-teal-500 hover:bg-teal-600 text-white px-8 py-6 rounded-md shadow-lg shadow-teal-500/20 transition-all font-semibold"
                     >
-                      <Link href="/reconcile" className="flex items-center gap-2">
-                        Get Started <ArrowRight className="w-4 h-4" />
+                      <Link href="/docs#run-demo" className="flex items-center gap-2">
+                        Run the Demo <ArrowRight className="w-4 h-4" />
                       </Link>
                     </Button>
                     <Button
@@ -156,7 +153,7 @@ const reconciliation = await client.reconciliations.create({
                       asChild
                       className="border-border bg-transparent text-foreground hover:bg-neutral-20 px-8 py-6"
                     >
-                      <Link href="/contact">Discuss Architecture</Link>
+                      <Link href="/why-settler">View Proof</Link>
                     </Button>
                   </div>
 
@@ -198,7 +195,9 @@ const reconciliation = await client.reconciliations.create({
                       <CheckCircle className="w-5 h-5 text-teal-500" />
                     </div>
                     <div>
-                      <div className="text-[10px] font-bold text-muted uppercase tracking-wider">Reliability</div>
+                      <div className="text-[10px] font-bold text-muted uppercase tracking-wider">
+                        Reliability
+                      </div>
                       <div className="text-lg font-mono font-bold">99.98% Confidence</div>
                     </div>
                   </div>
@@ -208,6 +207,26 @@ const reconciliation = await client.reconciliations.create({
           </div>
         </section>
 
+        {/* Proof section */}
+        <section
+          className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950"
+          aria-label="Proof section"
+        >
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">Provable today</h2>
+            <p className="text-muted mb-8">
+              Deterministic reconciliation with audit-grade evidence. Generated from{" "}
+              <code>pnpm demo</code>.
+            </p>
+            <Image
+              src="/assets/marketing/hero-image-1.png"
+              alt="Demo evidence report screenshot"
+              width={1200}
+              height={700}
+              className="rounded-xl border border-border"
+            />
+          </div>
+        </section>
 
         {/* How It Works Section with Diagram */}
         <section
@@ -228,8 +247,8 @@ const reconciliation = await client.reconciliations.create({
                 loading="lazy"
               />
               <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
-                Turns messy financial inputs into traceable variances your team
-                can review. Same inputs, same rules, same results.
+                Turns messy financial inputs into traceable variances your team can review. Same
+                inputs, same rules, same results.
               </p>
             </div>
 
@@ -285,8 +304,8 @@ const reconciliation = await client.reconciliations.create({
                 Inspectable Rules You Can Version Control
               </h2>
               <p className="text-base md:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
-                Every reconciliation run is explainable and replayable. No hidden
-                heuristics, no silent edits.
+                Every reconciliation run is explainable and replayable. No hidden heuristics, no
+                silent edits.
               </p>
             </div>
             <SpotlightCard className="p-0 overflow-hidden shadow-xl md:shadow-2xl">
@@ -311,8 +330,8 @@ const reconciliation = await client.reconciliations.create({
                 What Mature Financial Infrastructure Evolves Toward
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
-                Manual reconciliation is a phase. Deterministic, API-based
-                reconciliation is the stable end-state.
+                Manual reconciliation is a phase. Deterministic, API-based reconciliation is the
+                stable end-state.
               </p>
             </div>
 
@@ -374,10 +393,7 @@ const reconciliation = await client.reconciliations.create({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
                 <div className="flex items-center gap-3 mb-6">
-                  <AlertTriangle
-                    className="w-6 h-6 text-slate-400"
-                    aria-hidden="true"
-                  />
+                  <AlertTriangle className="w-6 h-6 text-slate-400" aria-hidden="true" />
                   <h3 className="text-xl font-semibold text-slate-500 dark:text-slate-400">
                     Before
                   </h3>
@@ -391,10 +407,7 @@ const reconciliation = await client.reconciliations.create({
                     "Failure surfaces expanding with transaction volume",
                   ].map((item, idx) => (
                     <li key={idx} className="flex items-start gap-2.5">
-                      <span
-                        className="text-slate-400 mt-0.5 flex-shrink-0"
-                        aria-hidden="true"
-                      >
+                      <span className="text-slate-400 mt-0.5 flex-shrink-0" aria-hidden="true">
                         --
                       </span>
                       <span>{item}</span>
@@ -456,20 +469,20 @@ const reconciliation = await client.reconciliations.create({
                 </AccordionTrigger>
                 <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed space-y-2">
                   <p>
-                    <strong>Surfaces discrepancies:</strong> Outputs variance
-                    sets instead of silently resolving them.
+                    <strong>Surfaces discrepancies:</strong> Outputs variance sets instead of
+                    silently resolving them.
                   </p>
                   <p>
-                    <strong>Deterministic and inspectable:</strong> Same inputs
-                    produce the same outputs, with traceable rule paths.
+                    <strong>Deterministic and inspectable:</strong> Same inputs produce the same
+                    outputs, with traceable rule paths.
                   </p>
                   <p>
-                    <strong>Provider-agnostic:</strong> Normalize from any
-                    adapter or file format into a canonical model.
+                    <strong>Provider-agnostic:</strong> Normalize from any adapter or file format
+                    into a canonical model.
                   </p>
                   <p>
-                    <strong>Human-in-the-loop:</strong> Review and resolve
-                    exceptions with evidence attached.
+                    <strong>Human-in-the-loop:</strong> Review and resolve exceptions with evidence
+                    attached.
                   </p>
                 </AccordionContent>
               </AccordionItem>
@@ -481,10 +494,9 @@ const reconciliation = await client.reconciliations.create({
                   What Settler Is Not
                 </AccordionTrigger>
                 <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
-                  Settler is not accounting software, an audit tool, or
-                  compliance certification. It does not make decisions or
-                  automate judgment. It surfaces variances and evidence for human
-                  review.
+                  Settler is not accounting software, an audit tool, or compliance certification. It
+                  does not make decisions or automate judgment. It surfaces variances and evidence
+                  for human review.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem
@@ -495,9 +507,8 @@ const reconciliation = await client.reconciliations.create({
                   Security and Audit
                 </AccordionTrigger>
                 <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
-                  Audit evidence is produced as deterministic outputs with
-                  SHA256 hashing. You decide how to review and certify results.
-                  See the{" "}
+                  Audit evidence is produced as deterministic outputs with SHA256 hashing. You
+                  decide how to review and certify results. See the{" "}
                   <Link
                     href="/security-and-audit"
                     className="text-blue-600 dark:text-blue-400 hover:underline"
@@ -524,9 +535,8 @@ const reconciliation = await client.reconciliations.create({
               Own Your Reconciliation Logic
             </h2>
             <p className="text-lg sm:text-xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-              Deploy reconciliation you can audit, test, and version control.
-              Start with the documentation or discuss your architecture with our
-              team.
+              Deploy reconciliation you can audit, test, and version control. Start with the
+              documentation or discuss your architecture with our team.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
@@ -534,12 +544,8 @@ const reconciliation = await client.reconciliations.create({
                 asChild
                 className="w-full sm:w-auto bg-white text-slate-900 hover:bg-slate-100 px-10 py-7 text-lg font-semibold shadow-2xl transition-all min-h-[56px] min-w-[200px]"
               >
-                <Link
-                  href="/docs/quickstart"
-                  className="flex items-center justify-center gap-2"
-                >
-                  Read Quickstart{" "}
-                  <ArrowRight className="w-5 h-5" aria-hidden="true" />
+                <Link href="/docs/quickstart" className="flex items-center justify-center gap-2">
+                  Read Quickstart <ArrowRight className="w-5 h-5" aria-hidden="true" />
                 </Link>
               </Button>
               <Button
@@ -548,10 +554,7 @@ const reconciliation = await client.reconciliations.create({
                 asChild
                 className="w-full sm:w-auto px-10 py-7 text-lg border-2 border-slate-600 bg-transparent text-white hover:bg-slate-800 transition-all min-h-[56px] min-w-[200px]"
               >
-                <Link
-                  href="/contact"
-                  className="flex items-center justify-center gap-2"
-                >
+                <Link href="/contact" className="flex items-center justify-center gap-2">
                   Discuss Your Architecture
                 </Link>
               </Button>

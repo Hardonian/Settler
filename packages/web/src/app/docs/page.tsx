@@ -1,26 +1,44 @@
-import { Metadata } from 'next';
-import Link from 'next/link';
-import Image from 'next/image';
-import { CodeBlock } from '@/components/docs/CodeBlock';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { SafeImage } from '@/components/SafeImage';
-import { Rocket, Code, Zap, Shield } from 'lucide-react';
+import { Metadata } from "next";
+import Link from "next/link";
+import Image from "next/image";
+import { CodeBlock } from "@/components/docs/CodeBlock";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SafeImage } from "@/components/SafeImage";
+import { Rocket, Code, Zap, Shield } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: 'Documentation - Settler',
-  description: 'Documentation, quickstart guides, and determinism notes for Settler',
+  title: "Documentation - Settler",
+  description: "Documentation, quickstart guides, and determinism notes for Settler",
 };
 
 export default function DocsPage() {
   return (
     <div className="prose prose-slate dark:prose-invert max-w-none">
       <h1>Documentation</h1>
-      
+
       <p className="text-lg text-slate-600 dark:text-slate-400">
-        Everything you need to integrate Settler into your reconciliation workflows, with explicit rules
-        and deterministic outputs.
+        Everything you need to integrate Settler into your reconciliation workflows, with explicit
+        rules and deterministic outputs.
       </p>
+
+      <section
+        id="run-demo"
+        className="my-8 p-6 rounded-xl border border-slate-200 dark:border-slate-800"
+      >
+        <h2 className="mt-0">30-second proof demo</h2>
+        <p>
+          Run <code>pnpm demo</code> to generate deterministic artifacts and replay verification.
+        </p>
+        <CodeBlock
+          code={`pnpm demo
+pnpm settler:replay examples/demo-output/evidence.json`}
+          language="bash"
+        />
+        <p>
+          Evidence output: <code>examples/demo-output/evidence.json</code>.
+        </p>
+      </section>
 
       {/* Docs Interface Screenshot */}
       <div className="my-8 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 shadow-lg">
@@ -33,7 +51,7 @@ export default function DocsPage() {
             className="w-full h-auto object-contain md:object-cover"
             priority={false}
             sizes="100vw"
-            style={{ maxWidth: '100%', height: 'auto' }}
+            style={{ maxWidth: "100%", height: "auto" }}
             unoptimized
           />
         </div>
