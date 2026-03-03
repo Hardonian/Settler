@@ -30,61 +30,63 @@ function SignedOutScreen() {
   );
 }
 
+const navItems = [
+  { name: "Overview", href: "/app" },
+  { name: "Runs", href: "/app/runs" },
+  { name: "Evidence", href: "/app/evidence" },
+  { name: "Policies", href: "/app/policies" },
+  { name: "Metrics", href: "/app/metrics" },
+  { name: "Settings", href: "/app/settings" },
+];
+
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const env = getAppEnvStatus();
-
-  if (!env.ok) {
-    return <EnvErrorPanel missingVars={env.missing} />;
-  }
+  if (!env.ok) return <EnvErrorPanel missingVars={env.missing} />;
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    return <SignedOutScreen />;
-  }
-
-  const navItems = [
-    { name: "Overview", href: "/app" },
-    { name: "Connections", href: "/app/connections" },
-    { name: "Pipelines", href: "/app/pipelines" },
-    { name: "Runs", href: "/app/runs" },
-    { name: "Results", href: "/app/results" },
-    { name: "Review Queue", href: "/app/review" },
-    { name: "Rules", href: "/app/rules" },
-    { name: "Governance", href: "/app/governance" },
-    { name: "Integrations", href: "/app/integrations" },
-    { name: "Alerts", href: "/app/alerts" },
-    { name: "Traces", href: "/app/traces" },
-    { name: "Settings", href: "/app/settings" },
-  ];
+  if (!user) return <SignedOutScreen />;
 
   return (
-    <div className="flex h-screen bg-background-light dark:bg-background-dark">
-      <aside className="w-64 flex-shrink-0 border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-surface-darker">
-        <div className="flex h-full flex-col">
-          <div className="flex h-16 items-center justify-center border-b border-slate-200 dark:border-slate-800">
-            <h1 className="text-xl font-bold">Settler</h1>
-          </div>
-          <nav className="flex-1 overflow-y-auto">
-            <ul className="space-y-2 p-4">
-              {navItems.map((item) => (
-                <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    className="flex items-center rounded-lg p-2 text-base font-normal text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                  >
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </div>
+    <div className="flex h-screen bg-background-light">
+      <aside className="w-64 border-r border-slate-200 bg-white">
+        <div className="border-b border-slate-200 p-4 text-xl font-bold">Settler Console</div>
+        <nav className="p-3">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="mb-1 block rounded px-3 py-2 text-sm hover:bg-slate-100"
+            >
+              {item.name}
+            </Link>
+          ))}
+        </nav>
       </aside>
-      <div className="flex flex-1 flex-col overflow-hidden">{children}</div>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4">
+          <div className="text-sm text-slate-600">
+            Tenant: {user.user_metadata?.tenant_id ?? "default"}
+          </div>
+          <div className="flex items-center gap-3 text-xs">
+            <span className="rounded bg-slate-100 px-2 py-1">
+              ENV: {process.env.NODE_ENV ?? "dev"}
+            </span>
+            <details>
+              <summary className="cursor-pointer rounded bg-slate-100 px-2 py-1">
+                request-id debug
+              </summary>
+              <div className="mt-1 rounded border border-slate-200 bg-white p-2 text-slate-600">
+                request-id is returned in x-request-id response header.
+              </div>
+            </details>
+          </div>
+        </header>
+        <main className="min-h-0 flex-1 overflow-auto p-4">{children}</main>
+      </div>
     </div>
   );
 }

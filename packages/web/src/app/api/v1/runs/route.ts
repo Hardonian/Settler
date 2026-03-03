@@ -7,16 +7,93 @@ import {
   fail,
   getIdempotent,
   ok,
+  recordRequestMetrics,
   storeIdempotent,
 } from "@/lib/api/v1/recon/core";
+import { prisma } from "@/shared/db/prismaClient";
 
 export const runtime = "nodejs";
+
+export async function GET(request: NextRequest) {
+  const ctx = await buildContext(request);
+  if (ctx instanceof NextResponse) return ctx;
+  const started = Date.now();
+  const limited = applyRateLimit(ctx, "read");
+  if (limited) {
+    await recordRequestMetrics(ctx, {
+      route: "/api/v1/runs",
+      method: "GET",
+      statusCode: 429,
+      latencyMs: Date.now() - started,
+      cacheHit: false,
+      rateLimited: true,
+    });
+    return limited;
+  }
+
+  try {
+    const status = request.nextUrl.searchParams.get("status") ?? undefined;
+    const cursor = request.nextUrl.searchParams.get("cursor") ?? undefined;
+    const limit = Number(request.nextUrl.searchParams.get("limit") || 20);
+
+    const runs = await prisma.reconJob.findMany({
+      where: {
+        tenantId: ctx.tenantId,
+        ...(status ? { status } : {}),
+      },
+      orderBy: { createdAt: "desc" },
+      take: Math.min(limit, 50),
+      ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
+    });
+
+    const payload = {
+      rows: runs.map((run: { id: string; createdAt: Date; status: string }) => ({
+        run_id: run.id,
+        created_at: run.createdAt.toISOString(),
+        status: run.status,
+        policy: "default",
+      })),
+      next_cursor: runs.length === Math.min(limit, 50) ? runs[runs.length - 1]?.id : null,
+    };
+
+    await recordRequestMetrics(ctx, {
+      route: "/api/v1/runs",
+      method: "GET",
+      statusCode: 200,
+      latencyMs: Date.now() - started,
+      cacheHit: false,
+      rateLimited: false,
+    });
+    return ok(NextResponse.json(payload), ctx.requestId);
+  } catch (error) {
+    await recordRequestMetrics(ctx, {
+      route: "/api/v1/runs",
+      method: "GET",
+      statusCode: 500,
+      latencyMs: Date.now() - started,
+      cacheHit: false,
+      rateLimited: false,
+    });
+    return fail(error, request, ctx.requestId);
+  }
+}
 
 export async function POST(request: NextRequest) {
   const ctx = await buildContext(request);
   if (ctx instanceof NextResponse) return ctx;
+  const started = Date.now();
   const limited = applyRateLimit(ctx, "write");
-  if (limited) return limited;
+  if (limited) {
+    await recordRequestMetrics(ctx, {
+      route: "/api/v1/runs",
+      method: "POST",
+      statusCode: 429,
+      latencyMs: Date.now() - started,
+      cacheHit: false,
+      rateLimited: true,
+    });
+    return limited;
+  }
 
   try {
     const raw = await request.json();
@@ -52,8 +129,24 @@ export async function POST(request: NextRequest) {
     };
     storeIdempotent(ctx.tenantId, idempotencyKey, idem.reqHash, payload);
 
+    await recordRequestMetrics(ctx, {
+      route: "/api/v1/runs",
+      method: "POST",
+      statusCode: parsed.async ? 202 : 201,
+      latencyMs: Date.now() - started,
+      cacheHit: false,
+      rateLimited: false,
+    });
     return ok(NextResponse.json(payload, { status: parsed.async ? 202 : 201 }), ctx.requestId);
   } catch (error) {
+    await recordRequestMetrics(ctx, {
+      route: "/api/v1/runs",
+      method: "POST",
+      statusCode: 500,
+      latencyMs: Date.now() - started,
+      cacheHit: false,
+      rateLimited: false,
+    });
     return fail(error, request, ctx.requestId);
   }
 }

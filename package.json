@@ -194,7 +194,7 @@
     "verify:root": "node scripts/verify-root-cleanliness.mjs",
     "demo": "tsx scripts/settler-demo.ts",
     "settler:replay": "tsx scripts/settler-replay.ts",
-    "verify:policy": "tsx scripts/verify-policy.ts && tsx scripts/test-moat.ts && tsx scripts/settler-replay.ts examples/demo-output-fixtures/demo-run-1/evidence.json"
+    "verify:policy": "tsx scripts/verify-policy.ts && tsx scripts/test-moat.ts && tsx scripts/settler-replay.ts examples/demo-output-fixtures/demo-run-1/evidence.json",
     "verify:api": "node scripts/verify-api.mjs",
     "verify:security": "node scripts/verify-security.mjs"
   },
