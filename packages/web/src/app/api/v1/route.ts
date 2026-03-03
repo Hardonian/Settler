@@ -1,28 +1,30 @@
 /**
  * API v1 Base Route
- * 
+ *
  * Provides API versioning information and health check.
  */
 
-import { NextResponse } from 'next/server';
-import { publicRoute } from '@/middleware/billing-gate-universal';
-import { withSecurity } from '@/lib/middleware/api-security';
+import { NextResponse } from "next/server";
+import { publicRoute } from "@/middleware/billing-gate-universal";
+import { withSecurity } from "@/lib/middleware/api-security";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export const GET = withSecurity(
   publicRoute(async function GET() {
-  return NextResponse.json({
-    version: '1.0.0',
-    status: 'active',
-    endpoints: {
-      receipts: '/api/v1/receipts',
-      featureFlags: '/api/v1/feature-flags',
-      convert: '/api/v1/convert',
-    },
-    documentation: 'https://settler.dev/docs/api',
-    support: 'https://settler.dev/support',
-  });
-}),
+    return NextResponse.json({
+      version: "1.0.0",
+      status: "active",
+      endpoints: {
+        runs: "/api/v1/runs",
+        datasets: "/api/v1/datasets",
+        health: "/api/v1/health",
+        ready: "/api/v1/ready",
+        meta: "/api/v1/meta",
+      },
+      documentation: "https://settler.dev/docs/api",
+      support: "https://settler.dev/support",
+    });
+  }),
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
 );

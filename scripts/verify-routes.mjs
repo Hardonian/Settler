@@ -7,6 +7,10 @@ const base = `http://127.0.0.1:${port}`;
 
 const strict200Routes = ["/", "/docs"];
 const non500Routes = [
+  "/api/v1/health",
+  "/api/v1/ready",
+  "/api/v1/meta",
+  "/openapi.json",
   "/app",
   "/app/assistant",
   "/app/pipelines",

@@ -191,7 +191,9 @@
     "verify:replay": "node scripts/verify-replay.mjs",
     "verify:tenant-isolation": "node scripts/verify-tenant-isolation.mjs",
     "settler demo": "node scripts/settler-demo.mjs",
-    "verify:root": "node scripts/verify-root-cleanliness.mjs"
+    "verify:root": "node scripts/verify-root-cleanliness.mjs",
+    "verify:api": "node scripts/verify-api.mjs",
+    "verify:security": "node scripts/verify-security.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
