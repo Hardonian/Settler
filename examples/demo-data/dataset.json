@@ -1,0 +1,26 @@
+{
+  "stripe": [
+    {
+      "id": "st_1",
+      "invoice_number": "INV-100",
+      "amount": 101
+    },
+    {
+      "id": "st_2",
+      "invoice_number": "INV-101",
+      "amount": 205.75
+    }
+  ],
+  "quickbooks": [
+    {
+      "id": "qb_1",
+      "invoice_number": "INV-100",
+      "amount": 101.01
+    },
+    {
+      "id": "qb_2",
+      "invoice_number": "INV-101",
+      "amount": 205.7
+    }
+  ]
+}

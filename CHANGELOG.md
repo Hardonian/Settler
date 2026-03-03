@@ -7,11 +7,17 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Added
+
+- Added policy-as-code substrate modules (`/policies`, `/runner`, `/economic`, `/evidence`) with deterministic compilation and runtime execution funnel via `executeWithPolicy()`.
+- Added deterministic demo and replay commands that generate evidence artifacts under `examples/demo-output` and replay fixtures under `examples/demo-output-fixtures`.
+- Added verification gates for policy boundaries and replay checks (`verify:policy`) and strengthened route smoke verification requirements.
+- Added new documentation: `docs/demo.md`, `docs/determinism.md`, `docs/policies.md`, `docs/investor.md`, and `docs/one-pager.md`.
+
 ### Changed
 
-- Strengthened release boundary linting to prevent enterprise imports from OSS route surfaces.
-- Standardized release documentation for OSS vs Enterprise scope and verification gates.
-- Purged tracked generated artifacts (Playwright outputs and generated media binaries) from git index.
+- Updated root `verify` and `verify:oss` scripts to enforce lint/typecheck/build/test plus boundaries/policy/routes.
+- Updated README proof sections to link directly to deterministic demo evidence and replay contract.
 
 ## [1.0.0] - 2026-02-23
 

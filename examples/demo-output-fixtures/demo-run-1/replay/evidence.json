@@ -1,0 +1,39 @@
+{
+  "run_id": "demo-run-1-replay",
+  "created_at": "2026-03-03T04:32:53.831Z",
+  "tenant_id": "demo-tenant",
+  "policy_id": "demo.strict",
+  "policy_hash": "fb9248e8bc97d1a6938616d7ad5acf14388db3aef70f8f4a2bd137e35cae5a72",
+  "policy_version": "1.0.0",
+  "engine_version": "nlcp-1.0.0",
+  "input_hash": "9a559adb3bd0ad6528fd96f713ce4c451caf0e67ef18eb935b9d981f9aeeb0b9",
+  "config_hash": "130fcad12b35cd3b7889663b7af878c16e1168760a7514814df4de8ab3ab88b6",
+  "output_hash": "8bc6d217bf8413d884037f6a3e2e6c0e0bb5701e29130f4d7d69780189176064",
+  "run_fingerprint": "48c781e97fd3557ea0722087a34c3098579d9bef56d76f41c5f96c46199631b5",
+  "metrics": {
+    "compute_units": 210,
+    "memory_units": 256,
+    "cas_io_units": 6,
+    "replay_calls": 1
+  },
+  "provenance": {
+    "hash_chain": [
+      "d6220b3fd1da12f83f3772ad228ac0579dce0772f3501718e59ff5bdc826368f",
+      "7543b8c2c272a11e6b9bb9351fd8f308f6004021b8124daf321259e8ae12c3b8",
+      "38d9bbe9319d445514d97dba80bfc392512efef74bff3ff94024528a243bcb3e",
+      "88253b7e5d73d944f720f16984c3d3c2c2041a3b0baf8e10c70a171241054be9"
+    ],
+    "summary": "input->config->output->fingerprint"
+  },
+  "artifacts": {
+    "run": "/workspace/Settler/examples/demo-output-fixtures/demo-run-1/replay/run.json",
+    "results": "/workspace/Settler/examples/demo-output-fixtures/demo-run-1/replay/results.json",
+    "evidence": "/workspace/Settler/examples/demo-output-fixtures/demo-run-1/replay/evidence.json",
+    "report": "/workspace/Settler/examples/demo-output-fixtures/demo-run-1/replay/report.html"
+  },
+  "metadata": {
+    "retention_days": 90,
+    "replay_required": true,
+    "evidence_level": "full"
+  }
+}
