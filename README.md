@@ -150,6 +150,15 @@ docs/               # operational and product docs
 scripts/            # verification and release automation
 ```
 
+## Canonical Documentation Map
+
+- Start here: [`docs/START_HERE.md`](docs/START_HERE.md)
+- Architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+- Security: [`docs/SECURITY.md`](docs/SECURITY.md)
+- Operations: [`docs/OPERATIONS.md`](docs/OPERATIONS.md)
+- API: [`docs/API.md`](docs/API.md)
+- Audit pack: [`docs/audit/`](docs/audit)
+
 ## License and Contributing
 
 - License: [`LICENSE`](LICENSE)
