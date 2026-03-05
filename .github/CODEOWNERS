@@ -39,3 +39,9 @@
 /packages/cli/ @settler/maintainers @settler/contributors
 /docs/public/ @settler/maintainers @settler/contributors
 /examples/ @settler/maintainers @settler/contributors
+/scripts/capture-launch-assets.ts @settler/maintainers
+/scripts/build-launch-gif.mjs @settler/maintainers
+/scripts/verify-launch-assets.mjs @settler/maintainers
+/launch/assets-manifest.json @settler/maintainers
+/scripts/mirror-verify.ts @settler/maintainers
+/scripts/test-mirror-publishing.sh @settler/maintainers
