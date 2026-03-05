@@ -77,7 +77,7 @@
     "clean:all": "node scripts/clean.mjs --all",
     "demo:seed": "npx tsx scripts/seed-demo.ts",
     "demo:seed:reset": "npx tsx scripts/seed-demo.ts --reset",
-    "verify": "pnpm run lint && pnpm run typecheck && pnpm run build && pnpm run test:ci:verify && pnpm run verify:boundaries && pnpm run verify:policy && pnpm run verify:routes",
+    "verify": "pnpm run lint && pnpm run typecheck && pnpm run build && pnpm run test:ci:verify && pnpm run verify:boundaries && pnpm run verify:policy && pnpm run verify:routes && pnpm run verify:launch-assets",
     "verify:fast": "node scripts/verify.mjs --fast",
     "verify:staged": "node scripts/verify-staged-packages.mjs",
     "verify:full": "node scripts/verify.mjs --full",
@@ -199,7 +199,8 @@
     "verify:foundry:metamorphic": "pnpm --filter @settler/cli exec tsx src/index.ts foundry metamorphic generate --base-suite core --per 1 --seed 1",
     "verify:foundry:faults": "pnpm --filter @settler/cli exec tsx src/index.ts foundry generate --type faults --seeds 1 && FOUNDRY_FAULTS=1 pnpm --filter @settler/cli exec tsx src/index.ts foundry report --last 1",
     "verify:api": "node scripts/verify-api.mjs",
-    "verify:security": "node scripts/verify-security.mjs"
+    "verify:security": "node scripts/verify-security.mjs",
+    "verify:launch-assets": "node scripts/verify-launch-assets.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

@@ -37,6 +37,14 @@ jobs:
         env:
           BASE_URL: ${{ secrets.E2E_BASE_URL || 'https://settler.dev' }}
         continue-on-error: true
+      - name: Verify GitHub CLI availability
+        if: github.event_name == 'pull_request'
+        run: |
+          if ! gh --version; then
+            echo "GitHub CLI (gh) required for this workflow. Install gh or update the runner image."
+            exit 1
+          fi
+
       - name: Get Vercel Preview URL
         if: github.event_name == 'pull_request'
         id: vercel-preview

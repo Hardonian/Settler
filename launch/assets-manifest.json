@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "path": "launch/twitter-thread.md",
+      "sha256": "0223edecb32e3fe8e73186b7c06a5ffca7db0ff19a7d27f6311e6d3126bb25aa"
+    },
+    {
+      "path": "launch/ph.md",
+      "sha256": "e9c55d1e60b317a7a9ba11c63765f7e34e0ef4925f9143ebcd887b5efbd8abea"
+    },
+    {
+      "path": "launch/reddit.md",
+      "sha256": "364a290d5c137b4ddf06fa0dc06b55dc065f540e5fcc76ee0ca10c741b8a7e8d"
+    },
+    {
+      "path": "launch/hn.md",
+      "sha256": "abcf83ee42665c275813822cf881ce950321bf3d7a5ab7a3f2ccca6b60e915a6"
+    }
+  ]
+}
