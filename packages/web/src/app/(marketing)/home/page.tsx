@@ -38,17 +38,17 @@ import {
 import Image from "next/image";
 
 const AnimatedCodeBlock = dynamic(
-  () => import("@/components/AnimatedCodeBlock").then(mod => ({ default: mod.AnimatedCodeBlock })),
+  () =>
+    import("@/components/AnimatedCodeBlock").then((mod) => ({ default: mod.AnimatedCodeBlock })),
   {
     ssr: false,
     loading: () => (
       <div className="bg-slate-900 rounded-xl p-6 min-h-[300px] flex items-center justify-center">
         <div className="animate-pulse text-slate-400">Loading code editor...</div>
       </div>
-    )
+    ),
   }
 );
-
 
 export default function HomePage() {
   const devWorkflowSteps = [
@@ -90,32 +90,38 @@ export default function HomePage() {
     {
       icon: Code2,
       title: "Deterministic Reconciliation Engine",
-      description: "Same data and same rules produce identical results. Every time. No hidden heuristics, no probabilistic drift."
+      description:
+        "Same data and same rules produce identical results. Every time. No hidden heuristics, no probabilistic drift.",
     },
     {
       icon: Shield,
       title: "Governance Boundaries",
-      description: "Tenant isolation, policy-based access controls, and audit-ready evidence trails are structural, not optional."
+      description:
+        "Tenant isolation, policy-based access controls, and audit-ready evidence trails are structural, not optional.",
     },
     {
       icon: Terminal,
       title: "API and CLI First",
-      description: "Programmatic reconciliation that integrates with your CI/CD pipeline. Reconciliation logic as code."
+      description:
+        "Programmatic reconciliation that integrates with your CI/CD pipeline. Reconciliation logic as code.",
     },
     {
       icon: Database,
       title: "Data Sovereignty",
-      description: "Self-host in your infrastructure. Your data never leaves your governance perimeter unless you choose otherwise."
+      description:
+        "Self-host in your infrastructure. Your data never leaves your governance perimeter unless you choose otherwise.",
     },
     {
       icon: Cpu,
       title: "Replayable Runs",
-      description: "Re-run any reconciliation with identical results. Debugging, testing, and auditing become tractable."
+      description:
+        "Re-run any reconciliation with identical results. Debugging, testing, and auditing become tractable.",
     },
     {
       icon: Eye,
       title: "AI-Assisted Review Layer",
-      description: "AI compresses exception triage time. Humans retain final authority. Reviewable decisions, not automated judgment."
+      description:
+        "AI compresses exception triage time. Humans retain final authority. Reviewable decisions, not automated judgment.",
     },
   ];
 
@@ -177,9 +183,7 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
               <HeroAnimationWrapper>
                 <div className="text-left max-w-2xl">
                   <div className="mb-6 flex justify-start">
-                    <Badge
-                      className="bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 text-sm font-medium inline-flex items-center gap-2"
-                    >
+                    <Badge className="bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 text-sm font-medium inline-flex items-center gap-2">
                       <Github className="w-4 h-4" aria-hidden="true" />
                       Deterministic Reconciliation Engine
                     </Badge>
@@ -200,8 +204,8 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
                   <div className="mb-10 sm:mb-12">
                     <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 leading-relaxed">
                       Normalize data. Apply explicit rules. Surface variances for review.
-                      Deterministic, inspectable, and designed for teams that require
-                      operational confidence.
+                      Deterministic, inspectable, and designed for teams that require operational
+                      confidence.
                     </p>
                   </div>
 
@@ -211,7 +215,10 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
                       asChild
                       className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 px-8 py-6 text-lg font-semibold shadow-xl transition-all duration-200"
                     >
-                      <Link href="/docs/quickstart" className="flex items-center justify-center gap-3">
+                      <Link
+                        href="/docs/quickstart"
+                        className="flex items-center justify-center gap-3"
+                      >
                         <BookOpen className="w-5 h-5" aria-hidden="true" />
                         <span>Read Quickstart</span>
                       </Link>
@@ -232,7 +239,10 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
               </HeroAnimationWrapper>
 
               <div className="hidden lg:block relative">
-                <div className="absolute inset-0 bg-blue-500/10 blur-3xl rounded-full -z-10" aria-hidden="true" />
+                <div
+                  className="absolute inset-0 bg-blue-500/10 blur-3xl rounded-full -z-10"
+                  aria-hidden="true"
+                />
                 <Image
                   src="/illustrations/hero-visual.svg"
                   alt="Settler deterministic reconciliation engine visualization showing data flow through rules-based matching pipeline"
@@ -247,14 +257,18 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
         </section>
 
         {/* Core Capabilities */}
-        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900" aria-label="Core capabilities">
+        <section
+          className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900"
+          aria-label="Core capabilities"
+        >
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12 sm:mb-16">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
                 Operational Confidence Through Determinism
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
-                No black boxes. No probabilistic drift. Inspectable rules, traceable evidence, and reviewable decisions at every step.
+                No black boxes. No probabilistic drift. Inspectable rules, traceable evidence, and
+                reviewable decisions at every step.
               </p>
             </div>
 
@@ -267,7 +281,10 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
                     className="p-6 sm:p-8 h-full transition-all duration-300 hover:shadow-xl"
                   >
                     <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
-                      <Icon className="w-6 h-6 text-slate-700 dark:text-slate-300" aria-hidden="true" />
+                      <Icon
+                        className="w-6 h-6 text-slate-700 dark:text-slate-300"
+                        aria-hidden="true"
+                      />
                     </div>
                     <h3 className="text-lg sm:text-xl font-semibold mb-2 text-slate-900 dark:text-white">
                       {capability.title}
@@ -283,7 +300,10 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
         </section>
 
         {/* Developer Workflow */}
-        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950" aria-label="Developer workflow">
+        <section
+          className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950"
+          aria-label="Developer workflow"
+        >
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12 sm:mb-16">
               <Badge className="mb-4 bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-200 px-3 py-1">
@@ -293,7 +313,8 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
                 Four Steps to Audit-Ready Reconciliation
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
-                Install the SDK, define your rules, run reconciliation, review evidence. No complex setup required.
+                Install the SDK, define your rules, run reconciliation, review evidence. No complex
+                setup required.
               </p>
             </div>
 
@@ -303,13 +324,13 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
                 return (
                   <div
                     key={index}
-                    className="relative p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col items-center text-center overflow-hidden"
+                    className="relative p-6 pt-10 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col items-center text-center overflow-visible"
                   >
-                    <div className="absolute -top-3 left-6 w-8 h-8 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center text-sm font-bold">
+                    <div className="absolute top-4 left-4 w-8 h-8 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center text-sm font-bold shadow-sm ring-2 ring-white dark:ring-slate-900">
                       {step.number}
                     </div>
 
-                    <div className="w-full aspect-square relative mb-6 p-4">
+                    <div className="w-full aspect-square relative mb-6 p-4 overflow-visible">
                       <Image
                         src={step.illustration}
                         alt={step.title}
@@ -319,14 +340,20 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
                     </div>
 
                     <div className="pt-2 w-full min-w-0">
-                       <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white flex items-center justify-center gap-2">
-                        <Icon className="w-5 h-5 text-slate-700 dark:text-slate-300" aria-hidden="true" />
+                      <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white flex items-center justify-center gap-2">
+                        <Icon
+                          className="w-5 h-5 text-slate-700 dark:text-slate-300"
+                          aria-hidden="true"
+                        />
                         {step.title}
                       </h3>
                       <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
                         {step.description}
                       </p>
-                      <code className="block text-xs bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded text-slate-700 dark:text-slate-300 font-mono overflow-hidden text-ellipsis whitespace-nowrap max-w-full" title={step.code}>
+                      <code
+                        className="block text-xs bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded text-slate-700 dark:text-slate-300 font-mono overflow-hidden text-ellipsis whitespace-nowrap max-w-full"
+                        title={step.code}
+                      >
                         {step.code}
                       </code>
                     </div>
@@ -338,7 +365,10 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
         </section>
 
         {/* Code Example */}
-        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-slate-900 text-white" aria-label="Code example">
+        <section
+          className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-slate-900 text-white"
+          aria-label="Code example"
+        >
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-10 sm:mb-12">
               <Badge className="mb-4 bg-slate-800 text-slate-200 px-3 py-1 border border-slate-700">
@@ -348,7 +378,8 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
                 Inspectable, Testable, Version Controlled
               </h2>
               <p className="text-lg text-slate-400 max-w-3xl mx-auto leading-relaxed">
-                Your reconciliation rules are code. Review them in PRs, test them in CI, deploy them with confidence.
+                Your reconciliation rules are code. Review them in PRs, test them in CI, deploy them
+                with confidence.
               </p>
             </div>
 
@@ -371,9 +402,21 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10">
               {[
-                { icon: CheckCircle2, title: "Type Safe", desc: "Full TypeScript support with IntelliSense" },
-                { icon: RefreshCw, title: "Deterministic", desc: "Same inputs always produce same outputs" },
-                { icon: Shield, title: "Auditable", desc: "Complete evidence chain with SHA256 hashes" },
+                {
+                  icon: CheckCircle2,
+                  title: "Type Safe",
+                  desc: "Full TypeScript support with IntelliSense",
+                },
+                {
+                  icon: RefreshCw,
+                  title: "Deterministic",
+                  desc: "Same inputs always produce same outputs",
+                },
+                {
+                  icon: Shield,
+                  title: "Auditable",
+                  desc: "Complete evidence chain with SHA256 hashes",
+                },
               ].map((feature, idx) => {
                 const Icon = feature.icon;
                 return (
@@ -393,14 +436,18 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
         </section>
 
         {/* Enterprise Inevitability Narrative */}
-        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900" aria-label="Why this matters">
+        <section
+          className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900"
+          aria-label="Why this matters"
+        >
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12 sm:mb-16">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
                 What Mature Financial Infrastructure Evolves Toward
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
-                Manual reconciliation is a phase. Deterministic, API-based reconciliation is the stable end-state.
+                Manual reconciliation is a phase. Deterministic, API-based reconciliation is the
+                stable end-state.
               </p>
             </div>
 
@@ -409,25 +456,38 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
                 {
                   icon: Target,
                   title: "Failure Surface Reduction",
-                  description: "Reconciliation is not a task. It is a structural risk surface. Determinism reduces that surface by eliminating probabilistic drift.",
+                  description:
+                    "Reconciliation is not a task. It is a structural risk surface. Determinism reduces that surface by eliminating probabilistic drift.",
                 },
                 {
                   icon: Eye,
                   title: "Reviewable Decisions",
-                  description: "AI compresses uncertainty. Humans retain authority. Every flagged variance includes evidence and confidence context for informed review.",
+                  description:
+                    "AI compresses uncertainty. Humans retain authority. Every flagged variance includes evidence and confidence context for informed review.",
                 },
                 {
                   icon: Layers,
                   title: "Operational Maturity",
-                  description: "From manual exports to version-controlled rules. From fragile scripts to deterministic pipelines. From hope to operational confidence.",
+                  description:
+                    "From manual exports to version-controlled rules. From fragile scripts to deterministic pipelines. From hope to operational confidence.",
                 },
               ].map((item, idx) => {
                 const Icon = item.icon;
                 return (
-                  <div key={idx} className="p-6 md:p-8 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-800">
-                    <Icon className="w-10 h-10 text-slate-700 dark:text-slate-300 mb-4" aria-hidden="true" />
-                    <h3 className="text-xl font-semibold mb-3 text-slate-900 dark:text-white">{item.title}</h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{item.description}</p>
+                  <div
+                    key={idx}
+                    className="p-6 md:p-8 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-800"
+                  >
+                    <Icon
+                      className="w-10 h-10 text-slate-700 dark:text-slate-300 mb-4"
+                      aria-hidden="true"
+                    />
+                    <h3 className="text-xl font-semibold mb-3 text-slate-900 dark:text-white">
+                      {item.title}
+                    </h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                      {item.description}
+                    </p>
                   </div>
                 );
               })}
@@ -436,7 +496,10 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
         </section>
 
         {/* FAQ */}
-        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950" aria-label="Common questions">
+        <section
+          className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950"
+          aria-label="Common questions"
+        >
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-10 sm:mb-12">
               <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
@@ -444,39 +507,60 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
               </h2>
             </div>
             <Accordion type="single" collapsible className="w-full space-y-4">
-              <AccordionItem value="what-is" className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6">
+              <AccordionItem
+                value="what-is"
+                className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6"
+              >
                 <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
                   What is Settler?
                 </AccordionTrigger>
                 <AccordionContent className="text-sm sm:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
-                  Settler is a deterministic reconciliation engine that normalizes financial data, applies explicit matching rules, and surfaces variances for human review. It is designed for teams who need transparency, auditability, and operational confidence in their financial workflows.
+                  Settler is a deterministic reconciliation engine that normalizes financial data,
+                  applies explicit matching rules, and surfaces variances for human review. It is
+                  designed for teams who need transparency, auditability, and operational confidence
+                  in their financial workflows.
                 </AccordionContent>
               </AccordionItem>
 
-              <AccordionItem value="deterministic" className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6">
+              <AccordionItem
+                value="deterministic"
+                className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6"
+              >
                 <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
                   What does deterministic mean?
                 </AccordionTrigger>
                 <AccordionContent className="text-sm sm:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
-                  Deterministic means the same inputs always produce the same outputs. Given identical data sources and matching rules, Settler will always identify the same variances. This makes debugging, testing, and auditing tractable.
+                  Deterministic means the same inputs always produce the same outputs. Given
+                  identical data sources and matching rules, Settler will always identify the same
+                  variances. This makes debugging, testing, and auditing tractable.
                 </AccordionContent>
               </AccordionItem>
 
-              <AccordionItem value="self-host" className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6">
+              <AccordionItem
+                value="self-host"
+                className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6"
+              >
                 <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
                   Can I self-host Settler?
                 </AccordionTrigger>
                 <AccordionContent className="text-sm sm:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
-                  Yes. Self-hosting is a first-class deployment model. Settler is open source under Apache 2.0. Your data stays in your infrastructure unless you choose to use the managed cloud service.
+                  Yes. Self-hosting is a first-class deployment model. Settler is open source under
+                  Apache 2.0. Your data stays in your infrastructure unless you choose to use the
+                  managed cloud service.
                 </AccordionContent>
               </AccordionItem>
 
-              <AccordionItem value="not" className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6">
+              <AccordionItem
+                value="not"
+                className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6"
+              >
                 <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
                   What is Settler NOT?
                 </AccordionTrigger>
                 <AccordionContent className="text-sm sm:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
-                  Settler is not accounting software, an audit tool, or compliance certification. It does not make decisions or automate judgment. It surfaces variances and evidence for human review. You decide how to act on the results.
+                  Settler is not accounting software, an audit tool, or compliance certification. It
+                  does not make decisions or automate judgment. It surfaces variances and evidence
+                  for human review. You decide how to act on the results.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
@@ -484,7 +568,10 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
         </section>
 
         {/* Final CTA */}
-        <section className="py-20 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 bg-slate-900 text-white" aria-label="Get started">
+        <section
+          className="py-20 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 bg-slate-900 text-white"
+          aria-label="Get started"
+        >
           <div className="max-w-4xl mx-auto text-center">
             <Badge className="mb-6 bg-slate-800 text-slate-200 px-4 py-2 border border-slate-700">
               Apache 2.0 Licensed
@@ -493,8 +580,8 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
               Own Your Reconciliation Logic
             </h2>
             <p className="text-lg sm:text-xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-              Deploy reconciliation you can audit, test, and version control.
-              Start with the documentation or discuss your architecture with our team.
+              Deploy reconciliation you can audit, test, and version control. Start with the
+              documentation or discuss your architecture with our team.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
