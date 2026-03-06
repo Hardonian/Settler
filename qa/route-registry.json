@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-02-24T20:23:11.601Z",
-  "totalRoutes": 387,
-  "pageRoutes": 218,
+  "generatedAt": "2026-03-06T03:45:57.195Z",
+  "totalRoutes": 413,
+  "pageRoutes": 227,
   "routes": [
     {
       "path": "/",
@@ -932,6 +932,38 @@
       "optional": false
     },
     {
+      "path": "/api/foundry/datasets",
+      "type": "route",
+      "file": "api/foundry/datasets/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/foundry/datasets/[id]",
+      "type": "route",
+      "file": "api/foundry/datasets/[id]/route.ts",
+      "dynamic": true,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/foundry/runs",
+      "type": "route",
+      "file": "api/foundry/runs/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/foundry/runs/[id]",
+      "type": "route",
+      "file": "api/foundry/runs/[id]/route.ts",
+      "dynamic": true,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/api/gtm/demo/reset",
       "type": "route",
       "file": "api/gtm/demo/reset/route.ts",
@@ -1468,6 +1500,14 @@
       "optional": false
     },
     {
+      "path": "/api/v1/datasets",
+      "type": "route",
+      "file": "api/v1/datasets/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/api/v1/feature-flags",
       "type": "route",
       "file": "api/v1/feature-flags/route.ts",
@@ -1487,6 +1527,54 @@
       "path": "/api/v1/feature-flags/evaluate",
       "type": "route",
       "file": "api/v1/feature-flags/evaluate/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/v1/health",
+      "type": "route",
+      "file": "api/v1/health/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/v1/meta",
+      "type": "route",
+      "file": "api/v1/meta/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/v1/metrics/summary",
+      "type": "route",
+      "file": "api/v1/metrics/summary/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/v1/metrics/timeseries",
+      "type": "route",
+      "file": "api/v1/metrics/timeseries/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/v1/metrics/top",
+      "type": "route",
+      "file": "api/v1/metrics/top/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/v1/ready",
+      "type": "route",
+      "file": "api/v1/ready/route.ts",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -1512,6 +1600,46 @@
       "type": "route",
       "file": "api/v1/recon/jobs/route.ts",
       "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/v1/runs",
+      "type": "route",
+      "file": "api/v1/runs/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/v1/runs/[id]",
+      "type": "route",
+      "file": "api/v1/runs/[id]/route.ts",
+      "dynamic": true,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/v1/runs/[id]/evidence",
+      "type": "route",
+      "file": "api/v1/runs/[id]/evidence/route.ts",
+      "dynamic": true,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/v1/runs/[id]/replay",
+      "type": "route",
+      "file": "api/v1/runs/[id]/replay/route.ts",
+      "dynamic": true,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/v1/runs/[id]/results",
+      "type": "route",
+      "file": "api/v1/runs/[id]/results/route.ts",
+      "dynamic": true,
       "catchAll": false,
       "optional": false
     },
@@ -1572,6 +1700,14 @@
       "optional": false
     },
     {
+      "path": "/app/evidence",
+      "type": "page",
+      "file": "app/evidence/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/app/governance",
       "type": "page",
       "file": "app/governance/page.tsx",
@@ -1588,6 +1724,14 @@
       "optional": false
     },
     {
+      "path": "/app/metrics",
+      "type": "page",
+      "file": "app/metrics/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/app/onboarding",
       "type": "page",
       "file": "app/onboarding/page.tsx",
@@ -1596,9 +1740,25 @@
       "optional": false
     },
     {
+      "path": "/app/overview",
+      "type": "page",
+      "file": "app/overview/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/app/pipelines",
       "type": "page",
       "file": "app/pipelines/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/app/policies",
+      "type": "page",
+      "file": "app/policies/page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -1632,6 +1792,14 @@
       "type": "page",
       "file": "app/runs/page.tsx",
       "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/app/runs/[id]",
+      "type": "page",
+      "file": "app/runs/[id]/page.tsx",
+      "dynamic": true,
       "catchAll": false,
       "optional": false
     },
@@ -2700,6 +2868,30 @@
       "optional": false
     },
     {
+      "path": "/intelligence/foundry",
+      "type": "page",
+      "file": "intelligence/foundry/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/intelligence/foundry/[datasetId]",
+      "type": "page",
+      "file": "intelligence/foundry/[datasetId]/page.tsx",
+      "dynamic": true,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/intelligence/foundry/runs/[runId]",
+      "type": "page",
+      "file": "intelligence/foundry/runs/[runId]/page.tsx",
+      "dynamic": true,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/investor/proof",
       "type": "page",
       "file": "investor/proof/page.tsx",
@@ -2815,6 +3007,14 @@
       "path": "/open-source",
       "type": "page",
       "file": "open-source/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/openapi.json",
+      "type": "route",
+      "file": "openapi.json/route.ts",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -3092,6 +3292,14 @@
       "optional": false
     },
     {
+      "path": "/why",
+      "type": "page",
+      "file": "why/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/why-settler",
       "type": "page",
       "file": "why-settler/page.tsx",
@@ -3130,14 +3338,19 @@
     "/app",
     "/app/alerts",
     "/app/connections",
+    "/app/evidence",
     "/app/governance",
     "/app/integrations",
+    "/app/metrics",
     "/app/onboarding",
+    "/app/overview",
     "/app/pipelines",
+    "/app/policies",
     "/app/results",
     "/app/review",
     "/app/rules",
     "/app/runs",
+    "/app/runs/[id]",
     "/app/settings",
     "/app/traces",
     "/architecture",
@@ -3269,6 +3482,9 @@
     "/how-it-works",
     "/integrations",
     "/integrations/request",
+    "/intelligence/foundry",
+    "/intelligence/foundry/[datasetId]",
+    "/intelligence/foundry/runs/[runId]",
     "/investor/proof",
     "/investor/reality",
     "/invite/[token]",
@@ -3318,6 +3534,7 @@
     "/ux-playground/events",
     "/verify",
     "/vision",
+    "/why",
     "/why-settler"
   ]
 }
