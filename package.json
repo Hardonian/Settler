@@ -200,7 +200,10 @@
     "verify:foundry:faults": "pnpm --filter @settler/cli exec tsx src/index.ts foundry generate --type faults --seeds 1 && FOUNDRY_FAULTS=1 pnpm --filter @settler/cli exec tsx src/index.ts foundry report --last 1",
     "verify:api": "node scripts/verify-api.mjs",
     "verify:security": "node scripts/verify-security.mjs",
-    "verify:launch-assets": "node scripts/verify-launch-assets.mjs"
+    "verify:launch-assets": "node scripts/verify-launch-assets.mjs",
+    "verify:route-parity": "tsx scripts/verify-route-parity.ts",
+    "verify:vercel-runtime-parity": "tsx scripts/verify-vercel-runtime-parity.ts",
+    "verify:api-surface": "tsx scripts/verify-api-surface.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

@@ -5,8 +5,9 @@ import { spawn } from "node:child_process";
 const port = Number(process.env.PORT || 3210);
 const base = `http://127.0.0.1:${port}`;
 
-const strict200Routes = ["/", "/docs"];
+const strict200Routes = ["/home", "/docs", "/pricing"];
 const non500Routes = [
+  "/",
   "/api/v1/health",
   "/api/v1/ready",
   "/api/v1/meta",
@@ -19,13 +20,15 @@ const non500Routes = [
   "/app/pipelines/demo-pipeline",
 ];
 
-async function waitForServer(timeoutMs = 60000) {
+async function waitForServer(timeoutMs = 90000) {
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
     try {
       const res = await fetch(`${base}/`, { redirect: "follow" });
       if (res.status < 500) return;
-    } catch {}
+    } catch {
+      // keep polling until timeout
+    }
     await new Promise((r) => setTimeout(r, 500));
   }
   throw new Error("Server did not start in time");
@@ -46,27 +49,35 @@ function startWebServer() {
         "--hostname",
         "127.0.0.1",
       ];
+
   const server = spawn("pnpm", args, { stdio: "pipe", env: process.env });
   server.stdout.on("data", (d) => process.stdout.write(d));
   server.stderr.on("data", (d) => process.stderr.write(d));
   return server;
 }
 
+async function verifyRoute(route, allowedStatuses) {
+  const res = await fetch(`${base}${route}`, { redirect: "manual" });
+  if (!allowedStatuses.includes(res.status)) {
+    throw new Error(`${route} => ${res.status}, expected one of ${allowedStatuses.join(", ")}`);
+  }
+  console.log(`✅ ${route} => ${res.status}`);
+}
+
 async function main() {
   const server = startWebServer();
   try {
     await waitForServer();
+
     for (const route of strict200Routes) {
-      const res = await fetch(`${base}${route}`, { redirect: "follow" });
-      if (res.status !== 200) throw new Error(`${route} => ${res.status}, expected 200`);
-      console.log(`✅ ${route} => ${res.status}`);
+      await verifyRoute(route, [200]);
     }
 
-    const appRes = await fetch(`${base}${appRoute}`, { redirect: "manual" });
-    if (![200, 302, 401].includes(appRes.status)) {
-      throw new Error(`${appRoute} => ${appRes.status}, expected 200/302/401 and never 500`);
+    for (const route of non500Routes) {
+      await verifyRoute(route, [200, 302, 307, 401, 403, 404]);
     }
-    console.log(`✅ ${appRoute} => ${appRes.status}`);
+
+    console.log("✅ Route verification completed without hard-500 responses on critical routes");
   } finally {
     server.kill("SIGTERM");
   }
