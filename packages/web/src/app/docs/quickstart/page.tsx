@@ -15,9 +15,9 @@ const steps = [
     title: 'Create a Workspace',
     description: 'Create a workspace to organize reconciliation runs',
     code: `# Using the SDK
-import { Settler } from '@settler/sdk';
+import { SettlerClient } from '@settler/sdk';
 
-const client = new Settler({
+const client = new SettlerClient({
   apiKey: process.env.SETTLER_API_KEY,
 });
 
@@ -52,7 +52,7 @@ const client = new Settler({
 
 // eslint-disable-next-line no-console
 console.log("Job created:", job.id);`,
-    action: { label: 'See Integrations', href: '/integrations' },
+    action: { label: 'See Integrations', href: '/docs/integrations' },
   },
   {
     title: 'Upload Receipt/Data',
@@ -139,7 +139,7 @@ export default function QuickstartPage() {
         </h2>
         <ul className="space-y-2 text-slate-700 dark:text-slate-300">
           <li>• <Link href="/docs/api" className="text-blue-600 dark:text-blue-400 hover:underline">Explore the API Reference</Link></li>
-          <li>• <Link href="/integrations" className="text-blue-600 dark:text-blue-400 hover:underline">Browse available integrations</Link></li>
+          <li>• <Link href="/docs/integrations" className="text-blue-600 dark:text-blue-400 hover:underline">Browse available integrations</Link></li>
           <li>• <Link href="/docs/auth" className="text-blue-600 dark:text-blue-400 hover:underline">Learn about authentication</Link></li>
           <li>• <Link href="/open-source" className="text-blue-600 dark:text-blue-400 hover:underline">Review the open-source governance</Link></li>
         </ul>

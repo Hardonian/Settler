@@ -1,53 +1,32 @@
 # Settler Documentation
 
-## Overview
+This is the canonical documentation entrypoint for Settler.
 
-This directory contains comprehensive documentation for Settler Enterprise.
+Settler is a deterministic reconciliation control plane: ingest transactions and documents, normalize records, reconcile with explicit rules, route exceptions to operators, and export evidence packs for audit.
 
-## Documentation Structure
+## Canonical doc map
 
-### Getting Started
-- [Quick Start](QUICK_START.md) - Get up and running quickly
-- [Environment Setup](../ENV_SETUP_GUIDE.md) - Configure your environment
-- [Remote Database Setup](../REMOTE_SETUP_GUIDE.md) - Set up remote database
+- **Getting started:** [`docs/getting-started/README.md`](getting-started/README.md)
+- **Product:** [`docs/product/README.md`](product/README.md)
+- **Architecture:** [`docs/architecture/README.md`](architecture/README.md)
+- **API + SDK:** [`docs/api/README.md`](api/README.md)
+- **Security + trust:** [`docs/security/README.md`](security/README.md)
+- **Operations:** [`docs/ops/README.md`](ops/README.md)
+- **Launch assets:** [`docs/launch/README.md`](launch/README.md)
+- **Archive:** [`docs/archive/README.md`](archive/README.md)
 
-### Developer Console
-- [Console Guide](CONSOLE.md) - Complete console documentation
-- [API Reference](API.md) - API endpoint documentation
-- [Authentication](AUTH.md) - Auth and authorization guide
+## First paths by reader
 
-### Architecture
-- [Architecture Overview](architecture.md) - System architecture
-- [Database Schema](database-schema.md) - Database structure
-- [API Design](api-design.md) - API design principles
+- **Engineer:** start at [`docs/getting-started/README.md`](getting-started/README.md), then [`docs/api/README.md`](api/README.md).
+- **Operator:** start at [`docs/product/README.md`](product/README.md), then [`docs/ops/README.md`](ops/README.md).
+- **Buyer / security reviewer:** start at [`docs/security/README.md`](security/README.md).
+- **Diligence skim (founder/investor):** start at [`docs/FINAL_CLOSURE_PACK.md`](FINAL_CLOSURE_PACK.md).
 
-### Operations
-- [Deployment](../DEPLOYMENT_CHECKLIST.md) - Deployment guide
-- [Monitoring](monitoring.md) - Monitoring and alerting
-- [Troubleshooting](troubleshooting.md) - Common issues and solutions
+## Canonical product and trust references
 
-### Reference
-- [API Reference](API_REFERENCE.md) - Complete API reference
-- [SDK Documentation](sdk.md) - SDK usage guide
-- [Examples](examples.md) - Code examples
-
-## Quick Links
-
-- [Main README](../README.md)
-- [Changelog](../CHANGELOG.md)
-- [Release Notes](../RELEASE_NOTES.md)
-- [Contributing](../CONTRIBUTING.md)
-
-## Documentation Standards
-
-- All documentation uses Markdown
-- Code examples include language tags
-- API examples use curl format
-- Screenshots stored in `docs/images/`
-
-## Contributing to Documentation
-
-1. Follow Markdown best practices
-2. Include code examples
-3. Keep documentation up to date
-4. Test all examples
+- Product definition + value props: [`docs/product/README.md`](product/README.md)
+- Architecture narrative: [`docs/architecture/README.md`](architecture/README.md)
+- OSS/public/private boundary: [`docs/oss-vs-enterprise.md`](oss-vs-enterprise.md)
+- API contract: [`docs/API.md`](API.md)
+- Determinism + replay: [`docs/determinism.md`](determinism.md)
+- Security posture: [`docs/SECURITY.md`](SECURITY.md)
