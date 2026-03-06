@@ -2,568 +2,581 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import dynamic from "next/dynamic";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
-import { HeroAnimationWrapper } from "@/components/HeroAnimationWrapper";
-import { TextReveal, TextRevealHeading } from "@/components/ui/TextReveal";
-import { SpotlightCard } from "@/components/ui/SpotlightCard";
-import {
-  Database,
-  Sliders,
-  Eye,
-  AlertTriangle,
-  ArrowRight,
-  Target,
-  Layers,
-  GitBranch,
-  CheckCircle,
-} from "lucide-react";
-import { ErrorBoundary } from "@/components/shared/error-boundary";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowRight, Circle, Dot } from "lucide-react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-const AnimatedCodeBlock = dynamic(
-  () =>
-    import("@/components/AnimatedCodeBlock").then((mod) => ({
-      default: mod.AnimatedCodeBlock,
-    })),
-  { ssr: false }
-);
+const capabilityChips = [
+  "Deterministic Workflows",
+  "Policy-Based Routing",
+  "Audit-Ready Evidence",
+  "API-First Control Plane",
+  "Enterprise Controls",
+];
 
-import { HeroMedia } from "@/components/HeroMedia";
+const stackLabels = [
+  "Unmatched Records",
+  "Policy-Routed Items",
+  "Evidence Pending",
+  "Auto-Classified Variance",
+  "Review Required",
+];
 
-export default function Home() {
-  const dashboardRoutes = [
-    { name: "Reconciliation", path: "/reconcile", icon: Layers },
-    { name: "Receipt Parser", path: "/parser", icon: Database },
-    { name: "Categorization", path: "/categorize", icon: Sliders },
-    { name: "Data Exports", path: "/exports", icon: GitBranch },
-  ];
+const feedLines = [
+  "[11:42:06] Normalized ledger input",
+  "[11:42:07] Policy rule applied",
+  "[11:42:08] Trace attached to exception",
+  "[11:42:09] Evidence bundle assembled",
+  "[11:42:10] Review state committed",
+];
 
-  const howItWorksSteps = [
-    {
-      number: 1,
-      title: "Ingest Data",
-      description: "Bring data in through adapters, files, or your own pipelines.",
-      icon: Database,
-      illustration: "/illustrations/feature-integration.svg",
-    },
-    {
-      number: 2,
-      title: "Normalize",
-      description: "Map records into a canonical schema with explicit, inspectable transforms.",
-      icon: Sliders,
-      illustration: "/illustrations/feature-deterministic.svg",
-    },
-    {
-      number: 3,
-      title: "Apply Rules",
-      description: "Run deterministic matching rules and tolerances you define.",
-      icon: Eye,
-      illustration: "/illustrations/feature-audit.svg",
-    },
-    {
-      number: 4,
-      title: "Surface Variances",
-      description: "Generate variance sets and evidence for human review.",
-      icon: AlertTriangle,
-      illustration: "/illustrations/feature-human.svg",
-    },
-  ];
+const protocolCards = [
+  {
+    step: "01",
+    id: "ingest-normalize",
+    title: "Ingest / Normalize",
+    description:
+      "Ingest records from source systems and map them into canonical structures with deterministic transforms.",
+  },
+  {
+    step: "02",
+    id: "route-resolve",
+    title: "Compare / Route / Resolve",
+    description:
+      "Compare record states, apply routing policy, and move exceptions to controlled queues with explicit ownership.",
+  },
+  {
+    step: "03",
+    id: "prove-learn",
+    title: "Record / Prove / Learn",
+    description:
+      "Commit evidence artifacts, preserve trace IDs, and keep decision history reproducible for audits and runbooks.",
+  },
+];
 
-  const codeExample = `import { SettlerClient } from "@settler/sdk";
+function ExceptionStackCard({ reducedMotion }: { reducedMotion: boolean }) {
+  const [index, setIndex] = useState(0);
 
-const client = new SettlerClient({ apiKey: "sk_live_..." });
+  useEffect(() => {
+    if (reducedMotion) return;
+    const timer = window.setInterval(() => {
+      setIndex((prev) => (prev + 1) % stackLabels.length);
+    }, 3000);
 
-// Deterministic reconciliation with inspectable rules
-const reconciliation = await client.reconciliations.create({
-  source: { adapter: "stripe" },
-  target: { adapter: "database" },
-  rules: { matching: [{ field: "amount", tolerance: 0.01 }] }
-});`;
+    return () => window.clearInterval(timer);
+  }, [reducedMotion]);
+
+  const visible = useMemo(
+    () => [
+      stackLabels[index],
+      stackLabels[(index + 1) % stackLabels.length],
+      stackLabels[(index + 2) % stackLabels.length],
+    ],
+    [index]
+  );
 
   return (
-    <ErrorBoundary context="Home Page">
-      <main
-        id="main-content"
-        className="min-h-screen bg-bg text-foreground"
-        aria-label="Settler homepage"
+    <article className="rounded-[2rem] border border-white/15 bg-white/[0.04] p-6 shadow-[0_40px_100px_-60px_rgba(0,0,0,0.8)] backdrop-blur-md">
+      <h3 className="text-xl font-semibold text-white">Exception Stack Shuffler</h3>
+      <p className="mt-2 text-sm text-slate-300">
+        Prioritized queues rotate by policy outcome so operators work the highest-risk path first.
+      </p>
+      <div className="relative mt-8 h-52">
+        {visible.map((label, slot) => (
+          <div
+            key={`${label}-${slot}`}
+            className="absolute inset-x-2 rounded-2xl border border-white/20 bg-slate-950/70 p-4 transition-all duration-700"
+            style={{
+              transform: `translateY(${slot * 20}px) scale(${1 - slot * 0.06})`,
+              opacity: 1 - slot * 0.2,
+              zIndex: 20 - slot,
+            }}
+          >
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-slate-400">
+              Queue State
+            </p>
+            <p className="mt-3 text-base font-medium text-white">{label}</p>
+          </div>
+        ))}
+      </div>
+    </article>
+  );
+}
+
+function EvidenceFeedCard({ reducedMotion }: { reducedMotion: boolean }) {
+  const [lineIndex, setLineIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+
+  useEffect(() => {
+    if (reducedMotion) return;
+
+    const typingTimer = window.setInterval(() => {
+      setCharIndex((prev) => {
+        const activeLine = feedLines[lineIndex] ?? "";
+        const target = activeLine.length;
+        if (prev >= target) {
+          window.setTimeout(() => {
+            setLineIndex((curr) => (curr + 1) % feedLines.length);
+            setCharIndex(0);
+          }, 700);
+          return prev;
+        }
+        return prev + 1;
+      });
+    }, 40);
+
+    return () => window.clearInterval(typingTimer);
+  }, [lineIndex, reducedMotion]);
+
+  const renderedLines = reducedMotion
+    ? feedLines
+    : [
+        ...feedLines.slice(Math.max(0, lineIndex - 3), lineIndex),
+        (feedLines[lineIndex] ?? "").slice(0, charIndex),
+      ];
+
+  return (
+    <article className="rounded-[2rem] border border-white/15 bg-white/[0.04] p-6 shadow-[0_40px_100px_-60px_rgba(0,0,0,0.8)] backdrop-blur-md">
+      <h3 className="text-xl font-semibold text-white">Evidence Feed Typewriter</h3>
+      <p className="mt-2 text-sm text-slate-300">
+        Live proof-chain events show what changed, why it changed, and where it was committed.
+      </p>
+      <div className="mt-8 rounded-2xl border border-emerald-400/20 bg-slate-950/80 p-4 font-mono text-xs text-emerald-200">
+        <div className="mb-3 flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-emerald-300/80">
+          <span className="relative inline-flex h-2.5 w-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-50" />
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
+          </span>
+          Evidence stream
+        </div>
+        <div className="space-y-2">
+          {renderedLines.map((line, idx) => (
+            <p key={`${line}-${idx}`} className="truncate">
+              {line}
+              {idx === renderedLines.length - 1 && !reducedMotion ? (
+                <span className="ml-1 inline-block h-3 w-1 animate-pulse bg-emerald-200 align-middle" />
+              ) : null}
+            </p>
+          ))}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function SchedulerCard({ reducedMotion }: { reducedMotion: boolean }) {
+  const [cursorStep, setCursorStep] = useState(0);
+  const cells = [1, 3, 8, 11];
+
+  useEffect(() => {
+    if (reducedMotion) return;
+    const timer = window.setInterval(() => {
+      setCursorStep((prev) => (prev + 1) % cells.length);
+    }, 1200);
+
+    return () => window.clearInterval(timer);
+  }, [cells.length, reducedMotion]);
+
+  const cursorIndex = cells[cursorStep];
+
+  return (
+    <article className="rounded-[2rem] border border-white/15 bg-white/[0.04] p-6 shadow-[0_40px_100px_-60px_rgba(0,0,0,0.8)] backdrop-blur-md">
+      <h3 className="text-xl font-semibold text-white">Resolution Scheduler Protocol</h3>
+      <p className="mt-2 text-sm text-slate-300">
+        Review windows align to routing windows so approvals happen on schedule, not by inbox chaos.
+      </p>
+      <div className="mt-8 rounded-2xl border border-white/15 bg-slate-950/80 p-4">
+        <div className="grid grid-cols-4 gap-2">
+          {Array.from({ length: 12 }).map((_, idx) => {
+            const active = idx === cursorIndex;
+            return (
+              <div
+                key={idx}
+                className={`rounded-lg border p-2 text-center text-xs transition-all ${
+                  active
+                    ? "border-cyan-300 bg-cyan-300/20 text-cyan-100"
+                    : "border-white/15 bg-white/[0.03] text-slate-400"
+                }`}
+              >
+                D{idx + 1}
+              </div>
+            );
+          })}
+        </div>
+        <button
+          type="button"
+          className="mt-4 w-full rounded-xl border border-cyan-300/40 bg-cyan-300/10 px-4 py-2 text-sm font-medium text-cyan-100"
+        >
+          Commit Review Cadence
+        </button>
+      </div>
+    </article>
+  );
+}
+
+function ProtocolVisual({ index }: { index: number }) {
+  if (index === 0) {
+    return (
+      <svg
+        viewBox="0 0 320 220"
+        className="h-52 w-full"
+        role="img"
+        aria-label="Verification geometry"
       >
-        <Navigation />
+        <circle cx="160" cy="110" r="78" fill="none" stroke="rgba(148,163,184,0.4)" />
+        <circle cx="160" cy="110" r="54" fill="none" stroke="rgba(56,189,248,0.7)" />
+        <circle cx="160" cy="110" r="28" fill="none" stroke="rgba(34,211,238,0.9)" />
+        <path d="M84 112h152" stroke="rgba(148,163,184,0.5)" />
+        <path d="M160 32v156" stroke="rgba(148,163,184,0.5)" />
+      </svg>
+    );
+  }
 
-        {/* Hero Section */}
-        <section
-          className="relative min-h-[90vh] flex items-center pt-24 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
-          aria-labelledby="hero-heading"
+  if (index === 1) {
+    return (
+      <svg
+        viewBox="0 0 320 220"
+        className="h-52 w-full"
+        role="img"
+        aria-label="Scanning policy grid"
+      >
+        {Array.from({ length: 8 }).map((_, row) => (
+          <path key={`r-${row}`} d={`M30 ${30 + row * 22}h260`} stroke="rgba(148,163,184,0.25)" />
+        ))}
+        {Array.from({ length: 10 }).map((_, col) => (
+          <path key={`c-${col}`} d={`M${30 + col * 28} 30v154`} stroke="rgba(148,163,184,0.25)" />
+        ))}
+        <rect x="30" y="84" width="260" height="22" fill="rgba(34,211,238,0.2)" />
+        <rect x="30" y="106" width="260" height="6" fill="rgba(34,211,238,0.6)" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 320 220" className="h-52 w-full" role="img" aria-label="Audit signal path">
+      <path
+        d="M20 150 C70 70, 120 180, 170 100 S250 130, 300 60"
+        fill="none"
+        stroke="rgba(34,211,238,0.9)"
+        strokeWidth="3"
+      />
+      <path
+        d="M20 170 C70 90, 120 200, 170 120 S250 150, 300 80"
+        fill="none"
+        stroke="rgba(148,163,184,0.55)"
+        strokeWidth="2"
+      />
+      {[40, 100, 180, 250].map((x) => (
+        <circle key={x} cx={x} cy={140 - (x % 3) * 12} r="6" fill="rgba(56,189,248,0.8)" />
+      ))}
+    </svg>
+  );
+}
+
+export default function Home() {
+  const reducedMotion = useReducedMotion();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <main id="main-content" className="relative overflow-x-clip bg-[#020617] text-slate-100">
+      <div
+        aria-hidden="true"
+        className="noise-overlay pointer-events-none fixed inset-0 z-0 opacity-30"
+      />
+
+      <header className="fixed inset-x-0 top-4 z-50 flex justify-center px-4">
+        <nav
+          className={`flex w-full max-w-4xl items-center justify-between rounded-full border px-3 py-2 transition-all duration-500 md:px-5 ${
+            scrolled
+              ? "border-white/20 bg-slate-950/75 shadow-[0_25px_80px_-45px_rgba(34,211,238,0.9)] backdrop-blur-xl"
+              : "border-white/10 bg-slate-900/30"
+          }`}
+          aria-label="Primary"
         >
-          <div className="absolute inset-0 bg-grid-quiet [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)] -z-10" />
-
-          <div className="max-w-7xl mx-auto relative z-10 w-full">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-              <HeroAnimationWrapper>
-                <div className="text-left max-w-2xl">
-                  <div className="mb-8 flex justify-start">
-                    <Badge className="bg-teal-500/10 text-teal-500 border-teal-500/20 px-3 py-1 text-xs font-bold uppercase tracking-wider">
-                      Deterministic Infrastructure
-                    </Badge>
-                  </div>
-
-                  <div className="mb-6">
-                    <TextRevealHeading
-                      as="h1"
-                      id="hero-heading"
-                      text="Deterministic Reconciliation, Audit-Grade Evidence"
-                      className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 text-foreground leading-[1.05] tracking-tight"
-                      delay={0}
-                      staggerDelay={0.02}
-                      splitBy="words"
-                    />
-                  </div>
-
-                  <div className="mb-10">
-                    <TextReveal
-                      text="Run deterministic reconciliation through policy-compiled guards, emit cryptographic evidence bundles, and replay every run with the same fingerprint."
-                      className="text-lg md:text-xl text-muted leading-relaxed font-normal max-w-xl"
-                      delay={0.2}
-                      staggerDelay={0.01}
-                      splitBy="words"
-                    />
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row gap-4 mb-12">
-                    <Button
-                      size="lg"
-                      asChild
-                      className="bg-teal-500 hover:bg-teal-600 text-white px-8 py-6 rounded-md shadow-lg shadow-teal-500/20 transition-all font-semibold"
-                    >
-                      <Link href="/docs#run-demo" className="flex items-center gap-2">
-                        Run the Demo <ArrowRight className="w-4 h-4" />
-                      </Link>
-                    </Button>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      asChild
-                      className="border-border bg-transparent text-foreground hover:bg-neutral-20 px-8 py-6"
-                    >
-                      <Link href="/why-settler">View Proof</Link>
-                    </Button>
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8 border-t border-border/50">
-                    {dashboardRoutes.map((route) => {
-                      const Icon = route.icon;
-                      return (
-                        <Link
-                          key={route.path}
-                          href={route.path}
-                          className="group flex flex-col gap-2"
-                        >
-                          <div className="w-8 h-8 rounded bg-neutral-20 flex items-center justify-center group-hover:bg-teal-500/10 transition-colors">
-                            <Icon className="w-4 h-4 text-muted group-hover:text-teal-500 transition-colors" />
-                          </div>
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-muted group-hover:text-foreground transition-colors">
-                            {route.name}
-                          </span>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              </HeroAnimationWrapper>
-
-              <div className="relative group">
-                <div className="absolute inset-0 bg-teal-500/5 blur-3xl rounded-full -z-10 animate-pulse" />
-                <HeroMedia
-                  className="rounded-2xl border border-border shadow-2xl aspect-[4/3] w-full"
-                  videoSrc="/hero/settler-hero.mp4"
-                  fallbackSrc="/hero/settler-hero-fallback.png"
-                  poster="/hero/settler-hero-fallback.png"
-                />
-
-                {/* Floating Metric Card */}
-                <div className="absolute -bottom-6 -left-6 bg-card border border-border p-4 rounded-xl shadow-xl animate-float hidden md:block">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-teal-500/10 flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-teal-500" />
-                    </div>
-                    <div>
-                      <div className="text-[10px] font-bold text-muted uppercase tracking-wider">
-                        Reliability
-                      </div>
-                      <div className="text-lg font-mono font-bold">99.98% Confidence</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <Link href="/" className="px-3 text-sm font-semibold tracking-[0.16em] text-white">
+            SETTLER
+          </Link>
+          <div className="hidden items-center gap-1 md:flex">
+            {[
+              { href: "#product", label: "Product" },
+              { href: "#architecture", label: "Architecture" },
+              { href: "#evidence", label: "Evidence" },
+              { href: "/docs", label: "Docs" },
+            ].map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="rounded-full px-4 py-2 text-sm text-slate-200 transition hover:bg-white/10 hover:text-white"
+              >
+                {item.label}
+              </Link>
+            ))}
           </div>
-        </section>
+          <Link
+            href="/contact"
+            className="rounded-full border border-cyan-300/50 bg-cyan-300/15 px-4 py-2 text-sm font-medium text-cyan-100 transition hover:bg-cyan-300/25"
+          >
+            Book a Demo
+          </Link>
+        </nav>
+      </header>
 
-        {/* Proof section */}
-        <section
-          className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950"
-          aria-label="Proof section"
-        >
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">Provable today</h2>
-            <p className="text-muted mb-8">
-              Deterministic reconciliation with audit-grade evidence. Generated from{" "}
-              <code>pnpm demo</code>.
+      <section className="relative flex min-h-screen items-end pt-28" id="product">
+        <Image
+          src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1800&q=80"
+          alt="Control room style operations environment"
+          fill
+          priority
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(125deg,rgba(15,23,42,0.35)_0%,rgba(2,6,23,0.85)_58%,rgba(2,6,23,0.98)_100%)]" />
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pb-16 md:pb-24">
+          <div className="max-w-3xl">
+            <p className="mb-4 text-xs uppercase tracking-[0.28em] text-cyan-200/80">
+              Deterministic reconciliation control plane
             </p>
-            <Image
-              src="/assets/marketing/hero-image-1.png"
-              alt="Demo evidence report screenshot"
-              width={1200}
-              height={700}
-              className="rounded-xl border border-border"
-            />
-          </div>
-        </section>
-
-        {/* How It Works Section with Diagram */}
-        <section
-          className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900"
-          aria-label="How Settler works"
-        >
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-slate-900 dark:text-white tracking-tight">
-                A Deterministic Pipeline
-              </h2>
-              <Image
-                src="/illustrations/how-settler-works.svg"
-                alt="Settler reconciliation pipeline diagram showing data flow from ingestion through normalization and rule application to variance surfacing"
-                width={800}
-                height={300}
-                className="mx-auto w-full max-w-4xl h-auto mb-12 drop-shadow-sm"
-                loading="lazy"
-              />
-              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
-                Turns messy financial inputs into traceable variances your team can review. Same
-                inputs, same rules, same results.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-              {howItWorksSteps.map((step, index) => {
-                const Icon = step.icon;
-                return (
-                  <SpotlightCard
-                    key={index}
-                    className="p-8 flex flex-col items-center text-center group"
-                  >
-                    <div className="relative mb-6">
-                      <div
-                        className="absolute inset-0 bg-blue-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"
-                        aria-hidden="true"
-                      />
-                      <Image
-                        src={step.illustration}
-                        alt={step.title}
-                        width={80}
-                        height={80}
-                        className="relative z-10 w-20 h-20"
-                        loading="lazy"
-                      />
-                    </div>
-                    <div className="w-10 h-10 mx-auto mb-4 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                      <Icon
-                        className="w-5 h-5 text-slate-600 dark:text-slate-400"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">
-                      {step.title}
-                    </h3>
-                    <p className="text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-                      {step.description}
-                    </p>
-                  </SpotlightCard>
-                );
-              })}
+            <h1 className="text-5xl font-bold leading-[0.95] text-white sm:text-6xl md:text-7xl">
+              Reconcile the
+              <span className="mt-2 block font-serif text-6xl italic font-medium text-cyan-100 sm:text-7xl md:text-8xl">
+                Truth.
+              </span>
+            </h1>
+            <p className="mt-6 max-w-2xl text-base text-slate-200 sm:text-lg">
+              Settler gives finance and operations teams a deterministic workflow for comparison,
+              routing, and evidence-backed exception resolution.
+            </p>
+            <div className="mt-9 flex flex-wrap gap-4">
+              <Link
+                href="/architecture"
+                className="inline-flex items-center gap-2 rounded-full bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
+              >
+                View Architecture <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/docs"
+                className="inline-flex items-center rounded-full border border-white/35 px-6 py-3 text-sm font-medium text-white transition hover:bg-white/10"
+              >
+                Read Docs
+              </Link>
             </div>
           </div>
-        </section>
-
-        {/* Code Example */}
-        <section
-          className="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950"
-          aria-label="Code example"
-        >
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-10 md:mb-12">
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4 text-slate-900 dark:text-white tracking-tight">
-                Inspectable Rules You Can Version Control
-              </h2>
-              <p className="text-base md:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
-                Every reconciliation run is explainable and replayable. No hidden heuristics, no
-                silent edits.
-              </p>
-            </div>
-            <SpotlightCard className="p-0 overflow-hidden shadow-xl md:shadow-2xl">
-              <AnimatedCodeBlock
-                code={codeExample}
-                title="Rules-First API"
-                description="Explicit rules, deterministic outputs, and inspectable evidence."
-                language="typescript"
-              />
-            </SpotlightCard>
+          <div className="mt-12 flex flex-wrap gap-3" id="evidence">
+            {capabilityChips.map((chip) => (
+              <span
+                key={chip}
+                className="rounded-full border border-white/20 bg-black/35 px-4 py-2 text-xs uppercase tracking-[0.12em] text-slate-200"
+              >
+                {chip}
+              </span>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Enterprise Inevitability Narrative */}
-        <section
-          className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900"
-          aria-label="Why this matters"
-        >
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12 md:mb-16">
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
-                What Mature Financial Infrastructure Evolves Toward
-              </h2>
-              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
-                Manual reconciliation is a phase. Deterministic, API-based reconciliation is the
-                stable end-state.
-              </p>
+      <section className="relative z-10 mx-auto max-w-7xl px-6 py-20 md:py-24">
+        <div className="grid gap-6 lg:grid-cols-3">
+          <ExceptionStackCard reducedMotion={reducedMotion} />
+          <EvidenceFeedCard reducedMotion={reducedMotion} />
+          <SchedulerCard reducedMotion={reducedMotion} />
+        </div>
+      </section>
+
+      <section
+        className="relative my-12 overflow-hidden border-y border-white/10 bg-slate-950/80 py-20"
+        id="architecture"
+      >
+        <Image
+          src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=80"
+          alt="Abstract infrastructure network"
+          fill
+          className="object-cover opacity-15"
+        />
+        <div className="absolute inset-0 bg-slate-950/75" />
+        <div className="relative z-10 mx-auto max-w-5xl px-6 text-center">
+          <p className="text-sm text-slate-300">
+            Most systems focus on: dashboards without closure.
+          </p>
+          <p className="mt-6 text-3xl font-semibold leading-tight text-white sm:text-5xl">
+            Settler focuses on:
+            <span className="text-cyan-300"> traceable decisions under pressure.</span>
+          </p>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl space-y-8 px-6 py-20 md:py-24">
+        {protocolCards.map((card, index) => (
+          <article
+            key={card.id}
+            className="sticky top-24 grid gap-8 rounded-[2.25rem] border border-white/15 bg-slate-900/70 p-8 backdrop-blur-xl md:grid-cols-2 md:p-12"
+            style={{
+              transform: `scale(${1 - index * 0.03})`,
+              opacity: 1 - index * 0.12,
+            }}
+          >
+            <div>
+              <p className="font-mono text-xs tracking-[0.2em] text-cyan-300">STEP {card.step}</p>
+              <h3 className="mt-4 text-3xl font-semibold text-white">{card.title}</h3>
+              <p className="mt-4 max-w-md text-slate-300">{card.description}</p>
             </div>
+            <div className="rounded-3xl border border-white/15 bg-slate-950/60 p-4">
+              <ProtocolVisual index={index} />
+            </div>
+          </article>
+        ))}
+      </section>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-              {[
-                {
-                  icon: Target,
-                  title: "Failure Surface Reduction",
-                  description:
-                    "Reconciliation is not a task. It is a structural risk surface. Determinism reduces that surface by eliminating probabilistic drift.",
-                },
-                {
-                  icon: Eye,
-                  title: "Reviewable Decisions",
-                  description:
-                    "AI compresses uncertainty. Humans retain authority. Every flagged variance includes evidence and confidence context for informed review.",
-                },
-                {
-                  icon: Layers,
-                  title: "Operational Maturity",
-                  description:
-                    "From manual exports to version-controlled rules. From fragile scripts to deterministic pipelines. From hope to operational confidence.",
-                },
-              ].map((item, idx) => {
-                const Icon = item.icon;
-                return (
+      <section className="mx-auto max-w-7xl px-6 py-20 md:py-24">
+        <div className="rounded-[2.5rem] border border-white/15 bg-slate-900/70 p-6 shadow-[0_30px_110px_-70px_rgba(15,23,42,1)] md:p-10">
+          <div className="mb-8">
+            <p className="text-xs uppercase tracking-[0.24em] text-cyan-300">
+              Control plane showcase
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold text-white sm:text-4xl">
+              Operational surface, not dashboard theater
+            </h2>
+          </div>
+          <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+            <div className="rounded-3xl border border-white/15 bg-slate-950/80 p-5">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-sm font-medium text-slate-100">Reconciliation Queue</h3>
+                <span className="rounded-full border border-amber-300/40 px-3 py-1 text-xs text-amber-200">
+                  Routed to review
+                </span>
+              </div>
+              <div className="space-y-3 text-sm">
+                {[
+                  ["Trace ID", "trc_7f9a2d"],
+                  ["Source system", "Stripe + NetSuite"],
+                  ["Unmatched amount", "$42,190.18"],
+                  ["Policy result", "Tolerance exceeded"],
+                  ["Evidence attached", "6 artifacts"],
+                ].map(([label, value]) => (
                   <div
-                    key={idx}
-                    className="p-6 md:p-8 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-800"
+                    key={label}
+                    className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3"
                   >
-                    <Icon
-                      className="w-10 h-10 text-slate-700 dark:text-slate-300 mb-4"
-                      aria-hidden="true"
-                    />
-                    <h3 className="text-xl font-semibold mb-3 text-slate-900 dark:text-white">
-                      {item.title}
-                    </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                      {item.description}
-                    </p>
+                    <span className="text-slate-400">{label}</span>
+                    <span className="font-mono text-slate-100">{value}</span>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* Before vs Controlled State */}
-        <section
-          className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950"
-          aria-label="Before and after comparison"
-        >
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
-                The Operational Shift
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
-                <div className="flex items-center gap-3 mb-6">
-                  <AlertTriangle className="w-6 h-6 text-slate-400" aria-hidden="true" />
-                  <h3 className="text-xl font-semibold text-slate-500 dark:text-slate-400">
-                    Before
-                  </h3>
-                </div>
-                <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
-                  {[
-                    "Manual CSV exports and spreadsheet matching",
-                    "Fragile scripts that fail silently at scale",
-                    "Untracked variances accumulating risk",
-                    "No audit trail for reconciliation decisions",
-                    "Failure surfaces expanding with transaction volume",
-                  ].map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5">
-                      <span className="text-slate-400 mt-0.5 flex-shrink-0" aria-hidden="true">
-                        --
-                      </span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
+                ))}
               </div>
+            </div>
 
-              <div className="p-8 bg-white dark:bg-slate-900 rounded-2xl border-2 border-slate-900 dark:border-white shadow-lg">
-                <div className="flex items-center gap-3 mb-6">
-                  <CheckCircle
-                    className="w-6 h-6 text-slate-900 dark:text-white"
-                    aria-hidden="true"
-                  />
-                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
-                    Controlled State
-                  </h3>
-                </div>
-                <ul className="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+            <div className="space-y-6">
+              <div className="rounded-3xl border border-white/15 bg-slate-950/70 p-5">
+                <h3 className="text-sm font-medium text-slate-100">Policy Rule Inspector</h3>
+                <pre className="mt-3 overflow-hidden rounded-xl border border-white/10 bg-slate-950 p-4 text-xs text-cyan-100">
+                  {`if amount_delta > 0.50 and source_age > 24h
+  route: reviewer:ops-finance
+  require: evidence_bundle=true
+  status: review_required`}
+                </pre>
+              </div>
+              <div className="rounded-3xl border border-white/15 bg-slate-950/70 p-5">
+                <h3 className="text-sm font-medium text-slate-100">Audit Trail</h3>
+                <ul className="mt-3 space-y-2 text-xs text-slate-300">
                   {[
-                    "Deterministic rules applied programmatically via API",
-                    "Version-controlled matching logic reviewed in PRs",
-                    "Every variance traceable with evidence hashing",
-                    "Complete audit trail for every reconciliation run",
-                    "Failure surface compressed through governance boundaries",
-                  ].map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5">
-                      <span
-                        className="text-slate-900 dark:text-white mt-0.5 flex-shrink-0 font-medium"
-                        aria-hidden="true"
-                      >
-                        --
-                      </span>
-                      <span className="font-medium">{item}</span>
+                    "Canonical record created",
+                    "Policy routed to ops-finance",
+                    "Evidence hash committed",
+                    "Reviewer decision pending",
+                  ].map((event) => (
+                    <li key={event} className="flex items-center gap-2">
+                      <Dot className="h-4 w-4 text-cyan-300" />
+                      {event}
                     </li>
                   ))}
                 </ul>
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* FAQ */}
-        <section
-          className="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900"
-          aria-label="Common questions"
-        >
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center text-slate-900 dark:text-white tracking-tight">
-              Common Questions
-            </h2>
-            <Accordion type="single" collapsible className="w-full space-y-3">
-              <AccordionItem
-                value="features"
-                className="bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800 px-6"
+      <section className="mx-auto max-w-7xl px-6 pb-24">
+        <div className="rounded-[2.25rem] border border-white/15 bg-slate-900/70 p-8 md:p-10">
+          <h2 className="text-3xl font-semibold text-white">Get Started with Settler</h2>
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            {(
+              [
+                [
+                  "Explore the Architecture",
+                  "/architecture",
+                  "System boundaries, policy flow, and deterministic invariants.",
+                ],
+                [
+                  "Read the Docs",
+                  "/docs",
+                  "API contracts, setup guides, and deterministic run semantics.",
+                ],
+                [
+                  "Book a Demo",
+                  "/contact",
+                  "Walk through a real control-plane workflow with our team.",
+                ],
+              ] as const
+            ).map(([title, href, text]) => (
+              <Link
+                key={title}
+                href={href}
+                className="rounded-3xl border border-white/15 bg-slate-950/70 p-6 transition hover:border-cyan-300/50 hover:bg-slate-950"
               >
-                <AccordionTrigger className="text-base md:text-lg font-semibold py-4 hover:no-underline">
-                  What Settler Does
-                </AccordionTrigger>
-                <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed space-y-2">
-                  <p>
-                    <strong>Surfaces discrepancies:</strong> Outputs variance sets instead of
-                    silently resolving them.
-                  </p>
-                  <p>
-                    <strong>Deterministic and inspectable:</strong> Same inputs produce the same
-                    outputs, with traceable rule paths.
-                  </p>
-                  <p>
-                    <strong>Provider-agnostic:</strong> Normalize from any adapter or file format
-                    into a canonical model.
-                  </p>
-                  <p>
-                    <strong>Human-in-the-loop:</strong> Review and resolve exceptions with evidence
-                    attached.
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem
-                value="not"
-                className="bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800 px-6"
-              >
-                <AccordionTrigger className="text-base md:text-lg font-semibold py-4 hover:no-underline">
-                  What Settler Is Not
-                </AccordionTrigger>
-                <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
-                  Settler is not accounting software, an audit tool, or compliance certification. It
-                  does not make decisions or automate judgment. It surfaces variances and evidence
-                  for human review.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem
-                value="security"
-                className="bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800 px-6"
-              >
-                <AccordionTrigger className="text-base md:text-lg font-semibold py-4 hover:no-underline">
-                  Security and Audit
-                </AccordionTrigger>
-                <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
-                  Audit evidence is produced as deterministic outputs with SHA256 hashing. You
-                  decide how to review and certify results. See the{" "}
-                  <Link
-                    href="/security-and-audit"
-                    className="text-blue-600 dark:text-blue-400 hover:underline"
-                  >
-                    Security and Audit
-                  </Link>{" "}
-                  page for full disclosure and operational limits.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+                <p className="text-lg font-medium text-white">{title}</p>
+                <p className="mt-2 text-sm text-slate-300">{text}</p>
+                <p className="mt-6 inline-flex items-center gap-2 text-sm text-cyan-200">
+                  Open <ArrowRight className="h-4 w-4" />
+                </p>
+              </Link>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Final CTA */}
-        <section
-          className="py-20 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 bg-slate-900 text-white"
-          aria-label="Get started"
-        >
-          <div className="max-w-4xl mx-auto text-center">
-            <Badge className="mb-6 bg-slate-800 text-slate-200 px-4 py-2 border border-slate-700">
-              Open Source - Apache 2.0
-            </Badge>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-6 tracking-tight">
-              Own Your Reconciliation Logic
-            </h2>
-            <p className="text-lg sm:text-xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-              Deploy reconciliation you can audit, test, and version control. Start with the
-              documentation or discuss your architecture with our team.
+      <footer className="border-t border-white/10 bg-slate-950 px-6 py-12">
+        <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-4">
+          <div>
+            <p className="text-lg font-semibold tracking-[0.14em] text-white">SETTLER</p>
+            <p className="mt-3 text-sm text-slate-300">
+              Deterministic reconciliation infrastructure for evidence-backed operational truth.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button
-                size="lg"
-                asChild
-                className="w-full sm:w-auto bg-white text-slate-900 hover:bg-slate-100 px-10 py-7 text-lg font-semibold shadow-2xl transition-all min-h-[56px] min-w-[200px]"
-              >
-                <Link href="/docs/quickstart" className="flex items-center justify-center gap-2">
-                  Read Quickstart <ArrowRight className="w-5 h-5" aria-hidden="true" />
-                </Link>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                asChild
-                className="w-full sm:w-auto px-10 py-7 text-lg border-2 border-slate-600 bg-transparent text-white hover:bg-slate-800 transition-all min-h-[56px] min-w-[200px]"
-              >
-                <Link href="/contact" className="flex items-center justify-center gap-2">
-                  Discuss Your Architecture
-                </Link>
-              </Button>
+            <div className="mt-6 flex items-center gap-2 text-xs font-mono text-emerald-200">
+              <Circle className="h-2.5 w-2.5 fill-emerald-400 text-emerald-400 animate-pulse" />
+              System Operational
             </div>
           </div>
-        </section>
-
-        <Footer />
-      </main>
-    </ErrorBoundary>
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Product</p>
+            <div className="mt-3 flex flex-col gap-2 text-sm text-slate-200">
+              <Link href="/product">Overview</Link>
+              <Link href="/architecture">Architecture</Link>
+              <Link href="/pricing">Pricing</Link>
+            </div>
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Resources</p>
+            <div className="mt-3 flex flex-col gap-2 text-sm text-slate-200">
+              <Link href="/docs">Docs</Link>
+              <Link href="/specs/openapi.yaml">API</Link>
+              <Link href="/status">Status</Link>
+            </div>
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Company</p>
+            <div className="mt-3 flex flex-col gap-2 text-sm text-slate-200">
+              <Link href="/legal">Legal</Link>
+              <Link href="/privacy">Privacy</Link>
+              <Link href="/contact">Contact</Link>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </main>
   );
 }
