@@ -122,9 +122,9 @@ pnpm settler:replay examples/demo-output/evidence.json`}
       <section className="mb-12">
         <h2>Quick Example</h2>
         <CodeBlock
-          code={`import { Settler } from '@settler/sdk';
+          code={`import { SettlerClient } from '@settler/sdk';
 
-const client = new Settler({
+const client = new SettlerClient({
   apiKey: process.env.SETTLER_API_KEY,
 });
 

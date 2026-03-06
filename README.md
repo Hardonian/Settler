@@ -152,12 +152,14 @@ scripts/            # verification and release automation
 
 ## Canonical Documentation Map
 
-- Start here: [`docs/START_HERE.md`](docs/START_HERE.md)
-- Architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
-- Security: [`docs/SECURITY.md`](docs/SECURITY.md)
-- Operations: [`docs/OPERATIONS.md`](docs/OPERATIONS.md)
-- API: [`docs/API.md`](docs/API.md)
-- Audit pack: [`docs/audit/`](docs/audit)
+- Docs home: [`docs/README.md`](docs/README.md)
+- Getting started: [`docs/getting-started/README.md`](docs/getting-started/README.md)
+- Product canon: [`docs/product/README.md`](docs/product/README.md)
+- Architecture: [`docs/architecture/README.md`](docs/architecture/README.md)
+- API + SDK: [`docs/api/README.md`](docs/api/README.md)
+- Security + trust: [`docs/security/README.md`](docs/security/README.md)
+- Operations: [`docs/ops/README.md`](docs/ops/README.md)
+- Strategic closure pack: [`docs/FINAL_CLOSURE_PACK.md`](docs/FINAL_CLOSURE_PACK.md)
 
 ## License and Contributing
 
