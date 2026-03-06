@@ -69,6 +69,77 @@ jobs:
           path: packages/web/.next
           retention-days: 1
 
+  # Marketing landing route + visual gates
+  landing-quality-gates:
+    name: Landing CTA + Visual Gates
+    runs-on: ubuntu-latest
+    needs: [build]
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            ~/.local/share/pnpm/store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Provision Playwright browsers
+        run: npx playwright install --with-deps chromium webkit
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: web-build
+          path: packages/web/.next
+
+      - name: Gate marketing landing quality post-build
+        run: |
+          cd packages/web
+          pnpm start &
+          SERVER_PID=$!
+          sleep 10
+          curl -f http://localhost:3000 || (sleep 5 && curl -f http://localhost:3000)
+
+          cd "$GITHUB_WORKSPACE"
+          BASE_URL=http://localhost:3000 pnpm run qa:marketing-ctas
+          BASE_URL=http://localhost:3000 E2E_BASE_URL=http://localhost:3000 pnpm run qa:visual:landing
+
+          kill $SERVER_PID
+          wait $SERVER_PID 2>/dev/null || true
+        env:
+          PORT: 3000
+          NODE_ENV: production
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-key
+          SAFE_MODE: "1"
+
+      - name: Upload landing gate results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: landing-quality-gates
+          path: |
+            test-results/
+            playwright-report/
+            tests/e2e/__snapshots__/
+          retention-days: 7
+
   # Run visual regression tests
   visual-regression:
     name: Visual Regression Tests
@@ -110,7 +181,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium webkit
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -186,7 +257,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium webkit
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -254,7 +325,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium webkit
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4

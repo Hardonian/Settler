@@ -202,7 +202,7 @@
     "verify:security": "node scripts/verify-security.mjs",
     "verify:launch-assets": "node scripts/verify-launch-assets.mjs",
     "qa:marketing-ctas": "node scripts/marketing-cta-smoke.mjs",
-    "qa:visual:landing": "playwright test tests/e2e/landing-home.visual.spec.ts --project=visual-desktop-light --project=visual-mobile-light"
+    "qa:visual:landing": "cross-env CI_VISUAL_LANDING=1 playwright test tests/e2e/landing-home.visual.spec.ts --project=visual-desktop-light --project=visual-mobile-light"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
