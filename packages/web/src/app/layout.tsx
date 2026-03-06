@@ -20,11 +20,11 @@ import { RuntimeUiOptionalFeatures } from "@/components/polish/RuntimeUiOptional
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://settler.dev"),
   title: {
-    default: "Settler - Open-Source Reconciliation Engine",
+    default: "Settler - Open-Source Reconciliation Control Plane",
     template: "%s | Settler",
   },
   description:
-    "Settler is an open-source reconciliation engine that normalizes financial data, applies explicit rules, and surfaces variances for human review.",
+    "Settler is an open-source reconciliation control plane that runs deterministic workflows, explains mismatches, and exports verifiable evidence.",
   keywords: [
     "reconciliation engine",
     "financial reconciliation",
@@ -95,9 +95,9 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://settler.dev",
     siteName: "Settler",
-    title: "Settler - Open-Source Reconciliation Engine",
+    title: "Settler - Open-Source Reconciliation Control Plane",
     description:
-      "Settler is an open-source reconciliation engine that normalizes financial data, applies explicit rules, and surfaces variances for human review.",
+      "Settler is an open-source reconciliation control plane that runs deterministic workflows, explains mismatches, and exports verifiable evidence.",
     images: [
       {
         url: getImageUrl("ogImage"),
@@ -109,9 +109,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Settler - Open-Source Reconciliation Engine",
+    title: "Settler - Open-Source Reconciliation Control Plane",
     description:
-      "Settler is an open-source reconciliation engine that normalizes financial data, applies explicit rules, and surfaces variances for human review.",
+      "Settler is an open-source reconciliation control plane that runs deterministic workflows, explains mismatches, and exports verifiable evidence.",
     images: [getImageUrl("twitterCard")],
     creator: "@settler_io",
   },

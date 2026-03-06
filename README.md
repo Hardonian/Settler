@@ -1,8 +1,51 @@
 # Settler
 
-Settler is a deterministic reconciliation control plane for running auditable Connections → Pipelines → Runs → Results workflows with an operator Review Queue.
+**Settler is the open-source reconciliation control plane for provable financial truth.**
 
-## OSS vs Enterprise at a Glance
+Run deterministic reconciliation workflows, inspect mismatches with traceable context, replay the exact run, and export verifiable evidence.
+
+## Why Settler exists
+
+Most teams reconcile across Stripe, ERP, banking, and internal ledgers with scripts + spreadsheets + dashboards that cannot explain divergence under pressure.
+
+Settler gives you a system of record for reconciliation operations:
+- deterministic runs
+- policy-checked routing
+- review workflows
+- tamper-evident evidence outputs
+
+## How it works
+
+1. **Ingest and normalize** records from source systems.
+2. **Reconcile and route** mismatches with explicit rules/policies.
+3. **Review and resolve** exceptions with operator context.
+4. **Replay and prove** results with exported evidence artifacts.
+
+## What you can do in 5 minutes
+
+```bash
+pnpm install
+cp .env.example .env
+pnpm exec tsx scripts/run-migrations-remote.ts
+pnpm --filter @settler/web dev
+pnpm demo
+pnpm settler:replay examples/demo-output/evidence.json
+```
+
+Demo outputs are written to `examples/demo-output`:
+- `run.json`
+- `results.json`
+- `evidence.json`
+- `report.html`
+
+## Why Settler is different
+
+- **Replay any run:** verify that reruns produce the same fingerprint for the same inputs/config.
+- **Prove every result:** export evidence packs per run for audit and incident response.
+- **Enforce policy in operations:** codify routing/review behavior instead of relying on tribal process.
+- **Keep OSS control:** self-host the core runtime and keep enterprise add-ons optional.
+
+## OSS vs Enterprise at a glance
 
 ### OSS (this repo, self-hostable)
 
@@ -19,36 +62,12 @@ Settler is a deterministic reconciliation control plane for running auditable Co
 
 Detailed boundary notes: [`docs/oss-vs-enterprise.md`](docs/oss-vs-enterprise.md).
 
-## Architecture Overview
-
-Core runtime primitives:
-
-- **Connections:** define external data sources.
-- **Pipelines:** deterministic processing configurations.
-- **Runs:** immutable execution instances.
-- **Results:** normalized reconciliation outputs.
-- **Review Queue:** operator decisions and resolution states.
-- **Governance/Audit:** policy, evidence, and traceability surfaces.
-
-Key packages:
-
-- `packages/api` – reconciliation API/domain/infrastructure.
-- `packages/web` – Next.js App Router product + console + docs routes.
-- `packages/adapters` – connector/adaptor implementations.
-- `packages/sdk`, `packages/react-settler`, `packages/sdk-go`, `packages/workhorse` – client and worker tooling.
-
 ## Quickstart (OSS)
 
 Prerequisites:
-
 - Node.js 22+
 - pnpm 10.13.1+
 - Postgres/Supabase
-
-```bash
-pnpm install
-cp .env.example .env
-```
 
 Set at minimum:
 
@@ -67,58 +86,34 @@ pnpm --filter @settler/web dev
 
 Open `http://localhost:3000`.
 
-## CLI Install (release artifacts)
+## Self-host and local development
 
-Use signed release artifacts and SHA256 checksums for install.
+- Primary setup and run flow: [`docs/getting-started/README.md`](docs/getting-started/README.md)
+- Deployment path: [`docs/deployment-guide.md`](docs/deployment-guide.md)
+- Enterprise compose example: [`enterprise/docker-compose.yml`](enterprise/docker-compose.yml)
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/settler/settler/main/scripts/install/install.sh | bash
-settler version
-settler doctor
-```
+If you are evaluating quickly, run `pnpm demo` first, then wire your own data sources.
 
-Windows PowerShell:
+## Architecture overview
 
-```powershell
-irm https://raw.githubusercontent.com/settler/settler/main/scripts/install/install.ps1 | iex
-settler version
-settler doctor
-```
+Core runtime primitives:
+- **Connections:** define external data sources.
+- **Pipelines:** deterministic processing configurations.
+- **Runs:** immutable execution instances.
+- **Results:** normalized reconciliation outputs.
+- **Review Queue:** operator decisions and resolution states.
+- **Governance/Audit:** policy, evidence, and traceability surfaces.
 
-See [`LAUNCHKIT.md`](LAUNCHKIT.md) for artifact naming, manual checksum verification, and release workflow details.
+Key packages:
+- `packages/api` – reconciliation API/domain/infrastructure.
+- `packages/web` – Next.js App Router product + console + docs routes.
+- `packages/adapters` – connector/adaptor implementations.
+- `packages/sdk`, `packages/react-settler`, `packages/sdk-go`, `packages/workhorse` – client and worker tooling.
 
-## One-command demo
+## Contributing
 
-```bash
-pnpm demo
-```
-
-The demo is local-only, deterministic, and writes proof artifacts to `examples/demo-output` (`run.json`, `results.json`, `evidence.json`, `report.html`). Replay is first-class via:
-
-```bash
-pnpm settler:replay examples/demo-output/evidence.json
-```
-
-## Environment Variables
-
-### Minimal OSS
-
-- `DATABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-
-### Optional OSS Integrations
-
-- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
-- `STRIPE_SECRET_KEY`
-- `STRIPE_WEBHOOK_SECRET`
-
-### Enterprise-only
-
-- Enterprise operational variables are isolated to enterprise routes/modules and are optional for OSS runtime.
-- Missing enterprise env must not crash public marketing/product routes.
-
-## Local Development and Release Build
+- Contributor guide: [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- Verification baseline:
 
 ```bash
 pnpm lint
@@ -127,30 +122,13 @@ pnpm test
 pnpm build
 ```
 
-## Verification
+Full release-grade verification:
 
 ```bash
 pnpm verify
 ```
 
-`pnpm verify` runs release gates including conflict-marker checks, lint, typecheck, test, build, smoke, boundary linting, and security audit threshold checks.
-
-## Repository Structure
-
-```text
-packages/
-  api/              # core reconciliation API
-  web/              # Next.js app router surfaces
-  adapters/         # connectors/adapters
-  sdk/              # TS SDK
-  react-settler/    # React bindings
-  workhorse/        # Python worker
-enterprise/         # enterprise-specific materials
-docs/               # operational and product docs
-scripts/            # verification and release automation
-```
-
-## Canonical Documentation Map
+## Documentation map
 
 - Docs home: [`docs/README.md`](docs/README.md)
 - Getting started: [`docs/getting-started/README.md`](docs/getting-started/README.md)
@@ -159,22 +137,9 @@ scripts/            # verification and release automation
 - API + SDK: [`docs/api/README.md`](docs/api/README.md)
 - Security + trust: [`docs/security/README.md`](docs/security/README.md)
 - Operations: [`docs/ops/README.md`](docs/ops/README.md)
-- Strategic closure pack: [`docs/FINAL_CLOSURE_PACK.md`](docs/FINAL_CLOSURE_PACK.md)
 
-## License and Contributing
+## License and support
 
 - License: [`LICENSE`](LICENSE)
-- Contributing: [`CONTRIBUTING.md`](CONTRIBUTING.md)
-
-## Support
-
+- Security reports: [`SECURITY.md`](SECURITY.md)
 - Issues: open a GitHub issue with reproduction details.
-- Discussions: use GitHub Discussions for Q&A and architecture proposals.
-- Security reports: follow [`SECURITY.md`](SECURITY.md).
-
-## Deterministic Proof Links
-
-- Demo guide: `docs/demo.md`
-- Determinism contract: `docs/determinism.md`
-- Policy compiler and runtime guards: `docs/policies.md`
-- Investor truth anchors: `docs/investor.md`
