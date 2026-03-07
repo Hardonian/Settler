@@ -1,7 +1,7 @@
 # Settler Positioning Truth (Repo-Grounded)
 
 ## Primary category
-**Open Source Reconciliation Engine** for provable financial truth.
+**Open-source reconciliation engine** that surfaces mismatches and produces verifiable evidence.
 
 ## Primary one-line description
 Settler helps teams run deterministic reconciliation workflows, explain mismatches, and export verifiable evidence for every run.
@@ -26,7 +26,7 @@ When finance and ops systems disagree, Settler gives teams a repeatable way to p
 - "Guaranteed compliance"
 
 ## Claims allowed
-- Open Source Reconciliation Engine.
+- Open-source reconciliation engine.
 - Deterministic run + replay workflow.
 - Explainable mismatch routing with policy and review surfaces.
 - Evidence export for audit and operator handoff.

@@ -2,17 +2,17 @@
 
 ## One-sentence definition
 
-Settler is a deterministic reconciliation engine that ingests financial records, applies explicit policy-aware matching rules, and produces auditable outputs with operator-managed exceptions.
+Settler is an open-source reconciliation engine that matches financial records across systems, surfaces every mismatch with full context, and produces verifiable evidence for each run.
 
 ## Category explanation
 
-Settler sits between data ingestion tools and accounting/ERP systems. It is not a generic ETL layer and not an autonomous accounting agent: it is a reconciliation and financial-controls plane built for reproducibility, evidence traceability, and high-throughput exception operations.
+Settler sits between data ingestion tools and accounting/ERP systems. It is not a generic ETL layer and not an autonomous accounting agent: it is a reconciliation engine built for repeatable results, traceable evidence, and structured exception handling.
 
 ## Three core value propositions
 
-1. **Deterministic evidence chain:** same inputs + same rules = same outputs, replayable and exportable.
-2. **Operator leverage:** exception queues and review lifecycle prevent silent drift while reducing manual triage load.
-3. **Control-plane integration:** API/SDK/CLI and policy surfaces let teams embed reconciliation into governed production workflows.
+1. **Verifiable evidence:** same inputs + same rules = same outputs, replayable and exportable as evidence packs.
+2. **Faster exception handling:** exception queues and review workflows prevent silent drift while reducing manual triage.
+3. **API and SDK integration:** API, SDK, and CLI let teams embed reconciliation into production workflows.
 
 ## AI role boundary
 

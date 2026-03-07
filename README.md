@@ -1,20 +1,16 @@
 # Settler — Open Source Reconciliation Engine
 
-Settler runs reconciliation workflows, detects mismatches, and generates verifiable evidence for every result.
+**Settler helps teams reconcile data across systems, surface mismatches, and generate replayable evidence for every run.**
 
-## Why Settler Exists
+If Stripe, banking data, and your internal ledger disagree, Settler shows the differences, records why they happened, and exports evidence you can review later.
 
-Most teams still reconcile across spreadsheets, exports, and one-off scripts. When mismatches appear, operators lose hours tracing row-level differences and cannot clearly explain why balances diverged.
+## What Settler does
 
-Settler exists to replace fragile manual reconciliation with replayable runs, explicit rule checks, and audit-ready evidence.
-
-## What Settler Does
-
-- Run reconciliation workflows across source systems.
-- Detect mismatches across systems with deterministic matching.
-- Generate evidence for every run.
-- Replay runs to explain what changed and why.
-- Export audit proof for incidents and external reviews.
+1. **Ingest** records from source systems.
+2. **Reconcile** with explicit matching rules.
+3. **Detect** mismatches and route exceptions for review.
+4. **Export evidence** (inputs, rules, outputs, fingerprints).
+5. **Replay runs** to verify behavior with the same evidence package.
 
 ## Five Minute Demo
 
@@ -27,28 +23,38 @@ pnpm demo
 pnpm settler:replay examples/demo-output/evidence.json
 ```
 
+Demo outputs are written to `examples/demo-output` (`run.json`, `results.json`, `evidence.json`, `report.html`).
+
+## Why teams choose Settler
+
+| Capability | OSS (this repo) | Enterprise |
+|---|---|---|
+| Reconciliation engine | Yes | Yes |
+| Evidence generation | Yes | Yes |
+| Replay and determinism | Yes | Yes |
+| Rules as code | Yes | Yes |
+| Self-hosted deployment | Yes | Yes |
+| Multi-tenant isolation | Yes | Yes |
+| Managed hosting | — | Yes |
+| SSO / SAML | — | Yes |
+| Priority support and SLA | — | Yes |
+| Advanced integrations | Community adapters | Managed connectors |
+
+See [docs/OSS_VS_ENTERPRISE.md](docs/OSS_VS_ENTERPRISE.md) for details.
+
+## Demo Output
+
 After running the demo, inspect:
 
-- `examples/demo-output/run.json`
-- `examples/demo-output/results.json`
-- `examples/demo-output/evidence.json`
-- `examples/demo-output/report.html`
+## Documentation paths
 
 The demo path shows reconciliation execution, mismatch detection, evidence generation, and replay verification.
-
-## Key Features
-
-- Replayable reconciliation
-- Proof-first operations
-- Policy enforcement
-- Evidence export
-- Audit-ready workflows
 
 ## Quickstart
 
 Prerequisites:
 
-- Node.js 22+
+- Node.js 24+ (see `.nvmrc`)
 - pnpm 10.13.1+
 - Postgres or Supabase
 
@@ -70,52 +76,21 @@ pnpm --filter @settler/web dev
 
 Open `http://localhost:3000`.
 
-## Why Settler
+## Core Concepts
 
-### 1) Problem
-Reconciling financial data across systems is fragile.
+- **Connections:** external data sources (Stripe, banks, ERPs, ledgers)
+- **Pipelines:** reconciliation workflow configurations
+- **Runs:** individual reconciliation executions (immutable, replayable)
+- **Results:** matched and mismatched records with full context
+- **Review Queue:** exception handling with assignment and resolution tracking
+- **Evidence:** audit-ready proof of what happened in each run
 
-### Feature
-Settler records deterministic reconciliation runs with stable fingerprints.
+## Key Packages
 
-### Outcome
-You can prove exactly how each result was produced.
-
-### 2) Problem
-Manual triage makes mismatch resolution slow.
-
-### Feature
-Settler surfaces mismatch outcomes with rule-checked routing.
-
-### Outcome
-Teams focus on high-risk mismatches first.
-
-### 3) Problem
-Audit and incident questions require evidence collection after the fact.
-
-### Feature
-Settler generates evidence bundles during every run.
-
-### Outcome
-Operators can answer "what happened" immediately.
-
-### 4) Problem
-Run-to-run drift is hard to explain with scripts and spreadsheets.
-
-### Feature
-Settler replays historical runs against the same inputs and config.
-
-### Outcome
-You can isolate behavioral changes before release.
-
-### 5) Problem
-Compliance reviews fail when controls are implicit.
-
-### Feature
-Settler applies policy checks as part of run execution.
-
-### Outcome
-Control behavior becomes testable and reviewable.
+- `packages/api` – reconciliation API, domain logic, and data layer
+- `packages/web` – Next.js web app (product console, docs, marketing)
+- `packages/adapters` – connectors for Stripe, banks, ERPs, and other data sources
+- `packages/sdk`, `packages/react-settler`, `packages/sdk-go`, `packages/workhorse` – client SDKs and background workers
 
 ## Architecture
 

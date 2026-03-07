@@ -19,7 +19,7 @@ pnpm settler:replay examples/demo-output/evidence.json
 ## Inputs and outputs
 
 - **Inputs:** transaction feeds, documents, connector payloads, reconciliation rules, policy configuration.
-- **Outputs:** deterministic run results, exception queue items, evidence artifacts (`run.json`, `results.json`, `evidence.json`, `report.html`).
+- **Outputs:** run results (matched and mismatched records), exception queue items, evidence packs (`run.json`, `results.json`, `evidence.json`, `report.html`).
 
 ## Where to go next
 

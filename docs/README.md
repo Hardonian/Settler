@@ -1,27 +1,19 @@
 # Settler Docs
 
-Settler is an Open Source Reconciliation Engine.
-
-Use this docs hub to go from first run → mismatch detection → evidence inspection → replay verification.
+Settler is an open-source reconciliation engine for running workflows, surfacing mismatches, and producing replayable evidence.
 
 ## Start here
 
-1. Run the quickstart: [`docs/getting-started/README.md`](getting-started/README.md)
-2. Run the demo workflow:
+- New to the repo: [docs/START_HERE.md](./START_HERE.md)
+- Full docs map: [docs/INDEX.md](./INDEX.md)
 
-```bash
-pnpm demo
-pnpm settler:replay examples/demo-output/evidence.json
-```
+## Core documentation
 
-3. Review generated demo outputs in `examples/demo-output`.
-
-## Documentation map
-
-- **Quickstart:** [`docs/getting-started/README.md`](getting-started/README.md)
-- **Engine internals:** [`docs/ENGINE.md`](ENGINE.md)
-- **Architecture overview:** [`ARCHITECTURE.md`](../ARCHITECTURE.md)
-- **Product:** [`docs/product/README.md`](product/README.md)
-- **API + SDK:** [`docs/api/README.md`](api/README.md)
-- **Security + trust:** [`docs/security/README.md`](security/README.md)
-- **Operations:** [`docs/ops/README.md`](ops/README.md)
+- Quickstart: [docs/getting-started/README.md](./getting-started/README.md)
+- Engine internals: [docs/ENGINE.md](./ENGINE.md)
+- Architecture overview: [ARCHITECTURE.md](../ARCHITECTURE.md)
+- Product docs: [docs/product/README.md](./product/README.md)
+- API + SDK: [docs/api/README.md](./api/README.md)
+- Security + trust: [docs/security/README.md](./security/README.md)
+- Ops + release: [docs/ops/README.md](./ops/README.md)
+- KPI instrumentation: [docs/metrics/EVENT_TAXONOMY.md](./metrics/EVENT_TAXONOMY.md)
