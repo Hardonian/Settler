@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { buildDashboardData, resolveDataMode } from "@/lib/data/adapters";
 
 type ExplorerPayload = {
   run_id: string;
   graph?: {
     graphHash: string;
     nodes: Array<{ id: string; label: string; type: string }>;
-    edges: Array<{ id: string; from: string; to: string; type: string }>;
   };
   lineage?: {
     lineage: Array<{
@@ -50,8 +50,15 @@ export function ProofExplorer() {
   const [replayResult, setReplayResult] = useState<string | null>(null);
 
   const basePath = useMemo(() => `/api/v1/runs/${runId}/trust-explorer`, [runId]);
+  const dataMode = resolveDataMode(Boolean(graph?.graph), !apiKey || !runId);
+  const dashboardData = buildDashboardData({ mode: dataMode });
 
   async function loadExplorer() {
+    if (!runId || !apiKey) {
+      setError("Enter a run id and API key for LIVE mode. DEMO mode remains available.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setReplayResult(null);
@@ -87,9 +94,12 @@ export function ProofExplorer() {
     <div className="space-y-6">
       <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-4 bg-white dark:bg-slate-900">
         <h2 className="text-xl font-semibold mb-3">Proof Explorer</h2>
-        <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-          Trace input → workflow → policy → artifact with deterministic node hashes and proof
-          checks.
+        <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+          Event links, provenance metadata, and proof hashes surfaced with deterministic replay
+          verification.
+        </p>
+        <p className="text-xs text-slate-500 mb-4">
+          Data mode: <span className="font-semibold">{dataMode}</span>
         </p>
         <div className="grid gap-3 md:grid-cols-3">
           <input
@@ -116,6 +126,34 @@ export function ProofExplorer() {
         </div>
         {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
       </div>
+
+      <section className="rounded-xl border border-slate-200 dark:border-slate-800 p-4 bg-white dark:bg-slate-900">
+        <h3 className="font-semibold mb-3">Audit / Replay Intelligence</h3>
+        <div className="grid gap-3 md:grid-cols-2 text-sm">
+          {dashboardData.auditEvents.map((event) => (
+            <div
+              key={event.id}
+              className="rounded border border-slate-200 dark:border-slate-700 p-3"
+            >
+              <p className="font-medium">{event.action}</p>
+              <p className="text-slate-500">trace: {event.traceId}</p>
+              <p className="text-slate-500">
+                entity: {event.entityType}:{event.entityId}
+              </p>
+            </div>
+          ))}
+          {dashboardData.proofReceipts.map((receipt) => (
+            <div
+              key={receipt.id}
+              className="rounded border border-slate-200 dark:border-slate-700 p-3"
+            >
+              <p className="font-medium">Proof {receipt.id}</p>
+              <p className="text-slate-500">hash: {receipt.hash}</p>
+              <p className="text-slate-500">provenance: {receipt.provenance.join(" → ")}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {graph?.graph && (
         <div className="grid gap-4 md:grid-cols-2">

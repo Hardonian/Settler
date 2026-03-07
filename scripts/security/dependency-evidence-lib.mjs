@@ -1,5 +1,13 @@
 export const DEPENDENCY_EVIDENCE_MODES = new Set(["standard", "strict"]);
 
+export const EVIDENCE_STATES = Object.freeze({
+  VERIFIED: "VERIFIED",
+  DEGRADED: "DEGRADED",
+  UNAVAILABLE: "UNAVAILABLE",
+  SKIPPED: "SKIPPED",
+  FAILED: "FAILED",
+});
+
 export function summarizeLockfiles(lockfiles) {
   const present = lockfiles.filter((item) => item.present);
   return {
@@ -74,9 +82,15 @@ export function evaluateDependencyEvidence({ mode, audit, advisory, lockfiles })
     evidenceCompleteness = "degraded";
   }
 
+  let evidenceState = EVIDENCE_STATES.VERIFIED;
+  if (!localAuditKnown && !lockSummary.complete) evidenceState = EVIDENCE_STATES.UNAVAILABLE;
+  if (advisoryState !== "complete" || audit?.degraded) evidenceState = EVIDENCE_STATES.DEGRADED;
+  if (status === "FAIL") evidenceState = EVIDENCE_STATES.FAILED;
+
   return {
     mode,
     status,
+    evidenceState,
     evidenceCompleteness,
     localAudit: {
       available: localAuditKnown,

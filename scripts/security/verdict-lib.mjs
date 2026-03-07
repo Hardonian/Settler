@@ -108,6 +108,9 @@ export function computeSecurityVerdict(inputs) {
       overall_development_safe,
       overall_launch_safe,
       overall_enterprise_review_safe,
+      development_safe: overall_development_safe,
+      launch_safe: overall_launch_safe,
+      enterprise_review_safe: overall_enterprise_review_safe,
     },
   };
 }

@@ -22,4 +22,5 @@ test("verdict is conditional when advisory completeness missing", () => {
 
   assert.equal(verdict.overall.overall_launch_safe, "CONDITIONAL");
   assert.equal(verdict.overall.overall_enterprise_review_safe, "IMPROVED_NOT_COMPLETE");
+  assert.equal(verdict.overall.launch_safe, "CONDITIONAL");
 });

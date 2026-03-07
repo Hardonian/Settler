@@ -63,6 +63,28 @@ Settler differs from generic workflow tools in five concrete ways:
 4. **Policy evaluation is in the execution loop**, not a separate post-processing stage.
 5. **Connector safety includes normalization + tenant boundaries** to reduce non-deterministic drift.
 
+## Security evidence model
+
+Security verification artifacts are machine-readable and intentionally explicit about evidence quality:
+
+- `VERIFIED`: runtime or authenticated evidence confirms the claim.
+- `DEGRADED`: checks passed, but confidence is reduced (e.g., missing authenticated advisory feed).
+- `UNAVAILABLE`: evidence was not produced in this environment.
+- `SKIPPED`: verification was intentionally not executed (for example, runtime-only probes during local work).
+- `FAILED`: evidence demonstrates a failing control.
+
+Artifacts are emitted to:
+
+- `security/dependency-evidence.json`
+- `security/rls-evidence.json`
+- `security/security-verdict.json`
+
+## Product surfaces and route map
+
+Public routes include `/product`, `/reconciliation`, `/replay-lab`, `/proof-explorer`, `/policies`, `/security`, `/oss`, and `/enterprise`.
+
+Control-plane routes include `/app/executions`, `/app/reconciliation`, `/app/replay`, `/app/proofs`, `/app/policies`, `/app/audit`, `/app/system-health`, and `/app/integrations`.
+
 ## Contributor on-ramp
 
 - Read [`CONTRIBUTING.md`](CONTRIBUTING.md) for local setup and quality gates.
