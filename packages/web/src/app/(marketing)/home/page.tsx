@@ -79,7 +79,7 @@ export default function HomePage() {
     {
       number: 4,
       title: "Review Evidence",
-      description: "Inspect variance sets with full audit trail. Export to JSON/CSV.",
+      description: "Review mismatches with full audit trail and context. Export to JSON/CSV.",
       icon: GitBranch,
       code: "Evidence: SHA256 hash chain",
       illustration: "/illustrations/feature-human.svg",
@@ -152,8 +152,8 @@ const reconciliation = await client.reconciliations.create({
   }
 });
 
-// Get variance report with full audit trail
-const variances = await client.reconciliations.getVariances(reconciliation.id);`;
+// Get mismatches with full audit trail
+const mismatches = await client.reconciliations.getMismatches(reconciliation.id);`;
 
   return (
     <ErrorBoundary context="Home Page">

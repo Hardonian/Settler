@@ -54,7 +54,7 @@ The demo path shows reconciliation execution, mismatch detection, evidence gener
 
 Prerequisites:
 
-- Node.js 22+
+- Node.js 24+ (see `.nvmrc`)
 - pnpm 10.13.1+
 - Postgres or Supabase
 
