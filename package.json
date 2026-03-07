@@ -78,9 +78,9 @@
     "demo:seed": "npx tsx scripts/seed-demo.ts",
     "demo:seed:reset": "npx tsx scripts/seed-demo.ts --reset",
     "verify": "pnpm run lint && pnpm run typecheck && pnpm run build && pnpm run test:ci:verify && pnpm run verify:boundaries && pnpm run verify:policy && pnpm run verify:routes && pnpm run verify:launch-assets",
-    "verify:fast": "node scripts/verify.mjs --fast",
+    "verify:fast": "node scripts/verify-release.mjs --profile=fast",
     "verify:staged": "node scripts/verify-staged-packages.mjs",
-    "verify:full": "node scripts/verify.mjs --full",
+    "verify:full": "node scripts/verify-release.mjs --profile=full",
     "verify:app-router": "tsx scripts/validate-app-router.ts",
     "verify:env:typed": "tsx scripts/validate-typed-env.ts",
     "verify:docs": "node scripts/verify-docs.mjs",
@@ -125,7 +125,7 @@
     "prisma:status": "prisma migrate status",
     "preinstall": "export SENTRY_SKIP_AUTO_INSTALL=1 || set SENTRY_SKIP_AUTO_INSTALL=1 || true",
     "postinstall": "test -f scripts/vercel-prisma-postinstall.js && node scripts/vercel-prisma-postinstall.js || echo 'Skipping postinstall: script not found (expected in Vercel builds)'",
-    "verify:build": "test -f scripts/verify-build-setup.sh && bash scripts/verify-build-setup.sh || echo '⚠️  Build verification script not available'",
+    "verify:build": "node scripts/verify-release.mjs --profile=build",
     "setup:turbo": "test -f scripts/setup-vercel-turbo-cache.sh && bash scripts/setup-vercel-turbo-cache.sh || echo '⚠️  Turbo setup script not available'",
     "demo:setup": "tsx scripts/generate-demo-data.ts",
     "demo:reset": "tsx scripts/generate-demo-data.ts",
@@ -210,7 +210,13 @@
     "verify:event-backbone": "tsx scripts/stress-reliability.ts",
     "verify:cas": "tsx scripts/cas-tool.ts verify",
     "cas:gc": "tsx scripts/cas-tool.ts gc",
-    "cas:repair": "tsx scripts/cas-tool.ts repair"
+    "cas:repair": "tsx scripts/cas-tool.ts repair",
+    "verify:test": "node scripts/verify-release.mjs --profile=test",
+    "verify:artifacts": "node scripts/verify-launch-artifacts.mjs",
+    "verify:release": "node scripts/verify-release.mjs --profile=full",
+    "capture:launch": "node scripts/capture-launch-assets.mjs --mode=auto",
+    "capture:launch:primary": "node scripts/capture-launch-assets.mjs --mode=primary",
+    "capture:launch:fallback": "node scripts/capture-launch-assets.mjs --mode=fallback"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

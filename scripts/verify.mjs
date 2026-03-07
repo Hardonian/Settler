@@ -1,29 +1,20 @@
 #!/usr/bin/env node
-import { spawnSync } from "child_process";
+import { spawnSync } from "node:child_process";
 
-const checks = [
-  ["Root cleanliness", ["run", "verify:root"]],
-  ["Lint", ["run", "lint"]],
-  ["Typecheck", ["run", "typecheck"]],
-  ["Build", ["run", "build"]],
-  ["Tests", ["run", "test:ci:verify"]],
-  ["Claims lint", ["run", "verify:claims"]],
-  ["Boundary enforcement", ["run", "verify:boundaries"]],
-  ["Route smoke", ["run", "verify:routes"]],
-];
+const argv = process.argv.slice(2);
 
-const failures = [];
-for (const [name, args] of checks) {
-  console.log(`\n▶ ${name}`);
-  const result = spawnSync("pnpm", args, { stdio: "inherit", env: process.env });
-  if (result.status !== 0) failures.push(name);
+let profile = "fast";
+if (argv.includes("--full")) {
+  profile = "full";
+} else if (argv.includes("--fast")) {
+  profile = "fast";
 }
 
-if (failures.length) {
-  console.error(`\n❌ verify failed: ${failures.join(", ")}`);
-  process.exit(1);
-}
+const extra = argv.filter((arg) => arg !== "--full" && arg !== "--fast");
 
-console.log(
-  "\n✅ verify passed: root + lint + typecheck + build + test + claims + boundaries + routes"
-);
+const result = spawnSync("node", ["scripts/verify-release.mjs", `--profile=${profile}`, ...extra], {
+  stdio: "inherit",
+  env: process.env,
+});
+
+process.exit(result.status ?? 1);

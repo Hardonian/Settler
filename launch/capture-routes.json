@@ -1,0 +1,7 @@
+{
+  "routes": [
+    { "path": "/", "title": "Landing page" },
+    { "path": "/pricing", "title": "Pricing" },
+    { "path": "/docs", "title": "Docs" }
+  ]
+}

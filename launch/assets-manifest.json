@@ -3,11 +3,11 @@
   "assets": [
     {
       "path": "launch/twitter-thread.md",
-      "sha256": "92edf0dda8c591e4706ec2753ce180a495bb1bd0c240cf2abdf07d97d0b38654"
+      "sha256": "7cb63fcf94171d06f5cee4448843ab6d1e820ad083652dacd5275bed909dc4b6"
     },
     {
       "path": "launch/ph.md",
-      "sha256": "7368c14834ef530d587928ee4c8dabaa172a37efa0ecddebb096705163b9075a"
+      "sha256": "52e15bed14d1574fe499e9d07928d0d3a9263c19249336e2af4ce959aa0cddfd"
     },
     {
       "path": "launch/reddit.md",
