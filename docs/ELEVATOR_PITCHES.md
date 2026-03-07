@@ -156,7 +156,7 @@ Each persona has three pitch versions:
 - **CTA:** "Start Free Trial - No Credit Card"
 
 ### README Copy
-- **Description:** "Reconciliation-as-a-Service platform"
+- **Description:** "Open Source Reconciliation Engine platform"
 - **Use Cases:** "Payment reconciliation, e-commerce reconciliation, receipt processing"
 - **Pricing:** "$99/month - 100K reconciliations/month"
 

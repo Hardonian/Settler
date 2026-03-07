@@ -177,9 +177,9 @@ This audit identifies content that is too technical, verbose, or jargon-heavy, a
 
 1. **Introduction (Lines 26-34)**
    - **Issue Type:** Technical definition
-   - **Current Text:** "Settler is a Reconciliation-as-a-Service API that automates financial and event data reconciliation across fragmented SaaS and e-commerce ecosystems."
+   - **Current Text:** "Settler is a Open Source Reconciliation Engine API that automates financial and event data reconciliation across fragmented SaaS and e-commerce ecosystems."
    - **Problems:**
-     - "Reconciliation-as-a-Service API" is jargon
+     - "Open Source Reconciliation Engine API" is jargon
      - "Fragmented SaaS and e-commerce ecosystems" is verbose
    - **Recommendation:**
      - "Settler automatically matches transactions between any two platforms—Shopify to Stripe, QuickBooks to PayPal, and more. No manual work required."
@@ -350,7 +350,7 @@ This audit identifies content that is too technical, verbose, or jargon-heavy, a
 ### Jargon to Replace:
 
 - "Reconciliation" → "Matching transactions" or "Matching payments"
-- "Reconciliation-as-a-Service API" → "Automatic transaction matching"
+- "Open Source Reconciliation Engine API" → "Automatic transaction matching"
 - "Fragmented SaaS and e-commerce ecosystems" → "Different platforms"
 - "Platform adapters" → "Platform connections" or "Integrations"
 - "Enterprise-Grade" → "Built for enterprise" or "Enterprise-ready"

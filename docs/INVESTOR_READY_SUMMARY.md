@@ -19,7 +19,7 @@ Financial reconciliation is a manual, error-prone process that consumes 10+ hour
 
 ## Solution
 
-Settler is a **Reconciliation-as-a-Service** platform that automates financial data matching across payment processors, e-commerce platforms, and accounting systems.
+Settler is a **Open Source Reconciliation Engine** platform that automates financial data matching across payment processors, e-commerce platforms, and accounting systems.
 
 **Key Capabilities:**
 - Event-sourced matching engine for high-volume processing

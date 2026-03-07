@@ -7,13 +7,13 @@
 **"The Autonomous Data Operations Operating System"**
 
 - **Category:** Infrastructure (not tools)
-- **Core:** Recon-as-a-Service
+- **Core:** reconciliation engine
 - **Differentiator:** AI-driven, self-healing, vertical modules
 - **Target:** Engineering teams who need data correctness
 
 ### Secondary Positioning
 
-**"Recon-as-a-Service for Modern Engineering Teams"**
+**"reconciliation engine for Modern Engineering Teams"**
 
 - **Focus:** Reconciliation as core primitive
 - **Audience:** Developers, operators, data engineers
@@ -182,11 +182,11 @@
 
 **"The Autonomous Data Operations Operating System"**
 
-Subheadline: "Recon-as-a-Service with AI-driven self-healing for modern engineering teams"
+Subheadline: "reconciliation engine with AI-driven self-healing for modern engineering teams"
 
 ### Key Messages
 
-1. **Recon-as-a-Service** — The core primitive for data operations
+1. **reconciliation engine** — The core primitive for data operations
 2. **Autonomous** — Self-healing, self-optimizing, self-monitoring
 3. **Vertical Modules** — Industry-specific solutions
 4. **Developer-First** — APIs, SDKs, great DX

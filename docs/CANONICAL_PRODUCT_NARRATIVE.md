@@ -521,7 +521,7 @@ Finance teams automate reconciliation:
 
 ### The Category Settler Occupies
 
-**Category:** Reconciliation-as-a-Service (RaaS)
+**Category:** Open Source Reconciliation Engine
 
 **Definition:** A specialized API platform that automates financial data reconciliation between systems.
 
@@ -585,7 +585,7 @@ Instead of feature comparison, focus on:
 - **Best for:** Payment processing, transaction handling
 - **Not best for:** Reconciliation, multi-platform matching, compliance audit trails
 
-**Settler (Reconciliation-as-a-Service):**
+**Settler (Open Source Reconciliation Engine):**
 - **Optimize for:** Accuracy, compliance, audit trails, deterministic matching
 - **Trade-offs:** Specialized (not general-purpose), requires API access, focused use case
 - **Best for:** Financial reconciliation, multi-platform matching, compliance requirements

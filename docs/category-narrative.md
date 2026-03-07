@@ -30,9 +30,9 @@ Reconciliation isn't just a "nice to have"—it's critical infrastructure. As co
 
 ## The Future
 
-We're not just building a product—we're creating a new category: **Reconciliation-as-a-Service**. Just like Stripe made payments simple, Settler makes reconciliation simple.
+We're not just building a product—we're creating a new category: **Open Source Reconciliation Engine**. Just like Stripe made payments simple, Settler makes reconciliation simple.
 
 ---
 
-**Category:** Reconciliation-as-a-Service (RaaS)  
+**Category:** Open Source Reconciliation Engine  
 **Positioning:** The Stripe of Reconciliation

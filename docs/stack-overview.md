@@ -1,7 +1,7 @@
 # Stack Overview
 
 **Last Updated:** 2025-01-XX  
-**Product:** Settler (Reconciliation-as-a-Service API)
+**Product:** Settler (Open Source Reconciliation Engine API)
 
 ## Executive Summary
 

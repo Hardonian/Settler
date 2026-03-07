@@ -11,7 +11,7 @@
 
 ## Executive Summary
 
-Settler.dev is a Reconciliation-as-a-Service (RaaS) platform that automates financial reconciliation across payment processors, e-commerce platforms, and business systems. Our pricing strategy combines a **base subscription model** ($49.95/month) with **usage-based metering** and **premium add-on integrations** to create a predictable revenue foundation while capturing value from high-volume customers.
+Settler.dev is a Open Source Reconciliation Engine platform that automates financial reconciliation across payment processors, e-commerce platforms, and business systems. Our pricing strategy combines a **base subscription model** ($49.95/month) with **usage-based metering** and **premium add-on integrations** to create a predictable revenue foundation while capturing value from high-volume customers.
 
 **Revenue Model:**
 

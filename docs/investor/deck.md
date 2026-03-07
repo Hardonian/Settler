@@ -28,7 +28,7 @@ The Autonomous Data Operations Operating System
 
 ## Slide 3: The Insight
 
-**Recon-as-a-Service is the Foundation**
+**reconciliation engine is the Foundation**
 
 Every data operation is fundamentally about reconciliation:
 - Validation = Recon data against rules
@@ -43,9 +43,9 @@ Every data operation is fundamentally about reconciliation:
 
 ## Slide 4: The Solution
 
-**Settler.dev: Autonomous Data Operations OS**
+**Settler.dev: Open Source Reconciliation Engine**
 
-**Core Engine:** Recon-as-a-Service
+**Core Engine:** reconciliation engine
 - Deterministic reconciliation
 - AI-driven drift detection and auto-repair
 - Comprehensive audit trail
@@ -205,7 +205,7 @@ We envision a world where:
 - Complex workflows orchestrate themselves
 - Developers spend zero time on data correctness plumbing
 
-**Join us in building the Autonomous Data Operations OS.**
+**Join us in building the Open Source Reconciliation Engine.**
 
 ---
 

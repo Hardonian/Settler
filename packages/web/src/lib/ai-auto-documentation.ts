@@ -150,7 +150,7 @@ export function generateOpenAPISpec(routes: APIDocumentation[]): Record<string, 
     info: {
       title: "Settler API",
       version: "1.0.0",
-      description: "Reconciliation-as-a-Service API",
+      description: "Open Source Reconciliation Engine API",
     },
     paths: routes.reduce(
       (paths, route) => {

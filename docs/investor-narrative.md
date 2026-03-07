@@ -6,7 +6,7 @@
 ## Category Clarity
 
 **What Settler Is:**
-- Reconciliation-as-a-Service API
+- Open Source Reconciliation Engine API
 - Automates financial reconciliation (matching transactions across systems)
 - Serves businesses that process payments through multiple channels (Stripe, Shopify, etc.)
 

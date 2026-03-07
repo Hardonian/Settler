@@ -19,7 +19,7 @@ Financial reconciliation is a critical but painful process for businesses that p
 
 ## Solution
 
-**Settler Enterprise** is a Reconciliation-as-a-Service platform that automates financial data reconciliation across multiple systems with enterprise-grade reliability, security, and compliance.
+**Settler Enterprise** is a Open Source Reconciliation Engine platform that automates financial data reconciliation across multiple systems with enterprise-grade reliability, security, and compliance.
 
 **Core Capabilities:**
 - **Reconciliation Engine:** Event-sourced matching engine for high-volume transaction processing

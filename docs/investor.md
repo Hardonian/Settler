@@ -2,7 +2,7 @@
 
 ## What Settler is
 
-Settler is a deterministic reconciliation execution substrate that emits replay-verifiable evidence on every run.
+Settler is a deterministic reconciliation engine that emits replay-verifiable evidence on every run.
 
 ## Provably true today
 

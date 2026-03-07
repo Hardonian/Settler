@@ -4,7 +4,7 @@
 
 ### 1. Recon Core Architecture (Technical Moat)
 
-**The Foundation:** Recon-as-a-Service is not just a feature — it's the architectural core.
+**The Foundation:** reconciliation engine is not just a feature — it's the architectural core.
 
 **Why It's Defensible:**
 - **Network Effects:** More reconciliations = better matching algorithms

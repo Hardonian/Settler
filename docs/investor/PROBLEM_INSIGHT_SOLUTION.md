@@ -39,7 +39,7 @@ Every engineering team faces the same problems:
 
 ## The Insight
 
-### Recon-as-a-Service is the Foundation
+### reconciliation engine is the Foundation
 
 **Insight #1:** Reconciliation is not a feature — it's the **core primitive** for all data operations.
 
@@ -58,9 +58,9 @@ Every data operation is fundamentally about reconciliation:
 
 ## The Solution
 
-### Settler.dev: Autonomous Data Operations OS
+### Settler.dev: Open Source Reconciliation Engine
 
-**Core Engine:** Recon-as-a-Service
+**Core Engine:** reconciliation engine
 - Deterministic reconciliation engine
 - Multi-agent AI fallback
 - Drift detection and auto-repair

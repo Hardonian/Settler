@@ -2,7 +2,7 @@
  * Recon Core Engine
  *
  * Unified, deterministic reconciliation engine serving as the philosophical
- * and architectural core of Settler.dev's Data Operations OS.
+ * and architectural core of Settler.dev's reconciliation engine.
  *
  * This engine orchestrates:
  * - Ingestion → Transform → Validate → Recon → Map → Audit → Report

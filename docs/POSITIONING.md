@@ -46,7 +46,7 @@ Settler offers a clear progression from open-source protocol to managed platform
 
 ### Tier 3: Managed Platform (SaaS)
 
-**What:** Settler Enterprise API - Reconciliation-as-a-Service  
+**What:** Settler Enterprise API - Open Source Reconciliation Engine  
 **License:** Proprietary SaaS  
 **Target:** Companies wanting managed solution  
 **Value:** No infrastructure management, automatic scaling, support

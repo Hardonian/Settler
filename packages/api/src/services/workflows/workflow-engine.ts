@@ -2,7 +2,7 @@
  * Workflow Engine
  * 
  * Orchestrates complex data operations workflows
- * Part of Phase V: AIOS (Autonomous Data Operations OS)
+ * Part of Phase V: AIOS (Open Source Reconciliation Engine)
  */
 
  

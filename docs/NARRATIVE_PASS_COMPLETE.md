@@ -92,13 +92,13 @@ This document confirms completion of the **Canonical Product Narrative, Trust & 
 **Location:** `/docs/CANONICAL_PRODUCT_NARRATIVE.md` — Part 5
 
 **Completed:**
-- ✅ Defined the category Settler occupies (Reconciliation-as-a-Service)
+- ✅ Defined the category Settler occupies (Open Source Reconciliation Engine)
 - ✅ Explained why comparison tables are the wrong lens
 - ✅ Clarified what competitors optimize for vs. what Settler optimizes for
 - ✅ Provided positioning strategy
 
 **Key Points:**
-- Category: Reconciliation-as-a-Service (specialized, not general-purpose)
+- Category: Open Source Reconciliation Engine (specialized, not general-purpose)
 - Don't compete on features (specialization vs. breadth)
 - Don't compete on price (value vs. cost)
 - Do compete on outcomes (time savings, accuracy, compliance)

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Settler is a **Reconciliation-as-a-Service API** built with TypeScript, Express, and PostgreSQL. The architecture follows **Hexagonal Architecture** (Ports & Adapters) with **CQRS** (Command Query Responsibility Segregation) and **Event-Driven** patterns. This ensures separation of concerns, testability, and maintainability.
+Settler is a **Open Source Reconciliation Engine API** built with TypeScript, Express, and PostgreSQL. The architecture follows **Hexagonal Architecture** (Ports & Adapters) with **CQRS** (Command Query Responsibility Segregation) and **Event-Driven** patterns. This ensures separation of concerns, testability, and maintainability.
 
 ## Architecture Layers
 

@@ -16,7 +16,7 @@ This document provides **procurement-friendly answers** to common questions from
 
 ### What is Settler?
 
-**Answer:** Settler is a Reconciliation-as-a-Service (RaaS) platform that automates financial data reconciliation between systems. We provide APIs for matching transactions between payment processors, accounting systems, and e-commerce platforms.
+**Answer:** Settler is a Open Source Reconciliation Engine platform that automates financial data reconciliation between systems. We provide APIs for matching transactions between payment processors, accounting systems, and e-commerce platforms.
 
 **Key Points:**
 - API-first platform

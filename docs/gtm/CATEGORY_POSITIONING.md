@@ -6,10 +6,10 @@
 
 ### Category Creation Strategy
 
-We're not entering an existing category. We're **creating** the category of "Autonomous Data Operations OS."
+We're not entering an existing category. We're **creating** the category of "Open Source Reconciliation Engine."
 
 **Why This Category:**
-1. **Recon-as-a-Service** is the core primitive
+1. **reconciliation engine** is the core primitive
 2. **Autonomous** means self-healing, self-optimizing, self-monitoring
 3. **Operating System** means it's infrastructure, not a tool
 4. **Data Operations** encompasses all data correctness workflows
@@ -18,8 +18,8 @@ We're not entering an existing category. We're **creating** the category of "Aut
 
 **For** engineering teams who need data correctness  
 **Who** struggle with reconciliation, drift detection, and workflow orchestration  
-**Settler.dev** is the Autonomous Data Operations OS  
-**That** provides Recon-as-a-Service with AI-driven self-healing  
+**Settler.dev** is the Open Source Reconciliation Engine  
+**That** provides reconciliation engine with AI-driven self-healing  
 **Unlike** ETL tools, data quality tools, or workflow orchestrators  
 **We** offer a unified OS with vertical modules and autonomous intelligence
 
@@ -27,7 +27,7 @@ We're not entering an existing category. We're **creating** the category of "Aut
 
 | Feature | Settler.dev | ETL Tools | Data Quality | Workflow Orchestration |
 |---------|-------------|-----------|--------------|----------------------|
-| Recon-as-a-Service | ✅ Core | ❌ | ❌ | ❌ |
+| reconciliation engine | ✅ Core | ❌ | ❌ | ❌ |
 | AI-Driven | ✅ | ❌ | Partial | ❌ |
 | Self-Healing | ✅ | ❌ | ❌ | ❌ |
 | Vertical Modules | ✅ | ❌ | ❌ | ❌ |
