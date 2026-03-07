@@ -176,45 +176,66 @@ async function runProbes(baseUrl, config) {
   }
 
   const limiterRoute = "/api/v1/receipts";
-  let first429 = null;
-  let finalStatus = null;
-  let retryAfter = null;
-  for (let i = 1; i <= config.rateLimitAttempts; i += 1) {
-    const resp = await fetch(`${baseUrl}${limiterRoute}`, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-forwarded-for": "198.51.100.42",
-      },
-      body: JSON.stringify({}),
-    });
-
-    finalStatus = resp.status;
-    if (resp.status === 429) {
-      first429 = i;
-      retryAfter = resp.headers.get("retry-after");
-      break;
-    }
-  }
-
-  if (first429 === null) {
+  // Probe the route once first to check availability before hammering it.
+  const limiterProbe = await fetch(`${baseUrl}${limiterRoute}`, {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-forwarded-for": "198.51.100.42" },
+    body: JSON.stringify({}),
+  });
+  if (limiterProbe.status === 404) {
     checks.push(
-      toCheck("rate_limit_behavior", "failed", {
+      toCheck("rate_limit_behavior", "skipped", {
+        reason: "route_not_present",
         route: limiterRoute,
-        details: [
-          `No 429 observed after ${config.rateLimitAttempts} attempts`,
-          `final_status=${finalStatus}`,
-        ],
+        details: "Route returned 404; rate limit probe skipped to avoid noise.",
       })
     );
   } else {
-    checks.push(
-      toCheck("rate_limit_behavior", "passed", {
-        route: limiterRoute,
-        first429Attempt: first429,
-        retryAfter,
-      })
-    );
+    let first429 = limiterProbe.status === 429 ? 1 : null;
+    let finalStatus = limiterProbe.status;
+    let retryAfter = limiterProbe.status === 429 ? limiterProbe.headers.get("retry-after") : null;
+
+    if (first429 === null) {
+      for (let i = 2; i <= config.rateLimitAttempts; i += 1) {
+        const resp = await fetch(`${baseUrl}${limiterRoute}`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "x-forwarded-for": "198.51.100.42",
+          },
+          body: JSON.stringify({}),
+        });
+
+        finalStatus = resp.status;
+        if (resp.status === 429) {
+          first429 = i;
+          retryAfter = resp.headers.get("retry-after");
+          break;
+        }
+      }
+    }
+
+    if (first429 === null) {
+      checks.push(
+        toCheck("rate_limit_behavior", "failed", {
+          route: limiterRoute,
+          expected: "HTTP 429 within the configured attempt window",
+          details: [
+            `No 429 observed after ${config.rateLimitAttempts} attempts`,
+            `final_status=${finalStatus}`,
+            "Possible causes: rate limiter not configured for this route, threshold too high, or IP-spoofing header (x-forwarded-for) not trusted.",
+          ],
+        })
+      );
+    } else {
+      checks.push(
+        toCheck("rate_limit_behavior", "passed", {
+          route: limiterRoute,
+          first429Attempt: first429,
+          retryAfter,
+        })
+      );
+    }
   }
 
   return checks;

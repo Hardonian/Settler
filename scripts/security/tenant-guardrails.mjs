@@ -80,8 +80,27 @@ export const highRiskRouteRules = [
 
 /**
  * Known-safe route prefixes that do not require tenant-isolation guardrails.
- * Admin routes are expected to use separate admin auth; health/docs/webhooks/cron
- * are either public or use their own auth model.
+ *
+ * IMPORTANT — Exemption semantics per prefix:
+ *
+ *   api/admin/       — Expected to enforce its own admin authentication (e.g., isSuperAdmin()
+ *                      or session-based admin check). This exemption does NOT mean these routes
+ *                      are public. If an admin route is added without auth, this exemption will
+ *                      silently cover it. Admin routes should be audited independently. Use
+ *                      `pnpm exec grep -r "src/app/api/admin" --include="route.ts" -l` to list
+ *                      them, then confirm each uses a recognized admin auth primitive.
+ *
+ *   api/cron/        — Expected to require a Vercel cron secret header or equivalent. Must not
+ *                      accept unauthenticated public requests.
+ *
+ *   api/stripe/      — Stripe webhook routes; authenticated by Stripe signature verification.
+ *
+ *   api/health,
+ *   api/docs,
+ *   api/gtm/,
+ *   api/legal/,
+ *   api/builder/revalidate/
+ *                    — Intentionally public or infrastructure-only. Must not return tenant data.
  */
 export const knownExemptPrefixes = [
   "packages/web/src/app/api/admin/",
