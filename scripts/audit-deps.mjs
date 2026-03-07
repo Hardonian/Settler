@@ -67,19 +67,20 @@ const attempts = [];
 let backend = { available: false, reason: null };
 let finalOutcome = "passed";
 let findings = null;
+let completeness = "full";
+const degradedReasons = [];
 
 if (mode !== "off") {
   const audit = run("pnpm", ["audit", "--prod", "--audit-level=high", "--json"]);
-  attempts.push({
-    tool: "pnpm-audit",
-    ...audit,
-  });
+  attempts.push({ tool: "pnpm-audit", ...audit });
 
   const combinedOutput = `${audit.stdout}\n${audit.stderr}`;
   findings = parseTotals(audit.stdout || audit.stderr);
 
   if (audit.timedOut) {
     backend = { available: false, reason: "backend-timeout" };
+    completeness = "degraded";
+    degradedReasons.push("pnpm-audit-timeout");
     finalOutcome = mode === "strict" ? "failed-backend-unavailable" : "warn-backend-unavailable";
   } else if (audit.status === 0 && findings) {
     backend = { available: true, reason: null };
@@ -88,9 +89,13 @@ if (mode !== "off") {
     }
   } else if (backendUnavailable(combinedOutput)) {
     backend = { available: false, reason: "backend-unavailable" };
+    completeness = "degraded";
+    degradedReasons.push("pnpm-audit-backend-unavailable");
     finalOutcome = mode === "strict" ? "failed-backend-unavailable" : "warn-backend-unavailable";
   } else {
     backend = { available: false, reason: "audit-command-failed" };
+    completeness = "degraded";
+    degradedReasons.push("pnpm-audit-command-failed");
     finalOutcome = mode === "strict" ? "failed-audit-error" : "warn-audit-error";
   }
 
@@ -103,18 +108,37 @@ if (mode !== "off") {
     attempts.push({ tool: "osv-scan", ...osvRun });
     writeFileSync(path.join(outputDir, "osv.json"), osvRun.stdout || osvRun.stderr, "utf8");
 
-    if (osvRun.status !== 0 && mode === "strict") {
-      finalOutcome = "failed-osv";
+    if (osvRun.status !== 0) {
+      degradedReasons.push("osv-scan-failed");
+      completeness = "degraded";
+      if (mode === "strict") {
+        finalOutcome = "failed-osv";
+      } else if (!finalOutcome.startsWith("failed")) {
+        finalOutcome = "warn-osv";
+      }
     }
+  } else {
+    degradedReasons.push("osv-scanner-missing");
+    completeness = "degraded";
   }
+}
+
+if (mode === "off") {
+  completeness = "none";
+  degradedReasons.push("policy-off");
+  finalOutcome = "skipped-policy-off";
 }
 
 const artifact = {
   generatedAt: new Date().toISOString(),
+  verifierVersion: "2026-03-07.2",
   runId,
   ci: isCi,
   policyMode: mode,
   backend,
+  completeness,
+  degraded: completeness !== "full",
+  degradedReasons,
   commandAttempts: attempts.map((entry) => ({
     tool: entry.tool,
     command: entry.command,
@@ -137,6 +161,9 @@ writeFileSync(
 
 console.log(`Dependency audit artifact: ${path.relative(repoRoot, artifactPath)}`);
 console.log(`Dependency audit outcome: ${finalOutcome}`);
+if (artifact.degraded) {
+  console.log(`Dependency audit degraded reasons: ${degradedReasons.join(", ") || "none"}`);
+}
 
 if (finalOutcome.startsWith("failed")) {
   process.exit(1);
