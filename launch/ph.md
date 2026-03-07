@@ -1,20 +1,31 @@
 # Name
+
 Settler
 
 # Tagline
-The API Infrastructure for Financial Evidence.
 
-# Description
-Settler gives engineering teams the primitives to build reliable financial software. Stop building fragile cron jobs for reconciliation and receipt parsing. Use Settler's typed API to ensure your numbers always match the bank.
+Deterministic reconciliation workflows with replayable proof.
 
-# Key Features
-- **Automated Reconciliation**: Match transactions across Stripe, Shopify, and your database with 100% accuracy.
-- **Receipts to JSON**: Turn PDFs and images into structured data with enterprise-grade OCR.
-- **Deterministic Math**: Handle currency conversion and unit math without floating point errors.
-- **Developer First**: Great SDKs, detailed docs, and a beautiful console.
+# Launch summary
 
-# Gallery
-[Insert Screenshots of Console, Playground, and VS Code]
+Settler is an open-source platform for running deterministic reconciliation workflows that produce verifiable evidence artifacts and support replay-based verification. It is designed for engineering teams that need reproducible outcomes, audit-friendly execution history, and policy-governed workflow operations.
 
-# Website
-https://settler.dev
+# What engineers can test quickly
+
+- Run the demo workflow: `pnpm demo`
+- Verify replay from generated evidence: `pnpm settler:replay examples/demo-output/evidence.json`
+- Inspect architecture and contributor docs in-repo
+
+# Core technical points
+
+- Deterministic execution path
+- Evidence artifact generation (`run.json`, `results.json`, `evidence.json`)
+- Replay verification with fingerprint matching
+- Policy checks in execution loop
+- Connector normalization with tenant-aware boundaries
+
+# Links
+
+- Repo: https://github.com/settler/settler
+- Quick start: https://github.com/settler/settler/blob/main/docs/launch/QUICK_START.md
+- Architecture: https://github.com/settler/settler/blob/main/ARCHITECTURE.md

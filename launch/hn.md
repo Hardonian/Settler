@@ -1,25 +1,31 @@
-# Show HN: Settler – Open-source API for financial reconciliation and receipt parsing
+# Show HN: Settler — deterministic reconciliation workflows with replayable proof artifacts
 
-Hi HN, we are the team behind Settler.dev. We've built an API infrastructure that handles the "boring but critical" parts of fintech: reconciliation, receipt parsing, and deterministic unit conversion.
+Hi HN — we open-sourced Settler to make reconciliation workflows reproducible and auditable.
 
-## The Problem
-Every fintech company eventually builds an internal "Reconciliation Service". It usually starts as a cron job matching Stripe payouts to DB rows, then grows into a monster dealing with currency conversion, fuzzy matching, and PDF parsing. It's fragile, unmaintained, and incorrect.
+## What it does
 
-## The Solution
-Settler is a double-entry ledger and reconciliation engine wrapped in a clean, typed API.
+- Runs deterministic reconciliation workflows.
+- Emits proof artifacts (`run.json`, `results.json`, `evidence.json`, `report.html`) for each run.
+- Replays from evidence and verifies fingerprint matches.
 
-- **Reconcile**: Match transactions across any two sources (Stripe, Shopify, DB, CSV) with configurable rules.
-- **Receipts**: Send us a PDF/Image, get back structured JSON (Vendor, Date, Line Items, Tax) using our edge-optimized OCR.
-- **Flags**: Feature flags designed for financial rollout (e.g. "enable for users with >$10k volume").
+## Why we built it
 
-## Tech Stack
-- Typescript / Node.js
-- Event Sourcing for auditability
-- Edge-first architecture for low latency
+Most teams end up with ad-hoc recon scripts that are hard to debug after the fact. When outcomes change between runs, it is difficult to prove whether data changed, policy changed, or execution changed.
 
-## Links
-- Docs: https://settler.dev/docs
-- Repo: https://github.com/settler/settler
-- Playground: https://settler.dev/console/playground
+Settler is opinionated around deterministic execution + replay so failure analysis is concrete instead of forensic guesswork.
 
-We'd love your feedback on the API design and the specific reconciliation pain points you've faced!
+## How to try it locally
+
+```bash
+pnpm install
+pnpm demo
+pnpm settler:replay examples/demo-output/evidence.json
+```
+
+## Repo references
+
+- Architecture: `ARCHITECTURE.md`
+- Quick start: `docs/launch/QUICK_START.md`
+- Example workflows: `docs/launch/EXAMPLE_WORKFLOWS.md`
+
+Feedback request: if your team has reconciliation pain points, where does deterministic replay help most (incident response, audits, or regression testing)?

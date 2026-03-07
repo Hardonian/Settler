@@ -3,19 +3,27 @@
   "assets": [
     {
       "path": "launch/twitter-thread.md",
-      "sha256": "0223edecb32e3fe8e73186b7c06a5ffca7db0ff19a7d27f6311e6d3126bb25aa"
+      "sha256": "92edf0dda8c591e4706ec2753ce180a495bb1bd0c240cf2abdf07d97d0b38654"
     },
     {
       "path": "launch/ph.md",
-      "sha256": "e9c55d1e60b317a7a9ba11c63765f7e34e0ef4925f9143ebcd887b5efbd8abea"
+      "sha256": "7368c14834ef530d587928ee4c8dabaa172a37efa0ecddebb096705163b9075a"
     },
     {
       "path": "launch/reddit.md",
-      "sha256": "364a290d5c137b4ddf06fa0dc06b55dc065f540e5fcc76ee0ca10c741b8a7e8d"
+      "sha256": "aea87a688e80bba6af518622978d2bc0318bc49788536f6e5ed82fd896e9acad"
     },
     {
       "path": "launch/hn.md",
-      "sha256": "abcf83ee42665c275813822cf881ce950321bf3d7a5ab7a3f2ccca6b60e915a6"
+      "sha256": "84629930e92f02d65eedceced4ba6b811841e5fb9d7e8eb4b47421bcb0422ac1"
+    },
+    {
+      "path": "launch/launch-summary.md",
+      "sha256": "0644cc316698600beb074d103cdd9a9e30d296688a9815bcb21992fd8dc00c1b"
+    },
+    {
+      "path": "launch/workflow-artifacts.md",
+      "sha256": "8b3018fbf4857fef4d99cbc8fdc30368a8e27a2dfe156a89678d1a2f2bbcfe53"
     }
   ]
 }

@@ -127,6 +127,27 @@ For workspace-specific tests:
 pnpm --filter @settler/web test
 ```
 
+## Adding a Connector (Minimal Path)
+
+1. Implement a driver in `packages/adapters/src/drivers/<your-connector>.ts`.
+2. Export it from `packages/adapters/src/drivers/index.ts`.
+3. Add deterministic normalization tests under `packages/adapters/src/__tests__`.
+4. Register metadata in `marketplace/adapters/registry.json` when the connector is user-visible.
+5. Run:
+
+```bash
+pnpm --filter @settler/adapters test
+pnpm --filter @settler/adapters build
+```
+
+Include fixture inputs/outputs in your PR so replay behavior can be validated.
+
+## Development Environment Notes
+
+- Use `pnpm install` at repo root; this is a workspace monorepo.
+- For reproducible checks, run `pnpm run verify:fast` before opening a PR.
+- If you touch launch/docs artifacts, also run `pnpm run verify:launch-assets`.
+
 ## Pull Request Process
 
 1. Create a feature branch.
