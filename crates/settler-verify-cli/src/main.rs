@@ -6,7 +6,7 @@ use std::path::PathBuf;
 #[derive(Parser)]
 #[command(
     name = "settler-verify",
-    about = "Verify Settler evidence bundles locally."
+    about = "Verify Settler proof artifacts locally."
 )]
 struct Cli {
     #[arg(long, value_name = "PATH")]

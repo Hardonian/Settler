@@ -1,79 +1,70 @@
 # Settler Documentation Index
 
-## Start Here
+This index provides a launch-ready reading path aligned to the current platform implementation.
 
-- [START_HERE.md](./START_HERE.md) — Fastest path to running Settler
-- [Getting Started](./GETTING_STARTED.md) — Setup and first run
-- [Quick Start](./QUICKSTART.md) — Five-minute demo
-- [FAQ](./FAQ.md) — Common questions
+## 1) START HERE
 
-## Product
+- [START_HERE.md](./START_HERE.md) — local setup, verification gates, and canonical entry points.
 
-- [Product Overview](./PRODUCT_OVERVIEW.md) — What Settler does
-- [Engine](./ENGINE.md) — How the reconciliation engine works
-- [Canonical Positioning](./positioning/CANONICAL_POSITIONING.md) — What Settler is and who it's for
-- [Messaging Hierarchy](./positioning/MESSAGING_HIERARCHY.md) — Terminology and copy guidelines
-- [Claim Validation](./positioning/CLAIM_VALIDATION.md) — Every claim verified against code
+## 2) Quick Start
 
-## Architecture
+- [../README.md](../README.md) — five-minute demo and core platform capabilities.
+- [getting-started/README.md](./getting-started/README.md) — step-by-step onboarding.
 
-- [Architecture Overview](./ARCHITECTURE.md) — System architecture
-- [Data Model](./DATA_MODEL.md) — Core data structures
-- [Source of Truth](./SOURCE_OF_TRUTH.md) — Authoritative documentation sources
+## 3) Core Concepts
 
-## API and SDKs
+- [TERMINOLOGY.md](./TERMINOLOGY.md) — canonical primitives and naming conventions.
+- [PRODUCT_OVERVIEW.md](./PRODUCT_OVERVIEW.md) — product framing grounded in implementation.
+- [SYSTEM_GUARANTEES.md](./SYSTEM_GUARANTEES.md) — determinism, replay, integrity, and isolation boundaries.
 
-- [API Reference](./API.md) — API endpoint documentation
-- [API Quick Start](./api-quick-start.md) — Get started with the API
-- [SDK Documentation](./api/README.md) — SDK usage across languages
+## 4) Workflows and Execution
 
-## Console and App
+- [WORKFLOWS.md](./WORKFLOWS.md) — workflow modeling and execution lifecycle.
+- [ENGINE.md](./ENGINE.md) — deterministic reconciliation engine internals.
+- [CONSOLE.md](./CONSOLE.md) — operator workflow inside the web console.
 
-- [Console Guide](./CONSOLE.md) — Console documentation
-- [Authentication](./AUTH.md) — Auth and authorization
+## 5) Proofs and Replay
 
-- [ENGINE.md](./ENGINE.md)
-- [architecture/README.md](./architecture/README.md)
-- [api/README.md](./api/README.md)
-- [security/README.md](./security/README.md)
-- [metrics/EVENT_TAXONOMY.md](./metrics/EVENT_TAXONOMY.md)
+- [EVIDENCE.md](./EVIDENCE.md) — artifact generation and verification chain.
+- [LINEAGE.md](./LINEAGE.md) — execution lineage and traceability model.
+- [positioning/CLAIM_VALIDATION.md](./positioning/CLAIM_VALIDATION.md) — product claim validation status.
 
-- [Operations Runbook](./OPERATIONS_RUNBOOK.md) — Day-to-day operations
-- [Deployment Guide](./deployment-guide.md) — Deployment instructions
-- [Configuration](./CONFIGURATION.md) — Configuration reference
-- [Environment Setup](./ENV_SETUP_GUIDE.md) — Environment variables
-- [Troubleshooting](./troubleshooting.md) — Common issues and fixes
+## 6) Connectors
 
-## Security
+- [integrations/connectors-overview.md](./integrations/connectors-overview.md) — connector model and integration guidance.
+- [REGISTRY.md](./REGISTRY.md) — connector/rule registry references.
+- [integration-recipes.md](./integration-recipes.md) — implementation examples.
 
-- [Security Architecture](./SECURITY_ARCHITECTURE.md) — Security design
-- [Security Invariants](./SECURITY_INVARIANTS.md) — Security guarantees
-- [Secrets Management](./SECRETS_MANAGEMENT.md) — Handling secrets
+## 7) AI Copilot
 
-## Go-to-Market
+- [MODEL_SPEC.md](../MODEL_SPEC.md) — advisory AI guardrails and behavioral boundaries.
+- [platform/ai-copilot.ts](../platform/ai-copilot.ts) — copilot implementation reference.
 
-- [Persona Map](./go-to-market/PERSONA_MAP.md) — Target personas
-- [Jobs To Be Done](./go-to-market/JOBS_TO_BE_DONE.md) — Core user jobs
+## 8) Chaos Testing
 
-## Metrics and Analytics
+- [platform/chaos-harness.ts](../platform/chaos-harness.ts) — deterministic fault injection model.
+- [scripts/stress-reliability.ts](../scripts/stress-reliability.ts) — event backbone reliability verification.
 
-- [Launch KPI Framework](./metrics/LAUNCH_KPI_FRAMEWORK.md) — What to measure
-- [Event Taxonomy](./metrics/EVENT_TAXONOMY.md) — Analytics event definitions
+## 9) Policy
 
-## Audits and Validation
+- [ACCESS_CONTROLS.md](./ACCESS_CONTROLS.md) — authorization and enforcement patterns.
+- [SECURITY_INVARIANTS.md](./SECURITY_INVARIANTS.md) — mandatory security invariants.
+- [RLS_POLICY_VERIFICATION.md](./RLS_POLICY_VERIFICATION.md) — tenant isolation verification.
 
-- [Final Reconciliation Matrix](./audits/FINAL_RECONCILIATION_MATRIX.md) — All audit findings reconciled
-- [Final Launch Scorecard](./audits/FINAL_LAUNCH_SCORECARD.md) — Launch readiness scores
-- [100-Point Audit](./audit/AUDIT_100_FINAL.md) — Technical audit results
+## 10) Architecture
 
-## Release
+- [../ARCHITECTURE.md](../ARCHITECTURE.md) — top-level system architecture map.
+- [architecture/README.md](./architecture/README.md) — architecture deep dives.
+- [SOURCE_OF_TRUTH.md](./SOURCE_OF_TRUTH.md) — authoritative documentation boundaries.
 
-- [Changelog](../CHANGELOG.md) — Version history
-- [Release Notes](../RELEASE_NOTES.md) — Release notes
+## 11) Contributing
 
-## Contributing
+- [../CONTRIBUTING.md](../CONTRIBUTING.md) — contribution process and quality gates.
+- [contributing.md](./contributing.md) — contributor onboarding notes.
+- [MAINTAINER_GUIDE.md](./MAINTAINER_GUIDE.md) — release and maintenance operations.
 
-- [Contributing Guide](../CONTRIBUTING.md) — How to contribute
-- [Architecture for Contributors](../ARCHITECTURE.md) — System map
-- [Governance](../GOVERNANCE.md) — Decision-making process
-- [Support](../SUPPORT.md) — Getting help
+---
+
+### Notes on legacy docs
+
+The repository contains historical and GTM-focused documentation that is still useful context, but may use legacy terms (`adapter`, `ReplayLab`, `evidence pack`). For launch-facing and developer onboarding surfaces, follow this index and [TERMINOLOGY.md](./TERMINOLOGY.md).

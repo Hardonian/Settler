@@ -2,8 +2,8 @@
  * Settler Platform Primitives
  *
  * Canonical types shared across all subsystems. Every subsystem
- * (Trust Graph, Replay Lab, Policy Simulator, AI Copilot, Connector
- * Ecosystem, Chaos Engine, MCP Server) maps to these primitives.
+ * (Trust Graph, Replay Engine, Policy Simulator, AI Copilot, Connector
+ * Ecosystem, Chaos Harness, MCP Server) maps to these primitives.
  */
 
 // ────────────────────────────────────────────────────────────
@@ -24,12 +24,7 @@ export interface Execution {
   runFingerprint?: string;
 }
 
-export type ExecutionStatus =
-  | "pending"
-  | "running"
-  | "completed"
-  | "failed"
-  | "replaying";
+export type ExecutionStatus = "pending" | "running" | "completed" | "failed" | "replaying";
 
 // ────────────────────────────────────────────────────────────
 // Artifact (content-addressed)
@@ -209,16 +204,16 @@ export interface TrustEdge {
 }
 
 export type TrustEdgeType =
-  | "produced"       // execution → artifact
-  | "consumed"       // execution → artifact (input)
-  | "governed_by"    // execution → policy
-  | "proved_by"      // execution → proof
-  | "sourced_from"   // artifact → connector
-  | "replayed_from"  // execution → execution
-  | "derived_from";  // artifact → artifact
+  | "produced" // execution → artifact
+  | "consumed" // execution → artifact (input)
+  | "governed_by" // execution → policy
+  | "proved_by" // execution → proof
+  | "sourced_from" // artifact → connector
+  | "replayed_from" // execution → execution
+  | "derived_from"; // artifact → artifact
 
 // ────────────────────────────────────────────────────────────
-// AI Suggestion (advisory only, never direct execution)
+// Copilot Suggestion (advisory only, never direct execution)
 // ────────────────────────────────────────────────────────────
 export interface AISuggestion {
   suggestionId: string;
