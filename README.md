@@ -1,10 +1,13 @@
-# Settler
+# Settler — Open Source Reconciliation Engine
 
 **Open-source engine that reconciles financial data across systems, surfaces mismatches, and produces verifiable evidence for every run.**
 
 Stripe says one thing. Your bank says another. Your ledger says something else. Settler finds every difference, explains why, and proves the results are correct.
+Settler runs reconciliation workflows, detects mismatches, and generates verifiable evidence for every result.
 
-## Why Settler exists
+## Why Settler Exists
+
+Most teams still reconcile across spreadsheets, exports, and one-off scripts. When mismatches appear, operators lose hours tracing row-level differences and cannot clearly explain why balances diverged.
 
 Companies reconcile across Stripe, banks, ERPs, and internal ledgers using spreadsheets and scripts that break silently, produce unexplainable results, and cannot be audited.
 
@@ -13,8 +16,15 @@ Settler replaces that with a reconciliation engine where:
 - Every mismatch is **surfaced** — with full context about what didn't match and why
 - Every result is **provable** — evidence packs are generated automatically for audit
 - Every exception is **tracked** — from detection through resolution
+Settler exists to replace fragile manual reconciliation with replayable runs, explicit rule checks, and audit-ready evidence.
 
-## How it works
+## What Settler Does
+
+- Run reconciliation workflows across source systems.
+- Detect mismatches across systems with deterministic matching.
+- Generate evidence for every run.
+- Replay runs to explain what changed and why.
+- Export audit proof for incidents and external reviews.
 
 1. **Ingest** records from Stripe, banks, ERPs, and ledgers.
 2. **Reconcile** with explicit matching rules defined in code.
@@ -23,6 +33,7 @@ Settler replaces that with a reconciliation engine where:
 5. **Replay** any run to verify or debug the results.
 
 ## What you can do in 5 minutes
+## Five Minute Demo
 
 ```bash
 pnpm install
@@ -51,28 +62,32 @@ Demo outputs are written to `examples/demo-output`:
 ## OSS vs Enterprise at a glance
 
 ### OSS (this repo, self-hostable)
+After running the demo, inspect:
 
-- Reconciliation API and data model for organizations/workspaces, connections, pipelines, runs, results, rules, and review workflows.
-- Next.js web surfaces for product, docs, and console operations.
-- SDKs (`@settler/sdk`, `@settler/react-settler`, Go/Python scaffolding) and adapters.
-- Baseline governance and audit primitives in core API/web flows.
+- `examples/demo-output/run.json`
+- `examples/demo-output/results.json`
+- `examples/demo-output/evidence.json`
+- `examples/demo-output/report.html`
 
-### Enterprise (optional extensions)
+The demo path shows reconciliation execution, mismatch detection, evidence generation, and replay verification.
 
-- Enterprise route surfaces under `packages/web/src/app/enterprise` and enterprise API endpoints under `packages/web/src/app/api/enterprise`.
-- Advanced governance/tenancy controls and premium operational panels.
-- Enterprise capabilities are optional; OSS build and public routes work without enterprise-only configuration.
+## Key Features
 
-Detailed boundary notes: [`docs/oss-vs-enterprise.md`](docs/oss-vs-enterprise.md).
+- Replayable reconciliation
+- Proof-first operations
+- Policy enforcement
+- Evidence export
+- Audit-ready workflows
 
-## Quickstart (OSS)
+## Quickstart
 
 Prerequisites:
+
 - Node.js 22+
 - pnpm 10.13.1+
-- Postgres/Supabase
+- Postgres or Supabase
 
-Set at minimum:
+Set environment values:
 
 ```bash
 DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DB
@@ -80,24 +95,26 @@ NEXT_PUBLIC_SUPABASE_URL=https://<project>.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
 ```
 
-Run local stack:
+Run locally:
 
 ```bash
+pnpm install
 pnpm exec tsx scripts/run-migrations-remote.ts
 pnpm --filter @settler/web dev
 ```
 
 Open `http://localhost:3000`.
 
-## Self-host and local development
+## Why Settler
 
-- Primary setup and run flow: [`docs/getting-started/README.md`](docs/getting-started/README.md)
-- Deployment path: [`docs/deployment-guide.md`](docs/deployment-guide.md)
-- Enterprise compose example: [`enterprise/docker-compose.yml`](enterprise/docker-compose.yml)
+### 1) Problem
+Reconciling financial data across systems is fragile.
 
-If you are evaluating quickly, run `pnpm demo` first, then wire your own data sources.
+### Feature
+Settler records deterministic reconciliation runs with stable fingerprints.
 
-## Architecture overview
+### Outcome
+You can prove exactly how each result was produced.
 
 Core runtime primitives:
 - **Connections:** external data sources (Stripe, banks, ERPs, ledgers).
@@ -112,37 +129,58 @@ Key packages:
 - `packages/web` – Next.js web app (product console, docs, marketing).
 - `packages/adapters` – connectors for Stripe, banks, ERPs, and other data sources.
 - `packages/sdk`, `packages/react-settler`, `packages/sdk-go`, `packages/workhorse` – client SDKs and background workers.
+### 2) Problem
+Manual triage makes mismatch resolution slow.
 
-## Contributing
+### Feature
+Settler surfaces mismatch outcomes with rule-checked routing.
 
-- Contributor guide: [`CONTRIBUTING.md`](CONTRIBUTING.md)
-- Verification baseline:
+### Outcome
+Teams focus on high-risk mismatches first.
 
-```bash
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm build
-```
+### 3) Problem
+Audit and incident questions require evidence collection after the fact.
 
-Full release-grade verification:
+### Feature
+Settler generates evidence bundles during every run.
 
-```bash
-pnpm verify
-```
+### Outcome
+Operators can answer "what happened" immediately.
 
-## Documentation map
+### 4) Problem
+Run-to-run drift is hard to explain with scripts and spreadsheets.
+
+### Feature
+Settler replays historical runs against the same inputs and config.
+
+### Outcome
+You can isolate behavioral changes before release.
+
+### 5) Problem
+Compliance reviews fail when controls are implicit.
+
+### Feature
+Settler applies policy checks as part of run execution.
+
+### Outcome
+Control behavior becomes testable and reviewable.
+
+## Architecture
+
+Learn how the engine works → [`docs/ENGINE.md`](docs/ENGINE.md)
+
+For contributor workflow, see [`CONTRIBUTING.md`](CONTRIBUTING.md).
+For a top-level system map, see [`ARCHITECTURE.md`](ARCHITECTURE.md).
+
+## Documentation
 
 - Docs home: [`docs/README.md`](docs/README.md)
 - Getting started: [`docs/getting-started/README.md`](docs/getting-started/README.md)
-- Product canon: [`docs/product/README.md`](docs/product/README.md)
-- Architecture: [`docs/architecture/README.md`](docs/architecture/README.md)
+- Product docs: [`docs/product/README.md`](docs/product/README.md)
 - API + SDK: [`docs/api/README.md`](docs/api/README.md)
-- Security + trust: [`docs/security/README.md`](docs/security/README.md)
-- Operations: [`docs/ops/README.md`](docs/ops/README.md)
+- Security docs: [`docs/security/README.md`](docs/security/README.md)
 
 ## License and support
 
 - License: [`LICENSE`](LICENSE)
 - Security reports: [`SECURITY.md`](SECURITY.md)
-- Issues: open a GitHub issue with reproduction details.
