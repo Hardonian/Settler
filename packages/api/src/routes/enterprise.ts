@@ -16,7 +16,7 @@ import { authMiddleware } from "../middleware/auth";
 // For backwards compatibility
 export const requireAuth = authMiddleware;
 
-const router = Router();
+const router: Router = Router();
 
 // ============================================================================
 // ROLE MATRIX VIEW
@@ -88,10 +88,7 @@ router.get("/roles", requireAuth, async (req, res) => {
         id: "viewer",
         name: "Viewer",
         description: "Read-only access to reconciliations",
-        permissions: [
-          "recon:view",
-          "rules:view",
-        ],
+        permissions: ["recon:view", "rules:view"],
       },
     ],
     resources: [
