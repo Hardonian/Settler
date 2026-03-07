@@ -1,0 +1,8 @@
+{
+  "generatedAt": "2026-03-07T19:07:47.421Z",
+  "routeTotal": 234,
+  "tenantScopedRoutes": 160,
+  "tenantMissingCount": 0,
+  "headerProbeFailures": 141,
+  "dependencyAuditOutcome": "warn-backend-unavailable"
+}

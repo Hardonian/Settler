@@ -22,6 +22,9 @@
 - **Dependency/supply-chain verification (`pnpm run verify:security:supply-chain`)**
   - Runs vulnerability scan (`pnpm audit`) and generates CycloneDX + SPDX SBOM (`npm sbom`).
   - Does **not** replace code-level SAST or live penetration testing.
+- **Security evidence pack (`pnpm run security:evidence`)**
+  - Produces portable route/tenant/runtime/header/dependency artifacts tied to commit SHA + timestamp.
+  - Runs drift detection against security baseline to catch contract regressions.
 - **Out of scope by design**
   - Full DAST, full SAST policy enforcement, and manual red-team exercises remain separate tracks.
 

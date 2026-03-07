@@ -1,5 +1,5 @@
 #!/usr/bin/env tsx
-import { readFileSync } from "node:fs";
+import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 type RegistryRoute = {
@@ -114,6 +114,29 @@ function main(): void {
   console.log(`tenant-scoped routes: ${tenantScopedRoutes.length}`);
   console.log(`routes verified: ${verified.length}`);
   console.log(`coverage: ${coverage.toFixed(2)}%`);
+
+  const outputPath = path.join(repoRoot, "artifacts", "security", "tenant-coverage-latest.json");
+  mkdirSync(path.dirname(outputPath), { recursive: true });
+  writeFileSync(
+    outputPath,
+    JSON.stringify(
+      {
+        generatedAt: new Date().toISOString(),
+        totalRoutes: registry.routes.length,
+        tenantScopedRoutes: tenantScopedRoutes.length,
+        verifiedRoutes: verified.length,
+        missingRoutes: missing.map((route) => ({
+          route: route.route,
+          file: route.file,
+          reason: route.reason,
+        })),
+        coveragePct: Number(coverage.toFixed(2)),
+      },
+      null,
+      2
+    ) + "\n",
+    "utf8"
+  );
 
   if (missing.length > 0) {
     console.log("\nMissing tenant coverage:");

@@ -42,7 +42,13 @@ Behavior details:
 
 ## 3) Dependency + supply-chain verification
 
-**Command:** `pnpm run verify:security:supply-chain`
+**Command:** `pnpm run audit:deps`
+
+Dependency audit policy modes (`SECURITY_AUDIT_MODE`):
+
+- `strict` (default): fails on backend unavailability, scanner failures, or actionable findings.
+- `warn`: permits pass with explicit warning outcome and machine-readable artifact trail.
+- `off`: local-only bypass mode; hard-blocked in CI.
 
 Policy state model:
 
@@ -86,15 +92,31 @@ For multi-instance production deployments, Redis-backed limiter configuration is
 
 ### Failure semantics
 
-| Scenario | Behavior |
-|---|---|
-| Redis configured and healthy | Distributed rate limiting, shared counters |
-| Redis configured but unavailable at request time | Silent fallback to process-local; one-time warning logged per process |
-| Redis not configured, local/dev | Process-local rate limiting (acceptable for single-instance dev) |
-| Redis not configured, production | Process-local fallback with startup warning; cross-instance drift risk |
+| Scenario                                         | Behavior                                                               |
+| ------------------------------------------------ | ---------------------------------------------------------------------- |
+| Redis configured and healthy                     | Distributed rate limiting, shared counters                             |
+| Redis configured but unavailable at request time | Silent fallback to process-local; one-time warning logged per process  |
+| Redis not configured, local/dev                  | Process-local rate limiting (acceptable for single-instance dev)       |
+| Redis not configured, production                 | Process-local fallback with startup warning; cross-instance drift risk |
 
 ### Operator actions
 
 1. **Single-instance production (Vercel hobby):** Process-local limiting is acceptable. Limits reset on redeploy.
 2. **Multi-instance production:** Configure Upstash Redis. Set `REQUIRE_REDIS_RATE_LIMIT=1` in CI env to enforce.
 3. **Monitor:** If Redis becomes unavailable after startup, rate limiting silently degrades. Monitor for the `[RateLimit] Redis limiter unavailable in production` log message.
+
+## 5) Security evidence pack + drift detection
+
+**Command:** `pnpm run security:evidence`
+
+Generated artifacts:
+
+- `security/evidence/manifest.json`
+- `security/evidence/route-registry.json`
+- `security/evidence/tenant-coverage.json`
+- `security/evidence/cross-tenant-results.json`
+- `security/evidence/header-probe.json`
+- `security/evidence/dependency-audit.json`
+- `security/evidence/security-summary.md`
+
+Drift checks compare the current run against `security/baseline/security-drift-baseline.json` for route totals, tenant coverage, header probe failures, and dependency audit outcome. Intentional baseline changes require `SECURITY_BASELINE_UPDATE=1`.
