@@ -1,38 +1,54 @@
 /**
  * Security Headers Middleware
  *
- * Adds security headers to all responses.
+ * Adds hardened security headers to all responses.
  */
 
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-/**
- * Add security headers to response
- */
-export function addSecurityHeaders(response: NextResponse): NextResponse {
-  const cspReportOnly = [
+interface SecurityHeaderOptions {
+  nonce?: string;
+}
+
+function buildCsp(nonce?: string): string {
+  const scriptDirective = nonce
+    ? `'self' 'nonce-${nonce}' https://vercel.live`
+    : "'self' https://vercel.live";
+  const styleDirective = nonce ? `'self' 'nonce-${nonce}'` : "'self'";
+
+  return [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live",
-    "style-src 'self' 'unsafe-inline'",
+    `script-src ${scriptDirective}`,
+    `style-src ${styleDirective}`,
     "img-src 'self' data: https:",
     "font-src 'self' data:",
     "connect-src 'self' https://*.supabase.co https://*.upstash.io https://vercel.live https://status.settler.dev wss://*.supabase.co",
     "frame-src 'self' https://vercel.live https://js.stripe.com",
     "object-src 'none'",
-    "base-uri 'self'",
+    "base-uri 'none'",
     "form-action 'self'",
     "frame-ancestors 'none'",
     "upgrade-insecure-requests",
-  ].join('; ');
+  ].join("; ");
+}
 
-  response.headers.set('X-DNS-Prefetch-Control', 'on');
-  response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-  response.headers.set('Content-Security-Policy-Report-Only', cspReportOnly);
+/**
+ * Add security headers to response
+ */
+export function addSecurityHeaders(
+  response: NextResponse,
+  options: SecurityHeaderOptions = {}
+): NextResponse {
+  const csp = buildCsp(options.nonce);
+
+  response.headers.set("X-DNS-Prefetch-Control", "on");
+  response.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  response.headers.set("Content-Security-Policy", csp);
 
   return response;
 }

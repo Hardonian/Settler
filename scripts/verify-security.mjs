@@ -30,12 +30,16 @@ const staticControlChecks = [
   },
   {
     file: "packages/web/middleware.ts",
-    checks: ["/api/:path*", "addSecurityHeaders(response)", "middleware.unexpected_error"],
+    checks: [
+      "/api/:path*",
+      "addSecurityHeaders(response, { nonce })",
+      "middleware.unexpected_error",
+    ],
   },
   {
     file: "packages/web/src/middleware/security-headers.ts",
     checks: [
-      "Content-Security-Policy-Report-Only",
+      "Content-Security-Policy",
       "Strict-Transport-Security",
       "X-Frame-Options",
       "X-Content-Type-Options",

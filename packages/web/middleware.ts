@@ -8,6 +8,7 @@
  */
 
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { randomBytes } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { addSecurityHeaders } from "./src/middleware/security-headers";
 import { generateTraceId } from "./src/lib/observability/trace";
@@ -19,6 +20,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   // CRITICAL: Wrap entire middleware in try-catch to prevent any 500 errors
   try {
     const pathname = request.nextUrl.pathname;
+    const nonce = randomBytes(16).toString("base64");
     // Generate or get trace_id
     let traceId = request.headers.get("x-trace-id") || request.cookies.get("trace-id")?.value;
     if (!traceId) {
@@ -39,6 +41,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     const applyTraceContext = (nextResponse: NextResponse): NextResponse => {
       nextResponse.headers.set("x-trace-id", traceId);
       nextResponse.headers.set("x-request-id", traceId);
+      nextResponse.headers.set("x-csp-nonce", nonce);
       nextResponse.cookies.set("trace-id", traceId, traceCookieOptions);
       return nextResponse;
     };
@@ -52,10 +55,11 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       });
       response.headers.set("x-trace-id", traceId);
       response.headers.set("x-request-id", traceId);
-      return addSecurityHeaders(response);
+      response.headers.set("x-csp-nonce", nonce);
+      return addSecurityHeaders(response, { nonce });
     }
 
-    const isApiRoute = pathname.startsWith('/api');
+    const isApiRoute = pathname.startsWith("/api");
 
     const isAuthRequiredRoute = !isApiRoute && isAppAuthRequiredRoute(pathname);
 
@@ -70,25 +74,27 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
     const appEnvStatus = getAppEnvStatus();
     const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const supabaseAnonKey =
+      process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!appEnvStatus.ok || !supabaseUrl || !supabaseAnonKey) {
       // If Supabase not configured, skip auth middleware for public/API routes
       // Public routes should still work; protected routes fail closed.
       if (isAuthRequiredRoute) {
-        const redirectUrl = new URL('/login', request.url);
-        redirectUrl.searchParams.set('next', pathname);
+        const redirectUrl = new URL("/login", request.url);
+        redirectUrl.searchParams.set("next", pathname);
         const redirectResponse = NextResponse.redirect(redirectUrl);
-        redirectResponse.headers.set('x-trace-id', traceId);
-        redirectResponse.headers.set('x-request-id', traceId);
-        return addSecurityHeaders(redirectResponse);
+        redirectResponse.headers.set("x-trace-id", traceId);
+        redirectResponse.headers.set("x-request-id", traceId);
+        redirectResponse.headers.set("x-csp-nonce", nonce);
+        return addSecurityHeaders(redirectResponse, { nonce });
       }
-      return addSecurityHeaders(response);
+      return addSecurityHeaders(response, { nonce });
     }
 
     // For public and API routes, skip auth entirely
     if (!isAuthRequiredRoute) {
-      return addSecurityHeaders(response);
+      return addSecurityHeaders(response, { nonce });
     }
 
     // For protected routes, attempt auth refresh but never throw
@@ -142,12 +148,13 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       try {
         const { data, error } = await supabase.auth.getUser();
         if (isAuthRequiredRoute && (error || !data?.user)) {
-          const redirectUrl = new URL('/login', request.url);
-          redirectUrl.searchParams.set('next', pathname);
+          const redirectUrl = new URL("/login", request.url);
+          redirectUrl.searchParams.set("next", pathname);
           const redirectResponse = NextResponse.redirect(redirectUrl);
-          redirectResponse.headers.set('x-trace-id', traceId);
-          redirectResponse.headers.set('x-request-id', traceId);
-          return addSecurityHeaders(redirectResponse);
+          redirectResponse.headers.set("x-trace-id", traceId);
+          redirectResponse.headers.set("x-request-id", traceId);
+          redirectResponse.headers.set("x-csp-nonce", nonce);
+          return addSecurityHeaders(redirectResponse, { nonce });
         }
       } catch (authError) {
         // Log but don't fail - let the route handler deal with auth
@@ -157,12 +164,13 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
           error: authError instanceof Error ? authError.message : "Unknown error",
         });
         if (isAuthRequiredRoute) {
-          const redirectUrl = new URL('/login', request.url);
-          redirectUrl.searchParams.set('next', pathname);
+          const redirectUrl = new URL("/login", request.url);
+          redirectUrl.searchParams.set("next", pathname);
           const redirectResponse = NextResponse.redirect(redirectUrl);
-          redirectResponse.headers.set('x-trace-id', traceId);
-          redirectResponse.headers.set('x-request-id', traceId);
-          return addSecurityHeaders(redirectResponse);
+          redirectResponse.headers.set("x-trace-id", traceId);
+          redirectResponse.headers.set("x-request-id", traceId);
+          redirectResponse.headers.set("x-csp-nonce", nonce);
+          return addSecurityHeaders(redirectResponse, { nonce });
         }
       }
     } catch (error) {
@@ -174,12 +182,13 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
         error: error instanceof Error ? error.message : "Unknown error",
       });
       if (isAuthRequiredRoute) {
-        const redirectUrl = new URL('/login', request.url);
-        redirectUrl.searchParams.set('next', pathname);
+        const redirectUrl = new URL("/login", request.url);
+        redirectUrl.searchParams.set("next", pathname);
         const redirectResponse = NextResponse.redirect(redirectUrl);
-        redirectResponse.headers.set('x-trace-id', traceId);
-        redirectResponse.headers.set('x-request-id', traceId);
-        return addSecurityHeaders(redirectResponse);
+        redirectResponse.headers.set("x-trace-id", traceId);
+        redirectResponse.headers.set("x-request-id", traceId);
+        redirectResponse.headers.set("x-csp-nonce", nonce);
+        return addSecurityHeaders(redirectResponse, { nonce });
       }
     }
 
@@ -192,7 +201,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
     // Add security headers to all responses
     // CRITICAL: Always return a response, never throw
-    return addSecurityHeaders(response);
+    return addSecurityHeaders(response, { nonce });
   } catch (error) {
     // CRITICAL: Middleware must NEVER throw - always return a valid response
     // Log error but continue with basic response
@@ -213,7 +222,8 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     fallbackResponse.headers.set("x-trace-id", traceId);
     fallbackResponse.headers.set("x-request-id", traceId);
 
-    return addSecurityHeaders(fallbackResponse);
+    fallbackResponse.headers.set("x-csp-nonce", traceId);
+    return addSecurityHeaders(fallbackResponse, { nonce: traceId });
   }
 }
 
