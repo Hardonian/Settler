@@ -245,11 +245,13 @@ async function main() {
   const skipped = checks.filter((item) => item.status === "skipped");
   const passed = checks.filter((item) => item.status === "passed");
 
+  const allSkipped = passed.length === 0 && failed.length === 0;
   const summary = {
     generatedAt: new Date().toISOString(),
     baseUrl: server.baseUrl,
     checks,
     diagnostics,
+    allSkipped,
     counts: { passed: passed.length, failed: failed.length, skipped: skipped.length },
   };
 
@@ -273,8 +275,23 @@ async function main() {
   }
 
   if (failed.length > 0) {
+    console.error(`\n❌ Runtime security smoke failed (${failed.length} check(s) failed).`);
     process.exit(1);
   }
+
+  if (passed.length === 0) {
+    console.warn(
+      "\n⚠️ Runtime security smoke completed with zero passed checks (all skipped or unavailable)."
+    );
+    console.warn(
+      "This does NOT constitute a security verification pass. Build the app or provide --baseUrl for meaningful probing."
+    );
+    process.exit(0);
+  }
+
+  console.log(
+    `\n✅ Runtime security smoke passed (${passed.length} check(s)). This is a limited behavioral probe, not a full DAST/pentest.`
+  );
 }
 
 main().catch((error) => {

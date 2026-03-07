@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { evaluateTenantGuardrails } from "./security/tenant-guardrails.mjs";
+import { evaluateTenantGuardrails, evaluateCoverageGap } from "./security/tenant-guardrails.mjs";
 
 const repoRoot = process.cwd();
 const outputDir = path.join(repoRoot, "artifacts", "security");
@@ -116,6 +116,7 @@ function main() {
   const staticResults = runStaticChecks();
   const tenantResults = evaluateTenantGuardrails(repoRoot);
   const limiterGuardrail = evaluateRateLimiterProductionGuardrail();
+  const coverageGap = evaluateCoverageGap(repoRoot);
 
   const staticFailures = staticResults.filter((item) => item.status !== "present");
   const tenantFailures = tenantResults.filter((item) => item.status !== "guardrail_present");
@@ -126,10 +127,11 @@ function main() {
     scope: {
       static: "Control-presence verification (not dynamic attack simulation).",
       tenantGuardrails:
-        "High-risk route structure checks for auth/tenant/rate-limit guardrails. Requires runtime/manual follow-up for full isolation proof.",
+        "Token-presence checks on selected high-risk route files. This verifies expected code patterns exist, not that they are correctly implemented at runtime. Requires runtime/manual follow-up for full isolation proof.",
     },
     staticResults,
     tenantIsolation: tenantResults,
+    tenantCoverageGap: coverageGap,
     limiterGuardrail,
     passed:
       staticFailures.length === 0 && tenantFailures.length === 0 && limiterFailures.length === 0,
@@ -159,7 +161,27 @@ function main() {
         console.log(`   missing guardrail: ${missing}`);
       }
     }
-    console.log(`   manual/runtime follow-up: ${result.manualValidation}`);
+    console.log(`   runtime follow-up required: ${result.manualValidation}`);
+  }
+
+  printSection("Tenant guardrail route coverage");
+  console.log(`Total API routes discovered: ${coverageGap.totalRoutes}`);
+  console.log(`Guardrail-checked routes: ${coverageGap.classifiedRoutes}`);
+  console.log(`Exempt prefixes (admin/cron/docs/health/webhooks): ${coverageGap.exemptPrefixes}`);
+  console.log(`Unclassified routes: ${coverageGap.unclassifiedRoutes.length}`);
+  if (coverageGap.unclassifiedRoutes.length > 0) {
+    console.log(
+      "⚠️  The following routes are not covered by tenant guardrail checks or exempt prefixes."
+    );
+    console.log(
+      "   This is informational — add high-risk routes to highRiskRouteRules in tenant-guardrails.mjs."
+    );
+    for (const route of coverageGap.unclassifiedRoutes.slice(0, 20)) {
+      console.log(`   - ${route}`);
+    }
+    if (coverageGap.unclassifiedRoutes.length > 20) {
+      console.log(`   ... and ${coverageGap.unclassifiedRoutes.length - 20} more`);
+    }
   }
 
   printSection("Production limiter backend guardrail");
@@ -179,7 +201,10 @@ function main() {
   }
 
   console.log(
-    "\n✅ Security verification passed (static controls + tenant guardrail presence). This does not replace runtime smoke or full DAST/SAST testing."
+    "\n✅ Security verification passed (static token-presence + tenant guardrail checks on selected routes)."
+  );
+  console.log(
+    "   This does not prove runtime enforcement. See verify:security:runtime for live probing."
   );
 }
 

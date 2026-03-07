@@ -28,13 +28,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run pnpm audit
-        run: pnpm audit --audit-level=moderate
+      - name: Run pnpm audit (informational - all deps)
+        run: pnpm audit --audit-level=moderate || echo "::warning::pnpm audit found moderate+ vulnerabilities in full dependency tree"
         continue-on-error: true
 
-      - name: Run pnpm audit (production only)
+      - name: Run pnpm audit (blocking - production high/critical)
         run: pnpm audit --prod --audit-level=high
-        continue-on-error: true
 
   secret-scanning:
     name: Secret Scanning
