@@ -1,7 +1,7 @@
 # Security Documentation - Settler Enterprise
 
-**Last Updated:** December 2024  
-**Security Status:** Production-Ready
+**Last Updated:** March 2026
+**Security Status:** Active Development (see caveats below)
 
 ---
 
@@ -72,12 +72,12 @@ Settler Enterprise implements comprehensive security measures across all layers 
 - Error handling: Graceful error handling, no PII leaks
 - Audit: Event sourcing for audit trails
 
-### Data Isolation ✅
+### Data Isolation
 
-- **Multi-Tenancy:** Complete tenant isolation via RLS
-- **Data Segregation:** Each tenant's data isolated at database level
-- **Cross-Tenant Access:** Impossible (enforced by RLS)
-- **Service Role:** Only used in server-only contexts
+- **Multi-Tenancy:** Tenant isolation via RLS policies on critical tables
+- **Data Segregation:** Each tenant's data filtered at database level via RLS
+- **Cross-Tenant Access:** Prevented by RLS for non-service-role connections; service role bypasses RLS by design and must only be used in server-only contexts with explicit tenant scoping
+- **Service Role:** Restricted to server-only contexts; code-level guardrails verified by `verify:security`
 
 ---
 
@@ -106,17 +106,17 @@ Settler Enterprise implements comprehensive security measures across all layers 
 - Database: Prisma ORM prevents SQL injection
 - Frontend: React XSS protection, CSP headers
 
-### Rate Limiting ✅
+### Rate Limiting
 
 - **API Rate Limits:** Configurable per endpoint
 - **IP-Based Limiting:** Protection against abuse
 - **User-Based Limiting:** Per-user limits
-- **Redis-Based:** Distributed rate limiting
+- **Redis-Backed (optional):** Distributed rate limiting via Upstash Redis
 
 **Implementation:**
-- Rate limiting: Redis/Upstash for distributed limiting
+- Rate limiting: Redis/Upstash for distributed limiting when configured; process-local in-memory fallback otherwise
 - Configuration: `RATE_LIMIT_DEFAULT`, `RATE_LIMIT_WINDOW_MS`
-- Edge functions: Rate limiting at edge
+- **Caveat:** Without Redis (`UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`), rate limits are per-process and will drift across instances. See `docs/security/VERIFICATION_SURFACES.md` for production guidance.
 
 ---
 
@@ -193,17 +193,14 @@ Settler Enterprise implements comprehensive security measures across all layers 
 - Data export: API endpoints for data export
 - Deletion: Process documented
 
-### SOC 2 Readiness ✅
+### SOC 2 Readiness (Partial)
 
 - **Access Controls:** RLS policies, authentication
-- **Monitoring:** Comprehensive logging and monitoring
-- **Incident Response:** Health checks, error tracking
-- **Change Management:** Version control, migrations
+- **Monitoring:** Structured logging, Sentry error tracking
+- **Incident Response:** Health check endpoints
+- **Change Management:** Version control, migration pipeline
 
-**Evidence:**
-- Security controls: Comprehensive RLS policies
-- Monitoring: Sentry, health checks, structured logging
-- Audit trail: Event sourcing, comprehensive logging
+**Note:** This describes architectural alignment with SOC 2 control families, not a completed SOC 2 audit. A formal audit has not been performed.
 
 ---
 
@@ -290,23 +287,24 @@ Settler Enterprise implements comprehensive security measures across all layers 
 
 ## 10. Security Checklist
 
-### Pre-Launch ✅
+### Pre-Launch
 
-- [x] RLS policies enabled on all critical tables
-- [x] Tenant isolation enforced in all API routes
-- [x] Authentication required on all protected routes
-- [x] Input validation on all API endpoints
-- [x] Webhook signature verification implemented
-- [x] PII sanitization in logs
+- [x] RLS policies enabled on critical tables
+- [x] Tenant isolation guardrails verified on high-risk routes (static check; see `verify:security`)
+- [x] Authentication required on protected routes
+- [x] Input validation via Zod schemas on API endpoints
+- [x] Webhook signature verification implemented (Stripe)
+- [x] PII sanitization in structured logger
 - [x] Error boundaries implemented
 - [x] Health check endpoints configured
-- [x] Monitoring and alerting configured
-- [x] Legal pages (privacy, terms, DPA) published
+- [x] Monitoring integration (Sentry)
+- [ ] Full runtime tenant-isolation test with cross-tenant fixtures
+- [ ] Formal penetration test
 
-### Ongoing ✅
+### Ongoing
 
 - [ ] Regular security audits
-- [ ] Dependency updates
+- [ ] Dependency updates (automated via `verify:security:supply-chain`)
 - [ ] Access log reviews
 - [ ] Penetration testing (annual)
 - [ ] Security training for team
@@ -322,5 +320,5 @@ Settler Enterprise implements comprehensive security measures across all layers 
 
 ---
 
-**Last Updated:** December 2024  
+**Last Updated:** March 2026
 **Next Review:** Quarterly

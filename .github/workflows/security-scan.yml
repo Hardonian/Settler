@@ -6,13 +6,11 @@ on:
   pull_request:
     branches: [main, develop]
   schedule:
-    # Run daily security scans at 2 AM UTC
     - cron: "0 2 * * *"
 
 jobs:
-  # SAST - Static Application Security Testing
   sast:
-    name: SAST Security Scan
+    name: SAST (Semgrep)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,76 +24,52 @@ jobs:
             p/javascript
             p/typescript
           generateSarif: "1"
+        # Semgrep findings are informational; uploaded to Security tab for triage.
         continue-on-error: true
 
       - name: Upload SARIF results
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: semgrep.sarif
         continue-on-error: true
 
-  # Dependency Vulnerability Scanning
   dependency-scan:
     name: Dependency Vulnerability Scan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "npm"
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
-      - name: Run npm audit
+      - name: Run pnpm audit (informational - all severities)
         run: |
-          npm audit --audit-level=moderate --json > npm-audit.json || true
-          npm audit --audit-level=moderate
-        continue-on-error: true
+          pnpm audit --json > pnpm-audit.json 2>&1 || true
+          pnpm audit --audit-level=moderate || echo "::warning::pnpm audit found moderate+ vulnerabilities"
 
-      - name: Run Snyk security scan
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high --json-file-output=snyk-results.json
-        continue-on-error: true
+      - name: Run pnpm audit (blocking - production high/critical)
+        run: pnpm audit --prod --audit-level=high
 
-      - name: Upload Snyk results
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: snyk-results
-          path: snyk-results.json
-        continue-on-error: true
-
-      - name: Check for critical vulnerabilities
-        run: |
-          if [ -f snyk-results.json ]; then
-            CRITICAL=$(jq -r '.vulnerabilities[] | select(.severity == "critical") | .id' snyk-results.json | wc -l)
-            if [ "$CRITICAL" -gt 0 ]; then
-              echo "❌ Found $CRITICAL critical vulnerabilities"
-              exit 1
-            fi
-          fi
-        continue-on-error: true
-
-  # Secrets Scanning
   secrets-scan:
     name: Secrets Scanning
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Full history for better detection
+          fetch-depth: 0
 
       - name: Run Gitleaks
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
 
       - name: Run TruffleHog
         uses: trufflesecurity/trufflehog@main
@@ -103,144 +77,64 @@ jobs:
           path: ./
           base: ${{ github.event.repository.default_branch }}
           head: HEAD
+        # TruffleHog is supplementary to Gitleaks; do not double-block.
         continue-on-error: true
 
-  # Container Security (if using Docker)
-  container-scan:
-    name: Container Security Scan
-    runs-on: ubuntu-latest
-    if: github.event_name != 'schedule'
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Build Docker image
-        run: |
-          if [ -f Dockerfile ]; then
-            docker build -t settler-api:test -f Dockerfile .
-          fi
-        continue-on-error: true
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: settler-api:test
-          format: "sarif"
-          output: "trivy-results.sarif"
-        continue-on-error: true
-
-      - name: Upload Trivy results
-        uses: github/codeql-action/upload-sarif@v2
-        if: always()
-        with:
-          sarif_file: trivy-results.sarif
-        continue-on-error: true
-
-  # License Compliance
   license-scan:
     name: License Compliance Scan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
           cache: "pnpm"
 
-      - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
-
-      - name: Cache pnpm store
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pnpm-store
-            ~/.local/share/pnpm/store
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-store-
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run license-checker
-        run: |
-          pnpm add -g license-checker
-          license-checker --json > license-report.json || true
-        continue-on-error: true
-
       - name: Check for problematic licenses
         run: |
+          npx license-checker --json > license-report.json 2>/dev/null || true
           if [ -f license-report.json ]; then
-            # Check for GPL, AGPL, or other copyleft licenses
-            PROBLEMATIC=$(jq -r 'to_entries[] | select(.value.licenses | test("GPL|AGPL")) | .key' license-report.json | wc -l)
+            PROBLEMATIC=$(jq -r 'to_entries[] | select(.value.licenses | test("GPL|AGPL")) | .key' license-report.json 2>/dev/null | wc -l)
             if [ "$PROBLEMATIC" -gt 0 ]; then
-              echo "⚠️  Found $PROBLEMATIC packages with potentially problematic licenses"
+              echo "::warning::Found $PROBLEMATIC packages with copyleft licenses"
               jq -r 'to_entries[] | select(.value.licenses | test("GPL|AGPL")) | "\(.key): \(.value.licenses)"' license-report.json
             fi
           fi
-        continue-on-error: true
 
-  # Security Policy Check
-  security-policy:
-    name: Security Policy Compliance
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Check security headers
-        run: |
-          # Verify security headers are configured
-          if [ -f packages/web/next.config.js ]; then
-            if ! grep -q "Strict-Transport-Security" packages/web/next.config.js; then
-              echo "❌ Missing HSTS header configuration"
-              exit 1
-            fi
-            if ! grep -q "X-Frame-Options" packages/web/next.config.js; then
-              echo "❌ Missing X-Frame-Options header configuration"
-              exit 1
-            fi
-            echo "✅ Security headers configured"
-          fi
-        continue-on-error: true
-
-      - name: Check for hardcoded secrets
-        run: |
-          # Check for common secret patterns
-          if grep -r "password.*=.*['\"].*[a-zA-Z0-9]{8,}" packages/ --include="*.ts" --include="*.js" | grep -v "test" | grep -v ".d.ts"; then
-            echo "⚠️  Potential hardcoded passwords found"
-            exit 1
-          fi
-          if grep -r "api[_-]?key.*=.*['\"].*[a-zA-Z0-9]{16,}" packages/ --include="*.ts" --include="*.js" | grep -v "test" | grep -v ".d.ts"; then
-            echo "⚠️  Potential hardcoded API keys found"
-            exit 1
-          fi
-        continue-on-error: true
-
-  # Security Report
   security-report:
     name: Generate Security Report
     runs-on: ubuntu-latest
-    needs: [sast, dependency-scan, secrets-scan, container-scan, license-scan, security-policy]
+    needs: [sast, dependency-scan, secrets-scan, license-scan]
     if: always()
     steps:
-      - uses: actions/checkout@v4
-
       - name: Generate security summary
         run: |
-          echo "# Security Scan Report" > security-report.md
-          echo "" >> security-report.md
-          echo "Generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> security-report.md
-          echo "" >> security-report.md
-          echo "## Scan Results" >> security-report.md
-          echo "" >> security-report.md
-          echo "- SAST: ${{ needs.sast.result }}" >> security-report.md
-          echo "- Dependency Scan: ${{ needs.dependency-scan.result }}" >> security-report.md
-          echo "- Secrets Scan: ${{ needs.secrets-scan.result }}" >> security-report.md
-          echo "- Container Scan: ${{ needs.container-scan.result }}" >> security-report.md
-          echo "- License Scan: ${{ needs.license-scan.result }}" >> security-report.md
-          echo "- Security Policy: ${{ needs.security-policy.result }}" >> security-report.md
+          cat <<'REPORT' > security-report.md
+          # Security Scan Report
+
+          Generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+          ## Scan Results
+
+          | Check | Result | Blocking? |
+          |---|---|---|
+          | SAST (Semgrep) | ${{ needs.sast.result }} | No (informational) |
+          | Dependency Scan | ${{ needs.dependency-scan.result }} | Yes (prod high/critical) |
+          | Secrets Scan | ${{ needs.secrets-scan.result }} | Yes (Gitleaks) |
+          | License Scan | ${{ needs.license-scan.result }} | No (informational) |
+
+          Blocking checks will fail the workflow. Informational checks upload results
+          to the GitHub Security tab for manual triage.
+          REPORT
 
       - name: Upload security report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: security-report
           path: security-report.md

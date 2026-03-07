@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 
 export const highRiskRouteRules = [
@@ -78,6 +78,51 @@ export const highRiskRouteRules = [
   },
 ];
 
+/**
+ * Known-safe route prefixes that do not require tenant-isolation guardrails.
+ * Admin routes are expected to use separate admin auth; health/docs/webhooks/cron
+ * are either public or use their own auth model.
+ */
+export const knownExemptPrefixes = [
+  "packages/web/src/app/api/admin/",
+  "packages/web/src/app/api/cron/",
+  "packages/web/src/app/api/docs/",
+  "packages/web/src/app/api/health",
+  "packages/web/src/app/api/stripe/",
+  "packages/web/src/app/api/gtm/",
+  "packages/web/src/app/api/legal/",
+  "packages/web/src/app/api/builder/revalidate/",
+];
+
+function discoverApiRoutes(repoRoot) {
+  const apiDir = path.join(repoRoot, "packages", "web", "src", "app", "api");
+  const routes = [];
+
+  function walk(dir) {
+    let entries;
+    try {
+      entries = readdirSync(dir);
+    } catch {
+      return;
+    }
+    for (const entry of entries) {
+      const full = path.join(dir, entry);
+      try {
+        const stats = statSync(full);
+        if (stats.isDirectory()) walk(full);
+        else if (entry === "route.ts") {
+          routes.push(path.relative(repoRoot, full));
+        }
+      } catch {
+        // skip unreadable entries
+      }
+    }
+  }
+
+  walk(apiDir);
+  return routes;
+}
+
 export function evaluateTenantGuardrails(repoRoot) {
   const checks = [];
 
@@ -105,4 +150,21 @@ export function evaluateTenantGuardrails(repoRoot) {
   }
 
   return checks;
+}
+
+export function evaluateCoverageGap(repoRoot) {
+  const allRoutes = discoverApiRoutes(repoRoot);
+  const classifiedFiles = new Set(highRiskRouteRules.map((r) => r.file));
+
+  const unclassified = allRoutes.filter((route) => {
+    if (classifiedFiles.has(route)) return false;
+    return !knownExemptPrefixes.some((prefix) => route.startsWith(prefix));
+  });
+
+  return {
+    totalRoutes: allRoutes.length,
+    classifiedRoutes: classifiedFiles.size,
+    exemptPrefixes: knownExemptPrefixes.length,
+    unclassifiedRoutes: unclassified,
+  };
 }
