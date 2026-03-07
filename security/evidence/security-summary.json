@@ -1,0 +1,36 @@
+{
+  "generatedAt": "2026-03-07T19:55:25.272Z",
+  "commitSha": "8d7982e76b3c5eab2586a60769f2b5a53b445cd6",
+  "ciRunId": null,
+  "policy": {
+    "dependencyAuditMode": "strict",
+    "headerProbeStrict": false,
+    "headerProbeAllowDegraded": true
+  },
+  "completeness": "partial",
+  "degradedChecks": {
+    "tenantCoverage": false,
+    "crossTenant": false,
+    "headerProbe": true,
+    "dependencyAudit": true
+  },
+  "results": {
+    "routeRegistryTotal": 228,
+    "tenantCoverage": {
+      "verified": 160,
+      "tenantScoped": 160,
+      "missingCount": 0
+    },
+    "crossTenantStatus": "passed",
+    "headerProbe": {
+      "failedChecks": 0,
+      "probeableRoutes": 133,
+      "degraded": true
+    },
+    "dependencyAudit": {
+      "outcome": "warn-backend-unavailable",
+      "degraded": true,
+      "reasons": ["pnpm-audit-backend-unavailable", "osv-scanner-missing"]
+    }
+  }
+}
