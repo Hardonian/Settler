@@ -18,7 +18,7 @@
 
 **⚠️ CI MUST PASS BEFORE MERGE**
 
-- [ ] CI link: [View CI run](https://github.com/YOUR_REPO/actions/runs/YOUR_RUN_ID)
+- [ ] CI link: (paste link to CI run after pushing)
 - [ ] ✅ Repository integrity check passed (`repo-integrity`)
 - [ ] ✅ Lint and typecheck passed
 - [ ] ✅ Tests passed

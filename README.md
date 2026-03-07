@@ -3,7 +3,6 @@
 **Open-source engine that reconciles financial data across systems, surfaces mismatches, and produces verifiable evidence for every run.**
 
 Stripe says one thing. Your bank says another. Your ledger says something else. Settler finds every difference, explains why, and proves the results are correct.
-Settler runs reconciliation workflows, detects mismatches, and generates verifiable evidence for every result.
 
 ## Why Settler Exists
 
@@ -16,7 +15,6 @@ Settler replaces that with a reconciliation engine where:
 - Every mismatch is **surfaced** — with full context about what didn't match and why
 - Every result is **provable** — evidence packs are generated automatically for audit
 - Every exception is **tracked** — from detection through resolution
-Settler exists to replace fragile manual reconciliation with replayable runs, explicit rule checks, and audit-ready evidence.
 
 ## What Settler Does
 
@@ -75,22 +73,11 @@ Demo outputs are written to `examples/demo-output`:
 
 See [docs/OSS_VS_ENTERPRISE.md](docs/OSS_VS_ENTERPRISE.md) for details.
 
-## Demo Output
-
-After running the demo, inspect:
-
-- `examples/demo-output/run.json`
-- `examples/demo-output/results.json`
-- `examples/demo-output/evidence.json`
-- `examples/demo-output/report.html`
-
-The demo path shows reconciliation execution, mismatch detection, evidence generation, and replay verification.
-
 ## Quickstart
 
 Prerequisites:
 
-- Node.js 22+
+- Node.js 24+ (see `.nvmrc`)
 - pnpm 10.13.1+
 - Postgres or Supabase
 

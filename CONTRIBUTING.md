@@ -138,16 +138,16 @@ pnpm --filter @settler/web test
 
 Need help? See [SUPPORT.md](SUPPORT.md).
 
-## Demo and Capsule Verification
+## Demo and Evidence Verification
 
 ```bash
-settler demo
+pnpm demo
 ```
 
-Capture the generated capsule path and verify with:
+Verify the generated evidence pack with:
 
 ```bash
-settler verify --file <capsule-path>
+pnpm settler:replay examples/demo-output/evidence.json
 ```
 
 ## Connector / Pack / Rule Contributions

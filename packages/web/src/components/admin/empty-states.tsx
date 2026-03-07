@@ -73,7 +73,7 @@ export function NoExceptionsEmptyState() {
     <EmptyState
       icon={<AlertCircle className="w-12 h-12" />}
       title="No exceptions"
-      description="Great news! There are no exceptions to review at this time."
+      description="The exception queue is empty. Exceptions appear here when mismatches are flagged for review."
     />
   );
 }
@@ -82,14 +82,8 @@ export function NoRunsEmptyState() {
   return (
     <EmptyState
       icon={<FileSearch className="w-12 h-12" />}
-      title="No runs found"
-      description="No reconciliation runs found. Create your first run to get started."
-      action={{
-        label: 'Create Run',
-        onClick: () => {
-          window.location.href = '/admin/runs';
-        },
-      }}
+      title="No runs yet"
+      description="No reconciliation runs recorded. Trigger a run via the API or CLI to get started."
     />
   );
 }

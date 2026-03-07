@@ -2,9 +2,6 @@
 
 Settler is the open-source engine that reconciles financial data across systems, surfaces mismatches, and produces verifiable evidence for every run.
 
-Use this docs hub to go from first run → mismatch found → evidence inspected → run replayed.
-Settler is an Open Source Reconciliation Engine.
-
 Use this docs hub to go from first run → mismatch detection → evidence inspection → replay verification.
 
 ## Start here

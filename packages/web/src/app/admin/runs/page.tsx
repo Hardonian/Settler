@@ -120,7 +120,7 @@ export default function AdminRunsPage() {
                 </button>
               </div>
             </div>
-            <Button>Run Reconcile Now</Button>
+            <Button>Start Reconciliation</Button>
           </div>
         </div>
       </div>
