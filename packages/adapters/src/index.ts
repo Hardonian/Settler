@@ -53,6 +53,7 @@ export type {
   WebhookPayload,
 } from "./connector-driver";
 export * from "./connector-runtime";
+export * from "./connector-sandbox";
 export * from "./drivers";
 export * from "./credential-encryption";
 export * from "./webhook-verification";

@@ -22,6 +22,36 @@ async function main() {
   assert.equal(hashA, hashB, "stable hashing must be key-order independent");
   assert.equal(buildHashChain(["a", "b", "c"]).length, 3, "hash chain should contain all parts");
 
+  const temporalHashA = sha256(stableStringify({ at: new Date("2026-01-01T00:00:00.000Z") }));
+  const temporalHashB = sha256(stableStringify({ at: "2026-01-01T00:00:00.000Z" }));
+  assert.equal(temporalHashA, temporalHashB, "date normalization must be stable");
+
+  const setHashA = sha256(stableStringify({ tags: new Set(["b", "a"]) }));
+  const setHashB = sha256(stableStringify({ tags: ["a", "b"] }));
+  assert.equal(setHashA, setHashB, "set normalization must be order independent");
+
+  const mapHashA = sha256(
+    stableStringify({
+      map: new Map([
+        ["b", 2],
+        ["a", 1],
+      ]),
+    })
+  );
+  const mapHashB = sha256(
+    stableStringify({
+      map: [
+        ["a", 1],
+        ["b", 2],
+      ],
+    })
+  );
+  assert.equal(mapHashA, mapHashB, "map normalization must be key-order independent");
+
+  const bigintHashA = sha256(stableStringify({ amount: 99n }));
+  const bigintHashB = sha256(stableStringify({ amount: "99" }));
+  assert.equal(bigintHashA, bigintHashB, "bigint normalization must be stable");
+
   await assert.rejects(
     executeWithPolicy({
       tenantId: "",
