@@ -147,7 +147,38 @@ async function main() {
     "utf8"
   );
 
+  const allSkipped = summary.counts.passed === 0 && failed.length === 0 && summary.counts.skipped > 0;
+
   console.log(`Header probe artifact: ${path.relative(repoRoot, summaryPath)}`);
+  console.log(
+    `Header probe counts: passed=${summary.counts.passed} failed=${failed.length} skipped=${summary.counts.skipped}`
+  );
+
+  if (allSkipped) {
+    console.warn(
+      "\n⚠️  Header probe completed with all checks SKIPPED (no build or --baseUrl available)."
+    );
+    console.warn(
+      "   This does NOT constitute a header verification pass. The artifact records zero real results."
+    );
+    console.warn(
+      "   Build the app first (`pnpm --filter @settler/web build`) or set SECURITY_HEADER_PROBE_BASE_URL."
+    );
+    console.warn(
+      "   If drift detection compares this artifact against a baseline with real counts, it will flag drift."
+    );
+  } else if (failed.length > 0) {
+    console.error(`\n❌ Header probe: ${failed.length} check(s) failed.`);
+    for (const check of failed) {
+      console.error(`   route: ${check.route || "unknown"}`);
+      for (const f of check.failures || []) {
+        console.error(`     - ${f}`);
+      }
+    }
+  } else {
+    console.log(`\n✅ Header probe passed (${summary.counts.passed} route(s) checked).`);
+  }
+
   if (config.strict && (failed.length > 0 || summary.counts.skipped > 0)) {
     process.exit(1);
   }

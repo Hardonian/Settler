@@ -161,6 +161,7 @@ function main() {
   const tenantResults = evaluateTenantGuardrails(repoRoot);
   const limiterGuardrail = evaluateRateLimiterProductionGuardrail();
   const runtimeTenantCoverage = readRuntimeTenantCoverage();
+  const coverageGap = evaluateCoverageGap(repoRoot);
 
   const staticFailures = staticResults.filter((item) => item.status !== "present");
   const tenantFailures = tenantResults.filter((item) => item.status !== "guardrail_present");
@@ -174,11 +175,25 @@ function main() {
         "High-risk route structure checks for auth/tenant/rate-limit guardrails. Guardrail-presence only.",
       tenantRuntime:
         "Runtime/API cross-tenant negative-path coverage from latest runtime smoke or dedicated fixture tests.",
+      coverageGap:
+        "Routes discovered by filesystem walk that are neither in the high-risk classified set nor in the known-exempt set. These routes are still checked by verify:tenant for token presence, but have not been individually reviewed against the high-risk rule set.",
     },
     staticResults,
     tenantGuardrailPresence: tenantResults,
     tenantRuntimeCoverage: runtimeTenantCoverage,
     limiterGuardrail,
+    coverageGap: {
+      totalRoutes: coverageGap.totalRoutes,
+      classifiedHighRisk: coverageGap.classifiedRoutes,
+      exemptPrefixes: coverageGap.exemptPrefixes,
+      unclassifiedCount: coverageGap.unclassifiedRoutes.length,
+      unclassifiedRoutes: coverageGap.unclassifiedRoutes,
+    },
+    // NOTE: passed reflects static controls and high-risk guardrail presence only.
+    // runtimeTenantCoverage is not_executed in most non-CI contexts; its status
+    // must be reviewed separately. coverageGap unclassified routes are surfaced
+    // as informational — they are gated by verify:tenant token checks but have
+    // not been individually classified in the high-risk rule set.
     passed:
       staticFailures.length === 0 && tenantFailures.length === 0 && limiterFailures.length === 0,
   };
@@ -210,9 +225,35 @@ function main() {
     console.log(`   runtime follow-up target: ${result.manualValidation}`);
   }
 
+  printSection("Route coverage gap analysis");
+  console.log(`   total routes discovered: ${coverageGap.totalRoutes}`);
+  console.log(`   individually classified (high-risk): ${coverageGap.classifiedRoutes}`);
+  console.log(`   exempt prefixes: ${coverageGap.exemptPrefixes}`);
+  if (coverageGap.unclassifiedRoutes.length === 0) {
+    console.log("✅ No unclassified routes (all routes are either classified or exempt).");
+  } else {
+    console.log(
+      `⚠️ ${coverageGap.unclassifiedRoutes.length} route(s) are not individually classified and not in known-exempt prefixes.`
+    );
+    console.log(
+      "   These are gated by verify:tenant token checks but warrant individual review:"
+    );
+    for (const route of coverageGap.unclassifiedRoutes) {
+      console.log(`   - ${route}`);
+    }
+  }
+
   printSection("Tenant runtime coverage status");
   const runtimeIcon = runtimeTenantCoverage.status === "pass" ? "✅" : "⚠️";
   console.log(`${runtimeIcon} ${runtimeTenantCoverage.message}`);
+  if (runtimeTenantCoverage.status === "not_executed") {
+    console.log(
+      "   NOTE: passed=true in this summary reflects static controls only. Runtime tenant boundary"
+    );
+    console.log(
+      "   behavior is not confirmed until verify:security:runtime or test:cross-tenant executes."
+    );
+  }
 
   printSection("Production limiter backend guardrail");
   const limiterIcon =

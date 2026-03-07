@@ -98,3 +98,39 @@ test("evaluateCoverageGap identifies unclassified routes", () => {
     rmSync(root, { recursive: true, force: true });
   }
 });
+
+test("evaluateCoverageGap unclassifiedRoutes does not include already-classified high-risk routes", () => {
+  // Verifies that routes in highRiskRouteRules are not double-reported as unclassified
+  // even if the actual route file exists on disk in a full fixture setup.
+  const root = setupFixture();
+  try {
+    const gap = evaluateCoverageGap(root);
+    for (const rule of highRiskRouteRules) {
+      assert.ok(
+        !gap.unclassifiedRoutes.includes(rule.file),
+        `classified high-risk route ${rule.file} must not appear in unclassifiedRoutes`
+      );
+    }
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("evaluateCoverageGap cron exempt prefix is not surfaced as unclassified", () => {
+  // Cron routes are exempt by policy; confirm they do not appear in the gap list.
+  const root = setupFixture((fixtureRoot) => {
+    const cronDir = path.join(fixtureRoot, "packages/web/src/app/api/cron/daily-job");
+    mkdirSync(cronDir, { recursive: true });
+    writeFileSync(path.join(cronDir, "route.ts"), "export function GET() {}", "utf8");
+  });
+
+  try {
+    const gap = evaluateCoverageGap(root);
+    assert.ok(
+      !gap.unclassifiedRoutes.some((r) => r.includes("cron/daily-job")),
+      "cron route should be exempt and not appear in unclassifiedRoutes"
+    );
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});

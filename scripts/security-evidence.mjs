@@ -72,7 +72,53 @@ const crossTenant = safeRead("security/evidence/cross-tenant-results.json");
 const headerProbe = safeRead("security/evidence/header-probe.json");
 const depAudit = safeRead("security/evidence/dependency-audit.json");
 
-const summary = `# Security Evidence Summary\n\n- Commit SHA: ${metadata.commitSha}\n- Timestamp: ${metadata.timestamp}\n- CI Run ID: ${metadata.ciRunId || "n/a"}\n- Audit Policy Mode: ${metadata.auditMode}\n\n## Snapshot\n- Route registry total: ${routeRegistry?.totalRoutes ?? "n/a"}\n- Tenant-scoped verified: ${tenantCoverage?.verifiedRoutes ?? "n/a"}/${tenantCoverage?.tenantScopedRoutes ?? "n/a"}\n- Cross-tenant test status: ${crossTenant?.status ?? "n/a"}\n- Header probe failed checks: ${headerProbe?.counts?.failed ?? "n/a"}\n- Dependency audit outcome: ${depAudit?.finalOutcome ?? "n/a"}\n`;
+const headerProbeAllSkipped =
+  headerProbe?.counts?.passed === 0 &&
+  headerProbe?.counts?.failed === 0 &&
+  (headerProbe?.counts?.skipped ?? 0) > 0;
+const headerProbeNote = headerProbeAllSkipped
+  ? " (SKIPPED — no build available; not a real probe result)"
+  : "";
+
+const missingArtifacts = artifacts.filter((entry) => !entry.present).map((entry) => entry.relPath);
+
+const summary = [
+  "# Security Evidence Summary",
+  "",
+  `- Commit SHA: ${metadata.commitSha}`,
+  `- Timestamp: ${metadata.timestamp}`,
+  `- CI Run ID: ${metadata.ciRunId || "n/a"}`,
+  `- Audit Policy Mode: ${metadata.auditMode}`,
+  "",
+  "## Snapshot",
+  `- Route registry total: ${routeRegistry?.totalRoutes ?? "n/a"}`,
+  `- Tenant-scoped verified: ${tenantCoverage?.verifiedRoutes ?? "n/a"}/${tenantCoverage?.tenantScopedRoutes ?? "n/a"}`,
+  `- Cross-tenant test status: ${crossTenant?.status ?? "n/a"}`,
+  `- Header probe failed checks: ${headerProbe?.counts?.failed ?? "n/a"}${headerProbeNote}`,
+  `- Dependency audit outcome: ${depAudit?.finalOutcome ?? "n/a"}`,
+  ...(missingArtifacts.length > 0
+    ? ["", "## Missing Artifacts", ...missingArtifacts.map((f) => `- ${f} (not present in this run)`)]
+    : []),
+  "",
+  "## What This Evidence Pack Proves",
+  "",
+  "- Route surface was discovered from the live filesystem at the commit above.",
+  "- Tenant-scoped routes were checked for at least one recognized isolation control token (static presence check).",
+  "- Cross-tenant runtime tests were executed against the fixture test suite (pass/fail recorded).",
+  "- Security headers were probed on discoverable non-parameterized API routes (if build was available).",
+  "- Dependency audit was run against the production dependency tree with the stated policy mode.",
+  "- All artifact files are checksummed in manifest.json to detect post-generation tampering.",
+  "",
+  "## What This Evidence Pack Does Not Prove",
+  "",
+  "- **Not a penetration test.** No active exploitation was attempted. Static token presence does not guarantee correct runtime enforcement of tenant scoping.",
+  "- **Not a full DAST scan.** Header probe covers only non-parameterized static routes reachable via GET. Parameterized routes, edge functions, and authenticated flows require separate runtime validation.",
+  "- **Not a complete CVE audit.** If dependency audit backend was unavailable (network restriction, registry auth), the audit outcome is recorded as unavailable, not as clean.",
+  "- **Not a confirmation of RLS enforcement.** Row-Level Security policies are documented in SECURITY_INVARIANTS.md but require a live database integration test (RUN_DB_TESTS=true) to confirm.",
+  "- **OSV scanner is optional.** If osv-scanner binary was absent from the runtime image, only pnpm audit results are included. CI remains authoritative for OSV coverage.",
+  "- **Admin and internal routes are exempt from tenant-scoping checks.** These routes must be validated under their own auth model; this pack does not cover them.",
+  "",
+].join("\n");
 
 writeFileSync(path.join(evidenceDir, "security-summary.md"), summary);
 console.log(`Security evidence generated at ${path.relative(repoRoot, evidenceDir)}`);
