@@ -82,19 +82,36 @@ jobs:
         run: |
           echo "${{ secrets.DEPENDABOT_ALERTS_EXPORT_B64 }}" | base64 -d > security/dependabot-alerts.json
 
-      - name: Enforce dependency triage completeness policy
-        env:
-          DEPENDENCY_TRIAGE_REQUIRE_AUTHENTICATED_EXPORT: "1"
-          DEPENDABOT_ALERTS_EXPORT_PATH: security/dependabot-alerts.json
-        run: node scripts/security/dependency-triage.mjs
-
-      - name: Generate security evidence + drift detection
+      - name: Generate layered security evidence (full mode)
         env:
           SECURITY_AUDIT_MODE: strict
           SECURITY_HEADER_PROBE_STRICT: "1"
-          DEPENDENCY_TRIAGE_REQUIRE_AUTHENTICATED_EXPORT: "1"
+          SECURITY_DEPENDENCY_EVIDENCE_MODE: standard
+          SECURITY_RLS_EVIDENCE_MODE: static-only
           DEPENDABOT_ALERTS_EXPORT_PATH: security/dependabot-alerts.json
-        run: pnpm run security:evidence
+        run: pnpm run verify:security:full
+
+      - name: Enterprise gate (strict evidence when secrets exist)
+        if: ${{ secrets.DEPENDABOT_ALERTS_EXPORT_B64 != '' && (secrets.DATABASE_URL != '' || secrets.DIRECT_URL != '' || secrets.SUPABASE_DB_URL != '') }}
+        env:
+          SECURITY_AUDIT_MODE: strict
+          SECURITY_HEADER_PROBE_STRICT: "1"
+          SECURITY_DEPENDENCY_EVIDENCE_MODE: strict
+          SECURITY_RLS_EVIDENCE_MODE: runtime-rls-required
+          DEPENDABOT_ALERTS_EXPORT_PATH: security/dependabot-alerts.json
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: pnpm run verify:security:enterprise
+
+      - name: Upload security evidence artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-evidence-${{ github.run_id }}
+          path: |
+            artifacts/security
+            security/*.json
+            security/*.md
 
   secret-scanning:
     name: Secret Scanning

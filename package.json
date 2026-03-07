@@ -228,8 +228,11 @@
     "audit:deps": "node scripts/audit-deps.mjs",
     "verify:security:headers": "node scripts/security/header-probe.mjs",
     "verify:security:drift": "node scripts/security-drift-check.mjs",
-    "security:evidence": "pnpm run security:routes && pnpm run verify:tenant && pnpm run test:cross-tenant && node scripts/security/admin-route-authz.mjs && pnpm run verify:security:headers && SECURITY_AUDIT_MODE=${SECURITY_AUDIT_MODE:-warn} pnpm run audit:deps && node scripts/security/dependency-triage.mjs && node scripts/security/verify-rls-boundary.mjs && node scripts/security-evidence.mjs && pnpm run verify:security:drift",
-    "verify:rls:live": "pnpm exec tsx scripts/verify-rls-status.ts"
+    "security:evidence": "pnpm run security:routes && pnpm run verify:tenant && pnpm run test:cross-tenant && node scripts/security/admin-route-authz.mjs && pnpm run verify:security:headers && SECURITY_AUDIT_MODE=${SECURITY_AUDIT_MODE:-warn} pnpm run audit:deps && node scripts/security/dependency-triage.mjs && node scripts/security/dependency-evidence.mjs && node scripts/security/verify-rls-boundary.mjs && node scripts/security/rls-evidence.mjs && node scripts/security-evidence.mjs && node scripts/security/verdict.mjs && pnpm run verify:security:drift",
+    "verify:rls:live": "pnpm exec tsx scripts/verify-rls-status.ts",
+    "verify:security:fast": "pnpm run security:routes && pnpm run verify:tenant && pnpm run test:cross-tenant && SECURITY_AUDIT_MODE=warn SECURITY_DEPENDENCY_EVIDENCE_MODE=standard pnpm run audit:deps && node scripts/security/dependency-evidence.mjs && SECURITY_RLS_EVIDENCE_MODE=static-only node scripts/security/verify-rls-boundary.mjs && node scripts/security/rls-evidence.mjs && node scripts/security/verdict.mjs",
+    "verify:security:full": "pnpm run security:evidence && node scripts/security/verdict.mjs",
+    "verify:security:enterprise": "SECURITY_DEPENDENCY_EVIDENCE_MODE=strict SECURITY_RLS_EVIDENCE_MODE=runtime-rls-required pnpm run security:evidence && node scripts/security/verdict.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

@@ -1,127 +1,175 @@
 #!/usr/bin/env tsx
-/**
- * Verify RLS Status on Production Database
- * 
- * Checks if RLS is enabled on critical tables.
- */
-
-import { Pool } from 'pg';
-import * as dotenv from 'dotenv';
+import { mkdirSync, writeFileSync } from "node:fs";
+import path from "node:path";
+import { Pool } from "pg";
+import * as dotenv from "dotenv";
 
 dotenv.config();
 
-const DATABASE_URL = process.env.DATABASE_URL || 
-  process.env.DIRECT_URL ||
-  process.env.SUPABASE_DB_URL;
+const repoRoot = process.cwd();
+const outputPath =
+  process.env.RLS_STATUS_OUTPUT ||
+  path.join(repoRoot, "artifacts", "security", "rls-status-latest.json");
 
+const DATABASE_URL =
+  process.env.DATABASE_URL || process.env.DIRECT_URL || process.env.SUPABASE_DB_URL;
 if (!DATABASE_URL) {
-  console.error('❌ Missing DATABASE_URL, DIRECT_URL, or SUPABASE_DB_URL');
+  console.error("❌ Missing DATABASE_URL, DIRECT_URL, or SUPABASE_DB_URL");
   process.exit(1);
 }
 
 const criticalTables = [
-  'billing_accounts',
-  'subscriptions',
-  'usage_events',
-  'recon_jobs',
-  'recon_results',
-  'normalized_transactions',
-  'reconciliation_runs',
-  'reconciliation_matches',
-  'receipt_uploads',
-  'receipts',
-  'feature_flags',
-  'tenants',
+  "billing_accounts",
+  "subscriptions",
+  "usage_events",
+  "recon_jobs",
+  "recon_results",
+  "normalized_transactions",
+  "reconciliation_runs",
+  "reconciliation_matches",
+  "receipt_uploads",
+  "receipts",
+  "feature_flags",
+  "tenants",
 ];
 
-async function verifyRLS() {
-  console.log('🔍 Verifying RLS Status on Critical Tables...\n');
+async function countWithTenant(pool: Pool, tenantId: string, sql: string) {
+  await pool.query("BEGIN");
+  try {
+    await pool.query("SELECT set_config('request.jwt.claim.tenant_id', $1, true)", [tenantId]);
+    const result = await pool.query(sql);
+    await pool.query("ROLLBACK");
+    return Number(result.rows[0]?.count || 0);
+  } catch (error) {
+    await pool.query("ROLLBACK");
+    throw error;
+  }
+}
 
+async function verifyRLS() {
   const pool = new Pool({
     connectionString: DATABASE_URL,
-    ssl: DATABASE_URL.includes('supabase') ? { rejectUnauthorized: false } : false,
+    ssl: DATABASE_URL.includes("supabase") ? { rejectUnauthorized: false } : false,
   });
 
-  try {
-    await pool.query('SELECT 1');
-    console.log('✅ Connected to database\n');
+  const report: any = {
+    generatedAt: new Date().toISOString(),
+    status: "passed",
+    criticalTables: [],
+    policyPresence: { totalChecked: 0, missingRls: [], missingPolicies: [] },
+    runtimeHarness: {
+      executed: false,
+      fixtures: {
+        schema: "settler_security",
+        table: "rls_runtime_probe",
+        tenants: ["tenant_A", "tenant_B"],
+      },
+      allowDenyMatrix: {},
+      errors: [],
+    },
+  };
 
-    let allEnabled = true;
-    const results: Array<{ table: string; rlsEnabled: boolean; policies: number }> = [];
+  try {
+    await pool.query("SELECT 1");
 
     for (const table of criticalTables) {
-      try {
-        // Check if RLS is enabled
-        const rlsCheck = await pool.query(`
-          SELECT tablename, rowsecurity 
-          FROM pg_tables 
-          WHERE schemaname = 'public' AND tablename = $1
-        `, [table]);
+      const rlsCheck = await pool.query(
+        `SELECT tablename, rowsecurity FROM pg_tables WHERE schemaname = 'public' AND tablename = $1`,
+        [table]
+      );
+      if (rlsCheck.rows.length === 0) continue;
 
-        if (rlsCheck.rows.length === 0) {
-          console.log(`⚠️  ${table}: Table not found`);
-          continue;
-        }
-
-        const rlsEnabled = rlsCheck.rows[0].rowsecurity;
-
-        // Count policies
-        const policyCheck = await pool.query(`
-          SELECT COUNT(*) as count
-          FROM pg_policies
-          WHERE schemaname = 'public' AND tablename = $1
-        `, [table]);
-
-        const policyCount = parseInt(policyCheck.rows[0].count, 10);
-
-        results.push({
-          table,
-          rlsEnabled,
-          policies: policyCount,
-        });
-
-        const icon = rlsEnabled ? '✅' : '❌';
-        const policyIcon = policyCount > 0 ? '🔒' : '⚠️';
-        console.log(`${icon} ${policyIcon} ${table}: RLS ${rlsEnabled ? 'ENABLED' : 'DISABLED'} (${policyCount} policies)`);
-
-        if (!rlsEnabled) {
-          allEnabled = false;
-        }
-      } catch (error) {
-        console.error(`❌ Error checking ${table}:`, error instanceof Error ? error.message : String(error));
-        allEnabled = false;
-      }
+      const policyCheck = await pool.query(
+        `SELECT COUNT(*)::int AS count FROM pg_policies WHERE schemaname = 'public' AND tablename = $1`,
+        [table]
+      );
+      const row = {
+        table,
+        rlsEnabled: Boolean(rlsCheck.rows[0].rowsecurity),
+        policies: Number(policyCheck.rows[0].count),
+      };
+      report.criticalTables.push(row);
+      report.policyPresence.totalChecked += 1;
+      if (!row.rlsEnabled) report.policyPresence.missingRls.push(table);
+      if (row.policies === 0) report.policyPresence.missingPolicies.push(table);
     }
 
-    console.log('\n═══════════════════════════════════════════════════════════');
-    console.log('RLS VERIFICATION SUMMARY');
-    console.log('═══════════════════════════════════════════════════════════\n');
+    // Runtime harness in isolated schema.
+    await pool.query(`
+      CREATE SCHEMA IF NOT EXISTS settler_security;
+      CREATE TABLE IF NOT EXISTS settler_security.rls_runtime_probe (
+        id serial PRIMARY KEY,
+        tenant_id text NOT NULL,
+        payload text NOT NULL
+      );
+      ALTER TABLE settler_security.rls_runtime_probe ENABLE ROW LEVEL SECURITY;
+      DROP POLICY IF EXISTS tenant_isolation_probe ON settler_security.rls_runtime_probe;
+      CREATE POLICY tenant_isolation_probe ON settler_security.rls_runtime_probe
+      USING (tenant_id = current_setting('request.jwt.claim.tenant_id', true))
+      WITH CHECK (tenant_id = current_setting('request.jwt.claim.tenant_id', true));
+      DELETE FROM settler_security.rls_runtime_probe;
+      INSERT INTO settler_security.rls_runtime_probe (tenant_id, payload)
+      VALUES ('tenant_A', 'alpha'), ('tenant_B', 'beta');
+    `);
 
-    const enabledCount = results.filter(r => r.rlsEnabled).length;
-    const disabledCount = results.filter(r => !r.rlsEnabled).length;
+    report.runtimeHarness.executed = true;
 
-    console.log(`Total tables checked: ${results.length}`);
-    console.log(`✅ RLS Enabled: ${enabledCount}`);
-    console.log(`❌ RLS Disabled: ${disabledCount}\n`);
+    const sameTenant = await countWithTenant(
+      pool,
+      "tenant_A",
+      "SELECT COUNT(*)::int AS count FROM settler_security.rls_runtime_probe WHERE tenant_id = 'tenant_A'"
+    );
+    const crossTenant = await countWithTenant(
+      pool,
+      "tenant_A",
+      "SELECT COUNT(*)::int AS count FROM settler_security.rls_runtime_probe WHERE tenant_id = 'tenant_B'"
+    );
 
-    if (allEnabled && results.every(r => r.policies > 0)) {
-      console.log('✅ All critical tables have RLS enabled with policies!');
-      console.log('🚀 Database is secure for production launch.\n');
-    } else {
-      console.log('⚠️  Some tables are missing RLS or policies.');
-      console.log('💡 Apply migration: supabase/migrations/20250122000000_rls_enforcement_critical.sql\n');
+    const unauthorized = await pool.query(
+      "SELECT COUNT(*)::int AS count FROM settler_security.rls_runtime_probe"
+    );
+
+    report.runtimeHarness.allowDenyMatrix = {
+      sameTenantAllow: sameTenant >= 1,
+      crossTenantDeny: crossTenant === 0,
+      anonymousDeny: Number(unauthorized.rows[0].count) === 0,
+    };
+
+    const matrix = report.runtimeHarness.allowDenyMatrix;
+    if (!matrix.sameTenantAllow || !matrix.crossTenantDeny || !matrix.anonymousDeny) {
+      report.status = "failed";
+    }
+
+    if (
+      report.policyPresence.missingRls.length > 0 ||
+      report.policyPresence.missingPolicies.length > 0
+    ) {
+      report.status = "failed";
+    }
+
+    mkdirSync(path.dirname(outputPath), { recursive: true });
+    writeFileSync(outputPath, JSON.stringify(report, null, 2));
+
+    if (report.status !== "passed") {
+      console.error("❌ RLS verification failed.");
       process.exit(1);
     }
 
+    console.log("✅ RLS verification passed.");
+    console.log(`Report: ${path.relative(repoRoot, outputPath)}`);
   } catch (error) {
-    console.error('❌ Verification failed:', error);
+    report.status = "failed";
+    report.runtimeHarness.errors.push(error instanceof Error ? error.message : String(error));
+    mkdirSync(path.dirname(outputPath), { recursive: true });
+    writeFileSync(outputPath, JSON.stringify(report, null, 2));
+    console.error(
+      "❌ Verification failed:",
+      error instanceof Error ? error.message : String(error)
+    );
     process.exit(1);
   } finally {
     await pool.end();
   }
 }
 
-verifyRLS().catch(error => {
-  console.error('❌ Fatal error:', error);
-  process.exit(1);
-});
+verifyRLS();

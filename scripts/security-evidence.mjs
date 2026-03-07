@@ -51,6 +51,9 @@ const artifacts = [
   maybeCopy("artifacts/security/admin-route-authz-latest.json", "admin-route-authz.json"),
   maybeCopy("artifacts/security/rls-verification-latest.json", "rls-verification.json", false),
   maybeCopy("security/dependency-triage.json", "dependency-triage.json", false),
+  maybeCopy("security/dependency-evidence.json", "dependency-evidence.json", false),
+  maybeCopy("security/rls-evidence.json", "rls-evidence.json", false),
+  maybeCopy("security/security-verdict.json", "security-verdict.json", false),
 ];
 
 const missingRequired = artifacts.filter((entry) => entry.required && !entry.present);
@@ -73,8 +76,11 @@ const crossTenant = safeRead("security/evidence/cross-tenant-results.json");
 const headerProbe = safeRead("security/evidence/header-probe.json");
 const depAudit = safeRead("security/evidence/dependency-audit.json");
 const depTriage = safeRead("security/evidence/dependency-triage.json");
+const depEvidence = safeRead("security/evidence/dependency-evidence.json");
 const adminAuthz = safeRead("security/evidence/admin-route-authz.json");
 const rlsVerification = safeRead("security/evidence/rls-verification.json");
+const rlsEvidence = safeRead("security/evidence/rls-evidence.json");
+const verdict = safeRead("security/evidence/security-verdict.json");
 
 const headerBlockingFailures =
   headerProbe?.counts?.failedBlocking ?? headerProbe?.counts?.failed ?? 0;
@@ -95,6 +101,8 @@ const headerContractCompleteness = headerProbe?.degraded
     : "enforced-contract-satisfied";
 
 const rlsProofLevel = rlsVerification?.proofLevel ?? "not-captured";
+const dependencyEvidenceStatus = depEvidence?.status ?? "not-captured";
+const rlsEvidenceStatus = rlsEvidence?.status ?? "not-captured";
 
 const releaseBlockingFindings = [
   ...(headerBlockingFailures > 0
@@ -154,7 +162,9 @@ const manifest = {
   evidenceCompleteness,
   headerContractCompleteness,
   dependencyTriageCompleteness,
+  dependencyEvidenceStatus,
   rlsProofLevel,
+  rlsEvidenceStatus,
   releaseBlockingFindings,
   degradedChecks,
   artifacts: artifacts.map((entry) => ({
@@ -174,7 +184,9 @@ const summaryJson = {
   evidenceCompleteness,
   headerContractCompleteness,
   dependencyTriageCompleteness,
+  dependencyEvidenceStatus,
   rlsProofLevel,
+  rlsEvidenceStatus,
   releaseBlockingFindings,
   degradedChecks,
   results: {
@@ -202,6 +214,11 @@ const summaryJson = {
       blockedByMissingAuthenticatedInput:
         depTriage?.triageCompleteness?.blockedByMissingAuthenticatedInput ?? null,
     },
+    dependencyEvidence: {
+      status: depEvidence?.status ?? null,
+      evidenceCompleteness: depEvidence?.evidenceCompleteness ?? null,
+      advisoryStatus: depEvidence?.advisoryCompleteness?.status ?? null,
+    },
     adminAuthz: {
       totalRoutes: adminAuthz?.totalAdminRoutes ?? null,
       failed: adminAuthz?.failed ?? null,
@@ -212,6 +229,11 @@ const summaryJson = {
       status: rlsVerification?.status ?? null,
       boundary: rlsVerification?.boundary ?? null,
     },
+    rlsEvidence: {
+      status: rlsEvidence?.status ?? null,
+      evidenceLevel: rlsEvidence?.evidenceLevel ?? null,
+    },
+    verdict: verdict?.overall ?? null,
   },
 };
 writeFileSync(
@@ -230,7 +252,9 @@ const summary = [
   `- Evidence Completeness: ${evidenceCompleteness}`,
   `- Header Contract Completeness: ${headerContractCompleteness}`,
   `- Dependency Triage Completeness: ${dependencyTriageCompleteness}`,
+  `- Dependency Evidence Status: ${dependencyEvidenceStatus}`,
   `- RLS Proof Level: ${rlsProofLevel}`,
+  `- RLS Evidence Status: ${rlsEvidenceStatus}`,
   "",
   "## Snapshot",
   `- Route registry total: ${routeRegistry?.totalRoutes ?? "n/a"}`,
