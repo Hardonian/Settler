@@ -35,7 +35,7 @@
 
 1. **ETL Tools** (Fivetran, Airbyte, Stitch)
    - **Gap:** No reconciliation, no drift detection, no vertical modules
-   - **Our Advantage:** Recon-as-a-Service core, AI-driven, vertical solutions
+   - **Our Advantage:** reconciliation engine core, AI-driven, vertical solutions
 
 2. **Data Quality Tools** (Great Expectations, Monte Carlo)
    - **Gap:** No reconciliation, no workflow orchestration
@@ -51,7 +51,7 @@
 
 ### Why We Win
 
-1. **Category Creation:** We own "Autonomous Data Operations OS"
+1. **Category Creation:** We own "Open Source Reconciliation Engine"
 2. **Recon Core:** First-class reconciliation service, not a feature
 3. **AI-Driven:** Self-healing, self-optimizing, autonomous
 4. **Vertical Modules:** Industry-specific solutions create moats

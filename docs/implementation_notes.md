@@ -156,7 +156,7 @@ This document tracks all code changes, new components, and configuration added d
    - More accessible language
    - Benefit-focused
 
-2. **"Reconciliation-as-a-Service API" → "Automatic Transaction Matching"**
+2. **"Open Source Reconciliation Engine API" → "Automatic Transaction Matching"**
    - Removed jargon
    - Clearer value proposition
 

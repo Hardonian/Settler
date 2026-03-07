@@ -14,7 +14,7 @@ const openApiSpec = {
   info: {
     title: 'Settler API',
     version: '1.0.0',
-    description: 'Reconciliation-as-a-Service API - Automate financial and event data reconciliation across fragmented SaaS and e-commerce ecosystems',
+    description: 'Open Source Reconciliation Engine API - Automate financial and event data reconciliation across fragmented SaaS and e-commerce ecosystems',
     contact: {
       name: 'Settler Support',
       email: 'support@settler.io',

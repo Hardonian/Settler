@@ -13,7 +13,7 @@
 **Homepage:**
 
 - Hero changed from "Make Reconciliation As Simple As Email" to "Stop Wasting Hours on Manual Financial Matching"
-- Removed technical jargon ("Reconciliation-as-a-Service API" → "Automatic Transaction Matching")
+- Removed technical jargon ("Open Source Reconciliation Engine API" → "Automatic Transaction Matching")
 - Features rewritten to be outcome-focused:
   - "5-Minute Integration" → "Save 10+ Hours Per Week"
   - "Enterprise Security" → "Bank-Level Security"

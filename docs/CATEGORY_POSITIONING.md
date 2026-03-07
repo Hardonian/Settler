@@ -16,7 +16,7 @@ This document defines **what Settler is** and **where it fits** in the market. I
 
 ### What Settler Is
 
-**Category:** Reconciliation-as-a-Service (RaaS)
+**Category:** Open Source Reconciliation Engine
 
 **Definition:** A specialized API platform that automates financial data reconciliation between systems.
 
@@ -166,7 +166,7 @@ This document defines **what Settler is** and **where it fits** in the market. I
 
 ## Category Signals
 
-### What Makes Settler "Reconciliation-as-a-Service"
+### What Makes Settler "Open Source Reconciliation Engine"
 
 **1. API-First**
 - RESTful API design
@@ -221,7 +221,7 @@ This document defines **what Settler is** and **where it fits** in the market. I
 ## Summary
 
 Settler's category positioning:
-- ✅ **Category:** Reconciliation-as-a-Service (RaaS)
+- ✅ **Category:** Open Source Reconciliation Engine
 - ✅ **Position:** Specialized API platform for financial reconciliation
 - ✅ **Differentiation:** Domain expertise, event-sourced architecture, multi-tenant isolation
 - ✅ **Competition:** Manual processes, custom scripts, accounting software

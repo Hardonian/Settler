@@ -159,7 +159,7 @@ console.log(result.summary); // { matched: 100, unmatched: 5 }
 
 ### Key Features
 
-- Recon-as-a-Service core
+- reconciliation engine core
 - Workflow orchestration
 - Schema drift detection
 - Data contract versioning

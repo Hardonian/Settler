@@ -16,14 +16,14 @@ We envision a world where:
 **To eliminate data correctness as a problem for every engineering team.**
 
 We do this by providing:
-1. **Recon-as-a-Service** — The core engine that powers all data operations
+1. **reconciliation engine** — The core engine that powers all data operations
 2. **Autonomous Intelligence** — Self-healing, self-optimizing, self-monitoring systems
 3. **Vertical Modules** — Industry-specific solutions that work out of the box
 4. **Developer-First Experience** — APIs, SDKs, and tools that developers love
 
 ## Category Definition
 
-**Autonomous Data Operations OS**
+**Open Source Reconciliation Engine**
 
 Settler.dev creates and owns the category of "Autonomous Data Operations Operating System" — a new class of infrastructure that:
 

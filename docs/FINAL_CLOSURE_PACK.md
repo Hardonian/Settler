@@ -3,7 +3,7 @@
 ## A) Product Canon
 
 ### One-sentence definition
-Settler is a deterministic reconciliation control plane for ingesting financial records, reconciling them with explicit rules, and producing auditable evidence with operator-managed exceptions.
+Settler is a deterministic reconciliation engine for ingesting financial records, reconciling them with explicit rules, and producing auditable evidence with operator-managed exceptions.
 
 ### Three value props
 1. Deterministic, replayable outputs with traceable evidence.
@@ -49,7 +49,7 @@ OSS includes deterministic core reconciliation, API/web surfaces, and baseline g
 
 - Consolidated docs entrypoint to a single canonical map in `docs/README.md`.
 - Removed stale docs index references to non-canonical setup files and replaced with active paths.
-- Unified product definition language across docs to “deterministic reconciliation control plane.”
+- Unified product definition language across docs to “deterministic reconciliation engine.”
 - Standardized trust-path language around tenant isolation, evidence exports, and graceful degradation.
 
 ## D) Launch Narrative Pack

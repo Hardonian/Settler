@@ -469,7 +469,7 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
                   icon: Layers,
                   title: "Operational Maturity",
                   description:
-                    "From manual exports to version-controlled rules. From fragile scripts to deterministic pipelines. From hope to operational confidence.",
+                    "From manual exports to version-controlled rules. From fragile scripts to replayable workflows. From hope to operational confidence.",
                 },
               ].map((item, idx) => {
                 const Icon = item.icon;

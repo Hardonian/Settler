@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email = ["support@settler.io"]
 
   spec.summary = "Production-grade Ruby SDK for Settler Reconciliation API"
-  spec.description = "Ruby SDK for Settler - Reconciliation-as-a-Service API"
+  spec.description = "Ruby SDK for Settler - Open Source Reconciliation Engine API"
   spec.homepage = "https://github.com/settler/settler-ruby"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.7.0"

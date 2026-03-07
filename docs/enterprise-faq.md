@@ -9,7 +9,7 @@
 
 ### What is Settler?
 
-Settler is a Reconciliation-as-a-Service (RaaS) platform that automates financial and event data reconciliation across fragmented SaaS and e-commerce ecosystems. Think "Stripe for reconciliation"—dead-simple onboarding, pure API, usage-based pricing, and composable adapters for every platform.
+Settler is a Open Source Reconciliation Engine platform that automates financial and event data reconciliation across fragmented SaaS and e-commerce ecosystems. Think "Stripe for reconciliation"—dead-simple onboarding, pure API, usage-based pricing, and composable adapters for every platform.
 
 ### How is Settler different from legacy reconciliation solutions?
 

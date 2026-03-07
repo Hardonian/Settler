@@ -1,6 +1,6 @@
 # Settler API
 
-Production-grade TypeScript API server for Settler - Reconciliation-as-a-Service platform.
+Production-grade TypeScript API server for Settler - Open Source Reconciliation Engine platform.
 
 ## Architecture
 

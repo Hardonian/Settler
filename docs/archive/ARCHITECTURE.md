@@ -7,11 +7,11 @@
 
 ## Overview
 
-Settler.dev is a unified, modular, AI-driven, enterprise-ready Data Operations OS with Recon-as-a-Service at its philosophical and architectural core.
+Settler.dev is a unified, modular, AI-driven, enterprise-ready reconciliation engine with reconciliation engine at its philosophical and architectural core.
 
 ## Core Philosophy
 
-**Recon-as-a-Service** is not just a feature—it's the foundational principle that drives every subsystem:
+**reconciliation engine** is not just a feature—it's the foundational principle that drives every subsystem:
 
 - **Deterministic Core:** All reconciliation operations are deterministic by default
 - **Self-Healing:** The system automatically detects and repairs drift

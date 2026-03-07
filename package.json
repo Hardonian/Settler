@@ -2,7 +2,7 @@
   "name": "settler-monorepo",
   "version": "1.0.0",
   "private": true,
-  "description": "Reconciliation-as-a-Service API - Complete monorepo",
+  "description": "Settler - Open Source Reconciliation Engine",
   "workspaces": [
     "packages/*"
   ],
@@ -203,7 +203,7 @@
     "verify:launch-assets": "node scripts/verify-launch-assets.mjs",
     "verify:route-parity": "tsx scripts/verify-route-parity.ts",
     "verify:vercel-runtime-parity": "tsx scripts/verify-vercel-runtime-parity.ts",
-    "verify:api-surface": "tsx scripts/verify-api-surface.ts"
+    "verify:api-surface": "tsx scripts/verify-api-surface.ts",
     "qa:marketing-ctas": "node scripts/marketing-cta-smoke.mjs",
     "qa:visual:landing": "cross-env CI_VISUAL_LANDING=1 playwright test tests/e2e/landing-home.visual.spec.ts --project=visual-desktop-light --project=visual-mobile-light"
   },

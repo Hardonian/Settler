@@ -2,7 +2,7 @@
 
 ## One-sentence definition
 
-Settler is a deterministic reconciliation control plane that ingests financial records, applies explicit policy-aware matching rules, and produces auditable outputs with operator-managed exceptions.
+Settler is a deterministic reconciliation engine that ingests financial records, applies explicit policy-aware matching rules, and produces auditable outputs with operator-managed exceptions.
 
 ## Category explanation
 
