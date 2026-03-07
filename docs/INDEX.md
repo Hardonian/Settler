@@ -1,48 +1,40 @@
-# Documentation Index
+# Settler Documentation Index
 
-## Getting Started
+Use this index as the canonical map for launch, evaluation, and contribution.
 
-- [Quick Start](./QUICK_START.md) - Get up and running quickly
-- [Environment Setup](./ENV_SETUP_GUIDE.md) - Configure your environment
-- [Remote Database Setup](./REMOTE_SETUP_GUIDE.md) - Set up remote database
+## New visitor path (fastest)
 
-## Core Documentation
+1. [START_HERE.md](./START_HERE.md)
+2. [getting-started/README.md](./getting-started/README.md)
+3. Run demo + replay proof:
 
-### Console
-- [Console Guide](./CONSOLE.md) - Complete console documentation
-- [API Reference](./API.md) - API endpoint documentation
-- [Authentication](./AUTH.md) - Auth and authorization guide
+```bash
+pnpm demo
+pnpm settler:replay examples/demo-output/evidence.json
+```
 
-### Architecture
-- [Architecture Overview](./ARCHITECTURE.md) - System architecture
-- [Source of Truth](./SOURCE_OF_TRUTH.md) - Authoritative documentation sources
-- [Citations](./CITATIONS.md) - Implementation references
+## Technical evaluator path
 
-## Operations
+- [ENGINE.md](./ENGINE.md)
+- [architecture/README.md](./architecture/README.md)
+- [api/README.md](./api/README.md)
+- [security/README.md](./security/README.md)
+- [metrics/EVENT_TAXONOMY.md](./metrics/EVENT_TAXONOMY.md)
 
-- [Deployment Checklist](../DEPLOYMENT_CHECKLIST.md) - Deployment guide
-- [Monitoring](./monitoring.md) - Monitoring and alerting (if exists)
-- [Troubleshooting](./troubleshooting.md) - Common issues (if exists)
+## Contributor path
 
-## Reference
+- [../CONTRIBUTING.md](../CONTRIBUTING.md)
+- [ops/README.md](./ops/README.md)
+- [verify/README.md](./verify/README.md)
+- [../SUPPORT.md](../SUPPORT.md)
 
-- [API Reference](./API_REFERENCE.md) - Complete API reference (if exists)
-- [SDK Documentation](./sdk.md) - SDK usage guide (if exists)
-- [Examples](./examples.md) - Code examples (if exists)
+## Positioning canon
 
-## Release Information
+- [positioning/CANONICAL_POSITIONING.md](./positioning/CANONICAL_POSITIONING.md)
 
-- [Changelog](../CHANGELOG.md) - Version changelog
-- [Release Notes](../RELEASE_NOTES.md) - Release notes
-- [Release Guide](../RELEASE.md) - Release information
+## Additional references
 
-## Archive
-
-- [Completed Work](../archive/completed-work/2024-12/) - Historical documentation
-
-## Quick Links
-
-- [Main README](../README.md)
-- [Contributing](../CONTRIBUTING.md)
-- [Security](../SECURITY.md)
-- [Scripts](../scripts/README.md)
+- [../README.md](../README.md)
+- [../ARCHITECTURE.md](../ARCHITECTURE.md)
+- [../SECURITY.md](../SECURITY.md)
+- [../CHANGELOG.md](../CHANGELOG.md)
