@@ -251,7 +251,7 @@ async function main(): Promise<void> {
   const program = new Command();
   const argv = process.argv.slice(2);
 
-  program.name("settler").description("CLI tool for Settler API");
+  program.name("settler").description("Settler CLI for the Open Source Reconciliation Engine");
 
   program
     .option("-k, --api-key <key>", "API key")

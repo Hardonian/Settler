@@ -31,10 +31,11 @@ function SignedOutScreen() {
 }
 
 const navItems = [
-  { name: "Overview", href: "/app" },
-  { name: "Runs", href: "/app/runs" },
+  { name: "Recent Runs", href: "/app/runs" },
+  { name: "Detected Mismatches", href: "/app/mismatches" },
   { name: "Evidence", href: "/app/evidence" },
   { name: "Policies", href: "/app/policies" },
+  { name: "Overview", href: "/app" },
   { name: "Metrics", href: "/app/metrics" },
   { name: "Settings", href: "/app/settings" },
 ];

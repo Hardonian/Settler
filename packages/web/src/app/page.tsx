@@ -50,7 +50,7 @@ const protocolCards = [
     id: "prove-learn",
     title: "Review and resolve with evidence",
     description:
-      "Attach evidence artifacts and trace IDs so operators can explain every decision in review.",
+      "Attach evidence records and trace IDs so operators can explain every decision in review.",
   },
   {
     step: "04",
@@ -347,7 +347,7 @@ export default function Home() {
         <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pb-16 md:pb-24">
           <div className="max-w-3xl">
             <p className="mb-4 text-xs uppercase tracking-[0.28em] text-cyan-200/80">
-              Open-source reconciliation control plane
+              Open Source Reconciliation Engine
             </p>
             <h1 className="text-5xl font-bold leading-[0.95] text-white sm:text-6xl md:text-7xl">
               Reconcile the
@@ -460,7 +460,7 @@ export default function Home() {
                   ["Source system", "Stripe + NetSuite"],
                   ["Unmatched amount", "$42,190.18"],
                   ["Policy result", "Tolerance exceeded"],
-                  ["Evidence attached", "6 artifacts"],
+                  ["Evidence attached", "6 records"],
                 ].map(([label, value]) => (
                   <div
                     key={label}
@@ -548,7 +548,7 @@ export default function Home() {
           <div>
             <p className="text-lg font-semibold tracking-[0.14em] text-white">SETTLER</p>
             <p className="mt-3 text-sm text-slate-300">
-              Open-source reconciliation control plane for replayable, evidence-backed financial truth.
+              Open Source Reconciliation Engine for replayable, evidence-backed financial truth.
             </p>
             <div className="mt-6 flex items-center gap-2 text-xs font-mono text-emerald-200">
               <Circle className="h-2.5 w-2.5 fill-emerald-400 text-emerald-400 animate-pulse" />
