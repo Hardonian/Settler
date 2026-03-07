@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-07T19:55:13.966Z",
+  "generatedAt": "2026-03-07T20:47:17.263Z",
   "verifierVersion": "2026-03-07.2",
   "verificationMode": "static-token-presence",
   "proofBoundary": "Static control-presence verification only. Runtime denial behavior is proven by test:cross-tenant and runtime smoke suites.",

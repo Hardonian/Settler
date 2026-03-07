@@ -9,18 +9,45 @@ const allowUpdate = process.env.SECURITY_BASELINE_UPDATE === "1";
 // Prerequisite artifacts that must exist before drift comparison can run.
 // Each entry maps a short label to the relative path expected on disk.
 const REQUIRED_ARTIFACTS = [
-  { label: "route-registry", rel: "security/route-registry.json", producer: "pnpm run security:routes" },
-  { label: "tenant-coverage", rel: "artifacts/security/tenant-coverage-latest.json", producer: "pnpm run verify:tenant" },
-  { label: "header-probe", rel: "artifacts/security/header-probe-latest.json", producer: "pnpm run verify:security:headers" },
-  { label: "dependency-audit", rel: "artifacts/security/dependency-audit-latest.json", producer: "pnpm run audit:deps" },
+  {
+    label: "route-registry",
+    rel: "security/route-registry.json",
+    producer: "pnpm run security:routes",
+  },
+  {
+    label: "tenant-coverage",
+    rel: "artifacts/security/tenant-coverage-latest.json",
+    producer: "pnpm run verify:tenant",
+  },
+  {
+    label: "header-probe",
+    rel: "artifacts/security/header-probe-latest.json",
+    producer: "pnpm run verify:security:headers",
+  },
+  {
+    label: "dependency-audit",
+    rel: "artifacts/security/dependency-audit-latest.json",
+    producer: "pnpm run audit:deps",
+  },
 ];
 
 function readJson(relPath) {
   return JSON.parse(readFileSync(path.join(repoRoot, relPath), "utf8"));
 }
 
+function listDiff(before = [], after = []) {
+  const b = new Set(before);
+  const a = new Set(after);
+  return {
+    added: [...a].filter((item) => !b.has(item)).sort(),
+    removed: [...b].filter((item) => !a.has(item)).sort(),
+  };
+}
+
 // Verify all prerequisite artifacts are present before attempting any reads.
-const missingArtifacts = REQUIRED_ARTIFACTS.filter(({ rel }) => !existsSync(path.join(repoRoot, rel)));
+const missingArtifacts = REQUIRED_ARTIFACTS.filter(
+  ({ rel }) => !existsSync(path.join(repoRoot, rel))
+);
 if (missingArtifacts.length > 0) {
   console.error("❌ Security drift check cannot run: required artifact(s) missing.");
   console.error("   Run the corresponding producer script for each missing artifact:\n");
@@ -55,7 +82,9 @@ try {
 // previous full run. Record the probe's skip state explicitly so drift messages
 // are not misread as "headers improved."
 const headerProbeAllSkipped = headerProbe.counts
-  ? headerProbe.counts.passed === 0 && headerProbe.counts.failed === 0 && headerProbe.counts.skipped > 0
+  ? headerProbe.counts.passed === 0 &&
+    headerProbe.counts.failed === 0 &&
+    headerProbe.counts.skipped > 0
   : false;
 
 const current = {
@@ -76,15 +105,14 @@ const current = {
     degraded: Boolean(depAudit.degraded),
     degradedReasons: depAudit.degradedReasons || [],
   },
+  headerProbeAllSkipped,
 };
 
 if (!existsSync(baselinePath) || allowUpdate) {
   mkdirSync(path.dirname(baselinePath), { recursive: true });
   const action = existsSync(baselinePath) ? "updated" : "created";
   writeFileSync(baselinePath, JSON.stringify(current, null, 2));
-  console.log(
-    `Security drift baseline ${action}: ${path.relative(repoRoot, baselinePath)}`
-  );
+  console.log(`Security drift baseline ${action}: ${path.relative(repoRoot, baselinePath)}`);
   if (current.headerProbeAllSkipped) {
     console.warn(
       "⚠️  Header probe was all-skipped (no build available) when this baseline was recorded."
