@@ -1,4 +1,4 @@
-# START_HERE
+# START HERE
 
 This is the canonical onboarding index for Settler.
 
@@ -33,16 +33,21 @@ pnpm verify:boundaries
 
 ## 4) Canonical docs
 
-- Product + setup: `README.md`
-- Docs hub: `docs/README.md`
-- Getting started: `docs/getting-started/README.md`
-- Architecture: `docs/architecture/README.md`
-- Security: `docs/security/README.md`
-- Operations: `docs/ops/README.md`
-- API: `docs/api/README.md`
+| Path | Purpose |
+|------|---------|
+| [README.md](../README.md) | Product overview and quickstart |
+| [docs/INDEX.md](./INDEX.md) | Full documentation map |
+| [docs/ENGINE.md](./ENGINE.md) | How the reconciliation engine works |
+| [docs/positioning/CANONICAL_POSITIONING.md](./positioning/CANONICAL_POSITIONING.md) | What Settler is and who it's for |
+| [docs/getting-started/README.md](./getting-started/README.md) | Getting started guide |
+| [docs/architecture/README.md](./architecture/README.md) | Architecture deep dive |
+| [docs/security/README.md](./security/README.md) | Security documentation |
+| [docs/api/README.md](./api/README.md) | API and SDK reference |
+| [docs/ops/README.md](./ops/README.md) | Operations and runbooks |
 
 ## 5) Verified guarantees
 
 - OSS and enterprise boundaries are guarded by static verification scripts.
 - Route and boundary checks are part of release verification scripts.
 - Determinism/replay claims are limited to what automated checks verify in current scripts.
+- All claims are validated in [docs/positioning/CLAIM_VALIDATION.md](./positioning/CLAIM_VALIDATION.md).

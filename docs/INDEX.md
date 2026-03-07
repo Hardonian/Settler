@@ -1,48 +1,75 @@
 # Documentation Index
 
-## Getting Started
+## Start Here
 
-- [Quick Start](./QUICK_START.md) - Get up and running quickly
-- [Environment Setup](./ENV_SETUP_GUIDE.md) - Configure your environment
-- [Remote Database Setup](./REMOTE_SETUP_GUIDE.md) - Set up remote database
+- [START_HERE.md](./START_HERE.md) — Fastest path to running Settler
+- [Getting Started](./GETTING_STARTED.md) — Setup and first run
+- [Quick Start](./QUICKSTART.md) — Five-minute demo
+- [FAQ](./FAQ.md) — Common questions
 
-## Core Documentation
+## Product
 
-### Console
-- [Console Guide](./CONSOLE.md) - Complete console documentation
-- [API Reference](./API.md) - API endpoint documentation
-- [Authentication](./AUTH.md) - Auth and authorization guide
+- [Product Overview](./PRODUCT_OVERVIEW.md) — What Settler does
+- [Engine](./ENGINE.md) — How the reconciliation engine works
+- [Canonical Positioning](./positioning/CANONICAL_POSITIONING.md) — What Settler is and who it's for
+- [Messaging Hierarchy](./positioning/MESSAGING_HIERARCHY.md) — Terminology and copy guidelines
+- [Claim Validation](./positioning/CLAIM_VALIDATION.md) — Every claim verified against code
 
-### Architecture
-- [Architecture Overview](./ARCHITECTURE.md) - System architecture
-- [Source of Truth](./SOURCE_OF_TRUTH.md) - Authoritative documentation sources
-- [Citations](./CITATIONS.md) - Implementation references
+## Architecture
+
+- [Architecture Overview](./ARCHITECTURE.md) — System architecture
+- [Data Model](./DATA_MODEL.md) — Core data structures
+- [Source of Truth](./SOURCE_OF_TRUTH.md) — Authoritative documentation sources
+
+## API and SDKs
+
+- [API Reference](./API.md) — API endpoint documentation
+- [API Quick Start](./api-quick-start.md) — Get started with the API
+- [SDK Documentation](./api/README.md) — SDK usage across languages
+
+## Console and App
+
+- [Console Guide](./CONSOLE.md) — Console documentation
+- [Authentication](./AUTH.md) — Auth and authorization
 
 ## Operations
 
-- [Deployment Checklist](../DEPLOYMENT_CHECKLIST.md) - Deployment guide
-- [Monitoring](./monitoring.md) - Monitoring and alerting (if exists)
-- [Troubleshooting](./troubleshooting.md) - Common issues (if exists)
+- [Operations Runbook](./OPERATIONS_RUNBOOK.md) — Day-to-day operations
+- [Deployment Guide](./deployment-guide.md) — Deployment instructions
+- [Configuration](./CONFIGURATION.md) — Configuration reference
+- [Environment Setup](./ENV_SETUP_GUIDE.md) — Environment variables
+- [Troubleshooting](./troubleshooting.md) — Common issues and fixes
 
-## Reference
+## Security
 
-- [API Reference](./API_REFERENCE.md) - Complete API reference (if exists)
-- [SDK Documentation](./sdk.md) - SDK usage guide (if exists)
-- [Examples](./examples.md) - Code examples (if exists)
+- [Security Architecture](./SECURITY_ARCHITECTURE.md) — Security design
+- [Security Invariants](./SECURITY_INVARIANTS.md) — Security guarantees
+- [Secrets Management](./SECRETS_MANAGEMENT.md) — Handling secrets
 
-## Release Information
+## Go-to-Market
 
-- [Changelog](../CHANGELOG.md) - Version changelog
-- [Release Notes](../RELEASE_NOTES.md) - Release notes
-- [Release Guide](../RELEASE.md) - Release information
+- [Persona Map](./go-to-market/PERSONA_MAP.md) — Target personas
+- [Jobs To Be Done](./go-to-market/JOBS_TO_BE_DONE.md) — Core user jobs
 
-## Archive
+## Metrics and Analytics
 
-- [Completed Work](../archive/completed-work/2024-12/) - Historical documentation
+- [Launch KPI Framework](./metrics/LAUNCH_KPI_FRAMEWORK.md) — What to measure
+- [Event Taxonomy](./metrics/EVENT_TAXONOMY.md) — Analytics event definitions
 
-## Quick Links
+## Audits and Validation
 
-- [Main README](../README.md)
-- [Contributing](../CONTRIBUTING.md)
-- [Security](../SECURITY.md)
-- [Scripts](../scripts/README.md)
+- [Final Reconciliation Matrix](./audits/FINAL_RECONCILIATION_MATRIX.md) — All audit findings reconciled
+- [Final Launch Scorecard](./audits/FINAL_LAUNCH_SCORECARD.md) — Launch readiness scores
+- [100-Point Audit](./audit/AUDIT_100_FINAL.md) — Technical audit results
+
+## Release
+
+- [Changelog](../CHANGELOG.md) — Version history
+- [Release Notes](../RELEASE_NOTES.md) — Release notes
+
+## Contributing
+
+- [Contributing Guide](../CONTRIBUTING.md) — How to contribute
+- [Architecture for Contributors](../ARCHITECTURE.md) — System map
+- [Governance](../GOVERNANCE.md) — Decision-making process
+- [Support](../SUPPORT.md) — Getting help
