@@ -89,6 +89,28 @@ const commandRegistry: Record<
       return { command: mcpCommand };
     },
   },
+  ai: {
+    description: "AI execution copilot commands",
+    load: async () => {
+      const { aiCommand } = await import("./commands/ai");
+      return { command: aiCommand };
+    },
+  },
+  connector: {
+    description: "Connector ecosystem registry and test commands",
+    aliases: ["connectors"],
+    load: async () => {
+      const { connectorCommand } = await import("./commands/connectors");
+      return { command: connectorCommand };
+    },
+  },
+  chaos: {
+    description: "Chaos determinism harness commands",
+    load: async () => {
+      const { chaosCommand } = await import("./commands/chaos");
+      return { command: chaosCommand };
+    },
+  },
 
   capsule: {
     description: "Create/verify deterministic time capsules",
