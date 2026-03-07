@@ -181,6 +181,15 @@ const commandRegistry: Record<
       return { command: doctorCommand };
     },
   },
+
+  replay: {
+    description: "Deterministic execution replay lab",
+    load: async () => {
+      const { replayCommand } = await import("./commands/replay");
+      return { command: replayCommand };
+    },
+  },
+
   demo: {
     description: "Run deterministic one-command demo",
     load: async () => {
