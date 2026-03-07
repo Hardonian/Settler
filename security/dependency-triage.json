@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-03-07T20:48:09.533Z",
+  "verifierVersion": "2026-03-07.1",
+  "runId": "2026-03-07T20-48-09-532Z",
+  "sourceStatus": {
+    "dependencyAuditArtifactPresent": true,
+    "dependabotExportPresent": false
+  },
+  "findingsSummary": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "entries": [],
+  "blockers": [
+    {
+      "id": "dependabot-export-missing",
+      "gap": "Cannot enumerate and disposition all Dependabot alerts without an authenticated alert export.",
+      "requiredInput": "security/dependabot-alerts.json",
+      "knownOutstandingCount": 22,
+      "launchImpact": "policy-dependent"
+    }
+  ],
+  "triageComplete": false,
+  "proofBoundary": "Full CVE-by-CVE triage requires authenticated Dependabot alert export. Local audit backend availability is captured separately in dependency-audit-latest.json."
+}

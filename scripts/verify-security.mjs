@@ -184,7 +184,10 @@ function main() {
     limiterGuardrail,
     coverageGap: {
       totalRoutes: coverageGap.totalRoutes,
-      classifiedHighRisk: coverageGap.classifiedRoutes,
+      classifiedRoutes: coverageGap.classifiedRoutes,
+      classificationCoveragePct: coverageGap.classificationCoveragePct,
+      categoryCounts: coverageGap.categoryCounts,
+      manualReviewRoutes: coverageGap.manualReviewRoutes,
       exemptPrefixes: coverageGap.exemptPrefixes,
       unclassifiedCount: coverageGap.unclassifiedRoutes.length,
       unclassifiedRoutes: coverageGap.unclassifiedRoutes,
@@ -227,17 +230,16 @@ function main() {
 
   printSection("Route coverage gap analysis");
   console.log(`   total routes discovered: ${coverageGap.totalRoutes}`);
-  console.log(`   individually classified (high-risk): ${coverageGap.classifiedRoutes}`);
+  console.log(`   classified routes: ${coverageGap.classifiedRoutes}`);
+  console.log(`   classification coverage: ${coverageGap.classificationCoveragePct}%`);
   console.log(`   exempt prefixes: ${coverageGap.exemptPrefixes}`);
   if (coverageGap.unclassifiedRoutes.length === 0) {
     console.log("✅ No unclassified routes (all routes are either classified or exempt).");
   } else {
     console.log(
-      `⚠️ ${coverageGap.unclassifiedRoutes.length} route(s) are not individually classified and not in known-exempt prefixes.`
+      `⚠️ ${coverageGap.unclassifiedRoutes.length} route(s) remain unclassified by safe heuristics.`
     );
-    console.log(
-      "   These are gated by verify:tenant token checks but warrant individual review:"
-    );
+    console.log("   These routes require explicit manual review and categorization:");
     for (const route of coverageGap.unclassifiedRoutes) {
       console.log(`   - ${route}`);
     }

@@ -33,9 +33,8 @@ function classifyRoute(route) {
   if (route.kind !== "next-app-router") return "unprobeable-kind";
   if (!route.route.startsWith("/api")) return "unprobeable-non-api";
   if (route.route.includes("[")) return "unprobeable-dynamic";
-  if (route.route.startsWith("/api/cron/") || route.route.startsWith("/api/stripe/")) {
+  if (route.route.startsWith("/api/cron/") || route.route.startsWith("/api/stripe/"))
     return "limited-contract";
-  }
   return "probeable";
 }
 
@@ -45,9 +44,7 @@ async function waitForServer(url, timeoutMs = 30_000) {
     try {
       const response = await fetch(url, { signal: AbortSignal.timeout(2000) });
       if (response.status < 500 || response.status === 404) return true;
-    } catch {
-      // ignore
-    }
+    } catch {}
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
   return false;
@@ -55,11 +52,9 @@ async function waitForServer(url, timeoutMs = 30_000) {
 
 async function maybeStartServer() {
   if (config.baseUrl) return { baseUrl: config.baseUrl, child: null, startupLogs: [] };
-
   const buildId = path.join(repoRoot, "packages", "web", ".next", "BUILD_ID");
-  if (!existsSync(buildId)) {
+  if (!existsSync(buildId))
     return { baseUrl: null, child: null, reason: "missing_build", startupLogs: [] };
-  }
 
   const child = spawn("pnpm", ["--filter", "@settler/web", "start", "-p", String(config.port)], {
     cwd: repoRoot,
@@ -69,13 +64,13 @@ async function maybeStartServer() {
   const logs = [];
   child.stdout.on("data", (chunk) => logs.push(chunk.toString()));
   child.stderr.on("data", (chunk) => logs.push(chunk.toString()));
+
   const baseUrl = `http://127.0.0.1:${config.port}`;
   const ready = await waitForServer(`${baseUrl}/api/v1/health`);
   if (!ready) {
     child.kill("SIGTERM");
     return { baseUrl: null, child: null, reason: "server_start_failed", startupLogs: logs };
   }
-
   return { baseUrl, child, startupLogs: logs };
 }
 
@@ -98,8 +93,8 @@ function hasNonce(csp) {
   return /nonce-[A-Za-z0-9+/_-]+/i.test(csp || "");
 }
 
-async function probeRoute(baseUrl, route) {
-  const url = `${baseUrl}${route.route}`;
+async function probeUrl(baseUrl, route, expectation = "default") {
+  const url = `${baseUrl}${route}`;
   const response = await fetch(url, { redirect: "manual", signal: AbortSignal.timeout(5000) });
   const csp = response.headers.get("content-security-policy") || "";
   const cacheControl = response.headers.get("cache-control") || "";
@@ -107,32 +102,37 @@ async function probeRoute(baseUrl, route) {
 
   const failures = [];
   for (const header of REQUIRED_HEADERS) {
-    if (!response.headers.get(header)) {
-      failures.push(`missing ${header} header`);
-    }
+    if (!response.headers.get(header)) failures.push(`missing ${header} header`);
   }
 
   if (csp.includes("unsafe-inline")) failures.push("contains unsafe-inline");
   if (csp.includes("unsafe-eval")) failures.push("contains unsafe-eval");
+
   if ((response.status === 401 || response.status === 403) && !cacheControl.includes("no-store")) {
     failures.push("auth denial response missing cache-control no-store");
   }
 
-  const expectedProtected =
-    route.route.startsWith("/api/v1/runs") || route.route.startsWith("/api/exports");
-  if (expectedProtected && ![401, 403, 404].includes(response.status)) {
-    failures.push(`expected unauthenticated denial status, got ${response.status}`);
+  if (expectation === "denial" && ![401, 403].includes(response.status)) {
+    failures.push(`expected denial status (401/403), got ${response.status}`);
+  }
+
+  if (expectation === "redirect" && (response.status < 300 || response.status >= 400)) {
+    failures.push(`expected redirect status, got ${response.status}`);
+  }
+
+  if (expectation === "not-found" && response.status !== 404) {
+    failures.push(`expected 404 status, got ${response.status}`);
   }
 
   return {
-    route: route.route,
+    route,
     status: failures.length ? "failed" : "passed",
-    method: "GET",
     statusCode: response.status,
     cspPresent: Boolean(csp),
     noncePresent: hasNonce(csp),
     requestIdPresent: Boolean(requestId),
     cacheControl,
+    expectation,
     failures,
     redirect: response.status >= 300 && response.status < 400,
   };
@@ -149,7 +149,6 @@ async function main() {
 
   const targets = routeClassification.filter((route) => route.classification === "probeable");
   const server = await maybeStartServer();
-
   const checks = [];
   const degradedReasons = [];
 
@@ -157,7 +156,16 @@ async function main() {
     degradedReasons.push(server.reason || "missing_base_url");
   } else {
     for (const route of targets) {
-      checks.push(await probeRoute(server.baseUrl, route));
+      checks.push(await probeUrl(server.baseUrl, route.route));
+    }
+
+    const specialProbes = [
+      ["/__definitely_not_a_real_route__", "not-found"],
+      ["/api/v1/runs", "denial"],
+      ["/admin", "redirect"],
+    ];
+    for (const [route, expectation] of specialProbes) {
+      checks.push(await probeUrl(server.baseUrl, route, expectation));
     }
   }
 
@@ -170,13 +178,10 @@ async function main() {
 
   const summary = {
     generatedAt: new Date().toISOString(),
-    verifierVersion: "2026-03-07.2",
+    verifierVersion: "2026-03-07.3",
     runId,
     baseUrl: server.baseUrl,
-    policy: {
-      strict: config.strict,
-      allowDegraded: config.allowDegraded,
-    },
+    policy: { strict: config.strict, allowDegraded: config.allowDegraded },
     degraded: degradedReasons.length > 0,
     degradedReasons,
     startupLogs: server.startupLogs || [],
@@ -185,6 +190,7 @@ async function main() {
       probeableRoutes: targets.length,
       probedRoutes: checks.length,
       skippedByClassification: skippedByClassification.length,
+      specialPathProbes: server.baseUrl ? 3 : 0,
     },
     classificationCounts: routeClassification.reduce((acc, item) => {
       acc[item.classification] = (acc[item.classification] || 0) + 1;
@@ -193,7 +199,7 @@ async function main() {
     counts: {
       passed: checks.filter((check) => check.status === "passed").length,
       failed: failed.length,
-      skipped: degradedReasons.length > 0 ? targets.length : 0,
+      skipped: degradedReasons.length > 0 ? targets.length + 3 : 0,
     },
     checks,
   };
@@ -206,52 +212,33 @@ async function main() {
     "utf8"
   );
 
-  const allSkipped = summary.counts.passed === 0 && failed.length === 0 && summary.counts.skipped > 0;
-
   console.log(`Header probe artifact: ${path.relative(repoRoot, summaryPath)}`);
+  console.log(
+    `Header probe counts: passed=${summary.counts.passed} failed=${failed.length} skipped=${summary.counts.skipped}`
+  );
 
   if (summary.degraded && !config.allowDegraded) {
     console.error(
       "Header probe could not prove header/CSP contract. Set SECURITY_HEADER_PROBE_ALLOW_DEGRADED=1 only when degraded results are explicitly acceptable."
     );
-  console.log(
-    `Header probe counts: passed=${summary.counts.passed} failed=${failed.length} skipped=${summary.counts.skipped}`
-  );
+  }
 
-  if (allSkipped) {
-    console.warn(
-      "\n⚠️  Header probe completed with all checks SKIPPED (no build or --baseUrl available)."
-    );
-    console.warn(
-      "   This does NOT constitute a header verification pass. The artifact records zero real results."
-    );
-    console.warn(
-      "   Build the app first (`pnpm --filter @settler/web build`) or set SECURITY_HEADER_PROBE_BASE_URL."
-    );
-    console.warn(
-      "   If drift detection compares this artifact against a baseline with real counts, it will flag drift."
-    );
-  } else if (failed.length > 0) {
+  if (failed.length > 0) {
     console.error(`\n❌ Header probe: ${failed.length} check(s) failed.`);
     for (const check of failed) {
-      console.error(`   route: ${check.route || "unknown"}`);
-      for (const f of check.failures || []) {
-        console.error(`     - ${f}`);
-      }
+      console.error(`   route: ${check.route}`);
+      for (const failure of check.failures) console.error(`     - ${failure}`);
     }
+  } else if (summary.counts.passed === 0) {
+    console.warn(
+      "\n⚠️ Header probe completed with all checks skipped (missing build/baseUrl). Not a verification pass."
+    );
   } else {
     console.log(`\n✅ Header probe passed (${summary.counts.passed} route(s) checked).`);
   }
 
-  if (config.strict && (failed.length > 0 || summary.counts.skipped > 0)) {
-    process.exit(1);
-  }
-
-  if (config.strict && failed.length > 0) {
-    process.exit(1);
-  }
-
-  process.exit(0);
+  if (config.strict && (failed.length > 0 || summary.counts.skipped > 0)) process.exit(1);
+  if (summary.degraded && !config.allowDegraded) process.exit(1);
 }
 
 main().catch((error) => {

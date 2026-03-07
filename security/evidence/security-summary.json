@@ -1,18 +1,14 @@
 {
-  "generatedAt": "2026-03-07T19:55:25.272Z",
-  "commitSha": "8d7982e76b3c5eab2586a60769f2b5a53b445cd6",
-  "ciRunId": null,
-  "policy": {
-    "dependencyAuditMode": "strict",
-    "headerProbeStrict": false,
-    "headerProbeAllowDegraded": true
-  },
+  "generatedAt": "2026-03-07T20:47:28.022Z",
+  "commitSha": "5c0313937628f0b74394775590e7ebf74cca8467",
   "completeness": "partial",
   "degradedChecks": {
     "tenantCoverage": false,
     "crossTenant": false,
-    "headerProbe": true,
-    "dependencyAudit": true
+    "headerProbe": false,
+    "dependencyAudit": true,
+    "adminAuthz": false,
+    "rlsVerification": true
   },
   "results": {
     "routeRegistryTotal": 228,
@@ -23,14 +19,24 @@
     },
     "crossTenantStatus": "passed",
     "headerProbe": {
-      "failedChecks": 0,
+      "failedChecks": 136,
       "probeableRoutes": 133,
-      "degraded": true
+      "degraded": false
     },
     "dependencyAudit": {
       "outcome": "warn-backend-unavailable",
       "degraded": true,
       "reasons": ["pnpm-audit-backend-unavailable", "osv-scanner-missing"]
+    },
+    "adminAuthz": {
+      "totalRoutes": 9,
+      "failed": 0,
+      "warnings": 9
+    },
+    "rlsVerification": {
+      "proofLevel": "static-only",
+      "status": "not-run",
+      "boundary": "Live database RLS enforcement is not proven in this run. Static migration/policy assertions and app-level tenant tests are separate controls."
     }
   }
 }

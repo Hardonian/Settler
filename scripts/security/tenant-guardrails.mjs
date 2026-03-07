@@ -78,39 +78,122 @@ export const highRiskRouteRules = [
   },
 ];
 
-/**
- * Known-safe route prefixes that do not require tenant-isolation guardrails.
- *
- * IMPORTANT — Exemption semantics per prefix:
- *
- *   api/admin/       — Expected to enforce its own admin authentication (e.g., isSuperAdmin()
- *                      or session-based admin check). This exemption does NOT mean these routes
- *                      are public. If an admin route is added without auth, this exemption will
- *                      silently cover it. Admin routes should be audited independently. Use
- *                      `pnpm exec grep -r "src/app/api/admin" --include="route.ts" -l` to list
- *                      them, then confirm each uses a recognized admin auth primitive.
- *
- *   api/cron/        — Expected to require a Vercel cron secret header or equivalent. Must not
- *                      accept unauthenticated public requests.
- *
- *   api/stripe/      — Stripe webhook routes; authenticated by Stripe signature verification.
- *
- *   api/health,
- *   api/docs,
- *   api/gtm/,
- *   api/legal/,
- *   api/builder/revalidate/
- *                    — Intentionally public or infrastructure-only. Must not return tenant data.
- */
+const classificationRules = [
+  {
+    prefix: "packages/web/src/app/api/admin/",
+    class: "admin",
+    reason: "Admin route namespace; covered by dedicated admin auth verification.",
+  },
+  {
+    prefix: "packages/web/src/app/api/internal/",
+    class: "internal",
+    reason: "Internal integration surface.",
+  },
+  {
+    prefix: "packages/web/src/app/api/cron/",
+    class: "system",
+    reason: "Scheduled job route; validated via signed scheduler secrets.",
+  },
+  {
+    prefix: "packages/web/src/app/api/stripe/",
+    class: "webhook",
+    reason: "Stripe webhook namespace uses signature validation.",
+  },
+  {
+    prefix: "packages/web/src/app/api/connectors/webhook/",
+    class: "webhook",
+    reason: "Connector webhook endpoint; provider signature/event validation expected.",
+  },
+  {
+    prefix: "packages/web/src/app/api/public/",
+    class: "public",
+    reason: "Explicit public namespace.",
+  },
+  {
+    prefix: "packages/web/src/app/api/docs/",
+    class: "public",
+    reason: "Documentation endpoint namespace.",
+  },
+  {
+    prefix: "packages/web/src/app/api/health",
+    class: "public",
+    reason: "Health endpoint.",
+  },
+  {
+    prefix: "packages/web/src/app/api/status",
+    class: "public",
+    reason: "Status/readiness endpoint.",
+  },
+  {
+    prefix: "packages/web/src/app/api/builder/revalidate/",
+    class: "system",
+    reason: "Signed revalidation endpoint.",
+  },
+  {
+    prefix: "packages/web/src/app/api/v1/health",
+    class: "public",
+    reason: "Versioned health endpoint.",
+  },
+  {
+    prefix: "packages/web/src/app/api/v1/ready",
+    class: "public",
+    reason: "Versioned readiness endpoint.",
+  },
+  {
+    prefix: "packages/web/src/app/api/v1/meta",
+    class: "public",
+    reason: "Versioned metadata endpoint.",
+  },
+  {
+    prefix: "packages/web/src/app/api/v1/",
+    class: "tenant",
+    reason: "Versioned API namespace defaults to tenant/app-auth bound.",
+  },
+  {
+    prefix: "packages/web/src/app/api/console/",
+    class: "tenant",
+    reason: "Console namespace operates on tenant/user scoped data.",
+  },
+  {
+    prefix: "packages/web/src/app/api/jobs/",
+    class: "tenant",
+    reason: "Job APIs are tenant-scoped operational data.",
+  },
+  {
+    prefix: "packages/web/src/app/api/exports",
+    class: "tenant",
+    reason: "Export endpoints expose tenant-bound artifacts.",
+  },
+  {
+    prefix: "packages/web/src/app/api/imports",
+    class: "tenant",
+    reason: "Import endpoints modify tenant-bound data.",
+  },
+  {
+    prefix: "packages/web/src/app/api/runs",
+    class: "tenant",
+    reason: "Run endpoints are tenant-bound.",
+  },
+  {
+    prefix: "packages/web/src/app/api/workspaces",
+    class: "tenant",
+    reason: "Workspace APIs are tenant/user-bound.",
+  },
+];
+
 export const knownExemptPrefixes = [
-  "packages/web/src/app/api/admin/",
-  "packages/web/src/app/api/cron/",
-  "packages/web/src/app/api/docs/",
   "packages/web/src/app/api/health",
-  "packages/web/src/app/api/stripe/",
+  "packages/web/src/app/api/docs/",
   "packages/web/src/app/api/gtm/",
   "packages/web/src/app/api/legal/",
   "packages/web/src/app/api/builder/revalidate/",
+];
+
+const manualReviewHints = [
+  { token: "mock", reason: "mock/test endpoint" },
+  { token: "example", reason: "example endpoint" },
+  { token: "demo", reason: "demo endpoint" },
+  { token: "debug", reason: "debug/diagnostic endpoint" },
 ];
 
 function discoverApiRoutes(repoRoot) {
@@ -139,7 +222,37 @@ function discoverApiRoutes(repoRoot) {
   }
 
   walk(apiDir);
-  return routes;
+  return routes.sort((a, b) => a.localeCompare(b));
+}
+
+function classifyRouteFile(routeFile) {
+  for (const rule of classificationRules) {
+    if (routeFile.startsWith(rule.prefix)) {
+      return {
+        category: rule.class,
+        reason: rule.reason,
+        source: `prefix:${rule.prefix}`,
+        confidence: "high",
+      };
+    }
+  }
+
+  const hint = manualReviewHints.find((entry) => routeFile.toLowerCase().includes(entry.token));
+  if (hint) {
+    return {
+      category: "manual-review",
+      reason: `Requires explicit reviewer classification (${hint.reason}).`,
+      source: `hint:${hint.token}`,
+      confidence: "medium",
+    };
+  }
+
+  return {
+    category: "unclassified",
+    reason: "No safe rule matched route path.",
+    source: "none",
+    confidence: "low",
+  };
 }
 
 export function evaluateTenantGuardrails(repoRoot) {
@@ -175,15 +288,53 @@ export function evaluateCoverageGap(repoRoot) {
   const allRoutes = discoverApiRoutes(repoRoot);
   const classifiedFiles = new Set(highRiskRouteRules.map((r) => r.file));
 
-  const unclassified = allRoutes.filter((route) => {
-    if (classifiedFiles.has(route)) return false;
-    return !knownExemptPrefixes.some((prefix) => route.startsWith(prefix));
+  const routeClassifications = allRoutes.map((routeFile) => {
+    if (classifiedFiles.has(routeFile)) {
+      return {
+        file: routeFile,
+        category: "high-risk-reviewed",
+        reason: "Route has explicit high-risk token-level guardrail assertions.",
+        source: "highRiskRouteRules",
+        confidence: "high",
+      };
+    }
+
+    return {
+      file: routeFile,
+      ...classifyRouteFile(routeFile),
+    };
   });
+
+  const categoryCounts = routeClassifications.reduce((acc, route) => {
+    acc[route.category] = (acc[route.category] || 0) + 1;
+    return acc;
+  }, {});
+
+  const unclassifiedRoutes = routeClassifications
+    .filter((route) => route.category === "unclassified")
+    .map((route) => route.file);
+
+  const manualReviewRoutes = routeClassifications
+    .filter((route) => route.category === "manual-review")
+    .map((route) => ({
+      route: route.file,
+      reason: route.reason,
+      suggestedCategory: "public-or-internal-review-required",
+    }));
 
   return {
     totalRoutes: allRoutes.length,
-    classifiedRoutes: classifiedFiles.size,
+    classifiedRoutes: routeClassifications.length - unclassifiedRoutes.length,
     exemptPrefixes: knownExemptPrefixes.length,
-    unclassifiedRoutes: unclassified,
+    classificationCoveragePct:
+      allRoutes.length === 0
+        ? 100
+        : Number(
+            (((allRoutes.length - unclassifiedRoutes.length) / allRoutes.length) * 100).toFixed(2)
+          ),
+    categoryCounts,
+    routeClassifications,
+    manualReviewRoutes,
+    unclassifiedRoutes,
   };
 }
