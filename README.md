@@ -1,25 +1,26 @@
 # Settler
 
-**Settler is the open-source reconciliation control plane for provable financial truth.**
+**Open-source engine that reconciles financial data across systems, surfaces mismatches, and produces verifiable evidence for every run.**
 
-Run deterministic reconciliation workflows, inspect mismatches with traceable context, replay the exact run, and export verifiable evidence.
+Stripe says one thing. Your bank says another. Your ledger says something else. Settler finds every difference, explains why, and proves the results are correct.
 
 ## Why Settler exists
 
-Most teams reconcile across Stripe, ERP, banking, and internal ledgers with scripts + spreadsheets + dashboards that cannot explain divergence under pressure.
+Companies reconcile across Stripe, banks, ERPs, and internal ledgers using spreadsheets and scripts that break silently, produce unexplainable results, and cannot be audited.
 
-Settler gives you a system of record for reconciliation operations:
-- deterministic runs
-- policy-checked routing
-- review workflows
-- tamper-evident evidence outputs
+Settler replaces that with a reconciliation engine where:
+- Every run is **repeatable** — same inputs and rules always produce the same results
+- Every mismatch is **surfaced** — with full context about what didn't match and why
+- Every result is **provable** — evidence packs are generated automatically for audit
+- Every exception is **tracked** — from detection through resolution
 
 ## How it works
 
-1. **Ingest and normalize** records from source systems.
-2. **Reconcile and route** mismatches with explicit rules/policies.
-3. **Review and resolve** exceptions with operator context.
-4. **Replay and prove** results with exported evidence artifacts.
+1. **Ingest** records from Stripe, banks, ERPs, and ledgers.
+2. **Reconcile** with explicit matching rules defined in code.
+3. **Detect** mismatches and route them to a review queue.
+4. **Prove** results with exported evidence (input data, rules applied, outputs, cryptographic hashes).
+5. **Replay** any run to verify or debug the results.
 
 ## What you can do in 5 minutes
 
@@ -40,10 +41,12 @@ Demo outputs are written to `examples/demo-output`:
 
 ## Why Settler is different
 
-- **Replay any run:** verify that reruns produce the same fingerprint for the same inputs/config.
-- **Prove every result:** export evidence packs per run for audit and incident response.
-- **Enforce policy in operations:** codify routing/review behavior instead of relying on tribal process.
-- **Keep OSS control:** self-host the core runtime and keep enterprise add-ons optional.
+- **Replayable runs:** re-run any reconciliation with identical results. Debugging and auditing become tractable.
+- **Evidence generation:** every run produces an evidence pack — what data went in, what rules applied, what matched, what didn't.
+- **Rules as code:** matching rules live in your repository, go through pull requests, and run in CI.
+- **Exception workflow:** mismatches route to a review queue with assignment, resolution tracking, and audit context.
+- **Self-hosted, open source:** Apache 2.0 licensed. Your data stays in your infrastructure.
+- **API and SDK first:** reconciliation runs can be triggered programmatically and embedded in operational workflows.
 
 ## OSS vs Enterprise at a glance
 
@@ -97,18 +100,18 @@ If you are evaluating quickly, run `pnpm demo` first, then wire your own data so
 ## Architecture overview
 
 Core runtime primitives:
-- **Connections:** define external data sources.
-- **Pipelines:** deterministic processing configurations.
-- **Runs:** immutable execution instances.
-- **Results:** normalized reconciliation outputs.
-- **Review Queue:** operator decisions and resolution states.
-- **Governance/Audit:** policy, evidence, and traceability surfaces.
+- **Connections:** external data sources (Stripe, banks, ERPs, ledgers).
+- **Pipelines:** reconciliation workflow configurations.
+- **Runs:** individual reconciliation executions (immutable, replayable).
+- **Results:** matched and mismatched records with full context.
+- **Review Queue:** exception handling with assignment and resolution tracking.
+- **Evidence:** audit-ready proof of what happened in each run.
 
 Key packages:
-- `packages/api` – reconciliation API/domain/infrastructure.
-- `packages/web` – Next.js App Router product + console + docs routes.
-- `packages/adapters` – connector/adaptor implementations.
-- `packages/sdk`, `packages/react-settler`, `packages/sdk-go`, `packages/workhorse` – client and worker tooling.
+- `packages/api` – reconciliation API, domain logic, and data layer.
+- `packages/web` – Next.js web app (product console, docs, marketing).
+- `packages/adapters` – connectors for Stripe, banks, ERPs, and other data sources.
+- `packages/sdk`, `packages/react-settler`, `packages/sdk-go`, `packages/workhorse` – client SDKs and background workers.
 
 ## Contributing
 

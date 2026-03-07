@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Quickstart - Docs',
-  description: 'Get started with deterministic reconciliation in Settler',
+  description: 'Get started with Settler — reconcile financial data, find mismatches, and verify results',
 };
 
 const steps = [
@@ -27,7 +27,7 @@ const client = new SettlerClient({
   },
   {
     title: 'Create a Reconciliation Run',
-    description: 'Define deterministic rules for matching',
+    description: 'Define matching rules for your data sources',
     code: `const job = await client.jobs.create({
   name: "My First Reconciliation",
   source: {
@@ -74,7 +74,7 @@ const upload = await client.data.upload({
   },
   {
     title: 'View Results',
-    description: 'Review variances and evidence',
+    description: 'Review mismatches and evidence',
     code: `# Get job status
 const status = await client.jobs.get(job.id);
 // eslint-disable-next-line no-console
@@ -96,12 +96,12 @@ export default function QuickstartPage() {
       <h1>Quickstart Guide</h1>
       
       <p className="text-lg text-slate-600 dark:text-slate-400">
-        Get started with Settler. Follow these steps to create a deterministic reconciliation run.
+        Get started with Settler. Follow these steps to run your first reconciliation.
       </p>
 
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 my-6">
         <p className="text-sm text-blue-800 dark:text-blue-200">
-          <strong>Note:</strong> Settler surfaces variances and evidence. Your team reviews and resolves outcomes.
+          <strong>Note:</strong> Settler surfaces mismatches and evidence. Your team reviews and resolves outcomes.
         </p>
       </div>
 

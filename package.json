@@ -2,7 +2,7 @@
   "name": "settler-monorepo",
   "version": "1.0.0",
   "private": true,
-  "description": "Reconciliation-as-a-Service API - Complete monorepo",
+  "description": "Open-source reconciliation engine — match financial records, surface mismatches, and produce verifiable evidence",
   "workspaces": [
     "packages/*"
   ],

@@ -23,7 +23,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Added
 
-- Deterministic reconciliation control plane primitives across connections, pipelines, runs, and results.
+- Reconciliation engine primitives across connections, pipelines, runs, and results.
 - Operator review queue and governance/audit baseline flows in API and web surfaces.
 - Monorepo package topology for API, web, adapters, SDKs, and worker tooling.
 

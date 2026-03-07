@@ -2,7 +2,7 @@
 
 ## Canonical architecture narrative
 
-Settler runs as a reconciliation control plane with a traceability spine:
+Settler runs as a reconciliation engine with a traceability spine:
 
 1. **Ingestion/connectors** pull transaction/document feeds.
 2. **Normalization** converts source variance into typed internal records.

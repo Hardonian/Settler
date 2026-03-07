@@ -4,7 +4,7 @@ This document defines the release boundary between Settler OSS and optional ente
 
 ## OSS Scope
 
-OSS includes the reconciliation control plane primitives and default runtime:
+OSS includes the core reconciliation engine and default runtime:
 
 - Organizations/workspaces, connections, pipelines, runs, results, rules, and review queue flows.
 - Core governance/audit traces needed for deterministic reconciliation operations.

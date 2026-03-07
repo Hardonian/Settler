@@ -9,7 +9,7 @@ import { Rocket, Code, Zap, Shield } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Documentation - Settler",
-  description: "Docs for running deterministic reconciliation workflows, replaying runs, and exporting evidence with Settler",
+  description: "Get started with Settler — reconcile financial data, find mismatches, replay runs, and export evidence",
 };
 
 export default function DocsPage() {

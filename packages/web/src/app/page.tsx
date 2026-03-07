@@ -347,7 +347,7 @@ export default function Home() {
         <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pb-16 md:pb-24">
           <div className="max-w-3xl">
             <p className="mb-4 text-xs uppercase tracking-[0.28em] text-cyan-200/80">
-              Open-source reconciliation control plane
+              Open-source reconciliation engine
             </p>
             <h1 className="text-5xl font-bold leading-[0.95] text-white sm:text-6xl md:text-7xl">
               Reconcile the
@@ -548,7 +548,7 @@ export default function Home() {
           <div>
             <p className="text-lg font-semibold tracking-[0.14em] text-white">SETTLER</p>
             <p className="mt-3 text-sm text-slate-300">
-              Open-source reconciliation control plane for replayable, evidence-backed financial truth.
+              Open-source reconciliation engine with replayable runs and verifiable evidence.
             </p>
             <div className="mt-6 flex items-center gap-2 text-xs font-mono text-emerald-200">
               <Circle className="h-2.5 w-2.5 fill-emerald-400 text-emerald-400 animate-pulse" />

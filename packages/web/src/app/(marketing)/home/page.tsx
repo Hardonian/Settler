@@ -89,15 +89,15 @@ export default function HomePage() {
   const coreCapabilities = [
     {
       icon: Code2,
-      title: "Deterministic Reconciliation Engine",
+      title: "Repeatable Reconciliation Engine",
       description:
-        "Same data and same rules produce identical results. Every time. No hidden heuristics, no probabilistic drift.",
+        "Same data and same rules produce identical results. Every time. No hidden logic, no unpredictable changes between runs.",
     },
     {
       icon: Shield,
-      title: "Governance Boundaries",
+      title: "Access Controls and Audit Trails",
       description:
-        "Tenant isolation, policy-based access controls, and audit-ready evidence trails are structural, not optional.",
+        "Tenant isolation, role-based access, and audit-ready evidence trails are built in from the start.",
     },
     {
       icon: Terminal,
@@ -115,7 +115,7 @@ export default function HomePage() {
       icon: Cpu,
       title: "Replayable Runs",
       description:
-        "Re-run any reconciliation with identical results. Debugging, testing, and auditing become tractable.",
+        "Re-run any reconciliation and get identical results. Debug mismatches, verify past runs, or prepare for audit in minutes.",
     },
     {
       icon: Eye,
@@ -185,7 +185,7 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
                   <div className="mb-6 flex justify-start">
                     <Badge className="bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 text-sm font-medium inline-flex items-center gap-2">
                       <Github className="w-4 h-4" aria-hidden="true" />
-                      Deterministic Reconciliation Engine
+                      Open Source Reconciliation Engine
                     </Badge>
                   </div>
 
@@ -193,7 +193,7 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
                     <TextRevealHeading
                       as="h1"
                       id="hero-heading"
-                      text="Reconciliation Infrastructure for Financial Operations"
+                      text="Reconcile Financial Data. Find Every Mismatch. Prove the Results."
                       className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold mb-4 sm:mb-6 text-slate-900 dark:text-white tracking-tight leading-[1.1]"
                       delay={0}
                       staggerDelay={0.02}
@@ -203,9 +203,9 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
 
                   <div className="mb-10 sm:mb-12">
                     <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 leading-relaxed">
-                      Normalize data. Apply explicit rules. Surface variances for review.
-                      Deterministic, inspectable, and designed for teams that require operational
-                      confidence.
+                      Settler matches records across Stripe, banks, ERPs, and ledgers — then
+                      surfaces every mismatch with full context. Every run produces verifiable
+                      evidence. Every run can be replayed.
                     </p>
                   </div>
 
@@ -230,8 +230,8 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
                       asChild
                       className="w-full sm:w-auto px-8 py-6 text-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200"
                     >
-                      <Link href="/contact" className="flex items-center justify-center gap-3">
-                        <span>Discuss Your Architecture</span>
+                      <Link href="https://github.com/Hardonian/Settler" className="flex items-center justify-center gap-3">
+                        <span>View on GitHub</span>
                       </Link>
                     </Button>
                   </div>
@@ -264,11 +264,11 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12 sm:mb-16">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
-                Operational Confidence Through Determinism
+                Reliable, Repeatable Reconciliation
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
-                No black boxes. No probabilistic drift. Inspectable rules, traceable evidence, and
-                reviewable decisions at every step.
+                No black boxes. No unexplainable results. Inspectable rules, traceable evidence,
+                and reviewable decisions at every step.
               </p>
             </div>
 
@@ -443,11 +443,11 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12 sm:mb-16">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
-                What Mature Financial Infrastructure Evolves Toward
+                Why Teams Move Beyond Spreadsheets
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
-                Manual reconciliation is a phase. Deterministic, API-based reconciliation is the
-                stable end-state.
+                Manual reconciliation breaks at scale. Repeatable, API-driven reconciliation is
+                what teams build toward.
               </p>
             </div>
 
@@ -455,9 +455,9 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
               {[
                 {
                   icon: Target,
-                  title: "Failure Surface Reduction",
+                  title: "Fewer Reconciliation Errors",
                   description:
-                    "Reconciliation is not a task. It is a structural risk surface. Determinism reduces that surface by eliminating probabilistic drift.",
+                    "Reconciliation errors compound when processes are manual and results are unrepeatable. Settler eliminates drift by making every run deterministic and traceable.",
                 },
                 {
                   icon: Eye,
@@ -469,7 +469,7 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
                   icon: Layers,
                   title: "Operational Maturity",
                   description:
-                    "From manual exports to version-controlled rules. From fragile scripts to deterministic pipelines. From hope to operational confidence.",
+                    "From manual exports to version-controlled rules. From fragile scripts to replayable workflows. From guesswork to verifiable results.",
                 },
               ].map((item, idx) => {
                 const Icon = item.icon;
@@ -515,10 +515,10 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
                   What is Settler?
                 </AccordionTrigger>
                 <AccordionContent className="text-sm sm:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
-                  Settler is a deterministic reconciliation engine that normalizes financial data,
-                  applies explicit matching rules, and surfaces variances for human review. It is
-                  designed for teams who need transparency, auditability, and operational confidence
-                  in their financial workflows.
+                  Settler is an open-source reconciliation engine that matches financial records
+                  across Stripe, banks, ERPs, and ledgers. It surfaces every mismatch with full
+                  context, generates verifiable evidence for each run, and lets you replay any
+                  run to verify the results.
                 </AccordionContent>
               </AccordionItem>
 
@@ -559,7 +559,7 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
                 </AccordionTrigger>
                 <AccordionContent className="text-sm sm:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
                   Settler is not accounting software, an audit tool, or compliance certification. It
-                  does not make decisions or automate judgment. It surfaces variances and evidence
+                  does not make decisions or automate judgment. It surfaces mismatches and evidence
                   for human review. You decide how to act on the results.
                 </AccordionContent>
               </AccordionItem>
@@ -577,11 +577,11 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
               Apache 2.0 Licensed
             </Badge>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-6 tracking-tight">
-              Own Your Reconciliation Logic
+              Reconciliation You Can Verify
             </h2>
             <p className="text-lg sm:text-xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
               Deploy reconciliation you can audit, test, and version control. Start with the
-              documentation or discuss your architecture with our team.
+              quickstart or explore the source on GitHub.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
@@ -601,8 +601,8 @@ const variances = await client.reconciliations.getVariances(reconciliation.id);`
                 asChild
                 className="w-full sm:w-auto px-10 py-7 text-lg border-2 border-slate-600 bg-transparent text-white hover:bg-slate-800 transition-all duration-200 min-h-[56px] min-w-[200px]"
               >
-                <Link href="/contact" className="flex items-center justify-center gap-3">
-                  Discuss Your Architecture
+                <Link href="https://github.com/Hardonian/Settler" className="flex items-center justify-center gap-3">
+                  View on GitHub
                   <ArrowRight className="w-5 h-5" aria-hidden="true" />
                 </Link>
               </Button>

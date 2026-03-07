@@ -1,8 +1,8 @@
 # Settler Documentation
 
-Settler is an open-source reconciliation control plane for provable financial truth.
+Settler is the open-source engine that reconciles financial data across systems, surfaces mismatches, and produces verifiable evidence for every run.
 
-Use this docs hub to go from first run → mismatch explanation → replay verification → evidence export.
+Use this docs hub to go from first run → mismatch found → evidence inspected → run replayed.
 
 ## Start here in 5 minutes
 
@@ -14,7 +14,7 @@ pnpm demo
 pnpm settler:replay examples/demo-output/evidence.json
 ```
 
-3. Inspect generated artifacts in `examples/demo-output`.
+3. Inspect generated evidence in `examples/demo-output`.
 
 ## Canonical doc map
 
