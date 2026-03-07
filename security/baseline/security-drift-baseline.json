@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-07T19:55:07.914Z",
+  "generatedAt": "2026-03-07T20:47:28.872Z",
   "verifierVersion": "2026-03-07.2",
   "routeTotal": 228,
   "routePaths": [
@@ -272,13 +272,14 @@
     "/openapi.json"
   ],
   "headerProbe": {
-    "failedChecks": 0,
+    "failedChecks": 136,
     "probeableRoutes": 133,
-    "degraded": true
+    "degraded": false
   },
   "dependencyAudit": {
     "outcome": "warn-backend-unavailable",
     "degraded": true,
     "degradedReasons": ["pnpm-audit-backend-unavailable", "osv-scanner-missing"]
-  }
+  },
+  "headerProbeAllSkipped": false
 }

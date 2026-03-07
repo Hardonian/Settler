@@ -1,0 +1,147 @@
+{
+  "generatedAt": "2026-03-07T20:47:21.931Z",
+  "verifierVersion": "2026-03-07.1",
+  "runId": "2026-03-07T20-47-21-927Z",
+  "totalAdminRoutes": 9,
+  "passed": 9,
+  "failed": 0,
+  "warnings": 9,
+  "checks": [
+    {
+      "routeFile": "packages/web/src/app/api/admin/audit/route.ts",
+      "route": "/api/admin/audit",
+      "status": "passed",
+      "checks": {
+        "authToken": "isSuperAdmin(",
+        "denialToken": "Forbidden",
+        "wrapperToken": "withSecurity(",
+        "cacheToken": null
+      },
+      "failures": [],
+      "warnings": [
+        "no explicit denial cache-control/no-store token (verify at runtime/header probe)"
+      ]
+    },
+    {
+      "routeFile": "packages/web/src/app/api/admin/exceptions/[id]/escalate/route.ts",
+      "route": "/api/admin/exceptions/[id]/escalate",
+      "status": "passed",
+      "checks": {
+        "authToken": "isSuperAdmin(",
+        "denialToken": "Forbidden",
+        "wrapperToken": "withSecurity(",
+        "cacheToken": null
+      },
+      "failures": [],
+      "warnings": [
+        "no explicit denial cache-control/no-store token (verify at runtime/header probe)"
+      ]
+    },
+    {
+      "routeFile": "packages/web/src/app/api/admin/exceptions/[id]/resolve/route.ts",
+      "route": "/api/admin/exceptions/[id]/resolve",
+      "status": "passed",
+      "checks": {
+        "authToken": "isSuperAdmin(",
+        "denialToken": "Forbidden",
+        "wrapperToken": "withSecurity(",
+        "cacheToken": null
+      },
+      "failures": [],
+      "warnings": [
+        "no explicit denial cache-control/no-store token (verify at runtime/header probe)"
+      ]
+    },
+    {
+      "routeFile": "packages/web/src/app/api/admin/exceptions/route.ts",
+      "route": "/api/admin/exceptions",
+      "status": "passed",
+      "checks": {
+        "authToken": "isSuperAdmin(",
+        "denialToken": "Forbidden",
+        "wrapperToken": "withSecurity(",
+        "cacheToken": null
+      },
+      "failures": [],
+      "warnings": [
+        "no explicit denial cache-control/no-store token (verify at runtime/header probe)"
+      ]
+    },
+    {
+      "routeFile": "packages/web/src/app/api/admin/health/route.ts",
+      "route": "/api/admin/health",
+      "status": "passed",
+      "checks": {
+        "authToken": "isSuperAdmin(",
+        "denialToken": "Forbidden",
+        "wrapperToken": "withSecurity(",
+        "cacheToken": null
+      },
+      "failures": [],
+      "warnings": [
+        "no explicit denial cache-control/no-store token (verify at runtime/header probe)"
+      ]
+    },
+    {
+      "routeFile": "packages/web/src/app/api/admin/jobforge/route.ts",
+      "route": "/api/admin/jobforge",
+      "status": "passed",
+      "checks": {
+        "authToken": "requireSuperAdmin(",
+        "denialToken": null,
+        "wrapperToken": null,
+        "cacheToken": null
+      },
+      "failures": [],
+      "warnings": [
+        "no explicit denial cache-control/no-store token (verify at runtime/header probe)"
+      ]
+    },
+    {
+      "routeFile": "packages/web/src/app/api/admin/metrics/route.ts",
+      "route": "/api/admin/metrics",
+      "status": "passed",
+      "checks": {
+        "authToken": "isSuperAdmin(",
+        "denialToken": "Forbidden",
+        "wrapperToken": "withSecurity(",
+        "cacheToken": null
+      },
+      "failures": [],
+      "warnings": [
+        "no explicit denial cache-control/no-store token (verify at runtime/header probe)"
+      ]
+    },
+    {
+      "routeFile": "packages/web/src/app/api/admin/runs/route.ts",
+      "route": "/api/admin/runs",
+      "status": "passed",
+      "checks": {
+        "authToken": "isSuperAdmin(",
+        "denialToken": "Forbidden",
+        "wrapperToken": "withSecurity(",
+        "cacheToken": null
+      },
+      "failures": [],
+      "warnings": [
+        "no explicit denial cache-control/no-store token (verify at runtime/header probe)"
+      ]
+    },
+    {
+      "routeFile": "packages/web/src/app/api/admin/stream/route.ts",
+      "route": "/api/admin/stream",
+      "status": "passed",
+      "checks": {
+        "authToken": "isSuperAdmin(",
+        "denialToken": "Forbidden",
+        "wrapperToken": "withSecurity(",
+        "cacheToken": null
+      },
+      "failures": [],
+      "warnings": [
+        "no explicit denial cache-control/no-store token (verify at runtime/header probe)"
+      ]
+    }
+  ],
+  "denialPolicy": "Unauthenticated and non-admin callers must be denied (401/403) with non-sensitive payloads and no-store cache directives."
+}

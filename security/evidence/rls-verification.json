@@ -1,0 +1,13 @@
+{
+  "generatedAt": "2026-03-07T20:47:27.890Z",
+  "verifierVersion": "2026-03-07.1",
+  "runId": "2026-03-07T20-47-27-889Z",
+  "status": "not-run",
+  "proofLevel": "static-only",
+  "boundary": "Live database RLS enforcement is not proven in this run. Static migration/policy assertions and app-level tenant tests are separate controls.",
+  "liveDbConfigured": false,
+  "command": "pnpm exec tsx scripts/verify-rls-status.ts",
+  "commandStatus": null,
+  "stdout": "",
+  "stderr": ""
+}

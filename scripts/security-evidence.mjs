@@ -9,17 +9,14 @@ const evidenceDir = path.join(repoRoot, "security", "evidence");
 mkdirSync(evidenceDir, { recursive: true });
 
 function checksum(relPath) {
-  const fullPath = path.join(repoRoot, relPath);
-  const content = readFileSync(fullPath);
+  const content = readFileSync(path.join(repoRoot, relPath));
   return createHash("sha256").update(content).digest("hex");
 }
 
 function maybeCopy(fromRel, toName, required = true) {
   const from = path.join(repoRoot, fromRel);
   const toRel = path.join("security", "evidence", toName);
-  if (!existsSync(from)) {
-    return { relPath: toRel, source: fromRel, present: false, required };
-  }
+  if (!existsSync(from)) return { relPath: toRel, source: fromRel, present: false, required };
   copyFileSync(from, path.join(repoRoot, toRel));
   return { relPath: toRel, source: fromRel, present: true, required };
 }
@@ -28,16 +25,12 @@ function runMetadata() {
   let sha = "unknown";
   try {
     sha = execSync("git rev-parse HEAD", { cwd: repoRoot, encoding: "utf8" }).trim();
-  } catch {
-    // noop
-  }
+  } catch {}
   return {
     commitSha: sha,
     timestamp: new Date().toISOString(),
     ciRunId: process.env.GITHUB_RUN_ID || null,
     auditMode: process.env.SECURITY_AUDIT_MODE || "strict",
-    headerProbeStrict: process.env.SECURITY_HEADER_PROBE_STRICT === "1",
-    headerProbeAllowDegraded: process.env.SECURITY_HEADER_PROBE_ALLOW_DEGRADED === "1",
   };
 }
 
@@ -55,6 +48,9 @@ const artifacts = [
   maybeCopy("artifacts/security/cross-tenant-results-latest.json", "cross-tenant-results.json"),
   maybeCopy("artifacts/security/header-probe-latest.json", "header-probe.json"),
   maybeCopy("artifacts/security/dependency-audit-latest.json", "dependency-audit.json"),
+  maybeCopy("artifacts/security/admin-route-authz-latest.json", "admin-route-authz.json"),
+  maybeCopy("artifacts/security/rls-verification-latest.json", "rls-verification.json", false),
+  maybeCopy("security/dependency-triage.json", "dependency-triage.json", false),
 ];
 
 const missingRequired = artifacts.filter((entry) => entry.required && !entry.present);
@@ -76,19 +72,23 @@ const tenantCoverage = safeRead("security/evidence/tenant-coverage.json");
 const crossTenant = safeRead("security/evidence/cross-tenant-results.json");
 const headerProbe = safeRead("security/evidence/header-probe.json");
 const depAudit = safeRead("security/evidence/dependency-audit.json");
+const adminAuthz = safeRead("security/evidence/admin-route-authz.json");
+const rlsVerification = safeRead("security/evidence/rls-verification.json");
 
 const degradedChecks = {
   tenantCoverage: Boolean(tenantCoverage?.degraded),
   crossTenant: crossTenant?.status !== "passed",
   headerProbe: Boolean(headerProbe?.degraded),
   dependencyAudit: Boolean(depAudit?.degraded),
+  adminAuthz: (adminAuthz?.failed || 0) > 0,
+  rlsVerification: rlsVerification?.proofLevel !== "live-db-confirmed",
 };
 
 const completeness = Object.values(degradedChecks).some(Boolean) ? "partial" : "complete";
 
 const manifest = {
   ...metadata,
-  verifierVersion: "2026-03-07.2",
+  verifierVersion: "2026-03-07.3",
   completeness,
   degradedChecks,
   artifacts: artifacts.map((entry) => ({
@@ -105,12 +105,6 @@ writeFileSync(path.join(evidenceDir, "manifest.json"), JSON.stringify(manifest, 
 const summaryJson = {
   generatedAt: metadata.timestamp,
   commitSha: metadata.commitSha,
-  ciRunId: metadata.ciRunId,
-  policy: {
-    dependencyAuditMode: metadata.auditMode,
-    headerProbeStrict: metadata.headerProbeStrict,
-    headerProbeAllowDegraded: metadata.headerProbeAllowDegraded,
-  },
   completeness,
   degradedChecks,
   results: {
@@ -131,43 +125,24 @@ const summaryJson = {
       degraded: depAudit?.degraded ?? null,
       reasons: depAudit?.degradedReasons ?? null,
     },
+    adminAuthz: {
+      totalRoutes: adminAuthz?.totalAdminRoutes ?? null,
+      failed: adminAuthz?.failed ?? null,
+      warnings: adminAuthz?.warnings ?? null,
+    },
+    rlsVerification: {
+      proofLevel: rlsVerification?.proofLevel ?? "not-captured",
+      status: rlsVerification?.status ?? null,
+      boundary: rlsVerification?.boundary ?? null,
+    },
   },
 };
-
 writeFileSync(
   path.join(evidenceDir, "security-summary.json"),
   JSON.stringify(summaryJson, null, 2)
 );
 
-const summary = `# Security Evidence Summary
-
-- Commit SHA: ${metadata.commitSha}
-- Timestamp: ${metadata.timestamp}
-- CI Run ID: ${metadata.ciRunId || "n/a"}
-- Audit Policy Mode: ${metadata.auditMode}
-- Header Probe Strict Mode: ${metadata.headerProbeStrict}
-- Header Probe Degraded Override: ${metadata.headerProbeAllowDegraded}
-- Evidence Completeness: ${completeness}
-
-## Snapshot
-- Route registry total: ${routeRegistry?.totalRoutes ?? "n/a"}
-- Tenant-scoped verified: ${tenantCoverage?.verifiedRoutes ?? "n/a"}/${tenantCoverage?.tenantScopedRoutes ?? "n/a"}
-- Cross-tenant test status: ${crossTenant?.status ?? "n/a"}
-- Header probe failed checks: ${headerProbe?.counts?.failed ?? "n/a"}
-- Header probe degraded: ${headerProbe?.degraded ?? "n/a"}
-- Dependency audit outcome: ${depAudit?.finalOutcome ?? "n/a"}
-- Dependency audit degraded: ${depAudit?.degraded ?? "n/a"}
-`;
-const headerProbeAllSkipped =
-  headerProbe?.counts?.passed === 0 &&
-  headerProbe?.counts?.failed === 0 &&
-  (headerProbe?.counts?.skipped ?? 0) > 0;
-const headerProbeNote = headerProbeAllSkipped
-  ? " (SKIPPED — no build available; not a real probe result)"
-  : "";
-
 const missingArtifacts = artifacts.filter((entry) => !entry.present).map((entry) => entry.relPath);
-
 const summary = [
   "# Security Evidence Summary",
   "",
@@ -175,34 +150,29 @@ const summary = [
   `- Timestamp: ${metadata.timestamp}`,
   `- CI Run ID: ${metadata.ciRunId || "n/a"}`,
   `- Audit Policy Mode: ${metadata.auditMode}`,
+  `- Evidence Completeness: ${completeness}`,
   "",
   "## Snapshot",
   `- Route registry total: ${routeRegistry?.totalRoutes ?? "n/a"}`,
   `- Tenant-scoped verified: ${tenantCoverage?.verifiedRoutes ?? "n/a"}/${tenantCoverage?.tenantScopedRoutes ?? "n/a"}`,
   `- Cross-tenant test status: ${crossTenant?.status ?? "n/a"}`,
-  `- Header probe failed checks: ${headerProbe?.counts?.failed ?? "n/a"}${headerProbeNote}`,
+  `- Header probe failed checks: ${headerProbe?.counts?.failed ?? "n/a"}`,
   `- Dependency audit outcome: ${depAudit?.finalOutcome ?? "n/a"}`,
+  `- Admin route authz failures: ${adminAuthz?.failed ?? "n/a"}`,
+  `- RLS proof level: ${rlsVerification?.proofLevel ?? "not-captured"}`,
   ...(missingArtifacts.length > 0
-    ? ["", "## Missing Artifacts", ...missingArtifacts.map((f) => `- ${f} (not present in this run)`)]
+    ? [
+        "",
+        "## Missing Artifacts",
+        ...missingArtifacts.map((f) => `- ${f} (not present in this run)`),
+      ]
     : []),
   "",
-  "## What This Evidence Pack Proves",
-  "",
-  "- Route surface was discovered from the live filesystem at the commit above.",
-  "- Tenant-scoped routes were checked for at least one recognized isolation control token (static presence check).",
-  "- Cross-tenant runtime tests were executed against the fixture test suite (pass/fail recorded).",
-  "- Security headers were probed on discoverable non-parameterized API routes (if build was available).",
-  "- Dependency audit was run against the production dependency tree with the stated policy mode.",
-  "- All artifact files are checksummed in manifest.json to detect post-generation tampering.",
-  "",
-  "## What This Evidence Pack Does Not Prove",
-  "",
-  "- **Not a penetration test.** No active exploitation was attempted. Static token presence does not guarantee correct runtime enforcement of tenant scoping.",
-  "- **Not a full DAST scan.** Header probe covers only non-parameterized static routes reachable via GET. Parameterized routes, edge functions, and authenticated flows require separate runtime validation.",
-  "- **Not a complete CVE audit.** If dependency audit backend was unavailable (network restriction, registry auth), the audit outcome is recorded as unavailable, not as clean.",
-  "- **Not a confirmation of RLS enforcement.** Row-Level Security policies are documented in SECURITY_INVARIANTS.md but require a live database integration test (RUN_DB_TESTS=true) to confirm.",
-  "- **OSV scanner is optional.** If osv-scanner binary was absent from the runtime image, only pnpm audit results are included. CI remains authoritative for OSV coverage.",
-  "- **Admin and internal routes are exempt from tenant-scoping checks.** These routes must be validated under their own auth model; this pack does not cover them.",
+  "## Boundaries",
+  "- Dependency findings are authoritative only when registry audit backend is reachable.",
+  "- Route classification and tenant checks are static-analysis controls; runtime tests are still required.",
+  "- Header probes cover GET-accessible routes and selected error/denial paths.",
+  "- RLS is live-confirmed only when DB credentials are present and the live verification script runs.",
   "",
 ].join("\n");
 

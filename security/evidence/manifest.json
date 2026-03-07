@@ -1,17 +1,17 @@
 {
-  "commitSha": "8d7982e76b3c5eab2586a60769f2b5a53b445cd6",
-  "timestamp": "2026-03-07T19:55:25.272Z",
+  "commitSha": "5c0313937628f0b74394775590e7ebf74cca8467",
+  "timestamp": "2026-03-07T20:47:28.022Z",
   "ciRunId": null,
   "auditMode": "strict",
-  "headerProbeStrict": false,
-  "headerProbeAllowDegraded": true,
-  "verifierVersion": "2026-03-07.2",
+  "verifierVersion": "2026-03-07.3",
   "completeness": "partial",
   "degradedChecks": {
     "tenantCoverage": false,
     "crossTenant": false,
-    "headerProbe": true,
-    "dependencyAudit": true
+    "headerProbe": false,
+    "dependencyAudit": true,
+    "adminAuthz": false,
+    "rlsVerification": true
   },
   "artifacts": [
     {
@@ -43,28 +43,58 @@
       "source": "artifacts/security/dependency-audit-latest.json",
       "present": true,
       "required": true
+    },
+    {
+      "file": "security/evidence/admin-route-authz.json",
+      "source": "artifacts/security/admin-route-authz-latest.json",
+      "present": true,
+      "required": true
+    },
+    {
+      "file": "security/evidence/rls-verification.json",
+      "source": "artifacts/security/rls-verification-latest.json",
+      "present": true,
+      "required": false
+    },
+    {
+      "file": "security/evidence/dependency-triage.json",
+      "source": "security/dependency-triage.json",
+      "present": true,
+      "required": false
     }
   ],
   "checksums": [
     {
       "file": "security/evidence/route-registry.json",
-      "sha256": "8c141ff494ac8374de06865dff1f143d93ab7e93b66b94d346b44147b9984541"
+      "sha256": "5b150c9e214312b8696b910e8c113fbe5f5516ba6195e14344c40c4dffef78e8"
     },
     {
       "file": "security/evidence/tenant-coverage.json",
-      "sha256": "631c6052b26fc50b9a1b403ae3cf0947c9e0459825c8940d622501cd5033a189"
+      "sha256": "bffb509559c339fcd594bcc8e4c0b3fda11166dd045362ee6ea2a1a878efbb29"
     },
     {
       "file": "security/evidence/cross-tenant-results.json",
-      "sha256": "7130802838aae52df4ba149df68fcddd652bdc7fd10827a98c33075798d576e1"
+      "sha256": "d8c9acd956f0458844af3ed1d7f06daaabdfbafdf9a7a5d9aab538e543169701"
     },
     {
       "file": "security/evidence/header-probe.json",
-      "sha256": "ed134171e13623121a51b7d885fffa64e4437c77d2573a60620a6ffaa085cfed"
+      "sha256": "b3c3e6e8be3c6a2758c07769e556b970664f493323fd9be1365eb43b4d6c8ce8"
     },
     {
       "file": "security/evidence/dependency-audit.json",
-      "sha256": "d7cdf3584de14323a84e7f5169b676df35668c787e8ed81f22712781aab80b17"
+      "sha256": "48c6e252c8b17e495a41d728232e5a36296b924e53e635220e1ae8fbd5e54c7c"
+    },
+    {
+      "file": "security/evidence/admin-route-authz.json",
+      "sha256": "55e88ae22ab9dd6530509d43c46989e4376fb3ca2f5eeeddd65e76e33e575086"
+    },
+    {
+      "file": "security/evidence/rls-verification.json",
+      "sha256": "cce88a0e29901828f86a17d5129c319bc1eb091cef0a4ea921ea5d918fc629bb"
+    },
+    {
+      "file": "security/evidence/dependency-triage.json",
+      "sha256": "ad40aefdfa52f796d6b3521ed4fec0d86954e30a0698fa18bfab302fe27b7fd3"
     }
   ]
 }

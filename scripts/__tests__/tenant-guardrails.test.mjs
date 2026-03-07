@@ -71,7 +71,7 @@ test("evaluateCoverageGap identifies unclassified routes", () => {
     // Add an unclassified route that is not in highRiskRouteRules or exempt prefixes
     const unclassifiedDir = path.join(
       fixtureRoot,
-      "packages/web/src/app/api/console/secret-data"
+      "packages/web/src/app/api/unknown-surface/secret-data"
     );
     mkdirSync(unclassifiedDir, { recursive: true });
     writeFileSync(path.join(unclassifiedDir, "route.ts"), "export function GET() {}", "utf8");
@@ -85,9 +85,9 @@ test("evaluateCoverageGap identifies unclassified routes", () => {
   try {
     const gap = evaluateCoverageGap(root);
     assert.ok(gap.totalRoutes >= highRiskRouteRules.length + 1);
-    assert.equal(gap.classifiedRoutes, highRiskRouteRules.length);
+    assert.ok(gap.classifiedRoutes >= highRiskRouteRules.length);
     assert.ok(
-      gap.unclassifiedRoutes.some((r) => r.includes("console/secret-data")),
+      gap.unclassifiedRoutes.some((r) => r.includes("unknown-surface/secret-data")),
       "unclassified route should appear in gap report"
     );
     assert.ok(
@@ -130,6 +130,35 @@ test("evaluateCoverageGap cron exempt prefix is not surfaced as unclassified", (
       !gap.unclassifiedRoutes.some((r) => r.includes("cron/daily-job")),
       "cron route should be exempt and not appear in unclassifiedRoutes"
     );
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("evaluateCoverageGap classifies admin and v1 routes by category", () => {
+  const root = setupFixture((fixtureRoot) => {
+    const adminDir = path.join(fixtureRoot, "packages/web/src/app/api/admin/metrics");
+    mkdirSync(adminDir, { recursive: true });
+    writeFileSync(path.join(adminDir, "route.ts"), "export function GET() {}", "utf8");
+
+    const v1Dir = path.join(fixtureRoot, "packages/web/src/app/api/v1/widgets");
+    mkdirSync(v1Dir, { recursive: true });
+    writeFileSync(path.join(v1Dir, "route.ts"), "export function GET() {}", "utf8");
+  });
+
+  try {
+    const gap = evaluateCoverageGap(root);
+    const adminEntry = gap.routeClassifications.find((r) =>
+      r.file.includes("api/admin/metrics/route.ts")
+    );
+    const v1Entry = gap.routeClassifications.find((r) =>
+      r.file.includes("api/v1/widgets/route.ts")
+    );
+
+    assert.ok(adminEntry);
+    assert.equal(adminEntry.category, "admin");
+    assert.ok(v1Entry);
+    assert.equal(v1Entry.category, "tenant");
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
