@@ -9,6 +9,10 @@
 5. Operational runbooks: [`docs/OPERATIONS_RUNBOOK.md`](../OPERATIONS_RUNBOOK.md)
 6. Security verification surfaces: [`docs/security/VERIFICATION_SURFACES.md`](./VERIFICATION_SURFACES.md)
 7. Production limiter guidance: [`docs/security/RATE_LIMITING_PRODUCTION.md`](./RATE_LIMITING_PRODUCTION.md)
+8. Verification model: [`docs/security/VERIFICATION_MODEL.md`](./VERIFICATION_MODEL.md)
+9. Dependency evidence: [`docs/security/DEPENDENCY_EVIDENCE.md`](./DEPENDENCY_EVIDENCE.md)
+10. Runtime RLS verification: [`docs/security/RLS_VERIFICATION.md`](./RLS_VERIFICATION.md)
+11. Launch gate semantics: [`docs/security/LAUNCH_GATE.md`](./LAUNCH_GATE.md)
 
 ## Security verification boundaries (no puffery)
 
