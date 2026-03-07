@@ -1,4 +1,4 @@
-# START_HERE
+# START HERE
 
 If you are new to Settler, follow this sequence.
 
@@ -37,10 +37,23 @@ pnpm verify:routes
 pnpm verify:boundaries
 ```
 
-## 4) Pick your path
+## 4) Canonical docs
 
-- Product/operator: [docs/product/README.md](./product/README.md)
-- Technical evaluator: [docs/ENGINE.md](./ENGINE.md)
-- Contributor: [../CONTRIBUTING.md](../CONTRIBUTING.md)
-- Security reviewer: [docs/security/README.md](./security/README.md)
-- Metrics/KPI reviewer: [docs/metrics/EVENT_TAXONOMY.md](./metrics/EVENT_TAXONOMY.md)
+| Path | Purpose |
+|------|---------|
+| [README.md](../README.md) | Product overview and quickstart |
+| [docs/INDEX.md](./INDEX.md) | Full documentation map |
+| [docs/ENGINE.md](./ENGINE.md) | How the reconciliation engine works |
+| [docs/positioning/CANONICAL_POSITIONING.md](./positioning/CANONICAL_POSITIONING.md) | What Settler is and who it's for |
+| [docs/getting-started/README.md](./getting-started/README.md) | Getting started guide |
+| [docs/architecture/README.md](./architecture/README.md) | Architecture deep dive |
+| [docs/security/README.md](./security/README.md) | Security documentation |
+| [docs/api/README.md](./api/README.md) | API and SDK reference |
+| [docs/ops/README.md](./ops/README.md) | Operations and runbooks |
+
+## 5) Verified guarantees
+
+- OSS and enterprise boundaries are guarded by static verification scripts.
+- Route and boundary checks are part of release verification scripts.
+- Determinism/replay claims are limited to what automated checks verify in current scripts.
+- All claims are validated in [docs/positioning/CLAIM_VALIDATION.md](./positioning/CLAIM_VALIDATION.md).

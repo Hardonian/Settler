@@ -1,13 +1,17 @@
 /**
  * Analytics Abstraction Layer
- * 
+ *
  * Unified interface for analytics providers with support for multiple providers.
+ * Events are dispatched to all registered providers. When no providers are
+ * configured the class is a safe no-op — analytics failures never break the app.
  */
 
 import type { AnalyticsProvider, PageViewProperties, EventProperties, ErrorMetadata } from './types';
 
 class Analytics {
   private initialized = false;
+  private providers: AnalyticsProvider[] = [];
+  private debugMode = false;
 
   /**
    * Initialize analytics with configured providers
@@ -15,62 +19,87 @@ class Analytics {
   init() {
     if (this.initialized || typeof window === 'undefined') return;
     this.initialized = true;
-    return;
+    this.debugMode = typeof window !== 'undefined' && window.location?.hostname === 'localhost';
+    for (const provider of this.providers) {
+      try {
+        provider.init?.();
+      } catch {
+        // Provider init failure must not block the app
+      }
+    }
+  }
+
+  private dispatch(method: keyof AnalyticsProvider, args: unknown[]) {
+    if (this.debugMode && typeof console !== 'undefined') {
+      console.debug(`[analytics] ${String(method)}`, ...args);
+    }
+    for (const provider of this.providers) {
+      try {
+        const fn = provider[method];
+        if (typeof fn === 'function') {
+          (fn as (...a: unknown[]) => void).apply(provider, args);
+        }
+      } catch {
+        // Analytics dispatch failure must not break the app
+      }
+    }
   }
 
   /**
    * Track a page view
-   * Respects cookie consent preferences
    */
   trackPageView(route: string, properties?: PageViewProperties) {
-    void route;
-    void properties;
+    this.dispatch('trackPageView', [route, properties]);
   }
 
   /**
    * Track a custom event
-   * Respects cookie consent preferences
    */
   trackEvent(name: string, payload?: EventProperties) {
-    void name;
-    void payload;
+    this.dispatch('trackEvent', [name, payload]);
   }
 
   /**
    * Track an error
    */
   trackError(error: Error | string, metadata?: Partial<ErrorMetadata> & Record<string, any>) {
-    void error;
-    void metadata;
+    this.dispatch('trackError', [error, metadata]);
   }
 
   /**
    * Identify a user
    */
   identify(userId: string, traits?: Record<string, any>) {
-    void userId;
-    void traits;
+    this.dispatch('identify', [userId, traits]);
   }
 
   /**
    * Set user properties
    */
   setUserProperties(properties: Record<string, any>) {
-    void properties;
+    this.dispatch('setUserProperties', [properties]);
   }
 
   /**
    * Flush pending events
    */
   async flush() {
-    return Promise.resolve();
+    const promises = this.providers
+      .filter((p) => typeof p.flush === 'function')
+      .map((p) => {
+        try { return p.flush!(); } catch { return Promise.resolve(); }
+      });
+    await Promise.allSettled(promises);
   }
 
   /**
    * Add a custom provider
    */
   addProvider(provider: AnalyticsProvider) {
-    void provider;
+    this.providers.push(provider);
+    if (this.initialized) {
+      try { provider.init?.(); } catch { /* safe */ }
+    }
   }
 }
 

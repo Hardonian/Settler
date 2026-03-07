@@ -12,7 +12,7 @@ If Stripe, banking data, and your internal ledger disagree, Settler shows the di
 4. **Export evidence** (inputs, rules, outputs, fingerprints).
 5. **Replay runs** to verify behavior with the same evidence package.
 
-## What you can do in 5 minutes
+## Five Minute Demo
 
 ```bash
 pnpm install
@@ -27,17 +27,28 @@ Demo outputs are written to `examples/demo-output` (`run.json`, `results.json`, 
 
 ## Why teams choose Settler
 
-- **Replayable runs** for audit and debugging.
-- **Evidence-first outputs** for incident reviews.
-- **Rules as code** for PR and CI workflows.
-- **Open-source and self-hostable** (Apache 2.0).
+| Capability | OSS (this repo) | Enterprise |
+|---|---|---|
+| Reconciliation engine | Yes | Yes |
+| Evidence generation | Yes | Yes |
+| Replay and determinism | Yes | Yes |
+| Rules as code | Yes | Yes |
+| Self-hosted deployment | Yes | Yes |
+| Multi-tenant isolation | Yes | Yes |
+| Managed hosting | — | Yes |
+| SSO / SAML | — | Yes |
+| Priority support and SLA | — | Yes |
+| Advanced integrations | Community adapters | Managed connectors |
+
+See [docs/OSS_VS_ENTERPRISE.md](docs/OSS_VS_ENTERPRISE.md) for details.
+
+## Demo Output
+
+After running the demo, inspect:
 
 ## Documentation paths
 
-- Start here: [`docs/START_HERE.md`](docs/START_HERE.md)
-- Canonical docs map: [`docs/INDEX.md`](docs/INDEX.md)
-- KPI instrumentation: [`docs/metrics/EVENT_TAXONOMY.md`](docs/metrics/EVENT_TAXONOMY.md)
-- Canonical positioning: [`docs/positioning/CANONICAL_POSITIONING.md`](docs/positioning/CANONICAL_POSITIONING.md)
+The demo path shows reconciliation execution, mismatch detection, evidence generation, and replay verification.
 
 ## Quickstart
 
@@ -65,83 +76,21 @@ pnpm --filter @settler/web dev
 
 Open `http://localhost:3000`.
 
-## Why Settler
+## Core Concepts
 
-### 1) Problem
+- **Connections:** external data sources (Stripe, banks, ERPs, ledgers)
+- **Pipelines:** reconciliation workflow configurations
+- **Runs:** individual reconciliation executions (immutable, replayable)
+- **Results:** matched and mismatched records with full context
+- **Review Queue:** exception handling with assignment and resolution tracking
+- **Evidence:** audit-ready proof of what happened in each run
 
-Reconciling financial data across systems is fragile.
+## Key Packages
 
-### Feature
-
-Settler records deterministic reconciliation runs with stable fingerprints.
-
-### Outcome
-
-You can prove exactly how each result was produced.
-
-Core runtime primitives:
-
-- **Connections:** external data sources (Stripe, banks, ERPs, ledgers).
-- **Pipelines:** reconciliation workflow configurations.
-- **Runs:** individual reconciliation executions (immutable, replayable).
-- **Results:** matched and mismatched records with full context.
-- **Review Queue:** exception handling with assignment and resolution tracking.
-- **Evidence:** audit-ready proof of what happened in each run.
-
-Key packages:
-
-- `packages/api` – reconciliation API, domain logic, and data layer.
-- `packages/web` – Next.js web app (product console, docs, marketing).
-- `packages/adapters` – connectors for Stripe, banks, ERPs, and other data sources.
-- `packages/sdk`, `packages/react-settler`, `packages/sdk-go`, `packages/workhorse` – client SDKs and background workers.
-
-### 2) Problem
-
-Manual triage makes mismatch resolution slow.
-
-### Feature
-
-Settler surfaces mismatch outcomes with rule-checked routing.
-
-### Outcome
-
-Teams focus on high-risk mismatches first.
-
-### 3) Problem
-
-Audit and incident questions require evidence collection after the fact.
-
-### Feature
-
-Settler generates evidence bundles during every run.
-
-### Outcome
-
-Operators can answer "what happened" immediately.
-
-### 4) Problem
-
-Run-to-run drift is hard to explain with scripts and spreadsheets.
-
-### Feature
-
-Settler replays historical runs against the same inputs and config.
-
-### Outcome
-
-You can isolate behavioral changes before release.
-
-### 5) Problem
-
-Compliance reviews fail when controls are implicit.
-
-### Feature
-
-Settler applies policy checks as part of run execution.
-
-### Outcome
-
-Control behavior becomes testable and reviewable.
+- `packages/api` – reconciliation API, domain logic, and data layer
+- `packages/web` – Next.js web app (product console, docs, marketing)
+- `packages/adapters` – connectors for Stripe, banks, ERPs, and other data sources
+- `packages/sdk`, `packages/react-settler`, `packages/sdk-go`, `packages/workhorse` – client SDKs and background workers
 
 ## Architecture
 
