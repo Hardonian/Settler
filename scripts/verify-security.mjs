@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { evaluateTenantGuardrails } from "./security/tenant-guardrails.mjs";
+import { evaluateTenantGuardrails, evaluateCoverageGap } from "./security/tenant-guardrails.mjs";
 
 const repoRoot = process.cwd();
 const outputDir = path.join(repoRoot, "artifacts", "security");

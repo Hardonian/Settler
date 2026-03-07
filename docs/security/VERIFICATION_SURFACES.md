@@ -8,8 +8,8 @@ This repository uses layered verification for release confidence. Each layer pro
 
 What it proves:
 
-- Required security control hooks are still present (headers, limiter hooks, middleware wiring).
-- Tenant-isolation guardrails are present on selected high-risk routes.
+- Expected code tokens (header names, function calls, middleware wiring) are present in specific files.
+- Tenant-isolation guardrails (auth context, tenant scoping, rate limiting) are present on 5 selected high-risk `/api/v1/` routes.
 - Production limiter backend configuration risk is surfaced (warning or failure, depending on policy).
 - Reports runtime tenant-coverage status if runtime artifacts exist.
 
@@ -18,6 +18,7 @@ What it does **not** prove:
 - Runtime exploitability.
 - Full end-to-end tenant isolation under real credentials and fixtures by itself.
 - End-to-end distributed limiter behavior across multiple instances.
+- That unclassified routes are safe — only that they have not been evaluated.
 
 ## 2) Runtime security smoke + fixture-based tenant checks
 
@@ -77,8 +78,23 @@ In CI (`release-verify` workflow):
 
 ## Redis-backed limiter guidance (production)
 
-For multi-instance production deployments, Redis-backed limiter configuration is strongly recommended:
+For multi-instance production deployments, Redis-backed limiter configuration is required for consistent enforcement:
 
 - Required envs: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`
-- If absent, limiter falls back to process-local memory and may drift across instances.
-- To enforce strict policy in verification: set `REQUIRE_REDIS_RATE_LIMIT=1`.
+- If absent, limiter falls back to process-local memory. Each instance tracks independently — an attacker distributing requests across instances effectively multiplies their allowed rate by the instance count.
+- To enforce strict policy in `verify:security`: set `REQUIRE_REDIS_RATE_LIMIT=1`.
+
+### Failure semantics
+
+| Scenario | Behavior |
+|---|---|
+| Redis configured and healthy | Distributed rate limiting, shared counters |
+| Redis configured but unavailable at request time | Silent fallback to process-local; one-time warning logged per process |
+| Redis not configured, local/dev | Process-local rate limiting (acceptable for single-instance dev) |
+| Redis not configured, production | Process-local fallback with startup warning; cross-instance drift risk |
+
+### Operator actions
+
+1. **Single-instance production (Vercel hobby):** Process-local limiting is acceptable. Limits reset on redeploy.
+2. **Multi-instance production:** Configure Upstash Redis. Set `REQUIRE_REDIS_RATE_LIMIT=1` in CI env to enforce.
+3. **Monitor:** If Redis becomes unavailable after startup, rate limiting silently degrades. Monitor for the `[RateLimit] Redis limiter unavailable in production` log message.
