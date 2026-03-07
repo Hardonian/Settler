@@ -60,7 +60,7 @@ async function captureWithPlaywright(args, routes, outputDir) {
     logs.push(
       `Playwright import failed: ${error instanceof Error ? error.message : String(error)}`
     );
-    return { ok: false, logs, artifacts: [] };
+    return { ok: false, logs, artifacts: [], failure: "playwright_import_failed" };
   }
 
   let browser;
@@ -95,12 +95,12 @@ async function captureWithPlaywright(args, routes, outputDir) {
       });
     }
 
-    return { ok: true, logs, artifacts };
+    return { ok: true, logs, artifacts, origin: "primary-playwright" };
   } catch (error) {
     logs.push(
       `Playwright capture failed: ${error instanceof Error ? (error.stack ?? error.message) : String(error)}`
     );
-    return { ok: false, logs, artifacts };
+    return { ok: false, logs, artifacts, failure: "playwright_capture_failed" };
   } finally {
     if (browser) {
       await browser.close().catch(() => undefined);
@@ -143,7 +143,7 @@ async function captureFallback(outputDir) {
     logs.push(`Fallback captured ${asset.path}`);
   }
 
-  return { ok: true, logs, artifacts };
+  return { ok: true, logs, artifacts, origin: "fallback-launch-manifest" };
 }
 
 async function main() {
@@ -163,9 +163,12 @@ async function main() {
     diagnostics.push(...result.logs);
   }
 
+  let primaryFailure = null;
   if ((args.mode === "fallback" || args.mode === "auto") && !result.ok) {
+    primaryFailure = result.failure || "primary_capture_failed";
     selectedMode = "fallback";
     const fallbackResult = await captureFallback(outputDir);
+    diagnostics.push(`Primary capture failed (${primaryFailure}); fallback capture engaged.`);
     diagnostics.push(...fallbackResult.logs);
     result = fallbackResult;
   }
@@ -173,6 +176,10 @@ async function main() {
   const manifest = {
     runId: args.runId,
     mode: selectedMode,
+    origin:
+      result.origin ||
+      (selectedMode === "primary" ? "primary-playwright" : "fallback-launch-manifest"),
+    primaryFailure,
     baseUrl: args.baseUrl,
     createdAt: new Date().toISOString(),
     success: result.ok,

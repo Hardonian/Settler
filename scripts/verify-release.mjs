@@ -34,6 +34,16 @@ const stageCatalog = {
     command: ["pnpm", ["run", "verify:security"]],
     timeoutMs: 3 * 60_000,
   },
+  securityRuntime: {
+    label: "Runtime security smoke",
+    command: ["pnpm", ["run", "verify:security:runtime"]],
+    timeoutMs: 8 * 60_000,
+  },
+  securityEvidence: {
+    label: "Supply-chain security evidence",
+    command: ["pnpm", ["run", "verify:security:evidence"]],
+    timeoutMs: 2 * 60_000,
+  },
   build: { label: "Build", command: ["pnpm", ["run", "build"]], timeoutMs: 20 * 60_000 },
   test: {
     label: "Core tests",
@@ -71,10 +81,12 @@ const profiles = {
     "routes",
     "security",
     "build",
+    "securityRuntime",
     "test",
     "launchManifest",
     "capture",
     "artifacts",
+    "securityEvidence",
   ],
 };
 

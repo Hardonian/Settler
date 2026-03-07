@@ -1,15 +1,15 @@
 /**
  * Redis-Backed Rate Limiting
- * 
+ *
  * Distributed rate limiting using Upstash Redis.
  * Falls back to in-memory store if Redis unavailable.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { safeRedisOperation } from '@/lib/redis/client';
+import { NextRequest, NextResponse } from "next/server";
+import { safeRedisOperation } from "@/lib/redis/client";
 
 // Optional Redis type - gracefully handles if package not installed
- 
+
 type Redis = any;
 
 interface RateLimitConfig {
@@ -27,6 +27,15 @@ interface RateLimitStore {
 
 // In-memory fallback store
 const fallbackStore: RateLimitStore = {};
+let emittedProductionFallbackWarning = false;
+
+function warnOnProductionLocalFallback() {
+  if (process.env.NODE_ENV !== "production" || emittedProductionFallbackWarning) return;
+  emittedProductionFallbackWarning = true;
+  console.warn(
+    "[RateLimit] Redis limiter unavailable in production; using process-local fallback (risk: cross-instance drift). Configure UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN."
+  );
+}
 
 /**
  * Get rate limit key from request
@@ -36,20 +45,18 @@ function getRateLimitKey(req: NextRequest, identifier?: string): string {
     return `rate_limit:${identifier}`;
   }
 
-  const apiKey = req.headers.get('x-api-key');
+  const apiKey = req.headers.get("x-api-key");
   if (apiKey) {
     return `rate_limit:api_key:${apiKey.substring(0, 20)}`;
   }
 
-  const userId = req.headers.get('x-user-id');
+  const userId = req.headers.get("x-user-id");
   if (userId) {
     return `rate_limit:user:${userId}`;
   }
 
   const ip =
-    req.headers.get('x-forwarded-for')?.split(',')[0] ||
-    req.headers.get('x-real-ip') ||
-    'unknown';
+    req.headers.get("x-forwarded-for")?.split(",")[0] || req.headers.get("x-real-ip") || "unknown";
   return `rate_limit:ip:${ip}`;
 }
 
@@ -120,6 +127,7 @@ export function rateLimitRedis(
         return await checkRedisRateLimit(client, key, config.windowMs, config.maxRequests);
       },
       () => {
+        warnOnProductionLocalFallback();
         return checkMemoryRateLimit(key, config.windowMs, config.maxRequests);
       }
     );
@@ -128,7 +136,7 @@ export function rateLimitRedis(
       const retryAfter = Math.ceil((result.resetTime - Date.now()) / 1000);
       return NextResponse.json(
         {
-          error: config.message || 'Too many requests',
+          error: config.message || "Too many requests",
           retryAfter,
           limit: config.maxRequests,
           remaining: 0,
@@ -136,10 +144,10 @@ export function rateLimitRedis(
         {
           status: 429,
           headers: {
-            'Retry-After': retryAfter.toString(),
-            'X-RateLimit-Limit': config.maxRequests.toString(),
-            'X-RateLimit-Remaining': '0',
-            'X-RateLimit-Reset': result.resetTime.toString(),
+            "Retry-After": retryAfter.toString(),
+            "X-RateLimit-Limit": config.maxRequests.toString(),
+            "X-RateLimit-Remaining": "0",
+            "X-RateLimit-Reset": result.resetTime.toString(),
           },
         }
       );
@@ -147,9 +155,9 @@ export function rateLimitRedis(
 
     // Add rate limit headers
     const response = new NextResponse();
-    response.headers.set('X-RateLimit-Limit', config.maxRequests.toString());
-    response.headers.set('X-RateLimit-Remaining', result.remaining.toString());
-    response.headers.set('X-RateLimit-Reset', result.resetTime.toString());
+    response.headers.set("X-RateLimit-Limit", config.maxRequests.toString());
+    response.headers.set("X-RateLimit-Remaining", result.remaining.toString());
+    response.headers.set("X-RateLimit-Reset", result.resetTime.toString());
 
     return null; // Continue to next middleware
   };
@@ -162,26 +170,26 @@ export const redisRateLimiters = {
   auth: rateLimitRedis({
     windowMs: 15 * 60 * 1000,
     maxRequests: 5,
-    message: 'Too many authentication attempts. Please try again later.',
+    message: "Too many authentication attempts. Please try again later.",
   }),
   api: rateLimitRedis({
     windowMs: 60 * 1000,
     maxRequests: 100,
-    message: 'API rate limit exceeded. Please slow down.',
+    message: "API rate limit exceeded. Please slow down.",
   }),
   billing: rateLimitRedis({
     windowMs: 60 * 1000,
     maxRequests: 20,
-    message: 'Billing API rate limit exceeded.',
+    message: "Billing API rate limit exceeded.",
   }),
   webhook: rateLimitRedis({
     windowMs: 60 * 1000,
     maxRequests: 10,
-    message: 'Webhook rate limit exceeded.',
+    message: "Webhook rate limit exceeded.",
   }),
   public: rateLimitRedis({
     windowMs: 60 * 1000,
     maxRequests: 200,
-    message: 'Rate limit exceeded.',
+    message: "Rate limit exceeded.",
   }),
 };

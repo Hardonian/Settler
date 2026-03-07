@@ -46,6 +46,16 @@ function main() {
     }
   }
 
+  if (!manifest.origin) {
+    failures.push(
+      "manifest.origin missing (must indicate primary-playwright or fallback-launch-manifest)"
+    );
+  }
+
+  if (manifest.mode === "fallback" && !manifest.primaryFailure) {
+    failures.push("fallback mode must include primaryFailure diagnostics");
+  }
+
   if (failures.length) {
     console.error("Launch artifact verification failed:");
     for (const failure of failures) {
@@ -54,9 +64,11 @@ function main() {
     process.exit(1);
   }
 
-  console.log(
-    `Verified ${manifest.artifacts.length} generated launch artifacts via ${args.manifest}`
-  );
+  console.log(`Verified ${manifest.artifacts.length} launch artifacts via ${args.manifest}`);
+  console.log(`Capture origin: ${manifest.origin}`);
+  if (manifest.primaryFailure) {
+    console.log(`Primary capture failure reason: ${manifest.primaryFailure}`);
+  }
 }
 
 try {
