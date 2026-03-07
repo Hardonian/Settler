@@ -206,7 +206,11 @@
     "verify:api-surface": "tsx scripts/verify-api-surface.ts",
     "qa:marketing-ctas": "node scripts/marketing-cta-smoke.mjs",
     "qa:visual:landing": "cross-env CI_VISUAL_LANDING=1 playwright test tests/e2e/landing-home.visual.spec.ts --project=visual-desktop-light --project=visual-mobile-light",
-    "verify:proof": "tsx scripts/verify-proof.ts"
+    "verify:proof": "tsx scripts/verify-proof.ts",
+    "verify:event-backbone": "tsx scripts/stress-reliability.ts",
+    "verify:cas": "tsx scripts/cas-tool.ts verify",
+    "cas:gc": "tsx scripts/cas-tool.ts gc",
+    "cas:repair": "tsx scripts/cas-tool.ts repair"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

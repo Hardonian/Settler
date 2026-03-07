@@ -14,6 +14,7 @@ import { trackSyncStart, trackSyncComplete, trackSyncFailure } from "./metrics/p
 import { AlertManager } from "./alerting/alert-manager";
 import { RetryQueue } from "./retry-queue/retry-queue";
 import { validator } from "./validation/data-validator";
+import { executeConnectorSandboxed } from "./connector-sandbox";
 // processInBatches imported dynamically when needed
 
 export interface RuntimeConfig {
@@ -837,7 +838,15 @@ export class ConnectorRuntime {
 
       try {
         // Execute sync
-        const result = await driver.sync(credentials, syncOptions);
+        const result = await executeConnectorSandboxed({
+          driver,
+          credentials,
+          options: syncOptions,
+          sandbox: {
+            timeoutMs: Number(process.env.CONNECTOR_TIMEOUT_MS || 30000),
+            allowWallClockTime: process.env.CONNECTOR_ALLOW_WALL_CLOCK_TIME === "1",
+          },
+        });
 
         // Validate data before saving
         const validation = validator.validateAll({

@@ -49,3 +49,7 @@ Every major claim made in user-facing surfaces (README, homepage, docs) is valid
 
 - Architecture and guarantee boundaries: `docs/architecture/technical-reality-hardening.md`
 - Determinism + replay proof verification: `scripts/verify-proof.ts`
+
+- Event backbone durability validated via append-only event log + replay tooling (`runner/eventBackbone.ts`, `scripts/stress-reliability.ts`)
+- Connector execution containment validated via runtime sandbox + timeout fencing (`packages/adapters/src/connector-sandbox.ts`)
+- CAS integrity lifecycle supported via verify/repair/gc tooling (`scripts/cas-tool.ts`)

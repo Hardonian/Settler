@@ -18,11 +18,13 @@ This document maps the current system architecture to public claims and explicit
 
 - `scripts/moat/replay.ts` re-executes from evidence artifacts.
 - `scripts/verify-proof.ts` verifies artifact presence, hash integrity, fingerprint consistency, provenance hash chain, and replay match.
+- `runner/eventBackbone.ts` provides durable append-only event logging with idempotent append, consumer leases, acknowledgements, and per-run replay.
 
 ### Worker and orchestration path
 
 - `packages/workhorse/src/settler_workhorse/worker.py` provides lease-style claim/process/fail loops.
 - `packages/workhorse/src/settler_workhorse/db/__init__.py` provides claim, retry with exponential backoff, attempt tracking, dead-letter persistence, and stale lock release.
+- `packages/adapters/src/connector-sandbox.ts` enforces connector timeout fencing, input cloning, normalized option handling, and normalized error wrapping.
 
 ### Storage + state boundaries
 
@@ -58,22 +60,23 @@ Worker lifecycle:
 ### Implemented now
 
 - Deterministic hashing pipeline uses one algorithm (SHA-256) with canonical serialization.
-- Replay is verifiable (`verify:replay`) and now proof-verifiable (`verify:proof`).
+- Replay is verifiable (`verify:replay`) and proof-verifiable (`verify:proof`).
 - Execution evidence includes fingerprints + provenance chain.
 - Worker reliability includes retries, DLQ, and stale-lock recovery.
 - Tenant boundaries are enforced in worker DB operations.
+- Durable append-only event backbone is active via `runner/eventBackbone.ts` with idempotency keys, consumer leases, ack offsets, and replay APIs.
+- Connector sandbox/fencing is active through `executeConnectorSandboxed` in connector runtime with timeout enforcement and normalized error wrapping.
+- CAS integrity/repair/GC tooling is implemented via `scripts/cas-tool.ts` (`verify`, `repair`, `gc`).
+- 10k execution stress/failure validation exists via `scripts/stress-reliability.ts` and is CI-runnable (`verify:event-backbone`).
 
 ### Scoped (claim narrowed to current boundary)
 
 - "Deterministic system state" is accurate **within the execution/evidence boundary** (same inputs/config/engine version), not for arbitrary external connector side effects.
-- "Cryptographic proof chains" are currently SHA-256 tamper-evidence chains, not blockchain/notarized proofs.
+- "Cryptographic proof chains" are SHA-256 tamper-evidence chains, not blockchain/notarized proofs.
 
-### Roadmap (not claimed as fully delivered)
+### Roadmap
 
-- Global append-only cross-service event backbone with fan-out subscriptions.
-- Full connector sandbox runtime with capability manifests and deterministic side-effect fencing.
-- Automated CAS repair/GC tooling with reference graph compaction.
-- Large-scale stress harness targets (10k distributed executions with fault injection).
+- Cross-process fan-out to external brokers (Kafka/NATS) is optional scale-out, not required for current durability guarantees.
 
 ## 4) Failure boundaries and guarantees
 
@@ -81,6 +84,9 @@ Worker lifecycle:
 - **Idempotency**: supported via idempotency keys at enqueue level.
 - **Crash recovery**: locked jobs can be re-queued after timeout.
 - **Proof reproducibility**: verify-proof recomputes hashes/fingerprint and enforces replay parity.
+- **Event durability + recoverability**: append-only log tolerates partial tail writes and preserves idempotent replay/lease semantics.
+- **Connector containment**: runtime fences connector execution by timeout and normalized error handling.
+- **CAS hygiene**: verify/repair/gc utilities keep content-addressed store reference-safe and auditable.
 
 ## 5) Operational checks
 
@@ -89,6 +95,8 @@ Recommended minimum CI gate:
 - `pnpm verify:determinism`
 - `pnpm verify:replay`
 - `pnpm verify:proof`
+- `pnpm verify:event-backbone`
+- `pnpm verify:cas`
 - `pnpm run workhorse:test`
 
 This keeps public claims tied to executable verification.
