@@ -147,6 +147,7 @@ const artifact = {
   generatedAt: new Date().toISOString(),
   runId,
   status: evaluation.status,
+  evidenceState: evaluation.evidenceState,
   reason: evaluation.reason,
   evidenceCompleteness: evaluation.evidenceCompleteness,
   environmentConstraints: evaluation.environmentConstraints,

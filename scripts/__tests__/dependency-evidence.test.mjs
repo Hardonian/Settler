@@ -22,6 +22,7 @@ test("downgrades in standard mode when advisory auth is missing", () => {
 
   assert.equal(result.status, "PASS_WITH_DEGRADED_EVIDENCE");
   assert.equal(result.evidenceCompleteness, "partial");
+  assert.equal(result.evidenceState, "DEGRADED");
 });
 
 test("upgrades to pass when authenticated advisory evidence exists", () => {
@@ -42,4 +43,5 @@ test("upgrades to pass when authenticated advisory evidence exists", () => {
 
   assert.equal(result.status, "PASS");
   assert.equal(result.evidenceCompleteness, "complete");
+  assert.equal(result.evidenceState, "VERIFIED");
 });

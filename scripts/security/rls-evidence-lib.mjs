@@ -1,3 +1,11 @@
+export const EVIDENCE_STATES = Object.freeze({
+  VERIFIED: "VERIFIED",
+  DEGRADED: "DEGRADED",
+  UNAVAILABLE: "UNAVAILABLE",
+  SKIPPED: "SKIPPED",
+  FAILED: "FAILED",
+});
+
 export function evaluateRlsEvidence({ mode, verification }) {
   const runtimeExecuted = verification?.liveDbConfigured === true;
   const staticStatus = verification?.proofLevel === "static-only" ? "PASS" : "PASS";
@@ -18,6 +26,8 @@ export function evaluateRlsEvidence({ mode, verification }) {
     return {
       ...base,
       status: mode === "runtime-rls-required" ? "FAIL" : "UNAVAILABLE",
+      evidenceState:
+        mode === "runtime-rls-required" ? EVIDENCE_STATES.FAILED : EVIDENCE_STATES.UNAVAILABLE,
       evidenceLevel: "unavailable",
       environmentConstraints: [
         "Run `node scripts/security/verify-rls-boundary.mjs` to generate baseline artifact.",
@@ -32,6 +42,7 @@ export function evaluateRlsEvidence({ mode, verification }) {
     return {
       ...base,
       status: "PASS",
+      evidenceState: EVIDENCE_STATES.VERIFIED,
       evidenceLevel: "runtime-confirmed",
     };
   }
@@ -40,6 +51,7 @@ export function evaluateRlsEvidence({ mode, verification }) {
     return {
       ...base,
       status: "FAIL",
+      evidenceState: EVIDENCE_STATES.FAILED,
       evidenceLevel:
         verification.proofLevel === "live-db-attempted-failed"
           ? "runtime-attempted-failed"
@@ -57,6 +69,7 @@ export function evaluateRlsEvidence({ mode, verification }) {
     return {
       ...base,
       status: required ? "FAIL" : "PASS_WITH_DEGRADED_EVIDENCE",
+      evidenceState: required ? EVIDENCE_STATES.FAILED : EVIDENCE_STATES.DEGRADED,
       evidenceLevel: "static-only",
       environmentConstraints: [
         "Runtime RLS verification not executed; only static boundary/policy checks were captured.",
@@ -70,6 +83,8 @@ export function evaluateRlsEvidence({ mode, verification }) {
   return {
     ...base,
     status: staticStatus,
+    evidenceState:
+      verification?.status === "skipped" ? EVIDENCE_STATES.SKIPPED : EVIDENCE_STATES.DEGRADED,
     evidenceLevel: "static-only",
   };
 }

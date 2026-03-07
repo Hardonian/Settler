@@ -13,8 +13,10 @@ test("runtime confirmation upgrades evidence level from static-only", () => {
   });
 
   assert.equal(staticOnly.evidenceLevel, "static-only");
+  assert.equal(staticOnly.evidenceState, "DEGRADED");
   assert.equal(runtime.evidenceLevel, "runtime-confirmed");
   assert.equal(runtime.status, "PASS");
+  assert.equal(runtime.evidenceState, "VERIFIED");
 });
 
 test("cross-tenant deny in runtime harness remains required for pass semantics", () => {

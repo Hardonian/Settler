@@ -30,6 +30,7 @@ const artifact = {
   generatedAt: new Date().toISOString(),
   runId,
   status: evaluation.status,
+  evidenceState: evaluation.evidenceState,
   reason: evaluation.reason,
   evidenceLevel: evaluation.evidenceLevel,
   environmentConstraints: evaluation.environmentConstraints,
