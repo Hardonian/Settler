@@ -16,6 +16,16 @@ function run(cmd, args, options = {}) {
   }
 }
 
+function parseTier(argv) {
+  const tierArg = argv.find((arg) => arg.startsWith("--tier="));
+  const tier = tierArg ? tierArg.split("=")[1] : "prepush";
+  if (!["precommit", "prepush"].includes(tier)) {
+    console.error(`Unsupported tier '${tier}'. Use --tier=precommit|prepush`);
+    process.exit(1);
+  }
+  return tier;
+}
+
 function getStagedFiles() {
   const output = execSync("git diff --cached --name-only --diff-filter=ACMR", {
     encoding: "utf8",
@@ -31,6 +41,7 @@ function getPackageName(packageDir) {
   return pkg.name;
 }
 
+const tier = parseTier(process.argv.slice(2));
 const stagedFiles = getStagedFiles();
 
 if (stagedFiles.length === 0) {
@@ -41,11 +52,9 @@ if (stagedFiles.length === 0) {
 const changedPackageDirs = new Set();
 
 for (const file of stagedFiles) {
-  if (file.startsWith("packages/")) {
-    const [, pkgDir] = file.split("/");
-    if (pkgDir) changedPackageDirs.add(pkgDir);
-    continue;
-  }
+  if (!file.startsWith("packages/")) continue;
+  const [, pkgDir] = file.split("/");
+  if (pkgDir) changedPackageDirs.add(pkgDir);
 }
 
 const changedPackages = Array.from(changedPackageDirs)
@@ -60,9 +69,17 @@ if (changedPackages.length === 0) {
 const filters = changedPackages.flatMap((pkg) => ["--filter", `${pkg.name}...`]);
 
 console.log(`🔎 Staged package verify scope: ${changedPackages.map((p) => p.name).join(", ")}`);
+console.log(`🔎 Verification tier: ${tier}`);
 
 console.log("\n▶ Lint (changed packages)");
 run("pnpm", ["turbo", "run", "lint", ...filters]);
+
+if (tier === "precommit") {
+  console.log(
+    "\n✅ Pre-commit tier complete (staged lint only). Full typecheck/tests run in pre-push/CI."
+  );
+  process.exit(0);
+}
 
 console.log("\n▶ Typecheck (changed packages)");
 run("pnpm", ["turbo", "run", "typecheck", ...filters]);
@@ -71,8 +88,8 @@ for (const pkg of changedPackages) {
   console.log(`\n▶ Test (${pkg.name})`);
 
   if (pkg.name === "@settler/web") {
-    run("pnpm", ["--filter", "@settler/web", "exec", "jest", "--maxWorkers=50%"], {
-      env: { NODE_OPTIONS: "--max-old-space-size=4096" },
+    run("pnpm", ["--filter", "@settler/web", "exec", "jest", "--runInBand"], {
+      env: { NODE_OPTIONS: "--max-old-space-size=2048" },
     });
     continue;
   }

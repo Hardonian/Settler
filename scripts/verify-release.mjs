@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { spawn } from "node:child_process";
 
@@ -178,15 +178,48 @@ async function runStage(stageName, runDir) {
   };
 }
 
+function readJsonIfExists(relPath) {
+  try {
+    return JSON.parse(readFileSync(path.join(repoRoot, relPath), "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+function collectVerificationSignals() {
+  const supplyChain = readJsonIfExists("artifacts/security/supply-chain-latest.json");
+  const runtimeSmoke = readJsonIfExists("artifacts/security/runtime-smoke-latest.json");
+  const staticSecurity = readJsonIfExists("artifacts/security/verify-security-summary.json");
+
+  return {
+    supplyChainAuditState: supplyChain?.audit?.state || "unknown",
+    supplyChainUnavailableCategory: supplyChain?.audit?.unavailableCategory || null,
+    tenantGuardrailStaticStatus:
+      Array.isArray(staticSecurity?.tenantGuardrailPresence) &&
+      staticSecurity.tenantGuardrailPresence.every((x) => x.status === "guardrail_present")
+        ? "pass"
+        : "incomplete",
+    tenantRuntimeCoverageStatus:
+      Array.isArray(runtimeSmoke?.checks) &&
+      runtimeSmoke.checks.some(
+        (x) => x.name === "auth_tenant_boundary_negative" && x.status === "passed"
+      )
+        ? "pass"
+        : "incomplete",
+  };
+}
+
 function emitSummary(args, results, runDir) {
   const completedAt = new Date().toISOString();
   const passed = results.every((item) => item.status === "passed");
+  const signals = collectVerificationSignals();
   const summary = {
     profile: args.profile,
     stageFilter: args.stage,
     runId: args.runId,
     completedAt,
     passed,
+    signals,
     results,
   };
 
@@ -200,6 +233,10 @@ function emitSummary(args, results, runDir) {
     `- Profile: ${args.profile}`,
     `- Passed: ${passed ? "yes" : "no"}`,
     `- Completed at: ${completedAt}`,
+    `- Supply-chain audit state: ${signals.supplyChainAuditState}`,
+    `- Supply-chain unavailable category: ${signals.supplyChainUnavailableCategory || "n/a"}`,
+    `- Tenant guardrail static status: ${signals.tenantGuardrailStaticStatus}`,
+    `- Tenant runtime coverage status: ${signals.tenantRuntimeCoverageStatus}`,
     "",
     "| Stage | Status | Duration (s) | Timeout (s) | Log |",
     "|---|---|---:|---:|---|",

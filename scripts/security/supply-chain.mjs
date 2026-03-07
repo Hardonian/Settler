@@ -3,6 +3,11 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { spawn } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
+import {
+  AUDIT_STATES,
+  classifyAuditUnavailability,
+  resolveAuditState,
+} from "./supply-chain-policy.mjs";
 
 const repoRoot = process.cwd();
 const runId = process.env.GITHUB_RUN_ID || new Date().toISOString().replace(/[:.]/g, "-");
@@ -19,6 +24,17 @@ function run(cmd, args, options = {}) {
     });
     let stdout = "";
     let stderr = "";
+    let timedOut = false;
+
+    const timeoutMs = options.timeoutMs || 0;
+    let timer = null;
+    if (timeoutMs > 0) {
+      timer = setTimeout(() => {
+        timedOut = true;
+        child.kill("SIGTERM");
+      }, timeoutMs);
+    }
+
     child.stdout.on("data", (chunk) => {
       const text = chunk.toString();
       if (options.logOutput !== false) process.stdout.write(text);
@@ -29,12 +45,20 @@ function run(cmd, args, options = {}) {
       if (options.logOutput !== false) process.stderr.write(text);
       stderr += text;
     });
-    child.on("close", (code) => resolve({ code: code ?? 1, stdout, stderr }));
+    child.on("close", (code) => {
+      if (timer) clearTimeout(timer);
+      resolve({ code: code ?? 1, stdout, stderr, timedOut });
+    });
   });
 }
 
 function parseAudit(raw) {
   const parsed = JSON.parse(raw);
+  if (parsed?.error) {
+    throw new Error(
+      `pnpm_audit_error:${parsed.error.code || "unknown"}:${parsed.error.message || ""}`
+    );
+  }
   const vulnerabilities = parsed.metadata?.vulnerabilities || {};
   return {
     vulnerabilities,
@@ -118,33 +142,30 @@ function buildSpdx(packages) {
 async function main() {
   const severityThreshold = process.env.SECURITY_AUDIT_FAIL_LEVEL || "high";
   const allowAuditUnavailable = process.env.SECURITY_AUDIT_ALLOW_UNAVAILABLE === "1";
+  const allowUnavailableOnRelease = process.env.SECURITY_AUDIT_ALLOW_UNAVAILABLE_ON_RELEASE === "1";
+  const verificationContext = process.env.SECURITY_AUDIT_CONTEXT || "local";
+  const isReleaseContext = verificationContext === "release";
+  const strictSoftSkipInRelease = isReleaseContext && !allowUnavailableOnRelease;
   const severityOrder = ["info", "low", "moderate", "high", "critical"];
   const thresholdIndex = severityOrder.indexOf(severityThreshold);
-  if (thresholdIndex === -1)
+  if (thresholdIndex === -1) {
     throw new Error(`Unsupported SECURITY_AUDIT_FAIL_LEVEL='${severityThreshold}'`);
+  }
 
-  const auditRun = await run("pnpm", ["audit", "--json"]);
+  const auditRun = await run("pnpm", ["audit", "--json"], { timeoutMs: 90_000 });
   const auditRaw = auditRun.stdout || auditRun.stderr;
   const auditPath = path.join(outputDir, "audit.json");
   writeFileSync(auditPath, auditRaw, "utf8");
 
   let auditSummary = null;
-  let auditUnavailableReason = null;
+  let unavailable = null;
+  let misconfigured = false;
 
   try {
     auditSummary = parseAudit(auditRaw);
   } catch {
-    if (auditRaw.includes("ERR_PNPM_AUDIT_BAD_RESPONSE") || auditRaw.includes("403")) {
-      auditUnavailableReason = "registry_audit_endpoint_forbidden";
-    } else {
-      throw new Error("Unable to parse pnpm audit output as JSON.");
-    }
-  }
-
-  if (auditUnavailableReason && !allowAuditUnavailable) {
-    throw new Error(
-      `Dependency audit unavailable (${auditUnavailableReason}). Set SECURITY_AUDIT_ALLOW_UNAVAILABLE=1 to soft-skip.`
-    );
+    unavailable = classifyAuditUnavailability(auditRaw, { timedOut: auditRun.timedOut });
+    misconfigured = unavailable.category === "missing_auth";
   }
 
   const depTreeRun = await run("pnpm", ["list", "--json", "--depth", "99"], { logOutput: false });
@@ -170,11 +191,27 @@ async function main() {
     }
   }
 
+  const effectiveAllowUnavailable = allowAuditUnavailable && !strictSoftSkipInRelease;
+  const auditState = resolveAuditState({
+    auditUnavailable: Boolean(unavailable),
+    allowUnavailable: effectiveAllowUnavailable,
+    misconfigured,
+    thresholdFailures,
+  });
+
   const summary = {
     generatedAt: new Date().toISOString(),
     runId,
+    verificationContext,
     failLevel: severityThreshold,
-    auditUnavailableReason,
+    audit: {
+      state: auditState,
+      unavailableCategory: unavailable?.category || null,
+      unavailableDetail: unavailable?.detail || null,
+      softSkipAllowed: allowAuditUnavailable,
+      softSkipAllowedOnRelease: allowUnavailableOnRelease,
+      softSkipBlockedByReleasePolicy: strictSoftSkipInRelease,
+    },
     vulnerabilities: auditSummary?.totals || null,
     thresholdBreakdown,
     thresholdFailures,
@@ -199,16 +236,26 @@ async function main() {
   );
 
   console.log(`Supply-chain report: ${path.relative(repoRoot, summaryPath)}`);
+  console.log(`Supply-chain audit state: ${auditState}`);
 
-  if (!auditUnavailableReason && thresholdFailures > 0) {
+  if (auditState === AUDIT_STATES.UNAVAILABLE_SOFT) {
+    console.warn(
+      `⚠️ SECURITY_SOFT_SKIP state=unavailable-soft category=${unavailable?.category} detail=${unavailable?.detail}`
+    );
+  }
+
+  if (auditState === AUDIT_STATES.FAIL) {
     console.error(
       `Dependency vulnerabilities at/above '${severityThreshold}': ${thresholdFailures}.`
     );
     process.exit(1);
   }
 
-  if (auditUnavailableReason) {
-    console.warn(`⚠️ Dependency audit soft-skipped (${auditUnavailableReason}).`);
+  if (auditState === AUDIT_STATES.UNAVAILABLE_HARD || auditState === AUDIT_STATES.MISCONFIGURED) {
+    console.error(
+      `Dependency audit blocked state=${auditState} category=${unavailable?.category} detail=${unavailable?.detail}`
+    );
+    process.exit(1);
   }
 }
 

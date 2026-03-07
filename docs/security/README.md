@@ -14,7 +14,7 @@
 
 - **Static/config verification (`pnpm run verify:security`)**
   - Verifies control and guardrail presence in high-risk files/routes.
-  - Includes tenant-isolation guardrail checks for selected routes.
+  - Includes tenant-isolation guardrail presence checks for selected routes (static signal only).
   - Does **not** prove exploit resistance or full runtime isolation.
 - **Runtime smoke verification (`pnpm run verify:security:runtime`)**
   - Starts/targets a real HTTP app instance and probes security headers, limiter behavior, and negative auth/tenant cases.
@@ -30,3 +30,11 @@
 - **Available now:** deterministic runs, evidence exports, operator review workflow, baseline auditability.
 - **Designed for:** deeper enterprise governance and broader controls-plane expansion.
 - **Future/experimental:** clearly marked in roadmap docs; do not present as shipped.
+
+## Verification tiering
+
+- **Pre-commit:** staged, low-memory checks only (format/lint + staged package lint guard).
+- **Pre-push:** `verify:fast` for broader local confidence.
+- **CI/Release:** `verify:release` + supply-chain evidence policy enforcement.
+
+See `docs/release/VERIFICATION.md` and `docs/security/VERIFICATION_SURFACES.md` for exact policy semantics.
