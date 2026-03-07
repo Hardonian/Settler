@@ -1,8 +1,20 @@
 # Settler Documentation
 
-This is the canonical documentation entrypoint for Settler.
+Settler is an open-source reconciliation control plane for provable financial truth.
 
-Settler is a deterministic reconciliation control plane: ingest transactions and documents, normalize records, reconcile with explicit rules, route exceptions to operators, and export evidence packs for audit.
+Use this docs hub to go from first run → mismatch explanation → replay verification → evidence export.
+
+## Start here in 5 minutes
+
+1. Run the local quickstart: [`docs/getting-started/README.md`](getting-started/README.md)
+2. Execute the deterministic demo + replay:
+
+```bash
+pnpm demo
+pnpm settler:replay examples/demo-output/evidence.json
+```
+
+3. Inspect generated artifacts in `examples/demo-output`.
 
 ## Canonical doc map
 
@@ -12,21 +24,11 @@ Settler is a deterministic reconciliation control plane: ingest transactions and
 - **API + SDK:** [`docs/api/README.md`](api/README.md)
 - **Security + trust:** [`docs/security/README.md`](security/README.md)
 - **Operations:** [`docs/ops/README.md`](ops/README.md)
-- **Launch assets:** [`docs/launch/README.md`](launch/README.md)
-- **Archive:** [`docs/archive/README.md`](archive/README.md)
+- **OSS vs Enterprise boundary:** [`docs/oss-vs-enterprise.md`](oss-vs-enterprise.md)
 
 ## First paths by reader
 
-- **Engineer:** start at [`docs/getting-started/README.md`](getting-started/README.md), then [`docs/api/README.md`](api/README.md).
-- **Operator:** start at [`docs/product/README.md`](product/README.md), then [`docs/ops/README.md`](ops/README.md).
-- **Buyer / security reviewer:** start at [`docs/security/README.md`](security/README.md).
-- **Diligence skim (founder/investor):** start at [`docs/FINAL_CLOSURE_PACK.md`](FINAL_CLOSURE_PACK.md).
-
-## Canonical product and trust references
-
-- Product definition + value props: [`docs/product/README.md`](product/README.md)
-- Architecture narrative: [`docs/architecture/README.md`](architecture/README.md)
-- OSS/public/private boundary: [`docs/oss-vs-enterprise.md`](oss-vs-enterprise.md)
-- API contract: [`docs/API.md`](API.md)
-- Determinism + replay: [`docs/determinism.md`](determinism.md)
-- Security posture: [`docs/SECURITY.md`](SECURITY.md)
+- **Engineer:** start with [`docs/getting-started/README.md`](getting-started/README.md), then [`docs/api/README.md`](api/README.md).
+- **Finance/Ops operator:** start with [`docs/product/README.md`](product/README.md), then [`docs/ops/README.md`](ops/README.md).
+- **Security reviewer:** start with [`docs/security/README.md`](security/README.md).
+- **Founder / evaluator:** start with [`docs/product/README.md`](product/README.md), then [`docs/oss-vs-enterprise.md`](oss-vs-enterprise.md).

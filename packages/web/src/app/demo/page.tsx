@@ -28,15 +28,31 @@ export default function DemoPage() {
             variants={staggerItem}
             className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 dark:from-white dark:via-slate-100 dark:to-white bg-clip-text text-transparent"
           >
-            Interactive Demo Preview
+            Run the Settler Demo Path
           </motion.h1>
           <motion.p
             variants={staggerItem}
             className="text-lg sm:text-xl md:text-2xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto"
           >
-            Explore Settler&apos;s reconciliation engine, receipt ingestion, and API playground.
-            All data is deterministic and reproducible—no authentication required.
+            See one concrete path: run reconciliation, inspect a mismatch, review evidence, and replay the run.
+            All demo data is deterministic and reproducible—no authentication required.
           </motion.p>
+        </motion.div>
+
+
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
+          className="mb-10 rounded-lg border bg-white/80 p-6 dark:bg-slate-900/60"
+        >
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-white">How this demo works</h2>
+          <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-slate-700 dark:text-slate-300">
+            <li>Open the reconciliation demo and run deterministic matching across sample systems.</li>
+            <li>Inspect mismatches and policy outcomes in the results view.</li>
+            <li>Review attached evidence and trace context.</li>
+            <li>Replay with the same inputs to verify reproducible output.</li>
+          </ol>
         </motion.div>
 
         {/* Demo Cards */}
@@ -53,7 +69,7 @@ export default function DemoPage() {
                 <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mb-4">
                   <RefreshCw className="w-6 h-6 text-white" />
                 </div>
-                <CardTitle>Reconciliation Engine</CardTitle>
+                <CardTitle>Reconciliation Run</CardTitle>
                 <CardDescription>
                   See how transactions from Stripe, Shopify, QuickBooks, and bank payouts are
                   automatically matched with deterministic rules.
@@ -62,7 +78,7 @@ export default function DemoPage() {
               <CardContent>
                 <Button asChild className="w-full">
                   <Link href="/demo/reconciliation">
-                    Try Reconciliation Demo
+                    Start Reconciliation Demo
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>
                 </Button>
@@ -70,14 +86,14 @@ export default function DemoPage() {
             </Card>
           </motion.div>
 
-          {/* Receipt Ingestion Demo */}
+          {/* Evidence & Receipts Demo */}
           <motion.div variants={staggerItem}>
             <Card className="h-full hover:shadow-lg transition-shadow" elevation="default">
               <CardHeader>
                 <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center mb-4">
                   <FileText className="w-6 h-6 text-white" />
                 </div>
-                <CardTitle>Receipt Ingestion</CardTitle>
+                <CardTitle>Evidence & Receipts</CardTitle>
                 <CardDescription>
                   Watch receipts transform from raw data into structured JSON, then match to
                   transactions automatically.
@@ -86,7 +102,7 @@ export default function DemoPage() {
               <CardContent>
                 <Button asChild className="w-full">
                   <Link href="/demo/receipts">
-                    Try Receipt Demo
+                    Open Receipt Evidence Demo
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>
                 </Button>
@@ -94,14 +110,14 @@ export default function DemoPage() {
             </Card>
           </motion.div>
 
-          {/* API Playground */}
+          {/* API + Policy Playground */}
           <motion.div variants={staggerItem}>
             <Card className="h-full hover:shadow-lg transition-shadow" elevation="default">
               <CardHeader>
                 <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center mb-4">
                   <Code className="w-6 h-6 text-white" />
                 </div>
-                <CardTitle>API Playground</CardTitle>
+                <CardTitle>API + Policy Playground</CardTitle>
                 <CardDescription>
                   Explore the API with feature flags and plan tiers. See how responses change
                   based on configuration.
@@ -110,7 +126,7 @@ export default function DemoPage() {
               <CardContent>
                 <Button asChild className="w-full">
                   <Link href="/demo/api">
-                    Try API Playground
+                    Try API + Policy Playground
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>
                 </Button>

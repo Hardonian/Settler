@@ -7,50 +7,57 @@ import { ArrowRight, Circle, Dot } from "lucide-react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 const capabilityChips = [
-  "Deterministic Workflows",
-  "Policy-Based Routing",
-  "Audit-Ready Evidence",
-  "API-First Control Plane",
-  "Enterprise Controls",
+  "Replay any run",
+  "Explain mismatches fast",
+  "Export verifiable evidence",
+  "Policy-checked operations",
+  "Tenant-safe by design",
 ];
 
 const stackLabels = [
-  "Unmatched Records",
-  "Policy-Routed Items",
-  "Evidence Pending",
-  "Auto-Classified Variance",
-  "Review Required",
+  "High-risk mismatches",
+  "Policy-check failures",
+  "Evidence required",
+  "Variance auto-classified",
+  "Awaiting operator review",
 ];
 
 const feedLines = [
-  "[11:42:06] Normalized ledger input",
-  "[11:42:07] Policy rule applied",
-  "[11:42:08] Trace attached to exception",
-  "[11:42:09] Evidence bundle assembled",
-  "[11:42:10] Review state committed",
+  "[11:42:06] Reconciliation input normalized",
+  "[11:42:07] Policy checks evaluated",
+  "[11:42:08] Trace ID attached to mismatch",
+  "[11:42:09] Evidence bundle generated",
+  "[11:42:10] Review decision committed",
 ];
 
 const protocolCards = [
   {
     step: "01",
     id: "ingest-normalize",
-    title: "Ingest / Normalize",
+    title: "Ingest and normalize records",
     description:
       "Ingest records from source systems and map them into canonical structures with deterministic transforms.",
   },
   {
     step: "02",
     id: "route-resolve",
-    title: "Compare / Route / Resolve",
+    title: "Compare and route mismatches",
     description:
       "Compare record states, apply routing policy, and move exceptions to controlled queues with explicit ownership.",
   },
   {
     step: "03",
     id: "prove-learn",
-    title: "Record / Prove / Learn",
+    title: "Review and resolve with evidence",
     description:
-      "Commit evidence artifacts, preserve trace IDs, and keep decision history reproducible for audits and runbooks.",
+      "Attach evidence artifacts and trace IDs so operators can explain every decision in review.",
+  },
+  {
+    step: "04",
+    id: "replay-export",
+    title: "Replay and export proof",
+    description:
+      "Replay the exact run and export evidence bundles for audits, incident response, and handoffs.",
   },
 ];
 
@@ -77,9 +84,9 @@ function ExceptionStackCard({ reducedMotion }: { reducedMotion: boolean }) {
 
   return (
     <article className="rounded-[2rem] border border-white/15 bg-white/[0.04] p-6 shadow-[0_40px_100px_-60px_rgba(0,0,0,0.8)] backdrop-blur-md">
-      <h3 className="text-xl font-semibold text-white">Exception Stack Shuffler</h3>
+      <h3 className="text-xl font-semibold text-white">Mismatch Queue</h3>
       <p className="mt-2 text-sm text-slate-300">
-        Prioritized queues rotate by policy outcome so operators work the highest-risk path first.
+        Prioritized queues reorder by policy outcome so teams can resolve the riskiest mismatches first.
       </p>
       <div className="relative mt-8 h-52">
         {visible.map((label, slot) => (
@@ -137,9 +144,9 @@ function EvidenceFeedCard({ reducedMotion }: { reducedMotion: boolean }) {
 
   return (
     <article className="rounded-[2rem] border border-white/15 bg-white/[0.04] p-6 shadow-[0_40px_100px_-60px_rgba(0,0,0,0.8)] backdrop-blur-md">
-      <h3 className="text-xl font-semibold text-white">Evidence Feed Typewriter</h3>
+      <h3 className="text-xl font-semibold text-white">Evidence Feed</h3>
       <p className="mt-2 text-sm text-slate-300">
-        Live proof-chain events show what changed, why it changed, and where it was committed.
+        Live evidence events show what changed, why it changed, and when it was committed.
       </p>
       <div className="mt-8 rounded-2xl border border-emerald-400/20 bg-slate-950/80 p-4 font-mono text-xs text-emerald-200">
         <div className="mb-3 flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-emerald-300/80">
@@ -181,9 +188,9 @@ function SchedulerCard({ reducedMotion }: { reducedMotion: boolean }) {
 
   return (
     <article className="rounded-[2rem] border border-white/15 bg-white/[0.04] p-6 shadow-[0_40px_100px_-60px_rgba(0,0,0,0.8)] backdrop-blur-md">
-      <h3 className="text-xl font-semibold text-white">Resolution Scheduler Protocol</h3>
+      <h3 className="text-xl font-semibold text-white">Review Scheduler</h3>
       <p className="mt-2 text-sm text-slate-300">
-        Review windows align to routing windows so approvals happen on schedule, not by inbox chaos.
+        Review windows align to routing windows so approvals happen on schedule, not in spreadsheet fire drills.
       </p>
       <div className="mt-8 rounded-2xl border border-white/15 bg-slate-950/80 p-4">
         <div className="grid grid-cols-4 gap-2">
@@ -340,7 +347,7 @@ export default function Home() {
         <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pb-16 md:pb-24">
           <div className="max-w-3xl">
             <p className="mb-4 text-xs uppercase tracking-[0.28em] text-cyan-200/80">
-              Deterministic reconciliation control plane
+              Open-source reconciliation control plane
             </p>
             <h1 className="text-5xl font-bold leading-[0.95] text-white sm:text-6xl md:text-7xl">
               Reconcile the
@@ -349,15 +356,14 @@ export default function Home() {
               </span>
             </h1>
             <p className="mt-6 max-w-2xl text-base text-slate-200 sm:text-lg">
-              Settler gives finance and operations teams a deterministic workflow for comparison,
-              routing, and evidence-backed exception resolution.
+              Settler helps engineering, finance, and operations teams reconcile faster, explain mismatches, and prove every result.
             </p>
             <div className="mt-9 flex flex-wrap gap-4">
               <Link
                 href="/architecture"
                 className="inline-flex items-center gap-2 rounded-full bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
               >
-                View Architecture <ArrowRight className="h-4 w-4" />
+                See How It Works <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/docs"
@@ -400,12 +406,10 @@ export default function Home() {
         />
         <div className="absolute inset-0 bg-slate-950/75" />
         <div className="relative z-10 mx-auto max-w-5xl px-6 text-center">
-          <p className="text-sm text-slate-300">
-            Most systems focus on: dashboards without closure.
-          </p>
+          <p className="text-sm text-slate-300">How Settler works in practice</p>
           <p className="mt-6 text-3xl font-semibold leading-tight text-white sm:text-5xl">
-            Settler focuses on:
-            <span className="text-cyan-300"> traceable decisions under pressure.</span>
+            Run reconciliation, inspect divergences, and
+            <span className="text-cyan-300"> prove outcomes with replayable evidence.</span>
           </p>
         </div>
       </section>
@@ -502,24 +506,24 @@ export default function Home() {
 
       <section className="mx-auto max-w-7xl px-6 pb-24">
         <div className="rounded-[2.25rem] border border-white/15 bg-slate-900/70 p-8 md:p-10">
-          <h2 className="text-3xl font-semibold text-white">Get Started with Settler</h2>
+          <h2 className="text-3xl font-semibold text-white">Get started in minutes</h2>
           <div className="mt-8 grid gap-5 md:grid-cols-3">
             {(
               [
                 [
-                  "Explore the Architecture",
+                  "See the architecture",
                   "/architecture",
-                  "System boundaries, policy flow, and deterministic invariants.",
+                  "Understand deterministic runs, policy checks, and evidence flow.",
                 ],
                 [
-                  "Read the Docs",
+                  "Run the quickstart",
                   "/docs",
-                  "API contracts, setup guides, and deterministic run semantics.",
+                  "Install, run demo data, replay a run, and inspect evidence.",
                 ],
                 [
-                  "Book a Demo",
-                  "/contact",
-                  "Walk through a real control-plane workflow with our team.",
+                  "Open the live demo",
+                  "/demo",
+                  "Walk through reconciliation, mismatches, and evidence without auth.",
                 ],
               ] as const
             ).map(([title, href, text]) => (
@@ -544,7 +548,7 @@ export default function Home() {
           <div>
             <p className="text-lg font-semibold tracking-[0.14em] text-white">SETTLER</p>
             <p className="mt-3 text-sm text-slate-300">
-              Deterministic reconciliation infrastructure for evidence-backed operational truth.
+              Open-source reconciliation control plane for replayable, evidence-backed financial truth.
             </p>
             <div className="mt-6 flex items-center gap-2 text-xs font-mono text-emerald-200">
               <Circle className="h-2.5 w-2.5 fill-emerald-400 text-emerald-400 animate-pulse" />

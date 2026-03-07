@@ -2,17 +2,27 @@
 
 This is the canonical onboarding index for Settler.
 
-## 1) What to run first
+## 1) See value first (recommended)
 
 ```bash
-pnpm install --frozen-lockfile
+pnpm install
+cp .env.example .env
+pnpm exec tsx scripts/run-migrations-remote.ts
+pnpm --filter @settler/web dev
+pnpm demo
+pnpm settler:replay examples/demo-output/evidence.json
+```
+
+## 2) Core quality checks
+
+```bash
 pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
 ```
 
-## 2) Release-grade verification
+## 3) Release-grade verification
 
 ```bash
 pnpm verify
@@ -21,16 +31,17 @@ pnpm verify:routes
 pnpm verify:boundaries
 ```
 
-## 3) Canonical docs
+## 4) Canonical docs
 
 - Product + setup: `README.md`
-- Architecture: `docs/ARCHITECTURE.md`
-- Security: `docs/SECURITY.md`
-- Operations: `docs/OPERATIONS.md`
-- API: `docs/API.md`
-- Audit package: `docs/audit/*`
+- Docs hub: `docs/README.md`
+- Getting started: `docs/getting-started/README.md`
+- Architecture: `docs/architecture/README.md`
+- Security: `docs/security/README.md`
+- Operations: `docs/ops/README.md`
+- API: `docs/api/README.md`
 
-## 4) Guarantees (verified scope)
+## 5) Verified guarantees
 
 - OSS and enterprise boundaries are guarded by static verification scripts.
 - Route and boundary checks are part of release verification scripts.

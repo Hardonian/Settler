@@ -9,7 +9,7 @@ import { Rocket, Code, Zap, Shield } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Documentation - Settler",
-  description: "Documentation, quickstart guides, and determinism notes for Settler",
+  description: "Docs for running deterministic reconciliation workflows, replaying runs, and exporting evidence with Settler",
 };
 
 export default function DocsPage() {
@@ -18,17 +18,16 @@ export default function DocsPage() {
       <h1>Documentation</h1>
 
       <p className="text-lg text-slate-600 dark:text-slate-400">
-        Everything you need to integrate Settler into your reconciliation workflows, with explicit
-        rules and deterministic outputs.
+        Start here to run your first reconciliation flow, inspect mismatches, replay the same run, and export evidence.
       </p>
 
       <section
         id="run-demo"
         className="my-8 p-6 rounded-xl border border-slate-200 dark:border-slate-800"
       >
-        <h2 className="mt-0">30-second proof demo</h2>
+        <h2 className="mt-0">5-minute proof demo</h2>
         <p>
-          Run <code>pnpm demo</code> to generate deterministic artifacts and replay verification.
+          Run <code>pnpm demo</code> to generate a deterministic run, then replay it to verify the same fingerprint.
         </p>
         <CodeBlock
           code={`pnpm demo
@@ -62,7 +61,7 @@ pnpm settler:replay examples/demo-output/evidence.json`}
           <CardHeader>
             <Rocket className="w-8 h-8 mb-2 text-blue-600" />
             <CardTitle>Getting Started</CardTitle>
-            <CardDescription>New to Settler? Start with the basics</CardDescription>
+            <CardDescription>Install, run, and see first value quickly</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/docs/getting-started">
@@ -77,7 +76,7 @@ pnpm settler:replay examples/demo-output/evidence.json`}
           <CardHeader>
             <Zap className="w-8 h-8 mb-2 text-green-600" />
             <CardTitle>Quickstart</CardTitle>
-            <CardDescription>Create your first deterministic reconciliation run</CardDescription>
+            <CardDescription>Run the canonical local workflow end-to-end</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/docs/quickstart">
@@ -92,7 +91,7 @@ pnpm settler:replay examples/demo-output/evidence.json`}
           <CardHeader>
             <Code className="w-8 h-8 mb-2 text-purple-600" />
             <CardTitle>API Reference</CardTitle>
-            <CardDescription>Complete API documentation</CardDescription>
+            <CardDescription>Integrate run, replay, and evidence workflows</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/docs/api">
@@ -107,7 +106,7 @@ pnpm settler:replay examples/demo-output/evidence.json`}
           <CardHeader>
             <Shield className="w-8 h-8 mb-2 text-amber-600" />
             <CardTitle>Auth & Security</CardTitle>
-            <CardDescription>Auth flows and security boundaries</CardDescription>
+            <CardDescription>Review auth, tenant boundaries, and controls</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/docs/auth">
