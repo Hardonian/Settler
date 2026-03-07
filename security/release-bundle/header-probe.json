@@ -1,0 +1,32 @@
+{
+  "generatedAt": "2026-03-07T19:55:20.518Z",
+  "verifierVersion": "2026-03-07.2",
+  "runId": "2026-03-07T19-55-20-516Z",
+  "baseUrl": null,
+  "policy": {
+    "strict": false,
+    "allowDegraded": true
+  },
+  "degraded": true,
+  "degradedReasons": ["missing_build"],
+  "startupLogs": [],
+  "coverage": {
+    "registryRoutes": 228,
+    "probeableRoutes": 133,
+    "probedRoutes": 0,
+    "skippedByClassification": 95
+  },
+  "classificationCounts": {
+    "probeable": 133,
+    "unprobeable-dynamic": 51,
+    "limited-contract": 8,
+    "unprobeable-kind": 35,
+    "unprobeable-non-api": 1
+  },
+  "counts": {
+    "passed": 0,
+    "failed": 0,
+    "skipped": 133
+  },
+  "checks": []
+}
