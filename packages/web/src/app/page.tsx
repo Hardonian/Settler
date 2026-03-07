@@ -440,7 +440,7 @@ export default function Home() {
         <div className="rounded-[2.5rem] border border-white/15 bg-slate-900/70 p-6 shadow-[0_30px_110px_-70px_rgba(15,23,42,1)] md:p-10">
           <div className="mb-8">
             <p className="text-xs uppercase tracking-[0.24em] text-cyan-300">
-              Control plane showcase
+              Engine in action
             </p>
             <h2 className="mt-3 text-3xl font-semibold text-white sm:text-4xl">
               Operational surface, not dashboard theater

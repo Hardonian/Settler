@@ -32,7 +32,6 @@ Settler exists to replace fragile manual reconciliation with replayable runs, ex
 4. **Prove** results with exported evidence (input data, rules applied, outputs, cryptographic hashes).
 5. **Replay** any run to verify or debug the results.
 
-## What you can do in 5 minutes
 ## Five Minute Demo
 
 ```bash
@@ -61,7 +60,23 @@ Demo outputs are written to `examples/demo-output`:
 
 ## OSS vs Enterprise at a glance
 
-### OSS (this repo, self-hostable)
+| Capability | OSS (this repo) | Enterprise |
+|---|---|---|
+| Reconciliation engine | Yes | Yes |
+| Evidence generation | Yes | Yes |
+| Replay and determinism | Yes | Yes |
+| Rules as code | Yes | Yes |
+| Self-hosted deployment | Yes | Yes |
+| Multi-tenant isolation | Yes | Yes |
+| Managed hosting | — | Yes |
+| SSO / SAML | — | Yes |
+| Priority support and SLA | — | Yes |
+| Advanced integrations | Community adapters | Managed connectors |
+
+See [docs/OSS_VS_ENTERPRISE.md](docs/OSS_VS_ENTERPRISE.md) for details.
+
+## Demo Output
+
 After running the demo, inspect:
 
 - `examples/demo-output/run.json`
@@ -70,14 +85,6 @@ After running the demo, inspect:
 - `examples/demo-output/report.html`
 
 The demo path shows reconciliation execution, mismatch detection, evidence generation, and replay verification.
-
-## Key Features
-
-- Replayable reconciliation
-- Proof-first operations
-- Policy enforcement
-- Evidence export
-- Audit-ready workflows
 
 ## Quickstart
 
@@ -105,65 +112,21 @@ pnpm --filter @settler/web dev
 
 Open `http://localhost:3000`.
 
-## Why Settler
+## Core Concepts
 
-### 1) Problem
-Reconciling financial data across systems is fragile.
+- **Connections:** external data sources (Stripe, banks, ERPs, ledgers)
+- **Pipelines:** reconciliation workflow configurations
+- **Runs:** individual reconciliation executions (immutable, replayable)
+- **Results:** matched and mismatched records with full context
+- **Review Queue:** exception handling with assignment and resolution tracking
+- **Evidence:** audit-ready proof of what happened in each run
 
-### Feature
-Settler records deterministic reconciliation runs with stable fingerprints.
+## Key Packages
 
-### Outcome
-You can prove exactly how each result was produced.
-
-Core runtime primitives:
-- **Connections:** external data sources (Stripe, banks, ERPs, ledgers).
-- **Pipelines:** reconciliation workflow configurations.
-- **Runs:** individual reconciliation executions (immutable, replayable).
-- **Results:** matched and mismatched records with full context.
-- **Review Queue:** exception handling with assignment and resolution tracking.
-- **Evidence:** audit-ready proof of what happened in each run.
-
-Key packages:
-- `packages/api` – reconciliation API, domain logic, and data layer.
-- `packages/web` – Next.js web app (product console, docs, marketing).
-- `packages/adapters` – connectors for Stripe, banks, ERPs, and other data sources.
-- `packages/sdk`, `packages/react-settler`, `packages/sdk-go`, `packages/workhorse` – client SDKs and background workers.
-### 2) Problem
-Manual triage makes mismatch resolution slow.
-
-### Feature
-Settler surfaces mismatch outcomes with rule-checked routing.
-
-### Outcome
-Teams focus on high-risk mismatches first.
-
-### 3) Problem
-Audit and incident questions require evidence collection after the fact.
-
-### Feature
-Settler generates evidence bundles during every run.
-
-### Outcome
-Operators can answer "what happened" immediately.
-
-### 4) Problem
-Run-to-run drift is hard to explain with scripts and spreadsheets.
-
-### Feature
-Settler replays historical runs against the same inputs and config.
-
-### Outcome
-You can isolate behavioral changes before release.
-
-### 5) Problem
-Compliance reviews fail when controls are implicit.
-
-### Feature
-Settler applies policy checks as part of run execution.
-
-### Outcome
-Control behavior becomes testable and reviewable.
+- `packages/api` – reconciliation API, domain logic, and data layer
+- `packages/web` – Next.js web app (product console, docs, marketing)
+- `packages/adapters` – connectors for Stripe, banks, ERPs, and other data sources
+- `packages/sdk`, `packages/react-settler`, `packages/sdk-go`, `packages/workhorse` – client SDKs and background workers
 
 ## Architecture
 
