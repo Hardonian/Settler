@@ -199,7 +199,7 @@
     "verify:foundry:metamorphic": "pnpm --filter @settler/cli exec tsx src/index.ts foundry metamorphic generate --base-suite core --per 1 --seed 1",
     "verify:foundry:faults": "pnpm --filter @settler/cli exec tsx src/index.ts foundry generate --type faults --seeds 1 && FOUNDRY_FAULTS=1 pnpm --filter @settler/cli exec tsx src/index.ts foundry report --last 1",
     "verify:api": "node scripts/verify-api.mjs",
-    "verify:security": "node scripts/verify-security.mjs",
+    "verify:security": "pnpm run security:routes && pnpm run verify:tenant && node scripts/verify-security.mjs && pnpm run test:cross-tenant && pnpm run audit:deps && pnpm exec tsx scripts/security-smoke.ts",
     "verify:security:runtime": "node scripts/security/runtime-smoke.mjs",
     "verify:security:supply-chain": "node scripts/security/supply-chain.mjs",
     "verify:security:evidence": "node scripts/verify-security-evidence.mjs",
@@ -221,7 +221,11 @@
     "capture:launch": "node scripts/capture-launch-assets.mjs --mode=auto",
     "capture:launch:primary": "node scripts/capture-launch-assets.mjs --mode=primary",
     "capture:launch:fallback": "node scripts/capture-launch-assets.mjs --mode=fallback",
-    "test:security:supply-chain-policy": "node --test scripts/__tests__/supply-chain-policy.test.mjs"
+    "test:security:supply-chain-policy": "node --test scripts/__tests__/supply-chain-policy.test.mjs",
+    "security:routes": "pnpm exec tsx scripts/security-route-registry.ts",
+    "verify:tenant": "pnpm exec tsx scripts/verify-tenant-coverage.ts",
+    "test:cross-tenant": "pnpm --filter @settler/web exec jest --runInBand --forceExit src/__tests__/api/tenant-runtime-cross-tenant.test.ts src/__tests__/security/crossTenantIsolation.test.ts",
+    "audit:deps": "node scripts/audit-deps.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
