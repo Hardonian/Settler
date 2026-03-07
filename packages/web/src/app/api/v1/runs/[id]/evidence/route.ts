@@ -8,6 +8,7 @@ import {
   ok,
   setCachingHeaders,
 } from "@/lib/api/v1/recon/core";
+import { getExecutionGraph, verifyProofChain } from "@/lib/trust-graph/explorer";
 
 export const runtime = "nodejs";
 
@@ -31,6 +32,29 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         proof_capsule: result.proofCapsule || {},
         artifact_path: `/tenant/${ctx.tenantId}/runs/${id}/evidence.json`,
       },
+    };
+    const graph = getExecutionGraph({
+      tenantId: ctx.tenantId,
+      runId: id,
+      metadata: (result.metadata as Record<string, unknown> | null) || null,
+      summary: (result.summary as Record<string, unknown> | null) || null,
+      proofCapsule:
+        (result.proofCapsule as import("@settler/protocol").ReconciliationProofCapsule | null) ||
+        null,
+    });
+    const verification = verifyProofChain({
+      tenantId: ctx.tenantId,
+      runId: id,
+      metadata: (result.metadata as Record<string, unknown> | null) || null,
+      summary: (result.summary as Record<string, unknown> | null) || null,
+      proofCapsule:
+        (result.proofCapsule as import("@settler/protocol").ReconciliationProofCapsule | null) ||
+        null,
+    });
+    payload.evidence.proof_capsule = {
+      ...(payload.evidence.proof_capsule as Record<string, unknown>),
+      graphHash: graph.graphHash,
+      proofNodeRefs: verification.proofNodeRefs,
     };
     const notModified = checkConditionalGet(request, payload);
     if (notModified) return ok(notModified, ctx.requestId);
