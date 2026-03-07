@@ -30,6 +30,7 @@ function walk(dir: string, collector: string[], predicate: (file: string) => boo
     }
 
     if (stats.isDirectory()) {
+      if (["node_modules", ".next", "dist", ".turbo", ".git"].includes(entry)) continue;
       walk(fullPath, collector, predicate);
       continue;
     }
@@ -95,7 +96,8 @@ function discoverRpcAndInternal(): RouteEntry[] {
 
   for (const absoluteFile of files) {
     const rel = toPosixPath(path.relative(repoRoot, absoluteFile));
-    if (rel.includes("/node_modules/")) continue;
+    if (rel.includes("/node_modules/") || rel.includes("/.next/") || rel.includes("/dist/"))
+      continue;
 
     if (/\brpc\b/i.test(rel)) {
       results.push({ route: `rpc:${rel}`, kind: "rpc-endpoint", file: rel });

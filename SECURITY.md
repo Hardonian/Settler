@@ -23,9 +23,12 @@ Settler is a multi-tenant system with layered controls:
 
 ## Tenant Isolation Guarantees
 
-- Tenant-bound routes must enforce at least one isolation mechanism: explicit tenant scoping, tenant context injection, RLS-backed access, or tenant authorization checks.
-- Route surface is discovered into `security/route-registry.json` and validated by `scripts/verify-tenant-coverage.ts`.
-- Cross-tenant denial is validated by runtime tests (`test:cross-tenant`) and fails CI on regressions.
+- API route discovery is generated into `security/route-registry.json` by `pnpm run security:routes`.
+- `pnpm run verify:tenant` performs **static control-presence verification** on tenant-bound API routes.
+  - This check proves guardrail tokens are present.
+  - This check does **not** prove runtime denial behavior by itself.
+- Runtime denial behavior is validated by `pnpm run test:cross-tenant`, which is the enforcement proof for cross-tenant access denial.
+- Exempt routes are explicit in the tenant coverage artifact (`artifacts/security/tenant-coverage-latest.json`) with route + reason.
 
 ## Rate Limiting Design
 
@@ -41,26 +44,34 @@ Settler is a multi-tenant system with layered controls:
 
 ## Security Headers & CSP
 
-Settler middleware applies hardened response headers including:
-
-- `Strict-Transport-Security`
-- `X-Content-Type-Options`
-- `X-Frame-Options`
-- `Referrer-Policy`
-- `Permissions-Policy`
-- `Content-Security-Policy` (nonce-based script/style allowances, no `unsafe-eval`, no `unsafe-inline`)
+- Header/CSP contract verification runs through `pnpm run verify:security:headers`.
+- The probe artifact explicitly records:
+  - route probeability coverage,
+  - degraded execution reasons (for example, server not startable),
+  - failed checks with per-route diagnostics.
+- Degraded header verification is blocking unless explicitly overridden with `SECURITY_HEADER_PROBE_ALLOW_DEGRADED=1`.
+- Strict probe failure blocking can be enabled with `SECURITY_HEADER_PROBE_STRICT=1`.
 
 ## Dependency Security
 
 - Dependency risk checks are executed via `pnpm run audit:deps`.
-- High/critical production vulnerabilities are blocking.
+- Audit behavior is policy-controlled by `SECURITY_AUDIT_MODE=strict|warn|off`.
+- CI forbids `SECURITY_AUDIT_MODE=off`.
+- Dependency artifacts report completeness/degraded state explicitly (`artifacts/security/dependency-audit-latest.json`).
 - Triage notes and mitigation expectations are tracked in `security/vulnerability-triage.md`.
+
+## Evidence and Drift Verification
+
+- `pnpm run security:evidence` generates `security/evidence/manifest.json`, `security/evidence/security-summary.md`, and `security/evidence/security-summary.json`.
+- Evidence manifest includes commit SHA, timestamp, CI run id (if available), policy modes, required artifact presence, and checksums.
+- `pnpm run verify:security:drift` fails when security surface or policy outcomes drift from baseline and reports actionable route/exemption/audit deltas.
 
 ## Known Limitations
 
-- Some public/health/admin/internal endpoints are intentionally exempt from tenant-scoping checks and validated under separate auth/public-route models.
-- OSV scanner execution depends on binary availability in runtime image; CI remains authoritative for OSV enforcement when local binary is absent.
-- Static guardrail verification confirms required controls are present in code; dynamic penetration-style validation is handled by runtime suites and smoke probes.
+- Tenant coverage verification is static token-based guardrail presence. Runtime denial proof is provided by dedicated runtime suites.
+- Some routes are intentionally exempt from tenant-scoping checks and require separate auth model review.
+- OSV scanner execution depends on binary availability in runtime image; degraded/partial scanner states are explicitly recorded in artifacts.
+- Header/CSP probe coverage excludes dynamic API routes (`[param]`) unless a concrete probe target is supplied.
 
 ## Incident Handling
 

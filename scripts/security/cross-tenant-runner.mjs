@@ -22,9 +22,16 @@ process.stderr.write(run.stderr || "");
 
 const artifact = {
   generatedAt: new Date().toISOString(),
+  verifierVersion: "2026-03-07.2",
   status: run.status === 0 ? "passed" : "failed",
   command: `pnpm ${cmd.join(" ")}`,
   exitCode: run.status ?? 1,
+  suiteFiles: [
+    "src/__tests__/api/tenant-runtime-cross-tenant.test.ts",
+    "src/__tests__/security/crossTenantIsolation.test.ts",
+    "src/__tests__/security/crossTenantMatrix.test.ts",
+  ],
+  degraded: false,
 };
 
 mkdirSync(path.join(repoRoot, "artifacts", "security"), { recursive: true });
