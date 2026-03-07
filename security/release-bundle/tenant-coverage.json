@@ -1,0 +1,190 @@
+{
+  "generatedAt": "2026-03-07T19:55:13.966Z",
+  "verifierVersion": "2026-03-07.2",
+  "verificationMode": "static-token-presence",
+  "proofBoundary": "Static control-presence verification only. Runtime denial behavior is proven by test:cross-tenant and runtime smoke suites.",
+  "totalRoutes": 228,
+  "tenantScopedRoutes": 160,
+  "verifiedRoutes": 160,
+  "exemptRoutes": [
+    {
+      "route": "/api/admin/audit",
+      "file": "packages/web/src/app/api/admin/audit/route.ts",
+      "reason": "admin endpoint with separate admin auth model"
+    },
+    {
+      "route": "/api/admin/exceptions",
+      "file": "packages/web/src/app/api/admin/exceptions/route.ts",
+      "reason": "admin endpoint with separate admin auth model"
+    },
+    {
+      "route": "/api/admin/exceptions/[id]/escalate",
+      "file": "packages/web/src/app/api/admin/exceptions/[id]/escalate/route.ts",
+      "reason": "admin endpoint with separate admin auth model"
+    },
+    {
+      "route": "/api/admin/exceptions/[id]/resolve",
+      "file": "packages/web/src/app/api/admin/exceptions/[id]/resolve/route.ts",
+      "reason": "admin endpoint with separate admin auth model"
+    },
+    {
+      "route": "/api/admin/health",
+      "file": "packages/web/src/app/api/admin/health/route.ts",
+      "reason": "admin endpoint with separate admin auth model"
+    },
+    {
+      "route": "/api/admin/jobforge",
+      "file": "packages/web/src/app/api/admin/jobforge/route.ts",
+      "reason": "admin endpoint with separate admin auth model"
+    },
+    {
+      "route": "/api/admin/metrics",
+      "file": "packages/web/src/app/api/admin/metrics/route.ts",
+      "reason": "admin endpoint with separate admin auth model"
+    },
+    {
+      "route": "/api/admin/runs",
+      "file": "packages/web/src/app/api/admin/runs/route.ts",
+      "reason": "admin endpoint with separate admin auth model"
+    },
+    {
+      "route": "/api/admin/stream",
+      "file": "packages/web/src/app/api/admin/stream/route.ts",
+      "reason": "admin endpoint with separate admin auth model"
+    },
+    {
+      "route": "/api/builder/revalidate",
+      "file": "packages/web/src/app/api/builder/revalidate/route.ts",
+      "reason": "signed revalidation endpoint"
+    },
+    {
+      "route": "/api/cron/check-reliability-alerts",
+      "file": "packages/web/src/app/api/cron/check-reliability-alerts/route.ts",
+      "reason": "scheduled system endpoint"
+    },
+    {
+      "route": "/api/cron/daily-cost-rollup",
+      "file": "packages/web/src/app/api/cron/daily-cost-rollup/route.ts",
+      "reason": "scheduled system endpoint"
+    },
+    {
+      "route": "/api/cron/email-lifecycle",
+      "file": "packages/web/src/app/api/cron/email-lifecycle/route.ts",
+      "reason": "scheduled system endpoint"
+    },
+    {
+      "route": "/api/cron/low-activity",
+      "file": "packages/web/src/app/api/cron/low-activity/route.ts",
+      "reason": "scheduled system endpoint"
+    },
+    {
+      "route": "/api/cron/monthly-summary",
+      "file": "packages/web/src/app/api/cron/monthly-summary/route.ts",
+      "reason": "scheduled system endpoint"
+    },
+    {
+      "route": "/api/docs/openapi",
+      "file": "packages/web/src/app/api/docs/openapi/route.ts",
+      "reason": "docs endpoint (public by design)"
+    },
+    {
+      "route": "/api/gtm/demo/reset",
+      "file": "packages/web/src/app/api/gtm/demo/reset/route.ts",
+      "reason": "public analytics endpoint"
+    },
+    {
+      "route": "/api/gtm/funnel-stage",
+      "file": "packages/web/src/app/api/gtm/funnel-stage/route.ts",
+      "reason": "public analytics endpoint"
+    },
+    {
+      "route": "/api/gtm/roi",
+      "file": "packages/web/src/app/api/gtm/roi/route.ts",
+      "reason": "public analytics endpoint"
+    },
+    {
+      "route": "/api/health",
+      "file": "packages/web/src/app/api/health/route.ts",
+      "reason": "health endpoint (no tenant data contract)"
+    },
+    {
+      "route": "/api/health/console",
+      "file": "packages/web/src/app/api/health/console/route.ts",
+      "reason": "health endpoint (no tenant data contract)"
+    },
+    {
+      "route": "/api/health/stripe",
+      "file": "packages/web/src/app/api/health/stripe/route.ts",
+      "reason": "health endpoint (no tenant data contract)"
+    },
+    {
+      "route": "/api/internal/health/deep",
+      "file": "packages/web/src/app/api/internal/health/deep/route.ts",
+      "reason": "internal health endpoint"
+    },
+    {
+      "route": "/api/internal/health/deep",
+      "file": "packages/web/src/app/api/internal/health/deep/route.ts",
+      "reason": "internal health endpoint"
+    },
+    {
+      "route": "/api/public/reality",
+      "file": "packages/web/src/app/api/public/reality/route.ts",
+      "reason": "public endpoint namespace"
+    },
+    {
+      "route": "/api/public/ui-config",
+      "file": "packages/web/src/app/api/public/ui-config/route.ts",
+      "reason": "public endpoint namespace"
+    },
+    {
+      "route": "/api/seo/generate-sitemap",
+      "file": "packages/web/src/app/api/seo/generate-sitemap/route.ts",
+      "reason": "SEO/public metadata route"
+    },
+    {
+      "route": "/api/status",
+      "file": "packages/web/src/app/api/status/route.ts",
+      "reason": "status endpoint (no tenant data contract)"
+    },
+    {
+      "route": "/api/status/health",
+      "file": "packages/web/src/app/api/status/health/route.ts",
+      "reason": "status endpoint (no tenant data contract)"
+    },
+    {
+      "route": "/api/stripe/webhook",
+      "file": "packages/web/src/app/api/stripe/webhook/route.ts",
+      "reason": "signed webhook endpoint"
+    },
+    {
+      "route": "/api/v1/health",
+      "file": "packages/web/src/app/api/v1/health/route.ts",
+      "reason": "health endpoint"
+    },
+    {
+      "route": "/api/v1/meta",
+      "file": "packages/web/src/app/api/v1/meta/route.ts",
+      "reason": "metadata endpoint"
+    },
+    {
+      "route": "/api/v1/ready",
+      "file": "packages/web/src/app/api/v1/ready/route.ts",
+      "reason": "readiness endpoint"
+    },
+    {
+      "route": "/api/vercel-example",
+      "file": "packages/web/src/app/api/vercel-example/route.ts",
+      "reason": "non-production example endpoint"
+    },
+    {
+      "route": "/openapi.json",
+      "file": "packages/web/src/app/openapi.json/route.ts",
+      "reason": "non-api route"
+    }
+  ],
+  "missingRoutes": [],
+  "unreadableRoutes": [],
+  "coveragePct": 100,
+  "degraded": false
+}

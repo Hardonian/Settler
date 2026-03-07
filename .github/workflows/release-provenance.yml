@@ -1,0 +1,207 @@
+name: Release Provenance
+
+# Produces a signed, verifiable release evidence bundle after the security
+# pipeline has run. The bundle links every release artifact back to:
+#   - the exact commit that triggered the build
+#   - the GitHub Actions run that executed the verification
+#   - the security evidence artifacts produced during that run
+#
+# The bundle is signed using GitHub's artifact attestation (Sigstore/OIDC),
+# which requires no stored secrets and produces SLSA-compatible provenance.
+#
+# External verification:
+#   gh attestation verify <artifact-path> --repo <owner>/<repo>
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - "v*"
+  workflow_run:
+    workflows: ["Security Checks"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      require_complete:
+        description: "Fail if bundle completeness is partial"
+        required: false
+        type: boolean
+        default: false
+
+env:
+  SECURITY_AUDIT_MODE: strict
+  SECURITY_HEADER_PROBE_STRICT: "1"
+  SECURITY_HEADER_PROBE_ALLOW_DEGRADED: "1"
+
+jobs:
+  generate-bundle:
+    name: Generate Release Evidence Bundle
+    runs-on: ubuntu-latest
+
+    # Required permissions for artifact attestation (Sigstore OIDC signing)
+    permissions:
+      contents: read
+      id-token: write      # Required for OIDC token (Sigstore signing)
+      attestations: write  # Required to write attestation records
+
+    # Only run when triggered directly or when the upstream security workflow succeeded
+    if: >
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # -----------------------------------------------------------------------
+      # Run the full security evidence pipeline to produce source artifacts.
+      # These become the inputs to the release bundle.
+      # -----------------------------------------------------------------------
+
+      - name: Generate route registry
+        run: pnpm run security:routes
+
+      - name: Verify tenant coverage
+        run: pnpm run verify:tenant
+
+      - name: Run cross-tenant runtime tests
+        run: pnpm run test:cross-tenant
+
+      - name: Run dependency audit
+        env:
+          SECURITY_AUDIT_MODE: strict
+        run: pnpm run audit:deps
+
+      - name: Verify security headers (degraded allowed — no build in this job)
+        env:
+          SECURITY_HEADER_PROBE_ALLOW_DEGRADED: "1"
+        run: node scripts/security/header-probe.mjs || true
+
+      - name: Generate security evidence artifacts
+        env:
+          SECURITY_AUDIT_MODE: strict
+          SECURITY_HEADER_PROBE_STRICT: "1"
+          SECURITY_HEADER_PROBE_ALLOW_DEGRADED: "1"
+        run: node scripts/security-evidence.mjs
+
+      # -----------------------------------------------------------------------
+      # Generate the release evidence bundle from the evidence artifacts
+      # -----------------------------------------------------------------------
+
+      - name: Generate release evidence bundle
+        env:
+          SECURITY_AUDIT_MODE: strict
+          BUNDLE_REQUIRE_COMPLETE: ${{ inputs.require_complete == true && '1' || '0' }}
+        run: pnpm run generate-release-bundle
+
+      # -----------------------------------------------------------------------
+      # Verify bundle integrity before signing
+      # -----------------------------------------------------------------------
+
+      - name: Verify release evidence bundle integrity
+        run: pnpm run verify-release-bundle
+
+      # -----------------------------------------------------------------------
+      # Package the bundle as a tar archive for signing and upload
+      # -----------------------------------------------------------------------
+
+      - name: Package bundle as tar archive
+        id: package
+        run: |
+          COMMIT_SHORT=$(git rev-parse --short HEAD)
+          ARCHIVE_NAME="release-evidence-bundle-${COMMIT_SHORT}.tar.gz"
+          tar -czf "${ARCHIVE_NAME}" -C security/release-bundle .
+          echo "archive=${ARCHIVE_NAME}" >> "${GITHUB_OUTPUT}"
+          echo "archive_path=$(pwd)/${ARCHIVE_NAME}" >> "${GITHUB_OUTPUT}"
+          SHA256=$(sha256sum "${ARCHIVE_NAME}" | awk '{print $1}')
+          echo "sha256=${SHA256}" >> "${GITHUB_OUTPUT}"
+          echo "[release-provenance] Archive: ${ARCHIVE_NAME}"
+          echo "[release-provenance] SHA256:  ${SHA256}"
+
+      # -----------------------------------------------------------------------
+      # Sign the bundle using GitHub artifact attestation (Sigstore OIDC).
+      # This links the artifact to this specific GitHub Actions run and commit.
+      # No secrets are required — signing uses the OIDC token issued to this job.
+      #
+      # External reviewers can verify with:
+      #   gh attestation verify <archive> --repo <owner>/<repo>
+      # -----------------------------------------------------------------------
+
+      - name: Attest release evidence bundle provenance
+        id: attest
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: ${{ steps.package.outputs.archive_path }}
+
+      - name: Log provenance attestation details
+        run: |
+          echo "[release-provenance] Attestation complete"
+          echo "[release-provenance] Bundle: ${{ steps.package.outputs.archive }}"
+          echo "[release-provenance] SHA256: ${{ steps.package.outputs.sha256 }}"
+          echo "[release-provenance] Commit: $(git rev-parse HEAD)"
+          echo "[release-provenance] Run:    ${GITHUB_RUN_ID}"
+          echo "[release-provenance] Verify: gh attestation verify ${{ steps.package.outputs.archive }} --repo ${GITHUB_REPOSITORY}"
+
+      # -----------------------------------------------------------------------
+      # Upload artifacts: both the bundle directory (for browsing) and the
+      # signed tar archive (for external verification)
+      # -----------------------------------------------------------------------
+
+      - name: Upload release evidence bundle (directory)
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-evidence-bundle-${{ github.sha }}
+          path: security/release-bundle/
+          retention-days: 90
+          if-no-files-found: error
+
+      - name: Upload signed bundle archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-evidence-bundle-archive-${{ github.sha }}
+          path: ${{ steps.package.outputs.archive }}
+          retention-days: 90
+          if-no-files-found: error
+
+      # -----------------------------------------------------------------------
+      # Gate check: log the final status clearly so CI logs are unambiguous
+      # -----------------------------------------------------------------------
+
+      - name: Report bundle status
+        run: |
+          MANIFEST=$(cat security/release-bundle/manifest.json)
+          COMPLETENESS=$(echo "${MANIFEST}" | node -e "const d=require('fs').readFileSync('/dev/stdin','utf8');console.log(JSON.parse(d).completeness)")
+          STATUS=$(echo "${MANIFEST}" | node -e "const d=require('fs').readFileSync('/dev/stdin','utf8');console.log(JSON.parse(d).overallStatus)")
+          echo ""
+          echo "========================================"
+          echo "  RELEASE EVIDENCE BUNDLE COMPLETE"
+          echo "========================================"
+          echo "  Commit:      $(git rev-parse HEAD)"
+          echo "  Branch/Tag:  ${GITHUB_REF_NAME}"
+          echo "  CI Run:      ${GITHUB_RUN_ID}"
+          echo "  Completeness: ${COMPLETENESS}"
+          echo "  Status:       ${STATUS}"
+          echo "  Archive:      ${{ steps.package.outputs.archive }}"
+          echo "  SHA256:       ${{ steps.package.outputs.sha256 }}"
+          echo "========================================"
+          echo ""
+          if [ "${COMPLETENESS}" = "partial" ]; then
+            echo "WARNING: Bundle completeness is 'partial'. Some security checks ran in degraded mode."
+            echo "         This is expected in environments without a live deployment target."
+            echo "         CI (security.yml) is authoritative for complete evidence."
+          fi

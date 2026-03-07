@@ -1,0 +1,59 @@
+{
+  "generatedAt": "2026-03-07T22:05:17.319Z",
+  "commitSha": "5c0313937628f0b74394775590e7ebf74cca8467",
+  "ciRunId": null,
+  "overallStatus": "partial",
+  "completeness": "partial",
+  "degradedChecks": {
+    "tenantCoverage": false,
+    "crossTenant": false,
+    "headerProbe": true,
+    "dependencyAudit": true
+  },
+  "checks": {
+    "routeRegistry": {
+      "status": "pass",
+      "totalRoutes": 228,
+      "generatedAt": "2026-03-07T19:55:11.444Z"
+    },
+    "tenantCoverage": {
+      "status": "pass",
+      "verified": 160,
+      "tenantScoped": 160,
+      "missingCount": 0,
+      "degraded": false
+    },
+    "crossTenant": {
+      "status": "pass",
+      "exitCode": 0,
+      "degraded": false
+    },
+    "headerProbe": {
+      "status": "degraded",
+      "failedChecks": 0,
+      "probeableRoutes": 133,
+      "degraded": true,
+      "degradedReasons": [
+        "missing_build"
+      ]
+    },
+    "dependencyAudit": {
+      "status": "degraded",
+      "outcome": "warn-backend-unavailable",
+      "degraded": true,
+      "degradedReasons": [
+        "pnpm-audit-backend-unavailable",
+        "osv-scanner-missing"
+      ],
+      "findings": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      }
+    }
+  },
+  "missingRequiredArtifacts": []
+}
