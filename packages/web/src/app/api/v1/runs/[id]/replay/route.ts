@@ -9,8 +9,25 @@ import {
   recordDriftMetric,
   recordRunMetrics,
 } from "@/lib/api/v1/recon/core";
+import { buildReplayLabReport } from "@/lib/replay-lab/engine";
 
 export const runtime = "nodejs";
+
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const ctx = await buildContext(request);
+  if (ctx instanceof NextResponse) return ctx;
+  const limited = applyRateLimit(ctx, "read");
+  if (limited) return limited;
+
+  try {
+    const { id } = await params;
+    const report = buildReplayLabReport(id);
+
+    return ok(NextResponse.json(report), ctx.requestId);
+  } catch (error) {
+    return fail(error, request, ctx.requestId);
+  }
+}
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const ctx = await buildContext(request);
@@ -31,6 +48,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       | undefined;
     const actual = createHash("sha256").update(`${id}:${ctx.tenantId}`).digest("hex");
     const match = Boolean(expected && expected === actual);
+    const report = buildReplayLabReport(id);
 
     if (!match) {
       await recordDriftMetric(ctx, {
@@ -57,6 +75,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             actual_fingerprint: actual,
             match,
             diff_pointers: ["summary", "metadata.fingerprint"],
+            replay_report: report,
           },
           { status: 409 }
         ),
@@ -76,7 +95,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     });
 
     return ok(
-      NextResponse.json({ expected_fingerprint: expected, actual_fingerprint: actual, match }),
+      NextResponse.json({
+        expected_fingerprint: expected,
+        actual_fingerprint: actual,
+        match,
+        replay_report: report,
+      }),
       ctx.requestId
     );
   } catch (error) {
