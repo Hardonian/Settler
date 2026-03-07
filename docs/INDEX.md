@@ -1,4 +1,4 @@
-# Documentation Index
+# Settler Documentation Index
 
 ## Start Here
 
@@ -32,7 +32,11 @@
 - [Console Guide](./CONSOLE.md) — Console documentation
 - [Authentication](./AUTH.md) — Auth and authorization
 
-## Operations
+- [ENGINE.md](./ENGINE.md)
+- [architecture/README.md](./architecture/README.md)
+- [api/README.md](./api/README.md)
+- [security/README.md](./security/README.md)
+- [metrics/EVENT_TAXONOMY.md](./metrics/EVENT_TAXONOMY.md)
 
 - [Operations Runbook](./OPERATIONS_RUNBOOK.md) — Day-to-day operations
 - [Deployment Guide](./deployment-guide.md) — Deployment instructions

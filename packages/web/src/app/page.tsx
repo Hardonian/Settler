@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Circle, Dot } from "lucide-react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 
 const capabilityChips = [
   "Replay any run",
@@ -86,7 +87,8 @@ function ExceptionStackCard({ reducedMotion }: { reducedMotion: boolean }) {
     <article className="rounded-[2rem] border border-white/15 bg-white/[0.04] p-6 shadow-[0_40px_100px_-60px_rgba(0,0,0,0.8)] backdrop-blur-md">
       <h3 className="text-xl font-semibold text-white">Mismatch Queue</h3>
       <p className="mt-2 text-sm text-slate-300">
-        Prioritized queues reorder by policy outcome so teams can resolve the riskiest mismatches first.
+        Prioritized queues reorder by policy outcome so teams can resolve the riskiest mismatches
+        first.
       </p>
       <div className="relative mt-8 h-52">
         {visible.map((label, slot) => (
@@ -190,7 +192,8 @@ function SchedulerCard({ reducedMotion }: { reducedMotion: boolean }) {
     <article className="rounded-[2rem] border border-white/15 bg-white/[0.04] p-6 shadow-[0_40px_100px_-60px_rgba(0,0,0,0.8)] backdrop-blur-md">
       <h3 className="text-xl font-semibold text-white">Review Scheduler</h3>
       <p className="mt-2 text-sm text-slate-300">
-        Review windows align to routing windows so approvals happen on schedule, not in spreadsheet fire drills.
+        Review windows align to routing windows so approvals happen on schedule, not in spreadsheet
+        fire drills.
       </p>
       <div className="mt-8 rounded-2xl border border-white/15 bg-slate-950/80 p-4">
         <div className="grid grid-cols-4 gap-2">
@@ -326,12 +329,14 @@ export default function Home() {
               </Link>
             ))}
           </div>
-          <Link
+          <TrackedLink
             href="/contact"
+            eventName="contact_cta_clicked"
+            eventPayload={{ location: "nav", ctaLabel: "Book a Demo", destination: "/contact" }}
             className="rounded-full border border-cyan-300/50 bg-cyan-300/15 px-4 py-2 text-sm font-medium text-cyan-100 transition hover:bg-cyan-300/25"
           >
             Book a Demo
-          </Link>
+          </TrackedLink>
         </nav>
       </header>
 
@@ -356,21 +361,30 @@ export default function Home() {
               </span>
             </h1>
             <p className="mt-6 max-w-2xl text-base text-slate-200 sm:text-lg">
-              Settler helps engineering, finance, and operations teams reconcile faster, explain mismatches, and prove every result.
+              Settler helps engineering, finance, and operations teams reconcile faster, explain
+              mismatches, and prove every result.
             </p>
             <div className="mt-9 flex flex-wrap gap-4">
-              <Link
+              <TrackedLink
                 href="/architecture"
+                eventName="hero_cta_clicked"
+                eventPayload={{
+                  location: "home",
+                  ctaLabel: "See How It Works",
+                  destination: "/architecture",
+                }}
                 className="inline-flex items-center gap-2 rounded-full bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
               >
                 See How It Works <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
+              </TrackedLink>
+              <TrackedLink
                 href="/docs"
+                eventName="docs_cta_clicked"
+                eventPayload={{ location: "home", ctaLabel: "Read Docs", destination: "/docs" }}
                 className="inline-flex items-center rounded-full border border-white/35 px-6 py-3 text-sm font-medium text-white transition hover:bg-white/10"
               >
                 Read Docs
-              </Link>
+              </TrackedLink>
             </div>
           </div>
           <div className="mt-12 flex flex-wrap gap-3" id="evidence">
@@ -527,9 +541,17 @@ export default function Home() {
                 ],
               ] as const
             ).map(([title, href, text]) => (
-              <Link
+              <TrackedLink
                 key={title}
                 href={href}
+                eventName={
+                  href === "/demo"
+                    ? "demo_cta_clicked"
+                    : href === "/docs"
+                      ? "docs_cta_clicked"
+                      : "hero_cta_clicked"
+                }
+                eventPayload={{ location: "home", ctaLabel: title, destination: href }}
                 className="rounded-3xl border border-white/15 bg-slate-950/70 p-6 transition hover:border-cyan-300/50 hover:bg-slate-950"
               >
                 <p className="text-lg font-medium text-white">{title}</p>
@@ -537,7 +559,7 @@ export default function Home() {
                 <p className="mt-6 inline-flex items-center gap-2 text-sm text-cyan-200">
                   Open <ArrowRight className="h-4 w-4" />
                 </p>
-              </Link>
+              </TrackedLink>
             ))}
           </div>
         </div>
@@ -568,6 +590,17 @@ export default function Home() {
             <div className="mt-3 flex flex-col gap-2 text-sm text-slate-200">
               <Link href="/docs">Docs</Link>
               <Link href="/specs/openapi.yaml">API</Link>
+              <TrackedLink
+                href="https://github.com"
+                eventName="github_outbound_clicked"
+                eventPayload={{
+                  location: "footer",
+                  ctaLabel: "GitHub",
+                  destination: "https://github.com",
+                }}
+              >
+                GitHub
+              </TrackedLink>
               <Link href="/status">Status</Link>
             </div>
           </div>

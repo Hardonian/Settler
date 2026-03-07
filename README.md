@@ -1,34 +1,16 @@
 # Settler — Open Source Reconciliation Engine
 
-**Open-source engine that reconciles financial data across systems, surfaces mismatches, and produces verifiable evidence for every run.**
+**Settler helps teams reconcile data across systems, surface mismatches, and generate replayable evidence for every run.**
 
-Stripe says one thing. Your bank says another. Your ledger says something else. Settler finds every difference, explains why, and proves the results are correct.
+If Stripe, banking data, and your internal ledger disagree, Settler shows the differences, records why they happened, and exports evidence you can review later.
 
-## Why Settler Exists
+## What Settler does
 
-Most teams still reconcile across spreadsheets, exports, and one-off scripts. When mismatches appear, operators lose hours tracing row-level differences and cannot clearly explain why balances diverged.
-
-Companies reconcile across Stripe, banks, ERPs, and internal ledgers using spreadsheets and scripts that break silently, produce unexplainable results, and cannot be audited.
-
-Settler replaces that with a reconciliation engine where:
-- Every run is **repeatable** — same inputs and rules always produce the same results
-- Every mismatch is **surfaced** — with full context about what didn't match and why
-- Every result is **provable** — evidence packs are generated automatically for audit
-- Every exception is **tracked** — from detection through resolution
-
-## What Settler Does
-
-- Run reconciliation workflows across source systems.
-- Detect mismatches across systems with deterministic matching.
-- Generate evidence for every run.
-- Replay runs to explain what changed and why.
-- Export audit proof for incidents and external reviews.
-
-1. **Ingest** records from Stripe, banks, ERPs, and ledgers.
-2. **Reconcile** with explicit matching rules defined in code.
-3. **Detect** mismatches and route them to a review queue.
-4. **Prove** results with exported evidence (input data, rules applied, outputs, cryptographic hashes).
-5. **Replay** any run to verify or debug the results.
+1. **Ingest** records from source systems.
+2. **Reconcile** with explicit matching rules.
+3. **Detect** mismatches and route exceptions for review.
+4. **Export evidence** (inputs, rules, outputs, fingerprints).
+5. **Replay runs** to verify behavior with the same evidence package.
 
 ## Five Minute Demo
 
@@ -41,22 +23,9 @@ pnpm demo
 pnpm settler:replay examples/demo-output/evidence.json
 ```
 
-Demo outputs are written to `examples/demo-output`:
-- `run.json`
-- `results.json`
-- `evidence.json`
-- `report.html`
+Demo outputs are written to `examples/demo-output` (`run.json`, `results.json`, `evidence.json`, `report.html`).
 
-## Why Settler is different
-
-- **Replayable runs:** re-run any reconciliation with identical results. Debugging and auditing become tractable.
-- **Evidence generation:** every run produces an evidence pack — what data went in, what rules applied, what matched, what didn't.
-- **Rules as code:** matching rules live in your repository, go through pull requests, and run in CI.
-- **Exception workflow:** mismatches route to a review queue with assignment, resolution tracking, and audit context.
-- **Self-hosted, open source:** Apache 2.0 licensed. Your data stays in your infrastructure.
-- **API and SDK first:** reconciliation runs can be triggered programmatically and embedded in operational workflows.
-
-## OSS vs Enterprise at a glance
+## Why teams choose Settler
 
 | Capability | OSS (this repo) | Enterprise |
 |---|---|---|
@@ -72,6 +41,14 @@ Demo outputs are written to `examples/demo-output`:
 | Advanced integrations | Community adapters | Managed connectors |
 
 See [docs/OSS_VS_ENTERPRISE.md](docs/OSS_VS_ENTERPRISE.md) for details.
+
+## Demo Output
+
+After running the demo, inspect:
+
+## Documentation paths
+
+The demo path shows reconciliation execution, mismatch detection, evidence generation, and replay verification.
 
 ## Quickstart
 
