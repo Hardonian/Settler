@@ -5,7 +5,7 @@ async function getRuns() {
   const h = await headers();
   const host = h.get("host") || "localhost:3000";
   const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
-  const res = await fetch(`${protocol}://${host}/api/v1/runs?limit=20`, {
+  const res = await fetch(`${protocol}://${host}/api/v1/runs?limit=50`, {
     headers: { authorization: h.get("authorization") || "" },
     cache: "no-store",
   });
@@ -14,12 +14,13 @@ async function getRuns() {
   return data.rows || [];
 }
 
-export default async function RunsPage() {
-  const rows = await getRuns();
+export default async function MismatchesPage() {
+  const runs = await getRuns();
+  const mismatches = runs.filter((run: { status?: string }) => run.status !== "succeeded");
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold">Recent Runs</h1>
+      <h1 className="text-2xl font-semibold">Detected Mismatches</h1>
       <div className="mt-4 overflow-hidden rounded border border-slate-200 bg-white">
         <table className="min-w-full text-sm">
           <thead className="bg-slate-50 text-left">
@@ -27,25 +28,27 @@ export default async function RunsPage() {
               <th className="px-3 py-2">Run ID</th>
               <th className="px-3 py-2">Created</th>
               <th className="px-3 py-2">Status</th>
-              <th className="px-3 py-2">Policy</th>
+              <th className="px-3 py-2">Action</th>
             </tr>
           </thead>
           <tbody>
-            {rows.length === 0 ? (
+            {mismatches.length === 0 ? (
               <tr>
                 <td colSpan={4} className="px-3 py-6 text-center text-slate-500">
-                  No runs yet. Start a reconciliation workflow to populate this list.
+                  No mismatches detected yet. Run a reconciliation workflow to surface differences.
                 </td>
               </tr>
             ) : (
-              rows.map((row: any) => (
+              mismatches.map((row: { run_id: string; created_at: string; status: string }) => (
                 <tr key={row.run_id} className="border-t border-slate-100">
-                  <td className="px-3 py-2 font-mono text-xs">
-                    <Link href={`/app/runs/${row.run_id}`}>{row.run_id}</Link>
-                  </td>
+                  <td className="px-3 py-2 font-mono text-xs">{row.run_id}</td>
                   <td className="px-3 py-2">{row.created_at}</td>
                   <td className="px-3 py-2">{row.status}</td>
-                  <td className="px-3 py-2">{row.policy}</td>
+                  <td className="px-3 py-2">
+                    <Link href={`/app/runs/${row.run_id}`} className="text-blue-600 hover:underline">
+                      Review run
+                    </Link>
+                  </td>
                 </tr>
               ))
             )}

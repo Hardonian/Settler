@@ -9,13 +9,13 @@ import { Rocket, Code, Zap, Shield } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Documentation - Settler",
-  description: "Docs for running deterministic reconciliation workflows, replaying runs, and exporting evidence with Settler",
+  description: "Docs for Settler, the Open Source Reconciliation Engine: run workflows, detect mismatches, replay runs, and export evidence.",
 };
 
 export default function DocsPage() {
   return (
     <div className="prose prose-slate dark:prose-invert max-w-none">
-      <h1>Documentation</h1>
+      <h1>Open Source Reconciliation Engine Docs</h1>
 
       <p className="text-lg text-slate-600 dark:text-slate-400">
         Start here to run your first reconciliation flow, inspect mismatches, replay the same run, and export evidence.
