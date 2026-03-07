@@ -1,16 +1,16 @@
-# Settler — Open Source Reconciliation Engine
+# Settler — Open Source Reconciliation Platform
 
-**Settler helps teams reconcile data across systems, surface mismatches, and generate replayable evidence for every run.**
+**Settler runs deterministic reconciliation workflows, produces verifiable artifacts, and supports replay-backed audits for every execution.**
 
-If Stripe, banking data, and your internal ledger disagree, Settler shows the differences, records why they happened, and exports evidence you can review later.
+If Stripe, banking data, and your internal ledger disagree, Settler identifies mismatches, records why they happened, and exports proof artifacts you can replay later.
 
 ## What Settler does
 
-1. **Ingest** records from source systems.
-2. **Reconcile** with explicit matching rules.
-3. **Detect** mismatches and route exceptions for review.
-4. **Export evidence** (inputs, rules, outputs, fingerprints).
-5. **Replay runs** to verify behavior with the same evidence package.
+1. **Workflow execution** across tenant-scoped connectors and policies.
+2. **Deterministic reconciliation** with explicit matching rules.
+3. **Mismatch detection** with review-ready context.
+4. **Artifact + proof generation** (inputs, policy, outputs, hashes).
+5. **Replay verification** against canonical execution artifacts.
 
 ## Five Minute Demo
 
@@ -25,30 +25,38 @@ pnpm settler:replay examples/demo-output/evidence.json
 
 Demo outputs are written to `examples/demo-output` (`run.json`, `results.json`, `evidence.json`, `report.html`).
 
-## Why teams choose Settler
+## Capability reality (OSS)
 
-| Capability | OSS (this repo) | Enterprise |
-|---|---|---|
-| Reconciliation engine | Yes | Yes |
-| Evidence generation | Yes | Yes |
-| Replay and determinism | Yes | Yes |
-| Rules as code | Yes | Yes |
-| Self-hosted deployment | Yes | Yes |
-| Multi-tenant isolation | Yes | Yes |
-| Managed hosting | — | Yes |
-| SSO / SAML | — | Yes |
-| Priority support and SLA | — | Yes |
-| Advanced integrations | Community adapters | Managed connectors |
+| Capability                         | Status                         | Notes                                                                                 |
+| ---------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------- |
+| Deterministic workflow execution   | ✅ Implemented                 | Deterministic guarantees apply to canonicalized inputs + rules + policy context.      |
+| Replayable execution               | ✅ Implemented                 | Replay verifies outputs against stored artifacts and hashes.                          |
+| Proof chains                       | ✅ Implemented                 | Hash-linked proof artifacts are generated and verified by scripts and runtime checks. |
+| Policy enforcement                 | ✅ Implemented                 | Execution policy is evaluated during runtime and verification gates.                  |
+| Connector normalization and safety | ✅ Implemented                 | Connector output normalization and sandbox controls are present in platform modules.  |
+| AI copilot                         | ✅ Implemented (advisory only) | Copilot suggests actions; it does not execute workflow changes directly.              |
+| Chaos-tested reliability           | ✅ Implemented                 | Chaos harness and reliability scripts validate deterministic invariants.              |
+| Multi-tenant isolation             | ✅ Implemented                 | Tenant boundaries enforced through RLS and isolation checks.                          |
 
-See [docs/OSS_VS_ENTERPRISE.md](docs/OSS_VS_ENTERPRISE.md) for details.
+See [docs/positioning/CLAIM_VALIDATION.md](docs/positioning/CLAIM_VALIDATION.md) for claim-by-claim evidence and boundaries.
 
-## Demo Output
+## Core primitives
 
-After running the demo, inspect:
+Settler documentation and user-facing surfaces normalize to these primitives:
 
-## Documentation paths
+- **Workflow**
+- **Execution**
+- **Artifact**
+- **Proof**
+- **Replay**
+- **Policy**
+- **Connector**
+- **Event**
+- **Tenant**
+- **Copilot**
+- **Chaos Harness**
 
-The demo path shows reconciliation execution, mismatch detection, evidence generation, and replay verification.
+Reference: [docs/TERMINOLOGY.md](docs/TERMINOLOGY.md).
 
 ## Quickstart
 
@@ -76,36 +84,23 @@ pnpm --filter @settler/web dev
 
 Open `http://localhost:3000`.
 
-## Core Concepts
-
-- **Connections:** external data sources (Stripe, banks, ERPs, ledgers)
-- **Pipelines:** reconciliation workflow configurations
-- **Runs:** individual reconciliation executions (immutable, replayable)
-- **Results:** matched and mismatched records with full context
-- **Review Queue:** exception handling with assignment and resolution tracking
-- **Evidence:** audit-ready proof of what happened in each run
-
-## Key Packages
+## Key packages
 
 - `packages/api` – reconciliation API, domain logic, and data layer
-- `packages/web` – Next.js web app (product console, docs, marketing)
-- `packages/adapters` – connectors for Stripe, banks, ERPs, and other data sources
-- `packages/sdk`, `packages/react-settler`, `packages/sdk-go`, `packages/workhorse` – client SDKs and background workers
+- `packages/web` – Next.js web app (console, docs, marketing)
+- `packages/adapters` – connector implementations for Stripe, banks, ERPs, and other sources
+- `packages/sdk`, `packages/react-settler`, `packages/sdk-go`, `packages/workhorse` – SDKs and workers
 
-## Architecture
+## Documentation path
 
-Learn how the engine works → [`docs/ENGINE.md`](docs/ENGINE.md)
-
-For contributor workflow, see [`CONTRIBUTING.md`](CONTRIBUTING.md).
-For a top-level system map, see [`ARCHITECTURE.md`](ARCHITECTURE.md).
-
-## Documentation
-
-- Docs home: [`docs/README.md`](docs/README.md)
-- Getting started: [`docs/getting-started/README.md`](docs/getting-started/README.md)
-- Product docs: [`docs/product/README.md`](docs/product/README.md)
-- API + SDK: [`docs/api/README.md`](docs/api/README.md)
-- Security docs: [`docs/security/README.md`](docs/security/README.md)
+- Start here: [`docs/START_HERE.md`](docs/START_HERE.md)
+- Quick start + onboarding: [`docs/getting-started/README.md`](docs/getting-started/README.md)
+- Core concepts + guarantees: [`docs/TERMINOLOGY.md`](docs/TERMINOLOGY.md), [`docs/SYSTEM_GUARANTEES.md`](docs/SYSTEM_GUARANTEES.md)
+- Workflows and execution: [`docs/WORKFLOWS.md`](docs/WORKFLOWS.md), [`docs/ENGINE.md`](docs/ENGINE.md)
+- Proofs and replay: [`docs/EVIDENCE.md`](docs/EVIDENCE.md), [`docs/LINEAGE.md`](docs/LINEAGE.md)
+- Connectors: [`docs/integrations/connectors-overview.md`](docs/integrations/connectors-overview.md)
+- AI copilot + chaos harness: [`MODEL_SPEC.md`](MODEL_SPEC.md), [`platform/chaos-harness.ts`](platform/chaos-harness.ts)
+- Architecture + contributing: [`ARCHITECTURE.md`](ARCHITECTURE.md), [`CONTRIBUTING.md`](CONTRIBUTING.md)
 
 ## License and support
 
