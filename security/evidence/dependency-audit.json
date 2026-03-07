@@ -1,0 +1,39 @@
+{
+  "generatedAt": "2026-03-07T19:55:25.064Z",
+  "verifierVersion": "2026-03-07.2",
+  "runId": "2026-03-07T19-55-21-494Z",
+  "ci": false,
+  "policyMode": "warn",
+  "backend": {
+    "available": false,
+    "reason": "backend-unavailable"
+  },
+  "completeness": "degraded",
+  "degraded": true,
+  "degradedReasons": ["pnpm-audit-backend-unavailable", "osv-scanner-missing"],
+  "commandAttempts": [
+    {
+      "tool": "pnpm-audit",
+      "command": "pnpm audit --prod --audit-level=high --json",
+      "status": 1,
+      "error": null
+    },
+    {
+      "tool": "osv-check",
+      "command": "bash -lc command -v osv-scanner >/dev/null 2>&1",
+      "status": 1,
+      "error": null
+    }
+  ],
+  "fallbackPathUsed": "backend-unavailable",
+  "osvPresent": false,
+  "findingsSummary": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "finalOutcome": "warn-backend-unavailable"
+}

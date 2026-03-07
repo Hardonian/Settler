@@ -1,0 +1,70 @@
+{
+  "commitSha": "8d7982e76b3c5eab2586a60769f2b5a53b445cd6",
+  "timestamp": "2026-03-07T19:55:25.272Z",
+  "ciRunId": null,
+  "auditMode": "strict",
+  "headerProbeStrict": false,
+  "headerProbeAllowDegraded": true,
+  "verifierVersion": "2026-03-07.2",
+  "completeness": "partial",
+  "degradedChecks": {
+    "tenantCoverage": false,
+    "crossTenant": false,
+    "headerProbe": true,
+    "dependencyAudit": true
+  },
+  "artifacts": [
+    {
+      "file": "security/evidence/route-registry.json",
+      "source": "security/route-registry.json",
+      "present": true,
+      "required": true
+    },
+    {
+      "file": "security/evidence/tenant-coverage.json",
+      "source": "artifacts/security/tenant-coverage-latest.json",
+      "present": true,
+      "required": true
+    },
+    {
+      "file": "security/evidence/cross-tenant-results.json",
+      "source": "artifacts/security/cross-tenant-results-latest.json",
+      "present": true,
+      "required": true
+    },
+    {
+      "file": "security/evidence/header-probe.json",
+      "source": "artifacts/security/header-probe-latest.json",
+      "present": true,
+      "required": true
+    },
+    {
+      "file": "security/evidence/dependency-audit.json",
+      "source": "artifacts/security/dependency-audit-latest.json",
+      "present": true,
+      "required": true
+    }
+  ],
+  "checksums": [
+    {
+      "file": "security/evidence/route-registry.json",
+      "sha256": "8c141ff494ac8374de06865dff1f143d93ab7e93b66b94d346b44147b9984541"
+    },
+    {
+      "file": "security/evidence/tenant-coverage.json",
+      "sha256": "631c6052b26fc50b9a1b403ae3cf0947c9e0459825c8940d622501cd5033a189"
+    },
+    {
+      "file": "security/evidence/cross-tenant-results.json",
+      "sha256": "7130802838aae52df4ba149df68fcddd652bdc7fd10827a98c33075798d576e1"
+    },
+    {
+      "file": "security/evidence/header-probe.json",
+      "sha256": "ed134171e13623121a51b7d885fffa64e4437c77d2573a60620a6ffaa085cfed"
+    },
+    {
+      "file": "security/evidence/dependency-audit.json",
+      "sha256": "d7cdf3584de14323a84e7f5169b676df35668c787e8ed81f22712781aab80b17"
+    }
+  ]
+}
