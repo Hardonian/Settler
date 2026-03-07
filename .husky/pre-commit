@@ -1,6 +1,9 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# Keep pre-commit low-memory and staged-aware.
+# Full verification remains in pre-push/CI.
+
 # Verify migrations before commit
 if git diff --cached --name-only | grep -q "supabase/migrations/"; then
   echo "🔍 Migration files detected, running verification..."
@@ -17,41 +20,22 @@ if git diff --cached --name-only | grep -q "prisma/schema.prisma"; then
   git add src/types/ 2>/dev/null || true
 fi
 
-# Validate ESLint config dependencies before linting
-echo "🔍 Validating ESLint config dependencies..."
-pnpm validate:eslint-config || {
-  echo "❌ ESLint config dependency issues found. Please fix them before committing."
-  exit 1
-}
-
-# Validate build safety
-echo "🔍 Validating build safety..."
-pnpm validate:build-safety || {
-  echo "❌ Build safety issues found. Please fix them before committing."
-  exit 1
-}
-
-# Validate lint configuration
-echo "🔍 Validating lint configuration..."
-pnpm validate:lint-config || {
-  echo "❌ Lint configuration issues found. Please fix them before committing."
-  exit 1
-}
-
 # Block unresolved merge conflict markers
 pnpm verify:conflict-markers || {
   echo "❌ Unresolved merge conflict markers detected. Please resolve them before committing."
   exit 1
 }
 
-# Run staged-package verification for local reliability
-echo "🔍 Running staged-package verification..."
-pnpm lint-staged || {
+# Stage-scoped lint/format, sequential to reduce memory spikes on constrained machines.
+echo "🔍 Running lint-staged (sequential, low-memory mode)..."
+pnpm lint-staged --concurrent false || {
   echo "❌ lint-staged failed. Please fix errors before committing."
   exit 1
 }
 
-node scripts/verify-staged-packages.mjs || {
-  echo "❌ Staged package verification failed. Please fix errors before committing."
+# Package-scoped quick reliability checks only (lint + config safety), no full typecheck/test here.
+node scripts/verify-staged-packages.mjs --tier=precommit || {
+  echo "❌ Pre-commit staged verification failed."
+  echo "💡 Run 'pnpm run verify:fast' before push for full local confidence."
   exit 1
 }

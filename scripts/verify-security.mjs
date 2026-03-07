@@ -71,6 +71,46 @@ function runStaticChecks() {
   return results;
 }
 
+function readRuntimeTenantCoverage() {
+  try {
+    const runtimeSummary = JSON.parse(
+      readFileSync(
+        path.join(repoRoot, "artifacts", "security", "runtime-smoke-latest.json"),
+        "utf8"
+      )
+    );
+    const negativeCheck = runtimeSummary?.checks?.find(
+      (entry) => entry.name === "auth_tenant_boundary_negative"
+    );
+
+    if (!negativeCheck) {
+      return {
+        status: "not_executed",
+        message:
+          "Runtime security smoke artifact present, but tenant negative check was not found.",
+      };
+    }
+
+    if (negativeCheck.status === "passed") {
+      return {
+        status: "pass",
+        message: "Runtime tenant negative-path check passed in latest runtime smoke artifact.",
+      };
+    }
+
+    return {
+      status: negativeCheck.status,
+      message: `Runtime tenant negative-path check status='${negativeCheck.status}'.`,
+    };
+  } catch {
+    return {
+      status: "not_executed",
+      message:
+        "Runtime tenant coverage not executed in this run context. Run `pnpm run verify:security:runtime` for fixture/runtime assurance.",
+    };
+  }
+}
+
 function printSection(title) {
   console.log(`\n=== ${title} ===`);
 }
@@ -116,6 +156,7 @@ function main() {
   const staticResults = runStaticChecks();
   const tenantResults = evaluateTenantGuardrails(repoRoot);
   const limiterGuardrail = evaluateRateLimiterProductionGuardrail();
+  const runtimeTenantCoverage = readRuntimeTenantCoverage();
 
   const staticFailures = staticResults.filter((item) => item.status !== "present");
   const tenantFailures = tenantResults.filter((item) => item.status !== "guardrail_present");
@@ -126,10 +167,13 @@ function main() {
     scope: {
       static: "Control-presence verification (not dynamic attack simulation).",
       tenantGuardrails:
-        "High-risk route structure checks for auth/tenant/rate-limit guardrails. Requires runtime/manual follow-up for full isolation proof.",
+        "High-risk route structure checks for auth/tenant/rate-limit guardrails. Guardrail-presence only.",
+      tenantRuntime:
+        "Runtime/API cross-tenant negative-path coverage from latest runtime smoke or dedicated fixture tests.",
     },
     staticResults,
-    tenantIsolation: tenantResults,
+    tenantGuardrailPresence: tenantResults,
+    tenantRuntimeCoverage: runtimeTenantCoverage,
     limiterGuardrail,
     passed:
       staticFailures.length === 0 && tenantFailures.length === 0 && limiterFailures.length === 0,
@@ -149,7 +193,7 @@ function main() {
     }
   }
 
-  printSection("Tenant-isolation guardrail checks");
+  printSection("Tenant guardrail presence checks (static)");
   for (const result of tenantResults) {
     const statusIcon = result.status === "guardrail_present" ? "✅" : "❌";
     console.log(`${statusIcon} ${result.route} [${result.classification}]`);
@@ -159,8 +203,12 @@ function main() {
         console.log(`   missing guardrail: ${missing}`);
       }
     }
-    console.log(`   manual/runtime follow-up: ${result.manualValidation}`);
+    console.log(`   runtime follow-up target: ${result.manualValidation}`);
   }
+
+  printSection("Tenant runtime coverage status");
+  const runtimeIcon = runtimeTenantCoverage.status === "pass" ? "✅" : "⚠️";
+  console.log(`${runtimeIcon} ${runtimeTenantCoverage.message}`);
 
   printSection("Production limiter backend guardrail");
   const limiterIcon =
@@ -179,7 +227,7 @@ function main() {
   }
 
   console.log(
-    "\n✅ Security verification passed (static controls + tenant guardrail presence). This does not replace runtime smoke or full DAST/SAST testing."
+    "\n✅ Security verification passed (static controls + tenant guardrail presence). Runtime coverage is reported separately and must be reviewed explicitly."
   );
 }
 

@@ -4,5 +4,9 @@
 echo "🔍 Checking for unresolved merge conflicts..."
 pnpm verify:conflict-markers || exit 1
 
-echo "🔍 Running fast verification gate..."
-pnpm verify:fast
+echo "🔍 Running broader pre-push verification gate..."
+pnpm verify:fast || {
+  echo "❌ pre-push verification failed."
+  echo "💡 For full release parity run: pnpm run verify:release"
+  exit 1
+}

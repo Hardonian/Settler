@@ -1,6 +1,16 @@
 # Release Verification Pipeline
 
-This repository uses a staged verification runner (`scripts/verify-release.mjs`) with bounded timeouts, per-stage logs, and machine-readable summaries.
+This repository uses a staged verification runner (`scripts/verify-release.mjs`) with bounded timeouts, per-stage logs, machine-readable summaries, and explicit security state carry-through.
+
+## Verification tiers
+
+| Tier       | Command                   | Scope                                                                                              | Goal                                                           |
+| ---------- | ------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| pre-commit | `.husky/pre-commit`       | staged lint/format + conflict marker + staged package lint only                                    | fast, low-memory, catches obvious local regressions            |
+| pre-push   | `.husky/pre-push`         | `verify:fast` (lint/typecheck/claims/boundaries/routes/security static checks)                     | broader local confidence without full release runtime workload |
+| CI/release | `pnpm run verify:release` | full staged pipeline including build, runtime smoke, tests, launch evidence, and security evidence | release integrity and auditable proof                          |
+
+If pre-commit fails due local constraints, run `pnpm run verify:fast` manually before push; do not normalize `--no-verify`.
 
 ## Command matrix
 
@@ -33,6 +43,18 @@ This repository uses a staged verification runner (`scripts/verify-release.mjs`)
 
 On first failure, the runner stops and emits stage-specific logs.
 
+## Security audit policy in release
+
+Supply-chain evidence includes an explicit audit state (`pass`, `fail`, `unavailable-hard`, `unavailable-soft`, `misconfigured`).
+
+Release behavior:
+
+- `pass` → release gate can proceed.
+- `fail` → release gate fails.
+- `unavailable-hard` → release gate fails.
+- `unavailable-soft` → release gate fails unless `RELEASE_ALLOW_AUDIT_UNAVAILABLE=1` is explicitly set.
+- `misconfigured` → release gate fails; fix auth/config, do not treat as environmental unavailability.
+
 ## Evidence artifacts
 
 Every run writes:
@@ -57,7 +79,8 @@ Use the `release-verify` workflow:
 
 - `verify-fast` runs fast static gates.
 - `security-supply-chain` runs dependency CVE scan + SBOM generation and uploads artifacts.
-- `verify-release` downloads those security artifacts and enforces `RELEASE_REQUIRE_SECURITY_EVIDENCE=1` (with optional `RELEASE_ALLOW_AUDIT_UNAVAILABLE=1` policy override when registry audit endpoint is unavailable).
+- `verify-release` downloads those security artifacts and enforces `RELEASE_REQUIRE_SECURITY_EVIDENCE=1`.
+- Release soft-skip requires explicit workflow input (`allow_audit_soft_skip=true`).
 
 ## Threat model
 

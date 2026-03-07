@@ -12,6 +12,11 @@ on:
         description: Optional externally hosted URL for launch capture
         required: false
         type: string
+      allow_audit_soft_skip:
+        description: Allow release to continue when registry audit endpoint is unavailable
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   verify-fast:
@@ -53,7 +58,9 @@ jobs:
       - name: Dependency CVE scan + SBOM generation
         env:
           SECURITY_AUDIT_FAIL_LEVEL: high
-          SECURITY_AUDIT_ALLOW_UNAVAILABLE: "1"
+          SECURITY_AUDIT_CONTEXT: release
+          SECURITY_AUDIT_ALLOW_UNAVAILABLE: ${{ github.event.inputs.allow_audit_soft_skip == 'true' && '1' || '0' }}
+          SECURITY_AUDIT_ALLOW_UNAVAILABLE_ON_RELEASE: ${{ github.event.inputs.allow_audit_soft_skip == 'true' && '1' || '0' }}
         run: pnpm run verify:security:supply-chain
       - name: Upload supply-chain evidence
         if: always()
@@ -88,7 +95,7 @@ jobs:
       - name: Run release verification
         env:
           RELEASE_REQUIRE_SECURITY_EVIDENCE: "1"
-          RELEASE_ALLOW_AUDIT_UNAVAILABLE: "1"
+          RELEASE_ALLOW_AUDIT_UNAVAILABLE: ${{ github.event.inputs.allow_audit_soft_skip == 'true' && '1' || '0' }}
           LAUNCH_CAPTURE_BASE_URL: ${{ github.event.inputs.capture_base_url || 'http://127.0.0.1:3000' }}
         run: pnpm run verify:release -- --run-id=ci-release-${{ github.run_id }}
       - name: Upload release verification evidence

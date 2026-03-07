@@ -220,7 +220,8 @@
     "verify:release": "node scripts/verify-release.mjs --profile=full",
     "capture:launch": "node scripts/capture-launch-assets.mjs --mode=auto",
     "capture:launch:primary": "node scripts/capture-launch-assets.mjs --mode=primary",
-    "capture:launch:fallback": "node scripts/capture-launch-assets.mjs --mode=fallback"
+    "capture:launch:fallback": "node scripts/capture-launch-assets.mjs --mode=fallback",
+    "test:security:supply-chain-policy": "node --test scripts/__tests__/supply-chain-policy.test.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

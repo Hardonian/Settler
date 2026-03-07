@@ -4,7 +4,7 @@ import path from "node:path";
 
 const repoRoot = process.cwd();
 const strict = process.env.RELEASE_REQUIRE_SECURITY_EVIDENCE === "1";
-const allowAuditUnavailable = process.env.RELEASE_ALLOW_AUDIT_UNAVAILABLE === "1";
+const allowUnavailableSoft = process.env.RELEASE_ALLOW_AUDIT_UNAVAILABLE === "1";
 const summaryFile =
   process.env.SECURITY_EVIDENCE_SUMMARY || "artifacts/security/supply-chain-latest.json";
 
@@ -15,6 +15,21 @@ function fail(message) {
 
 function warn(message) {
   console.warn(`⚠️ ${message}`);
+}
+
+function ensureFile(relPath, problems) {
+  if (!relPath) {
+    problems.push("missing path in summary metadata");
+    return;
+  }
+  try {
+    const stats = statSync(path.join(repoRoot, relPath));
+    if (!stats.isFile() || stats.size === 0) {
+      problems.push(`${relPath} is empty or not a file`);
+    }
+  } catch (error) {
+    problems.push(`${relPath}: ${error instanceof Error ? error.message : String(error)}`);
+  }
 }
 
 function main() {
@@ -33,45 +48,55 @@ function main() {
     return;
   }
 
-  const requiredPaths = [summary?.sbom?.cyclonedx, summary?.sbom?.spdx, summaryFile];
-  const missing = [];
+  const problems = [];
+  ensureFile(summary?.sbom?.cyclonedx, problems);
+  ensureFile(summary?.sbom?.spdx, problems);
+  ensureFile(summaryFile, problems);
 
-  for (const rel of requiredPaths) {
-    if (!rel) {
-      missing.push("missing path in summary metadata");
-      continue;
-    }
-    try {
-      const stats = statSync(path.join(repoRoot, rel));
-      if (!stats.isFile() || stats.size === 0) {
-        missing.push(`${rel} is empty or not a file`);
-      }
-    } catch (error) {
-      missing.push(`${rel}: ${error instanceof Error ? error.message : String(error)}`);
-    }
+  const auditState = summary?.audit?.state || "unknown";
+  if (
+    !["pass", "fail", "unavailable-hard", "unavailable-soft", "misconfigured"].includes(auditState)
+  ) {
+    problems.push(`unknown audit state '${auditState}'`);
   }
 
-  if (summary.thresholdFailures > 0) {
-    missing.push(
-      `thresholdFailures=${summary.thresholdFailures} at failLevel=${summary.failLevel}`
+  if (auditState === "fail") {
+    problems.push(`audit_state=fail thresholdFailures=${summary.thresholdFailures || 0}`);
+  }
+
+  if (auditState === "unavailable-hard") {
+    problems.push(
+      `audit unavailable under hard policy (${summary?.audit?.unavailableCategory || "unknown"})`
     );
   }
 
-  if (summary.auditUnavailableReason && strict && !allowAuditUnavailable) {
-    missing.push(
-      `auditUnavailableReason=${summary.auditUnavailableReason} (set RELEASE_ALLOW_AUDIT_UNAVAILABLE=1 to permit)`
+  if (auditState === "misconfigured") {
+    problems.push(
+      `audit misconfigured (${summary?.audit?.unavailableCategory || "unknown"}); fix registry auth/config instead of skipping`
     );
   }
 
-  if (missing.length) {
+  if (auditState === "unavailable-soft" && strict && !allowUnavailableSoft) {
+    problems.push(
+      `audit unavailable-soft requires RELEASE_ALLOW_AUDIT_UNAVAILABLE=1; category=${summary?.audit?.unavailableCategory || "unknown"}`
+    );
+  }
+
+  if (problems.length) {
     if (strict) {
-      fail(`Security evidence invalid:\n - ${missing.join("\n - ")}`);
+      fail(`Security evidence invalid:\n - ${problems.join("\n - ")}`);
     }
-    warn(`Security evidence has issues (non-strict mode):\n - ${missing.join("\n - ")}`);
+    warn(`Security evidence has issues (non-strict mode):\n - ${problems.join("\n - ")}`);
     return;
   }
 
-  console.log(`✅ Security evidence verified (${summaryFile})`);
+  if (auditState === "unavailable-soft") {
+    warn(
+      `SECURITY_SOFT_SKIP_RELEASE state=unavailable-soft category=${summary?.audit?.unavailableCategory || "unknown"}`
+    );
+  }
+
+  console.log(`✅ Security evidence verified (${summaryFile}) with audit_state=${auditState}`);
 }
 
 main();
