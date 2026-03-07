@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.0",
+  "bundleType": "release-evidence",
+  "generatedAt": "2026-03-07T22:05:17.319Z",
+  "git": {
+    "commitSha": "5c0313937628f0b74394775590e7ebf74cca8467",
+    "branch": "claude/release-provenance-security-rZxZd",
+    "tag": null,
+    "ref": "refs/heads/claude/release-provenance-security-rZxZd"
+  },
+  "ci": {
+    "runId": null,
+    "runUrl": null,
+    "workflowName": null,
+    "actor": null,
+    "repository": null,
+    "eventName": null,
+    "runAttempt": null
+  },
+  "environment": {
+    "nodeVersion": "v22.22.0",
+    "pnpmVersion": "10.13.1",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "policy": {
+    "auditMode": "strict",
+    "headerProbeStrict": false,
+    "headerProbeAllowDegraded": false,
+    "requireComplete": false
+  },
+  "completeness": "partial",
+  "overallStatus": "partial",
+  "degradedChecks": {
+    "tenantCoverage": false,
+    "crossTenant": false,
+    "headerProbe": true,
+    "dependencyAudit": true
+  },
+  "artifacts": [
+    {
+      "bundleFile": "route-registry.json",
+      "source": "security/evidence/route-registry.json",
+      "required": true,
+      "present": true,
+      "sha256": "8c141ff494ac8374de06865dff1f143d93ab7e93b66b94d346b44147b9984541"
+    },
+    {
+      "bundleFile": "tenant-coverage.json",
+      "source": "security/evidence/tenant-coverage.json",
+      "required": true,
+      "present": true,
+      "sha256": "631c6052b26fc50b9a1b403ae3cf0947c9e0459825c8940d622501cd5033a189"
+    },
+    {
+      "bundleFile": "cross-tenant-results.json",
+      "source": "security/evidence/cross-tenant-results.json",
+      "required": true,
+      "present": true,
+      "sha256": "92f8dc994625d38538fd719f5aba02c195131e5f341b67cb443a501cea86f584"
+    },
+    {
+      "bundleFile": "header-probe.json",
+      "source": "security/evidence/header-probe.json",
+      "required": true,
+      "present": true,
+      "sha256": "0ca4c887a2f78a26e6734b906a9e815121dc880245a3ad5b512bc68eb86b87e2"
+    },
+    {
+      "bundleFile": "dependency-audit.json",
+      "source": "security/evidence/dependency-audit.json",
+      "required": true,
+      "present": true,
+      "sha256": "79adbe6b6d78b502c7f6d092d5ad97e429b6b34b5d4d65b55e2ddcd1695eff29"
+    },
+    {
+      "bundleFile": "security-summary.md",
+      "source": "security/evidence/security-summary.md",
+      "required": false,
+      "present": true,
+      "sha256": "bb5b4dc9d705dbfcd28946b723f4d18d353d7bc4aab731864d4609a6e8b2be34"
+    }
+  ],
+  "checksumAlgorithm": "sha256",
+  "checksums": {
+    "build-metadata.json": "e5a308738acb20e9405b93b1a5c0d140a37ac7e97e51ba61c06c189ced60654f",
+    "cross-tenant-results.json": "92f8dc994625d38538fd719f5aba02c195131e5f341b67cb443a501cea86f584",
+    "dependency-audit.json": "79adbe6b6d78b502c7f6d092d5ad97e429b6b34b5d4d65b55e2ddcd1695eff29",
+    "header-probe.json": "0ca4c887a2f78a26e6734b906a9e815121dc880245a3ad5b512bc68eb86b87e2",
+    "route-registry.json": "8c141ff494ac8374de06865dff1f143d93ab7e93b66b94d346b44147b9984541",
+    "security-summary.md": "bb5b4dc9d705dbfcd28946b723f4d18d353d7bc4aab731864d4609a6e8b2be34",
+    "tenant-coverage.json": "631c6052b26fc50b9a1b403ae3cf0947c9e0459825c8940d622501cd5033a189",
+    "verification-results.json": "8437709005e7cd92fb10e9ec0bc91a460304fc4438aec2a0db83bfc13b9fc6b9"
+  }
+}
