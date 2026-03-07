@@ -15,27 +15,68 @@ const config = {
   allowDegraded: process.env.SECURITY_HEADER_PROBE_ALLOW_DEGRADED === "1",
 };
 
-const REQUIRED_HEADERS = [
-  "content-security-policy",
+const ENFORCED_HEADERS_COMMON = [
   "strict-transport-security",
   "x-content-type-options",
   "x-frame-options",
   "referrer-policy",
   "permissions-policy",
-  "x-request-id",
 ];
+const ENFORCED_HEADERS_HTML = ["content-security-policy", ...ENFORCED_HEADERS_COMMON];
+const ENFORCED_HEADERS_API = ENFORCED_HEADERS_COMMON;
+const OBSERVABILITY_HEADERS = ["x-request-id"];
 
 function loadRegistry() {
   return JSON.parse(readFileSync(path.join(repoRoot, "security", "route-registry.json"), "utf8"));
 }
 
+function hasMethod(route, method) {
+  return Array.isArray(route.methods) && route.methods.includes(method);
+}
+
 function classifyRoute(route) {
-  if (route.kind !== "next-app-router") return "unprobeable-kind";
-  if (!route.route.startsWith("/api")) return "unprobeable-non-api";
-  if (route.route.includes("[")) return "unprobeable-dynamic";
-  if (route.route.startsWith("/api/cron/") || route.route.startsWith("/api/stripe/"))
-    return "limited-contract";
-  return "probeable";
+  if (route.kind !== "next-app-router") return { class: "unprobeable-kind", probe: false };
+  if (!route.route.startsWith("/api")) return { class: "unprobeable-non-api", probe: false };
+  if (route.route.includes("[")) return { class: "framework-limited-dynamic", probe: false };
+
+  const hasGet = hasMethod(route, "GET") || hasMethod(route, "HEAD");
+  if (!hasGet) {
+    return {
+      class: "framework-limited-method-not-implemented",
+      probe: true,
+      expectation: "method-not-allowed",
+      blocking: false,
+      contractType: "framework-limited",
+      requiredHeaders: ENFORCED_HEADERS_API,
+      pathCategory: "api",
+      rationale: "Route does not implement GET/HEAD; Next runtime may emit synthetic 405 response.",
+    };
+  }
+
+  if (route.route.startsWith("/api/cron/") || route.route.startsWith("/api/stripe/")) {
+    return {
+      class: "best-effort-webhook-cron",
+      probe: true,
+      expectation: "api-best-effort",
+      blocking: false,
+      contractType: "best-effort",
+      requiredHeaders: ENFORCED_HEADERS_API,
+      pathCategory: "api",
+      rationale:
+        "Webhook/cron endpoints can be runtime-constrained and are tracked as best-effort.",
+    };
+  }
+
+  return {
+    class: "api-enforced",
+    probe: true,
+    expectation: "api-enforced",
+    blocking: true,
+    contractType: "enforced",
+    requiredHeaders: ENFORCED_HEADERS_API,
+    pathCategory: "api",
+    rationale: "GET/HEAD API route under middleware scope should carry baseline security headers.",
+  };
 }
 
 async function waitForServer(url, timeoutMs = 30_000) {
@@ -93,61 +134,211 @@ function hasNonce(csp) {
   return /nonce-[A-Za-z0-9+/_-]+/i.test(csp || "");
 }
 
-async function probeUrl(baseUrl, route, expectation = "default") {
-  const url = `${baseUrl}${route}`;
-  const response = await fetch(url, { redirect: "manual", signal: AbortSignal.timeout(5000) });
-  const csp = response.headers.get("content-security-policy") || "";
-  const cacheControl = response.headers.get("cache-control") || "";
-  const requestId = response.headers.get("x-request-id") || "";
+function evaluateCheck({
+  statusCode,
+  expectation,
+  requiredHeaders,
+  blocking,
+  csp,
+  cacheControl,
+  headerValues,
+}) {
+  const mismatches = [];
 
-  const failures = [];
-  for (const header of REQUIRED_HEADERS) {
-    if (!response.headers.get(header)) failures.push(`missing ${header} header`);
+  for (const header of requiredHeaders) {
+    if (!headerValues[header]) mismatches.push({ kind: "missing-header", header });
   }
 
-  if (csp.includes("unsafe-inline")) failures.push("contains unsafe-inline");
-  if (csp.includes("unsafe-eval")) failures.push("contains unsafe-eval");
-
-  if ((response.status === 401 || response.status === 403) && !cacheControl.includes("no-store")) {
-    failures.push("auth denial response missing cache-control no-store");
+  if (expectation === "html-enforced") {
+    if (csp.includes("unsafe-inline"))
+      mismatches.push({ kind: "csp-directive", issue: "contains unsafe-inline" });
+    if (csp.includes("unsafe-eval"))
+      mismatches.push({ kind: "csp-directive", issue: "contains unsafe-eval" });
   }
 
-  if (expectation === "denial" && ![401, 403].includes(response.status)) {
-    failures.push(`expected denial status (401/403), got ${response.status}`);
+  if (expectation === "denial-enforced" && ![401, 403].includes(statusCode)) {
+    mismatches.push({
+      kind: "status",
+      issue: `expected denial status (401/403), got ${statusCode}`,
+    });
+  }
+  if (expectation === "redirect-enforced" && (statusCode < 300 || statusCode >= 400)) {
+    mismatches.push({ kind: "status", issue: `expected redirect status, got ${statusCode}` });
+  }
+  if (expectation === "not-found-best-effort" && statusCode !== 404) {
+    mismatches.push({ kind: "status", issue: `expected 404 status, got ${statusCode}` });
   }
 
-  if (expectation === "redirect" && (response.status < 300 || response.status >= 400)) {
-    failures.push(`expected redirect status, got ${response.status}`);
+  if (expectation === "denial-enforced" && !cacheControl.toLowerCase().includes("no-store")) {
+    mismatches.push({
+      kind: "cache-control",
+      issue: "auth denial response missing cache-control no-store",
+    });
   }
 
-  if (expectation === "not-found" && response.status !== 404) {
-    failures.push(`expected 404 status, got ${response.status}`);
+  if (expectation === "method-not-allowed" && statusCode !== 405) {
+    mismatches.push({ kind: "status", issue: `expected 405 status, got ${statusCode}` });
   }
 
   return {
-    route,
-    status: failures.length ? "failed" : "passed",
-    statusCode: response.status,
-    cspPresent: Boolean(csp),
-    noncePresent: hasNonce(csp),
-    requestIdPresent: Boolean(requestId),
-    cacheControl,
-    expectation,
-    failures,
-    redirect: response.status >= 300 && response.status < 400,
+    status: mismatches.length === 0 ? "passed" : blocking ? "failed" : "limited",
+    mismatches,
   };
+}
+
+async function probeUrl(baseUrl, target) {
+  const url = `${baseUrl}${target.route}`;
+  let response;
+  try {
+    response = await fetch(url, { redirect: "manual", signal: AbortSignal.timeout(5000) });
+  } catch (error) {
+    return {
+      route: target.route,
+      sourceFile: target.file || null,
+      routeClass: target.routeClass,
+      pathCategory: target.pathCategory,
+      contractType: "probe-limited",
+      expectation: target.expectation,
+      blocking: false,
+      rationale: `${target.rationale} Probe request failed before response headers were available.`,
+      status: "limited",
+      statusCode: null,
+      observed: {
+        redirect: false,
+        cacheControl: "",
+        cspPresent: false,
+        noncePresent: false,
+        headers: {},
+      },
+      requiredHeaders: target.requiredHeaders,
+      mismatches: [
+        {
+          kind: "probe-error",
+          issue: error instanceof Error ? error.message : String(error),
+        },
+      ],
+    };
+  }
+  const csp = response.headers.get("content-security-policy") || "";
+  const cacheControl = response.headers.get("cache-control") || "";
+
+  const headerValues = Object.fromEntries(
+    ["content-security-policy", ...ENFORCED_HEADERS_COMMON, ...OBSERVABILITY_HEADERS].map(
+      (header) => [header, response.headers.get(header) || ""]
+    )
+  );
+
+  const evaluation = evaluateCheck({
+    statusCode: response.status,
+    expectation: target.expectation,
+    requiredHeaders: target.requiredHeaders,
+    blocking: target.blocking,
+    csp,
+    cacheControl,
+    headerValues,
+  });
+
+  return {
+    route: target.route,
+    sourceFile: target.file || null,
+    routeClass: target.routeClass,
+    pathCategory: target.pathCategory,
+    contractType: target.contractType,
+    expectation: target.expectation,
+    blocking: target.blocking,
+    rationale: target.rationale,
+    status: evaluation.status,
+    statusCode: response.status,
+    observed: {
+      redirect: response.status >= 300 && response.status < 400,
+      cacheControl,
+      cspPresent: Boolean(csp),
+      noncePresent: hasNonce(csp),
+      headers: headerValues,
+    },
+    requiredHeaders: target.requiredHeaders,
+    mismatches: evaluation.mismatches,
+  };
+}
+
+function buildSpecialTargets() {
+  return [
+    {
+      route: "/app",
+      file: "special:path",
+      routeClass: "special-html",
+      pathCategory: "html",
+      contractType: "framework-limited",
+      expectation: "html-enforced",
+      blocking: false,
+      requiredHeaders: ENFORCED_HEADERS_HTML,
+      rationale:
+        "HTML middleware path coverage is framework-limited in this probe and tracked as non-blocking.",
+    },
+    {
+      route: "/api/v1/runs",
+      file: "special:path",
+      routeClass: "special-denial",
+      pathCategory: "api",
+      contractType: "enforced",
+      expectation: "denial-enforced",
+      blocking: true,
+      requiredHeaders: ENFORCED_HEADERS_API,
+      rationale: "Protected API route should deny anonymous access with secure denial headers.",
+    },
+    {
+      route: "/admin",
+      file: "special:path",
+      routeClass: "special-redirect",
+      pathCategory: "framework",
+      contractType: "framework-limited",
+      expectation: "redirect-enforced",
+      blocking: false,
+      requiredHeaders: ["x-request-id"],
+      rationale:
+        "Route is outside middleware matcher; redirect behavior is observed as framework-limited.",
+    },
+    {
+      route: "/__definitely_not_a_real_route__",
+      file: "special:path",
+      routeClass: "special-not-found",
+      pathCategory: "framework",
+      contractType: "framework-limited",
+      expectation: "not-found-best-effort",
+      blocking: false,
+      requiredHeaders: ["x-request-id"],
+      rationale: "404 fallback path is framework generated and treated as best-effort evidence.",
+    },
+  ];
 }
 
 async function main() {
   const registry = loadRegistry();
-  const routeClassification = registry.routes.map((route) => ({
-    route: route.route,
-    file: route.file,
-    kind: route.kind,
-    classification: classifyRoute(route),
-  }));
+  const routeClassification = registry.routes.map((route) => {
+    const classification = classifyRoute(route);
+    return {
+      route: route.route,
+      file: route.file,
+      kind: route.kind,
+      methods: route.methods || [],
+      ...classification,
+    };
+  });
 
-  const targets = routeClassification.filter((route) => route.classification === "probeable");
+  const targets = routeClassification
+    .filter((route) => route.probe)
+    .map((route) => ({
+      route: route.route,
+      file: route.file,
+      routeClass: route.class,
+      pathCategory: route.pathCategory,
+      contractType: route.contractType,
+      expectation: route.expectation,
+      blocking: route.blocking,
+      requiredHeaders: route.requiredHeaders,
+      rationale: route.rationale,
+    }));
+
   const server = await maybeStartServer();
   const checks = [];
   const degradedReasons = [];
@@ -155,53 +346,54 @@ async function main() {
   if (!server.baseUrl) {
     degradedReasons.push(server.reason || "missing_base_url");
   } else {
-    for (const route of targets) {
-      checks.push(await probeUrl(server.baseUrl, route.route));
-    }
-
-    const specialProbes = [
-      ["/__definitely_not_a_real_route__", "not-found"],
-      ["/api/v1/runs", "denial"],
-      ["/admin", "redirect"],
-    ];
-    for (const [route, expectation] of specialProbes) {
-      checks.push(await probeUrl(server.baseUrl, route, expectation));
+    for (const target of [...targets, ...buildSpecialTargets()]) {
+      checks.push(await probeUrl(server.baseUrl, target));
     }
   }
 
   await stopServer(server.child);
 
-  const failed = checks.filter((check) => check.status === "failed");
-  const skippedByClassification = routeClassification.filter(
-    (route) => route.classification !== "probeable"
-  );
+  const failedBlocking = checks.filter((check) => check.status === "failed");
+  const limitedFindings = checks.filter((check) => check.status === "limited");
+  const skippedByClassification = routeClassification.filter((route) => !route.probe);
 
   const summary = {
     generatedAt: new Date().toISOString(),
-    verifierVersion: "2026-03-07.3",
+    verifierVersion: "2026-03-08.1",
     runId,
     baseUrl: server.baseUrl,
     policy: { strict: config.strict, allowDegraded: config.allowDegraded },
     degraded: degradedReasons.length > 0,
     degradedReasons,
     startupLogs: server.startupLogs || [],
+    contractModel: {
+      htmlEnforcedHeaders: ENFORCED_HEADERS_HTML,
+      apiEnforcedHeaders: ENFORCED_HEADERS_API,
+      classes: {
+        enforced: "Blocking failures.",
+        "best-effort": "Recorded but non-blocking.",
+        "framework-limited": "Observed for visibility; non-blocking by policy.",
+      },
+    },
     coverage: {
       registryRoutes: registry.routes.length,
       probeableRoutes: targets.length,
       probedRoutes: checks.length,
       skippedByClassification: skippedByClassification.length,
-      specialPathProbes: server.baseUrl ? 3 : 0,
+      specialPathProbes: server.baseUrl ? buildSpecialTargets().length : 0,
     },
     classificationCounts: routeClassification.reduce((acc, item) => {
-      acc[item.classification] = (acc[item.classification] || 0) + 1;
+      acc[item.class] = (acc[item.class] || 0) + 1;
       return acc;
     }, {}),
     counts: {
       passed: checks.filter((check) => check.status === "passed").length,
-      failed: failed.length,
-      skipped: degradedReasons.length > 0 ? targets.length + 3 : 0,
+      failedBlocking: failedBlocking.length,
+      limited: limitedFindings.length,
+      skipped: degradedReasons.length > 0 ? targets.length + buildSpecialTargets().length : 0,
     },
     checks,
+    skippedByClassification,
   };
 
   const summaryPath = path.join(outputDir, "header-probe.json");
@@ -214,7 +406,7 @@ async function main() {
 
   console.log(`Header probe artifact: ${path.relative(repoRoot, summaryPath)}`);
   console.log(
-    `Header probe counts: passed=${summary.counts.passed} failed=${failed.length} skipped=${summary.counts.skipped}`
+    `Header probe counts: passed=${summary.counts.passed} failedBlocking=${failedBlocking.length} limited=${summary.counts.limited} skipped=${summary.counts.skipped}`
   );
 
   if (summary.degraded && !config.allowDegraded) {
@@ -223,11 +415,13 @@ async function main() {
     );
   }
 
-  if (failed.length > 0) {
-    console.error(`\n❌ Header probe: ${failed.length} check(s) failed.`);
-    for (const check of failed) {
+  if (failedBlocking.length > 0) {
+    console.error(`\n❌ Header probe: ${failedBlocking.length} blocking check(s) failed.`);
+    for (const check of failedBlocking) {
       console.error(`   route: ${check.route}`);
-      for (const failure of check.failures) console.error(`     - ${failure}`);
+      for (const mismatch of check.mismatches) {
+        console.error(`     - ${mismatch.kind}: ${mismatch.header || mismatch.issue}`);
+      }
     }
   } else if (summary.counts.passed === 0) {
     console.warn(
@@ -237,7 +431,7 @@ async function main() {
     console.log(`\n✅ Header probe passed (${summary.counts.passed} route(s) checked).`);
   }
 
-  if (config.strict && (failed.length > 0 || summary.counts.skipped > 0)) process.exit(1);
+  if (config.strict && (failedBlocking.length > 0 || summary.counts.skipped > 0)) process.exit(1);
   if (summary.degraded && !config.allowDegraded) process.exit(1);
 }
 

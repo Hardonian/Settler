@@ -228,9 +228,8 @@
     "audit:deps": "node scripts/audit-deps.mjs",
     "verify:security:headers": "node scripts/security/header-probe.mjs",
     "verify:security:drift": "node scripts/security-drift-check.mjs",
-    "security:evidence": "pnpm run security:routes && pnpm run verify:tenant && pnpm run test:cross-tenant && pnpm run verify:security:headers && SECURITY_AUDIT_MODE=${SECURITY_AUDIT_MODE:-warn} pnpm run audit:deps && node scripts/security-evidence.mjs && pnpm run verify:security:drift",
-    "generate-release-bundle": "npx tsx scripts/generate-release-bundle.ts",
-    "verify-release-bundle": "npx tsx scripts/verify-release-bundle.ts"
+    "security:evidence": "pnpm run security:routes && pnpm run verify:tenant && pnpm run test:cross-tenant && node scripts/security/admin-route-authz.mjs && pnpm run verify:security:headers && SECURITY_AUDIT_MODE=${SECURITY_AUDIT_MODE:-warn} pnpm run audit:deps && node scripts/security/dependency-triage.mjs && node scripts/security/verify-rls-boundary.mjs && node scripts/security-evidence.mjs && pnpm run verify:security:drift",
+    "verify:rls:live": "pnpm exec tsx scripts/verify-rls-status.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

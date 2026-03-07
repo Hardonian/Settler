@@ -1,5 +1,5 @@
 #!/usr/bin/env tsx
-import { readdirSync, statSync, writeFileSync, mkdirSync } from "node:fs";
+import { readdirSync, statSync, writeFileSync, mkdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 type RouteKind = "next-app-router" | "edge-function" | "rpc-endpoint" | "internal-service-endpoint";
@@ -8,6 +8,7 @@ interface RouteEntry {
   route: string;
   kind: RouteKind;
   file: string;
+  methods: string[];
 }
 
 const repoRoot = process.cwd();
@@ -45,6 +46,25 @@ function toPosixPath(input: string): string {
   return input.split(path.sep).join("/");
 }
 
+const HTTP_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"];
+
+function discoverRouteMethods(absoluteFile: string): string[] {
+  let source = "";
+  try {
+    source = readFileSync(absoluteFile, "utf8");
+  } catch {
+    return [];
+  }
+
+  const methods = new Set<string>();
+  for (const method of HTTP_METHODS) {
+    const functionExport = new RegExp(`export\\s+async\\s+function\\s+${method}\\b`);
+    const constExport = new RegExp(`export\\s+const\\s+${method}\\b`);
+    if (functionExport.test(source) || constExport.test(source)) methods.add(method);
+  }
+  return [...methods].sort();
+}
+
 function discoverNextAppRouterRoutes(): RouteEntry[] {
   const apiRoot = path.join(repoRoot, "packages", "web", "src", "app");
   const files: string[] = [];
@@ -65,6 +85,7 @@ function discoverNextAppRouterRoutes(): RouteEntry[] {
       route: normalized || "/",
       kind: "next-app-router" as const,
       file: rel,
+      methods: discoverRouteMethods(absoluteFile),
     };
   });
 }
@@ -81,6 +102,7 @@ function discoverEdgeFunctions(): RouteEntry[] {
       route: `/edge/${fnName}`,
       kind: "edge-function" as const,
       file: rel,
+      methods: [],
     };
   });
 }
@@ -100,13 +122,18 @@ function discoverRpcAndInternal(): RouteEntry[] {
       continue;
 
     if (/\brpc\b/i.test(rel)) {
-      results.push({ route: `rpc:${rel}`, kind: "rpc-endpoint", file: rel });
+      results.push({ route: `rpc:${rel}`, kind: "rpc-endpoint", file: rel, methods: [] });
     }
 
     if (/\/internal\//.test(rel) && /route\.(ts|tsx|js|jsx)$/.test(rel)) {
       const normalized =
         rel.replace("packages/web/src/app", "").replace(/\/route\.(ts|tsx|js|jsx)$/, "") || "/";
-      results.push({ route: normalized, kind: "internal-service-endpoint", file: rel });
+      results.push({
+        route: normalized,
+        kind: "internal-service-endpoint",
+        file: rel,
+        methods: discoverRouteMethods(absoluteFile),
+      });
     }
   }
 

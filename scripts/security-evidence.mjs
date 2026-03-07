@@ -72,24 +72,90 @@ const tenantCoverage = safeRead("security/evidence/tenant-coverage.json");
 const crossTenant = safeRead("security/evidence/cross-tenant-results.json");
 const headerProbe = safeRead("security/evidence/header-probe.json");
 const depAudit = safeRead("security/evidence/dependency-audit.json");
+const depTriage = safeRead("security/evidence/dependency-triage.json");
 const adminAuthz = safeRead("security/evidence/admin-route-authz.json");
 const rlsVerification = safeRead("security/evidence/rls-verification.json");
+
+const headerBlockingFailures =
+  headerProbe?.counts?.failedBlocking ?? headerProbe?.counts?.failed ?? 0;
+const headerLimitedFindings = headerProbe?.counts?.limited ?? 0;
+
+const dependencyTriageCompleteness = depTriage
+  ? depTriage.triageComplete
+    ? "complete"
+    : depTriage.triageCompleteness?.blockedByMissingAuthenticatedInput
+      ? "blocked-missing-authenticated-input"
+      : "partial"
+  : "not-captured";
+
+const headerContractCompleteness = headerProbe?.degraded
+  ? "degraded"
+  : headerBlockingFailures > 0
+    ? "incomplete-blocking-failures"
+    : "enforced-contract-satisfied";
+
+const rlsProofLevel = rlsVerification?.proofLevel ?? "not-captured";
+
+const releaseBlockingFindings = [
+  ...(headerBlockingFailures > 0
+    ? [
+        {
+          id: "header-contract-blocking-failures",
+          class: "BLOCKING",
+          detail: `${headerBlockingFailures} blocking header/CSP contract failures observed.`,
+        },
+      ]
+    : []),
+  ...(depTriage?.policy?.requireAuthenticatedDependabotExport === true &&
+  depTriage?.sourceStatus?.authenticatedDependabotExportAvailable !== true
+    ? [
+        {
+          id: "dependency-triage-authenticated-export-missing",
+          class: "POLICY-DEPENDENT",
+          detail: "Authenticated Dependabot export required by policy but missing.",
+        },
+      ]
+    : []),
+  ...(depAudit?.degraded
+    ? [
+        {
+          id: "dependency-audit-degraded",
+          class: "EXTERNAL-TOOLING",
+          detail: `Dependency audit degraded: ${(depAudit?.degradedReasons || []).join(", ") || "unknown"}`,
+        },
+      ]
+    : []),
+  ...(rlsProofLevel !== "live-db-confirmed"
+    ? [
+        {
+          id: "rls-live-proof-not-confirmed",
+          class: "POLICY-DEPENDENT",
+          detail: `RLS proof level is ${rlsProofLevel}.`,
+        },
+      ]
+    : []),
+];
 
 const degradedChecks = {
   tenantCoverage: Boolean(tenantCoverage?.degraded),
   crossTenant: crossTenant?.status !== "passed",
-  headerProbe: Boolean(headerProbe?.degraded),
+  headerProbe: Boolean(headerProbe?.degraded) || headerBlockingFailures > 0,
   dependencyAudit: Boolean(depAudit?.degraded),
+  dependencyTriage: dependencyTriageCompleteness !== "complete",
   adminAuthz: (adminAuthz?.failed || 0) > 0,
-  rlsVerification: rlsVerification?.proofLevel !== "live-db-confirmed",
+  rlsVerification: rlsProofLevel !== "live-db-confirmed",
 };
 
-const completeness = Object.values(degradedChecks).some(Boolean) ? "partial" : "complete";
+const evidenceCompleteness = Object.values(degradedChecks).some(Boolean) ? "partial" : "complete";
 
 const manifest = {
   ...metadata,
-  verifierVersion: "2026-03-07.3",
-  completeness,
+  verifierVersion: "2026-03-08.1",
+  evidenceCompleteness,
+  headerContractCompleteness,
+  dependencyTriageCompleteness,
+  rlsProofLevel,
+  releaseBlockingFindings,
   degradedChecks,
   artifacts: artifacts.map((entry) => ({
     file: entry.relPath,
@@ -105,7 +171,11 @@ writeFileSync(path.join(evidenceDir, "manifest.json"), JSON.stringify(manifest, 
 const summaryJson = {
   generatedAt: metadata.timestamp,
   commitSha: metadata.commitSha,
-  completeness,
+  evidenceCompleteness,
+  headerContractCompleteness,
+  dependencyTriageCompleteness,
+  rlsProofLevel,
+  releaseBlockingFindings,
   degradedChecks,
   results: {
     routeRegistryTotal: routeRegistry?.totalRoutes ?? null,
@@ -116,7 +186,8 @@ const summaryJson = {
     },
     crossTenantStatus: crossTenant?.status ?? null,
     headerProbe: {
-      failedChecks: headerProbe?.counts?.failed ?? null,
+      failedBlockingChecks: headerBlockingFailures,
+      limitedFindings: headerLimitedFindings,
       probeableRoutes: headerProbe?.coverage?.probeableRoutes ?? null,
       degraded: headerProbe?.degraded ?? null,
     },
@@ -125,13 +196,19 @@ const summaryJson = {
       degraded: depAudit?.degraded ?? null,
       reasons: depAudit?.degradedReasons ?? null,
     },
+    dependencyTriage: {
+      triageComplete: depTriage?.triageComplete ?? null,
+      blockers: depTriage?.blockers?.length ?? null,
+      blockedByMissingAuthenticatedInput:
+        depTriage?.triageCompleteness?.blockedByMissingAuthenticatedInput ?? null,
+    },
     adminAuthz: {
       totalRoutes: adminAuthz?.totalAdminRoutes ?? null,
       failed: adminAuthz?.failed ?? null,
       warnings: adminAuthz?.warnings ?? null,
     },
     rlsVerification: {
-      proofLevel: rlsVerification?.proofLevel ?? "not-captured",
+      proofLevel: rlsProofLevel,
       status: rlsVerification?.status ?? null,
       boundary: rlsVerification?.boundary ?? null,
     },
@@ -150,16 +227,26 @@ const summary = [
   `- Timestamp: ${metadata.timestamp}`,
   `- CI Run ID: ${metadata.ciRunId || "n/a"}`,
   `- Audit Policy Mode: ${metadata.auditMode}`,
-  `- Evidence Completeness: ${completeness}`,
+  `- Evidence Completeness: ${evidenceCompleteness}`,
+  `- Header Contract Completeness: ${headerContractCompleteness}`,
+  `- Dependency Triage Completeness: ${dependencyTriageCompleteness}`,
+  `- RLS Proof Level: ${rlsProofLevel}`,
   "",
   "## Snapshot",
   `- Route registry total: ${routeRegistry?.totalRoutes ?? "n/a"}`,
   `- Tenant-scoped verified: ${tenantCoverage?.verifiedRoutes ?? "n/a"}/${tenantCoverage?.tenantScopedRoutes ?? "n/a"}`,
   `- Cross-tenant test status: ${crossTenant?.status ?? "n/a"}`,
-  `- Header probe failed checks: ${headerProbe?.counts?.failed ?? "n/a"}`,
+  `- Header probe blocking failures: ${headerBlockingFailures}`,
+  `- Header probe limited findings: ${headerLimitedFindings}`,
   `- Dependency audit outcome: ${depAudit?.finalOutcome ?? "n/a"}`,
+  `- Dependency triage complete: ${depTriage?.triageComplete ?? "n/a"}`,
   `- Admin route authz failures: ${adminAuthz?.failed ?? "n/a"}`,
-  `- RLS proof level: ${rlsVerification?.proofLevel ?? "not-captured"}`,
+  `- RLS proof level: ${rlsProofLevel}`,
+  "",
+  "## Release Blocking Findings",
+  ...(releaseBlockingFindings.length
+    ? releaseBlockingFindings.map((item) => `- [${item.class}] ${item.id}: ${item.detail}`)
+    : ["- none"]),
   ...(missingArtifacts.length > 0
     ? [
         "",
@@ -169,10 +256,10 @@ const summary = [
     : []),
   "",
   "## Boundaries",
-  "- Dependency findings are authoritative only when registry audit backend is reachable.",
-  "- Route classification and tenant checks are static-analysis controls; runtime tests are still required.",
-  "- Header probes cover GET-accessible routes and selected error/denial paths.",
-  "- RLS is live-confirmed only when DB credentials are present and the live verification script runs.",
+  "- Enforced header/CSP failures are blocking; framework-limited/best-effort findings are non-blocking and explicitly labeled.",
+  "- Dependency triage is complete only when authenticated Dependabot export is ingested.",
+  "- Audit backend/tooling degradation is machine-visible in dependency-audit and releaseBlockingFindings.",
+  "- RLS is live-confirmed only when DB credentials are present and live verification passes.",
   "",
 ].join("\n");
 

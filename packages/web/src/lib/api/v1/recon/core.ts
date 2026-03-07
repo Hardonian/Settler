@@ -82,7 +82,14 @@ function problem(
       instance,
       request_id: requestId,
     },
-    { status, headers: { "content-type": "application/problem+json", "x-request-id": requestId } }
+    {
+      status,
+      headers: {
+        "content-type": "application/problem+json",
+        "x-request-id": requestId,
+        "cache-control": "no-store, max-age=0",
+      },
+    }
   );
 }
 

@@ -1,10 +1,17 @@
 {
-  "generatedAt": "2026-03-07T20:47:27.777Z",
-  "verifierVersion": "2026-03-07.1",
-  "runId": "2026-03-07T20-47-27-775Z",
+  "generatedAt": "2026-03-07T22:02:35.559Z",
+  "verifierVersion": "2026-03-08.1",
+  "runId": "2026-03-07T22-02-35-556Z",
+  "policy": {
+    "requireAuthenticatedDependabotExport": false,
+    "dependabotExportPath": "security/dependabot-alerts.json"
+  },
   "sourceStatus": {
     "dependencyAuditArtifactPresent": true,
-    "dependabotExportPresent": false
+    "dependabotExportPresent": false,
+    "authenticatedDependabotExportAvailable": false,
+    "pnpmAuditBackendAvailable": false,
+    "osvScannerPresent": false
   },
   "findingsSummary": {
     "info": 0,
@@ -20,10 +27,16 @@
       "id": "dependabot-export-missing",
       "gap": "Cannot enumerate and disposition all Dependabot alerts without an authenticated alert export.",
       "requiredInput": "security/dependabot-alerts.json",
-      "knownOutstandingCount": 22,
-      "launchImpact": "policy-dependent"
+      "launchImpact": "policy-dependent",
+      "confidence": "high"
     }
   ],
+  "triageCompleteness": {
+    "fullyTriagedFindings": 0,
+    "partiallyTriagedFindings": 0,
+    "blockedByMissingAuthenticatedInput": true,
+    "toolingDegraded": true
+  },
   "triageComplete": false,
-  "proofBoundary": "Full CVE-by-CVE triage requires authenticated Dependabot alert export. Local audit backend availability is captured separately in dependency-audit-latest.json."
+  "proofBoundary": "Advisory-level complete triage is only proven when authenticated Dependabot export is ingested. pnpm/osv backend degradation is tracked separately in dependency-audit-latest.json."
 }

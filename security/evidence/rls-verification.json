@@ -1,13 +1,25 @@
 {
-  "generatedAt": "2026-03-07T20:47:27.890Z",
-  "verifierVersion": "2026-03-07.1",
-  "runId": "2026-03-07T20-47-27-889Z",
+  "generatedAt": "2026-03-07T22:02:35.717Z",
+  "verifierVersion": "2026-03-08.1",
+  "runId": "2026-03-07T22-02-35-715Z",
   "status": "not-run",
   "proofLevel": "static-only",
-  "boundary": "Live database RLS enforcement is not proven in this run. Static migration/policy assertions and app-level tenant tests are separate controls.",
+  "boundary": "Live database RLS enforcement not executed in this run. Static migration/policy assertions and app-level tenant denial are separate controls.",
+  "policy": {
+    "requireLiveVerification": false
+  },
   "liveDbConfigured": false,
   "command": "pnpm exec tsx scripts/verify-rls-status.ts",
   "commandStatus": null,
   "stdout": "",
-  "stderr": ""
+  "stderr": "",
+  "operatorGuidance": {
+    "liveVerificationEntrypoint": "pnpm run verify:rls:live",
+    "requiredEnv": ["DATABASE_URL or DIRECT_URL or SUPABASE_DB_URL"],
+    "expectations": [
+      "RLS is enabled on critical tenant tables",
+      "Policy count is non-zero for each critical table",
+      "Failures are blocking when SECURITY_REQUIRE_LIVE_RLS=1"
+    ]
+  }
 }

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-07T20:47:21.790Z",
+  "generatedAt": "2026-03-07T22:02:22.277Z",
   "verifierVersion": "2026-03-07.2",
   "status": "passed",
   "command": "pnpm --filter @settler/web exec jest --runInBand --forceExit src/__tests__/api/tenant-runtime-cross-tenant.test.ts src/__tests__/security/crossTenantIsolation.test.ts src/__tests__/security/crossTenantMatrix.test.ts",
