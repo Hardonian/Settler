@@ -1,15 +1,16 @@
 import { Metadata } from "next";
-import Link from "next/link";
 import Image from "next/image";
 import { CodeBlock } from "@/components/docs/CodeBlock";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SafeImage } from "@/components/SafeImage";
 import { Rocket, Code, Zap, Shield } from "lucide-react";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 
 export const metadata: Metadata = {
   title: "Documentation - Settler",
-  description: "Docs for Settler, the Open Source Reconciliation Engine: run workflows, detect mismatches, replay runs, and export evidence.",
+  description:
+    "Docs for Settler, the Open Source Reconciliation Engine: run workflows, detect mismatches, replay runs, and export evidence.",
 };
 
 export default function DocsPage() {
@@ -18,7 +19,8 @@ export default function DocsPage() {
       <h1>Open Source Reconciliation Engine Docs</h1>
 
       <p className="text-lg text-slate-600 dark:text-slate-400">
-        Start here to run your first reconciliation flow, inspect mismatches, replay the same run, and export evidence.
+        Use this page to get to first value fast: run a workflow, inspect mismatches, replay the
+        same run, and export evidence you can share.
       </p>
 
       <section
@@ -27,7 +29,8 @@ export default function DocsPage() {
       >
         <h2 className="mt-0">5-minute proof demo</h2>
         <p>
-          Run <code>pnpm demo</code> to generate a deterministic run, then replay it to verify the same fingerprint.
+          Run <code>pnpm demo</code> to generate a deterministic run, then replay it to verify the
+          same fingerprint.
         </p>
         <CodeBlock
           code={`pnpm demo
@@ -64,11 +67,20 @@ pnpm settler:replay examples/demo-output/evidence.json`}
             <CardDescription>Install, run, and see first value quickly</CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/docs/getting-started">
+            <TrackedLink
+              href="/docs/getting-started"
+              eventName="docs_cta_clicked"
+              eventPayload={{
+                location: "docs",
+                ctaLabel: "Get Started",
+                destination: "/docs/getting-started",
+                section: "docs_index_cards",
+              }}
+            >
               <Button variant="outline" className="w-full">
                 Get Started →
               </Button>
-            </Link>
+            </TrackedLink>
           </CardContent>
         </Card>
 
@@ -79,11 +91,20 @@ pnpm settler:replay examples/demo-output/evidence.json`}
             <CardDescription>Run the canonical local workflow end-to-end</CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/docs/quickstart">
+            <TrackedLink
+              href="/docs/quickstart"
+              eventName="docs_cta_clicked"
+              eventPayload={{
+                location: "docs",
+                ctaLabel: "Quickstart Guide",
+                destination: "/docs/quickstart",
+                section: "docs_index_cards",
+              }}
+            >
               <Button variant="outline" className="w-full">
                 Quickstart Guide →
               </Button>
-            </Link>
+            </TrackedLink>
           </CardContent>
         </Card>
 
@@ -94,11 +115,20 @@ pnpm settler:replay examples/demo-output/evidence.json`}
             <CardDescription>Integrate run, replay, and evidence workflows</CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/docs/api">
+            <TrackedLink
+              href="/docs/api"
+              eventName="docs_cta_clicked"
+              eventPayload={{
+                location: "docs",
+                ctaLabel: "View API Reference",
+                destination: "/docs/api",
+                section: "docs_index_cards",
+              }}
+            >
               <Button variant="outline" className="w-full">
                 View API Reference →
               </Button>
-            </Link>
+            </TrackedLink>
           </CardContent>
         </Card>
 
@@ -109,11 +139,20 @@ pnpm settler:replay examples/demo-output/evidence.json`}
             <CardDescription>Review auth, tenant boundaries, and controls</CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/docs/auth">
+            <TrackedLink
+              href="/docs/auth"
+              eventName="docs_cta_clicked"
+              eventPayload={{
+                location: "docs",
+                ctaLabel: "Security Guide",
+                destination: "/docs/auth",
+                section: "docs_index_cards",
+              }}
+            >
               <Button variant="outline" className="w-full">
                 Security Guide →
               </Button>
-            </Link>
+            </TrackedLink>
           </CardContent>
         </Card>
       </div>

@@ -9,7 +9,8 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, ArrowRight, Zap, Shield, BarChart3 } from "lucide-react";
-import Link from "next/link";
+import { notFound } from "next/navigation";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 
 const useCases: Record<
   string,
@@ -18,13 +19,18 @@ const useCases: Record<
     description: string;
     hero: string;
     features: string[];
-    benefits: Array<{ title: string; description: string; icon: React.ComponentType<{ className?: string }> }>;
+    benefits: Array<{
+      title: string;
+      description: string;
+      icon: React.ComponentType<{ className?: string }>;
+    }>;
     cta: string;
   }
 > = {
   "ecommerce-reconciliation": {
     title: "E-commerce Reconciliation",
-    description: "Automatically match orders, payments, and fulfillment across Shopify, Stripe, and your database",
+    description:
+      "Automatically match orders, payments, and fulfillment across Shopify, Stripe, and your database",
     hero: "Stop manually reconciling e-commerce transactions. Settler automatically matches orders with payments, handles refunds, and tracks fulfillment—all in real-time.",
     features: [
       "Match Shopify orders with Stripe payments",
@@ -49,7 +55,7 @@ const useCases: Record<
         icon: BarChart3,
       },
     ],
-    cta: "Start Free Trial",
+    cta: "Start setup",
   },
   "payment-reconciliation": {
     title: "Payment Reconciliation",
@@ -78,7 +84,7 @@ const useCases: Record<
         icon: BarChart3,
       },
     ],
-    cta: "Start Free Trial",
+    cta: "Start setup",
   },
   "receipt-processing": {
     title: "Receipt Processing",
@@ -107,7 +113,7 @@ const useCases: Record<
         icon: BarChart3,
       },
     ],
-    cta: "Try Receipt Parser",
+    cta: "Try receipt parser",
   },
 };
 
@@ -141,31 +147,18 @@ export async function generateMetadata({
   };
 }
 
-export default async function UseCasePage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function UseCasePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const useCase = useCases[slug];
 
   if (!useCase) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Use Case Not Found</h1>
-          <Link href="/" className="text-blue-600 hover:underline">
-            Go Home
-          </Link>
-        </div>
-      </div>
-    );
+    notFound();
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
       <Navigation />
-      
+
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
@@ -181,10 +174,30 @@ export default async function UseCasePage({
               size="lg"
               className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
             >
-              <Link href="/signup">{useCase.cta}</Link>
+              <TrackedLink
+                href="/signup"
+                eventName="onboarding_started"
+                eventPayload={{
+                  location: "use_case",
+                  ctaLabel: useCase.cta,
+                  destination: "/signup",
+                }}
+              >
+                {useCase.cta}
+              </TrackedLink>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link href="/docs/getting-started">View Documentation</Link>
+              <TrackedLink
+                href="/docs/getting-started"
+                eventName="docs_cta_clicked"
+                eventPayload={{
+                  location: "use_case",
+                  ctaLabel: "View Documentation",
+                  destination: "/docs/getting-started",
+                }}
+              >
+                View Documentation
+              </TrackedLink>
             </Button>
           </div>
         </div>
@@ -239,20 +252,22 @@ export default async function UseCasePage({
       {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Ready to Get Started?
-          </h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Get Started?</h2>
           <p className="text-xl text-blue-100 mb-8">
-            Start your free 14-day trial. No credit card required.
+            Start with the quick onboarding flow and run your first reconciliation.
           </p>
-          <Button
-            asChild
-            size="lg"
-            className="bg-white text-blue-600 hover:bg-blue-50"
-          >
-            <Link href="/signup">
-              Start Free Trial <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
+          <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-blue-50">
+            <TrackedLink
+              href="/signup"
+              eventName="onboarding_started"
+              eventPayload={{
+                location: "use_case",
+                ctaLabel: "Start setup",
+                destination: "/signup",
+              }}
+            >
+              Start setup <ArrowRight className="ml-2 h-5 w-5" />
+            </TrackedLink>
           </Button>
         </div>
       </section>

@@ -1,8 +1,8 @@
 # START HERE
 
-This is the canonical onboarding index for Settler.
+If you are new to Settler, follow this sequence.
 
-## 1) See value first (recommended)
+## 1) See value first
 
 ```bash
 pnpm install
@@ -13,7 +13,13 @@ pnpm demo
 pnpm settler:replay examples/demo-output/evidence.json
 ```
 
-## 2) Core quality checks
+What this proves:
+
+- You can execute a reconciliation run locally.
+- You can inspect mismatches and evidence artifacts.
+- You can replay the same run to verify deterministic behavior for that dataset + ruleset.
+
+## 2) Run quality gates
 
 ```bash
 pnpm lint
@@ -22,7 +28,7 @@ pnpm test
 pnpm build
 ```
 
-## 3) Release-grade verification
+## 3) Run release verification
 
 ```bash
 pnpm verify
