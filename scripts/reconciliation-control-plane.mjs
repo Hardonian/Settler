@@ -3,6 +3,14 @@ import crypto from "node:crypto";
 const ENGINE_VERSION = "nlcp-1.0.0";
 
 export function stableStringify(value) {
+  if (value instanceof Date) return JSON.stringify(value.toISOString());
+  if (typeof value === "bigint") return JSON.stringify(value.toString());
+  if (value instanceof Set) return stableStringify(Array.from(value).sort());
+  if (value instanceof Map) {
+    return stableStringify(
+      Array.from(value.entries()).sort(([a], [b]) => String(a).localeCompare(String(b)))
+    );
+  }
   if (value === null || typeof value !== "object") return JSON.stringify(value);
   if (Array.isArray(value)) return `[${value.map((item) => stableStringify(item)).join(",")}]`;
   const keys = Object.keys(value).sort();
