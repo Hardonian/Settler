@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-07T20:47:28.872Z",
+  "generatedAt": "2026-03-07T22:02:03.772Z",
   "verifierVersion": "2026-03-07.2",
   "routeTotal": 228,
   "routePaths": [
@@ -272,8 +272,8 @@
     "/openapi.json"
   ],
   "headerProbe": {
-    "failedChecks": 136,
-    "probeableRoutes": 133,
+    "failedChecks": 0,
+    "probeableRoutes": 141,
     "degraded": false
   },
   "dependencyAudit": {

@@ -77,10 +77,23 @@ jobs:
         run: |
           test "${SECURITY_AUDIT_MODE:-strict}" != "off"
 
+      - name: Materialize authenticated Dependabot export (optional)
+        if: ${{ secrets.DEPENDABOT_ALERTS_EXPORT_B64 != '' }}
+        run: |
+          echo "${{ secrets.DEPENDABOT_ALERTS_EXPORT_B64 }}" | base64 -d > security/dependabot-alerts.json
+
+      - name: Enforce dependency triage completeness policy
+        env:
+          DEPENDENCY_TRIAGE_REQUIRE_AUTHENTICATED_EXPORT: "1"
+          DEPENDABOT_ALERTS_EXPORT_PATH: security/dependabot-alerts.json
+        run: node scripts/security/dependency-triage.mjs
+
       - name: Generate security evidence + drift detection
         env:
           SECURITY_AUDIT_MODE: strict
           SECURITY_HEADER_PROBE_STRICT: "1"
+          DEPENDENCY_TRIAGE_REQUIRE_AUTHENTICATED_EXPORT: "1"
+          DEPENDABOT_ALERTS_EXPORT_PATH: security/dependabot-alerts.json
         run: pnpm run security:evidence
 
   secret-scanning:

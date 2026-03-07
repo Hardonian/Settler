@@ -1,15 +1,31 @@
 {
-  "commitSha": "5c0313937628f0b74394775590e7ebf74cca8467",
-  "timestamp": "2026-03-07T20:47:28.022Z",
+  "commitSha": "55784e8e3f84899d6d7bb916ea22ba5db063e396",
+  "timestamp": "2026-03-07T22:02:35.901Z",
   "ciRunId": null,
-  "auditMode": "strict",
-  "verifierVersion": "2026-03-07.3",
-  "completeness": "partial",
+  "auditMode": "warn",
+  "verifierVersion": "2026-03-08.1",
+  "evidenceCompleteness": "partial",
+  "headerContractCompleteness": "enforced-contract-satisfied",
+  "dependencyTriageCompleteness": "blocked-missing-authenticated-input",
+  "rlsProofLevel": "static-only",
+  "releaseBlockingFindings": [
+    {
+      "id": "dependency-audit-degraded",
+      "class": "EXTERNAL-TOOLING",
+      "detail": "Dependency audit degraded: pnpm-audit-backend-unavailable, osv-scanner-missing"
+    },
+    {
+      "id": "rls-live-proof-not-confirmed",
+      "class": "POLICY-DEPENDENT",
+      "detail": "RLS proof level is static-only."
+    }
+  ],
   "degradedChecks": {
     "tenantCoverage": false,
     "crossTenant": false,
     "headerProbe": false,
     "dependencyAudit": true,
+    "dependencyTriage": true,
     "adminAuthz": false,
     "rlsVerification": true
   },
@@ -66,35 +82,35 @@
   "checksums": [
     {
       "file": "security/evidence/route-registry.json",
-      "sha256": "5b150c9e214312b8696b910e8c113fbe5f5516ba6195e14344c40c4dffef78e8"
+      "sha256": "87403b6fcd837dbcfcafd80d8da7123ef2559bf0dbc154a27ddff1a78dca8701"
     },
     {
       "file": "security/evidence/tenant-coverage.json",
-      "sha256": "bffb509559c339fcd594bcc8e4c0b3fda11166dd045362ee6ea2a1a878efbb29"
+      "sha256": "9c0f00df8b007b613ceaf53e75f4c9ef1d72b47fd491e0fb588281284c5bbb8d"
     },
     {
       "file": "security/evidence/cross-tenant-results.json",
-      "sha256": "d8c9acd956f0458844af3ed1d7f06daaabdfbafdf9a7a5d9aab538e543169701"
+      "sha256": "875ab607b3cce8cba27e0d5dc1de7679caaf5ccc7dff9d81ae302708a5342756"
     },
     {
       "file": "security/evidence/header-probe.json",
-      "sha256": "b3c3e6e8be3c6a2758c07769e556b970664f493323fd9be1365eb43b4d6c8ce8"
+      "sha256": "44ccb707abd9610527acc600e0b87ece88e3a7e435f4b5bf489c0dde2229fc38"
     },
     {
       "file": "security/evidence/dependency-audit.json",
-      "sha256": "48c6e252c8b17e495a41d728232e5a36296b924e53e635220e1ae8fbd5e54c7c"
+      "sha256": "183b80737e09c02b137127875a121818934159b13d16777646572e13526d6b61"
     },
     {
       "file": "security/evidence/admin-route-authz.json",
-      "sha256": "55e88ae22ab9dd6530509d43c46989e4376fb3ca2f5eeeddd65e76e33e575086"
+      "sha256": "0e60c718769c94fdf28fa9243c8eda176a1c5811634f8b54b2842d3510276b9c"
     },
     {
       "file": "security/evidence/rls-verification.json",
-      "sha256": "cce88a0e29901828f86a17d5129c319bc1eb091cef0a4ea921ea5d918fc629bb"
+      "sha256": "8d8b19a181f5f08b47d08d504fce856f9a6b10ec1b25a0499da800e5d0f2004c"
     },
     {
       "file": "security/evidence/dependency-triage.json",
-      "sha256": "ad40aefdfa52f796d6b3521ed4fec0d86954e30a0698fa18bfab302fe27b7fd3"
+      "sha256": "5d55f242f4bb09696442ddd9ba2bd95412babfdaaff7a2a974f4f6e81b491cf1"
     }
   ]
 }

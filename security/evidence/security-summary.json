@@ -1,12 +1,28 @@
 {
-  "generatedAt": "2026-03-07T20:47:28.022Z",
-  "commitSha": "5c0313937628f0b74394775590e7ebf74cca8467",
-  "completeness": "partial",
+  "generatedAt": "2026-03-07T22:02:35.901Z",
+  "commitSha": "55784e8e3f84899d6d7bb916ea22ba5db063e396",
+  "evidenceCompleteness": "partial",
+  "headerContractCompleteness": "enforced-contract-satisfied",
+  "dependencyTriageCompleteness": "blocked-missing-authenticated-input",
+  "rlsProofLevel": "static-only",
+  "releaseBlockingFindings": [
+    {
+      "id": "dependency-audit-degraded",
+      "class": "EXTERNAL-TOOLING",
+      "detail": "Dependency audit degraded: pnpm-audit-backend-unavailable, osv-scanner-missing"
+    },
+    {
+      "id": "rls-live-proof-not-confirmed",
+      "class": "POLICY-DEPENDENT",
+      "detail": "RLS proof level is static-only."
+    }
+  ],
   "degradedChecks": {
     "tenantCoverage": false,
     "crossTenant": false,
     "headerProbe": false,
     "dependencyAudit": true,
+    "dependencyTriage": true,
     "adminAuthz": false,
     "rlsVerification": true
   },
@@ -19,14 +35,20 @@
     },
     "crossTenantStatus": "passed",
     "headerProbe": {
-      "failedChecks": 136,
-      "probeableRoutes": 133,
+      "failedBlockingChecks": 0,
+      "limitedFindings": 5,
+      "probeableRoutes": 141,
       "degraded": false
     },
     "dependencyAudit": {
       "outcome": "warn-backend-unavailable",
       "degraded": true,
       "reasons": ["pnpm-audit-backend-unavailable", "osv-scanner-missing"]
+    },
+    "dependencyTriage": {
+      "triageComplete": false,
+      "blockers": 1,
+      "blockedByMissingAuthenticatedInput": true
     },
     "adminAuthz": {
       "totalRoutes": 9,
@@ -36,7 +58,7 @@
     "rlsVerification": {
       "proofLevel": "static-only",
       "status": "not-run",
-      "boundary": "Live database RLS enforcement is not proven in this run. Static migration/policy assertions and app-level tenant tests are separate controls."
+      "boundary": "Live database RLS enforcement not executed in this run. Static migration/policy assertions and app-level tenant denial are separate controls."
     }
   }
 }

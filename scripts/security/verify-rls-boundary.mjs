@@ -10,21 +10,34 @@ mkdirSync(outputDir, { recursive: true });
 
 const dbUrl =
   process.env.DATABASE_URL || process.env.DIRECT_URL || process.env.SUPABASE_DB_URL || null;
+const requireLive = process.env.SECURITY_REQUIRE_LIVE_RLS === "1";
 
 function main() {
   const summary = {
     generatedAt: new Date().toISOString(),
-    verifierVersion: "2026-03-07.1",
+    verifierVersion: "2026-03-08.1",
     runId,
     status: "not-run",
     proofLevel: "static-only",
     boundary:
-      "Live database RLS enforcement is not proven in this run. Static migration/policy assertions and app-level tenant tests are separate controls.",
+      "Live database RLS enforcement not executed in this run. Static migration/policy assertions and app-level tenant denial are separate controls.",
+    policy: {
+      requireLiveVerification: requireLive,
+    },
     liveDbConfigured: Boolean(dbUrl),
     command: "pnpm exec tsx scripts/verify-rls-status.ts",
     commandStatus: null,
     stdout: "",
     stderr: "",
+    operatorGuidance: {
+      liveVerificationEntrypoint: "pnpm run verify:rls:live",
+      requiredEnv: ["DATABASE_URL or DIRECT_URL or SUPABASE_DB_URL"],
+      expectations: [
+        "RLS is enabled on critical tenant tables",
+        "Policy count is non-zero for each critical table",
+        "Failures are blocking when SECURITY_REQUIRE_LIVE_RLS=1",
+      ],
+    },
   };
 
   if (dbUrl) {
@@ -49,6 +62,11 @@ function main() {
       summary.boundary =
         "Live DB credentials were present, but RLS verification failed. Review stdout/stderr in artifact.";
     }
+  } else if (requireLive) {
+    summary.status = "failed";
+    summary.proofLevel = "live-db-required-missing-config";
+    summary.boundary =
+      "Live RLS verification required by policy but database credentials are missing.";
   }
 
   const outPath = path.join(outputDir, "rls-verification.json");

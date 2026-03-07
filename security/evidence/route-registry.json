@@ -1,1146 +1,1374 @@
 {
-  "generatedAt": "2026-03-07T20:47:15.194Z",
+  "generatedAt": "2026-03-07T22:02:12.517Z",
   "totalRoutes": 228,
   "routes": [
     {
       "route": "/api/admin/audit",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/admin/audit/route.ts"
+      "file": "packages/web/src/app/api/admin/audit/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/admin/exceptions",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/admin/exceptions/route.ts"
+      "file": "packages/web/src/app/api/admin/exceptions/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/admin/exceptions/[id]/escalate",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/admin/exceptions/[id]/escalate/route.ts"
+      "file": "packages/web/src/app/api/admin/exceptions/[id]/escalate/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/admin/exceptions/[id]/resolve",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/admin/exceptions/[id]/resolve/route.ts"
+      "file": "packages/web/src/app/api/admin/exceptions/[id]/resolve/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/admin/health",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/admin/health/route.ts"
+      "file": "packages/web/src/app/api/admin/health/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/admin/jobforge",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/admin/jobforge/route.ts"
+      "file": "packages/web/src/app/api/admin/jobforge/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/admin/metrics",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/admin/metrics/route.ts"
+      "file": "packages/web/src/app/api/admin/metrics/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/admin/runs",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/admin/runs/route.ts"
+      "file": "packages/web/src/app/api/admin/runs/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/admin/stream",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/admin/stream/route.ts"
+      "file": "packages/web/src/app/api/admin/stream/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/ai/data-insights",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/ai/data-insights/route.ts"
+      "file": "packages/web/src/app/api/ai/data-insights/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/ai/onboarding-assistant",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/ai/onboarding-assistant/route.ts"
+      "file": "packages/web/src/app/api/ai/onboarding-assistant/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/ai/support-assistant",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/ai/support-assistant/route.ts"
+      "file": "packages/web/src/app/api/ai/support-assistant/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/ai/troubleshooting",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/ai/troubleshooting/route.ts"
+      "file": "packages/web/src/app/api/ai/troubleshooting/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/billing/dispute",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/billing/dispute/route.ts"
+      "file": "packages/web/src/app/api/billing/dispute/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/billing/payment-recovery",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/billing/payment-recovery/route.ts"
+      "file": "packages/web/src/app/api/billing/payment-recovery/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/billing/retry-payment",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/billing/retry-payment/route.ts"
+      "file": "packages/web/src/app/api/billing/retry-payment/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/builder/revalidate",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/builder/revalidate/route.ts"
+      "file": "packages/web/src/app/api/builder/revalidate/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/connectors/backfill/[providerId]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/connectors/backfill/[providerId]/route.ts"
+      "file": "packages/web/src/app/api/connectors/backfill/[providerId]/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/connectors/callback/[providerId]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/connectors/callback/[providerId]/route.ts"
+      "file": "packages/web/src/app/api/connectors/callback/[providerId]/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/connectors/connect/[providerId]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/connectors/connect/[providerId]/route.ts"
+      "file": "packages/web/src/app/api/connectors/connect/[providerId]/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/connectors/disconnect/[providerId]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/connectors/disconnect/[providerId]/route.ts"
+      "file": "packages/web/src/app/api/connectors/disconnect/[providerId]/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/connectors/refresh/[providerId]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/connectors/refresh/[providerId]/route.ts"
+      "file": "packages/web/src/app/api/connectors/refresh/[providerId]/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/connectors/sync/[providerId]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/connectors/sync/[providerId]/route.ts"
+      "file": "packages/web/src/app/api/connectors/sync/[providerId]/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/connectors/test/[providerId]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/connectors/test/[providerId]/route.ts"
+      "file": "packages/web/src/app/api/connectors/test/[providerId]/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/connectors/webhook/[providerId]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/connectors/webhook/[providerId]/route.ts"
+      "file": "packages/web/src/app/api/connectors/webhook/[providerId]/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/console/activities",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/activities/route.ts"
+      "file": "packages/web/src/app/api/console/activities/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/ai-analysis",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/ai-analysis/route.ts"
+      "file": "packages/web/src/app/api/console/ai-analysis/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/ai-tokens/usage",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/ai-tokens/usage/route.ts"
+      "file": "packages/web/src/app/api/console/ai-tokens/usage/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/alerts",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/alerts/route.ts"
+      "file": "packages/web/src/app/api/console/alerts/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/alerts/[id]/acknowledge",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/alerts/[id]/acknowledge/route.ts"
+      "file": "packages/web/src/app/api/console/alerts/[id]/acknowledge/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/console/analytics/datasets",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/analytics/datasets/route.ts"
+      "file": "packages/web/src/app/api/console/analytics/datasets/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/analytics/pivot",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/analytics/pivot/route.ts"
+      "file": "packages/web/src/app/api/console/analytics/pivot/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/analytics/rollup",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/analytics/rollup/route.ts"
+      "file": "packages/web/src/app/api/console/analytics/rollup/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/analytics/saved-views",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/analytics/saved-views/route.ts"
+      "file": "packages/web/src/app/api/console/analytics/saved-views/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/api-keys",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/api-keys/route.ts"
+      "file": "packages/web/src/app/api/console/api-keys/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/api-keys/[id]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/api-keys/[id]/route.ts"
+      "file": "packages/web/src/app/api/console/api-keys/[id]/route.ts",
+      "methods": ["DELETE"]
     },
     {
       "route": "/api/console/api-logs",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/api-logs/route.ts"
+      "file": "packages/web/src/app/api/console/api-logs/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/billing",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/billing/route.ts"
+      "file": "packages/web/src/app/api/console/billing/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/billing/ai-tokens",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/billing/ai-tokens/route.ts"
+      "file": "packages/web/src/app/api/console/billing/ai-tokens/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/costs",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/costs/route.ts"
+      "file": "packages/web/src/app/api/console/costs/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/feature-flags",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/feature-flags/route.ts"
+      "file": "packages/web/src/app/api/console/feature-flags/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/feature-flags/[id]/environments/[env]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/feature-flags/[id]/environments/[env]/route.ts"
+      "file": "packages/web/src/app/api/console/feature-flags/[id]/environments/[env]/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/health",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/health/route.ts"
+      "file": "packages/web/src/app/api/console/health/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/insights",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/insights/route.ts"
+      "file": "packages/web/src/app/api/console/insights/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/meaningful-changes",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/meaningful-changes/route.ts"
+      "file": "packages/web/src/app/api/console/meaningful-changes/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/metrics",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/metrics/route.ts"
+      "file": "packages/web/src/app/api/console/metrics/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/performance",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/performance/route.ts"
+      "file": "packages/web/src/app/api/console/performance/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/reality",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/reality/route.ts"
+      "file": "packages/web/src/app/api/console/reality/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/receipts",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/receipts/route.ts"
+      "file": "packages/web/src/app/api/console/receipts/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/receipts-v2",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/receipts-v2/route.ts"
+      "file": "packages/web/src/app/api/console/receipts-v2/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/receipts/[id]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/receipts/[id]/route.ts"
+      "file": "packages/web/src/app/api/console/receipts/[id]/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/reconciliation",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/reconciliation/route.ts"
+      "file": "packages/web/src/app/api/console/reconciliation/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/site/branding",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/site/branding/route.ts"
+      "file": "packages/web/src/app/api/console/site/branding/route.ts",
+      "methods": ["GET", "PUT"]
     },
     {
       "route": "/api/console/site/experiments",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/site/experiments/route.ts"
+      "file": "packages/web/src/app/api/console/site/experiments/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/site/experiments/[id]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/site/experiments/[id]/route.ts"
+      "file": "packages/web/src/app/api/console/site/experiments/[id]/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/site/experiments/[id]/results",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/site/experiments/[id]/results/route.ts"
+      "file": "packages/web/src/app/api/console/site/experiments/[id]/results/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/site/experiments/[id]/start",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/site/experiments/[id]/start/route.ts"
+      "file": "packages/web/src/app/api/console/site/experiments/[id]/start/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/console/site/navigation",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/site/navigation/route.ts"
+      "file": "packages/web/src/app/api/console/site/navigation/route.ts",
+      "methods": ["GET", "PUT"]
     },
     {
       "route": "/api/console/site/pages",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/site/pages/route.ts"
+      "file": "packages/web/src/app/api/console/site/pages/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/site/pages/[id]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/site/pages/[id]/route.ts"
+      "file": "packages/web/src/app/api/console/site/pages/[id]/route.ts",
+      "methods": ["DELETE", "GET", "PUT"]
     },
     {
       "route": "/api/console/site/pages/[id]/publish",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/site/pages/[id]/publish/route.ts"
+      "file": "packages/web/src/app/api/console/site/pages/[id]/publish/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/console/site/ui-config",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/site/ui-config/route.ts"
+      "file": "packages/web/src/app/api/console/site/ui-config/route.ts",
+      "methods": ["GET", "PUT"]
     },
     {
       "route": "/api/console/subscription",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/subscription/route.ts"
+      "file": "packages/web/src/app/api/console/subscription/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/subscription-status",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/subscription-status/route.ts"
+      "file": "packages/web/src/app/api/console/subscription-status/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/support/tickets",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/support/tickets/route.ts"
+      "file": "packages/web/src/app/api/console/support/tickets/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/support/triage",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/support/triage/route.ts"
+      "file": "packages/web/src/app/api/console/support/triage/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/tables/[table]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/tables/[table]/route.ts"
+      "file": "packages/web/src/app/api/console/tables/[table]/route.ts",
+      "methods": ["DELETE", "GET", "PATCH", "POST"]
     },
     {
       "route": "/api/console/tenants",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/tenants/route.ts"
+      "file": "packages/web/src/app/api/console/tenants/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/usage",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/usage/route.ts"
+      "file": "packages/web/src/app/api/console/usage/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/usage/alerts",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/usage/alerts/route.ts"
+      "file": "packages/web/src/app/api/console/usage/alerts/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/usage/analytics",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/usage/analytics/route.ts"
+      "file": "packages/web/src/app/api/console/usage/analytics/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/usage/export",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/usage/export/route.ts"
+      "file": "packages/web/src/app/api/console/usage/export/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/usage/warnings",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/usage/warnings/route.ts"
+      "file": "packages/web/src/app/api/console/usage/warnings/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/user-role",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/user-role/route.ts"
+      "file": "packages/web/src/app/api/console/user-role/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/console/webhooks",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/webhooks/route.ts"
+      "file": "packages/web/src/app/api/console/webhooks/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/console/webhooks/[id]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/console/webhooks/[id]/route.ts"
+      "file": "packages/web/src/app/api/console/webhooks/[id]/route.ts",
+      "methods": ["DELETE", "PATCH"]
     },
     {
       "route": "/api/control-plane/failures",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/control-plane/failures/route.ts"
+      "file": "packages/web/src/app/api/control-plane/failures/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/control-plane/keys",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/control-plane/keys/route.ts"
+      "file": "packages/web/src/app/api/control-plane/keys/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/control-plane/metrics",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/control-plane/metrics/route.ts"
+      "file": "packages/web/src/app/api/control-plane/metrics/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/control-plane/policies",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/control-plane/policies/route.ts"
+      "file": "packages/web/src/app/api/control-plane/policies/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/control-plane/policies/[policyId]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/control-plane/policies/[policyId]/route.ts"
+      "file": "packages/web/src/app/api/control-plane/policies/[policyId]/route.ts",
+      "methods": ["PATCH"]
     },
     {
       "route": "/api/control-plane/triggers",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/control-plane/triggers/route.ts"
+      "file": "packages/web/src/app/api/control-plane/triggers/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/cron/check-reliability-alerts",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/cron/check-reliability-alerts/route.ts"
+      "file": "packages/web/src/app/api/cron/check-reliability-alerts/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/cron/daily-cost-rollup",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/cron/daily-cost-rollup/route.ts"
+      "file": "packages/web/src/app/api/cron/daily-cost-rollup/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/cron/email-lifecycle",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/cron/email-lifecycle/route.ts"
+      "file": "packages/web/src/app/api/cron/email-lifecycle/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/cron/low-activity",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/cron/low-activity/route.ts"
+      "file": "packages/web/src/app/api/cron/low-activity/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/cron/monthly-summary",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/cron/monthly-summary/route.ts"
+      "file": "packages/web/src/app/api/cron/monthly-summary/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/data/export",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/data/export/route.ts"
+      "file": "packages/web/src/app/api/data/export/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/data/import",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/data/import/route.ts"
+      "file": "packages/web/src/app/api/data/import/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/docs/openapi",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/docs/openapi/route.ts"
+      "file": "packages/web/src/app/api/docs/openapi/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/enterprise/contact",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/enterprise/contact/route.ts"
+      "file": "packages/web/src/app/api/enterprise/contact/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/enterprise/ip-allowlist",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/enterprise/ip-allowlist/route.ts"
+      "file": "packages/web/src/app/api/enterprise/ip-allowlist/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/enterprise/ip-allowlist/[id]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/enterprise/ip-allowlist/[id]/route.ts"
+      "file": "packages/web/src/app/api/enterprise/ip-allowlist/[id]/route.ts",
+      "methods": ["DELETE"]
     },
     {
       "route": "/api/exports",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/exports/route.ts"
+      "file": "packages/web/src/app/api/exports/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/feedback-loops/insights",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/feedback-loops/insights/route.ts"
+      "file": "packages/web/src/app/api/feedback-loops/insights/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/foundry/datasets",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/foundry/datasets/route.ts"
+      "file": "packages/web/src/app/api/foundry/datasets/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/foundry/datasets/[id]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/foundry/datasets/[id]/route.ts"
+      "file": "packages/web/src/app/api/foundry/datasets/[id]/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/foundry/runs",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/foundry/runs/route.ts"
+      "file": "packages/web/src/app/api/foundry/runs/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/foundry/runs/[id]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/foundry/runs/[id]/route.ts"
+      "file": "packages/web/src/app/api/foundry/runs/[id]/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/gtm/demo/reset",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/gtm/demo/reset/route.ts"
+      "file": "packages/web/src/app/api/gtm/demo/reset/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/gtm/funnel-stage",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/gtm/funnel-stage/route.ts"
+      "file": "packages/web/src/app/api/gtm/funnel-stage/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/gtm/roi",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/gtm/roi/route.ts"
+      "file": "packages/web/src/app/api/gtm/roi/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/health",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/health/route.ts"
+      "file": "packages/web/src/app/api/health/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/health/console",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/health/console/route.ts"
+      "file": "packages/web/src/app/api/health/console/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/health/stripe",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/health/stripe/route.ts"
+      "file": "packages/web/src/app/api/health/stripe/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/image-optimize",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/image-optimize/route.ts"
+      "file": "packages/web/src/app/api/image-optimize/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/imports/validate",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/imports/validate/route.ts"
+      "file": "packages/web/src/app/api/imports/validate/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/integrations/[integrationId]/debug",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/integrations/[integrationId]/debug/route.ts"
+      "file": "packages/web/src/app/api/integrations/[integrationId]/debug/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/integrations/[integrationId]/test",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/integrations/[integrationId]/test/route.ts"
+      "file": "packages/web/src/app/api/integrations/[integrationId]/test/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/integrations/[integrationId]/upgrade",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/integrations/[integrationId]/upgrade/route.ts"
+      "file": "packages/web/src/app/api/integrations/[integrationId]/upgrade/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/integrations/[integrationId]/versions",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/integrations/[integrationId]/versions/route.ts"
+      "file": "packages/web/src/app/api/integrations/[integrationId]/versions/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/integrations/analytics",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/integrations/analytics/route.ts"
+      "file": "packages/web/src/app/api/integrations/analytics/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/integrations/health",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/integrations/health/route.ts"
+      "file": "packages/web/src/app/api/integrations/health/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/internal/health/deep",
       "kind": "internal-service-endpoint",
-      "file": "packages/web/src/app/api/internal/health/deep/route.ts"
+      "file": "packages/web/src/app/api/internal/health/deep/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/internal/health/deep",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/internal/health/deep/route.ts"
+      "file": "packages/web/src/app/api/internal/health/deep/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/internal/jobs/drain",
       "kind": "internal-service-endpoint",
-      "file": "packages/web/src/app/api/internal/jobs/drain/route.ts"
+      "file": "packages/web/src/app/api/internal/jobs/drain/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/internal/jobs/drain",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/internal/jobs/drain/route.ts"
+      "file": "packages/web/src/app/api/internal/jobs/drain/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/invite/[token]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/invite/[token]/route.ts"
+      "file": "packages/web/src/app/api/invite/[token]/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/jobs",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/jobs/route.ts"
+      "file": "packages/web/src/app/api/jobs/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/jobs/[id]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/jobs/[id]/route.ts"
+      "file": "packages/web/src/app/api/jobs/[id]/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/jobs/[id]/exceptions",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/jobs/[id]/exceptions/route.ts"
+      "file": "packages/web/src/app/api/jobs/[id]/exceptions/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/jobs/[id]/exceptions/[exceptionId]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/jobs/[id]/exceptions/[exceptionId]/route.ts"
+      "file": "packages/web/src/app/api/jobs/[id]/exceptions/[exceptionId]/route.ts",
+      "methods": ["PATCH"]
     },
     {
       "route": "/api/jobs/[id]/progress",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/jobs/[id]/progress/route.ts"
+      "file": "packages/web/src/app/api/jobs/[id]/progress/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/jobs/[id]/result",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/jobs/[id]/result/route.ts"
+      "file": "packages/web/src/app/api/jobs/[id]/result/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/jobs/bulk",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/jobs/bulk/route.ts"
+      "file": "packages/web/src/app/api/jobs/bulk/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/metrics",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/metrics/route.ts"
+      "file": "packages/web/src/app/api/metrics/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/metrics/prometheus",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/metrics/prometheus/route.ts"
+      "file": "packages/web/src/app/api/metrics/prometheus/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/milestones",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/milestones/route.ts"
+      "file": "packages/web/src/app/api/milestones/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/onboarding/progress",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/onboarding/progress/route.ts"
+      "file": "packages/web/src/app/api/onboarding/progress/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/onboarding/progress/skip",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/onboarding/progress/skip/route.ts"
+      "file": "packages/web/src/app/api/onboarding/progress/skip/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/ops/activation-funnel",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/ops/activation-funnel/route.ts"
+      "file": "packages/web/src/app/api/ops/activation-funnel/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/ops/customers",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/ops/customers/route.ts"
+      "file": "packages/web/src/app/api/ops/customers/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/ops/edge-functions",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/ops/edge-functions/route.ts"
+      "file": "packages/web/src/app/api/ops/edge-functions/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/ops/overview",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/ops/overview/route.ts"
+      "file": "packages/web/src/app/api/ops/overview/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/ops/performance",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/ops/performance/route.ts"
+      "file": "packages/web/src/app/api/ops/performance/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/ops/retry-queues",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/ops/retry-queues/route.ts"
+      "file": "packages/web/src/app/api/ops/retry-queues/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/ops/system-health",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/ops/system-health/route.ts"
+      "file": "packages/web/src/app/api/ops/system-health/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/oss/stats",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/oss/stats/route.ts"
+      "file": "packages/web/src/app/api/oss/stats/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/pricing/experiments",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/pricing/experiments/route.ts"
+      "file": "packages/web/src/app/api/pricing/experiments/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/projects",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/projects/route.ts"
+      "file": "packages/web/src/app/api/projects/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/projects/snapshots",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/projects/snapshots/route.ts"
+      "file": "packages/web/src/app/api/projects/snapshots/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/projects/snapshots/[snapshotId]/export",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/projects/snapshots/[snapshotId]/export/route.ts"
+      "file": "packages/web/src/app/api/projects/snapshots/[snapshotId]/export/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/projects/snapshots/[snapshotId]/rollback",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/projects/snapshots/[snapshotId]/rollback/route.ts"
+      "file": "packages/web/src/app/api/projects/snapshots/[snapshotId]/rollback/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/public/reality",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/public/reality/route.ts"
+      "file": "packages/web/src/app/api/public/reality/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/public/ui-config",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/public/ui-config/route.ts"
+      "file": "packages/web/src/app/api/public/ui-config/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/quota",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/quota/route.ts"
+      "file": "packages/web/src/app/api/quota/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/rbac/roles",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/rbac/roles/route.ts"
+      "file": "packages/web/src/app/api/rbac/roles/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/rbac/users",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/rbac/users/route.ts"
+      "file": "packages/web/src/app/api/rbac/users/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/receipts/ocr",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/receipts/ocr/route.ts"
+      "file": "packages/web/src/app/api/receipts/ocr/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/referrals",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/referrals/route.ts"
+      "file": "packages/web/src/app/api/referrals/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/runs/[runId]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/runs/[runId]/route.ts"
+      "file": "packages/web/src/app/api/runs/[runId]/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/runs/create",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/runs/create/route.ts"
+      "file": "packages/web/src/app/api/runs/create/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/seo/generate-sitemap",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/seo/generate-sitemap/route.ts"
+      "file": "packages/web/src/app/api/seo/generate-sitemap/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/share/[id]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/share/[id]/route.ts"
+      "file": "packages/web/src/app/api/share/[id]/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/status",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/status/route.ts"
+      "file": "packages/web/src/app/api/status/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/status/health",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/status/health/route.ts"
+      "file": "packages/web/src/app/api/status/health/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/stripe/checkout",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/stripe/checkout/route.ts"
+      "file": "packages/web/src/app/api/stripe/checkout/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/stripe/portal",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/stripe/portal/route.ts"
+      "file": "packages/web/src/app/api/stripe/portal/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/stripe/webhook",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/stripe/webhook/route.ts"
+      "file": "packages/web/src/app/api/stripe/webhook/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/support/canned-responses",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/support/canned-responses/route.ts"
+      "file": "packages/web/src/app/api/support/canned-responses/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/support/report-issue",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/support/report-issue/route.ts"
+      "file": "packages/web/src/app/api/support/report-issue/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/support/tickets",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/support/tickets/route.ts"
+      "file": "packages/web/src/app/api/support/tickets/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/user/checklist",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/user/checklist/route.ts"
+      "file": "packages/web/src/app/api/user/checklist/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/user/pre-test",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/user/pre-test/route.ts"
+      "file": "packages/web/src/app/api/user/pre-test/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/user/upgrade",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/user/upgrade/route.ts"
+      "file": "packages/web/src/app/api/user/upgrade/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/user/value-moments",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/user/value-moments/route.ts"
+      "file": "packages/web/src/app/api/user/value-moments/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/v1",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/route.ts"
+      "file": "packages/web/src/app/api/v1/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/v1/convert",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/convert/route.ts"
+      "file": "packages/web/src/app/api/v1/convert/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/v1/datasets",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/datasets/route.ts"
+      "file": "packages/web/src/app/api/v1/datasets/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/v1/feature-flags",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/feature-flags/route.ts"
+      "file": "packages/web/src/app/api/v1/feature-flags/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/v1/feature-flags/[id]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/feature-flags/[id]/route.ts"
+      "file": "packages/web/src/app/api/v1/feature-flags/[id]/route.ts",
+      "methods": ["PATCH"]
     },
     {
       "route": "/api/v1/feature-flags/evaluate",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/feature-flags/evaluate/route.ts"
+      "file": "packages/web/src/app/api/v1/feature-flags/evaluate/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/v1/health",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/health/route.ts"
+      "file": "packages/web/src/app/api/v1/health/route.ts",
+      "methods": []
     },
     {
       "route": "/api/v1/meta",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/meta/route.ts"
+      "file": "packages/web/src/app/api/v1/meta/route.ts",
+      "methods": []
     },
     {
       "route": "/api/v1/metrics/summary",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/metrics/summary/route.ts"
+      "file": "packages/web/src/app/api/v1/metrics/summary/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/v1/metrics/timeseries",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/metrics/timeseries/route.ts"
+      "file": "packages/web/src/app/api/v1/metrics/timeseries/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/v1/metrics/top",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/metrics/top/route.ts"
+      "file": "packages/web/src/app/api/v1/metrics/top/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/v1/ready",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/ready/route.ts"
+      "file": "packages/web/src/app/api/v1/ready/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/v1/receipts",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/receipts/route.ts"
+      "file": "packages/web/src/app/api/v1/receipts/route.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/v1/receipts/[id]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/receipts/[id]/route.ts"
+      "file": "packages/web/src/app/api/v1/receipts/[id]/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/v1/recon/jobs",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/recon/jobs/route.ts"
+      "file": "packages/web/src/app/api/v1/recon/jobs/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/v1/runs",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/runs/route.ts"
+      "file": "packages/web/src/app/api/v1/runs/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/v1/runs/[id]",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/runs/[id]/route.ts"
+      "file": "packages/web/src/app/api/v1/runs/[id]/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/v1/runs/[id]/evidence",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/runs/[id]/evidence/route.ts"
+      "file": "packages/web/src/app/api/v1/runs/[id]/evidence/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/v1/runs/[id]/replay",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/runs/[id]/replay/route.ts"
+      "file": "packages/web/src/app/api/v1/runs/[id]/replay/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/v1/runs/[id]/results",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/runs/[id]/results/route.ts"
+      "file": "packages/web/src/app/api/v1/runs/[id]/results/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/v1/runs/[id]/trust-explorer/findPolicyImpact",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/runs/[id]/trust-explorer/findPolicyImpact/route.ts"
+      "file": "packages/web/src/app/api/v1/runs/[id]/trust-explorer/findPolicyImpact/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/v1/runs/[id]/trust-explorer/getExecutionGraph",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/runs/[id]/trust-explorer/getExecutionGraph/route.ts"
+      "file": "packages/web/src/app/api/v1/runs/[id]/trust-explorer/getExecutionGraph/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/v1/runs/[id]/trust-explorer/traceArtifactLineage",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/runs/[id]/trust-explorer/traceArtifactLineage/route.ts"
+      "file": "packages/web/src/app/api/v1/runs/[id]/trust-explorer/traceArtifactLineage/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/v1/runs/[id]/trust-explorer/verifyProofChain",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/v1/runs/[id]/trust-explorer/verifyProofChain/route.ts"
+      "file": "packages/web/src/app/api/v1/runs/[id]/trust-explorer/verifyProofChain/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/vercel-example",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/vercel-example/route.ts"
+      "file": "packages/web/src/app/api/vercel-example/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/workspaces",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/workspaces/route.ts"
+      "file": "packages/web/src/app/api/workspaces/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/workspaces/[workspaceId]/invites",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/workspaces/[workspaceId]/invites/route.ts"
+      "file": "packages/web/src/app/api/workspaces/[workspaceId]/invites/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/workspaces/[workspaceId]/onboarding",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/api/workspaces/[workspaceId]/onboarding/route.ts"
+      "file": "packages/web/src/app/api/workspaces/[workspaceId]/onboarding/route.ts",
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/edge/agent-monitor",
       "kind": "edge-function",
-      "file": "supabase/functions/agent-monitor/index.ts"
+      "file": "supabase/functions/agent-monitor/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/agent-orchestrator",
       "kind": "edge-function",
-      "file": "supabase/functions/agent-orchestrator/index.ts"
+      "file": "supabase/functions/agent-orchestrator/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/architecture-sentinel-agent",
       "kind": "edge-function",
-      "file": "supabase/functions/architecture-sentinel-agent/index.ts"
+      "file": "supabase/functions/architecture-sentinel-agent/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/auth_edge_guard",
       "kind": "edge-function",
-      "file": "supabase/functions/auth_edge_guard/index.ts"
+      "file": "supabase/functions/auth_edge_guard/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/automated-alerting",
       "kind": "edge-function",
-      "file": "supabase/functions/automated-alerting/index.ts"
+      "file": "supabase/functions/automated-alerting/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/automated-diagnostics",
       "kind": "edge-function",
-      "file": "supabase/functions/automated-diagnostics/index.ts"
+      "file": "supabase/functions/automated-diagnostics/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/automated-health-checks",
       "kind": "edge-function",
-      "file": "supabase/functions/automated-health-checks/index.ts"
+      "file": "supabase/functions/automated-health-checks/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/automated-onboarding-emails",
       "kind": "edge-function",
-      "file": "supabase/functions/automated-onboarding-emails/index.ts"
+      "file": "supabase/functions/automated-onboarding-emails/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/automated-reconciliation-review",
       "kind": "edge-function",
-      "file": "supabase/functions/automated-reconciliation-review/index.ts"
+      "file": "supabase/functions/automated-reconciliation-review/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/autonomous-cfo-agent",
       "kind": "edge-function",
-      "file": "supabase/functions/autonomous-cfo-agent/index.ts"
+      "file": "supabase/functions/autonomous-cfo-agent/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/collect-reality-metrics",
       "kind": "edge-function",
-      "file": "supabase/functions/collect-reality-metrics/index.ts"
+      "file": "supabase/functions/collect-reality-metrics/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/compute-bill",
       "kind": "edge-function",
-      "file": "supabase/functions/compute-bill/index.ts"
+      "file": "supabase/functions/compute-bill/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/generate-founder-digest",
       "kind": "edge-function",
-      "file": "supabase/functions/generate-founder-digest/index.ts"
+      "file": "supabase/functions/generate-founder-digest/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/generate-monthly-export",
       "kind": "edge-function",
-      "file": "supabase/functions/generate-monthly-export/index.ts"
+      "file": "supabase/functions/generate-monthly-export/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/generate-ops-insights",
       "kind": "edge-function",
-      "file": "supabase/functions/generate-ops-insights/index.ts"
+      "file": "supabase/functions/generate-ops-insights/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/generate-weekly-briefing",
       "kind": "edge-function",
-      "file": "supabase/functions/generate-weekly-briefing/index.ts"
+      "file": "supabase/functions/generate-weekly-briefing/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/integration-sync-paypal",
       "kind": "edge-function",
-      "file": "supabase/functions/integration-sync-paypal/index.ts"
+      "file": "supabase/functions/integration-sync-paypal/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/integration-sync-scheduler",
       "kind": "edge-function",
-      "file": "supabase/functions/integration-sync-scheduler/index.ts"
+      "file": "supabase/functions/integration-sync-scheduler/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/integration-sync-shopify",
       "kind": "edge-function",
-      "file": "supabase/functions/integration-sync-shopify/index.ts"
+      "file": "supabase/functions/integration-sync-shopify/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/integration-sync-shopify-secure",
       "kind": "edge-function",
-      "file": "supabase/functions/integration-sync-shopify-secure/index.ts"
+      "file": "supabase/functions/integration-sync-shopify-secure/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/integration-sync-stripe",
       "kind": "edge-function",
-      "file": "supabase/functions/integration-sync-stripe/index.ts"
+      "file": "supabase/functions/integration-sync-stripe/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/integration-sync-tiktok",
       "kind": "edge-function",
-      "file": "supabase/functions/integration-sync-tiktok/index.ts"
+      "file": "supabase/functions/integration-sync-tiktok/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/log-usage",
       "kind": "edge-function",
-      "file": "supabase/functions/log-usage/index.ts"
+      "file": "supabase/functions/log-usage/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/log-usage-secure",
       "kind": "edge-function",
-      "file": "supabase/functions/log-usage-secure/index.ts"
+      "file": "supabase/functions/log-usage-secure/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/organic-growth-agent",
       "kind": "edge-function",
-      "file": "supabase/functions/organic-growth-agent/index.ts"
+      "file": "supabase/functions/organic-growth-agent/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/preemptive-support-agent",
       "kind": "edge-function",
-      "file": "supabase/functions/preemptive-support-agent/index.ts"
+      "file": "supabase/functions/preemptive-support-agent/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/release-gatekeeper-agent",
       "kind": "edge-function",
-      "file": "supabase/functions/release-gatekeeper-agent/index.ts"
+      "file": "supabase/functions/release-gatekeeper-agent/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/retry-queue-processor",
       "kind": "edge-function",
-      "file": "supabase/functions/retry-queue-processor/index.ts"
+      "file": "supabase/functions/retry-queue-processor/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/strategic-governor-agent",
       "kind": "edge-function",
-      "file": "supabase/functions/strategic-governor-agent/index.ts"
+      "file": "supabase/functions/strategic-governor-agent/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/sync-usage-to-stripe",
       "kind": "edge-function",
-      "file": "supabase/functions/sync-usage-to-stripe/index.ts"
+      "file": "supabase/functions/sync-usage-to-stripe/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/trigger-upgrade-alert",
       "kind": "edge-function",
-      "file": "supabase/functions/trigger-upgrade-alert/index.ts"
+      "file": "supabase/functions/trigger-upgrade-alert/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/user-intent-synthesizer-agent",
       "kind": "edge-function",
-      "file": "supabase/functions/user-intent-synthesizer-agent/index.ts"
+      "file": "supabase/functions/user-intent-synthesizer-agent/index.ts",
+      "methods": []
     },
     {
       "route": "/edge/weekly-reality-loop",
       "kind": "edge-function",
-      "file": "supabase/functions/weekly-reality-loop/index.ts"
+      "file": "supabase/functions/weekly-reality-loop/index.ts",
+      "methods": []
     },
     {
       "route": "/openapi.json",
       "kind": "next-app-router",
-      "file": "packages/web/src/app/openapi.json/route.ts"
+      "file": "packages/web/src/app/openapi.json/route.ts",
+      "methods": []
     }
   ]
 }
