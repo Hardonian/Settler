@@ -1,108 +1,75 @@
-# Settler — Open Source Reconciliation Platform
+# Settler
 
-**Settler runs deterministic reconciliation workflows, produces verifiable artifacts, and supports replay-backed audits for every execution.**
+**Settler is a deterministic workflow platform for financial reconciliation that emits verifiable proof artifacts for every run.**
 
-If Stripe, banking data, and your internal ledger disagree, Settler identifies mismatches, records why they happened, and exports proof artifacts you can replay later.
+Engineering teams routinely hit the same failure mode: Stripe, bank exports, and internal ledgers diverge, but root-cause analysis is slow because execution history is incomplete or non-replayable. Settler solves this by combining deterministic execution, policy evaluation, and replay verification in one auditable path.
 
-## What Settler does
+## Key capabilities
 
-1. **Workflow execution** across tenant-scoped connectors and policies.
-2. **Deterministic reconciliation** with explicit matching rules.
-3. **Mismatch detection** with review-ready context.
-4. **Artifact + proof generation** (inputs, policy, outputs, hashes).
-5. **Replay verification** against canonical execution artifacts.
+- **Deterministic workflow execution** for recon pipelines across normalized connector inputs.
+- **Replay with cryptographic evidence** so every run can be re-verified from stored artifacts.
+- **Policy-governed operations** that evaluate access, budgets, and guardrails as part of execution.
 
-## Five Minute Demo
+## Quick usage example
 
 ```bash
 pnpm install
-cp .env.example .env
-pnpm exec tsx scripts/run-migrations-remote.ts
-pnpm --filter @settler/web dev
 pnpm demo
 pnpm settler:replay examples/demo-output/evidence.json
 ```
 
-Demo outputs are written to `examples/demo-output` (`run.json`, `results.json`, `evidence.json`, `report.html`).
+This generates `examples/demo-output/run.json`, `results.json`, `evidence.json`, and `report.html` from a deterministic Stripe↔QuickBooks demo workflow.
 
-## Capability reality (OSS)
+## Quick start (time-to-first-value)
 
-| Capability                         | Status                         | Notes                                                                                 |
-| ---------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------- |
-| Deterministic workflow execution   | ✅ Implemented                 | Deterministic guarantees apply to canonicalized inputs + rules + policy context.      |
-| Replayable execution               | ✅ Implemented                 | Replay verifies outputs against stored artifacts and hashes.                          |
-| Proof chains                       | ✅ Implemented                 | Hash-linked proof artifacts are generated and verified by scripts and runtime checks. |
-| Policy enforcement                 | ✅ Implemented                 | Execution policy is evaluated during runtime and verification gates.                  |
-| Connector normalization and safety | ✅ Implemented                 | Connector output normalization and sandbox controls are present in platform modules.  |
-| AI copilot                         | ✅ Implemented (advisory only) | Copilot suggests actions; it does not execute workflow changes directly.              |
-| Chaos-tested reliability           | ✅ Implemented                 | Chaos harness and reliability scripts validate deterministic invariants.              |
-| Multi-tenant isolation             | ✅ Implemented                 | Tenant boundaries enforced through RLS and isolation checks.                          |
+1. **Clone + install**
+   ```bash
+   git clone https://github.com/settler/settler.git
+   cd settler
+   pnpm install
+   ```
+2. **Set environment values**
+   ```bash
+   cp .env.example .env
+   ```
+   For demo and replay, `DATABASE_URL` is not required.
+3. **Execute a deterministic example workflow**
+   ```bash
+   pnpm demo
+   ```
+4. **Inspect outputs + proof**
+   ```bash
+   cat examples/demo-output/results.json
+   cat examples/demo-output/evidence.json
+   ```
+5. **Replay verification**
+   ```bash
+   pnpm settler:replay examples/demo-output/evidence.json
+   ```
 
-See [docs/positioning/CLAIM_VALIDATION.md](docs/positioning/CLAIM_VALIDATION.md) for claim-by-claim evidence and boundaries.
+For expanded launch-oriented walkthroughs (example workflows, expected outputs, replay instructions), see [`docs/launch/QUICK_START.md`](docs/launch/QUICK_START.md).
 
-## Core primitives
+## Architecture at a glance
 
-Settler documentation and user-facing surfaces normalize to these primitives:
+See [`ARCHITECTURE.md`](ARCHITECTURE.md) for the runtime diagram and component flow (workflow execution, event backbone, workers, artifact store, proof generation, connector integrations, policy engine).
 
-- **Workflow**
-- **Execution**
-- **Artifact**
-- **Proof**
-- **Replay**
-- **Policy**
-- **Connector**
-- **Event**
-- **Tenant**
-- **Copilot**
-- **Chaos Harness**
+## Technical differentiation
 
-Reference: [docs/TERMINOLOGY.md](docs/TERMINOLOGY.md).
+Settler differs from generic workflow tools in five concrete ways:
 
-## Quickstart
+1. **Determinism is enforced** (not advisory) via execution fences and canonicalization.
+2. **Proof artifacts are first-class outputs** (`evidence.json`, fingerprints, hash-linked lineage).
+3. **Replay is a built-in verification path**, not a best-effort debug mode.
+4. **Policy evaluation is in the execution loop**, not a separate post-processing stage.
+5. **Connector safety includes normalization + tenant boundaries** to reduce non-deterministic drift.
 
-Prerequisites:
+## Contributor on-ramp
 
-- Node.js 24+ (see `.nvmrc`)
-- pnpm 10.13.1+
-- Postgres or Supabase
+- Read [`CONTRIBUTING.md`](CONTRIBUTING.md) for local setup and quality gates.
+- Browse launch-ready examples in [`docs/launch/EXAMPLE_WORKFLOWS.md`](docs/launch/EXAMPLE_WORKFLOWS.md).
+- Use issue/PR templates in [`.github/ISSUE_TEMPLATE`](.github/ISSUE_TEMPLATE) and [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md).
 
-Set environment values:
-
-```bash
-DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DB
-NEXT_PUBLIC_SUPABASE_URL=https://<project>.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
-```
-
-Run locally:
-
-```bash
-pnpm install
-pnpm exec tsx scripts/run-migrations-remote.ts
-pnpm --filter @settler/web dev
-```
-
-Open `http://localhost:3000`.
-
-## Key packages
-
-- `packages/api` – reconciliation API, domain logic, and data layer
-- `packages/web` – Next.js web app (console, docs, marketing)
-- `packages/adapters` – connector implementations for Stripe, banks, ERPs, and other sources
-- `packages/sdk`, `packages/react-settler`, `packages/sdk-go`, `packages/workhorse` – SDKs and workers
-
-## Documentation path
-
-- Start here: [`docs/START_HERE.md`](docs/START_HERE.md)
-- Quick start + onboarding: [`docs/getting-started/README.md`](docs/getting-started/README.md)
-- Core concepts + guarantees: [`docs/TERMINOLOGY.md`](docs/TERMINOLOGY.md), [`docs/SYSTEM_GUARANTEES.md`](docs/SYSTEM_GUARANTEES.md)
-- Workflows and execution: [`docs/WORKFLOWS.md`](docs/WORKFLOWS.md), [`docs/ENGINE.md`](docs/ENGINE.md)
-- Proofs and replay: [`docs/EVIDENCE.md`](docs/EVIDENCE.md), [`docs/LINEAGE.md`](docs/LINEAGE.md)
-- Connectors: [`docs/integrations/connectors-overview.md`](docs/integrations/connectors-overview.md)
-- AI copilot + chaos harness: [`MODEL_SPEC.md`](MODEL_SPEC.md), [`platform/chaos-harness.ts`](platform/chaos-harness.ts)
-- Architecture + contributing: [`ARCHITECTURE.md`](ARCHITECTURE.md), [`CONTRIBUTING.md`](CONTRIBUTING.md)
-
-## License and support
+## License and security
 
 - License: [`LICENSE`](LICENSE)
-- Security reports: [`SECURITY.md`](SECURITY.md)
+- Security policy: [`SECURITY.md`](SECURITY.md)

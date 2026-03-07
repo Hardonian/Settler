@@ -1,104 +1,52 @@
 # Settler Architecture Overview
 
-Settler is an Open Source Reconciliation Engine with a simple surface and a deterministic core.
+Settler is an open-source reconciliation system with deterministic execution, policy enforcement, and replayable proof artifacts.
 
-## System Shape
+## Runtime architecture diagram
 
-- **Web surface (`packages/web`)**: Dashboard, docs, and demo UX.
-- **API surface (`packages/api` + `packages/web/src/app/api`)**: Run creation, run listing, metrics, and evidence access.
-- **Engine + runner (`runner`, `scripts/moat`)**: Deterministic run execution and replay verification.
-- **Platform layer (`platform/`)**: Unified subsystem integration — trust graph, policy simulator, AI copilot, chaos harness, event consumers, connector registry.
-- **Connector ecosystem (`packages/adapters`)**: Sandboxed external data connectors with normalization.
-- **CLI (`packages/cli`)**: Command-line interface including MCP server, replay lab, foundry, and proof verification.
-- **Protocol (`packages/protocol`)**: Framework-agnostic types for reconciliation workflows.
-- **Storage (Postgres/Supabase via Prisma)**: Tenant-scoped run state and metrics.
-
-## Runtime Flow
-
-1. Operator or integration starts a run.
-2. Engine processes normalized records deterministically.
-3. Policy engine compiles and enforces governance rules.
-4. Results + evidence are persisted as content-addressed artifacts.
-5. Event backbone distributes events to subsystem consumers.
-6. Trust graph records execution lineage and artifact provenance.
-7. Replay verifies fingerprints for provable outcomes.
-
-## Subsystem Architecture
-
-### Core Primitives (`platform/primitives.ts`)
-
-All subsystems share these canonical types:
-
-| Primitive   | Purpose                                    |
-|-------------|---------------------------------------------|
-| Execution   | A workflow run with input/output hashes     |
-| Artifact    | Content-addressed output (evidence, report) |
-| Workflow    | Tenant-scoped reconciliation definition     |
-| Policy      | Governance rules with budgets and identity  |
-| Connector   | External data source adapter                |
-| Event       | Durable, idempotent platform event          |
-| Proof       | Cryptographic proof capsule with hash chain |
-| Tenant      | Isolated organizational boundary            |
-
-### Trust Graph (`platform/trust-graph.ts`)
-
-- **Nodes**: Execution, Artifact, Policy, Connector, Proof
-- **Edges**: produced, consumed, governed_by, proved_by, sourced_from, replayed_from, derived_from
-- Tenant-isolated: cross-tenant edges are forbidden
-- Content-addressed: node IDs are deterministic hashes
-- Snapshotable: produces a root hash for graph verification
-
-### Event Backbone (`runner/eventBackbone.ts` + `platform/event-consumers.ts`)
-
-- **Append-only NDJSON log** with idempotency keys
-- **Consumer offset tracking** for exactly-once processing
-- **Consumers**: Trust Graph, Observability, Policy Audit, Connector Metrics
-- **Replayable**: same event stream for live execution and replay
-
-### Policy Engine & Simulator (`policies/` + `platform/policy-simulator.ts`)
-
-- **Compilation** to enforcement plans with hash-based integrity
-- **Simulation**: what-if analysis against historical executions
-- **Comparison**: diff two policies to see retroactive impact
-
-### Determinism Guarantees (`platform/determinism.ts`)
-
-- **Auditor**: detects timestamps, random IDs, AI mutations, connector non-determinism
-- **Execution Fence**: blocks non-deterministic operations during deterministic blocks
-- **Connector Output Normalizer**: replaces random UUIDs with deterministic IDs
-- **Replay Verification**: asserts fingerprint match
-
-### AI Copilot (`platform/ai-copilot.ts`)
-
-- Advisory-only — never executes directly
-- Blocked during deterministic execution via execution fence
-- Requires human review; full audit trail
-- Rate-limited per execution
-
-### Chaos Harness (`platform/chaos-harness.ts`)
-
-- **Fault types**: worker crash, network partition, connector failure, event delay, partial write, artifact corruption
-- **Invariant checks**: replay correctness, proof integrity, execution idempotency, tenant isolation
-
-### MCP Server (`packages/cli/src/mcp/server.ts`)
-
-Exposes: runWorkflow, replayExecution, verifyProof, inspectPolicy, traceArtifact, listConnectors, eventBackboneHealth.
-
-## Data Flow
-
-```
-workflow trigger → event backbone → policy enforcement → worker execution
-→ artifact generation → proof pack → trust graph update → observability
+```mermaid
+flowchart LR
+    A[Workflow Trigger\nCLI / API / Scheduler] --> B[Execution Engine\nDeterministic Runner]
+    B --> C[Policy Evaluation\nIdentity + Budget + Guardrails]
+    C --> D[Worker Execution\nConnector Calls + Matching]
+    D --> E[Event Backbone\nAppend-only NDJSON Log]
+    D --> F[Artifact Store\nrun.json / results.json / report.html]
+    D --> G[Proof Generation\nevidence.json + hash chain]
+    E --> H[Event Consumers\nObservability / Metrics / Audit]
+    G --> I[Replay Verification\nFingerprint Match]
+    D --> J[Connector Integrations\nStripe, QuickBooks, etc.]
+    I --> K[Trust Graph\nExecution Lineage]
+    G --> K
+    C --> K
 ```
 
-## Determinism Contract
+## System shape
+
+- **Web surface (`packages/web`)**: dashboard, docs, and demo UX.
+- **API surface (`packages/api` + `packages/web/src/app/api`)**: run creation, listing, metrics, and evidence access.
+- **Engine + runner (`runner`, `scripts/moat`)**: deterministic execution and replay verification.
+- **Platform layer (`platform/`)**: trust graph, policy simulator, AI copilot, chaos harness, and event consumers.
+- **Connector ecosystem (`packages/adapters`)**: adapter drivers with normalization and safety controls.
+- **CLI (`packages/cli`)**: replay, verification, and foundry tooling.
+- **Storage (Postgres/Supabase via Prisma)**: tenant-scoped run state and metadata.
+
+## Runtime flow
+
+1. Operator or integration starts a workflow run.
+2. Policy is evaluated before deterministic execution proceeds.
+3. Worker execution reads normalized connector data and applies matching rules.
+4. Artifacts + proof are persisted (`run.json`, `results.json`, `evidence.json`, HTML report).
+5. Event backbone fans out updates to observability, trust, and audit consumers.
+6. Replay verifies the run fingerprint against stored evidence.
+
+## Determinism contract
 
 1. AI cannot modify deterministic execution path directly.
-2. Connector outputs are normalized; random UUIDs → deterministic IDs.
-3. All workflow state transitions are deterministic.
-4. Replay produces identical fingerprints.
-5. Non-deterministic operations are blocked inside execution fence.
+2. Connector outputs are normalized; unstable IDs are canonicalized.
+3. Workflow state transitions are deterministic.
+4. Replay must produce identical fingerprints.
+5. Non-deterministic operations are blocked inside execution fences.
 
-## Deep Dive
+## Deep dive
 
-For detailed internals (deterministic replay, content-addressed evidence, policy engine, run storage, and execution model), read [`docs/ENGINE.md`](docs/ENGINE.md).
+For internals (execution engine, lineage, proof model, and policy path), see [`docs/ENGINE.md`](docs/ENGINE.md).

@@ -1,39 +1,29 @@
-1/ Building fintech? You're probably wasting 30% of your eng time on reconciliation.
+1/ We open sourced Settler: deterministic reconciliation workflows with replayable proof artifacts.
 
-We fixed it.
+2/ Problem: many reconciliation systems start as scripts + cron. Later, outcomes drift and post-incident debugging turns into guesswork.
 
-Introducing Settler.dev – The API Infrastructure for Financial Evidence. 🧵👇
+3/ Settler's model is explicit:
 
-2/ Every financial app needs to prove its numbers are correct. This means matching internal DB records with external payment gateways (Stripe, PayPal, Banks).
+- deterministic run execution
+- policy checks in-path
+- generated evidence (`run.json`, `results.json`, `evidence.json`)
+- replay verification against fingerprints
 
-Doing this manually is a nightmare. Building it yourself is a distraction.
+4/ Try it locally:
 
-3/ Settler provides a clean, typed API to handle:
-✅ Multi-way Reconciliation (N-way matching)
-✅ Receipt Parsing (OCR -> JSON)
-✅ Deterministic Currency Conversion
-✅ Financial Feature Flags
+```bash
+pnpm install
+pnpm demo
+pnpm settler:replay examples/demo-output/evidence.json
+```
 
-4/ 🧾 Receipts API
-Stop writing regex for receipts. Send us the file, we return structured data.
-- Vendor Name
-- Tax Line Items
-- Currency detection
-- 99.8% Accuracy
+5/ The demo writes concrete artifacts under `examples/demo-output/`, including an HTML report and replayable evidence.
 
-5/ 🔄 Reconciliation API
-Define rules like:
-"Match if OrderID matches EXACTLY AND Amount is within $0.05"
+6/ Repo entry points:
 
-We handle the conflict resolution, reporting, and audit trail.
+- `ARCHITECTURE.md`
+- `docs/launch/QUICK_START.md`
+- `docs/launch/EXAMPLE_WORKFLOWS.md`
+- `CONTRIBUTING.md`
 
-6/ 🏗️ Developer Experience First
-We built the SDKs we wanted to use.
-- Fully typed (TypeScript, Go, Python)
-- Local dev sandbox
-- Interactive playground
-
-7/ We're live today.
-Get your API key and stop worrying about financial correctness.
-
-👉 https://settler.dev
+7/ We'd value feedback from engineers running high-integrity data pipelines: where does deterministic replay help most in your stack?

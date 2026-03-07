@@ -1,37 +1,40 @@
-# We open sourced our financial reconciliation engine
+# We open sourced Settler: deterministic reconciliation with proof + replay
 
 Hi r/programming,
 
-We've spent the last year building **Settler**, an API infrastructure for financial reconciliation and evidence.
+We open sourced Settler, a workflow system focused on one thing: deterministic reconciliation runs that can be replayed and verified later.
 
-**Repo:** [Link to Repo]
-**Docs:** https://settler.dev/docs
+## Why this exists
 
-### Why?
-In previous roles at fintech companies, we saw the same pattern:
-1. Build a product.
-2. Realize the numbers don't match the bank.
-3. Panic.
-4. Build a hasty "Recon Service" that scrapes CSVs and runs fragile SQL queries.
-5. Spend 20% of engineering time maintaining it.
+In many systems, reconciliation logic evolves through cron jobs and one-off SQL. When output changes unexpectedly, root-cause analysis is expensive because run context is incomplete.
 
-We decided to extract this problem into a standalone, robust infrastructure layer.
+Settler's core model is:
 
-### Architecture
-Settler is built on **Event Sourcing**. Every state change (Transaction Created, Match Attempted, Conflict Resolved) is an immutable event. This allows us to:
-- Replay history to fix bugs without data loss.
-- Provide a perfect audit trail for compliance (SOC2/ISO).
-- Run deterministic "what-if" scenarios.
+1. deterministic execution
+2. policy checks in the run path
+3. proof artifact generation
+4. replay verification
 
-### Features
-- **Reconciliation Engine**: Matches disparate data sources based on configurable heuristic rules.
-- **Receipt Parsing**: Uses a specialized OCR model tuned for financial documents (receipts, invoices).
-- **Convert**: A deterministic math library for currency and unit conversion, avoiding floating-point errors.
+## What you can run today
 
-### Tech Stack
-- Node.js / TypeScript
-- PostgreSQL (Ledger)
-- Redis (Queue)
-- Edge Functions (Latency-sensitive ops)
+```bash
+pnpm install
+pnpm demo
+pnpm settler:replay examples/demo-output/evidence.json
+```
 
-We're looking for feedback on the SDK design and the reconciliation rules engine. Let us know what you think!
+The demo generates:
+
+- `examples/demo-output/run.json`
+- `examples/demo-output/results.json`
+- `examples/demo-output/evidence.json`
+- `examples/demo-output/report.html`
+
+## Useful entry points
+
+- `ARCHITECTURE.md`
+- `docs/launch/QUICK_START.md`
+- `docs/launch/EXAMPLE_WORKFLOWS.md`
+- `CONTRIBUTING.md`
+
+If you build data/recon pipelines, we'd appreciate feedback on the determinism + replay model and where it breaks down.
