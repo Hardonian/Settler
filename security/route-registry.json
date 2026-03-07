@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-03-07T18:28:31.177Z",
-  "totalRoutes": 228,
+  "generatedAt": "2026-03-07T19:09:05.718Z",
+  "totalRoutes": 234,
   "routes": [
     {
       "route": "/api/admin/audit",
@@ -1141,6 +1141,36 @@
       "route": "/openapi.json",
       "kind": "next-app-router",
       "file": "packages/web/src/app/openapi.json/route.ts"
+    },
+    {
+      "route": "packages/web/.next/server/app/api/internal/health/deep",
+      "kind": "internal-service-endpoint",
+      "file": "packages/web/.next/server/app/api/internal/health/deep/route.js"
+    },
+    {
+      "route": "packages/web/.next/server/app/api/internal/jobs/drain",
+      "kind": "internal-service-endpoint",
+      "file": "packages/web/.next/server/app/api/internal/jobs/drain/route.js"
+    },
+    {
+      "route": "packages/web/.next/standalone/packages/web/.next/server/app/api/internal/health/deep",
+      "kind": "internal-service-endpoint",
+      "file": "packages/web/.next/standalone/packages/web/.next/server/app/api/internal/health/deep/route.js"
+    },
+    {
+      "route": "packages/web/.next/standalone/packages/web/.next/server/app/api/internal/jobs/drain",
+      "kind": "internal-service-endpoint",
+      "file": "packages/web/.next/standalone/packages/web/.next/server/app/api/internal/jobs/drain/route.js"
+    },
+    {
+      "route": "packages/web/.next/types/app/api/internal/health/deep",
+      "kind": "internal-service-endpoint",
+      "file": "packages/web/.next/types/app/api/internal/health/deep/route.ts"
+    },
+    {
+      "route": "packages/web/.next/types/app/api/internal/jobs/drain",
+      "kind": "internal-service-endpoint",
+      "file": "packages/web/.next/types/app/api/internal/jobs/drain/route.ts"
     }
   ]
 }

@@ -28,6 +28,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build web app for runtime header probing
+        run: pnpm --filter @settler/web build
+
       - name: Generate route registry
         run: pnpm run security:routes
 
@@ -62,8 +65,23 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run dependency audit gate (blocking high/critical)
+      - name: Build web app for runtime header probing
+        run: pnpm --filter @settler/web build
+
+      - name: Run dependency audit gate (strict mode)
+        env:
+          SECURITY_AUDIT_MODE: strict
         run: pnpm run audit:deps
+
+      - name: Assert CI audit policy is not off
+        run: |
+          test "${SECURITY_AUDIT_MODE:-strict}" != "off"
+
+      - name: Generate security evidence + drift detection
+        env:
+          SECURITY_AUDIT_MODE: strict
+          SECURITY_HEADER_PROBE_STRICT: "1"
+        run: pnpm run security:evidence
 
   secret-scanning:
     name: Secret Scanning
