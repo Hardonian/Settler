@@ -74,6 +74,29 @@ settler console health
 
 ## All Commands
 
+### AI Copilot / Connectors / Chaos
+
+```bash
+# AI advisory APIs (audited + validated)
+settler ai suggest-workflow --prompt "Design payout reconciliation workflow"
+settler ai analyze-execution --prompt "Run had 2 retries on connector_x"
+settler ai suggest-policy --prompt "Suggest safer retry policy"
+settler ai detect-anomaly --prompt "Latency spike + event bus lag"
+settler ai connector-guidance --connector stripe_sync --prompt "How should I map idempotency keys?"
+settler ai audit
+
+# Connector ecosystem
+settler connector install --name stripe_sync --type financial --operations read_transactions,refunds
+settler connector list
+settler connector test --name stripe_sync --operation read_transactions
+settler connector test --name stripe_sync --simulate-failure
+settler connector create --name my_internal_connector
+
+# Chaos determinism harness
+settler chaos run --executions 10000 --concurrency 1000 --seed 42
+settler chaos reports
+```
+
 ### Runtime and support commands
 
 ```bash
@@ -266,6 +289,7 @@ When adding new CLI commands that read local files or write package metadata, us
 - `requireUnsafeAcknowledgement(flag)` — mandatory explicit acknowledgement for unsafe write paths.
 
 Required usage points:
+
 - Adapter/rule registry commands (`search/install/verify`) must use manifest validation + size limits.
 - Any run/capsule or user-provided file path must resolve via `resolveWithinCwd`.
 - Any command that mutates local package metadata/install state must require `--allow-unsafe`.
