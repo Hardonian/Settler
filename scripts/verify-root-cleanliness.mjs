@@ -1,165 +1,125 @@
 #!/usr/bin/env node
-import { readdirSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
+import path from "node:path";
 
-const rootEntries = readdirSync(".", { withFileTypes: true })
-  .map((entry) => entry.name)
-  .filter((name) => name !== ".git" && name !== "node_modules")
-  .sort();
+const repoRoot = process.cwd();
+const policyPath = path.join(repoRoot, "config", "root-policy.json");
 
-const allowed = new Set([
-  ".classifyignore",
-  ".cursorrules",
-  ".editorconfig",
-  ".env.connection",
-  ".env.example",
-  ".env.example.billing",
-  ".env.example.integrations",
-  ".env.template",
-  ".eslintignore",
-  ".eslintrc.js",
-  ".gitattributes",
-  ".github",
-  ".gitignore",
-  ".gitleaks.toml",
-  ".husky",
-  ".lintstagedrc.js",
-  ".node-version",
-  ".npm-auditignore",
-  ".npmrc",
-  ".nvmrc",
-  ".prettierignore",
-  ".prettierrc",
-  ".release-checklist.md",
-  ".turbo",
-  ".vercelignore",
-  "AGENTS.md",
-  "BUILDER_IO_SETUP.md",
-  "CHANGELOG.md",
-  "CODEOWNERS",
-  "CODE_OF_CONDUCT.md",
-  "CONTRIBUTING.md",
-  "Cargo.lock",
-  "Cargo.toml",
-  "DATA_PORTABILITY.md",
-  "DEPENDENCY_FIX_PLAN.md",
-  "FRONTEND_DESIGN_REVIEW.md",
-  "FRONTEND_IMPROVEMENTS.md",
-  "GOVERNANCE.md",
-  "GO_LIVE.md",
-  "GO_LIVE_COMPLETE.md",
-  "HARDENING_SUMMARY.md",
-  "HISTORICAL-PLANNING-ARCHIVE",
-  "INVESTOR-RELATIONS-PRIVATE",
-  "LAUNCHKIT.md",
-  "LAUNCH_CHECKLIST.md",
-  "LAUNCH_READY.md",
-  "LEGAL",
-  "LICENSE",
-  "MERGE_SUMMARY.md",
-  "MODEL_SPEC.md",
-  "OPS_IMPLEMENTATION_SUMMARY.md",
-  "PRIVACY.md",
-  "README.md",
-  "README_LAUNCH.md",
-  "REALITY_MAP.md",
-  "REALITY_MODE_SUMMARY.md",
-  "REALITY_SCORECARD.md",
-  "RELEASE.md",
-  "RELEASE_NOTES.md",
-  "RELEASE_PREP_SUMMARY.md",
-  "REPO_POLICY.md",
-  "SAFE_BREAKING_CHANGES_PLAN.md",
-  "SECURITY.md",
-  "SECURITY_INVARIANTS.md",
-  "SKILLS.md",
-  "SUPABASE_AI_PROMPT.sql",
-  "SUPABASE_AI_REMEDIATION_PROMPT.sql",
-  "SUPABASE_BACKEND_VALIDATION_SUMMARY.md",
-  "SUPPORT.md",
-  "Settler.sln",
-  "UI_CONSISTENCY_REPORT.md",
-  "WINDOWS_DEVELOPMENT.md",
-  "WINDOWS_SYMLINK_FIX.md",
-  "_import",
-  "agents",
-  "archive",
-  "benchmarks",
-  "config",
-  "contracts",
-  "crates",
-  "demo",
-  "design",
-  "design-system",
-  "docs",
-  "domain-packs",
-  "emails",
-  "enterprise",
-  "eslint.config.js",
-  "examples",
-  "execute_patch.py",
-  "execute_sql.py",
-  "fixtures",
-  "grafana-dashboards",
-  "kits",
-  "launch",
-  "legal",
-  "marketing",
-  "marketplace",
-  "next.config.js",
-  "node-compile-cache",
-  "opencode.json",
-  "ops",
-  "package.json",
-  "packages",
-  "pdk",
-  "playwright.config.ts",
-  "playwright.prod.config.ts",
-  "pnpm-lock.yaml",
-  "pnpm-workspace.yaml",
-  "pr-overlay",
-  "prisma",
-  "prisma.config.ts",
-  "prompts",
-  "qa",
-  "qa-artifacts",
-  "recon_mismatch",
-  "recon_output",
-  "run_validation.py",
-  "scaffold-repro",
-  "scripts",
-  "settler_stax_dataset_200_multiturn.csv",
-  "stitch_export",
-  "strategic",
-  "supabase",
-  "support",
-  "templates",
-  "tests",
-  "tmp",
-  "tools",
-  "tsconfig.api-adapter.json",
-  "tsconfig.json",
-  "tsconfig.temp-fix.json",
-  "turbo.json",
-  "ui",
-  "vercel.json",
-  "verify_patch.py",
-]);
-
-const blockedExtensions = [".zip", ".tar", ".tgz", ".bak", ".tmp", ".old"];
-const blocked = rootEntries.filter((name) => blockedExtensions.some((ext) => name.endsWith(ext)));
-const unexpected = rootEntries.filter((name) => !allowed.has(name));
-
-if (blocked.length || unexpected.length) {
-  console.error("❌ Root cleanliness check failed.");
-  if (blocked.length) {
-    console.error("Blocked artifact extensions found at repo root:");
-    for (const name of blocked) console.error(` - ${name}`);
-  }
-  if (unexpected.length) {
-    console.error("Unexpected root entries (update allowlist only when intentional):");
-    for (const name of unexpected) console.error(` - ${name}`);
-  }
-  process.exit(1);
+function parseArgs(argv) {
+  return {
+    json: argv.includes("--json"),
+    listAllowed: argv.includes("--list-allowed"),
+  };
 }
 
-console.log("✅ Root cleanliness check passed.");
+function loadPolicy() {
+  const raw = readFileSync(policyPath, "utf8");
+  const parsed = JSON.parse(raw);
+
+  if (!Array.isArray(parsed.allowedEntries)) {
+    throw new Error("config/root-policy.json must define an allowedEntries array.");
+  }
+
+  return {
+    policyDoc: parsed.policyDoc ?? "docs/repo/ROOT_POLICY.md",
+    allowed: new Set(parsed.allowedEntries),
+    blockedExtensions: Array.isArray(parsed.blockedExtensions) ? parsed.blockedExtensions : [],
+    clutterMatchers: (Array.isArray(parsed.localClutterPatterns)
+      ? parsed.localClutterPatterns
+      : []
+    ).map((pattern) => new RegExp(pattern)),
+  };
+}
+
+function rootEntries() {
+  return readdirSync(repoRoot, { withFileTypes: true })
+    .map((entry) => entry.name)
+    .filter((name) => name !== ".git" && name !== "node_modules")
+    .sort((a, b) => a.localeCompare(b));
+}
+
+function formatList(title, items) {
+  if (items.length === 0) return "";
+  const lines = items.map((item) => `  - ${item}`).join("\n");
+  return `\n${title}\n${lines}`;
+}
+
+function main() {
+  const args = parseArgs(process.argv.slice(2));
+  const policy = loadPolicy();
+  const entries = rootEntries();
+
+  const blocked = entries.filter((name) =>
+    policy.blockedExtensions.some((ext) => name.toLowerCase().endsWith(ext.toLowerCase()))
+  );
+
+  const unknown = entries.filter((name) => !policy.allowed.has(name));
+  const clutter = unknown.filter((name) =>
+    policy.clutterMatchers.some((matcher) => matcher.test(name))
+  );
+  const unexpected = unknown.filter((name) => !clutter.includes(name));
+
+  if (args.listAllowed) {
+    for (const item of [...policy.allowed].sort((a, b) => a.localeCompare(b))) {
+      console.log(item);
+    }
+    return;
+  }
+
+  const payload = {
+    policyPath: path.relative(repoRoot, policyPath),
+    policyDoc: policy.policyDoc,
+    checkedEntries: entries.length,
+    blocked,
+    clutter,
+    unexpected,
+  };
+
+  if (args.json) {
+    console.log(JSON.stringify(payload, null, 2));
+  }
+
+  if (blocked.length || clutter.length || unexpected.length) {
+    console.error("\n❌ Root cleanliness policy check failed.");
+    console.error(`Policy source: ${payload.policyPath}`);
+    console.error(`Policy docs: ${payload.policyDoc}`);
+
+    if (blocked.length) {
+      console.error(
+        formatList("Blocked artifact extensions at repo root (must be removed):", blocked)
+      );
+    }
+
+    if (clutter.length) {
+      console.error(
+        formatList("Detected local/generated clutter (clean before committing):", clutter)
+      );
+    }
+
+    if (unexpected.length) {
+      console.error(
+        formatList(
+          "Unexpected root entries (either relocate or allowlist intentionally):",
+          unexpected
+        )
+      );
+    }
+
+    console.error("\nRemediation:");
+    console.error("  1) Move new project files into existing root directories where possible.");
+    console.error(
+      "  2) Update config/root-policy.json only for intentional, durable root entries."
+    );
+    console.error("  3) Re-run: pnpm run verify:root");
+    process.exit(1);
+  }
+
+  console.log(`✅ Root cleanliness check passed (${entries.length} entries checked).`);
+}
+
+try {
+  main();
+} catch (error) {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exit(1);
+}
