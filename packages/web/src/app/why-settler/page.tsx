@@ -1,7 +1,14 @@
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
-import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
-import { Check, X } from 'lucide-react';
+import { Metadata } from "next";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
+import { Check, X } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Why Settler - Settler",
+  description:
+    "Stop building reconciliation infrastructure from scratch. Settler gives you deterministic matching, verifiable evidence, and audit-grade controls — without the engineering overhead.",
+};
 
 export default function WhySettlerPage() {
   return (

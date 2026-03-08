@@ -1,0 +1,50 @@
+---
+title: "Multi-Source Joins: Reconcile Across Three or More Systems"
+date: "2025-09-01"
+description: "Reconciliation jobs can now join across three or more source systems in a single run. Join keys, field mappings, and tolerance windows are configurable per-source-pair."
+author: "Settler Engineering"
+---
+
+## What Changed
+
+Settler now supports **multi-source reconciliation jobs** — a single job that joins records across three or more systems simultaneously.
+
+Previously, each job compared exactly two sources. Multi-source joins required chaining multiple jobs and manually correlating their outputs.
+
+### Example: Stripe + QuickBooks + Bank Payouts
+
+```typescript
+const job = await client.jobs.create({
+  name: "Payment Triple Reconciliation",
+  sources: [
+    { id: "stripe", adapter: "stripe", config: { apiKey: "..." } },
+    { id: "quickbooks", adapter: "quickbooks", config: { ... } },
+    { id: "bank", adapter: "csv", config: { path: "./bank-payouts.csv" } },
+  ],
+  joins: [
+    { left: "stripe", right: "quickbooks", on: "order_id" },
+    { left: "quickbooks", right: "bank", on: "reference_number" },
+  ],
+  rules: {
+    matching: [
+      { field: "amount", tolerance: 0.01 },
+      { field: "settled_date", tolerance: "48h" },
+    ],
+  },
+});
+```
+
+### What You Get
+
+- **Unified mismatch report** — mismatches across all source pairs in a single evidence bundle
+- **Per-pair variance detail** — field-level differences broken down by which source pair produced the variance
+- **Single hash chain** — the entire multi-source run produces one tamper-evident evidence hash
+- **Partial match classification** — records present in two of three sources are classified separately from full mismatches
+
+### Performance
+
+Multi-source joins have higher memory requirements proportional to the number of sources. For jobs with more than 500k records across all sources, we recommend using the batch API to split the run.
+
+## Adapter Support
+
+Multi-source joins are supported by all current adapters: Stripe, QuickBooks, Xero, PostgreSQL, MySQL, CSV, and JSON. Custom adapters built with the SDK are also compatible.

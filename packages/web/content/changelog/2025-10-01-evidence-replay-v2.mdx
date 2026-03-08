@@ -1,0 +1,41 @@
+---
+title: "Evidence Replay v2: Hash Verification and Provenance Chain"
+date: "2025-10-01"
+description: "Replay any historical run and verify the output hash matches the original. Now with run-to-run provenance chain linking for full audit trail continuity."
+author: "Settler Engineering"
+---
+
+## What Changed
+
+**Evidence Replay v2** ships with two major improvements: hash verification and run-to-run provenance chaining.
+
+### Hash-Verified Replay
+
+Replaying a reconciliation run now verifies that the output hash matches the original evidence bundle. If the inputs and rules are identical, the hash must be byte-identical. Any drift is surfaced immediately as a verification failure — not silently accepted.
+
+```bash
+pnpm settler:replay examples/demo-output/evidence.json
+
+# Output:
+# ✓ Replay complete
+# ✓ Hash match confirmed: sha256:a3f2e1c8...
+# ✓ Prior run chain: sha256:99d1f4b7...
+```
+
+### Provenance Chain
+
+Sequential runs are now linked via `prior_run_hash` in the evidence schema. Gaps or insertions in the chain are detectable without re-running any jobs. This means you can verify a complete reconciliation history without access to live systems.
+
+### Evidence Schema Update
+
+The evidence bundle now includes:
+
+- `prior_run_hash` — SHA-256 of the preceding run in the chain (`null` for the first run)
+- `rule_fingerprint` — Hash of the exact rule configuration used for this run
+- `replay_verified_at` — Timestamp of the most recent replay verification
+
+Existing evidence bundles are backward-compatible. `prior_run_hash` is `null` for runs created before this release.
+
+## Migration
+
+No action required. Existing evidence bundles remain valid. New runs will automatically include `prior_run_hash` if a prior run exists for the same job.
