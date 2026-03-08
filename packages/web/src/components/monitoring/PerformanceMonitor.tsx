@@ -20,8 +20,7 @@ export function PerformanceMonitor() {
           const observer = new PerformanceObserver((list) => {
             for (const entry of list.getEntries()) {
               if (entry.entryType === "navigation" || entry.entryType === "paint") {
-                // eslint-disable-next-line no-console
-                console.log("[Performance]", entry.name, entry.duration);
+                console.warn("[Performance]", entry.name, entry.duration);
               }
             }
           });
@@ -29,7 +28,7 @@ export function PerformanceMonitor() {
           return () => {
             observer.disconnect();
           };
-        } catch (_error: unknown) {
+        } catch {
           // PerformanceObserver not supported or error
           return undefined;
         }

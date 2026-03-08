@@ -1,25 +1,25 @@
 /**
  * Positioning Feedback Form Component
- * 
+ *
  * Community Loop Feedback: Users submit positioning clarity input
  * which triggers Supabase Function to calculate impact score
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { submitPositioningFeedback } from '@/app/actions/positioning';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Target, Sparkles, CheckCircle2 } from 'lucide-react';
+import { useState } from "react";
+import { submitPositioningFeedback } from "@/app/actions/positioning";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Target, Sparkles, CheckCircle2 } from "lucide-react";
 
 export function PositioningFeedbackForm() {
   const [formData, setFormData] = useState({
-    fiveWordVp: '',
-    targetPersonaPain: '',
+    fiveWordVp: "",
+    targetPersonaPain: "",
     clarityRating: 5,
-    feedbackText: '',
+    feedbackText: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<{
@@ -49,21 +49,21 @@ export function PositioningFeedbackForm() {
         });
         // Reset form
         setFormData({
-          fiveWordVp: '',
-          targetPersonaPain: '',
+          fiveWordVp: "",
+          targetPersonaPain: "",
           clarityRating: 5,
-          feedbackText: '',
+          feedbackText: "",
         });
       } else {
         setResult({
           success: false,
-          message: response.error || 'Failed to submit feedback',
+          message: response.error || "Failed to submit feedback",
         });
       }
-    } catch (error) {
+    } catch {
       setResult({
         success: false,
-        message: 'An unexpected error occurred',
+        message: "An unexpected error occurred",
       });
     } finally {
       setIsSubmitting(false);
@@ -80,16 +80,18 @@ export function PositioningFeedbackForm() {
       </div>
 
       <p className="text-slate-600 dark:text-slate-400 mb-6">
-        Your feedback helps us communicate our value proposition more clearly.
-        Earn impact points for detailed, thoughtful responses!
+        Your feedback helps us communicate our value proposition more clearly. Earn impact points
+        for detailed, thoughtful responses!
       </p>
 
       {result && (
-        <div className={`mb-6 p-4 rounded-lg ${
-          result.success
-            ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
-            : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
-        }`}>
+        <div
+          className={`mb-6 p-4 rounded-lg ${
+            result.success
+              ? "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
+              : "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
+          }`}
+        >
           <div className="flex items-start gap-3">
             {result.success ? (
               <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" />
@@ -97,11 +99,13 @@ export function PositioningFeedbackForm() {
               <Sparkles className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5" />
             )}
             <div>
-              <p className={`font-semibold ${
-                result.success
-                  ? 'text-green-800 dark:text-green-300'
-                  : 'text-red-800 dark:text-red-300'
-              }`}>
+              <p
+                className={`font-semibold ${
+                  result.success
+                    ? "text-green-800 dark:text-green-300"
+                    : "text-red-800 dark:text-red-300"
+                }`}
+              >
                 {result.message}
               </p>
               {result.success && result.impactScore && (
@@ -139,9 +143,7 @@ export function PositioningFeedbackForm() {
         <div>
           <Label htmlFor="targetPersonaPain" className="mb-2 block">
             Target Persona Pain Point
-            <span className="text-slate-500 dark:text-slate-400 text-sm ml-2">
-              (Optional)
-            </span>
+            <span className="text-slate-500 dark:text-slate-400 text-sm ml-2">(Optional)</span>
           </Label>
           <textarea
             id="targetPersonaPain"
@@ -175,9 +177,7 @@ export function PositioningFeedbackForm() {
         <div>
           <Label htmlFor="feedbackText" className="mb-2 block">
             Additional Feedback
-            <span className="text-slate-500 dark:text-slate-400 text-sm ml-2">
-              (Optional)
-            </span>
+            <span className="text-slate-500 dark:text-slate-400 text-sm ml-2">(Optional)</span>
           </Label>
           <textarea
             id="feedbackText"
@@ -191,10 +191,13 @@ export function PositioningFeedbackForm() {
 
         <Button
           type="submit"
-          disabled={isSubmitting || (!formData.fiveWordVp && !formData.targetPersonaPain && !formData.feedbackText)}
+          disabled={
+            isSubmitting ||
+            (!formData.fiveWordVp && !formData.targetPersonaPain && !formData.feedbackText)
+          }
           className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-electric-cyan dark:to-electric-blue dark:hover:from-electric-cyan/90 dark:hover:to-electric-blue/90"
         >
-          {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
+          {isSubmitting ? "Submitting..." : "Submit Feedback"}
         </Button>
       </form>
     </div>

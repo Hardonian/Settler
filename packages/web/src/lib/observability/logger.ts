@@ -76,7 +76,7 @@ class Logger {
         break;
       case "debug":
         if (this.isDevelopment) {
-          console.debug(logString);
+          console.warn(logString);
         }
         break;
       case "info":

@@ -117,7 +117,7 @@ export const PATCH = withSecurity(
                 });
                 tenantId = billingAccount?.tenantId || null;
               }
-            } catch (error) {
+            } catch {
               return NextResponse.json(
                 {
                   error: "Unauthorized",
@@ -127,7 +127,7 @@ export const PATCH = withSecurity(
               );
             }
           }
-        } catch (error) {
+        } catch {
           return NextResponse.json(
             {
               error: "Unauthorized",

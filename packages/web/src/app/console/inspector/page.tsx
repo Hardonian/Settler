@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { EmptyState } from '@/components/EmptyState';
-import { Skeleton } from '@/components/Skeleton';
-import { safeFetch, sanitizeForLogging } from '@/lib/safe-fetch';
-import { Play, Download, Clock, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/EmptyState";
+import { Skeleton } from "@/components/Skeleton";
+import { safeFetch, sanitizeForLogging } from "@/lib/safe-fetch";
+import { Play, Download, Clock, AlertCircle, CheckCircle2 } from "lucide-react";
 
 interface WebhookAttempt {
   id: string;
@@ -23,7 +23,7 @@ interface WebhookAttempt {
 interface ReconciliationRunAttempt {
   id: string;
   runId: string;
-  status: 'success' | 'failed';
+  status: "success" | "failed";
   latency: number;
   timestamp: Date;
   error?: string;
@@ -33,7 +33,7 @@ export default function InspectorPage() {
   const [webhookAttempts, setWebhookAttempts] = useState<WebhookAttempt[]>([]);
   const [runAttempts, setRunAttempts] = useState<ReconciliationRunAttempt[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'webhooks' | 'runs'>('webhooks');
+  const [activeTab, setActiveTab] = useState<"webhooks" | "runs">("webhooks");
 
   useEffect(() => {
     loadData();
@@ -42,8 +42,8 @@ export default function InspectorPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      if (activeTab === 'webhooks') {
-        const result = await safeFetch<{ attempts: WebhookAttempt[] }>('/api/webhooks/attempts');
+      if (activeTab === "webhooks") {
+        const result = await safeFetch<{ attempts: WebhookAttempt[] }>("/api/webhooks/attempts");
         if (result.success) {
           setWebhookAttempts(result.data?.attempts || []);
         } else {
@@ -51,7 +51,9 @@ export default function InspectorPage() {
           setWebhookAttempts([]);
         }
       } else {
-        const result = await safeFetch<{ attempts: ReconciliationRunAttempt[] }>('/api/reconciliation-runs/attempts');
+        const result = await safeFetch<{ attempts: ReconciliationRunAttempt[] }>(
+          "/api/reconciliation-runs/attempts"
+        );
         if (result.success) {
           setRunAttempts(result.data?.attempts || []);
         } else {
@@ -59,9 +61,9 @@ export default function InspectorPage() {
           setRunAttempts([]);
         }
       }
-    } catch (error) {
+    } catch {
       // No mock data - show empty state on error
-      if (activeTab === 'webhooks') {
+      if (activeTab === "webhooks") {
         setWebhookAttempts([]);
       } else {
         setRunAttempts([]);
@@ -72,23 +74,30 @@ export default function InspectorPage() {
   };
 
   const handleReplay = async (id: string) => {
-    const endpoint = activeTab === 'webhooks' ? `/api/webhooks/${id}/replay` : `/api/reconciliation-runs/${id}/replay`;
-    const result = await safeFetch(endpoint, { method: 'POST' });
-    
+    const endpoint =
+      activeTab === "webhooks"
+        ? `/api/webhooks/${id}/replay`
+        : `/api/reconciliation-runs/${id}/replay`;
+    const result = await safeFetch(endpoint, { method: "POST" });
+
     if (result.success) {
-      alert('Replay initiated');
+      alert("Replay initiated");
       loadData();
     } else {
-      alert(result.error?.message || 'Failed to replay');
+      alert(result.error?.message || "Failed to replay");
     }
   };
 
   const handleExport = () => {
-    const data = activeTab === 'webhooks' ? webhookAttempts : runAttempts;
-    const dataStr = JSON.stringify(data.map(item => sanitizeForLogging(JSON.stringify(item))), null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const data = activeTab === "webhooks" ? webhookAttempts : runAttempts;
+    const dataStr = JSON.stringify(
+      data.map((item) => sanitizeForLogging(JSON.stringify(item))),
+      null,
+      2
+    );
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
     const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
     link.download = `settler-inspector-${activeTab}-${Date.now()}.json`;
     link.click();
@@ -101,8 +110,10 @@ export default function InspectorPage() {
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Inspector</h1>
           <p className="text-slate-600 dark:text-slate-400 mt-1">
-            Inspect webhook deliveries and reconciliation runs with detailed logs. 
-            <span className="text-xs text-slate-500 ml-2">All sensitive data is automatically redacted.</span>
+            Inspect webhook deliveries and reconciliation runs with detailed logs.
+            <span className="text-xs text-slate-500 ml-2">
+              All sensitive data is automatically redacted.
+            </span>
           </p>
         </div>
         <Button variant="outline" onClick={handleExport}>
@@ -111,7 +122,7 @@ export default function InspectorPage() {
         </Button>
       </div>
 
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'webhooks' | 'runs')}>
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "webhooks" | "runs")}>
         <TabsList>
           <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
           <TabsTrigger value="runs">Reconciliation Runs</TabsTrigger>
@@ -147,7 +158,7 @@ export default function InspectorPage() {
                           <code className="text-sm bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded truncate">
                             {attempt.url}
                           </code>
-                          <Badge variant={attempt.status >= 400 ? 'destructive' : 'default'}>
+                          <Badge variant={attempt.status >= 400 ? "destructive" : "default"}>
                             {attempt.status}
                           </Badge>
                           <div className="flex items-center gap-1 text-sm text-slate-600 dark:text-slate-400">
@@ -170,7 +181,11 @@ export default function InspectorPage() {
                             Payload (redacted)
                           </div>
                           <pre className="text-xs bg-slate-900 text-green-400 p-2 rounded overflow-x-auto">
-                            {JSON.stringify(sanitizeForLogging(JSON.stringify(attempt.payload || {})), null, 2)}
+                            {JSON.stringify(
+                              sanitizeForLogging(JSON.stringify(attempt.payload || {})),
+                              null,
+                              2
+                            )}
                           </pre>
                         </div>
                         <div>
@@ -220,8 +235,8 @@ export default function InspectorPage() {
                           <code className="text-sm bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded truncate">
                             {attempt.runId}
                           </code>
-                          <Badge variant={attempt.status === 'failed' ? 'destructive' : 'default'}>
-                            {attempt.status === 'success' ? (
+                          <Badge variant={attempt.status === "failed" ? "destructive" : "default"}>
+                            {attempt.status === "success" ? (
                               <CheckCircle2 className="w-3 h-3 mr-1" />
                             ) : (
                               <AlertCircle className="w-3 h-3 mr-1" />
