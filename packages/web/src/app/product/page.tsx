@@ -1,31 +1,21 @@
-import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { MdxPlainRenderer } from '@/components/content/MdxPlainRenderer';
-import { PageLayout } from '@/components/content/PageLayout';
-import { getContentPage } from '@/lib/content/pages';
-
-export const dynamic = 'force-dynamic';
-
-export function generateMetadata(): Metadata {
-  const page = getContentPage('product');
-  if (!page) {
-    return { title: 'Product' };
-  }
-  return {
-    title: page.title,
-    description: page.description,
-  };
-}
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import ArchitectureOverview from "@/components/stitch-import/ArchitectureOverview";
 
 export default function ProductPage() {
-  const page = getContentPage('product');
-  if (!page) {
-    notFound();
-  }
-
   return (
-    <PageLayout title={page.title} description={page.description}>
-      <MdxPlainRenderer source={page.content} />
-    </PageLayout>
+    <>
+      <Navigation />
+      <main id="main-content" className="min-h-screen bg-slate-50 pt-24">
+        <section className="mx-auto max-w-6xl px-4 pb-8">
+          <h1 className="text-4xl font-bold text-slate-900">Product Architecture</h1>
+          <p className="mt-3 text-slate-600">
+            The stitched control-plane architecture is now the primary product surface.
+          </p>
+        </section>
+        <ArchitectureOverview />
+      </main>
+      <Footer />
+    </>
   );
 }

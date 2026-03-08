@@ -1,1 +1,5 @@
-export { default } from "@/app/app/traces/page";
+import SecurityOverview from "@/components/stitch-import/SecurityOverview";
+
+export default function AuditPage() {
+  return <SecurityOverview />;
+}
