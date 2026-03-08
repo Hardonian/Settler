@@ -198,7 +198,6 @@ export default function EnterprisePage() {
 
       {/* Narrative Sections - Control + Governance */}
       {narrativeSections.map((section, index) => {
-        const Icon = section.icon;
         const isEven = index % 2 === 0;
         return (
           <section

@@ -10,8 +10,6 @@ import {
   Webhook,
   Terminal,
   AlertTriangle,
-  Database,
-  Code,
   PauseCircle,
   Play,
   Bug,
@@ -21,8 +19,7 @@ import {
   LogOut,
   GitCommit,
   Filter,
-  CheckCircle2,
-  ChevronDown
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,7 +41,7 @@ const pipelines = [
     errorTrend: [10, 15, 10, 10, 5, 12, 8],
     latency: "245ms",
     throughput: "45k/s",
-    version: "v1.4.2"
+    version: "v1.4.2",
   },
   {
     id: "ledger-sync-daily",
@@ -61,7 +58,7 @@ const pipelines = [
     name: "fraud_detection_stream",
     status: "Paused",
     lastRun: "4h ago",
-    version: "v1.2.0"
+    version: "v1.2.0",
   },
   {
     id: "inventory-aggregator",
@@ -69,11 +66,11 @@ const pipelines = [
     status: "Degraded",
     lastRun: "5m ago",
     errorTrend: [15, 15, 10, 12, 5, 8],
-  }
+  },
 ];
 
 export function PipelinesPanel() {
-  const [selectedPipeline, setSelectedPipeline] = useState<typeof pipelines[0] | null>(null);
+  const [selectedPipeline, setSelectedPipeline] = useState<(typeof pipelines)[0] | null>(null);
   const [isReasonDialogOpen, setIsReasonDialogOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<string | null>(null);
 
@@ -83,7 +80,7 @@ export function PipelinesPanel() {
   };
 
   const confirmAction = (reason: string) => {
-    console.log(`Action ${pendingAction} executed with reason: ${reason}`);
+    console.warn(`Action ${pendingAction} executed with reason: ${reason}`);
   };
 
   return (
@@ -91,8 +88,12 @@ export function PipelinesPanel() {
       <header className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Pipelines</h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-1">Monitor and control your data processing pipelines.</p>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+              Pipelines
+            </h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-1">
+              Monitor and control your data processing pipelines.
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="icon" className="rounded-full">
@@ -110,8 +111,12 @@ export function PipelinesPanel() {
               <Globe className="w-6 h-6" />
             </div>
             <div className="flex flex-col items-start">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Active Workspace</span>
-              <span className="text-lg font-bold text-slate-900 dark:text-white mt-1">Production - US East</span>
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                Active Workspace
+              </span>
+              <span className="text-lg font-bold text-slate-900 dark:text-white mt-1">
+                Production - US East
+              </span>
             </div>
           </div>
           <ChevronDown className="w-5 h-5 text-slate-400 group-hover:text-primary-500" />
@@ -119,17 +124,23 @@ export function PipelinesPanel() {
 
         <div className="flex gap-10 px-4">
           <div className="flex flex-col gap-1">
-            <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">Active</span>
+            <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">
+              Active
+            </span>
             <span className="text-2xl font-bold text-slate-900 dark:text-white">12</span>
           </div>
           <div className="w-[1px] h-10 bg-slate-200 dark:bg-slate-800" />
           <div className="flex flex-col gap-1">
-            <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">Error Rate</span>
+            <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">
+              Error Rate
+            </span>
             <span className="text-2xl font-bold text-red-500">0.4%</span>
           </div>
           <div className="w-[1px] h-10 bg-slate-200 dark:bg-slate-800" />
           <div className="flex flex-col gap-1">
-            <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">Throughput</span>
+            <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">
+              Throughput
+            </span>
             <span className="text-2xl font-bold text-slate-900 dark:text-white">45k/s</span>
           </div>
         </div>
@@ -159,19 +170,33 @@ export function PipelinesPanel() {
             )}
             onClick={() => setSelectedPipeline(pipe)}
           >
-            {pipe.status === "Critical" && <div className="absolute inset-y-0 left-0 w-1 bg-red-600" />}
+            {pipe.status === "Critical" && (
+              <div className="absolute inset-y-0 left-0 w-1 bg-red-600" />
+            )}
 
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-4">
-                <div className={cn(
-                  "relative flex h-12 w-12 items-center justify-center rounded-xl",
-                  pipe.status === "Healthy" ? "bg-emerald-500/10 text-emerald-500" :
-                  pipe.status === "Critical" ? "bg-red-500/10 text-red-500" :
-                  pipe.status === "Paused" ? "bg-slate-500/10 text-slate-500" : "bg-yellow-500/10 text-yellow-500"
-                )}>
-                  {pipe.status === "Healthy" ? <RefreshCw className="w-6 h-6" /> :
-                   pipe.status === "Critical" ? <AlertTriangle className="w-6 h-6" /> :
-                   pipe.status === "Paused" ? <PauseCircle className="w-6 h-6" /> : <Bug className="w-6 h-6" />}
+                <div
+                  className={cn(
+                    "relative flex h-12 w-12 items-center justify-center rounded-xl",
+                    pipe.status === "Healthy"
+                      ? "bg-emerald-500/10 text-emerald-500"
+                      : pipe.status === "Critical"
+                        ? "bg-red-500/10 text-red-500"
+                        : pipe.status === "Paused"
+                          ? "bg-slate-500/10 text-slate-500"
+                          : "bg-yellow-500/10 text-yellow-500"
+                  )}
+                >
+                  {pipe.status === "Healthy" ? (
+                    <RefreshCw className="w-6 h-6" />
+                  ) : pipe.status === "Critical" ? (
+                    <AlertTriangle className="w-6 h-6" />
+                  ) : pipe.status === "Paused" ? (
+                    <PauseCircle className="w-6 h-6" />
+                  ) : (
+                    <Bug className="w-6 h-6" />
+                  )}
                   {pipe.status === "Healthy" && (
                     <span className="absolute -right-1 -top-1 flex h-3 w-3">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -180,12 +205,26 @@ export function PipelinesPanel() {
                   )}
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 dark:text-white text-lg leading-tight">{pipe.name}</h3>
+                  <h3 className="font-bold text-slate-900 dark:text-white text-lg leading-tight">
+                    {pipe.name}
+                  </h3>
                   <div className="flex items-center gap-2 mt-1">
-                    <Badge variant={pipe.status === "Healthy" ? "success" : pipe.status === "Critical" ? "destructive" : pipe.status === "Paused" ? "secondary" : "warning"}>
+                    <Badge
+                      variant={
+                        pipe.status === "Healthy"
+                          ? "success"
+                          : pipe.status === "Critical"
+                            ? "destructive"
+                            : pipe.status === "Paused"
+                              ? "secondary"
+                              : "warning"
+                      }
+                    >
                       {pipe.status}
                     </Badge>
-                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">• {pipe.lastRun}</span>
+                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                      • {pipe.lastRun}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -198,31 +237,45 @@ export function PipelinesPanel() {
               <>
                 <div className="grid grid-cols-2 gap-6 mb-4">
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Input</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                      Input
+                    </span>
                     <div className="flex items-center gap-2">
-                       <ArrowRightCircle className="w-4 h-4 text-primary-500" />
-                       <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 truncate">{pipe.input || "Default Source"}</span>
+                      <ArrowRightCircle className="w-4 h-4 text-primary-500" />
+                      <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 truncate">
+                        {pipe.input || "Default Source"}
+                      </span>
                     </div>
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Output</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                      Output
+                    </span>
                     <div className="flex items-center gap-2">
-                       <Webhook className="w-4 h-4 text-purple-500" />
-                       <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 truncate">{pipe.output || "Default Sync"}</span>
+                      <Webhook className="w-4 h-4 text-purple-500" />
+                      <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 truncate">
+                        {pipe.output || "Default Sync"}
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-end justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
                   <div className="flex flex-col gap-2 w-full mr-8">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Error Trend (24h)</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                      Error Trend (24h)
+                    </span>
                     <div className="h-8 w-full flex items-end gap-1">
                       {pipe.errorTrend?.map((val, i) => (
                         <div
                           key={i}
                           className={cn(
                             "flex-1 rounded-t-sm",
-                            pipe.status === "Healthy" ? "bg-emerald-500/30" : pipe.status === "Critical" ? "bg-red-500/30" : "bg-yellow-500/30"
+                            pipe.status === "Healthy"
+                              ? "bg-emerald-500/30"
+                              : pipe.status === "Critical"
+                                ? "bg-red-500/30"
+                                : "bg-yellow-500/30"
                           )}
                           style={{ height: `${val * 3}px` }}
                         />
@@ -230,14 +283,28 @@ export function PipelinesPanel() {
                     </div>
                   </div>
                   <div className="flex gap-2 shrink-0">
-                    <Button variant="secondary" size="sm" className="h-9 px-4 font-bold text-xs uppercase tracking-wider">History</Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="h-9 px-4 font-bold text-xs uppercase tracking-wider"
+                    >
+                      History
+                    </Button>
                     {pipe.status === "Critical" ? (
-                      <Button size="sm" className="h-9 px-4 font-bold text-xs uppercase tracking-wider bg-red-600 hover:bg-red-700 text-white" onClick={() => handleAction("fix_pipeline")}>
+                      <Button
+                        size="sm"
+                        className="h-9 px-4 font-bold text-xs uppercase tracking-wider bg-red-600 hover:bg-red-700 text-white"
+                        onClick={() => handleAction("fix_pipeline")}
+                      >
                         <Hammer className="w-3 h-3 mr-2" />
                         Fix Now
                       </Button>
                     ) : (
-                      <Button variant="outline" size="sm" className="h-9 px-4 font-bold text-xs uppercase tracking-wider border-primary-500/20 text-primary-600 hover:bg-primary-50">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-9 px-4 font-bold text-xs uppercase tracking-wider border-primary-500/20 text-primary-600 hover:bg-primary-50"
+                      >
                         <Terminal className="w-3 h-3 mr-2" />
                         Config
                       </Button>
@@ -249,11 +316,18 @@ export function PipelinesPanel() {
 
             {pipe.status === "Paused" && (
               <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
-                 <span className="text-sm text-slate-500 italic font-medium">Configuration frozen at {pipe.version}</span>
-                 <Button variant="ghost" size="sm" className="text-primary-600 font-bold gap-2" onClick={() => handleAction("resume_pipeline")}>
-                    <Play className="w-4 h-4" />
-                    Resume Pipeline
-                 </Button>
+                <span className="text-sm text-slate-500 italic font-medium">
+                  Configuration frozen at {pipe.version}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-primary-600 font-bold gap-2"
+                  onClick={() => handleAction("resume_pipeline")}
+                >
+                  <Play className="w-4 h-4" />
+                  Resume Pipeline
+                </Button>
               </div>
             )}
           </Card>
@@ -267,38 +341,55 @@ export function PipelinesPanel() {
               <SheetHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Detail View</span>
-                    <SheetTitle className="text-2xl font-bold mt-1">{selectedPipeline.name}</SheetTitle>
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                      Detail View
+                    </span>
+                    <SheetTitle className="text-2xl font-bold mt-1">
+                      {selectedPipeline.name}
+                    </SheetTitle>
                   </div>
                   <div className="flex items-center gap-4">
-                    <Badge variant={selectedPipeline.status === "Healthy" ? "success" : "destructive"}>
+                    <Badge
+                      variant={selectedPipeline.status === "Healthy" ? "success" : "destructive"}
+                    >
                       {selectedPipeline.status}
                     </Badge>
-                    <Switch checked={selectedPipeline.status === "Healthy"} onCheckedChange={() => handleAction("toggle_pipeline")} />
+                    <Switch
+                      checked={selectedPipeline.status === "Healthy"}
+                      onCheckedChange={() => handleAction("toggle_pipeline")}
+                    />
                   </div>
                 </div>
               </SheetHeader>
 
               <div className="grid grid-cols-2 gap-4">
                 <Card className="p-4 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase">Latency (P99)</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">
+                    Latency (P99)
+                  </span>
                   <div className="text-xl font-bold mt-1">{selectedPipeline.latency || "---"}</div>
                 </Card>
                 <Card className="p-4 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800">
                   <span className="text-[10px] font-bold text-slate-400 uppercase">Processed</span>
-                  <div className="text-xl font-bold mt-1 text-primary-600">{selectedPipeline.throughput || "---"}</div>
+                  <div className="text-xl font-bold mt-1 text-primary-600">
+                    {selectedPipeline.throughput || "---"}
+                  </div>
                 </Card>
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest">Execution Flow</h3>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest">
+                  Execution Flow
+                </h3>
                 <div className="relative space-y-8 pl-12 before:absolute before:left-6 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-800">
                   <div className="relative">
                     <div className="absolute -left-12 h-12 w-12 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500 bg-white dark:bg-slate-950 z-10 transition-transform hover:scale-110">
                       <ArrowRightCircle className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold">{selectedPipeline.input || "Default Source"}</h4>
+                      <h4 className="text-sm font-bold">
+                        {selectedPipeline.input || "Default Source"}
+                      </h4>
                       <p className="text-xs text-slate-500 font-medium">Type: API Connector</p>
                     </div>
                   </div>
@@ -308,7 +399,9 @@ export function PipelinesPanel() {
                     </div>
                     <div>
                       <h4 className="text-sm font-bold">Normalization Engine</h4>
-                      <p className="text-xs text-slate-500 font-medium">Rule: standard_currency_mapping</p>
+                      <p className="text-xs text-slate-500 font-medium">
+                        Rule: standard_currency_mapping
+                      </p>
                     </div>
                   </div>
                   <div className="relative">
@@ -316,7 +409,9 @@ export function PipelinesPanel() {
                       <LogOut className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold">{selectedPipeline.output || "Default Sink"}</h4>
+                      <h4 className="text-sm font-bold">
+                        {selectedPipeline.output || "Default Sink"}
+                      </h4>
                       <p className="text-xs text-slate-500 font-medium">Storage Class: Standard</p>
                     </div>
                   </div>
@@ -324,22 +419,30 @@ export function PipelinesPanel() {
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest">Infrastructure</h3>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest">
+                  Infrastructure
+                </h3>
                 <Card className="p-6 border-slate-200 dark:border-slate-800 space-y-4">
-                   <div className="flex flex-col gap-2">
-                      <Button className="w-full h-12 bg-primary-600 hover:bg-primary-700 text-white font-bold gap-2 shadow-lg shadow-primary-600/20" onClick={() => handleAction("generate_patch")}>
-                        <GitCommit className="w-5 h-5" />
-                        Generate Provisioning Patch
-                      </Button>
-                      <p className="text-[11px] text-center text-slate-400 italic font-medium px-4">
-                        Converts current UI configuration into a Terraform/Kubernetes manifest and opens a CI/CD pull request.
-                      </p>
-                   </div>
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      className="w-full h-12 bg-primary-600 hover:bg-primary-700 text-white font-bold gap-2 shadow-lg shadow-primary-600/20"
+                      onClick={() => handleAction("generate_patch")}
+                    >
+                      <GitCommit className="w-5 h-5" />
+                      Generate Provisioning Patch
+                    </Button>
+                    <p className="text-[11px] text-center text-slate-400 italic font-medium px-4">
+                      Converts current UI configuration into a Terraform/Kubernetes manifest and
+                      opens a CI/CD pull request.
+                    </p>
+                  </div>
                 </Card>
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest">Version History</h3>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest">
+                  Version History
+                </h3>
                 <div className="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden divide-y divide-slate-100 dark:divide-slate-800 font-medium">
                   <div className="flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
                     <div className="flex items-center gap-3">
@@ -372,7 +475,10 @@ export function PipelinesPanel() {
         isOpen={isReasonDialogOpen}
         onClose={() => setIsReasonDialogOpen(false)}
         onConfirm={confirmAction}
-        title={`Confirm ${pendingAction?.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}`}
+        title={`Confirm ${pendingAction
+          ?.split("_")
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(" ")}`}
       />
     </div>
   );

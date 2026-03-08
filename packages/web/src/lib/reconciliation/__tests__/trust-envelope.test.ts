@@ -1,5 +1,4 @@
 import { seal, verify } from "../trust-envelope";
-import type { ReconciliationProofCapsule } from "@settler/protocol";
 
 /**
  * Trust Envelope v1 – Unit Tests
@@ -25,8 +24,18 @@ describe("TrustEnvelope", () => {
       requireExactMerchant: false,
     },
     matches: [
-      { sourceTransactionId: "src_1", targetTransactionId: "tgt_1", matchType: "exact", confidence: 0.8 },
-      { sourceTransactionId: "src_2", targetTransactionId: "tgt_2", matchType: "fuzzy", confidence: 0.7 },
+      {
+        sourceTransactionId: "src_1",
+        targetTransactionId: "tgt_1",
+        matchType: "exact",
+        confidence: 0.8,
+      },
+      {
+        sourceTransactionId: "src_2",
+        targetTransactionId: "tgt_2",
+        matchType: "fuzzy",
+        confidence: 0.7,
+      },
     ],
     engine: { name: "Settler", version: "1.0.0", build: "test-sha" },
   };
@@ -187,7 +196,12 @@ describe("TrustEnvelope", () => {
       const tampered = {
         ...baseInput,
         matches: [
-          { sourceTransactionId: "src_1", targetTransactionId: "tgt_1", matchType: "exact", confidence: 0.99 },
+          {
+            sourceTransactionId: "src_1",
+            targetTransactionId: "tgt_1",
+            matchType: "exact",
+            confidence: 0.99,
+          },
         ],
       };
 
