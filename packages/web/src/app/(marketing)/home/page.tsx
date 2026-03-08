@@ -25,6 +25,9 @@ import {
   Eye,
   Target,
   Layers,
+  ArrowRight,
+  Hash,
+  Network,
 } from "lucide-react";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import {
@@ -540,6 +543,118 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                   </div>
                 );
               })}
+            </div>
+          </div>
+        </section>
+
+        {/* Feature Pages */}
+        <section
+          className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950"
+          aria-label="Key features"
+        >
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500 mb-3">
+                Explore
+              </p>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
+                Go Deeper on Each Capability
+              </h2>
+              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+                Each feature has its own dedicated page with detailed mechanics, interactive demos, and documentation.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {[
+                {
+                  href: "/how-it-works",
+                  icon: Network,
+                  label: "How It Works",
+                  description:
+                    "Step-by-step walkthrough of Settler's reconciliation architecture — from data ingestion through rule evaluation to evidence generation.",
+                  cta: "See the architecture",
+                },
+                {
+                  href: "/replay-lab",
+                  icon: Hash,
+                  label: "Replay Lab",
+                  description:
+                    "Replay any past reconciliation run, verify determinism via hash-diff inspection, and export signed evidence bundles for audit packages.",
+                  cta: "Explore Replay Lab",
+                },
+                {
+                  href: "/proof-explorer",
+                  icon: Eye,
+                  label: "Proof Explorer",
+                  description:
+                    "Navigate trust graphs and artifact lineage. Inspect SHA-256 hash chains and verify reconciliation runs against their original evidence DAG.",
+                  cta: "View Proof Explorer",
+                },
+              ].map((feature) => {
+                const Icon = feature.icon;
+                return (
+                  <Link
+                    key={feature.href}
+                    href={feature.href}
+                    className="group p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-lg transition-all duration-200 flex flex-col"
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4 flex-shrink-0">
+                      <Icon
+                        className="w-5 h-5 text-slate-700 dark:text-slate-300"
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-2 tracking-tight">
+                      {feature.label}
+                    </h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed flex-1 mb-4">
+                      {feature.description}
+                    </p>
+                    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                      {feature.cta}
+                      <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* GitHub / Quickstart CTA */}
+        <section
+          className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-slate-900 dark:bg-slate-950"
+          aria-label="Get started"
+        >
+          <div className="max-w-3xl mx-auto text-center">
+            <div className="mb-5 flex justify-center">
+              <span className="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-800 px-3.5 py-1.5 text-xs font-semibold text-slate-300">
+                <Github className="w-3.5 h-3.5" aria-hidden="true" />
+                Apache 2.0 · Open Source
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight mb-4">
+              Start in Minutes
+            </h2>
+            <p className="text-lg text-slate-400 max-w-xl mx-auto leading-relaxed mb-10">
+              One SDK install. Define your rules. Run reconciliation. Review the evidence.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/docs/quickstart"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white text-slate-900 hover:bg-slate-100 px-8 py-3.5 text-base font-semibold shadow-lg transition-all duration-200"
+              >
+                <BookOpen className="w-4 h-4" aria-hidden="true" />
+                Read the Quickstart
+              </Link>
+              <Link
+                href={repoUrl}
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 hover:border-slate-600 px-8 py-3.5 text-base font-medium transition-all duration-200"
+              >
+                <Github className="w-4 h-4" aria-hidden="true" />
+                View on GitHub
+              </Link>
             </div>
           </div>
         </section>

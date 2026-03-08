@@ -8,11 +8,20 @@ const footerSections = [
     heading: "Product",
     links: [
       { href: "/platform", label: "Platform" },
+      { href: "/how-it-works", label: "How It Works" },
       { href: "/pricing", label: "Pricing" },
-      { href: "/docs", label: "Documentation" },
-      { href: "/security", label: "Security" },
+      { href: "/security-and-audit", label: "Security" },
       { href: "/login", label: "Login" },
       { href: "/signup", label: "Get Started" },
+    ],
+  },
+  {
+    heading: "Features",
+    links: [
+      { href: "/replay-lab", label: "Replay Lab" },
+      { href: "/proof-explorer", label: "Proof Explorer" },
+      { href: "/docs/quickstart", label: "Quickstart" },
+      { href: "/docs", label: "Documentation" },
     ],
   },
   {
@@ -21,18 +30,8 @@ const footerSections = [
       { href: "/about", label: "About" },
       { href: "/contact", label: "Contact" },
       { href: "https://github.com/Hardonian/Settler", label: "GitHub", external: true },
-      { href: "https://status.settler.dev", label: "Status", external: true },
-    ],
-  },
-  {
-    heading: "Resources",
-    links: [
-      { href: "/docs", label: "Docs" },
-      { href: "/status", label: "Status" },
       { href: "/terms", label: "Terms" },
       { href: "/privacy", label: "Privacy" },
-      { href: "/about", label: "About" },
-      { href: "/platform", label: "Platform" },
     ],
   },
 ] as const;
@@ -47,12 +46,22 @@ export function Footer() {
         <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-4">
           <div>
             <UiLink href="/" aria-label="Settler homepage" className="mb-4 inline-flex">
+              {/* Light mode logo */}
               <Image
-                src={SETTLER_IMAGES.logoMain.webpPath || SETTLER_IMAGES.logoMain.path}
+                src="/logo.svg"
                 alt="Settler Logo"
                 width={130}
                 height={34}
-                className="h-10 w-auto"
+                className="h-10 w-auto dark:hidden"
+                priority
+              />
+              {/* Dark mode logo */}
+              <Image
+                src="/logo-dark.svg"
+                alt="Settler Logo"
+                width={130}
+                height={34}
+                className="h-10 w-auto hidden dark:block"
                 priority
               />
             </UiLink>
