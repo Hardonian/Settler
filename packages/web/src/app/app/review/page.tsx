@@ -1,6 +1,8 @@
+"use client";
 
-import ReviewQueue from '@/components/stitch-import/ReviewQueue';
-import ReasonForChangeModal from '@/components/stitch-import/ReasonForChangeModal';
+import { Filter, AlertTriangle, Pencil, Check } from "lucide-react";
+import ReviewQueue from "@/components/stitch-import/ReviewQueue";
+import ReasonForChangeModal from "@/components/stitch-import/ReasonForChangeModal";
 
 export default function ReviewPage() {
   return (
@@ -11,7 +13,7 @@ export default function ReviewPage() {
           <span className="text-xs text-slate-400">12 Pending Reconciliation</span>
         </div>
         <button className="w-10 h-10 flex items-center justify-center rounded-full bg-border-dark/50 text-slate-300 hover:text-white transition-colors">
-          <span className="material-symbols-outlined">filter_list</span>
+          <Filter className="h-6 w-6" />
         </button>
       </header>
       <ReviewQueue />
@@ -19,22 +21,27 @@ export default function ReviewPage() {
         <div className="grid grid-cols-3 gap-3 max-w-lg mx-auto">
           <button className="flex flex-col items-center justify-center gap-1 group">
             <div className="w-12 h-12 rounded-full bg-surface-dark border border-border-dark flex items-center justify-center group-hover:bg-accent-warning/20 group-hover:border-accent-warning/50 transition-all group-active:scale-95">
-              <span className="material-symbols-outlined text-slate-300 group-hover:text-accent-warning">warning_amber</span>
+              <AlertTriangle className="h-6 w-6 text-slate-300 group-hover:text-accent-warning" />
             </div>
-            <span className="text-[10px] font-medium text-slate-400 group-hover:text-slate-200">Exception</span>
+            <span className="text-[10px] font-medium text-slate-400 group-hover:text-slate-200">
+              Exception
+            </span>
           </button>
           <button className="flex flex-col items-center justify-center gap-1 group">
             <div className="w-12 h-12 rounded-full bg-surface-dark border border-border-dark flex items-center justify-center group-hover:bg-white/10 transition-all group-active:scale-95">
-              <span className="material-symbols-outlined text-slate-300 group-hover:text-white">edit</span>
+              <Pencil className="h-6 w-6 text-slate-300 group-hover:text-white" />
             </div>
-            <span className="text-[10px] font-medium text-slate-400 group-hover:text-slate-200">Override</span>
+            <span className="text-[10px] font-medium text-slate-400 group-hover:text-slate-200">
+              Override
+            </span>
           </button>
           <button className="flex flex-col items-center justify-center gap-1 group col-span-1">
             <div className="w-full h-12 px-6 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:bg-primary-dark transition-all group-active:scale-95">
-              <span className="material-symbols-outlined text-white mr-1">check</span>
+              <Check className="h-6 w-6 text-white mr-1" />
               <span className="text-sm font-bold text-white">Match</span>
             </div>
-            <span className="text-[10px] font-medium text-transparent select-none">.</span> {/* Spacing hack */}
+            <span className="text-[10px] font-medium text-transparent select-none">.</span>{" "}
+            {/* Spacing hack */}
           </button>
         </div>
       </div>

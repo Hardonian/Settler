@@ -1,5 +1,18 @@
-
-import React from 'react';
+import React from "react";
+import {
+  Search,
+  AlertCircle,
+  Server,
+  ListChecks,
+  BellOff,
+  AlertTriangle,
+  Building,
+  BookOpen,
+  Info,
+  FileText,
+  Download,
+  Lock,
+} from "lucide-react";
 
 const AlertsPage: React.FC = () => {
   return (
@@ -13,11 +26,13 @@ const AlertsPage: React.FC = () => {
           </div>
           <div className="flex items-center gap-3">
             <button className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 dark:bg-surface-dark text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-colors">
-              <span className="material-symbols-outlined">search</span>
+              <Search className="h-5 w-5" />
             </button>
             <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-indigo-500 p-[2px]">
-              <div className="w-full h-full rounded-full bg-slate-200 dark:bg-surface-dark overflow-hidden">
-                <img alt="User Avatar" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDceMIl2uLXPKGZXebgvec8QDWrQcNcQxEcdEx7AdSX-6XYoS1eupM437ykeGgB8CswxD1rNiYRV8Scjz4rCDE_2_vq87kimcIle-smZRfYr4xFydCXS8_2a5WWVnWSDmeTeQRaFYZWcoijTS2d0Ab9y8wQVhG2ZmioS4aoNGs-FyWKAeZE8eJGkEyhuf0QCI7m4qHxKyL8WgyL3ULv_J5TaGlqKGizeq_BPh_6F9ZeHsO-fAyNCr0d_NfqAbxOrbSkjv-ItJTVSFsJ" />
+              <div className="w-full h-full rounded-full bg-slate-200 dark:bg-surface-dark overflow-hidden flex items-center justify-center">
+                <div className="w-full h-full rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[10px] font-medium">
+                  UA
+                </div>
               </div>
             </div>
           </div>
@@ -28,21 +43,27 @@ const AlertsPage: React.FC = () => {
             <div className="w-2 h-2 rounded-full bg-danger animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]"></div>
             <div>
               <span className="block text-2xl font-bold text-danger leading-none">2</span>
-              <span className="text-xs font-medium text-danger/80 uppercase tracking-wider">Critical</span>
+              <span className="text-xs font-medium text-danger/80 uppercase tracking-wider">
+                Critical
+              </span>
             </div>
           </div>
           <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-warning/10 border border-warning/20 min-w-[140px] flex-1">
             <div className="w-2 h-2 rounded-full bg-warning"></div>
             <div>
               <span className="block text-2xl font-bold text-warning leading-none">5</span>
-              <span className="text-xs font-medium text-warning/80 uppercase tracking-wider">Warning</span>
+              <span className="text-xs font-medium text-warning/80 uppercase tracking-wider">
+                Warning
+              </span>
             </div>
           </div>
           <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 border border-primary/20 min-w-[140px] flex-1">
             <div className="w-2 h-2 rounded-full bg-primary"></div>
             <div>
               <span className="block text-2xl font-bold text-primary leading-none">12</span>
-              <span className="text-xs font-medium text-primary/80 uppercase tracking-wider">Info</span>
+              <span className="text-xs font-medium text-primary/80 uppercase tracking-wider">
+                Info
+              </span>
             </div>
           </div>
         </div>
@@ -70,16 +91,20 @@ const AlertsPage: React.FC = () => {
           <div className="p-4 pl-5">
             <div className="flex justify-between items-start mb-2">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-danger text-[20px]">error</span>
-                <span className="text-xs font-bold text-danger uppercase tracking-wider">Critical</span>
+                <AlertCircle className="h-5 w-5 text-danger" />
+                <span className="text-xs font-bold text-danger uppercase tracking-wider">
+                  Critical
+                </span>
               </div>
-              <span className="text-xs text-slate-400 dark:text-neutral-dark font-mono">2m ago</span>
+              <span className="text-xs text-slate-400 dark:text-neutral-dark font-mono">
+                2m ago
+              </span>
             </div>
             <h3 className="text-base font-semibold leading-tight mb-1 text-slate-900 dark:text-slate-100">
               Payment Gateway Timeout - 500 Error
             </h3>
             <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-neutral-dark mb-4">
-              <span className="material-symbols-outlined text-[16px]">dns</span>
+              <Server className="h-4 w-4" />
               <span>api-gateway</span>
               <span className="w-1 h-1 rounded-full bg-slate-400"></span>
               <span>us-east-1</span>
@@ -87,13 +112,13 @@ const AlertsPage: React.FC = () => {
             {/* Technical Badge */}
             <div className="flex items-center justify-between mt-3">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-primary/10 text-primary text-xs font-mono font-medium border border-primary/20 hover:bg-primary/20 cursor-pointer transition-colors">
-                <span className="material-symbols-outlined text-[14px]">list_alt</span>
+                <ListChecks className="h-3.5 w-3.5" />
                 TRC-9928-X
               </span>
               {/* Quick Actions visible on card */}
               <div className="flex gap-2">
                 <button className="p-2 rounded-lg bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-neutral-dark hover:text-slate-900 dark:hover:text-white transition-colors">
-                  <span className="material-symbols-outlined text-[20px]">notifications_paused</span>
+                  <BellOff className="h-5 w-5" />
                 </button>
                 <button className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium shadow-lg shadow-primary/25 hover:bg-primary-dark transition-colors">
                   Ack
@@ -108,38 +133,53 @@ const AlertsPage: React.FC = () => {
           <div className="p-4 pl-5 border-l-[6px] border-warning">
             <div className="flex justify-between items-start mb-2">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-warning text-[20px]">warning</span>
-                <span className="text-xs font-bold text-warning uppercase tracking-wider">Warning</span>
+                <AlertTriangle className="h-5 w-5 text-warning" />
+                <span className="text-xs font-bold text-warning uppercase tracking-wider">
+                  Warning
+                </span>
               </div>
-              <span className="text-xs text-slate-400 dark:text-neutral-dark font-mono">15m ago</span>
+              <span className="text-xs text-slate-400 dark:text-neutral-dark font-mono">
+                15m ago
+              </span>
             </div>
             <h3 className="text-base font-semibold leading-tight mb-1 text-slate-900 dark:text-slate-100">
               Reconciliation Delay &gt; 5m
             </h3>
             <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-neutral-dark mb-3">
-              <span className="material-symbols-outlined text-[16px]">account_balance</span>
+              <Building className="h-4 w-4" />
               <span>ledger-service</span>
             </div>
             {/* Expanded Details Section */}
             <div className="mt-4 pt-4 border-t border-slate-100 dark:border-white/5">
               <div className="flex items-center gap-2 mb-4">
                 <div className="flex -space-x-2">
-                  <img alt="User 1" className="w-6 h-6 rounded-full border-2 border-white dark:border-surface-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDd7DjtBcJu43UaG81CifrhIBbcqGdgXEAjTif-PWrd_fbwKBk0XuMB21DaHzTFDn3AJZFpejMqxiSqbWtiVct50ElN8pYVSlylYVbdCVfFYCroixf2nwNfB6-UPeb6m6NCbSSV7M3G9omtQNdnYE7_i3b7uUHHmzQ8_8HOiWjudDuBIaF-cyBpGEoDOxk72sHDgtH7YEkZzrmKBPNi0JBegO2fg3-ZDM6B9vST32wdfw6o6deTiWP3mej0U5G_11GMLse0MqVyrgX" />
-                  <div className="w-6 h-6 rounded-full border-2 border-white dark:border-surface-dark bg-slate-200 dark:bg-surface-highlight flex items-center justify-center text-[10px] text-slate-500">+1</div>
+                  <div className="w-6 h-6 rounded-full border-2 border-white dark:border-surface-dark bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[10px] font-medium">
+                    JD
+                  </div>
+                  <div className="w-6 h-6 rounded-full border-2 border-white dark:border-surface-dark bg-slate-200 dark:bg-surface-highlight flex items-center justify-center text-[10px] text-slate-500">
+                    +1
+                  </div>
                 </div>
-                <span className="text-xs text-slate-500 dark:text-neutral-dark">Acknowledged by <span className="text-slate-900 dark:text-slate-200 font-medium">Jane Doe</span></span>
+                <span className="text-xs text-slate-500 dark:text-neutral-dark">
+                  Acknowledged by{" "}
+                  <span className="text-slate-900 dark:text-slate-200 font-medium">Jane Doe</span>
+                </span>
               </div>
               {/* Mini Timeline */}
               <div className="relative pl-3 space-y-4 mb-4 before:absolute before:left-0 before:top-1 before:bottom-1 before:w-px before:bg-slate-200 dark:before:bg-white/10">
                 <div className="relative pl-4">
                   <div className="absolute left-[-4px] top-1.5 w-2 h-2 rounded-full bg-slate-300 dark:bg-white/20"></div>
-                  <p className="text-xs text-slate-500 dark:text-neutral-dark leading-tight">Alert triggered based on <span className="font-mono">thresh_latency_high</span></p>
+                  <p className="text-xs text-slate-500 dark:text-neutral-dark leading-tight">
+                    Alert triggered based on <span className="font-mono">thresh_latency_high</span>
+                  </p>
                 </div>
                 <div className="relative pl-4">
                   <div className="absolute left-[-4px] top-1.5 w-2 h-2 rounded-full bg-primary ring-4 ring-primary/20"></div>
-                  <p className="text-xs text-slate-900 dark:text-slate-200 font-medium leading-tight">Runbook suggestion: Check DB locks</p>
+                  <p className="text-xs text-slate-900 dark:text-slate-200 font-medium leading-tight">
+                    Runbook suggestion: Check DB locks
+                  </p>
                   <button className="mt-2 flex items-center gap-1.5 text-primary text-xs font-medium hover:underline">
-                    <span className="material-symbols-outlined text-[14px]">menu_book</span>
+                    <BookOpen className="h-3.5 w-3.5" />
                     View SOP-Ledger-04
                   </button>
                 </div>
@@ -160,22 +200,26 @@ const AlertsPage: React.FC = () => {
           <div className="p-4 pl-5 border-l-[6px] border-primary">
             <div className="flex justify-between items-start mb-2">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary text-[20px]">info</span>
-                <span className="text-xs font-bold text-primary uppercase tracking-wider">Info</span>
+                <Info className="h-5 w-5 text-primary" />
+                <span className="text-xs font-bold text-primary uppercase tracking-wider">
+                  Info
+                </span>
               </div>
-              <span className="text-xs text-slate-400 dark:text-neutral-dark font-mono">1h ago</span>
+              <span className="text-xs text-slate-400 dark:text-neutral-dark font-mono">
+                1h ago
+              </span>
             </div>
             <h3 className="text-base font-semibold leading-tight mb-1 text-slate-900 dark:text-slate-100">
               Daily Settlement Report Generated
             </h3>
             <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-neutral-dark mb-3">
-              <span className="material-symbols-outlined text-[16px]">description</span>
+              <FileText className="h-4 w-4" />
               <span>reporting-service</span>
             </div>
             {/* Technical Badge */}
             <div className="mt-2">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-neutral-dark text-xs font-mono font-medium border border-slate-200 dark:border-white/5 hover:text-primary transition-colors">
-                <span className="material-symbols-outlined text-[14px]">download</span>
+                <Download className="h-3.5 w-3.5" />
                 RPT-2023-10-24.pdf
               </span>
             </div>
@@ -186,18 +230,24 @@ const AlertsPage: React.FC = () => {
           <div className="p-4 pl-5 border-l-[6px] border-danger">
             <div className="flex justify-between items-start mb-2">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-danger text-[20px]">error</span>
-                <span className="text-xs font-bold text-danger uppercase tracking-wider">Critical</span>
+                <AlertCircle className="h-5 w-5 text-danger" />
+                <span className="text-xs font-bold text-danger uppercase tracking-wider">
+                  Critical
+                </span>
               </div>
-              <span className="text-xs text-slate-400 dark:text-neutral-dark font-mono">3h ago</span>
+              <span className="text-xs text-slate-400 dark:text-neutral-dark font-mono">
+                3h ago
+              </span>
             </div>
             <h3 className="text-base font-semibold leading-tight mb-1 text-slate-900 dark:text-slate-100 line-through decoration-slate-500">
               High Latency on Auth Service
             </h3>
             <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-neutral-dark">
-              <span className="material-symbols-outlined text-[16px]">lock</span>
+              <Lock className="h-4 w-4" />
               <span>auth-service</span>
-              <span className="ml-auto text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Silenced</span>
+              <span className="ml-auto text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded">
+                Silenced
+              </span>
             </div>
           </div>
         </div>

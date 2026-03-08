@@ -1,5 +1,7 @@
+"use client";
 
-import React from 'react';
+import React from "react";
+import { Lock, CheckCircle } from "lucide-react";
 
 const FreezeToggle: React.FC = () => {
   return (
@@ -8,8 +10,10 @@ const FreezeToggle: React.FC = () => {
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-danger text-[20px]">lock_clock</span>
-              <h2 className="text-base font-bold text-text-main-light dark:text-text-main-dark">Freeze System</h2>
+              <Lock className="h-5 w-5 text-danger" />
+              <h2 className="text-base font-bold text-text-main-light dark:text-text-main-dark">
+                Freeze System
+              </h2>
             </div>
             <p className="text-sm text-text-muted-light dark:text-text-muted-dark leading-relaxed">
               Switch to Read-Only Mode for emergency safety. All write operations will be blocked.
@@ -21,8 +25,10 @@ const FreezeToggle: React.FC = () => {
           </label>
         </div>
         <div className="mt-3 flex items-center gap-2 bg-emerald-500/10 rounded-lg px-3 py-2 border border-emerald-500/20">
-          <span className="material-symbols-outlined text-emerald-500 text-sm">check_circle</span>
-          <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">System is currently Operational</span>
+          <CheckCircle className="h-4 w-4 text-emerald-500" />
+          <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
+            System is currently Operational
+          </span>
         </div>
       </div>
     </section>
