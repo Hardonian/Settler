@@ -15,25 +15,25 @@ const steps = [
   {
     number: 1,
     title: "Connect",
-    description: "Link Stripe, Shopify, QuickBooks, and 50+ platforms",
+    description: "Attach a data source — Stripe, Shopify, QuickBooks, a CSV export, or your own adapter.",
     icon: Plug,
   },
   {
     number: 2,
-    title: "Match",
-    description: "Set up intelligent matching rules with automatic suggestions",
+    title: "Define Rules",
+    description: "Write matching rules in code: field mappings, numeric tolerances, and date windows. Rules are version-controlled and testable.",
     icon: Code2,
   },
   {
     number: 3,
     title: "Run",
-    description: "Process millions of transactions automatically",
+    description: "Execute the reconciliation. The engine applies your rules deterministically — same inputs always produce the same output.",
     icon: Play,
   },
   {
     number: 4,
-    title: "Review",
-    description: "View results with complete audit trail and compliance reports",
+    title: "Review Evidence",
+    description: "Inspect every mismatch with full context: which rule matched, what the variance was, and a SHA-256 hash-linked audit trail.",
     icon: BarChart3,
   },
 ];
@@ -70,7 +70,7 @@ export default function HowItWorksPage() {
               staggerDelay={0.02}
             />
             <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
-              Reconcile millions of transactions automatically in 4 simple steps.
+              Connect a data source, define matching rules, run the engine, review evidence. Four explicit steps with no hidden logic.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
@@ -79,7 +79,7 @@ export default function HowItWorksPage() {
                 asChild
                 className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-5 sm:py-6 text-base sm:text-lg font-semibold"
               >
-                <Link href="/signup">Start Free Trial</Link>
+                <Link href="/docs/quickstart">Read the Quickstart</Link>
               </Button>
               <Button
                 size="lg"
@@ -87,7 +87,7 @@ export default function HowItWorksPage() {
                 asChild
                 className="w-full sm:w-auto px-8 py-5 sm:py-6 text-base sm:text-lg"
               >
-                <Link href="/console/playground">Try Playground</Link>
+                <Link href="/docs">View Documentation</Link>
               </Button>
             </div>
           </div>
@@ -127,37 +127,28 @@ export default function HowItWorksPage() {
           <SpotlightCard className="p-6 md:p-8">
             <div className="text-center mb-5 md:mb-6">
               <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-3 md:mb-4 text-slate-900 dark:text-white">
-                Get Started in 5 Minutes
+                Run a Demo Reconciliation in 5 Minutes
               </h2>
+              <p className="text-slate-600 dark:text-slate-400 text-sm md:text-base max-w-lg mx-auto">
+                No database or API keys required for the demo. The example runs a Stripe↔QuickBooks reconciliation and writes <code className="font-mono text-xs bg-slate-800 text-green-400 px-1 rounded">evidence.json</code> and <code className="font-mono text-xs bg-slate-800 text-green-400 px-1 rounded">report.html</code> to <code className="font-mono text-xs bg-slate-800 text-green-400 px-1 rounded">examples/demo-output/</code>.
+              </p>
             </div>
 
             <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-4 md:p-6 overflow-x-auto mb-5 md:mb-6">
               <pre className="text-green-400 text-xs md:text-sm leading-relaxed">
-                <code>{`npm install @settler/sdk
+                <code>{`# Clone and install
+git clone https://github.com/Hardonian/Settler.git
+cd Settler && pnpm install
 
-import { Settler } from '@settler/sdk';
+# Run the built-in demo (no API key required)
+pnpm demo
 
-const client = new Settler({
-  apiKey: process.env.SETTLER_API_KEY,
-});
+# Inspect outputs
+cat examples/demo-output/results.json
+cat examples/demo-output/evidence.json
 
-// Create a reconciliation job
-const job = await client.jobs.create({
-  name: "Shopify-Stripe Reconciliation",
-  source: { adapter: "shopify" },
-  target: { adapter: "stripe" },
-  rules: {
-    matching: [
-      { field: "order_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 },
-    ],
-  },
-});
-
-// Run and get results
-const report = await client.jobs.run(job.id);
-// eslint-disable-next-line no-console
-console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);`}</code>
+# Replay verification — re-runs deterministically from stored artifacts
+pnpm settler:replay examples/demo-output/evidence.json`}</code>
               </pre>
             </div>
 
@@ -167,7 +158,7 @@ console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);`}
                 asChild
                 className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-5 sm:py-6 text-base sm:text-lg font-semibold"
               >
-                <Link href="/console/playground">Try Playground</Link>
+                <Link href="/docs/quickstart">Read the Quickstart</Link>
               </Button>
               <Button
                 size="lg"
@@ -189,10 +180,10 @@ console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);`}
         </ParallaxBackground>
         <div className="max-w-4xl mx-auto relative z-10 text-center">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4 text-slate-900 dark:text-white">
-            Ready to Automate Your Reconciliation?
+            Start with the Demo or Read the Docs
           </h2>
           <p className="text-base md:text-lg text-slate-600 dark:text-slate-300 mb-6 md:mb-8 leading-relaxed">
-            Start automating reconciliation in minutes. Free trial—no credit card required.
+            Run <code className="font-mono text-sm">pnpm demo</code> locally for a zero-credential first run, or read the quickstart to connect your own data sources.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <Button
@@ -200,7 +191,7 @@ console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);`}
               asChild
               className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-5 sm:py-6 text-base sm:text-lg font-semibold"
             >
-              <Link href="/signup">Start Free Trial</Link>
+              <Link href="/docs/quickstart">Read the Quickstart</Link>
             </Button>
             <Button
               size="lg"
@@ -208,7 +199,7 @@ console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);`}
               asChild
               className="w-full sm:w-auto px-8 py-5 sm:py-6 text-base sm:text-lg"
             >
-              <Link href="/pricing">View Pricing</Link>
+              <Link href="/docs">Full Documentation</Link>
             </Button>
           </div>
         </div>
@@ -217,7 +208,7 @@ console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);`}
       <section className="py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
-            Stitch Workflow Surface
+            Architecture Overview
           </h2>
           <ArchitectureOverview />
         </div>

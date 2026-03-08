@@ -5,11 +5,39 @@ description: How Settler approaches security, audit evidence, and disclosure wit
 
 ## Security posture
 
-Settler is designed to be conservative and auditable. The engine emphasizes deterministic behavior and explicit rule configuration over implicit automation.
+Settler is designed to be conservative and auditable. The engine emphasizes deterministic behavior and explicit rule configuration over implicit automation. Every run produces machine-readable evidence artifacts that can be independently inspected and replayed.
 
 ## Audit evidence, not audit results
 
-Settler produces reconciliation artifacts (inputs, rules, outputs, and variances) to support human review. It is **not** an audit, and it does not certify outcomes or compliance.
+Settler produces reconciliation artifacts — inputs, rules, outputs, and variances — to support human review. These artifacts are structured so a third party can independently verify that the run occurred as described.
+
+Settler is **not** an audit and it does not certify outcomes or compliance. Evidence generation is a tool for your team and your auditors — not a replacement for professional review.
+
+## What evidence artifacts contain
+
+Each run produces:
+
+- **`evidence.json`** — hash-linked record of inputs, rules applied, outputs, and variance summary. Includes SHA-256 fingerprints at each step.
+- **`results.json`** — structured match/mismatch output with rule path traces for every record pair.
+- **`report.html`** — human-readable summary for audit review packages.
+
+Artifact integrity is verified during replay: `pnpm settler:replay evidence.json` re-runs the workflow from stored artifacts and confirms the output hash matches the original.
+
+## Evidence quality levels
+
+Security verification artifacts use explicit confidence levels rather than binary pass/fail:
+
+- `VERIFIED` — runtime or authenticated evidence confirms the claim.
+- `DEGRADED` — checks passed, but confidence is reduced (e.g., missing authenticated advisory feed).
+- `UNAVAILABLE` — evidence was not produced in this environment.
+- `SKIPPED` — verification was intentionally not executed (e.g., runtime-only probes during local development).
+- `FAILED` — evidence demonstrates a failing control.
+
+System-level security artifacts are written to:
+
+- `security/dependency-evidence.json`
+- `security/rls-evidence.json`
+- `security/security-verdict.json`
 
 ## Non-guarantees
 
@@ -21,10 +49,19 @@ Settler does **not**:
 
 You are responsible for review, approval, and downstream reporting.
 
+## Data handling
+
+Data handling depends on your deployment model:
+
+- **Self-hosted (OSS):** your data stays in your infrastructure. You control retention, access, and configuration.
+- **Managed cloud:** data is processed in Settler's infrastructure. Review the privacy policy and DPA for your deployment.
+
+Always review configuration, retention, and access control policies for your environment before processing sensitive financial data.
+
+## Access controls
+
+The engine enforces tenant isolation through row-level security (RLS) on all data queries. Policy-based access controls gate reconciliation workflow execution. Access logs are written as part of the audit trail.
+
 ## Responsible disclosure
 
-Report security issues to `security@settler.dev`. We follow responsible disclosure timelines and coordinate public fixes once remediation is available.
-
-## Data handling expectations
-
-Data handling depends on your deployment model (self-hosted OSS vs. hosted enterprise). Always review configuration, retention, and access control policies for your environment.
+Report security issues to `security@settler.dev`. We follow responsible disclosure timelines and coordinate public fixes once remediation is available. Do not disclose vulnerabilities publicly before a fix is available.

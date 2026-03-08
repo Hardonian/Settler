@@ -1,31 +1,53 @@
 ---
 title: Open Source
-description: Governance, licenses, and fork safety for the Settler reconciliation engine.
+description: Governance, licenses, and fork guidance for the Settler reconciliation engine.
 ---
 
 ## What is open source in Settler
 
-Settler’s reconciliation protocols and SDKs are published as open-source packages. The canonical repositories live in this monorepo under `packages/`, and the SDKs are intended to be fork-safe.
+Settler is published as an open-source monorepo. The reconciliation engine, CLI, SDKs, and protocol definitions are all included. The canonical repository lives at [github.com/Hardonian/Settler](https://github.com/Hardonian/Settler).
 
 ## Licenses
 
-- **MIT licensed**: reconciliation protocol and SDK packages (see `packages/protocol/LICENSE` and `packages/react-settler/LICENSE`).
-- **Repository license**: additional components in this repository are covered by the root `LICENSE`.
+- **Apache 2.0:** the root repository, including the reconciliation engine, API, CLI, and web console. See `LICENSE` at the repository root.
+- **MIT:** select SDK and protocol packages under `packages/protocol/` and `packages/react-settler/`. See per-package `LICENSE` files.
 
-Review licenses before redistributing or deploying derivatives.
+Review the applicable license before redistributing or deploying derivatives.
 
-## Governance
+## Running it locally
 
-Changes are proposed through GitHub pull requests, reviewed by maintainers, and merged with a public changelog. Design discussions and issues live in the same repo to keep history inspectable.
+No database required for the demo path:
+
+```bash
+git clone https://github.com/Hardonian/Settler.git
+cd Settler
+pnpm install
+pnpm demo
+```
+
+This runs a deterministic Stripe↔QuickBooks example and writes outputs to `examples/demo-output/`. See the [quickstart](/docs/quickstart) for full instructions.
 
 ## Fork safety
 
-The OSS packages are structured to remain usable without the hosted service. Forks can:
+The OSS packages are structured to remain usable without the hosted service:
 
-- pin a stable protocol version,
-- maintain local adapters,
-- and control data handling without SaaS dependencies.
+- Pin a stable protocol version to avoid breaking changes from upstream.
+- Maintain local adapters in `packages/adapters/src/drivers/` without coupling to SaaS dependencies.
+- Control data handling and retention entirely within your own infrastructure.
+- The replay verification path (`pnpm settler:replay`) works offline against stored `evidence.json` artifacts.
+
+## Governance
+
+Changes are proposed through GitHub pull requests and reviewed by maintainers. The changelog is public and versioned. Design discussions and issues live in the same repository to keep history inspectable.
+
+Contributor guidance is in [`CONTRIBUTING.md`](https://github.com/Hardonian/Settler/blob/main/CONTRIBUTING.md). Good first contributions include documentation improvements, new adapter integrations, and SDK examples.
+
+## Community
+
+- **Issues:** bug reports and feature requests via GitHub Issues using the provided templates.
+- **Pull requests:** contributions welcome — see `CONTRIBUTING.md` for quality gates and local setup.
+- **Discussions:** proposals and Q&A via GitHub Discussions (if enabled on the repository).
 
 ## Code of conduct
 
-Community contributions follow the repository’s contribution guidelines and code of conduct. See `CONTRIBUTING.md` for details.
+Community contributions follow the repository's [Code of Conduct](https://github.com/Hardonian/Settler/blob/main/CODE_OF_CONDUCT.md). Respectful, constructive engagement is expected from all participants.
