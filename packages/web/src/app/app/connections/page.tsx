@@ -1,6 +1,8 @@
+"use client";
 
-import ConnectionsTable from '@/components/stitch-import/ConnectionsTable';
-import ConnectionDrawer from '@/components/stitch-import/ConnectionDrawer';
+import { Plus } from "lucide-react";
+import ConnectionsTable from "@/components/stitch-import/ConnectionsTable";
+import ConnectionDrawer from "@/components/stitch-import/ConnectionDrawer";
 
 export default function ConnectionsPage() {
   return (
@@ -9,12 +11,14 @@ export default function ConnectionsPage() {
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Connections</h1>
           <button className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white hover:bg-primary/90 transition-colors shadow-sm">
-            <span className="material-symbols-outlined">add</span>
+            <Plus className="h-6 w-6" />
           </button>
         </div>
         <div className="flex gap-3 mt-6 overflow-x-auto hide-scrollbar pb-1">
           <div className="flex-1 min-w-[100px] bg-white rounded-xl p-3 border border-slate-200 shadow-sm flex flex-col items-start gap-1">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Total
+            </span>
             <span className="text-xl font-bold text-slate-900">12</span>
           </div>
           <div className="flex-1 min-w-[100px] bg-white rounded-xl p-3 border-l-4 border-l-emerald-500 border-y border-r border-slate-200 shadow-sm flex flex-col items-start gap-1">

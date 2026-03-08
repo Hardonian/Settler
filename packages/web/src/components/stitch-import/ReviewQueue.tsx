@@ -1,5 +1,7 @@
+"use client";
 
-import React from 'react';
+import React from "react";
+import { AlertTriangle, Fingerprint, AlertCircle, Info } from "lucide-react";
 
 const ReviewQueue: React.FC = () => {
   return (
@@ -19,7 +21,9 @@ const ReviewQueue: React.FC = () => {
                 <span className="w-2 h-2 rounded-full bg-accent-danger animate-pulse"></span>
                 <span className="text-xs font-mono text-slate-400">REC-9021</span>
               </div>
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-accent-danger/20 text-accent-danger border border-accent-danger/30">HIGH SEVERITY</span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-accent-danger/20 text-accent-danger border border-accent-danger/30">
+                HIGH SEVERITY
+              </span>
             </div>
             <div className="flex justify-between items-end">
               <div>
@@ -29,7 +33,7 @@ const ReviewQueue: React.FC = () => {
               <div className="text-right">
                 <p className="text-xs text-slate-500 mb-1">Confidence</p>
                 <div className="flex items-center gap-1 text-accent-warning text-xs font-medium">
-                  <span className="material-symbols-outlined text-sm">warning</span>
+                  <AlertTriangle className="h-4 w-4" />
                   <span>Low Match</span>
                 </div>
               </div>
@@ -42,7 +46,9 @@ const ReviewQueue: React.FC = () => {
                 <span className="w-2 h-2 rounded-full bg-accent-warning"></span>
                 <span className="text-xs font-mono text-slate-400">REC-9022</span>
               </div>
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-accent-warning/20 text-accent-warning border border-accent-warning/30">MEDIUM</span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-accent-warning/20 text-accent-warning border border-accent-warning/30">
+                MEDIUM
+              </span>
             </div>
             <div className="flex justify-between items-end">
               <div>
@@ -58,7 +64,9 @@ const ReviewQueue: React.FC = () => {
                 <span className="w-2 h-2 rounded-full bg-slate-500"></span>
                 <span className="text-xs font-mono text-slate-400">REC-9023</span>
               </div>
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-700 text-slate-300 border border-slate-600">LOW</span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-700 text-slate-300 border border-slate-600">
+                LOW
+              </span>
             </div>
             <div className="flex justify-between items-end">
               <div>
@@ -73,8 +81,11 @@ const ReviewQueue: React.FC = () => {
       <div className="px-4 mt-2">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-base font-semibold text-white">Evidence Viewer</h2>
-          <div className="flex items-center gap-1.5 px-2 py-1 bg-surface-dark rounded text-xs text-slate-400 border border-border-dark cursor-copy" title="Copy Trace ID">
-            <span className="material-symbols-outlined text-[14px]">fingerprint</span>
+          <div
+            className="flex items-center gap-1.5 px-2 py-1 bg-surface-dark rounded text-xs text-slate-400 border border-border-dark cursor-copy"
+            title="Copy Trace ID"
+          >
+            <Fingerprint className="h-3.5 w-3.5" />
             <span className="font-mono">8a9f-2b3c...</span>
           </div>
         </div>
@@ -83,10 +94,14 @@ const ReviewQueue: React.FC = () => {
           {/* Headers */}
           <div className="grid grid-cols-2 divide-x divide-border-dark bg-surface-darker border-b border-border-dark">
             <div className="p-3 text-center">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Source A (ERP)</p>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                Source A (ERP)
+              </p>
             </div>
             <div className="p-3 text-center">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Source B (Bank)</p>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                Source B (Bank)
+              </p>
             </div>
           </div>
           {/* Row 1: Match */}
@@ -109,10 +124,12 @@ const ReviewQueue: React.FC = () => {
               <p className="text-sm font-mono font-bold text-slate-300">500.00</p>
             </div>
             <div className="p-3 bg-accent-danger/10">
-              <p className="text-[10px] text-accent-danger/80 mb-0.5 font-bold">Amount (Mismatch)</p>
+              <p className="text-[10px] text-accent-danger/80 mb-0.5 font-bold">
+                Amount (Mismatch)
+              </p>
               <div className="flex items-center justify-between">
                 <p className="text-sm font-mono font-bold text-white">5,000.00</p>
-                <span className="material-symbols-outlined text-accent-danger text-sm">error</span>
+                <AlertCircle className="h-4 w-4 text-accent-danger" />
               </div>
             </div>
           </div>
@@ -141,11 +158,12 @@ const ReviewQueue: React.FC = () => {
         </div>
         {/* Context Box */}
         <div className="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-lg flex gap-3 items-start">
-          <span className="material-symbols-outlined text-primary mt-0.5">info</span>
+          <Info className="h-6 w-6 text-primary mt-0.5" />
           <div>
             <h3 className="text-sm font-semibold text-primary mb-1">AI Insight</h3>
             <p className="text-xs text-slate-300 leading-relaxed">
-              The discrepancy appears to be a decimal placement error (10x difference). Historically, manual overrides favor Source B for this vendor.
+              The discrepancy appears to be a decimal placement error (10x difference).
+              Historically, manual overrides favor Source B for this vendor.
             </p>
           </div>
         </div>

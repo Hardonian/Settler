@@ -1,5 +1,7 @@
+"use client";
 
-import React from 'react';
+import React from "react";
+import { AlertCircle, X, CheckCircle, XCircle } from "lucide-react";
 
 const EvidenceViewer: React.FC = () => {
   return (
@@ -13,11 +15,11 @@ const EvidenceViewer: React.FC = () => {
         <div>
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">Evidence Viewer</h3>
           <p className="text-xs text-rose-500 font-medium flex items-center gap-1">
-            <span className="material-symbols-outlined text-[14px]">error</span> Mismatched · Trace 8a9f...2b1
+            <AlertCircle className="h-3.5 w-3.5" /> Mismatched · Trace 8a9f...2b1
           </p>
         </div>
         <button className="text-slate-400 hover:text-white">
-          <span className="material-symbols-outlined text-[24px]">close</span>
+          <X className="h-6 w-6" />
         </button>
       </div>
       {/* Sheet Content */}
@@ -25,8 +27,12 @@ const EvidenceViewer: React.FC = () => {
         {/* Comparison View */}
         <div className="flex flex-col gap-3">
           <div className="flex justify-between items-center">
-            <span className="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider">Comparison</span>
-            <span className="text-xs text-primary font-medium cursor-pointer hover:underline">View Raw JSON</span>
+            <span className="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
+              Comparison
+            </span>
+            <span className="text-xs text-primary font-medium cursor-pointer hover:underline">
+              View Raw JSON
+            </span>
           </div>
           <div className="grid grid-cols-2 gap-4">
             {/* Source A */}
@@ -36,10 +42,14 @@ const EvidenceViewer: React.FC = () => {
               </div>
               <div className="p-3 bg-white dark:bg-[#0c1219] border border-slate-200 dark:border-slate-700 rounded-lg">
                 <div className="text-[10px] text-slate-400 uppercase">Amount</div>
-                <div className="font-mono text-sm text-slate-900 dark:text-slate-100">100.00 USD</div>
+                <div className="font-mono text-sm text-slate-900 dark:text-slate-100">
+                  100.00 USD
+                </div>
                 <div className="w-full h-px bg-slate-100 dark:bg-slate-800 my-2"></div>
                 <div className="text-[10px] text-slate-400 uppercase">Status</div>
-                <div className="font-mono text-sm text-slate-900 dark:text-slate-100">succeeded</div>
+                <div className="font-mono text-sm text-slate-900 dark:text-slate-100">
+                  succeeded
+                </div>
               </div>
             </div>
             {/* Source B */}
@@ -54,26 +64,34 @@ const EvidenceViewer: React.FC = () => {
                 <div className="font-mono text-sm text-rose-500 font-bold">99.00 USD</div>
                 <div className="w-full h-px bg-slate-100 dark:bg-slate-800 my-2"></div>
                 <div className="text-[10px] text-slate-400 uppercase">Status</div>
-                <div className="font-mono text-sm text-slate-900 dark:text-slate-100">completed</div>
+                <div className="font-mono text-sm text-slate-900 dark:text-slate-100">
+                  completed
+                </div>
               </div>
             </div>
           </div>
         </div>
         {/* Rules Applied */}
         <div>
-          <span className="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider mb-2 block">Logic Trace</span>
+          <span className="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider mb-2 block">
+            Logic Trace
+          </span>
           <div className="space-y-2">
             <div className="flex items-center gap-3 p-3 bg-white dark:bg-[#0c1219] border border-emerald-500/30 rounded-lg">
-              <span className="material-symbols-outlined text-emerald-500 text-[20px]">check_circle</span>
+              <CheckCircle className="h-5 w-5 text-emerald-500" />
               <div className="flex-1">
-                <div className="text-sm font-medium text-slate-900 dark:text-slate-200">Currency Match</div>
+                <div className="text-sm font-medium text-slate-900 dark:text-slate-200">
+                  Currency Match
+                </div>
                 <div className="text-xs text-slate-500">Both sources are USD</div>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 bg-white dark:bg-[#0c1219] border border-rose-500/30 rounded-lg">
-              <span className="material-symbols-outlined text-rose-500 text-[20px]">cancel</span>
+              <XCircle className="h-5 w-5 text-rose-500" />
               <div className="flex-1">
-                <div className="text-sm font-medium text-slate-900 dark:text-slate-200">Exact Amount Match</div>
+                <div className="text-sm font-medium text-slate-900 dark:text-slate-200">
+                  Exact Amount Match
+                </div>
                 <div className="text-xs text-rose-400">Values differ by &gt; 0.00</div>
               </div>
             </div>
