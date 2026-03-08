@@ -30,6 +30,36 @@
   .glass-subtle {
     @apply backdrop-blur-sm bg-white/30 dark:bg-white/5 border border-neutral-200 border-opacity-50 dark:border-white/5;
   }
+
+  /* Premium panel — sharp border, subtle shadow, consistent radius */
+  .panel {
+    @apply bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm;
+  }
+
+  /* Premium section divider */
+  .section-eyebrow {
+    @apply text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500;
+  }
+
+  /* Tight metric value — for dashboard numbers */
+  .metric-value {
+    @apply text-3xl font-bold tracking-tight text-slate-900 dark:text-white;
+  }
+
+  /* Muted label — for card descriptions, metadata */
+  .label-muted {
+    @apply text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-500;
+  }
+
+  /* Status dot — operational green */
+  .status-dot-ok {
+    @apply w-2.5 h-2.5 rounded-full bg-green-500 flex-shrink-0;
+  }
+
+  /* Hover card lift */
+  .card-hover {
+    @apply hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200;
+  }
 }
 
 @layer base {

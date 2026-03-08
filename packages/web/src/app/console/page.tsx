@@ -184,255 +184,157 @@ async function ConsoleOverviewContent() {
     // CRITICAL: In safe mode, skip all database/backend calls
     if (!user || isSafeMode()) {
       return (
-        <div className="space-y-8">
-          {/* Public Minimal Console with Upsell Triggers */}
-          <div className="text-center space-y-4 py-8">
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-              Settler Developer Console
-            </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              Manage your API keys, monitor usage, and explore your Settler integration. Sign in for
-              full access to all features, or explore our public tools below.
-            </p>
-            <div className="flex items-center justify-center gap-4 mt-6">
-              <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">
-                <Link href="/signup">Get Started Free</Link>
-              </Button>
-              <Button variant="outline" size="lg" asChild>
-                <Link href="/console/playground">Try Playground</Link>
-              </Button>
-            </div>
-          </div>
-
-          {/* Upsell Banner - Premium Features */}
-          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="text-blue-600 dark:text-blue-400">✨</span>
-                Unlock Full Console Access
-              </CardTitle>
-              <CardDescription>
-                Get unlimited API calls, advanced analytics, and priority support
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div className="flex items-start gap-2">
-                  <span className="text-green-500 mt-0.5">✓</span>
-                  <div>
-                    <div className="font-semibold text-sm">Unlimited API Calls</div>
-                    <div className="text-xs text-slate-600 dark:text-slate-400">
-                      No usage limits
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-green-500 mt-0.5">✓</span>
-                  <div>
-                    <div className="font-semibold text-sm">Advanced Analytics</div>
-                    <div className="text-xs text-slate-600 dark:text-slate-400">
-                      Usage insights & trends
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-green-500 mt-0.5">✓</span>
-                  <div>
-                    <div className="font-semibold text-sm">Priority Support</div>
-                    <div className="text-xs text-slate-600 dark:text-slate-400">
-                      24/7 assistance
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex gap-2 justify-center">
-                <Button asChild className="bg-blue-600 hover:bg-blue-700">
-                  <Link href="/pricing">View Pricing</Link>
-                </Button>
-                <Button variant="outline" asChild>
-                  <Link href="/signup">Start Free Trial</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Live Status Widget */}
-          <Card>
-            <CardHeader>
-              <CardTitle>System Status</CardTitle>
-              <CardDescription>Current service availability</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-sm text-slate-600 dark:text-slate-400">
-                  All systems operational
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Quick Tools - Client-only safe tools */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Tools</CardTitle>
-              <CardDescription>Client-side utilities you can use right now</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Button asChild variant="outline" className="h-auto py-4 flex-col items-start">
-                  <Link href="/playground">
-                    <span className="font-semibold">JSON Validator</span>
-                    <span className="text-xs text-slate-500 mt-1">Validate and format JSON</span>
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" className="h-auto py-4 flex-col items-start">
-                  <Link href="/playground">
-                    <span className="font-semibold">CSV Previewer</span>
-                    <span className="text-xs text-slate-500 mt-1">Preview CSV data</span>
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" className="h-auto py-4 flex-col items-start">
-                  <Link href="/playground">
-                    <span className="font-semibold">Sample Demo</span>
-                    <span className="text-xs text-slate-500 mt-1">Try reconciliation demo</span>
-                  </Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Docs Shortcuts */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Documentation</CardTitle>
-              <CardDescription>Learn more about Settler</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Button asChild variant="outline">
-                  <Link href="/cookbooks">Cookbooks</Link>
-                </Button>
-                <Button asChild variant="outline">
-                  <Link href="/runbooks">Runbooks</Link>
-                </Button>
-                <Button asChild variant="outline">
-                  <Link href="/schematics">Schematics</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Try Playground CTA */}
-          <Card className="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 text-white border-0">
-            <CardHeader>
-              <CardTitle className="text-white">Try Playground</CardTitle>
-              <CardDescription className="text-blue-100">
-                Experiment with Settler APIs without signing up
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button asChild size="lg" variant="secondary">
-                  <Link href="/console/playground">Try Playground</Link>
-                </Button>
+        <div className="space-y-6">
+          {/* Hero — sign-in prompt */}
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 md:p-10">
+            <div className="max-w-xl">
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500 mb-3">
+                Developer Console
+              </p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">
+                Settler Developer Console
+              </h1>
+              <p className="text-base text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
+                Manage API keys, monitor reconciliation usage, and explore your integration. Sign in
+                for full console access.
+              </p>
+              <div className="flex flex-wrap gap-3">
                 <Button
                   asChild
                   size="lg"
-                  variant="outline"
-                  className="bg-white/10 hover:bg-white/20 border-white/20 text-white"
+                  className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 font-semibold px-6 shadow-md"
                 >
-                  <Link href="/signup">Sign Up for Full Access</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Feature Comparison - Upsell Trigger */}
-          <Card>
-            <CardHeader>
-              <CardTitle>What You Get with Full Access</CardTitle>
-              <CardDescription>Compare free vs. paid features</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="font-semibold mb-3 text-slate-700 dark:text-slate-300">
-                    Free Access
-                  </h3>
-                  <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                    <li className="flex items-center gap-2">
-                      <span className="text-green-500">✓</span>
-                      <span>Public playground tools</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-green-500">✓</span>
-                      <span>Documentation access</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-slate-400">✗</span>
-                      <span className="line-through">API key management</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-slate-400">✗</span>
-                      <span className="line-through">Usage analytics</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-slate-400">✗</span>
-                      <span className="line-through">Saved workflows</span>
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-3 text-blue-600 dark:text-blue-400">
-                    Full Access
-                  </h3>
-                  <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                    <li className="flex items-center gap-2">
-                      <span className="text-green-500">✓</span>
-                      <span>Everything in free, plus:</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-green-500">✓</span>
-                      <span>Unlimited API keys</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-green-500">✓</span>
-                      <span>Real-time usage analytics</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-green-500">✓</span>
-                      <span>Save & share workflows</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-green-500">✓</span>
-                      <span>Priority support</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div className="mt-6 text-center">
-                <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">
                   <Link href="/signup">Get Started Free</Link>
                 </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  asChild
+                  className="px-6 border-slate-300 dark:border-slate-700"
+                >
+                  <Link href="/login">Sign In</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Status + Quick access */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* System status */}
+            <Card className="md:col-span-1">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
+                  System Status
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="w-2.5 h-2.5 rounded-full bg-green-500 flex-shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    All systems operational
+                  </span>
+                </div>
+                <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                  <Button asChild variant="outline" size="sm" className="w-full">
+                    <Link href="/status">View Status Page</Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Playground */}
+            <Card className="md:col-span-1 hover:shadow-md transition-shadow">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
+                  Playground
+                </CardTitle>
+                <CardDescription className="text-xs">Test APIs without an account</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button
+                  asChild
+                  size="sm"
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                >
+                  <Link href="/console/playground">Open Playground</Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Docs */}
+            <Card className="md:col-span-1 hover:shadow-md transition-shadow">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
+                  Documentation
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Guides, reference, and cookbooks
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <Button asChild variant="outline" size="sm" className="w-full justify-start">
+                    <Link href="/docs">
+                      <ArrowRight className="w-3.5 h-3.5 mr-2" />
+                      Quickstart
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" size="sm" className="w-full justify-start">
+                    <Link href="/cookbook">
+                      <ArrowRight className="w-3.5 h-3.5 mr-2" />
+                      Cookbooks
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* What you unlock */}
+          <Card className="bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-base font-semibold text-slate-900 dark:text-white">
+                What you unlock with a free account
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-3">
+                {[
+                  "API key management",
+                  "Real-time usage analytics",
+                  "Reconciliation run history",
+                  "Saved workflows",
+                  "Audit evidence export",
+                  "Replay Lab access",
+                  "Webhook configuration",
+                  "Priority support",
+                ].map((item) => (
+                  <div key={item} className="flex items-center gap-2">
+                    <Activity className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
+                    <span className="text-sm text-slate-700 dark:text-slate-300">{item}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-5 pt-5 border-t border-slate-200 dark:border-slate-700 flex flex-wrap gap-3">
+                <Button
+                  asChild
+                  className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 font-semibold px-6 shadow-sm"
+                >
+                  <Link href="/signup">Create Free Account</Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  asChild
+                  className="px-6 border-slate-300 dark:border-slate-700"
+                >
+                  <Link href="/pricing">View Plans</Link>
+                </Button>
               </div>
             </CardContent>
           </Card>
-
-          {/* Final Sign In CTA */}
-          <div className="text-center py-6 border-t border-slate-200 dark:border-slate-800">
-            <p className="text-slate-600 dark:text-slate-400 mb-4 font-medium">
-              Ready to unlock the full power of Settler?
-            </p>
-            <div className="flex gap-3 justify-center">
-              <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">
-                <Link href="/signup">Sign Up Free</Link>
-              </Button>
-              <Button variant="outline" size="lg" asChild>
-                <Link href="/pricing">View Plans</Link>
-              </Button>
-            </div>
-          </div>
         </div>
       );
     }
@@ -620,20 +522,32 @@ async function ConsoleOverviewContent() {
         {/* Guided Tour */}
         <GuidedTourClient />
 
-        <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+        <div className="flex flex-col md:flex-row justify-between md:items-start gap-4 pb-2 border-b border-slate-100 dark:border-slate-800">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500 mb-1.5">
               Developer Console
+            </p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-1">
+              Overview
             </h1>
-            <p className="text-slate-600 dark:text-slate-400">
-              Manage your API keys and explore your data.
+            <p className="text-sm text-slate-500 dark:text-slate-500">
+              API usage, keys, and integration health — last 7 days
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" asChild>
-              <Link href="/docs">Documentation</Link>
+          <div className="flex gap-2 flex-shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              asChild
+              className="border-slate-300 dark:border-slate-700"
+            >
+              <Link href="/docs">Docs</Link>
             </Button>
-            <Button asChild>
+            <Button
+              size="sm"
+              asChild
+              className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+            >
               <Link href="/playground">Playground</Link>
             </Button>
           </div>
@@ -645,67 +559,101 @@ async function ConsoleOverviewContent() {
           apiKeys.length > 0 ||
           receipts.length > 0 ||
           flags.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-3">
-                  <CardDescription>Total API Calls</CardDescription>
-                  <CardTitle className="text-3xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card className="hover:shadow-md transition-shadow border-slate-200 dark:border-slate-800">
+                <CardHeader className="pb-2 pt-5 px-5">
+                  <CardDescription className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-500">
+                    Total API Calls
+                  </CardDescription>
+                  <CardTitle className="text-3xl font-bold tracking-tight mt-1">
                     {formatNumber(usageSummary.totalCalls)}
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 mb-2">
-                    <Activity className="w-4 h-4" />
+                <CardContent className="px-5 pb-5">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-500 mb-3">
+                    <Activity className="w-3.5 h-3.5" />
                     <span>Last 7 days</span>
                   </div>
-                  <Button asChild variant="outline" size="sm" className="w-full">
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="w-full text-xs border-slate-200 dark:border-slate-800"
+                  >
                     <Link href="/console/usage">
-                      View Details <ArrowRight className="w-4 h-4 ml-1" />
+                      View Details <ArrowRight className="w-3.5 h-3.5 ml-1" />
                     </Link>
                   </Button>
                 </CardContent>
               </Card>
 
               <RBACGate requiredTier="subscribed_unpaid" feature="API Keys">
-                <Card className="hover:shadow-lg transition-shadow">
-                  <CardHeader className="pb-3">
-                    <CardDescription>API Keys</CardDescription>
-                    <CardTitle className="text-3xl">{apiKeys.length}</CardTitle>
+                <Card className="hover:shadow-md transition-shadow border-slate-200 dark:border-slate-800">
+                  <CardHeader className="pb-2 pt-5 px-5">
+                    <CardDescription className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-500">
+                      API Keys
+                    </CardDescription>
+                    <CardTitle className="text-3xl font-bold tracking-tight mt-1">
+                      {apiKeys.length}
+                    </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <Button asChild variant="outline" size="sm" className="w-full">
+                  <CardContent className="px-5 pb-5">
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className="w-full text-xs border-slate-200 dark:border-slate-800"
+                    >
                       <Link href="/console/api-keys">
-                        Manage Keys <ArrowRight className="w-4 h-4 ml-1" />
+                        Manage Keys <ArrowRight className="w-3.5 h-3.5 ml-1" />
                       </Link>
                     </Button>
                   </CardContent>
                 </Card>
               </RBACGate>
 
-              <Card className="hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-3">
-                  <CardDescription>Receipts Parsed</CardDescription>
-                  <CardTitle className="text-3xl">{formatNumber(receipts.length)}</CardTitle>
+              <Card className="hover:shadow-md transition-shadow border-slate-200 dark:border-slate-800">
+                <CardHeader className="pb-2 pt-5 px-5">
+                  <CardDescription className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-500">
+                    Receipts Parsed
+                  </CardDescription>
+                  <CardTitle className="text-3xl font-bold tracking-tight mt-1">
+                    {formatNumber(receipts.length)}
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <Button asChild variant="outline" size="sm" className="w-full">
+                <CardContent className="px-5 pb-5">
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="w-full text-xs border-slate-200 dark:border-slate-800"
+                  >
                     <Link href="/console/receipts">
-                      View Receipts <ArrowRight className="w-4 h-4 ml-1" />
+                      View Receipts <ArrowRight className="w-3.5 h-3.5 ml-1" />
                     </Link>
                   </Button>
                 </CardContent>
               </Card>
 
               <RBACGate requiredTier="subscribed_unpaid" feature="Feature Flags">
-                <Card className="hover:shadow-lg transition-shadow">
-                  <CardHeader className="pb-3">
-                    <CardDescription>Feature Flags</CardDescription>
-                    <CardTitle className="text-3xl">{flags.length}</CardTitle>
+                <Card className="hover:shadow-md transition-shadow border-slate-200 dark:border-slate-800">
+                  <CardHeader className="pb-2 pt-5 px-5">
+                    <CardDescription className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-500">
+                      Feature Flags
+                    </CardDescription>
+                    <CardTitle className="text-3xl font-bold tracking-tight mt-1">
+                      {flags.length}
+                    </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <Button asChild variant="outline" size="sm" className="w-full">
+                  <CardContent className="px-5 pb-5">
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className="w-full text-xs border-slate-200 dark:border-slate-800"
+                    >
                       <Link href="/console/feature-flags">
-                        Manage Flags <ArrowRight className="w-4 h-4 ml-1" />
+                        Manage Flags <ArrowRight className="w-3.5 h-3.5 ml-1" />
                       </Link>
                     </Button>
                   </CardContent>
