@@ -1,7 +1,9 @@
 import Link from "next/link";
+import Image from "next/image";
 import { EnvErrorPanel } from "@/components/env/EnvErrorPanel";
 import { getAppEnvStatus } from "@/lib/env/runtime-access";
 import { createClient } from "@/lib/supabase/server";
+import { SETTLER_IMAGES } from "@/lib/images/image-config";
 
 function SignedOutScreen() {
   return (
@@ -31,12 +33,15 @@ function SignedOutScreen() {
 }
 
 const navItems = [
-  { name: "Recent Runs", href: "/app/runs" },
-  { name: "Detected Mismatches", href: "/app/mismatches" },
-  { name: "Evidence", href: "/app/evidence" },
-  { name: "Policies", href: "/app/policies" },
   { name: "Overview", href: "/app" },
-  { name: "Metrics", href: "/app/metrics" },
+  { name: "Executions", href: "/app/executions" },
+  { name: "Reconciliation", href: "/app/reconciliation" },
+  { name: "Replay", href: "/app/replay" },
+  { name: "Proofs", href: "/app/proofs" },
+  { name: "Policies", href: "/app/policies" },
+  { name: "Audit", href: "/app/audit" },
+  { name: "Integrations", href: "/app/integrations" },
+  { name: "System Health", href: "/app/system-health" },
   { name: "Settings", href: "/app/settings" },
 ];
 
@@ -54,7 +59,16 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex h-screen bg-background-light">
       <aside className="w-64 border-r border-slate-200 bg-white">
-        <div className="border-b border-slate-200 p-4 text-xl font-bold">Settler Console</div>
+        <Link href="/" className="flex border-b border-slate-200 p-4">
+          <Image
+            src={SETTLER_IMAGES.logoMain.webpPath || SETTLER_IMAGES.logoMain.path}
+            alt={SETTLER_IMAGES.logoMain.alt}
+            width={130}
+            height={34}
+            className="h-8 w-auto"
+            priority
+          />
+        </Link>
         <nav className="p-3">
           {navItems.map((item) => (
             <Link

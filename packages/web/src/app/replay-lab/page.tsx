@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { ReviewQueuePanel } from "@/components/stitch-import/ReviewQueuePanel";
 import {
   ArrowRight,
   GitBranch,
@@ -271,6 +272,15 @@ export default function ReplayLabPage() {
           </div>
         </section>
       </main>
+      <section className="py-10 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
+            Stitch Replay Review Surface
+          </h2>
+          <ReviewQueuePanel />
+        </div>
+      </section>
+
       <Footer />
     </>
   );

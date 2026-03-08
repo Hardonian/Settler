@@ -8,12 +8,8 @@ import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { TextRevealHeading } from "@/components/ui/TextReveal";
 import { ParallaxBackground, ParallaxBlobs } from "@/components/ui/ParallaxBackground";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import {
-  Plug,
-  Code2,
-  Play,
-  BarChart3,
-} from "lucide-react";
+import ArchitectureOverview from "@/components/stitch-import/ArchitectureOverview";
+import { Plug, Code2, Play, BarChart3 } from "lucide-react";
 
 const steps = [
   {
@@ -50,7 +46,7 @@ export default function HowItWorksPage() {
       {/* Breadcrumbs */}
       <section className="px-4 sm:px-6 lg:px-8 pt-24">
         <div className="max-w-7xl mx-auto">
-          <Breadcrumbs items={[{ label: 'How It Works' }]} />
+          <Breadcrumbs items={[{ label: "How It Works" }]} />
         </div>
       </section>
 
@@ -76,7 +72,7 @@ export default function HowItWorksPage() {
             <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
               Reconcile millions of transactions automatically in 4 simple steps.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
               <Button
                 size="lg"
@@ -85,7 +81,12 @@ export default function HowItWorksPage() {
               >
                 <Link href="/signup">Start Free Trial</Link>
               </Button>
-              <Button size="lg" variant="outline" asChild className="w-full sm:w-auto px-8 py-5 sm:py-6 text-base sm:text-lg">
+              <Button
+                size="lg"
+                variant="outline"
+                asChild
+                className="w-full sm:w-auto px-8 py-5 sm:py-6 text-base sm:text-lg"
+              >
                 <Link href="/console/playground">Try Playground</Link>
               </Button>
             </div>
@@ -107,8 +108,12 @@ export default function HowItWorksPage() {
                   <div className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-4 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center">
                     <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
                   </div>
-                  <h3 className="text-lg md:text-xl font-bold mb-2 text-slate-900 dark:text-white">{step.title}</h3>
-                  <p className="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-relaxed">{step.description}</p>
+                  <h3 className="text-lg md:text-xl font-bold mb-2 text-slate-900 dark:text-white">
+                    {step.title}
+                  </h3>
+                  <p className="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+                    {step.description}
+                  </p>
                 </SpotlightCard>
               );
             })}
@@ -164,7 +169,12 @@ console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);`}
               >
                 <Link href="/console/playground">Try Playground</Link>
               </Button>
-              <Button size="lg" variant="outline" asChild className="w-full sm:w-auto px-8 py-5 sm:py-6 text-base sm:text-lg">
+              <Button
+                size="lg"
+                variant="outline"
+                asChild
+                className="w-full sm:w-auto px-8 py-5 sm:py-6 text-base sm:text-lg"
+              >
                 <Link href="/docs">View Documentation</Link>
               </Button>
             </div>
@@ -192,10 +202,24 @@ console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);`}
             >
               <Link href="/signup">Start Free Trial</Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="w-full sm:w-auto px-8 py-5 sm:py-6 text-base sm:text-lg">
+            <Button
+              size="lg"
+              variant="outline"
+              asChild
+              className="w-full sm:w-auto px-8 py-5 sm:py-6 text-base sm:text-lg"
+            >
               <Link href="/pricing">View Pricing</Link>
             </Button>
           </div>
+        </div>
+      </section>
+
+      <section className="py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
+            Stitch Workflow Surface
+          </h2>
+          <ArchitectureOverview />
         </div>
       </section>
 

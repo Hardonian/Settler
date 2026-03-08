@@ -1,6 +1,7 @@
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { ProofExplorer } from "@/components/proof/ProofExplorer";
+import { ResultsPanel } from "@/components/stitch-import/ResultsPanel";
 
 export const metadata = {
   title: "Proof Explorer | Settler",
@@ -33,6 +34,15 @@ export default function ProofExplorerPage() {
         <section className="py-8 sm:py-10 px-4 sm:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto">
             <ProofExplorer />
+          </div>
+        </section>
+
+        <section className="py-10 sm:py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-800">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
+              Stitch Proof Surface
+            </h2>
+            <ResultsPanel />
           </div>
         </section>
       </main>
