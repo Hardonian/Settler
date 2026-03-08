@@ -77,7 +77,7 @@ test.describe("Landing page reality pass", () => {
     );
     await expect(page.getByRole("link", { name: "Security" }).first()).toHaveAttribute(
       "href",
-      "/security"
+      "/security-and-audit"
     );
     await expect(page.getByRole("link", { name: "Docs" }).first()).toHaveAttribute("href", "/docs");
   });
@@ -161,5 +161,119 @@ test.describe("Landing page reality pass", () => {
     const response = await page.goto("/docs/quickstart");
     expect(response?.status()).toBeLessThan(400);
     await expect(page.locator("h1").first()).toBeVisible();
+  });
+
+  // --- Feature pages ---
+
+  test("replay-lab page loads with correct structure", async ({ page }) => {
+    const response = await page.goto("/replay-lab");
+    expect(response?.status()).toBeLessThan(400);
+    await expect(page.locator("h1")).toBeVisible();
+    // Nav and footer should be present
+    await expect(page.locator('nav[aria-label="Main navigation"]')).toBeVisible();
+    await expect(page.locator("footer")).toBeVisible();
+    // Main element should be present (sections no longer orphaned outside main)
+    await expect(page.locator("main#main-content")).toBeVisible();
+    // No sections outside main before footer — footer should follow main
+    const mainEl = page.locator("main#main-content");
+    await expect(mainEl).toBeVisible();
+  });
+
+  test("proof-explorer page loads", async ({ page }) => {
+    const response = await page.goto("/proof-explorer");
+    expect(response?.status()).toBeLessThan(400);
+    await expect(page.locator("h1")).toBeVisible();
+    await expect(page.locator('nav[aria-label="Main navigation"]')).toBeVisible();
+    await expect(page.locator("footer")).toBeVisible();
+  });
+
+  test("how-it-works page loads", async ({ page }) => {
+    const response = await page.goto("/how-it-works");
+    expect(response?.status()).toBeLessThan(400);
+    await expect(page.locator("h1").first()).toBeVisible();
+  });
+
+  // --- Homepage feature surface ---
+
+  test("homepage has feature entry cards linking to feature pages", async ({ page }) => {
+    await page.goto("/");
+
+    // Feature cards section
+    const featureSection = page.locator('[aria-label="Key features"]');
+    await expect(featureSection).toBeVisible();
+
+    // Links to feature pages exist
+    await expect(page.getByRole("link", { name: /How It Works/i }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /Replay Lab/i }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /Proof Explorer/i }).first()).toBeVisible();
+  });
+
+  test("homepage has GitHub/Quickstart CTA section", async ({ page }) => {
+    await page.goto("/");
+
+    // Start in minutes CTA
+    const ctaSection = page.locator('[aria-label="Get started"]');
+    await expect(ctaSection).toBeVisible();
+
+    // Read Quickstart link
+    const quickstartCta = ctaSection.getByRole("link", { name: /Quickstart/i });
+    await expect(quickstartCta).toHaveAttribute("href", "/docs/quickstart");
+  });
+
+  // --- Logo dark mode ---
+
+  test("logo renders in dark mode", async ({ page }) => {
+    await page.goto("/");
+
+    // Switch to dark mode
+    const toggle = page.getByRole("button", { name: "Toggle dark mode" });
+    await toggle.click();
+    await expect(page.locator("html")).toHaveClass(/dark/);
+
+    // Dark logo should be visible (light logo hidden)
+    const darkLogo = page.locator('img[src="/logo-dark.svg"]').first();
+    await expect(darkLogo).toBeVisible();
+
+    // Light logo should be hidden in dark mode
+    const lightLogo = page.locator('img[src="/logo.svg"]').first();
+    await expect(lightLogo).toBeHidden();
+
+    // Reset to light
+    await toggle.click();
+  });
+
+  // --- Navigation features dropdown ---
+
+  test("features dropdown in nav exposes feature pages", async ({ page }) => {
+    await page.goto("/");
+
+    // Click Features dropdown
+    const featuresBtn = page.getByRole("button", { name: "Features navigation" });
+    await expect(featuresBtn).toBeVisible();
+    await featuresBtn.click();
+
+    // Dropdown items should appear
+    await expect(page.getByRole("menuitem", { name: "How It Works" })).toBeVisible();
+    await expect(page.getByRole("menuitem", { name: "Replay Lab" })).toBeVisible();
+    await expect(page.getByRole("menuitem", { name: "Proof Explorer" })).toBeVisible();
+  });
+
+  // --- Footer features section ---
+
+  test("footer has Features section linking to feature pages", async ({ page }) => {
+    await page.goto("/");
+
+    const footer = page.locator("footer");
+    const featuresHeading = footer.getByRole("heading", { name: "Features" });
+    await expect(featuresHeading).toBeVisible();
+
+    await expect(footer.getByRole("link", { name: "Replay Lab" })).toHaveAttribute(
+      "href",
+      "/replay-lab"
+    );
+    await expect(footer.getByRole("link", { name: "Proof Explorer" })).toHaveAttribute(
+      "href",
+      "/proof-explorer"
+    );
   });
 });

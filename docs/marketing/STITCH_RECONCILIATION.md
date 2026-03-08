@@ -167,3 +167,43 @@ packages/web/src/app/
 - Theme system SSR-safe ✓
 - GitHub CTA href valid ✓
 - Build passes ✓
+
+---
+
+## Pass 2 — 2026-03-08 (branch: claude/stitch-marketing-unification-okii7)
+
+### Changes Made This Pass
+
+1. **`/public/logo-dark.svg`** — Created dark-mode logo variant. Text fills changed from `#0F172A`
+   (invisible on dark backgrounds) to `#F1F5F9` (near-white). Icon box updated to `#1E293B`/`#475569`
+   for visibility on dark nav/footer.
+
+2. **`Navigation.tsx`** — Logo now conditionally renders light (`/logo.svg`, `dark:hidden`) and
+   dark (`/logo-dark.svg`, `hidden dark:block`) variants. Added "Features" dropdown to desktop nav
+   exposing: How It Works, Replay Lab, Proof Explorer. Added Features section to mobile sheet nav.
+   Fixed `/security` nav link → now points directly at `/security-and-audit`.
+
+3. **`Footer.tsx`** — Logo conditional rendering (same as Navigation). Replaced redundant "Resources"
+   section (which duplicated Product links) with a "Features" section: Replay Lab, Proof Explorer,
+   Quickstart, Documentation.
+
+4. **`(marketing)/home/page.tsx`** — Added "Go Deeper on Each Capability" feature entry cards
+   section (links to How It Works, Replay Lab, Proof Explorer). Added dark GitHub/Quickstart CTA
+   section between feature cards and FAQ.
+
+5. **`/replay-lab/page.tsx`** — Fixed structural bug: the "Stitch Replay Review Surface" section
+   was rendered **outside** `<main>` (between `</main>` and `<Footer />`). Moved inside `<main>`,
+   renamed to "Live Replay Review Surface".
+
+6. **`docs/marketing/IA.md`** — Created canonical IA document defining the site structure,
+   navigation model, footer structure, brand asset paths, and design system conventions.
+
+### Verification (Pass 2)
+
+- Logo visible in both light and dark mode ✓
+- Feature pages reachable from homepage feature cards ✓
+- Feature pages reachable from nav Features dropdown ✓
+- Feature pages reachable from footer Features section ✓
+- replay-lab document structure valid (section inside main) ✓
+- No duplicate heroes, CTAs, or FAQs ✓
+- Homepage section count: hero=1, FAQ=1, footer=1, CTA=1 ✓

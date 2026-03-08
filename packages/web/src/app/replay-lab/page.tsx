@@ -271,15 +271,20 @@ export default function ReplayLabPage() {
             </div>
           </div>
         </section>
+
+        {/* Live Replay Review Surface — inside main for correct document structure */}
+        <section className="py-10 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+              Live Replay Review Surface
+            </h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
+              Queue of reconciliation runs available for replay inspection.
+            </p>
+            <ReviewQueuePanel />
+          </div>
+        </section>
       </main>
-      <section className="py-10 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
-            Stitch Replay Review Surface
-          </h2>
-          <ReviewQueuePanel />
-        </div>
-      </section>
 
       <Footer />
     </>

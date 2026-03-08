@@ -18,8 +18,15 @@ const primaryNavigationItems = [
   { href: "/platform", label: "Platform" },
   ...(siteMode === "enterprise" ? [{ href: "/enterprise", label: "Enterprise" }] : []),
   { href: "/pricing", label: "Pricing" },
-  { href: "/security", label: "Security" },
+  { href: "/security-and-audit", label: "Security" },
   { href: "/docs", label: "Docs" },
+];
+
+// Feature pages exposed in a dropdown
+const featureNavigationItems = [
+  { href: "/how-it-works", label: "How It Works" },
+  { href: "/replay-lab", label: "Replay Lab" },
+  { href: "/proof-explorer", label: "Proof Explorer" },
 ];
 
 // Secondary navigation items (in "More" dropdown on desktop, accordion on mobile)
@@ -33,9 +40,11 @@ export function Navigation() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [featuresMenuOpen, setFeaturesMenuOpen] = useState(false);
   const hasSecondaryNavigationItems = secondaryNavigationItems.length > 0;
   const menuRef = useRef<HTMLDivElement>(null);
   const moreMenuRef = useRef<HTMLDivElement>(null);
+  const featuresMenuRef = useRef<HTMLDivElement>(null);
 
   // Close "More" menu when clicking outside
   useEffect(() => {
@@ -51,9 +60,24 @@ export function Navigation() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [moreMenuOpen]);
 
-  // Close "More" menu on route change
+  // Close Features menu when clicking outside
+  useEffect(() => {
+    if (!featuresMenuOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (featuresMenuRef.current && !featuresMenuRef.current.contains(event.target as Node)) {
+        setFeaturesMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [featuresMenuOpen]);
+
+  // Close dropdowns on route change
   useEffect(() => {
     setMoreMenuOpen(false);
+    setFeaturesMenuOpen(false);
   }, [pathname]);
 
   // Focus trap for mobile menu
@@ -126,20 +150,23 @@ export function Navigation() {
               aria-label="Settler homepage"
             >
               <div className="relative overflow-hidden rounded">
+                {/* Light mode logo */}
                 <Image
-                  src={SETTLER_IMAGES.logoMain.webpPath || SETTLER_IMAGES.logoMain.path}
+                  src="/logo.svg"
                   alt="Settler Logo"
                   width={130}
                   height={34}
-                  className="h-8 w-auto relative z-10 transition-all duration-300 group-hover:brightness-110 group-hover:drop-shadow-lg"
+                  className="h-8 w-auto relative z-10 transition-all duration-300 group-hover:brightness-110 group-hover:drop-shadow-lg dark:hidden"
                   priority
-                  onError={(e) => {
-                    // Fallback to PNG if WebP fails
-                    const target = e.target as HTMLImageElement;
-                    if (target.src.includes(".webp")) {
-                      target.src = SETTLER_IMAGES.logoMain.path;
-                    }
-                  }}
+                />
+                {/* Dark mode logo */}
+                <Image
+                  src="/logo-dark.svg"
+                  alt="Settler Logo"
+                  width={130}
+                  height={34}
+                  className="h-8 w-auto relative z-10 transition-all duration-300 group-hover:brightness-110 group-hover:drop-shadow-lg hidden dark:block"
+                  priority
                 />
                 {/* Shine effect overlay */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
@@ -176,6 +203,66 @@ export function Navigation() {
                     </Link>
                   );
                 })}
+
+                {/* Features dropdown */}
+                <div className="relative" ref={featuresMenuRef}>
+                  <button
+                    type="button"
+                    onClick={() => setFeaturesMenuOpen(!featuresMenuOpen)}
+                    className={cn(
+                      "text-sm xl:text-base text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap",
+                      "transition-colors duration-200 ease-out",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                      "focus-visible:ring-offset-background",
+                      "rounded px-2 py-1 flex items-center gap-1",
+                      "motion-reduce:transition-none",
+                      featuresMenuOpen && "text-primary-600 dark:text-primary-400"
+                    )}
+                    aria-expanded={featuresMenuOpen}
+                    aria-haspopup="true"
+                    aria-label="Features navigation"
+                  >
+                    Features
+                    <ChevronDown
+                      className={cn(
+                        "w-4 h-4 transition-transform duration-200",
+                        featuresMenuOpen && "rotate-180"
+                      )}
+                      aria-hidden="true"
+                    />
+                  </button>
+
+                  {featuresMenuOpen && (
+                    <div
+                      className="absolute top-full left-0 mt-2 w-52 bg-background border border-border rounded-lg shadow-lg py-2 z-50"
+                      role="menu"
+                      aria-orientation="vertical"
+                    >
+                      {featureNavigationItems.map((item) => {
+                        const isActive =
+                          pathname === item.href || pathname?.startsWith(item.href + "/");
+                        return (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            className={cn(
+                              "block px-4 py-2 text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent",
+                              isActive &&
+                                "text-primary-600 dark:text-primary-400 font-medium bg-accent/50",
+                              "transition-colors duration-150 ease-out",
+                              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                            )}
+                            role="menuitem"
+                            onClick={() => setFeaturesMenuOpen(false)}
+                            aria-current={isActive ? "page" : undefined}
+                          >
+                            {item.label}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
 
                 {/* More dropdown menu */}
                 {hasSecondaryNavigationItems && (
@@ -330,6 +417,41 @@ export function Navigation() {
                         Main
                       </p>
                       {primaryNavigationItems.map((item) => {
+                        const isActive =
+                          pathname === item.href || pathname?.startsWith(item.href + "/");
+                        return (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            className={cn(
+                              "text-base text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400",
+                              isActive &&
+                                "text-primary-600 dark:text-primary-400 font-medium bg-accent/50",
+                              "transition-colors duration-200 ease-out",
+                              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                              "focus-visible:ring-offset-background",
+                              "rounded-lg px-4 py-3 min-h-[48px] flex items-center",
+                              "hover:bg-accent/50",
+                              "motion-reduce:transition-none"
+                            )}
+                            onClick={() => setMobileMenuOpen(false)}
+                            aria-current={isActive ? "page" : undefined}
+                          >
+                            {item.label}
+                          </Link>
+                        );
+                      })}
+                    </nav>
+
+                    {/* Features Navigation */}
+                    <nav
+                      className="flex flex-col space-y-1 pt-6 border-t border-border"
+                      aria-label="Mobile features navigation"
+                    >
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 mb-2">
+                        Features
+                      </p>
+                      {featureNavigationItems.map((item) => {
                         const isActive =
                           pathname === item.href || pathname?.startsWith(item.href + "/");
                         return (
