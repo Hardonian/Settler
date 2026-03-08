@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { StatusIndicator } from "@/components/monitoring/StatusIndicator";
 import { UiLink } from "@/components/ui/link";
-import { SETTLER_IMAGES } from "@/lib/images/image-config";
 
 const footerSections = [
   {
