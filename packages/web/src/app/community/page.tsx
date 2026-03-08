@@ -1,18 +1,25 @@
 /**
  * Community Page
- * 
+ *
  * Combines positioning feedback form with real-time posts
  * Demonstrates the full ecosystem in action
  */
 
-import { PositioningFeedbackForm } from '@/app/components/PositioningFeedbackForm';
-import { RealtimePosts } from '@/app/components/RealtimePosts';
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
-import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { ConversionCTA } from '@/components/ConversionCTA';
-import { AnimatedHero } from '@/components/AnimatedHero';
+import { Metadata } from "next";
+import { PositioningFeedbackForm } from "@/app/components/PositioningFeedbackForm";
+import { RealtimePosts } from "@/app/components/RealtimePosts";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { ConversionCTA } from "@/components/ConversionCTA";
+import { AnimatedHero } from "@/components/AnimatedHero";
+
+export const metadata: Metadata = {
+  title: "Community - Settler",
+  description:
+    "Join the Settler community. Share feedback, discuss reconciliation engineering, and help shape the future of open source financial infrastructure.",
+};
 
 export default function CommunityPage() {
   return (
@@ -22,7 +29,7 @@ export default function CommunityPage() {
       {/* Breadcrumbs */}
       <section className="px-4 sm:px-6 lg:px-8 pt-24">
         <div className="max-w-7xl mx-auto">
-          <Breadcrumbs items={[{ label: 'Community' }]} />
+          <Breadcrumbs items={[{ label: "Community" }]} />
         </div>
       </section>
 
@@ -32,9 +39,8 @@ export default function CommunityPage() {
         title="Community Hub"
         description="Share feedback, engage with posts, and help shape the future of Settler"
       />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Positioning Feedback Form */}
           <div>

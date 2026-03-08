@@ -22,40 +22,43 @@ const competitors: Competitor[] = [
   {
     name: 'Settler',
     features: {
-      'Meaningful Changes': true,
-      'Impact Ranking': true,
-      'Hash Chain Receipts': true,
-      'AI Analysis': 'Growth+',
-      'Judgment Layer': true,
-      'Feature Flags as Policy': true,
+      'Deterministic Output': true,
+      'Hash Chain Evidence': true,
+      'Run Replay & Verification': true,
+      'AI-Assisted Exception Review': 'All Plans',
+      'Human-in-the-Loop Enforcement': true,
+      'Tenant Isolation (RLS)': true,
       'Tamper-Evident Audit Trail': true,
-      'Explanations & Why It Matters': true,
+      'Open Source Core': true,
+      'Self-Hostable': true,
     },
   },
   {
-    name: 'Competitor A',
+    name: 'Custom Scripts',
     features: {
-      'Meaningful Changes': false,
-      'Impact Ranking': false,
-      'Hash Chain Receipts': false,
-      'AI Analysis': false,
-      'Judgment Layer': false,
-      'Feature Flags as Policy': false,
+      'Deterministic Output': 'Varies',
+      'Hash Chain Evidence': false,
+      'Run Replay & Verification': false,
+      'AI-Assisted Exception Review': false,
+      'Human-in-the-Loop Enforcement': 'Manual',
+      'Tenant Isolation (RLS)': 'DIY',
       'Tamper-Evident Audit Trail': false,
-      'Explanations & Why It Matters': false,
+      'Open Source Core': 'N/A',
+      'Self-Hostable': true,
     },
   },
   {
-    name: 'Competitor B',
+    name: 'Generic ETL Tools',
     features: {
-      'Meaningful Changes': 'Basic',
-      'Impact Ranking': false,
-      'Hash Chain Receipts': false,
-      'AI Analysis': 'Enterprise Only',
-      'Judgment Layer': false,
-      'Feature Flags as Policy': false,
-      'Tamper-Evident Audit Trail': false,
-      'Explanations & Why It Matters': 'Limited',
+      'Deterministic Output': 'Partial',
+      'Hash Chain Evidence': false,
+      'Run Replay & Verification': false,
+      'AI-Assisted Exception Review': false,
+      'Human-in-the-Loop Enforcement': false,
+      'Tenant Isolation (RLS)': 'Add-on',
+      'Tamper-Evident Audit Trail': 'Logs only',
+      'Open Source Core': 'Varies',
+      'Self-Hostable': 'Varies',
     },
   },
 ];
@@ -180,7 +183,7 @@ export function ComparisonTable() {
           className="mt-8 text-center"
         >
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            * AI Analysis available on Growth and Enterprise plans.
+            Comparison based on publicly documented capabilities. &quot;Custom Scripts&quot; and &quot;Generic ETL Tools&quot; represent common alternatives, not specific named products.
           </p>
         </motion.div>
       </div>

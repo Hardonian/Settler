@@ -1,0 +1,39 @@
+---
+title: "AI-Assisted Exception Review: Context Summarization and Anomaly Flagging"
+date: "2025-08-01"
+description: "The exception review workflow now includes AI-generated context summaries and anomaly detection. Human reviewers make faster, better-informed decisions. Humans still approve every resolution."
+author: "Settler Engineering"
+---
+
+## What Changed
+
+The **exception review UI** now includes AI-generated context for every mismatch. The AI compresses triage time by surfacing relevant context, suggesting classification labels, and flagging anomalies — without making autonomous decisions.
+
+### How It Works
+
+When a reviewer opens a mismatch, the AI layer:
+
+1. **Summarizes the mismatch** — explains the variance in plain language (amount difference, timing offset, field-level breakdown)
+2. **Suggests a classification** — offers a likely category (timing difference, duplicate, data-entry error, genuine variance) with a confidence score
+3. **Flags anomalies** — highlights if this mismatch pattern is unusual relative to recent runs or historical norms
+4. **Shows similar past exceptions** — surfaces resolved mismatches with similar characteristics for reference
+
+### What the AI Does NOT Do
+
+- The AI does not resolve mismatches. Every exception requires an explicit human decision.
+- The AI suggestion is advisory. Reviewers can accept, modify, or ignore the suggestion.
+- All human decisions are captured in the audit trail with the reviewer's documented reason.
+- The AI layer is stateless per run — no training on your financial data.
+
+### Audit Trail
+
+The audit trail now records:
+- Whether the AI suggestion was shown to the reviewer
+- Whether the reviewer accepted or overrode the suggestion
+- The reviewer's documented resolution reason (required regardless of AI involvement)
+
+This ensures the review record is complete and defensible for compliance purposes.
+
+## Configuration
+
+AI-assisted review is enabled by default on all plans. It can be disabled per-workspace in Settings → Review → AI Assistance.

@@ -1,7 +1,14 @@
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
-import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Metadata } from "next";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+
+export const metadata: Metadata = {
+  title: "Vision - Settler",
+  description:
+    "Settler's long-term vision: financial infrastructure where every reconciliation is deterministic, every decision is auditable, and trust is verifiable by any party.",
+};
 
 export default function VisionPage() {
   return (

@@ -1,15 +1,22 @@
 /**
  * Comparison Page
- * 
- * Detailed comparison with competitors.
+ *
+ * How Settler compares to common reconciliation alternatives.
  */
 
-import { ComparisonTable } from '@/components/landing/ComparisonTable';
-import { FeatureShowcase } from '@/components/landing/FeatureShowcase';
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
+import { Metadata } from "next";
+import { ComparisonTable } from "@/components/landing/ComparisonTable";
+import { FeatureShowcase } from "@/components/landing/FeatureShowcase";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 
-export const dynamic = 'force-dynamic';
+export const metadata: Metadata = {
+  title: "How Settler Compares - Settler",
+  description:
+    "Settler vs custom scripts and generic ETL tools: deterministic output, hash chain evidence, run replay, tenant isolation, and open source core.",
+};
+
+export const dynamic = "force-dynamic";
 
 export default function ComparisonPage() {
   return (
@@ -22,7 +29,8 @@ export default function ComparisonPage() {
               How Settler Compares
             </h1>
             <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              See why Settler's judgment layer and meaningful insights set us apart from the competition.
+              Purpose-built reconciliation infrastructure vs. custom scripts and generic ETL tools.
+              See what you get with Settler that the alternatives cannot provide.
             </p>
           </div>
         </div>

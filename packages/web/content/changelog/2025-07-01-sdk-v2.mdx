@@ -1,0 +1,81 @@
+---
+title: "SDK v2: TypeScript, Python, and Go Clients"
+date: "2025-07-01"
+description: "SDK v2 ships typed clients for TypeScript, Python, and Go. Breaking change: reconciliation jobs now use the jobs.create() API. See migration guide below."
+author: "Settler Engineering"
+---
+
+## What Changed
+
+**SDK v2** ships typed clients for TypeScript, Python, and Go with a simplified, consistent API surface.
+
+### TypeScript
+
+```bash
+npm install @settler/sdk@^2
+```
+
+```typescript
+import { SettlerClient } from "@settler/sdk";
+
+const client = new SettlerClient({ apiKey: process.env.SETTLER_API_KEY });
+
+const job = await client.jobs.create({
+  name: "Stripe ↔ QuickBooks",
+  sources: [
+    { id: "stripe", adapter: "stripe", config: { apiKey: "..." } },
+    { id: "qb", adapter: "quickbooks", config: { ... } },
+  ],
+  rules: { matching: [{ field: "amount", tolerance: 0.01 }] },
+});
+
+const run = await client.jobs.run(job.id);
+const mismatches = await client.runs.getMismatches(run.id);
+```
+
+### Python
+
+```bash
+pip install settler-sdk>=2
+```
+
+```python
+from settler import SettlerClient
+
+client = SettlerClient(api_key=os.environ["SETTLER_API_KEY"])
+
+job = client.jobs.create(name="Stripe ↔ QuickBooks", ...)
+run = client.jobs.run(job.id)
+mismatches = client.runs.get_mismatches(run.id)
+```
+
+### Go
+
+```bash
+go get github.com/Hardonian/settler-go@v2
+```
+
+```go
+client := settler.NewClient(os.Getenv("SETTLER_API_KEY"))
+job, _ := client.Jobs.Create(ctx, settler.CreateJobRequest{...})
+run, _ := client.Jobs.Run(ctx, job.ID)
+```
+
+## Breaking Changes
+
+### v1 → v2 Migration
+
+| v1 | v2 |
+|---|---|
+| `client.reconciliations.create()` | `client.jobs.create()` |
+| `client.reconciliations.getMismatches()` | `client.runs.getMismatches()` |
+| `client.runs.replay()` | `client.runs.replay()` (unchanged) |
+
+The v1 `reconciliations` namespace is deprecated and will be removed in v3. It remains functional in v2 for backward compatibility.
+
+## New in v2
+
+- **Typed errors** — all API errors are typed with `SettlerError` and a `code` field
+- **Streaming mismatch iteration** — `client.runs.streamMismatches()` for large result sets
+- **Evidence download** — `client.runs.downloadEvidence(runId)` returns the full evidence bundle
+- **Webhook verification** — `settler.webhooks.verify(payload, signature, secret)` validates signed webhook events
