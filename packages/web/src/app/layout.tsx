@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { cookies } from "next/headers";
 import "./globals.css";
 import { SmoothScroll } from "@/components/ui/SmoothScroll";
 import {
@@ -143,6 +144,9 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const cookieStore = await cookies();
+  const cookieTheme = cookieStore.get("theme")?.value;
+  const isDarkTheme = cookieTheme === "dark";
   // Initialize Sentry on the server (non-blocking, graceful failure)
   initSentry().catch(() => {
     // Sentry initialization failed (package not available or not configured)
@@ -150,7 +154,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   });
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={isDarkTheme ? "dark" : undefined} suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="mobile-web-app-capable" content="yes" />
@@ -164,9 +168,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                const theme = localStorage.getItem('theme') || 'light';
-                if (theme === 'dark') {
-                  document.documentElement.classList.add('dark');
+                var storedTheme = localStorage.getItem('theme');
+                var cookieTheme = document.cookie
+                  .split('; ')
+                  .find(function(row) { return row.startsWith('theme='); })
+                  ?.split('=')[1];
+                var resolvedTheme = storedTheme || cookieTheme || 'light';
+                var root = document.documentElement;
+                if (resolvedTheme === 'dark') {
+                  root.classList.add('dark');
+                } else {
+                  root.classList.remove('dark');
                 }
               })();
             `,
@@ -175,11 +187,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <ErrorBoundary componentName="RootLayout">
-          <TenantThemeProvider
-            theme={null}
-            tenantId={null}
-            tenantSlug={null}
-          >
+          <TenantThemeProvider theme={null} tenantId={null} tenantSlug={null}>
             <RuntimeUiConfigProvider>
               <QueryProvider>
                 {/* Skip to main content link for accessibility */}

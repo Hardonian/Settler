@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { HelpCircle, MessageSquare, BookOpen, Mail, FileText, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { useState } from "react";
+import Link from "next/link";
+import { HelpCircle, MessageSquare, BookOpen, Mail, FileText, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 /**
  * Floating Help Button Component
- * 
+ *
  * Provides quick access to help resources, support, and documentation.
  * Always visible in bottom-right corner for easy access.
  */
@@ -18,32 +18,32 @@ export function FloatingHelpButton() {
   const helpOptions = [
     {
       icon: BookOpen,
-      label: 'Documentation',
-      href: '/docs',
-      description: 'Browse guides and API reference',
+      label: "Documentation",
+      href: "/docs",
+      description: "Browse guides and API reference",
     },
     {
       icon: MessageSquare,
-      label: 'Support',
-      href: '/support',
-      description: 'Get help from our team',
+      label: "Support",
+      href: "/support",
+      description: "Get help from our team",
     },
     {
       icon: FileText,
-      label: 'Cookbooks',
-      href: '/cookbooks',
-      description: 'Ready-to-use examples',
+      label: "Cookbooks",
+      href: "/cookbooks",
+      description: "Ready-to-use examples",
     },
     {
       icon: Mail,
-      label: 'Contact Sales',
-      href: '/enterprise',
-      description: 'Talk to our sales team',
+      label: "Contact Sales",
+      href: "/enterprise",
+      description: "Talk to our sales team",
     },
   ];
 
   return (
-    <div className="fixed bottom-6 right-6 z-40">
+    <div className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-6 z-40">
       {/* Help Menu */}
       {isOpen && (
         <div className="absolute bottom-16 right-0 mb-2 w-80 bg-white dark:bg-slate-900 rounded-lg shadow-2xl border border-slate-200 dark:border-slate-800 p-4 animate-in slide-in-from-bottom-2">
@@ -59,10 +59,10 @@ export function FloatingHelpButton() {
                   href={option.href}
                   onClick={() => setIsOpen(false)}
                   className={cn(
-                    'flex items-start gap-3 p-3 rounded-lg',
-                    'hover:bg-slate-50 dark:hover:bg-slate-800',
-                    'transition-colors duration-200',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
+                    "flex items-start gap-3 p-3 rounded-lg",
+                    "hover:bg-slate-50 dark:hover:bg-slate-800",
+                    "transition-colors duration-200",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   )}
                 >
                   <Icon className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
@@ -94,15 +94,15 @@ export function FloatingHelpButton() {
       <Button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          'h-14 w-14 rounded-full shadow-lg',
-          'bg-gradient-to-r from-blue-600 to-indigo-600',
-          'hover:from-blue-700 hover:to-indigo-700',
-          'text-white',
-          'transition-all duration-200',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-          isOpen && 'rotate-45'
+          "h-14 w-14 rounded-full shadow-lg",
+          "bg-gradient-to-r from-blue-600 to-indigo-600",
+          "hover:from-blue-700 hover:to-indigo-700",
+          "text-white",
+          "transition-all duration-200",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          isOpen && "rotate-45"
         )}
-        aria-label={isOpen ? 'Close help menu' : 'Open help menu'}
+        aria-label={isOpen ? "Close help menu" : "Open help menu"}
         aria-expanded={isOpen}
       >
         <HelpCircle className="w-6 h-6" />
