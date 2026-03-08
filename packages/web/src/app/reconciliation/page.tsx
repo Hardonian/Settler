@@ -1,1 +1,5 @@
-export { default } from "@/app/app/reconciliation/page";
+import { redirect } from "next/navigation";
+
+export default function ReconciliationPage() {
+  redirect("/app/reconciliation");
+}
