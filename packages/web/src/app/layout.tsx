@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { cookies } from "next/headers";
 import "./globals.css";
 import { SmoothScroll } from "@/components/ui/SmoothScroll";
 import {
@@ -9,14 +8,11 @@ import {
 } from "@/components/StructuredData";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { QueryProvider } from "@/lib/providers/query-provider";
-import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import { TenantThemeProvider } from "@/components/tenant/TenantThemeProvider";
-import { ToastContainer } from "@/components/ux/ToastContainer";
 import { initSentry } from "@/lib/monitoring/sentry";
 import { getImageUrl, SETTLER_IMAGES } from "@/lib/images/image-config";
 import { RuntimeUiConfigProvider } from "@/lib/runtime-ui-config/client";
-import { AnnouncementBanner } from "@/components/polish/AnnouncementBanner";
-import { RuntimeUiOptionalFeatures } from "@/components/polish/RuntimeUiOptionalFeatures";
+import { GlobalClientShell } from "@/components/GlobalClientShell";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://settler.dev"),
@@ -143,10 +139,7 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = await cookies();
-  const cookieTheme = cookieStore.get("theme")?.value;
-  const isDarkTheme = cookieTheme === "dark";
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   // Initialize Sentry on the server (non-blocking, graceful failure)
   initSentry().catch(() => {
     // Sentry initialization failed (package not available or not configured)
@@ -154,7 +147,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   });
 
   return (
-    <html lang="en" className={isDarkTheme ? "dark" : undefined} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="mobile-web-app-capable" content="yes" />
@@ -169,11 +162,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             __html: `
               (function() {
                 var storedTheme = localStorage.getItem('theme');
-                var cookieTheme = document.cookie
-                  .split('; ')
-                  .find(function(row) { return row.startsWith('theme='); })
-                  ?.split('=')[1];
-                var resolvedTheme = storedTheme || cookieTheme || 'light';
+                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var resolvedTheme = storedTheme || (prefersDark ? 'dark' : 'light');
                 var root = document.documentElement;
                 if (resolvedTheme === 'dark') {
                   root.classList.add('dark');
@@ -194,11 +184,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <a href="#main-content" className="skip-to-main">
                   Skip to main content
                 </a>
-                <AnnouncementBanner />
                 <SmoothScroll>{children}</SmoothScroll>
-                <PwaInstallPrompt />
-                <ToastContainer />
-                <RuntimeUiOptionalFeatures />
+                <GlobalClientShell />
               </QueryProvider>
             </RuntimeUiConfigProvider>
           </TenantThemeProvider>

@@ -1,7 +1,4 @@
-"use client";
-
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
@@ -37,19 +34,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Image from "next/image";
-
-const AnimatedCodeBlock = dynamic(
-  () =>
-    import("@/components/AnimatedCodeBlock").then((mod) => ({ default: mod.AnimatedCodeBlock })),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="bg-slate-900 rounded-xl p-6 min-h-[300px] flex items-center justify-center">
-        <div className="animate-pulse text-slate-400">Loading code editor...</div>
-      </div>
-    ),
-  }
-);
+import { AnimatedCodeBlock } from "@/components/AnimatedCodeBlock";
 
 export default function HomePage() {
   const repoUrl = process.env.NEXT_PUBLIC_REPO_URL || "https://github.com/Hardonian/Settler";
@@ -561,7 +546,8 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                 Go Deeper on Each Capability
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
-                Each feature has its own dedicated page with detailed mechanics, interactive demos, and documentation.
+                Each feature has its own dedicated page with detailed mechanics, interactive demos,
+                and documentation.
               </p>
             </div>
 
@@ -613,7 +599,10 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                     </p>
                     <span className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                       {feature.cta}
-                      <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                      <ArrowRight
+                        className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5"
+                        aria-hidden="true"
+                      />
                     </span>
                   </Link>
                 );
