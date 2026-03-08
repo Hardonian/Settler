@@ -20,7 +20,7 @@ const footerSections = [
     links: [
       { href: "/about", label: "About" },
       { href: "/contact", label: "Contact" },
-      { href: "https://github.com/shardie-github/Settler-API", label: "GitHub", external: true },
+      { href: "https://github.com/Hardonian/Settler", label: "GitHub", external: true },
       { href: "https://status.settler.dev", label: "Status", external: true },
     ],
   },
@@ -39,7 +39,10 @@ const footerSections = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-background px-4 py-12 sm:px-6 lg:px-8" role="contentinfo">
+    <footer
+      className="border-t border-border bg-background px-4 py-12 sm:px-6 lg:px-8"
+      role="contentinfo"
+    >
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-4">
           <div>
@@ -54,7 +57,8 @@ export function Footer() {
               />
             </UiLink>
             <p className="text-sm text-muted-foreground">
-              Open-source reconciliation engine for deterministic, inspectable financial data matching.
+              Open-source reconciliation engine for deterministic, inspectable financial data
+              matching.
             </p>
           </div>
 
@@ -82,17 +86,34 @@ export function Footer() {
 
         <div className="flex flex-col items-center justify-between gap-4 border-t border-border pt-8 md:flex-row">
           <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-            <div className="text-sm text-muted-foreground">© 2026 Settler. All rights reserved.</div>
+            <div className="text-sm text-muted-foreground">
+              © 2026 Settler. All rights reserved.
+            </div>
             <StatusIndicator />
           </div>
           <nav className="flex gap-6 text-sm" aria-label="Social media links">
-            <UiLink href="https://twitter.com/settler_io" external variant="muted" showExternalIcon={false}>
+            <UiLink
+              href="https://twitter.com/settler_io"
+              external
+              variant="muted"
+              showExternalIcon={false}
+            >
               Twitter
             </UiLink>
-            <UiLink href="https://github.com/shardie-github/Settler-API" external variant="muted" showExternalIcon={false}>
+            <UiLink
+              href="https://github.com/Hardonian/Settler"
+              external
+              variant="muted"
+              showExternalIcon={false}
+            >
               GitHub
             </UiLink>
-            <UiLink href="https://discord.gg/settler" external variant="muted" showExternalIcon={false}>
+            <UiLink
+              href="https://discord.gg/settler"
+              external
+              variant="muted"
+              showExternalIcon={false}
+            >
               Discord
             </UiLink>
           </nav>
