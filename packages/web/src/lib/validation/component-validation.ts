@@ -55,7 +55,7 @@ export function validateWebhookUrl(url: string): {
     }
 
     return { valid: true };
-  } catch (_error) {
+  } catch {
     return { valid: false, error: "Invalid URL format" };
   }
 }

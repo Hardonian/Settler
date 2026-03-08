@@ -1,28 +1,37 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { EmptyState } from '@/components/EmptyState';
-import { Skeleton } from '@/components/Skeleton';
-import { Activity, RefreshCw, CheckCircle2, XCircle, Clock, Upload, Webhook, CreditCard } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/EmptyState";
+import { Skeleton } from "@/components/Skeleton";
+import {
+  Activity,
+  RefreshCw,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Upload,
+  Webhook,
+  CreditCard,
+} from "lucide-react";
 // Simple date formatting without external dependency
 function formatTimeAgo(date: Date): string {
   const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-  if (seconds < 60) return 'just now';
+  if (seconds < 60) return "just now";
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+  if (minutes < 60) return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+  if (hours < 24) return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
   const days = Math.floor(hours / 24);
-  return `${days} day${days !== 1 ? 's' : ''} ago`;
+  return `${days} day${days !== 1 ? "s" : ""} ago`;
 }
 
 interface ActivityEvent {
   id: string;
-  type: 'reconciliation' | 'file_upload' | 'webhook' | 'billing';
-  status: 'success' | 'failed' | 'pending';
+  type: "reconciliation" | "file_upload" | "webhook" | "billing";
+  status: "success" | "failed" | "pending";
   message: string;
   workspaceId: string;
   actorId?: string;
@@ -37,7 +46,7 @@ export default function ActivityPage() {
 
   useEffect(() => {
     loadEvents();
-    
+
     if (autoRefresh) {
       const interval = setInterval(loadEvents, 5000); // Poll every 5 seconds
       return () => clearInterval(interval);
@@ -47,7 +56,7 @@ export default function ActivityPage() {
 
   const loadEvents = async () => {
     try {
-      const result = await fetch('/api/workspace/events');
+      const result = await fetch("/api/workspace/events");
       if (result.ok) {
         const data = await result.json();
         setEvents(data.events || []);
@@ -55,7 +64,7 @@ export default function ActivityPage() {
         // No mock data - show empty state if API fails
         setEvents([]);
       }
-    } catch (error) {
+    } catch {
       // No mock data - show empty state on error
       setEvents([]);
     } finally {
@@ -63,44 +72,44 @@ export default function ActivityPage() {
     }
   };
 
-  const getEventIcon = (type: ActivityEvent['type']) => {
+  const getEventIcon = (type: ActivityEvent["type"]) => {
     switch (type) {
-      case 'reconciliation':
+      case "reconciliation":
         return RefreshCw;
-      case 'file_upload':
+      case "file_upload":
         return Upload;
-      case 'webhook':
+      case "webhook":
         return Webhook;
-      case 'billing':
+      case "billing":
         return CreditCard;
       default:
         return Activity;
     }
   };
 
-  const getStatusIcon = (status: ActivityEvent['status']) => {
+  const getStatusIcon = (status: ActivityEvent["status"]) => {
     switch (status) {
-      case 'success':
+      case "success":
         return CheckCircle2;
-      case 'failed':
+      case "failed":
         return XCircle;
-      case 'pending':
+      case "pending":
         return Clock;
       default:
         return Activity;
     }
   };
 
-  const getStatusColor = (status: ActivityEvent['status']) => {
+  const getStatusColor = (status: ActivityEvent["status"]) => {
     switch (status) {
-      case 'success':
-        return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
-      case 'failed':
-        return 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300';
+      case "success":
+        return "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300";
+      case "failed":
+        return "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300";
+      case "pending":
+        return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300";
       default:
-        return 'bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300';
+        return "bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300";
     }
   };
 
@@ -110,8 +119,10 @@ export default function ActivityPage() {
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Activity Feed</h1>
           <p className="text-slate-600 dark:text-slate-400 mt-1">
-            Real-time updates on reconciliations, file uploads, webhooks, and billing. 
-            <span className="text-xs text-slate-500 ml-2">Auto-refreshes every 5 seconds when enabled.</span>
+            Real-time updates on reconciliations, file uploads, webhooks, and billing.
+            <span className="text-xs text-slate-500 ml-2">
+              Auto-refreshes every 5 seconds when enabled.
+            </span>
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -124,13 +135,8 @@ export default function ActivityPage() {
             />
             Auto-refresh
           </label>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={loadEvents}
-            disabled={loading}
-          >
-            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          <Button variant="outline" size="sm" onClick={loadEvents} disabled={loading}>
+            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </Button>
         </div>
@@ -185,7 +191,7 @@ export default function ActivityPage() {
                             {Object.entries(event.metadata)
                               .slice(0, 2)
                               .map(([k, v]) => `${k}: ${v}`)
-                              .join(', ')}
+                              .join(", ")}
                           </span>
                         )}
                       </div>

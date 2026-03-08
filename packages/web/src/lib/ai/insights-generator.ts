@@ -52,7 +52,7 @@ async function generateCostInsights(billingAccountId: string): Promise<Insight[]
           if (usage.limit !== -1) {
             totalLimit += usage.limit;
           }
-        } catch (_error) {
+        } catch {
           // Skip on error
         }
       }

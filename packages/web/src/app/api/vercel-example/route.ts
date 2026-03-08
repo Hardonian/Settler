@@ -15,7 +15,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { kv, cacheGet, cacheSet } from "@/lib/vercel/kv";
 import { edgeConfig, getFeatureFlagFromEdgeConfig } from "@/lib/vercel/edge-config";
 import { blob } from "@/lib/vercel/blob";
-import { withSecurity } from '@/lib/middleware/api-security';
+import { withSecurity } from "@/lib/middleware/api-security";
 import { requireAuth } from "@/lib/api/unified-auth";
 import { isSuperAdmin } from "@/lib/auth/super-admin";
 
@@ -36,7 +36,7 @@ async function guardInternalAccess(request: NextRequest): Promise<NextResponse |
   try {
     // Require authenticated session (Console users).
     await requireAuth(request);
-  } catch (error) {
+  } catch {
     // Do not reveal route existence.
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
@@ -58,34 +58,34 @@ export const GET = withSecurity(
     const denied = await guardInternalAccess(request);
     if (denied) return denied;
 
-  const { searchParams } = new URL(request.url);
-  const action = searchParams.get("action") || "all";
+    const { searchParams } = new URL(request.url);
+    const action = searchParams.get("action") || "all";
 
-  try {
-    switch (action) {
-      case "kv":
-        return await handleKvExample();
-      case "edge-config":
-        return await handleEdgeConfigExample();
-      case "blob":
-        return await handleBlobExample();
-      case "all":
-      default:
-        return await handleAllExamples();
+    try {
+      switch (action) {
+        case "kv":
+          return await handleKvExample();
+        case "edge-config":
+          return await handleEdgeConfigExample();
+        case "blob":
+          return await handleBlobExample();
+        case "all":
+        default:
+          return await handleAllExamples();
+      }
+    } catch (error) {
+      // Never return 500 - return graceful error response
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Failed to execute example",
+          message: error instanceof Error ? error.message : "Unknown error",
+          examples: null,
+        },
+        { status: 200 }
+      );
     }
-  } catch (error) {
-    // Never return 500 - return graceful error response
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to execute example",
-        message: error instanceof Error ? error.message : "Unknown error",
-        examples: null,
-      },
-      { status: 200 }
-    );
-  }
-},
+  },
   { rateLimit: { windowMs: 60000, maxRequests: 60 }, requireAuth: true }
 );
 
@@ -97,40 +97,40 @@ export const POST = withSecurity(
     const denied = await guardInternalAccess(request);
     if (denied) return denied;
 
-  try {
-    const formData = await request.formData();
-    const file = formData.get("file") as File;
+    try {
+      const formData = await request.formData();
+      const file = formData.get("file") as File;
 
-    if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+      if (!file) {
+        return NextResponse.json({ error: "No file provided" }, { status: 400 });
+      }
+
+      const result = await blob.put(`uploads/${file.name}`, file, {
+        access: "public",
+        addRandomSuffix: true,
+        contentType: file.type,
+      });
+
+      return NextResponse.json({
+        success: true,
+        url: result.url,
+        pathname: result.pathname,
+        size: result.size ?? 0,
+        contentType: result.contentType,
+      });
+    } catch (error) {
+      // Never return 500 - return graceful error response
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Failed to upload file",
+          message: error instanceof Error ? error.message : "Unknown error",
+          url: null,
+        },
+        { status: 200 }
+      );
     }
-
-    const result = await blob.put(`uploads/${file.name}`, file, {
-      access: "public",
-      addRandomSuffix: true,
-      contentType: file.type,
-    });
-
-    return NextResponse.json({
-      success: true,
-      url: result.url,
-      pathname: result.pathname,
-      size: result.size ?? 0,
-      contentType: result.contentType,
-    });
-  } catch (error) {
-    // Never return 500 - return graceful error response
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to upload file",
-        message: error instanceof Error ? error.message : "Unknown error",
-        url: null,
-      },
-      { status: 200 }
-    );
-  }
-},
+  },
   { rateLimit: { windowMs: 60000, maxRequests: 10 }, requireAuth: true }
 );
 

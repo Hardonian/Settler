@@ -64,7 +64,7 @@ export const POST = withSecurity(
                 });
                 tenantId = billingAccount?.tenantId || null;
               }
-            } catch (error) {
+            } catch {
               return NextResponse.json(
                 {
                   error: "Unauthorized",
@@ -74,7 +74,7 @@ export const POST = withSecurity(
               );
             }
           }
-        } catch (error) {
+        } catch {
           return NextResponse.json(
             {
               error: "Unauthorized",

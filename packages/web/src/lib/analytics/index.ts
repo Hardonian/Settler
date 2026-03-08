@@ -6,7 +6,12 @@
  * configured the class is a safe no-op — analytics failures never break the app.
  */
 
-import type { AnalyticsProvider, PageViewProperties, EventProperties, ErrorMetadata } from './types';
+import type {
+  AnalyticsProvider,
+  PageViewProperties,
+  EventProperties,
+  ErrorMetadata,
+} from "./types";
 
 class Analytics {
   private initialized = false;
@@ -17,9 +22,9 @@ class Analytics {
    * Initialize analytics with configured providers
    */
   init() {
-    if (this.initialized || typeof window === 'undefined') return;
+    if (this.initialized || typeof window === "undefined") return;
     this.initialized = true;
-    this.debugMode = typeof window !== 'undefined' && window.location?.hostname === 'localhost';
+    this.debugMode = typeof window !== "undefined" && window.location?.hostname === "localhost";
     for (const provider of this.providers) {
       try {
         provider.init?.();
@@ -30,13 +35,13 @@ class Analytics {
   }
 
   private dispatch(method: keyof AnalyticsProvider, args: unknown[]) {
-    if (this.debugMode && typeof console !== 'undefined') {
-      console.debug(`[analytics] ${String(method)}`, ...args);
+    if (this.debugMode && typeof console !== "undefined") {
+      console.warn(`[analytics] ${String(method)}`, ...args);
     }
     for (const provider of this.providers) {
       try {
         const fn = provider[method];
-        if (typeof fn === 'function') {
+        if (typeof fn === "function") {
           (fn as (...a: unknown[]) => void).apply(provider, args);
         }
       } catch {
@@ -49,35 +54,35 @@ class Analytics {
    * Track a page view
    */
   trackPageView(route: string, properties?: PageViewProperties) {
-    this.dispatch('trackPageView', [route, properties]);
+    this.dispatch("trackPageView", [route, properties]);
   }
 
   /**
    * Track a custom event
    */
   trackEvent(name: string, payload?: EventProperties) {
-    this.dispatch('trackEvent', [name, payload]);
+    this.dispatch("trackEvent", [name, payload]);
   }
 
   /**
    * Track an error
    */
   trackError(error: Error | string, metadata?: Partial<ErrorMetadata> & Record<string, any>) {
-    this.dispatch('trackError', [error, metadata]);
+    this.dispatch("trackError", [error, metadata]);
   }
 
   /**
    * Identify a user
    */
   identify(userId: string, traits?: Record<string, any>) {
-    this.dispatch('identify', [userId, traits]);
+    this.dispatch("identify", [userId, traits]);
   }
 
   /**
    * Set user properties
    */
   setUserProperties(properties: Record<string, any>) {
-    this.dispatch('setUserProperties', [properties]);
+    this.dispatch("setUserProperties", [properties]);
   }
 
   /**
@@ -85,9 +90,13 @@ class Analytics {
    */
   async flush() {
     const promises = this.providers
-      .filter((p) => typeof p.flush === 'function')
+      .filter((p) => typeof p.flush === "function")
       .map((p) => {
-        try { return p.flush!(); } catch { return Promise.resolve(); }
+        try {
+          return p.flush!();
+        } catch {
+          return Promise.resolve();
+        }
       });
     await Promise.allSettled(promises);
   }
@@ -98,7 +107,11 @@ class Analytics {
   addProvider(provider: AnalyticsProvider) {
     this.providers.push(provider);
     if (this.initialized) {
-      try { provider.init?.(); } catch { /* safe */ }
+      try {
+        provider.init?.();
+      } catch {
+        /* safe */
+      }
     }
   }
 }

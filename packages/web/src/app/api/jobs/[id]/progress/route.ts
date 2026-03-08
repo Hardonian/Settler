@@ -93,7 +93,7 @@ export const GET = withSecurity(
               });
               tenantId = billingAccount?.tenantId || null;
             }
-          } catch (error) {
+          } catch {
             return NextResponse.json(
               {
                 error: "Unauthorized",
