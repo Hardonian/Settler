@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function DarkModeToggle() {
@@ -38,10 +39,21 @@ export function DarkModeToggle() {
       onClick={toggleDarkMode}
       className="rounded-full"
       aria-label="Toggle dark mode"
+      // Suppress hydration mismatch — icon is determined client-side only
+      suppressHydrationWarning
     >
-      <span className="text-xl" aria-hidden="true">
-        {!mounted ? "◐" : darkMode ? "☀️" : "🌙"}
-      </span>
+      {mounted ? (
+        darkMode ? (
+          <Sun className="h-4 w-4" aria-hidden="true" />
+        ) : (
+          <Moon className="h-4 w-4" aria-hidden="true" />
+        )
+      ) : (
+        // Pre-hydration: render a stable placeholder that matches the server HTML
+        // The root layout applies the correct theme class before React hydrates,
+        // so we render an invisible placeholder to avoid layout shift.
+        <span className="h-4 w-4 block" aria-hidden="true" />
+      )}
     </Button>
   );
 }
