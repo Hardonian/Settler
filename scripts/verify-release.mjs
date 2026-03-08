@@ -29,6 +29,11 @@ const stageCatalog = {
     command: ["pnpm", ["run", "verify:routes"]],
     timeoutMs: 4 * 60_000,
   },
+  linkIntegrity: {
+    label: "Internal link integrity",
+    command: ["pnpm", ["run", "qa:links"]],
+    timeoutMs: 4 * 60_000,
+  },
   security: {
     label: "Security controls",
     command: ["pnpm", ["run", "verify:security"]],
@@ -68,7 +73,16 @@ const stageCatalog = {
 };
 
 const profiles = {
-  fast: ["root", "lint", "typecheck", "claims", "boundaries", "routes", "security"],
+  fast: [
+    "root",
+    "lint",
+    "typecheck",
+    "claims",
+    "boundaries",
+    "routes",
+    "linkIntegrity",
+    "security",
+  ],
   build: ["build"],
   test: ["test"],
   artifacts: ["launchManifest", "capture", "artifacts"],
@@ -79,6 +93,7 @@ const profiles = {
     "claims",
     "boundaries",
     "routes",
+    "linkIntegrity",
     "security",
     "build",
     "securityRuntime",

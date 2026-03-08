@@ -9,7 +9,6 @@ import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { Menu, ChevronDown } from "lucide-react";
-import { SETTLER_IMAGES } from "@/lib/images/image-config";
 
 // Primary navigation items (always visible on desktop)
 const siteMode = process.env.NEXT_PUBLIC_SITE_MODE || "oss";
