@@ -182,11 +182,11 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <HeroAnimationWrapper>
                 <div className="text-left max-w-2xl">
-                  <div className="mb-6 flex justify-start">
-                    <Badge className="bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 text-sm font-medium inline-flex items-center gap-2">
-                      <Github className="w-4 h-4" aria-hidden="true" />
-                      Open Source Reconciliation Engine
-                    </Badge>
+                  <div className="mb-5 flex justify-start">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-sm">
+                      <Github className="w-3.5 h-3.5" aria-hidden="true" />
+                      Open-source · Apache 2.0
+                    </span>
                   </div>
 
                   <div className="mb-6 sm:mb-8 text-left">
@@ -209,7 +209,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                     </p>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-4 justify-start items-center mb-12 sm:mb-16">
+                  <div className="flex flex-col sm:flex-row gap-4 justify-start items-center mb-6 sm:mb-8">
                     <Button
                       size="lg"
                       asChild
@@ -230,10 +230,54 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                       asChild
                       className="w-full sm:w-auto px-8 py-6 text-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200"
                     >
-                      <Link href="https://github.com/Hardonian/Settler" className="flex items-center justify-center gap-3">
+                      <Link
+                        href="https://github.com/Hardonian/Settler"
+                        className="flex items-center justify-center gap-3"
+                      >
                         <span>View on GitHub</span>
                       </Link>
                     </Button>
+                  </div>
+
+                  {/* Trust signals */}
+                  <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mb-12 sm:mb-16">
+                    <span className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-500">
+                      <CheckCircle2
+                        className="w-3.5 h-3.5 text-slate-400 dark:text-slate-600"
+                        aria-hidden="true"
+                      />
+                      Apache 2.0
+                    </span>
+                    <span className="text-slate-300 dark:text-slate-700" aria-hidden="true">
+                      ·
+                    </span>
+                    <span className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-500">
+                      <CheckCircle2
+                        className="w-3.5 h-3.5 text-slate-400 dark:text-slate-600"
+                        aria-hidden="true"
+                      />
+                      Self-hostable
+                    </span>
+                    <span className="text-slate-300 dark:text-slate-700" aria-hidden="true">
+                      ·
+                    </span>
+                    <span className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-500">
+                      <CheckCircle2
+                        className="w-3.5 h-3.5 text-slate-400 dark:text-slate-600"
+                        aria-hidden="true"
+                      />
+                      TypeScript &amp; Python SDKs
+                    </span>
+                    <span className="text-slate-300 dark:text-slate-700" aria-hidden="true">
+                      ·
+                    </span>
+                    <span className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-500">
+                      <CheckCircle2
+                        className="w-3.5 h-3.5 text-slate-400 dark:text-slate-600"
+                        aria-hidden="true"
+                      />
+                      SHA-256 audit trail
+                    </span>
                   </div>
                 </div>
               </HeroAnimationWrapper>
@@ -263,12 +307,15 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
         >
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12 sm:mb-16">
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500 mb-3">
+                Core Capabilities
+              </p>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
                 Reliable, Repeatable Reconciliation
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
-                No black boxes. No unexplainable results. Inspectable rules, traceable evidence,
-                and reviewable decisions at every step.
+                No black boxes. No unexplainable results. Inspectable rules, traceable evidence, and
+                reviewable decisions at every step.
               </p>
             </div>
 
@@ -306,9 +353,9 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
         >
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12 sm:mb-16">
-              <Badge className="mb-4 bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-200 px-3 py-1">
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500 mb-3">
                 Developer Experience
-              </Badge>
+              </p>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
                 Four Steps to Audit-Ready Reconciliation
               </h2>
@@ -371,9 +418,9 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
         >
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-10 sm:mb-12">
-              <Badge className="mb-4 bg-slate-800 text-slate-200 px-3 py-1 border border-slate-700">
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-3">
                 TypeScript SDK
-              </Badge>
+              </p>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 tracking-tight">
                 Inspectable, Testable, Version Controlled
               </h2>
@@ -442,12 +489,15 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
         >
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12 sm:mb-16">
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500 mb-3">
+                Why Settler
+              </p>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
                 Why Teams Move Beyond Spreadsheets
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
-                Manual reconciliation breaks at scale. Repeatable, API-driven reconciliation is
-                what teams build toward.
+                Manual reconciliation breaks at scale. Repeatable, API-driven reconciliation is what
+                teams build toward.
               </p>
             </div>
 
@@ -476,13 +526,15 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                 return (
                   <div
                     key={idx}
-                    className="p-6 md:p-8 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-800"
+                    className="p-6 md:p-8 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-md transition-all duration-200"
                   >
-                    <Icon
-                      className="w-10 h-10 text-slate-700 dark:text-slate-300 mb-4"
-                      aria-hidden="true"
-                    />
-                    <h3 className="text-xl font-semibold mb-3 text-slate-900 dark:text-white">
+                    <div className="w-11 h-11 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-5 shadow-sm">
+                      <Icon
+                        className="w-5 h-5 text-slate-700 dark:text-slate-300"
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2.5 text-slate-900 dark:text-white tracking-tight">
                       {item.title}
                     </h3>
                     <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -502,7 +554,10 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
         >
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-10 sm:mb-12">
-              <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500 mb-3">
+                FAQ
+              </p>
+              <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-slate-900 dark:text-white tracking-tight">
                 Common Questions
               </h2>
             </div>
@@ -517,8 +572,8 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                 <AccordionContent className="text-sm sm:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
                   Settler is an open-source reconciliation engine that matches financial records
                   across Stripe, banks, ERPs, and ledgers. It surfaces every mismatch with full
-                  context, generates verifiable evidence for each run, and lets you replay any
-                  run to verify the results.
+                  context, generates verifiable evidence for each run, and lets you replay any run
+                  to verify the results.
                 </AccordionContent>
               </AccordionItem>
 
@@ -601,7 +656,10 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                 asChild
                 className="w-full sm:w-auto px-10 py-7 text-lg border-2 border-slate-600 bg-transparent text-white hover:bg-slate-800 transition-all duration-200 min-h-[56px] min-w-[200px]"
               >
-                <Link href="https://github.com/Hardonian/Settler" className="flex items-center justify-center gap-3">
+                <Link
+                  href="https://github.com/Hardonian/Settler"
+                  className="flex items-center justify-center gap-3"
+                >
                   View on GitHub
                   <ArrowRight className="w-5 h-5" aria-hidden="true" />
                 </Link>
