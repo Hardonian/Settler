@@ -40,7 +40,7 @@ export default function ProofExplorerPage() {
         <section className="py-10 sm:py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-800">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
-              Stitch Proof Surface
+              Run Results
             </h2>
             <ResultsPanel />
           </div>

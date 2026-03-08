@@ -1,34 +1,58 @@
 ---
 title: Product
-description: Deterministic reconciliation engine that normalizes data, applies explicit rules, and surfaces variances.
+description: Deterministic reconciliation engine that normalizes data, applies explicit rules, and surfaces variances with verifiable evidence.
 ---
 
-## Data → Normalize → Rules → Variances
+## What Settler does
 
-Settler is a reconciliation engine with a deliberate pipeline:
+Settler matches financial records across data sources — Stripe, QuickBooks, Shopify, bank exports, internal ledgers — and surfaces every mismatch with full context. Every run produces a hash-linked evidence artifact you can inspect, share, and replay.
 
-1. **Ingest data** from adapters, files, or internal pipelines.
-2. **Normalize records** into a canonical schema.
-3. **Apply explicit rules** for matching, tolerances, and transformations.
-4. **Surface variances** with evidence for human review.
+## The pipeline: Data → Normalize → Rules → Variances
 
-## Deterministic and inspectable
+Settler processes data through a fixed, inspectable pipeline:
 
-The engine is deterministic: the same inputs and rules produce the same outputs. Outputs are designed to be inspectable so teams can review evidence and rule paths.
+1. **Ingest data** from adapters, file uploads, or internal pipelines.
+2. **Normalize records** into a canonical schema so records from different sources are comparable.
+3. **Apply explicit rules** for matching criteria, numeric tolerances, and date windows.
+4. **Surface variances** with the rule path that produced them, for human review.
+
+Nothing in the pipeline is implicit. Every step is inspectable.
+
+## Why determinism matters
+
+Most reconciliation workflows fail during root-cause analysis — not during the run itself. When a mismatch surfaces in production, you need to know: did the rule change? Did the data change? Did the engine behave differently between runs?
+
+Settler eliminates this uncertainty. Given the same inputs and rules, it always produces the same output. This means:
+
+- **Debugging is tractable.** Replay a past run against current rules to isolate what changed.
+- **Testing is reliable.** Write rule tests against fixture data with known expected outputs.
+- **Audit is straightforward.** The evidence artifact for any past run can be independently re-verified.
+
+## Proof artifacts are first-class outputs
+
+Every run writes:
+
+- `evidence.json` — SHA-256 hash-linked record of inputs, rules, and outputs
+- `results.json` — structured match/mismatch data with rule path traces
+- `report.html` — human-readable mismatch summary
+
+These artifacts are the product, not a debug side-effect.
 
 ## Human-in-the-loop by design
 
-Settler does not decide outcomes for you. It provides variance sets and evidence so your team can review and resolve exceptions.
+Settler does not decide outcomes for your team. It surfaces variance sets and evidence so your team can review and resolve exceptions. AI-assisted review compresses triage time for high-volume exception queues — but final authority stays with your operators.
 
 ## Provider-agnostic core
 
-Adapters are optional. You can bring your own data model and map it into the canonical schema without coupling to a single provider.
+Adapters are optional. You can bring your own data model and normalize it into the canonical schema without coupling to a single provider. Custom adapters live in `packages/adapters/src/drivers/` and follow the same normalization contract as built-in connectors.
 
 ## Non-goals
 
 Settler is **not**:
 
 - Accounting software
-- An audit
-- Compliance tooling
+- An audit or certification tool
+- Compliance infrastructure
 - A guarantee of correctness
+
+It produces evidence that supports your team's review and your auditors' work. The judgment and accountability remain with you.

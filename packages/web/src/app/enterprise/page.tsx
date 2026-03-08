@@ -339,12 +339,12 @@ export default function EnterprisePage() {
             ))}
           </div>
 
-          {/* Compliance Badges */}
+          {/* Architecture and design properties */}
           <div className="flex flex-wrap justify-center gap-8 md:gap-16">
             {[
-              { label: "SOC 2 TYPE II", sublabel: "Ready" },
-              { label: "GDPR", sublabel: "Compliant" },
-              { label: "AES-256", sublabel: "Encrypted" },
+              { label: "SOC 2 TYPE II", sublabel: "Architecture aligned" },
+              { label: "GDPR", sublabel: "Data handling controls" },
+              { label: "AES-256", sublabel: "Encryption at rest" },
             ].map((badge, idx) => (
               <div key={idx} className="flex flex-col items-center gap-1">
                 <Shield
@@ -358,6 +358,9 @@ export default function EnterprisePage() {
               </div>
             ))}
           </div>
+          <p className="text-xs text-slate-400 dark:text-slate-600 mt-6 max-w-lg mx-auto">
+            Architecture alignment does not constitute certification. Review your deployment configuration and consult your compliance team for your audit requirements.
+          </p>
         </div>
       </section>
 
