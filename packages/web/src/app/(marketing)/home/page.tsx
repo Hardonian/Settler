@@ -134,8 +134,9 @@ const client = new SettlerClient({
   apiKey: process.env.SETTLER_API_KEY
 });
 
-// Deterministic reconciliation with inspectable rules
-const reconciliation = await client.reconciliations.create({
+// Define explicit matching rules — versioned, testable, deterministic
+const job = await client.jobs.create({
+  name: "Stripe ↔ Postgres Reconciliation",
   source: { adapter: "stripe", config: { apiKey: process.env.STRIPE_KEY } },
   target: { adapter: "postgres", config: { connectionString: process.env.DATABASE_URL } },
   rules: {
@@ -147,16 +148,12 @@ const reconciliation = await client.reconciliations.create({
       amount: { maxDiff: 0.01 },
       currency: { requireExact: true }
     }
-  },
-  output: {
-    format: "json",
-    includeEvidence: true,
-    hashAlgorithm: "sha256"
   }
 });
 
-// Get mismatches with full audit trail
-const mismatches = await client.reconciliations.getMismatches(reconciliation.id);`;
+// Run and get the evidence-backed report
+const report = await client.reports.get(job.id);
+// report.summary.matched, report.summary.unmatched, report.evidence.sha256`;
 
   return (
     <ErrorBoundary context="Home Page">
@@ -561,7 +558,8 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                 Go Deeper on Each Capability
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
-                Each feature has its own dedicated page with detailed mechanics, interactive demos, and documentation.
+                Each feature has its own dedicated page with detailed mechanics, interactive demos,
+                and documentation.
               </p>
             </div>
 
@@ -613,7 +611,10 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                     </p>
                     <span className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                       {feature.cta}
-                      <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                      <ArrowRight
+                        className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5"
+                        aria-hidden="true"
+                      />
                     </span>
                   </Link>
                 );
@@ -728,6 +729,43 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                   Settler is not accounting software, an audit tool, or compliance certification. It
                   does not make decisions or automate judgment. It surfaces mismatches and evidence
                   for human review. You decide how to act on the results.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem
+                value="replay"
+                className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6"
+              >
+                <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
+                  What does &quot;replayable&quot; mean in practice?
+                </AccordionTrigger>
+                <AccordionContent className="text-sm sm:text-base text-slate-700 dark:text-slate-300 pb-4 leading-relaxed">
+                  Every reconciliation run stores a snapshot of the inputs, rules, and execution
+                  state. You can re-run any past job and get identical outputs — same matched
+                  records, same variances, same evidence file. The Replay Lab lets you compare the
+                  SHA-256 hash of a replay against the original to confirm the results are
+                  unchanged. This makes it straightforward to verify results for an auditor or debug
+                  a specific run weeks after it happened.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem
+                value="evidence"
+                className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6"
+              >
+                <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
+                  What is the &quot;evidence&quot; or &quot;proof&quot; output?
+                </AccordionTrigger>
+                <AccordionContent className="text-sm sm:text-base text-slate-700 dark:text-slate-300 pb-4 leading-relaxed">
+                  Each run produces an{" "}
+                  <code className="text-xs bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono">
+                    evidence.json
+                  </code>{" "}
+                  file containing the full record of inputs, matched pairs, flagged variances, rule
+                  paths applied, and a SHA-256 hash over the entire payload. This hash lets any
+                  reviewer — internal or external — verify that the evidence file has not been
+                  altered after the run completed. It is not a compliance certification; it is a
+                  tamper-detectable record you can attach to audit packages.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>

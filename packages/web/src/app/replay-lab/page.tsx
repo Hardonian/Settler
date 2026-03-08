@@ -43,7 +43,7 @@ const capabilities = [
     icon: Shield,
     title: "Audit Evidence Export",
     description:
-      "Export replay results as a signed, self-contained evidence bundle. Attach to audit packages or share with reviewers.",
+      "Export replay results as a hash-verified, self-contained evidence bundle. Attach to audit packages or share with reviewers.",
   },
 ];
 
@@ -219,7 +219,7 @@ export default function ReplayLabPage() {
                 {
                   icon: Shield,
                   title: "Evidence bundle",
-                  desc: "Signed export ready for audit packages",
+                  desc: "Hash-verified export ready for audit packages",
                 },
               ].map((f, idx) => {
                 const Icon = f.icon;
@@ -272,14 +272,12 @@ export default function ReplayLabPage() {
           </div>
         </section>
 
-        {/* Live Replay Review Surface — inside main for correct document structure */}
+        {/* Replay Review Queue */}
         <section className="py-10 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              Live Replay Review Surface
-            </h2>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Replay Queue</h2>
             <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
-              Queue of reconciliation runs available for replay inspection.
+              Reconciliation runs available for replay and hash verification.
             </p>
             <ReviewQueuePanel />
           </div>

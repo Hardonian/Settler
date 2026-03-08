@@ -220,9 +220,9 @@ export function Navigation() {
                     )}
                     aria-expanded={featuresMenuOpen}
                     aria-haspopup="true"
-                    aria-label="Features navigation"
+                    aria-label="Explore features navigation"
                   >
-                    Features
+                    Explore
                     <ChevronDown
                       className={cn(
                         "w-4 h-4 transition-transform duration-200",
@@ -449,7 +449,7 @@ export function Navigation() {
                       aria-label="Mobile features navigation"
                     >
                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 mb-2">
-                        Features
+                        Explore
                       </p>
                       {featureNavigationItems.map((item) => {
                         const isActive =

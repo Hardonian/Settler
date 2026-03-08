@@ -1,22 +1,32 @@
 ---
 title: Open Source
-description: Governance, licenses, and fork safety for the Settler reconciliation engine.
+description: Licenses, governance, and fork safety for the Settler reconciliation engine.
 ---
 
 ## What is open source in Settler
 
-Settler’s reconciliation protocols and SDKs are published as open-source packages. The canonical repositories live in this monorepo under `packages/`, and the SDKs are intended to be fork-safe.
+Settler’s reconciliation engine, protocol definitions, and SDKs are published as open-source packages. The canonical source lives in the monorepo under `packages/`. The core engine is usable without the hosted service.
 
 ## Licenses
 
 - **MIT licensed**: reconciliation protocol and SDK packages (see `packages/protocol/LICENSE` and `packages/react-settler/LICENSE`).
-- **Repository license**: additional components in this repository are covered by the root `LICENSE`.
+- **Apache 2.0**: the root repository and reconciliation engine (see `LICENSE`).
 
-Review licenses before redistributing or deploying derivatives.
+Review the applicable license before redistributing or deploying derivatives.
+
+## Getting started without the hosted service
+
+1. Clone the repository: `git clone https://github.com/Hardonian/Settler.git`
+2. Install dependencies: `pnpm install`
+3. Run the demo workflow: `pnpm demo`
+4. Inspect the output: `cat examples/demo-output/evidence.json`
+5. Verify determinism via replay: `pnpm settler:replay examples/demo-output/evidence.json`
+
+No signup or hosted service required for local development and self-hosted deployments.
 
 ## Governance
 
-Changes are proposed through GitHub pull requests, reviewed by maintainers, and merged with a public changelog. Design discussions and issues live in the same repo to keep history inspectable.
+Changes are proposed through GitHub pull requests, reviewed by maintainers, and merged with a public changelog. Design discussions and issues live in the same repository to keep history inspectable.
 
 ## Fork safety
 
@@ -24,8 +34,8 @@ The OSS packages are structured to remain usable without the hosted service. For
 
 - pin a stable protocol version,
 - maintain local adapters,
-- and control data handling without SaaS dependencies.
+- and control data handling entirely within their own infrastructure.
 
-## Code of conduct
+## Contributing
 
-Community contributions follow the repository’s contribution guidelines and code of conduct. See `CONTRIBUTING.md` for details.
+See `CONTRIBUTING.md` for local setup, quality gates, and contribution guidelines. Issue and PR templates are in `.github/`.

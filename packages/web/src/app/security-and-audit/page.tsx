@@ -209,9 +209,19 @@ export default function SecurityAndAuditPage() {
         >
           Responsible Disclosure
         </h2>
-        <p className="text-muted-foreground mb-6 leading-relaxed max-w-2xl">
+        <p className="text-muted-foreground mb-4 leading-relaxed max-w-2xl">
           Found a security vulnerability? Please report it responsibly. We take all reports
-          seriously and respond promptly.
+          seriously, respond promptly, and follow responsible disclosure timelines — coordinating
+          public fixes once remediation is available.
+        </p>
+        <p className="text-muted-foreground mb-6 leading-relaxed">
+          Email:{" "}
+          <a
+            href="mailto:security@settler.dev"
+            className="font-medium text-foreground underline underline-offset-2 hover:no-underline"
+          >
+            security@settler.dev
+          </a>
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
           <Button asChild variant="outline">

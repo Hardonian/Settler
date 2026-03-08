@@ -24,7 +24,7 @@ This generates `examples/demo-output/run.json`, `results.json`, `evidence.json`,
 
 1. **Clone + install**
    ```bash
-   git clone https://github.com/settler/settler.git
+   git clone https://github.com/Hardonian/Settler.git
    cd settler
    pnpm install
    ```
