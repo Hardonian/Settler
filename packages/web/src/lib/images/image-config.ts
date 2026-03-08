@@ -74,13 +74,12 @@ const SETTLER_IMAGES_CONFIG = {
 
   // Logos
   logoMain: {
-    path: "/assets/images/Settler-logo.png",
-    width: 1303,
-    height: 339,
+    path: "/logo.svg",
+    width: 160,
+    height: 40,
     alt: "Settler Logo",
     category: "logo" as const,
-    mimeType: "image/png",
-    webpPath: "/assets/images/Settler-logo.webp",
+    mimeType: "image/svg+xml",
   },
   logoSEO: {
     path: "/assets/images/Settler_seo.png",

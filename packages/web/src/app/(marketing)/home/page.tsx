@@ -3,7 +3,6 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { HeroAnimationWrapper } from "@/components/HeroAnimationWrapper";
@@ -12,7 +11,6 @@ import { ParallaxBackground, ParallaxBlobs } from "@/components/ui/ParallaxBackg
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import {
   Database,
-  ArrowRight,
   Shield,
   RefreshCw,
   CheckCircle2,
@@ -51,6 +49,8 @@ const AnimatedCodeBlock = dynamic(
 );
 
 export default function HomePage() {
+  const repoUrl = process.env.NEXT_PUBLIC_REPO_URL || "https://github.com/Hardonian/Settler";
+
   const devWorkflowSteps = [
     {
       number: 1,
@@ -159,7 +159,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
     <ErrorBoundary context="Home Page">
       <main
         id="main-content"
-        className="min-h-screen bg-slate-50 dark:bg-slate-950 antialiased"
+        className="min-h-screen bg-slate-50 pb-[env(safe-area-inset-bottom)] dark:bg-slate-950 antialiased"
         aria-label="Settler homepage"
       >
         <Navigation />
@@ -230,10 +230,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                       asChild
                       className="w-full sm:w-auto px-8 py-6 text-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200"
                     >
-                      <Link
-                        href="https://github.com/Hardonian/Settler"
-                        className="flex items-center justify-center gap-3"
-                      >
+                      <Link href={repoUrl} className="flex items-center justify-center gap-3">
                         <span>View on GitHub</span>
                       </Link>
                     </Button>
@@ -537,7 +534,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                     <h3 className="text-lg font-semibold mb-2.5 text-slate-900 dark:text-white tracking-tight">
                       {item.title}
                     </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                       {item.description}
                     </p>
                   </div>
@@ -569,7 +566,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                 <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
                   What is Settler?
                 </AccordionTrigger>
-                <AccordionContent className="text-sm sm:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
+                <AccordionContent className="text-sm sm:text-base text-slate-700 dark:text-slate-300 pb-4 leading-relaxed">
                   Settler is an open-source reconciliation engine that matches financial records
                   across Stripe, banks, ERPs, and ledgers. It surfaces every mismatch with full
                   context, generates verifiable evidence for each run, and lets you replay any run
@@ -584,7 +581,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                 <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
                   What does deterministic mean?
                 </AccordionTrigger>
-                <AccordionContent className="text-sm sm:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
+                <AccordionContent className="text-sm sm:text-base text-slate-700 dark:text-slate-300 pb-4 leading-relaxed">
                   Deterministic means the same inputs always produce the same outputs. Given
                   identical data sources and matching rules, Settler will always identify the same
                   variances. This makes debugging, testing, and auditing tractable.
@@ -598,7 +595,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                 <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
                   Can I self-host Settler?
                 </AccordionTrigger>
-                <AccordionContent className="text-sm sm:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
+                <AccordionContent className="text-sm sm:text-base text-slate-700 dark:text-slate-300 pb-4 leading-relaxed">
                   Yes. Self-hosting is a first-class deployment model. Settler is open source under
                   Apache 2.0. Your data stays in your infrastructure unless you choose to use the
                   managed cloud service.
@@ -612,59 +609,13 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                 <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
                   What is Settler NOT?
                 </AccordionTrigger>
-                <AccordionContent className="text-sm sm:text-base text-slate-600 dark:text-slate-400 pb-4 leading-relaxed">
+                <AccordionContent className="text-sm sm:text-base text-slate-700 dark:text-slate-300 pb-4 leading-relaxed">
                   Settler is not accounting software, an audit tool, or compliance certification. It
                   does not make decisions or automate judgment. It surfaces mismatches and evidence
                   for human review. You decide how to act on the results.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-          </div>
-        </section>
-
-        {/* Final CTA */}
-        <section
-          className="py-20 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 bg-slate-900 text-white"
-          aria-label="Get started"
-        >
-          <div className="max-w-4xl mx-auto text-center">
-            <Badge className="mb-6 bg-slate-800 text-slate-200 px-4 py-2 border border-slate-700">
-              Apache 2.0 Licensed
-            </Badge>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-6 tracking-tight">
-              Reconciliation You Can Verify
-            </h2>
-            <p className="text-lg sm:text-xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-              Deploy reconciliation you can audit, test, and version control. Start with the
-              quickstart or explore the source on GitHub.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button
-                size="lg"
-                asChild
-                className="w-full sm:w-auto bg-white text-slate-900 hover:bg-slate-100 px-10 py-7 text-lg font-semibold shadow-2xl transition-all duration-200 min-h-[56px] min-w-[200px]"
-              >
-                <Link href="/docs/quickstart" className="flex items-center justify-center gap-3">
-                  <BookOpen className="w-5 h-5" aria-hidden="true" />
-                  Read Quickstart
-                </Link>
-              </Button>
-
-              <Button
-                size="lg"
-                variant="outline"
-                asChild
-                className="w-full sm:w-auto px-10 py-7 text-lg border-2 border-slate-600 bg-transparent text-white hover:bg-slate-800 transition-all duration-200 min-h-[56px] min-w-[200px]"
-              >
-                <Link
-                  href="https://github.com/Hardonian/Settler"
-                  className="flex items-center justify-center gap-3"
-                >
-                  View on GitHub
-                  <ArrowRight className="w-5 h-5" aria-hidden="true" />
-                </Link>
-              </Button>
-            </div>
           </div>
         </section>
 
