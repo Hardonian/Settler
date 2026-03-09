@@ -30,6 +30,7 @@ import { tenantDataRouter } from "./routes/tenant-data";
 import { webhookManagementRouter } from "./routes/webhook-management";
 import { notificationsRouter } from "./routes/notifications";
 import { usageRouter } from "./routes/usage";
+import { platformControlPlaneRouter } from "./routes/platform-control-plane";
 import { batchRouter } from "./routes/batch";
 import { exportsRouter } from "./routes/exports";
 import { testModeMiddleware, validateTestMode } from "./middleware/test-mode";
@@ -330,6 +331,10 @@ v2ProtectedRouter.use("/batch", batchRouter);
 // Export routes (requires auth)
 v1ProtectedRouter.use("/exports", exportsRouter);
 v2ProtectedRouter.use("/exports", exportsRouter);
+
+// Platform control plane routes (requires auth + tenant context)
+v1ProtectedRouter.use("/tenant", tenantMiddleware, platformControlPlaneRouter);
+v2ProtectedRouter.use("/tenant", tenantMiddleware, platformControlPlaneRouter);
 
 // Versioned API routes
 v1ProtectedRouter.use(v1Router);
