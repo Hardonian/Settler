@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import chalk from "chalk";
+import { createTraceContext, withTraceHeaders } from "../lib/http";
 
 interface TenantIntegrityResponse {
   tenantId: string;
@@ -29,17 +30,19 @@ export const tenantCheckCommand = new Command("tenant-check")
     }
 
     const baseUrl = (options.parent.baseUrl || "https://api.settler.io").replace(/\/$/, "");
+    const trace = createTraceContext();
     const response = await fetch(`${baseUrl}/api/v1/tenant/integrity-check`, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
+      headers: withTraceHeaders(
+        {
+          Authorization: `Bearer ${apiKey}`,
+        },
+        trace
+      ),
     });
 
     if (!response.ok) {
       const body = await response.text();
-      console.error(
-        chalk.red(`Error: tenant integrity check failed (${response.status}) ${body}`)
-      );
+      console.error(chalk.red(`Error: tenant integrity check failed (${response.status}) ${body}`));
       process.exit(1);
     }
 

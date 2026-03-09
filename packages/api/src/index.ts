@@ -138,9 +138,17 @@ if (config.features.enableRequestTimeout) {
 
 // Trace ID middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
+  const authReq = req as AuthRequest;
   const traceId = (req.headers["x-trace-id"] as string) || uuidv4();
-  (req as AuthRequest).traceId = traceId;
+  const executionId = (req.headers["x-execution-id"] as string) || uuidv4();
+  authReq.traceId = traceId;
+  authReq.executionId = executionId;
+  authReq.tenantId = authReq.tenantId || (req.headers["x-tenant-id"] as string | undefined);
   res.setHeader("X-Trace-Id", traceId);
+  res.setHeader("X-Execution-Id", executionId);
+  if (authReq.tenantId) {
+    res.setHeader("X-Tenant-Id", authReq.tenantId);
+  }
   next();
 });
 

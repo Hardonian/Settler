@@ -6,6 +6,7 @@ import {
   EXPORT_SCHEMA_VERSION,
   validateHashChain,
 } from "../lib/export-integrity";
+import { createTraceContext, withTraceHeaders } from "../lib/http";
 
 interface ExportDocument {
   schemaVersion: string;
@@ -38,10 +39,14 @@ exportCommand
     const baseUrl = (options.parent.baseUrl || "https://api.settler.io").replace(/\/$/, "");
     const url = `${baseUrl}/api/export?runId=${encodeURIComponent(options.runId)}`;
 
+    const trace = createTraceContext();
     const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
+      headers: withTraceHeaders(
+        {
+          Authorization: `Bearer ${apiKey}`,
+        },
+        trace
+      ),
     });
 
     if (!response.ok) {

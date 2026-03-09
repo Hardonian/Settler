@@ -3,6 +3,7 @@ import { Command } from "commander";
 
 import Settler from "@settler/sdk";
 import type { ReconciliationJob } from "@settler/sdk";
+import { createTraceContext, withTraceHeaders } from "../lib/http";
 
 interface CommandParentOptions {
   apiKey?: string;
@@ -206,10 +207,14 @@ jobsCommand
           params.append("since", options.since);
         }
 
+        const trace = createTraceContext();
         const response = await fetch(`${baseUrl}/api/v1/jobs/${id}/logs?${params.toString()}`, {
-          headers: {
-            "X-API-Key": apiKey,
-          },
+          headers: withTraceHeaders(
+            {
+              "X-API-Key": apiKey,
+            },
+            trace
+          ),
         });
 
         if (!response.ok) {
@@ -281,63 +286,68 @@ jobsCommand
         parent?: CommandParentOptions;
       }
     ) => {
-    try {
-      const apiKey = process.env.SETTLER_API_KEY || options.parent?.parent?.apiKey;
-      if (!apiKey) {
-        console.error(chalk.red("Error: API key required"));
+      try {
+        const apiKey = process.env.SETTLER_API_KEY || options.parent?.parent?.apiKey;
+        if (!apiKey) {
+          console.error(chalk.red("Error: API key required"));
+          process.exit(1);
+        }
+
+        const baseUrl = options.parent?.parent?.baseUrl || "https://api.settler.io";
+
+        const body: Record<string, unknown> = {
+          dryRun: options.dryRun || false,
+        };
+
+        if (options.fromDate) {
+          body.fromDate = options.fromDate;
+        }
+
+        if (options.eventId) {
+          body.eventId = options.eventId;
+        }
+
+        console.log(chalk.blue("Replaying events..."));
+
+        const trace = createTraceContext(undefined, id);
+        const response = await fetch(`${baseUrl}/api/v1/jobs/${id}/replay`, {
+          method: "POST",
+          headers: withTraceHeaders(
+            {
+              "X-API-Key": apiKey,
+              "Content-Type": "application/json",
+            },
+            trace
+          ),
+          body: JSON.stringify(body),
+        });
+
+        if (!response.ok) {
+          const error = (await response.json()) as { message?: string };
+          console.error(chalk.red(`Error: ${error.message || "Failed to replay events"}`));
+          process.exit(1);
+        }
+
+        const result = (await response.json()) as {
+          eventsProcessed?: number;
+          eventsReplayed?: number;
+        };
+
+        if (options.dryRun) {
+          console.log(chalk.yellow("Dry run mode - no events were actually replayed"));
+        } else {
+          console.log(chalk.green("✓ Events replayed successfully"));
+        }
+
+        console.log(chalk.gray(`   Events processed: ${result.eventsProcessed || 0}`));
+        console.log(chalk.gray(`   Events replayed: ${result.eventsReplayed || 0}`));
+      } catch (error) {
+        console.error(
+          chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
+        );
         process.exit(1);
       }
-
-      const baseUrl = options.parent?.parent?.baseUrl || "https://api.settler.io";
-
-      const body: Record<string, unknown> = {
-        dryRun: options.dryRun || false,
-      };
-
-      if (options.fromDate) {
-        body.fromDate = options.fromDate;
-      }
-
-      if (options.eventId) {
-        body.eventId = options.eventId;
-      }
-
-      console.log(chalk.blue("Replaying events..."));
-
-      const response = await fetch(`${baseUrl}/api/v1/jobs/${id}/replay`, {
-        method: "POST",
-        headers: {
-          "X-API-Key": apiKey,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-
-      if (!response.ok) {
-        const error = (await response.json()) as { message?: string };
-        console.error(chalk.red(`Error: ${error.message || "Failed to replay events"}`));
-        process.exit(1);
-      }
-
-      const result = (await response.json()) as {
-        eventsProcessed?: number;
-        eventsReplayed?: number;
-      };
-
-      if (options.dryRun) {
-        console.log(chalk.yellow("Dry run mode - no events were actually replayed"));
-      } else {
-        console.log(chalk.green("✓ Events replayed successfully"));
-      }
-
-      console.log(chalk.gray(`   Events processed: ${result.eventsProcessed || 0}`));
-      console.log(chalk.gray(`   Events replayed: ${result.eventsReplayed || 0}`));
-    } catch (error) {
-      console.error(
-        chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
-      );
-      process.exit(1);
     }
-  });
+  );
 
 export { jobsCommand };
