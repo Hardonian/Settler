@@ -9,4 +9,4 @@ It performs:
 3. Run `pnpm run repo-integrity`.
 4. Run `pnpm run doctor -- --skip-pipeline --first-run`.
 
-Bootstrap is idempotent for repeated local runs.
+Bootstrap is idempotent for repeated local runs and keeps core onboarding independent from optional integrations.
