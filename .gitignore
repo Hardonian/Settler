@@ -99,3 +99,10 @@ completion-reports/
 # Uncomment below to ignore them:
 # AGENTS.md
 # CLAUDE.md
+
+# local-only financial planning docs (private)
+docs/business/operating-cost-model.md
+docs/business/pricing-strategy.md
+docs/business/breakeven-analysis.md
+docs/business/revenue-projections.md
+docs/business/api-rate-limit-strategy.md
