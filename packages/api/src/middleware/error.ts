@@ -4,6 +4,7 @@ import { AuthRequest } from "./auth";
 import { config } from "../config";
 import { captureException, setSentryUser } from "./sentry";
 import { toApiError } from "../utils/typed-errors";
+import { sendProblemJson } from "../utils/problem-json";
 
 export const errorHandler = (
   err: unknown,
@@ -13,14 +14,14 @@ export const errorHandler = (
 ): void => {
   const authReq = req as AuthRequest;
   const apiError = toApiError(err);
-  
+
   // Set Sentry user context
   if (authReq.userId) {
     setSentryUser(authReq);
   }
-  
+
   // Log error with context
-  logError('Request error', err, {
+  logError("Request error", err, {
     method: req.method,
     path: req.path,
     ip: req.ip,
@@ -46,32 +47,19 @@ export const errorHandler = (
     });
   }
 
-  // Build error response
-  const response: {
-    error: string;
-    errorCode: string;
-    message: string;
-    traceId?: string;
-    stack?: string;
-    details?: unknown;
-  } = {
-    error: apiError.name,
-    errorCode: apiError.errorCode,
-    message: apiError.message,
-  };
-  if (authReq.traceId !== undefined) {
-    response.traceId = authReq.traceId;
-  }
-
-  // Include details if present
+  const extra: Record<string, unknown> = {};
   if (apiError.details) {
-    response.details = apiError.details;
+    extra.details = apiError.details;
   }
-
-  // Only include stack in development
   if (config.nodeEnv === "development" && err instanceof Error && err.stack !== undefined) {
-    response.stack = err.stack;
+    extra.stack = err.stack;
   }
 
-  res.status(statusCode).json(response);
+  sendProblemJson(authReq, res, {
+    status: statusCode,
+    title: apiError.name,
+    detail: apiError.message,
+    code: apiError.errorCode,
+    extra,
+  });
 };

@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import chalk from "chalk";
+import { createTraceContext, withTraceHeaders } from "../lib/http";
 
 const debugCommand = new Command("debug");
 
@@ -23,14 +24,18 @@ debugCommand
       console.log(chalk.blue(`Testing connection to ${options.adapter}...`));
 
       // Use the playground endpoint to test adapter connection
+      const trace = createTraceContext();
       const response = await fetch(
         `${options.parent.parent?.baseUrl || "https://api.settler.io"}/api/v1/playground/test-adapter`,
         {
           method: "POST",
-          headers: {
-            "X-API-Key": settlerApiKey,
-            "Content-Type": "application/json",
-          },
+          headers: withTraceHeaders(
+            {
+              "X-API-Key": settlerApiKey,
+              "Content-Type": "application/json",
+            },
+            trace
+          ),
           body: JSON.stringify({
             adapter: options.adapter,
             config: options.config ? JSON.parse(options.config) : { apiKey: options.apiKey },
@@ -98,7 +103,7 @@ debugCommand
       // Basic validation
       const errors: string[] = [];
 
-      if (typeof config !== 'object' || config === null) {
+      if (typeof config !== "object" || config === null) {
         console.error(chalk.red("❌ Validation failed: Config must be an object"));
         process.exit(1);
       }
@@ -109,15 +114,27 @@ debugCommand
         errors.push("Missing required field: name");
       }
 
-      if (!configObj.source || typeof configObj.source !== 'object' || !(configObj.source as Record<string, unknown>).adapter) {
+      if (
+        !configObj.source ||
+        typeof configObj.source !== "object" ||
+        !(configObj.source as Record<string, unknown>).adapter
+      ) {
         errors.push("Missing required field: source.adapter");
       }
 
-      if (!configObj.target || typeof configObj.target !== 'object' || !(configObj.target as Record<string, unknown>).adapter) {
+      if (
+        !configObj.target ||
+        typeof configObj.target !== "object" ||
+        !(configObj.target as Record<string, unknown>).adapter
+      ) {
         errors.push("Missing required field: target.adapter");
       }
 
-      if (!configObj.rules || typeof configObj.rules !== 'object' || !Array.isArray((configObj.rules as Partial<{ matching: unknown[] }>).matching)) {
+      if (
+        !configObj.rules ||
+        typeof configObj.rules !== "object" ||
+        !Array.isArray((configObj.rules as Partial<{ matching: unknown[] }>).matching)
+      ) {
         errors.push("Missing required field: rules.matching (must be an array)");
       }
 
@@ -129,8 +146,12 @@ debugCommand
 
       console.log(chalk.green("✅ Config file is valid!"));
       console.log(chalk.gray(`   Name: ${configObj.name}`));
-      console.log(chalk.gray(`   Source: ${(configObj.source as Record<string, unknown>).adapter}`));
-      console.log(chalk.gray(`   Target: ${(configObj.target as Record<string, unknown>).adapter}`));
+      console.log(
+        chalk.gray(`   Source: ${(configObj.source as Record<string, unknown>).adapter}`)
+      );
+      console.log(
+        chalk.gray(`   Target: ${(configObj.target as Record<string, unknown>).adapter}`)
+      );
       const rules = configObj.rules as Partial<{ matching: unknown[] }>;
       console.log(chalk.gray(`   Matching rules: ${rules.matching?.length || 0}`));
     } catch (error) {
@@ -165,12 +186,16 @@ debugCommand
 
       const startTime = Date.now();
 
+      const trace = createTraceContext();
       const fetchOptions: RequestInit = {
         method: options.method,
-        headers: {
-          "X-API-Key": settlerApiKey,
-          "Content-Type": "application/json",
-        },
+        headers: withTraceHeaders(
+          {
+            "X-API-Key": settlerApiKey,
+            "Content-Type": "application/json",
+          },
+          trace
+        ),
       };
 
       if (options.data) {

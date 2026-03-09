@@ -12,6 +12,8 @@ export const requestContext = new AsyncLocalStorage<{
   requestId?: string;
   tenantId?: string;
   userId?: string;
+  traceId?: string;
+  executionId?: string;
 }>();
 
 function getTraceContext(): { trace_id?: string; span_id?: string } {
@@ -31,6 +33,8 @@ function getRequestContext(): {
   request_id?: string;
   tenant_id?: string;
   user_id?: string;
+  trace_id?: string;
+  execution_id?: string;
 } {
   const context = requestContext.getStore();
   if (!context) {
@@ -41,6 +45,8 @@ function getRequestContext(): {
     request_id: context.requestId || undefined,
     tenant_id: context.tenantId || undefined,
     user_id: context.userId || undefined,
+    trace_id: context.traceId || undefined,
+    execution_id: context.executionId || undefined,
   };
 }
 
@@ -63,6 +69,7 @@ function createPrintfFormat() {
         span_id?: string;
         tenant_id?: string;
         user_id?: string;
+        execution_id?: string;
       }
     ) => {
       const timestamp = info.timestamp as string | Date | undefined;
@@ -73,6 +80,7 @@ function createPrintfFormat() {
       const span_id = info.span_id;
       const tenant_id = info.tenant_id;
       const user_id = info.user_id;
+      const execution_id = info.execution_id;
 
       const meta = { ...(info as Record<string, unknown>) };
       delete meta.timestamp;
@@ -83,6 +91,7 @@ function createPrintfFormat() {
       delete meta.span_id;
       delete meta.tenant_id;
       delete meta.user_id;
+      delete meta.execution_id;
       const metaStr = Object.keys(meta).length ? JSON.stringify(redact(meta)) : "";
 
       const requestInfo =
@@ -93,10 +102,14 @@ function createPrintfFormat() {
         span_id && typeof span_id === "string" ? `[span=${span_id.substring(0, 8)}]` : "";
       const tenantInfo = tenant_id && typeof tenant_id === "string" ? `[tenant=${tenant_id}]` : "";
       const userInfo = user_id && typeof user_id === "string" ? `[user=${user_id}]` : "";
+      const executionInfo =
+        execution_id && typeof execution_id === "string"
+          ? `[exec=${execution_id.substring(0, 8)}]`
+          : "";
       const timestampStr = typeof timestamp === "string" ? timestamp : String(timestamp);
       const messageStr = typeof message === "string" ? message : String(message);
 
-      return `${timestampStr} [${level}]${requestInfo}${traceInfo}${spanInfo}${tenantInfo}${userInfo}: ${messageStr} ${metaStr}`;
+      return `${timestampStr} [${level}]${requestInfo}${traceInfo}${spanInfo}${tenantInfo}${userInfo}${executionInfo}: ${messageStr} ${metaStr}`;
     }
   );
 }

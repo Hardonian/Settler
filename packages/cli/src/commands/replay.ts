@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import chalk from "chalk";
+import { createTraceContext, withTraceHeaders } from "../lib/http";
 
 type ReplayDiffEntry = {
   path: string;
@@ -73,9 +74,10 @@ export const replayCommand = new Command("replay")
       options: { baseUrl?: string; step: string; breakpoint?: boolean }
     ) => {
       const baseUrl = normalizeBaseUrl(options.baseUrl);
+      const trace = createTraceContext(undefined, executionId);
       const response = await fetch(`${baseUrl}/api/v1/runs/${executionId}/replay`, {
         method: "GET",
-        headers: { "content-type": "application/json" },
+        headers: withTraceHeaders({ "content-type": "application/json" }, trace),
       });
 
       if (!response.ok) {

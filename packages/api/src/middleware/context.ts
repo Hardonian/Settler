@@ -29,6 +29,8 @@ export function contextMiddleware(req: Request, _res: Response, next: NextFuncti
     requestId: req.requestId,
     tenantId: (req as any).tenantId, // Set by auth middleware
     userId: (req as any).userId, // Set by auth middleware
+    traceId: (req as any).traceId,
+    executionId: (req as any).executionId,
   };
 
   // Run the rest of the request handling in this context

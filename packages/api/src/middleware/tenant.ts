@@ -8,6 +8,7 @@ import { AuthRequest } from "./auth";
 import { ITenantRepository } from "../domain/repositories/ITenantRepository";
 import { Container } from "../infrastructure/di/Container";
 import { query } from "../db";
+import { sendProblemJson } from "../utils/problem-json";
 
 export interface TenantRequest extends AuthRequest {
   tenantId?: string;
@@ -70,18 +71,22 @@ export async function tenantMiddleware(
     }
 
     if (!tenant) {
-      res.status(403).json({
-        error: "TenantNotFound",
-        message: "Unable to determine tenant context",
+      sendProblemJson(req, res, {
+        status: 403,
+        title: "Tenant context missing",
+        detail: "Unable to determine tenant context",
+        code: "TENANT_NOT_FOUND",
       });
       return;
     }
 
     // Check tenant status
     if (tenant.status === "suspended" || tenant.status === "cancelled") {
-      res.status(403).json({
-        error: "TenantSuspended",
-        message: "Tenant account is suspended or cancelled",
+      sendProblemJson(req, res, {
+        status: 403,
+        title: "Tenant suspended",
+        detail: "Tenant account is suspended or cancelled",
+        code: "TENANT_SUSPENDED",
       });
       return;
     }
