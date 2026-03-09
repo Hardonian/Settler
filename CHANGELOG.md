@@ -16,6 +16,11 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Changed
 
+- Rebuilt root and package documentation around deterministic execution ledger, replay lab, proof verification, policy simulation, and failure-intelligence terminology.
+- Added role-based docs navigation and new support/troubleshooting surfaces for replay divergence, proof verification failures, API errors, and health/doctor workflows.
+- Reconciled API documentation with mounted route families in `packages/api/src/index.ts` and clarified v1 vs v2 (strategic/internal) status.
+- Updated homepage messaging to emphasize verifiable execution, replay outcomes, and remediation guardrails instead of generic reconciliation phrasing.
+
 - Updated root `verify` and `verify:oss` scripts to enforce lint/typecheck/build/test plus boundaries/policy/routes.
 - Updated README proof sections to link directly to deterministic demo evidence and replay contract.
 

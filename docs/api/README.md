@@ -1,18 +1,63 @@
-# API and SDK
+# API Surface (Truth Pass)
 
-## Contract-first API summary
+This document tracks the currently implemented route surfaces from `packages/api/src/index.ts` and mounted routers.
 
-Settler API exposes deterministic reconciliation workflows across connections, pipelines, runs, results, rules, and review operations.
+## Public operational endpoints
 
-## Developer trust path
+| Route             | Method | Purpose                  | Auth                         |
+| ----------------- | ------ | ------------------------ | ---------------------------- |
+| `/health`         | GET    | Health root              | No                           |
+| `/health/live`    | GET    | Liveness probe           | No                           |
+| `/health/ready`   | GET    | Readiness probe          | No                           |
+| `/metrics`        | GET    | Prometheus metrics       | No (protect at edge in prod) |
+| `/api/csrf-token` | GET    | CSRF token for web flows | No                           |
 
-1. Read API reference: [`docs/API.md`](../API.md)
-2. Run deterministic demo: [`docs/demo.md`](../demo.md)
-3. Validate replay contract: [`docs/determinism.md`](../determinism.md)
-4. Integrate with SDKs (`packages/sdk`, `packages/react-settler`, `packages/sdk-go`, `packages/sdk-python`)
+## Versioned API roots
 
-## Operational API concerns
+- `/api/v1/*` — primary API surface.
+- `/api/v2/*` — strategic/internal expansion surface.
 
-- Idempotency and retries are required for production ingestion and webhooks.
-- Failure paths should emit explicit errors and preserve evidence continuity.
-- Tenant boundary checks are mandatory at every read/write surface.
+## Authentication and tenant behavior
+
+- Auth routes are mounted at `/api/v1/auth` and `/api/v2/auth`.
+- Most v1/v2 business routes run behind auth middleware + idempotency + API-key rate limiting.
+- Tenant-sensitive data routes are mounted under `/tenant` with tenant middleware.
+- Trace and execution IDs are propagated via headers (`X-Trace-Id`, `X-Execution-Id`).
+
+## Route families (v1)
+
+Mounted families include:
+
+- `/transactions`, `/settlements`, `/fees`, `/exports`, `/currency`
+- `/ingestion`, `/ingestion/exports`, `/reconciliation`, `/reconciliations`
+- `/webhooks/*`, `/notifications`, `/audit-trail`
+- `/multi-source-reconciliation`, `/approvals`, `/progress`
+- `/receipt-matching`, `/bulk-operations`, `/advanced-matching-rules`
+- `/sla`, `/custom-integrations`, `/dedicated-infrastructure`
+
+## Route families (v2, currently strategic/internal)
+
+- `/reconciliation-graph`
+- `/ai-agents`
+- `/network-effects`
+- `/knowledge`
+- `/compliance`
+
+## Error semantics
+
+- Unknown routes return structured JSON and include trace metadata.
+- Consumers should treat non-2xx responses as machine-readable and log `traceId` for support correlation.
+- Problem+JSON style guidance: see `docs/support/api-error-guide.md`.
+
+## Runtime constraints
+
+- Requests are protected by global IP rate limiting and API-key rate limiting middleware.
+- State-changing routes run through idempotency middleware.
+- JSON body size/depth protections are enabled.
+
+## Verification workflow
+
+```bash
+pnpm --filter @settler/web validate:api-routes
+pnpm --filter @settler/api test
+```

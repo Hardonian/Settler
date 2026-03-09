@@ -1,20 +1,19 @@
-# Settler Docs
+# Settler Documentation
 
-Settler is an open-source reconciliation platform for deterministic workflows, replayable execution, and verifiable proof artifacts.
+This directory is the canonical documentation surface for Settler.
 
-## Start here
+## Primary entry points
 
-- New to the repo: [docs/START_HERE.md](./START_HERE.md)
-- Canonical doc map: [docs/INDEX.md](./INDEX.md)
-- Canonical language: [docs/TERMINOLOGY.md](./TERMINOLOGY.md)
+- **Role-based map**: [`docs/INDEX.md`](./INDEX.md)
+- **Terminology standard**: [`docs/reference/glossary.md`](./reference/glossary.md)
+- **Developer fast path**: [`docs/getting-started/README.md`](./getting-started/README.md)
+- **Product/architecture truth**: [`docs/architecture/README.md`](./architecture/README.md)
+- **API route contract**: [`docs/api/README.md`](./api/README.md)
+- **Operations and runbooks**: [`docs/operations/README.md`](./operations/README.md)
+- **Support and troubleshooting**: [`docs/support/README.md`](./support/README.md), [`docs/troubleshooting/README.md`](./troubleshooting/README.md)
 
-## Core documentation path
+## Scope rules
 
-- Quickstart: [docs/getting-started/README.md](./getting-started/README.md)
-- Workflows + engine: [docs/WORKFLOWS.md](./WORKFLOWS.md), [docs/ENGINE.md](./ENGINE.md)
-- Proof + replay: [docs/EVIDENCE.md](./EVIDENCE.md), [docs/LINEAGE.md](./LINEAGE.md)
-- Connectors: [docs/integrations/connectors-overview.md](./integrations/connectors-overview.md)
-- API + SDK: [docs/api/README.md](./api/README.md)
-- Security + policy: [docs/security/README.md](./security/README.md), [docs/SECURITY_INVARIANTS.md](./SECURITY_INVARIANTS.md)
-- Architecture: [ARCHITECTURE.md](../ARCHITECTURE.md), [docs/architecture/README.md](./architecture/README.md)
-- Contributing: [CONTRIBUTING.md](../CONTRIBUTING.md)
+- If implementation and docs disagree, narrow docs or fix code immediately.
+- Experimental/internal features must be explicitly marked.
+- Public website copy, README, and docs must use the same terms.

@@ -66,8 +66,9 @@ export default function HomePage() {
     },
     {
       number: 4,
-      title: "Review Evidence",
-      description: "Review mismatches with full audit trail and context. Export to JSON/CSV.",
+      title: "Inspect Proof + Replay",
+      description:
+        "Review proof artifacts, replay outcomes, and divergence signals with full trace context.",
       icon: GitBranch,
       code: "Evidence: SHA256 hash chain",
       illustration: "/illustrations/feature-human.svg",
@@ -77,7 +78,7 @@ export default function HomePage() {
   const coreCapabilities = [
     {
       icon: Code2,
-      title: "Repeatable Reconciliation Engine",
+      title: "Deterministic Execution Ledger",
       description:
         "Same data and same rules produce identical results. Every time. No hidden logic, no unpredictable changes between runs.",
     },
@@ -107,9 +108,9 @@ export default function HomePage() {
     },
     {
       icon: Eye,
-      title: "AI-Assisted Review Layer",
+      title: "Failure Intelligence + Remediation Guardrails",
       description:
-        "AI compresses exception triage time. Humans retain final authority. Reviewable decisions, not automated judgment.",
+        "Structured failure classes and operator guidance help teams remediate safely without masking root cause.",
     },
   ];
 
@@ -296,11 +297,11 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                 Core Capabilities
               </p>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
-                Reliable, Repeatable Reconciliation
+                Verifiable Execution for Operational Systems
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
-                No black boxes. No unexplainable results. Inspectable rules, traceable evidence, and
-                reviewable decisions at every step.
+                No black boxes. Deterministic runs, replay verification, and traceable
+                policy-governed execution at every step.
               </p>
             </div>
 
