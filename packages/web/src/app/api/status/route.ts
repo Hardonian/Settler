@@ -27,31 +27,31 @@ export const GET = withSecurity(
       checkAPIHealth(),
     ]);
 
+    // Uptime values are not measured historically — report only current connectivity status.
+    // Do not display fabricated uptime percentages.
+    const apiOk = healthChecks[2].status === 'fulfilled';
+    const dbOk = healthChecks[0].status === 'fulfilled';
+
     const systems = [
       {
         name: "Reconciliation Engine",
-        status: healthChecks[2].status === 'fulfilled' ? ("operational" as const) : ("degraded" as const),
-        uptime: healthChecks[2].status === 'fulfilled' ? 99.99 : 95.0,
+        status: apiOk ? ("operational" as const) : ("degraded" as const),
       },
       {
         name: "Receipts Processing",
-        status: healthChecks[2].status === 'fulfilled' ? ("operational" as const) : ("degraded" as const),
-        uptime: healthChecks[2].status === 'fulfilled' ? 99.95 : 95.0,
+        status: apiOk ? ("operational" as const) : ("degraded" as const),
       },
       {
         name: "Convert Service",
-        status: healthChecks[2].status === 'fulfilled' ? ("operational" as const) : ("degraded" as const),
-        uptime: healthChecks[2].status === 'fulfilled' ? 99.98 : 95.0,
+        status: apiOk ? ("operational" as const) : ("degraded" as const),
       },
       {
         name: "Feature Flags",
-        status: healthChecks[2].status === 'fulfilled' ? ("operational" as const) : ("degraded" as const),
-        uptime: healthChecks[2].status === 'fulfilled' ? 100.0 : 95.0,
+        status: apiOk ? ("operational" as const) : ("degraded" as const),
       },
       {
         name: "Database",
-        status: healthChecks[0].status === 'fulfilled' ? ("operational" as const) : ("degraded" as const),
-        uptime: healthChecks[0].status === 'fulfilled' ? 99.98 : 90.0,
+        status: dbOk ? ("operational" as const) : ("degraded" as const),
       },
     ];
 

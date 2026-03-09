@@ -12,7 +12,6 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 interface SystemStatus {
   name: string;
   status: "operational" | "degraded" | "down" | "maintenance";
-  uptime: number;
   lastIncident?: string;
 }
 
@@ -22,15 +21,10 @@ interface StatusResponse {
 }
 
 export default function StatusPage() {
-  const [systems, setSystems] = useState<SystemStatus[]>([
-    { name: "Reconciliation Engine", status: "operational", uptime: 99.99 },
-    { name: "Receipts Processing", status: "operational", uptime: 99.95 },
-    { name: "Convert Service", status: "operational", uptime: 99.98 },
-    { name: "Feature Flags", status: "operational", uptime: 100.0 },
-    { name: "API Gateway", status: "operational", uptime: 99.99 },
-  ]);
-  const [overallStatus, setOverallStatus] = useState<"operational" | "degraded" | "down">(
-    "operational"
+  // No default values — start empty and show real data only
+  const [systems, setSystems] = useState<SystemStatus[]>([]);
+  const [overallStatus, setOverallStatus] = useState<"operational" | "degraded" | "down" | null>(
+    null
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,12 +39,12 @@ export default function StatusPage() {
           throw new Error("Failed to fetch status");
         }
         const data: StatusResponse = await response.json();
-        setSystems(data.systems || systems);
-        setOverallStatus(data.overallStatus || "operational");
+        setSystems(data.systems || []);
+        setOverallStatus(data.overallStatus || "degraded");
       } catch (err) {
         console.error("Failed to load status:", err);
         setError(err instanceof Error ? err.message : "Failed to load status");
-        // Keep default values on error
+        setOverallStatus("degraded");
       } finally {
         setLoading(false);
       }
@@ -90,7 +84,7 @@ export default function StatusPage() {
     },
   };
 
-  const overall = statusConfig[overallStatus];
+  const overall = overallStatus ? statusConfig[overallStatus] : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
@@ -112,19 +106,29 @@ export default function StatusPage() {
                 <CardTitle className="text-3xl mb-2">System Status</CardTitle>
                 <CardDescription>Real-time status of all Settler services</CardDescription>
               </div>
-              <div
-                className={`w-16 h-16 rounded-lg flex items-center justify-center ${overall.bg}`}
-              >
-                <overall.icon className={`w-8 h-8 ${overall.color}`} />
-              </div>
+              {overall && (
+                <div
+                  className={`w-16 h-16 rounded-lg flex items-center justify-center ${overall.bg}`}
+                >
+                  <overall.icon className={`w-8 h-8 ${overall.color}`} />
+                </div>
+              )}
             </div>
           </CardHeader>
           <CardContent>
             <div className="text-center">
-              <h2 className={`text-4xl font-bold mb-2 ${overall.color}`}>{overall.label}</h2>
-              <p className="text-slate-600 dark:text-slate-400">
-                All systems are operating normally
-              </p>
+              {loading ? (
+                <p className="text-slate-500 dark:text-slate-400">Checking system status…</p>
+              ) : overall ? (
+                <>
+                  <h2 className={`text-4xl font-bold mb-2 ${overall.color}`}>{overall.label}</h2>
+                  <p className="text-slate-600 dark:text-slate-400">
+                    {overallStatus === "operational"
+                      ? "All systems are operating normally"
+                      : "One or more services are experiencing issues"}
+                  </p>
+                </>
+              ) : null}
             </div>
           </CardContent>
         </Card>
@@ -137,7 +141,7 @@ export default function StatusPage() {
                 <div className="flex items-center gap-2 text-amber-800 dark:text-amber-200">
                   <AlertTriangle className="h-5 w-5" />
                   <p className="text-sm">
-                    Unable to fetch real-time status. Showing cached data. {error}
+                    Unable to fetch system status. {error}
                   </p>
                 </div>
               </CardContent>
@@ -165,9 +169,6 @@ export default function StatusPage() {
                           <h3 className="font-semibold text-slate-900 dark:text-white">
                             {system.name}
                           </h3>
-                          <p className="text-sm text-slate-500 dark:text-slate-400">
-                            Uptime: {system.uptime.toFixed(2)}%
-                          </p>
                         </div>
                       </div>
                       <Badge

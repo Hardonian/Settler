@@ -269,28 +269,34 @@ async function DashboardMetrics() {
                 GitHub Repository
               </h3>
             </div>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Stars</span>
-                <span className="font-semibold text-slate-900 dark:text-white">
-                  {externalMetrics.github.stars.toLocaleString()}
-                </span>
+            {externalMetrics.github.unavailable ? (
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                GitHub data unavailable — API could not be reached.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-slate-600 dark:text-slate-400">Stars</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">
+                    {externalMetrics.github.stars.toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-600 dark:text-slate-400">Forks</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">
+                    {externalMetrics.github.forks.toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-600 dark:text-slate-400">Open Issues</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">
+                    {externalMetrics.github.openIssues.toLocaleString()}
+                  </span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Forks</span>
-                <span className="font-semibold text-slate-900 dark:text-white">
-                  {externalMetrics.github.forks.toLocaleString()}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Open Issues</span>
-                <span className="font-semibold text-slate-900 dark:text-white">
-                  {externalMetrics.github.openIssues.toLocaleString()}
-                </span>
-              </div>
-            </div>
+            )}
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-4">
-              Data from GitHub API (with demo fallback if unavailable)
+              Live data from GitHub API
             </p>
           </div>
 
@@ -302,22 +308,22 @@ async function DashboardMetrics() {
                 NPM Package
               </h3>
             </div>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Version</span>
-                <span className="font-semibold text-slate-900 dark:text-white">
-                  {externalMetrics.npm.version}
-                </span>
+            {externalMetrics.npm.unavailable ? (
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                NPM data unavailable — registry could not be reached.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-slate-600 dark:text-slate-400">Version</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">
+                    {externalMetrics.npm.version}
+                  </span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Downloads</span>
-                <span className="font-semibold text-slate-900 dark:text-white">
-                  {externalMetrics.npm.downloads.toLocaleString()}
-                </span>
-              </div>
-            </div>
+            )}
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-4">
-              Data from NPM Registry API (with demo fallback if unavailable)
+              Live data from NPM Registry
             </p>
           </div>
           </HoverCard>

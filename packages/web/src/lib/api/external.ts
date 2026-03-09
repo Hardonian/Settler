@@ -1,8 +1,8 @@
 /**
  * External API Integrations
- * 
- * Leverages real data from external sources to build information source value
- * without lying or embellishing. Uses demo/fallback data when APIs are unavailable.
+ *
+ * Fetches real data from GitHub and NPM APIs.
+ * Returns zeroed-out values when APIs are unavailable — no fake placeholder numbers.
  */
 
 export interface GitHubRepoStats {
@@ -11,12 +11,14 @@ export interface GitHubRepoStats {
   watchers: number;
   openIssues: number;
   lastUpdated: string;
+  unavailable?: boolean;
 }
 
 export interface NPMStats {
   downloads: number;
   version: string;
   lastUpdated: string;
+  unavailable?: boolean;
 }
 
 export interface ExternalMetrics {
@@ -26,12 +28,12 @@ export interface ExternalMetrics {
 }
 
 /**
- * Fetch GitHub repository statistics
- * Falls back to demo data if API is unavailable or rate-limited
+ * Fetch GitHub repository statistics.
+ * Returns unavailable=true with zero counts when the API cannot be reached.
  */
 export async function getGitHubStats(
-  owner: string = 'shardie-github',
-  repo: string = 'Settler-API'
+  owner: string = 'Hardonian',
+  repo: string = 'Settler'
 ): Promise<GitHubRepoStats> {
   try {
     const response = await fetch(
@@ -58,27 +60,26 @@ export async function getGitHubStats(
       lastUpdated: data.updated_at || new Date().toISOString(),
     };
   } catch (error) {
-    console.warn('GitHub API unavailable, using demo data:', error);
-    // Return realistic demo data (clearly marked as such in UI)
+    console.warn('GitHub API unavailable:', error);
     return {
-      stars: 42,
-      forks: 8,
-      watchers: 12,
-      openIssues: 3,
+      stars: 0,
+      forks: 0,
+      watchers: 0,
+      openIssues: 0,
       lastUpdated: new Date().toISOString(),
+      unavailable: true,
     };
   }
 }
 
 /**
- * Fetch NPM package download statistics
- * Falls back to demo data if API is unavailable
+ * Fetch NPM package download statistics.
+ * Returns unavailable=true with zero counts when the registry cannot be reached.
  */
 export async function getNPMStats(
   packageName: string = '@settler/sdk'
 ): Promise<NPMStats> {
   try {
-    // Try to get package info
     const packageResponse = await fetch(
       `https://registry.npmjs.org/${packageName}`,
       {
@@ -94,22 +95,18 @@ export async function getNPMStats(
     const latestVersion = packageData['dist-tags']?.latest || '0.0.0';
     const lastModified = packageData.time?.modified || new Date().toISOString();
 
-    // Try to get download stats (this might require npm API key for detailed stats)
-    // For now, we'll use a reasonable estimate based on package age
-    const downloads = packageData.downloads?.length || 0;
-
     return {
-      downloads: downloads || 0,
+      downloads: 0, // NPM public API does not surface download counts without auth
       version: latestVersion,
       lastUpdated: lastModified,
     };
   } catch (error) {
-    console.warn('NPM API unavailable, using demo data:', error);
-    // Return realistic demo data
+    console.warn('NPM API unavailable:', error);
     return {
-      downloads: 1250,
-      version: '1.0.0',
+      downloads: 0,
+      version: 'unavailable',
       lastUpdated: new Date().toISOString(),
+      unavailable: true,
     };
   }
 }

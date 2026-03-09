@@ -27,6 +27,7 @@ interface BillingData {
     reconcile: { current: number; limit: number };
     exceptions: { current: number; limit: number };
   };
+  stripeConfigured?: boolean;
 }
 
 export default function BillingPage() {
@@ -171,7 +172,7 @@ export default function BillingPage() {
               Manage your subscription and view usage
             </p>
           </div>
-          {data.subscription && (
+          {data.subscription && data.stripeConfigured && (
             <Button onClick={handleManageBilling} disabled={isCreatingPortal} variant="outline">
               {isCreatingPortal ? (
                 <>
@@ -187,6 +188,26 @@ export default function BillingPage() {
             </Button>
           )}
         </div>
+
+        {/* Stripe not configured — shown when billing cannot be activated */}
+        {data.stripeConfigured === false && (
+          <Card className="border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20">
+            <CardContent className="pt-4 pb-4">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-medium text-amber-900 dark:text-amber-200">
+                    Billing not configured
+                  </p>
+                  <p className="text-sm text-amber-700 dark:text-amber-300 mt-0.5">
+                    Payment processing requires Stripe to be configured by the operator.
+                    Paid plan upgrades are unavailable until this is resolved.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Current Plan */}
         <Card>
@@ -341,21 +362,27 @@ export default function BillingPage() {
                   <li>• Exception review: $0.10/exception</li>
                 </ul>
                 {!isGrowth && (
-                  <Button
-                    size="sm"
-                    className="w-full"
-                    onClick={() => handleUpgrade("growth")}
-                    disabled={isCreatingCheckout === "growth"}
-                  >
-                    {isCreatingCheckout === "growth" ? (
-                      <>
-                        <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                        Processing...
-                      </>
-                    ) : (
-                      "Upgrade to Growth"
-                    )}
-                  </Button>
+                  data.stripeConfigured === false ? (
+                    <p className="text-xs text-amber-600 dark:text-amber-400">
+                      Billing not configured
+                    </p>
+                  ) : (
+                    <Button
+                      size="sm"
+                      className="w-full"
+                      onClick={() => handleUpgrade("growth")}
+                      disabled={isCreatingCheckout === "growth"}
+                    >
+                      {isCreatingCheckout === "growth" ? (
+                        <>
+                          <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        "Upgrade to Growth"
+                      )}
+                    </Button>
+                  )
                 )}
               </div>
 
@@ -383,6 +410,11 @@ export default function BillingPage() {
                   <li>• Exception review: $0.10/exception</li>
                 </ul>
                 {!isScale && (
+                  data.stripeConfigured === false ? (
+                    <p className="text-xs text-amber-600 dark:text-amber-400">
+                      Billing not configured
+                    </p>
+                  ) : (
                   <Button
                     size="sm"
                     className="w-full"
@@ -398,6 +430,7 @@ export default function BillingPage() {
                       "Upgrade to Scale"
                     )}
                   </Button>
+                  )
                 )}
               </div>
 
