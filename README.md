@@ -1,108 +1,121 @@
 # Settler
 
-**Settler is a deterministic reconciliation engine for financial data that emits verifiable evidence artifacts for every run.**
+Settler is an OSS-first platform for **deterministic execution, replay verification, and traceable operational history**.
 
-Engineering teams hit the same failure mode: Stripe, bank exports, and internal ledgers diverge, but root-cause analysis is slow because execution history is incomplete or non-replayable. Settler solves this by combining deterministic execution, explicit rule evaluation, and replay verification in one auditable path.
+It is designed for teams that need more than “job succeeded/failed.” Settler records what ran, why it ran, what policy was applied, and whether the same run can be replayed with matching outcomes.
 
-## What it produces
+## Mental model
 
-Every reconciliation run writes four outputs to `examples/demo-output/` (or your configured output path):
+Think of Settler as a **git-style execution ledger** for operational workflows:
 
-| File | Contents |
-|------|----------|
-| `run.json` | Execution metadata: timing, adapter versions, rule set used |
-| `results.json` | Match/mismatch summary with rule path traces for every record pair |
-| `evidence.json` | SHA-256 hash-linked audit artifact — the replay-verification input |
-| `report.html` | Human-readable mismatch report for review packages |
+- Every run has a structured record.
+- Every run can emit a proof bundle.
+- Every run can be replayed to test determinism.
+- Divergence is explicit and inspectable, not hidden in logs.
 
-## Quick start — first run in 5 minutes
+## Core capabilities
 
-No database or API keys required for the demo path.
+- **Deterministic proof engine**: canonicalized inputs + stable hashing + verification artifacts.
+- **Replay lab**: rerun captured executions and classify `match` vs `diverged` outcomes.
+- **Execution ledger**: run history with trace IDs and append-oriented audit records.
+- **Proof explorer + trust graph surfaces**: inspect evidence and lineage relationships.
+- **Failure intelligence**: structured failure classes and recurrence analysis primitives.
+- **Policy simulation**: evaluate policy outcomes without mutating production state.
+- **Operational integrity spine**: trace propagation, structured error semantics, health routes.
+
+## OSS-first model
+
+Settler is open source and self-hostable by default. Enterprise/commercial capabilities are layered as deployment, governance, and support expansions rather than a closed core.
+
+## High-level architecture
+
+- **`packages/api`**: Express control plane, health/metrics, API routes, middleware, deterministic/replay services.
+- **`packages/web`**: Next.js marketing + product surfaces (proof explorer, replay, policies, support, status).
+- **`packages/cli`**: operator/developer CLI (`doctor`, `demo`, `replay`, `verify`, `policy`, `failures`, `tenant-check`).
+- **`packages/sdk*`**: SDK clients for integration.
+- **`docs/`**: canonical reference and runbooks.
+
+## 5-minute quickstart
 
 ```bash
-# Clone and install
-git clone https://github.com/Hardonian/Settler.git
-cd Settler
 pnpm install
-
-# Copy env (DATABASE_URL not required for demo)
 cp .env.example .env
-
-# Run a Stripe↔QuickBooks demo reconciliation
 pnpm demo
-
-# Inspect results and evidence
-cat examples/demo-output/results.json
-cat examples/demo-output/evidence.json
-
-# Replay verification — re-runs deterministically and confirms hash match
 pnpm settler:replay examples/demo-output/evidence.json
 ```
 
-For SDK-based reconciliation against your own data sources, see [`docs/launch/QUICK_START.md`](docs/launch/QUICK_START.md).
+Expected result: replay verification confirms deterministic equivalence for the demo capsule.
 
-## Key capabilities
+## Local development
 
-- **Deterministic execution** — same inputs and rules always produce the same output.
-- **Evidence artifacts are first-class outputs** — `evidence.json` with SHA-256 fingerprints, not debug logs.
-- **Replay verification** — re-run any past reconciliation from stored artifacts to confirm results.
-- **Policy evaluation in the execution loop** — access controls and guardrails evaluated at runtime, not post-hoc.
-- **Connector normalization** — adapters normalize inputs into a canonical schema before matching, reducing non-deterministic drift.
+```bash
+# monorepo dev
+pnpm dev
 
-## Why determinism matters
+# run CLI diagnostics
+pnpm --filter @settler/cli dev -- doctor
 
-Most reconciliation workflows fail during root-cause analysis, not during the run itself. When a variance surfaces in production, you need to know: did the rule change? Did the data change? Did the engine behave differently?
+# show local stack commands
+pnpm --filter @settler/cli dev -- dev stack
+```
 
-Settler eliminates that uncertainty. Determinism makes debugging tractable, rule testing reliable, and audit straightforward.
+## Main interfaces
 
-## Technical differentiation
+### CLI
 
-Settler differs from generic workflow tools in five concrete ways:
+- `settler doctor` — environment diagnostics.
+- `settler demo` — deterministic local demo capsule.
+- `settler replay` — replay-lab workflows.
+- `settler verify` — proof capsule verification.
+- `settler failures` — inspect structured failure records.
+- `settler policy` — governance simulation commands.
 
-1. **Determinism is enforced** (not advisory) via execution fences and canonicalization.
-2. **Proof artifacts are first-class outputs** (`evidence.json`, fingerprints, hash-linked lineage).
-3. **Replay is a built-in verification path**, not a best-effort debug mode.
-4. **Policy evaluation is in the execution loop**, not a separate post-processing stage.
-5. **Connector safety includes normalization + tenant boundaries** to reduce non-deterministic drift.
+### API (control plane)
 
-## Architecture at a glance
+- Health: `/health`, `/health/live`, `/health/ready`
+- Metrics: `/metrics`
+- Versioned API: `/api/v1/*`, `/api/v2/*`
+- OpenAPI document endpoint under `/api/v1`
 
-See [`ARCHITECTURE.md`](ARCHITECTURE.md) for the runtime diagram and component flow: workflow execution, event backbone, workers, artifact store, proof generation, connector integrations, and policy engine.
+### Web/product routes
 
-## Security evidence model
+Public narrative and product pages include: `/product`, `/how-it-works`, `/replay-lab`, `/proof-explorer`, `/policies`, `/security`, `/oss`, `/enterprise`, `/status`, `/support`.
 
-Security verification artifacts are machine-readable and intentionally explicit about evidence quality:
+## Verification commands
 
-- `VERIFIED`: runtime or authenticated evidence confirms the claim.
-- `DEGRADED`: checks passed, but confidence is reduced (e.g., missing authenticated advisory feed).
-- `UNAVAILABLE`: evidence was not produced in this environment.
-- `SKIPPED`: verification was intentionally not executed (e.g., runtime-only probes during local development).
-- `FAILED`: evidence demonstrates a failing control.
+```bash
+pnpm --filter @settler/cli build
+pnpm --filter @settler/cli dev -- --help
+pnpm --filter @settler/api test:tenant-safety
+pnpm --filter @settler/web validate:api-routes
+```
 
-Artifacts are written to:
+## Documentation index
 
-- `security/dependency-evidence.json`
-- `security/rls-evidence.json`
-- `security/security-verdict.json`
+Start with [`docs/README.md`](docs/README.md), then use [`docs/INDEX.md`](docs/INDEX.md) by role.
 
-## Product surfaces
+## Security, tenancy, traceability
 
-**Public routes:** `/product`, `/how-it-works`, `/reconciliation`, `/replay-lab`, `/proof-explorer`, `/policies`, `/security`, `/oss`, `/enterprise`
+- Multi-tenant checks are enforced through tenant middleware and tenant-scoped route surfaces.
+- Trace metadata is propagated via `X-Trace-Id` and execution identifiers.
+- Error semantics favor machine-readable payloads and explicit degraded states.
 
-**Control-plane routes:** `/app/executions`, `/app/reconciliation`, `/app/replay`, `/app/proofs`, `/app/policies`, `/app/audit`, `/app/system-health`, `/app/integrations`
+See:
 
-## Contributor on-ramp
+- [`docs/security/README.md`](docs/security/README.md)
+- [`docs/operations/README.md`](docs/operations/README.md)
+- [`docs/support/api-error-guide.md`](docs/support/api-error-guide.md)
 
-1. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) for local setup, package layout, and quality gates.
-2. Run `pnpm demo` to verify your environment produces a working evidence artifact.
-3. Browse [`docs/launch/EXAMPLE_WORKFLOWS.md`](docs/launch/EXAMPLE_WORKFLOWS.md) for walkthrough examples with expected outputs.
-4. Check open issues for **good first issue** labels, or open a proposal before starting larger changes.
-5. Use issue/PR templates in [`.github/ISSUE_TEMPLATE`](.github/ISSUE_TEMPLATE) and [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md).
+## Maturity model (truthful status)
 
-Good first contributions: documentation fixes, new adapter integrations (see `packages/adapters/src/drivers/`), SDK examples, and minor UI improvements.
+- **Stable**: deterministic demo path, health/metrics, CLI runtime diagnostics, tenant safety test suite.
+- **Growing**: proof explorer, replay/graph product surfaces, policy simulation UX, failure intelligence depth.
+- **Internal/advanced**: selected v2 strategic APIs and enterprise-oriented controls.
 
-## License and security
+## Contributing
 
-- License: [`LICENSE`](LICENSE) — Apache 2.0
-- Security policy: [`SECURITY.md`](SECURITY.md)
-- Report security issues: `security@settler.dev`
+See [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+## License
+
+Apache-2.0. See [`LICENSE`](LICENSE).

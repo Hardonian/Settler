@@ -1,27 +1,37 @@
-# Architecture
+# Architecture Overview
 
-## Canonical architecture narrative
+## Capability
 
-Settler runs as a reconciliation engine with a traceability spine:
+Settler provides deterministic execution with replayable verification and auditable run lineage.
 
-1. **Ingestion/connectors** pull transaction/document feeds.
-2. **Normalization** converts source variance into typed internal records.
-3. **Reconciliation engine** applies deterministic matching and tolerance rules.
-4. **Policy/rules layer** enforces governance and decision constraints.
-5. **Exception handling** routes unmatched/ambiguous records to operator review.
-6. **Evidence/audit layer** stores run lineage, decisions, hashes, and exports.
-7. **API/SDK layer** exposes contract-first execution and retrieval surfaces.
-8. **Operator/admin planes** provide monitoring, controls, and review lifecycle.
+## Intended use
 
-## Hosted vs enterprise boundary
+- Reconciliation and operational workflows that require reproducibility.
+- Multi-tenant environments with strict traceability and scoped access.
 
-- OSS/public surfaces must run without enterprise-only configuration.
-- Enterprise modules add advanced controls and operational tooling without changing deterministic core behavior.
-- Missing enterprise configuration must degrade gracefully on public routes.
+## Core components
 
-## Deep links
+- **Control plane (`packages/api`)**: API routes, auth, tenant middleware, idempotency, health/metrics, trace headers.
+- **Execution services**: determinism, replay, policy evaluation, failure recording.
+- **Web surfaces (`packages/web`)**: proof explorer, replay lab, status/support pages.
+- **CLI (`packages/cli`)**: local diagnostics, demo generation, replay/verify workflows.
 
-- Full architecture: [`docs/ARCHITECTURE.md`](../ARCHITECTURE.md)
-- Event model: [`docs/EVENT_MODEL.md`](../EVENT_MODEL.md)
-- Ingestion reference: [`docs/INGESTION.md`](../INGESTION.md)
-- Reliability and operations: [`docs/OPERATIONS.md`](../OPERATIONS.md)
+## Invariants
+
+- Deterministic operations rely on canonical inputs and stable hashing.
+- Tenant context must be preserved for protected reads/writes.
+- Trace IDs (`X-Trace-Id`) and execution IDs are attached per request.
+- Health and metrics endpoints remain available for operational checks.
+
+## Caveats
+
+- Not every route family is public product API; many are internal or operator-focused.
+- v2 route family currently represents strategic/internal expansion areas.
+
+## Example workflow
+
+1. Run deterministic reconciliation.
+2. Emit proof bundle/capsule.
+3. Replay same inputs.
+4. Compare hash/result equivalence.
+5. Investigate divergence via failure records and audit trail.
