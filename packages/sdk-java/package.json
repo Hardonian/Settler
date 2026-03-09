@@ -1,0 +1,9 @@
+{
+  "name": "@settler/sdk-java",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Settler Java SDK workspace metadata",
+  "scripts": {
+    "verify:presence": "echo 'java sdk metadata workspace'"
+  }
+}

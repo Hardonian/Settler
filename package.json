@@ -187,7 +187,7 @@
     "verify:route-boundaries": "node scripts/verify-route-boundaries.mjs",
     "test:web:middleware-gating": "pnpm --filter @settler/web test -- app-auth-gating.test.ts",
     "test:e2e:marketing:prod": "pnpm --filter @settler/web build && playwright test -c playwright.prod.config.ts tests/e2e/marketing-crawl.spec.ts",
-    "benchmark:check": "tsx benchmarks/reconciliationBenchmark.ts",
+    "benchmark:check": "tsx ./benchmarks/reconciliationBenchmark.ts",
     "verify:conflict-markers": "node scripts/check-conflict-markers.mjs",
     "smoke:m1": "tsx scripts/m1-smoke.ts",
     "lint:boundaries": "node scripts/boundary-linter.mjs",
