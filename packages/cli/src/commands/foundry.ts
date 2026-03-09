@@ -7,6 +7,11 @@ import {
   createMetamorphicDataset,
   runDataset,
 } from "../lib/foundry";
+import {
+  exportReconciliationSuite,
+  generateReconciliationSuite,
+  validateSuiteDeterminism,
+} from "../lib/reconciliation-foundry";
 
 function parseSeeds(raw: string): number[] {
   return raw
@@ -245,4 +250,43 @@ foundryCommand
     }
     const store = new FoundryFileStore();
     logJson(runDataset(store, options.dataset, false).run);
+  });
+
+foundryCommand
+  .command("reconciliation-generate")
+  .description("Generate deterministic synthetic reconciliation test data")
+  .option("--seed <seed>", "Deterministic seed", "42")
+  .option("--profile <profile>", "smoke|integration|load|chaos", "smoke")
+  .option("--output <dir>", "Output directory", "test-data/exports/latest")
+  .action(
+    (options: {
+      seed: string;
+      profile: "smoke" | "integration" | "load" | "chaos";
+      output: string;
+    }) => {
+      const suite = generateReconciliationSuite({
+        seed: Number(options.seed) || 42,
+        profile: options.profile,
+      });
+      const result = exportReconciliationSuite(suite, options.output);
+      logJson({
+        output: result.path,
+        hash: result.hash,
+        profile: suite.manifest.profile,
+        records: Object.fromEntries(Object.entries(suite.sources).map(([k, v]) => [k, v.length])),
+      });
+    }
+  );
+
+foundryCommand
+  .command("reconciliation-verify")
+  .description("Verify deterministic generation for reconciliation suites")
+  .option("--seed <seed>", "Deterministic seed", "42")
+  .option("--profile <profile>", "smoke|integration|load|chaos", "smoke")
+  .action((options: { seed: string; profile: "smoke" | "integration" | "load" | "chaos" }) => {
+    const ok = validateSuiteDeterminism(Number(options.seed) || 42, options.profile);
+    if (!ok) {
+      throw new Error("Determinism verification failed for reconciliation synthetic suite");
+    }
+    logJson({ deterministic: true, seed: Number(options.seed) || 42, profile: options.profile });
   });
