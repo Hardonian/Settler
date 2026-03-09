@@ -60,6 +60,7 @@ pnpm verify:schema
 ```
 
 Common causes:
+
 - Missing or malformed `DATABASE_URL` in `.env`
 - Supabase project not running or URL incorrect
 - Migrations not applied — run `pnpm exec tsx scripts/run-migrations-remote.ts`
@@ -104,8 +105,19 @@ PORT=3001 pnpm --filter @settler/web dev
 ## Getting Faster Help
 
 Include in your issue:
+
 1. What you were trying to do
 2. What happened instead
 3. Steps to reproduce
 4. Output of `pnpm doctor` if relevant
 5. Node.js version, pnpm version, and OS
+
+## Launch Support Scope
+
+When reporting launch issues, include outputs from:
+
+- `pnpm run doctor`
+- `pnpm run repo-integrity`
+- `pnpm run verify`
+
+This keeps support triage tied to verifiable repository state.

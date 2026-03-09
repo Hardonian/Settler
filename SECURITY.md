@@ -29,7 +29,7 @@ Settler is a multi-tenant system with layered controls:
   - This check does **not** prove runtime denial behavior by itself.
 - Runtime denial behavior is validated by `pnpm run test:cross-tenant`, which is the enforcement proof for cross-tenant access denial.
 - Exempt routes are explicit in the tenant coverage artifact (`artifacts/security/tenant-coverage-latest.json`) with route + reason.
-Settler enforces tenant isolation through layered controls:
+  Settler enforces tenant isolation through layered controls:
 
 - **Static token check:** every route file that serves tenant data must contain a recognized isolation control token (e.g. `buildContext(`, `tenantId`, `authenticateApiKey(`). This is verified by `scripts/verify-tenant-coverage.ts` and gates CI.
 - **High-risk route classification:** a subset of routes with the highest isolation risk are individually reviewed and checked for specific guardrail patterns via `scripts/security/tenant-guardrails.mjs`.
@@ -59,7 +59,7 @@ Settler enforces tenant isolation through layered controls:
   - failed checks with per-route diagnostics.
 - Degraded header verification is blocking unless explicitly overridden with `SECURITY_HEADER_PROBE_ALLOW_DEGRADED=1`.
 - Strict probe failure blocking can be enabled with `SECURITY_HEADER_PROBE_STRICT=1`.
-Settler middleware applies hardened response headers on all responses:
+  Settler middleware applies hardened response headers on all responses:
 
 - `X-Content-Type-Options: nosniff`
 - `X-Frame-Options: DENY`
@@ -106,3 +106,9 @@ Please do not publicly disclose vulnerabilities before remediation is available.
 - Initial acknowledgement target: **72 hours**.
 - Severity triage target: **5 business days**.
 - Coordinated remediation and disclosure timeline is shared with reporter after validation.
+
+## Launch Security Verification
+
+Release candidates must pass `pnpm run verify` and `pnpm run repo-integrity` before launch copy is updated.
+
+Security claims must map to code paths, tests, or verification scripts committed in-repo.

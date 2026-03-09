@@ -190,3 +190,9 @@ pnpm run verify:links
 - Tags (`vX.Y.Z`) trigger release workflows.
 - `.github/workflows/release-cli.yml` publishes OS/arch CLI artifacts and SHA256 checksum files.
 - Install smoke checks validate `settler version` and `settler doctor` from packaged artifacts.
+
+## Verification Requirements
+
+Before opening a PR, run: `pnpm run typecheck`, `pnpm run test`, `pnpm run repo-integrity`, and `pnpm run verify`.
+
+If any command fails, narrow claims in docs or fix implementation first.
