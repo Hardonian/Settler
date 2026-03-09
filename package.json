@@ -4,7 +4,13 @@
   "private": true,
   "description": "Settler - Open Source Reconciliation Engine",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "!packages/sdk-csharp",
+    "!packages/sdk-java",
+    "!packages/sdk-go",
+    "!packages/sdk-python",
+    "!packages/sdk-ruby",
+    "!packages/workhorse"
   ],
   "scripts": {
     "build": "turbo run build --filter @settler/web...",
@@ -199,9 +205,9 @@
     "demo": "tsx scripts/settler-demo.ts",
     "settler:replay": "tsx scripts/settler-replay.ts",
     "verify:policy": "tsx scripts/verify-policy.ts && tsx scripts/test-moat.ts && tsx scripts/settler-replay.ts examples/demo-output-fixtures/demo-run-1/evidence.json",
-    "verify:foundry": "pnpm --filter @settler/cli exec tsx src/index.ts foundry vectors run --suite core --seeds 1,2",
-    "verify:foundry:metamorphic": "pnpm --filter @settler/cli exec tsx src/index.ts foundry metamorphic generate --base-suite core --per 1 --seed 1",
-    "verify:foundry:faults": "pnpm --filter @settler/cli exec tsx src/index.ts foundry generate --type faults --seeds 1 && FOUNDRY_FAULTS=1 pnpm --filter @settler/cli exec tsx src/index.ts foundry report --last 1",
+    "verify:foundry": "pnpm --filter @settler/cli exec tsx packages/cli/src/index.ts foundry vectors run --suite core --seeds 1,2",
+    "verify:foundry:metamorphic": "pnpm --filter @settler/cli exec tsx packages/cli/src/index.ts foundry metamorphic generate --base-suite core --per 1 --seed 1",
+    "verify:foundry:faults": "pnpm --filter @settler/cli exec tsx packages/cli/src/index.ts foundry generate --type faults --seeds 1 && FOUNDRY_FAULTS=1 pnpm --filter @settler/cli exec tsx packages/cli/src/index.ts foundry report --last 1",
     "verify:api": "node scripts/verify-api.mjs",
     "verify:security": "pnpm run security:routes && pnpm run verify:tenant && node scripts/verify-security.mjs && node scripts/security/admin-route-authz.mjs && pnpm run test:cross-tenant && SECURITY_AUDIT_MODE=${SECURITY_AUDIT_MODE:-warn} pnpm run audit:deps && node scripts/security/dependency-triage.mjs && pnpm exec tsx scripts/security-smoke.ts",
     "verify:security:runtime": "node scripts/security/runtime-smoke.mjs",
@@ -236,7 +242,9 @@
     "verify:rls:live": "pnpm exec tsx scripts/verify-rls-status.ts",
     "verify:security:fast": "pnpm run security:routes && pnpm run verify:tenant && pnpm run test:cross-tenant && SECURITY_AUDIT_MODE=warn SECURITY_DEPENDENCY_EVIDENCE_MODE=standard pnpm run audit:deps && node scripts/security/dependency-evidence.mjs && SECURITY_RLS_EVIDENCE_MODE=static-only node scripts/security/verify-rls-boundary.mjs && node scripts/security/rls-evidence.mjs && node scripts/security/verdict.mjs",
     "verify:security:full": "pnpm run security:evidence && node scripts/security/verdict.mjs",
-    "verify:security:enterprise": "SECURITY_DEPENDENCY_EVIDENCE_MODE=strict SECURITY_RLS_EVIDENCE_MODE=runtime-rls-required pnpm run security:evidence && node scripts/security/verdict.mjs"
+    "verify:security:enterprise": "SECURITY_DEPENDENCY_EVIDENCE_MODE=strict SECURITY_RLS_EVIDENCE_MODE=runtime-rls-required pnpm run security:evidence && node scripts/security/verdict.mjs",
+    "bootstrap": "node scripts/bootstrap.mjs",
+    "dev:stack": "turbo run dev --filter @settler/api --filter @settler/web"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

@@ -1,121 +1,44 @@
 # Settler
 
-Settler is an OSS-first platform for **deterministic execution, replay verification, and traceable operational history**.
+Settler is an OSS-first deterministic execution and reconciliation platform.
 
-It is designed for teams that need more than “job succeeded/failed.” Settler records what ran, why it ran, what policy was applied, and whether the same run can be replayed with matching outcomes.
-
-## Mental model
-
-Think of Settler as a **git-style execution ledger** for operational workflows:
-
-- Every run has a structured record.
-- Every run can emit a proof bundle.
-- Every run can be replayed to test determinism.
-- Divergence is explicit and inspectable, not hidden in logs.
-
-## Core capabilities
-
-- **Deterministic proof engine**: canonicalized inputs + stable hashing + verification artifacts.
-- **Replay lab**: rerun captured executions and classify `match` vs `diverged` outcomes.
-- **Execution ledger**: run history with trace IDs and append-oriented audit records.
-- **Proof explorer + trust graph surfaces**: inspect evidence and lineage relationships.
-- **Failure intelligence**: structured failure classes and recurrence analysis primitives.
-- **Policy simulation**: evaluate policy outcomes without mutating production state.
-- **Operational integrity spine**: trace propagation, structured error semantics, health routes.
-
-## OSS-first model
-
-Settler is open source and self-hostable by default. Enterprise/commercial capabilities are layered as deployment, governance, and support expansions rather than a closed core.
-
-## High-level architecture
-
-- **`packages/api`**: Express control plane, health/metrics, API routes, middleware, deterministic/replay services.
-- **`packages/web`**: Next.js marketing + product surfaces (proof explorer, replay, policies, support, status).
-- **`packages/cli`**: operator/developer CLI (`doctor`, `demo`, `replay`, `verify`, `policy`, `failures`, `tenant-check`).
-- **`packages/sdk*`**: SDK clients for integration.
-- **`docs/`**: canonical reference and runbooks.
-
-## 5-minute quickstart
+## Quickstart (fast path)
 
 ```bash
-pnpm install
-cp .env.example .env
-pnpm demo
-pnpm settler:replay examples/demo-output/evidence.json
+pnpm run bootstrap
+pnpm run doctor -- --skip-pipeline
+pnpm run demo
+pnpm run dev:stack
 ```
 
-Expected result: replay verification confirms deterministic equivalence for the demo capsule.
+## Command matrix
 
-## Local development
+- `pnpm run bootstrap` — first-run install + integrity + first-run doctor.
+- `pnpm run doctor -- --skip-pipeline` — local diagnostics (toolchain/env/config).
+- `pnpm run demo` — deterministic demo execution with replay proof.
+- `pnpm run dev:stack` — canonical local API + web stack entrypoint.
+- `pnpm run repo-integrity` — monorepo contract validator.
+- `pnpm run verify` — full lint/typecheck/build/test verification suite.
+- `pnpm run build` — production build path.
 
-```bash
-# monorepo dev
-pnpm dev
+## Repository structure
 
-# run CLI diagnostics
-pnpm --filter @settler/cli dev -- doctor
+- `packages/api` — API/control plane.
+- `packages/web` — Next.js product/marketing UI.
+- `packages/cli` — Settler CLI runtime.
+- `packages/sdk` + `packages/react-settler` + `packages/types` — SDK/runtime libraries.
+- `docs/getting-started/*` — onboarding flow documentation.
+- `docs/reference/repo-integrity.md` — monorepo contract rules.
 
-# show local stack commands
-pnpm --filter @settler/cli dev -- dev stack
-```
+## Onboarding docs
 
-## Main interfaces
+- [Quickstart](docs/getting-started/quickstart.md)
+- [Bootstrap](docs/getting-started/bootstrap.md)
+- [Doctor](docs/getting-started/doctor.md)
+- [First-run demo](docs/demo/first-run-demo.md)
+- [Troubleshooting](docs/troubleshooting/installation-and-setup.md)
+- [Repo integrity reference](docs/reference/repo-integrity.md)
 
-### CLI
+## Integrity guarantee
 
-- `settler doctor` — environment diagnostics.
-- `settler demo` — deterministic local demo capsule.
-- `settler replay` — replay-lab workflows.
-- `settler verify` — proof capsule verification.
-- `settler failures` — inspect structured failure records.
-- `settler policy` — governance simulation commands.
-
-### API (control plane)
-
-- Health: `/health`, `/health/live`, `/health/ready`
-- Metrics: `/metrics`
-- Versioned API: `/api/v1/*`, `/api/v2/*`
-- OpenAPI document endpoint under `/api/v1`
-
-### Web/product routes
-
-Public narrative and product pages include: `/product`, `/how-it-works`, `/replay-lab`, `/proof-explorer`, `/policies`, `/security`, `/oss`, `/enterprise`, `/status`, `/support`.
-
-## Verification commands
-
-```bash
-pnpm --filter @settler/cli build
-pnpm --filter @settler/cli dev -- --help
-pnpm --filter @settler/api test:tenant-safety
-pnpm --filter @settler/web validate:api-routes
-```
-
-## Documentation index
-
-Start with [`docs/README.md`](docs/README.md), then use [`docs/INDEX.md`](docs/INDEX.md) by role.
-
-## Security, tenancy, traceability
-
-- Multi-tenant checks are enforced through tenant middleware and tenant-scoped route surfaces.
-- Trace metadata is propagated via `X-Trace-Id` and execution identifiers.
-- Error semantics favor machine-readable payloads and explicit degraded states.
-
-See:
-
-- [`docs/security/README.md`](docs/security/README.md)
-- [`docs/operations/README.md`](docs/operations/README.md)
-- [`docs/support/api-error-guide.md`](docs/support/api-error-guide.md)
-
-## Maturity model (truthful status)
-
-- **Stable**: deterministic demo path, health/metrics, CLI runtime diagnostics, tenant safety test suite.
-- **Growing**: proof explorer, replay/graph product surfaces, policy simulation UX, failure intelligence depth.
-- **Internal/advanced**: selected v2 strategic APIs and enterprise-oriented controls.
-
-## Contributing
-
-See [`CONTRIBUTING.md`](CONTRIBUTING.md).
-
-## License
-
-Apache-2.0. See [`LICENSE`](LICENSE).
+`pnpm run repo-integrity` is expected to pass on a healthy checkout and fails hard when workspace manifests, script references, or package contracts drift.
