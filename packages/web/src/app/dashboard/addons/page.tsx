@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { AddOnCard } from "@/components/billing/AddOnCard";
 import { AddOnPurchaseModal } from "@/components/billing/AddOnPurchaseModal";
 import { Input } from "@/components/ui/input";
-import { Loader2, Search } from "lucide-react";
+import { Loader2, Search, Package } from "lucide-react";
 
 interface AddOn {
   id: string;
@@ -61,92 +61,9 @@ export default function AddOnsMarketplacePage() {
         console.error("Failed to fetch addons from API:", error);
       }
       
-      // Fallback: Empty state if API fails
-      const mockAddOns: AddOn[] = [
-        {
-          id: "1",
-          integration_id: "tiktok-shop",
-          name: "TikTok Shop + TikTok Ads",
-          description: "TikTok Shop order reconciliation and TikTok Ads spend tracking",
-          base_price_monthly: 39.95,
-          usage_price_per_unit: 0.02,
-          usage_unit: "order",
-          is_standard: false,
-          is_purchased: false,
-          features: [
-            "TikTok Shop order reconciliation",
-            "TikTok Ads spend tracking",
-            "Real-time inventory sync",
-            "Campaign performance reconciliation",
-          ],
-        },
-        {
-          id: "2",
-          integration_id: "wix-stores",
-          name: "Wix Stores",
-          description: "Wix Stores order reconciliation",
-          base_price_monthly: 19.95,
-          usage_price_per_unit: 0.01,
-          usage_unit: "order",
-          is_standard: false,
-          is_purchased: true,
-          features: [
-            "Wix Stores order reconciliation",
-            "Payment processor sync",
-            "Product catalog reconciliation",
-          ],
-        },
-        {
-          id: "3",
-          integration_id: "ga4-deep-sync",
-          name: "Google Analytics GA4 Deep Sync",
-          description: "GA4 event data reconciliation with revenue",
-          base_price_monthly: 29.95,
-          usage_price_per_unit: 0.005,
-          usage_unit: "event",
-          is_standard: false,
-          is_purchased: false,
-          features: [
-            "GA4 event data reconciliation",
-            "E-commerce transaction matching",
-            "Attribution modeling",
-          ],
-        },
-        {
-          id: "4",
-          integration_id: "paypal-payouts",
-          name: "PayPal Payouts + Automation",
-          description: "PayPal Payouts API reconciliation and automation",
-          base_price_monthly: 49.95,
-          usage_price_per_unit: 0.03,
-          usage_unit: "payout",
-          is_standard: false,
-          is_purchased: false,
-          features: [
-            "PayPal Payouts API reconciliation",
-            "Automated payout scheduling",
-            "Multi-recipient payout reconciliation",
-          ],
-        },
-        {
-          id: "5",
-          integration_id: "whatsapp-telegram",
-          name: "WhatsApp Business + Telegram Messaging",
-          description: "WhatsApp Business API and Telegram Bot API integration",
-          base_price_monthly: 79.95,
-          usage_price_per_unit: 0.001,
-          usage_unit: "message",
-          is_standard: false,
-          is_purchased: false,
-          features: [
-            "WhatsApp Business API integration",
-            "Telegram Bot API integration",
-            "Payment link reconciliation",
-          ],
-        },
-      ];
-      setAddOns(mockAddOns);
-      setFilteredAddOns(mockAddOns);
+      // API failed — show empty state (no fake add-ons)
+      setAddOns([]);
+      setFilteredAddOns([]);
     } catch (error) {
       console.error("Failed to fetch add-ons:", error);
     } finally {
@@ -157,13 +74,16 @@ export default function AddOnsMarketplacePage() {
   const handlePurchase = async (id: string): Promise<void> => {
     try {
       setIsProcessing(true);
-      // In production: await fetch(`/api/billing/addon/purchase`, { method: "POST", body: JSON.stringify({ add_on_id: id }) });
-      // eslint-disable-next-line no-console
-      console.log("Purchasing add-on:", id);
-      // Update local state
-      setAddOns((prev) =>
-        prev.map((addOn) => (addOn.id === id ? { ...addOn, is_purchased: true } : addOn))
-      );
+      const response = await fetch("/api/billing/addon/purchase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ add_on_id: id }),
+      });
+      if (!response.ok) {
+        throw new Error("Purchase failed");
+      }
+      // Refresh add-ons to reflect real state
+      await fetchAddOns();
       setIsModalOpen(false);
     } catch (error) {
       console.error("Purchase failed:", error);
@@ -173,15 +93,19 @@ export default function AddOnsMarketplacePage() {
     }
   };
 
-  const handleCancel = (id: string) => {
+  const handleCancel = async (id: string) => {
     try {
       setIsProcessing(true);
-      // In production: await fetch(`/api/billing/addon/cancel`, { method: "POST", body: JSON.stringify({ add_on_id: id }) });
-      // eslint-disable-next-line no-console
-      console.log("Canceling add-on:", id);
-      setAddOns((prev) =>
-        prev.map((addOn) => (addOn.id === id ? { ...addOn, is_purchased: false } : addOn))
-      );
+      const response = await fetch("/api/billing/addon/cancel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ add_on_id: id }),
+      });
+      if (!response.ok) {
+        throw new Error("Cancel failed");
+      }
+      // Refresh add-ons to reflect real state
+      await fetchAddOns();
     } catch (error) {
       console.error("Cancel failed:", error);
     } finally {
@@ -241,16 +165,24 @@ export default function AddOnsMarketplacePage() {
               await Promise.resolve();
             }}
             onCancel={async () => {
-              await Promise.resolve(handleCancel(addOn.id));
+              await handleCancel(addOn.id);
             }}
             isLoading={isProcessing}
           />
         ))}
       </div>
 
-      {filteredAddOns.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500">No add-ons found matching your search.</p>
+      {filteredAddOns.length === 0 && !isLoading && (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <Package className="w-12 h-12 text-gray-400 mb-4" />
+          <p className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">
+            {searchQuery ? "No add-ons match your search" : "No add-ons available yet"}
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm">
+            {searchQuery
+              ? "Try a different search term."
+              : "Add-ons will appear here once the marketplace is configured."}
+          </p>
         </div>
       )}
 
