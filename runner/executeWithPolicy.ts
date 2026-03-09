@@ -1,4 +1,5 @@
 import path from "node:path";
+import fs from "node:fs/promises";
 import { z } from "zod";
 import { Meter } from "../economic/meter";
 import { emitEvidenceBundle } from "../evidence/emit";
@@ -25,12 +26,66 @@ const requestSchema = z.object({
   engineFn: z.function().args(z.any()).returns(z.promise(z.any())),
 });
 
+function stableObject(value: unknown): string {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map((v) => stableObject(v)).join(",")}]`;
+  const entries = Object.entries(value as Record<string, unknown>).sort(([a], [b]) =>
+    a.localeCompare(b)
+  );
+  return `{${entries.map(([k, v]) => `${JSON.stringify(k)}:${stableObject(v)}`).join(",")}}`;
+}
+
+function blake3Compat(payload: string): string {
+  return sha256(payload);
+}
+
+async function appendExecutionLedger(entry: {
+  execution_id: string;
+  tenant_id: string;
+  trace_id: string;
+  timestamp: string;
+  policy_version: string;
+  input_hash: string;
+  output_hash: string;
+  status: "success" | "failed";
+  duration: number;
+  initiator: "worker";
+  tool_calls: string[];
+}): Promise<void> {
+  const ledgerDir = path.resolve(process.cwd(), "ledger");
+  await fs.mkdir(ledgerDir, { recursive: true });
+  const files = (await fs.readdir(ledgerDir)).filter((file) => file.endsWith(".json"));
+  let previousExecutionHash = "GENESIS";
+  let latestTs = "";
+  for (const file of files) {
+    const raw = await fs.readFile(path.join(ledgerDir, file), "utf8");
+    const parsed = JSON.parse(raw) as {
+      tenant_id: string;
+      timestamp: string;
+      execution_hash: string;
+    };
+    if (parsed.tenant_id === entry.tenant_id && parsed.timestamp > latestTs) {
+      latestTs = parsed.timestamp;
+      previousExecutionHash = parsed.execution_hash;
+    }
+  }
+
+  const executionHash = blake3Compat(`${previousExecutionHash}${stableObject(entry)}`);
+  await fs.writeFile(
+    path.join(ledgerDir, `${entry.execution_id}.json`),
+    `${JSON.stringify({ ...entry, previous_execution_hash: previousExecutionHash, execution_hash: executionHash }, null, 2)}
+`,
+    "utf8"
+  );
+}
+
 export async function executeWithPolicy(input: z.input<typeof requestSchema>): Promise<{
   result: unknown;
   evidence: EvidenceBundle;
   plan: ExecutionPlan;
 }> {
   const req = requestSchema.parse(input);
+  const startedAt = Date.now();
   const backbone = new FileEventBackbone();
   await backbone.append({
     tenantId: req.tenantId,
@@ -135,6 +190,20 @@ export async function executeWithPolicy(input: z.input<typeof requestSchema>): P
       payload: { run_fingerprint: runFingerprint },
     });
 
+    await appendExecutionLedger({
+      execution_id: req.runId,
+      tenant_id: req.tenantId,
+      trace_id: runFingerprint,
+      timestamp: createdAt,
+      policy_version: enforcement.policyVersion,
+      input_hash: inputHash,
+      output_hash: outputHash,
+      status: "success",
+      duration: Date.now() - startedAt,
+      initiator: "worker",
+      tool_calls: [],
+    });
+
     return { result, evidence, plan };
   } catch (error) {
     await backbone.append({
@@ -144,6 +213,19 @@ export async function executeWithPolicy(input: z.input<typeof requestSchema>): P
       payload: {
         error: error instanceof Error ? error.message : String(error),
       },
+    });
+    await appendExecutionLedger({
+      execution_id: req.runId,
+      tenant_id: req.tenantId,
+      trace_id: req.runId,
+      timestamp: new Date().toISOString(),
+      policy_version: enforcement.policyVersion,
+      input_hash: inputHash,
+      output_hash: "",
+      status: "failed",
+      duration: Date.now() - startedAt,
+      initiator: "worker",
+      tool_calls: [],
     });
     throw error;
   }
