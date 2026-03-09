@@ -5,11 +5,11 @@
  * Includes proper error handling, input validation, and security measures.
  */
 
-import Stripe from 'stripe';
-import { prisma } from '@/shared/db/prismaClient';
-import { getPlanConfig, PlanCode } from './planConfig';
-import { generateIdempotencyKey } from '@/lib/stripe/idempotency';
-import { safeJsonStringify, safeJsonParse } from '@/lib/utils/safe-parse';
+import Stripe from "stripe";
+import { prisma } from "@/shared/db/prismaClient";
+import { getPlanConfig, PlanCode } from "./planConfig";
+import { generateIdempotencyKey } from "@/lib/stripe/idempotency";
+import { safeJsonStringify, safeJsonParse } from "@/lib/utils/safe-parse";
 
 /**
  * Lazy Stripe client initialization
@@ -17,17 +17,26 @@ import { safeJsonStringify, safeJsonParse } from '@/lib/utils/safe-parse';
  */
 let stripeInstance: Stripe | null = null;
 
+export class StripeConfigurationError extends Error {
+  readonly code = "STRIPE_NOT_CONFIGURED";
+
+  constructor(message = "Stripe billing is not configured in this environment.") {
+    super(message);
+    this.name = "StripeConfigurationError";
+  }
+}
+
 function getStripe(): Stripe | null {
   if (!stripeInstance) {
     const secretKey = process.env.STRIPE_SECRET_KEY;
     if (!secretKey) {
       // Demo mode: return null instead of throwing
-       
-      console.warn('[Stripe] STRIPE_SECRET_KEY not configured, running in demo mode');
+
+      console.warn("[Stripe] STRIPE_SECRET_KEY not configured, running in demo mode");
       return null;
     }
     stripeInstance = new Stripe(secretKey, {
-      apiVersion: '2025-11-17.clover' as any, // Cast to any to avoid strict version check if types are outdated
+      apiVersion: "2025-11-17.clover" as any, // Cast to any to avoid strict version check if types are outdated
       typescript: true,
     });
   }
@@ -62,7 +71,7 @@ export const stripe = new Proxy({} as Stripe, {
     if (!instance) {
       // Return a no-op function for demo mode
       return () => {
-        throw new Error('Stripe is not configured. Running in demo mode.');
+        throw new Error("Stripe is not configured. Running in demo mode.");
       };
     }
     return (instance as any)[prop];
@@ -83,7 +92,7 @@ function isValidUUID(uuid: string): boolean {
 function isValidUrl(url: string): boolean {
   try {
     const parsed = new URL(url);
-    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
   } catch {
     return false;
   }
@@ -92,20 +101,15 @@ function isValidUrl(url: string): boolean {
 /**
  * Create or get Stripe customer for a billing account
  */
-export async function getOrCreateStripeCustomer(
-  billingAccountId: string
-): Promise<string> {
+export async function getOrCreateStripeCustomer(billingAccountId: string): Promise<string> {
   // Input validation
   if (!billingAccountId || !isValidUUID(billingAccountId)) {
-    throw new Error('Invalid billing account ID');
+    throw new Error("Invalid billing account ID");
   }
 
   // Check if Stripe is configured
   if (!isStripeConfigured()) {
-    // Demo mode: return a mock customer ID
-     
-    console.warn('[Stripe] Demo mode: returning mock customer ID');
-    return 'cus_demo_' + billingAccountId.substring(0, 8);
+    throw new StripeConfigurationError();
   }
 
   const account = await prisma.billingAccount.findUnique({
@@ -114,7 +118,7 @@ export async function getOrCreateStripeCustomer(
   });
 
   if (!account) {
-    throw new Error('Billing account not found');
+    throw new Error("Billing account not found");
   }
 
   // Return existing customer ID if present
@@ -123,12 +127,12 @@ export async function getOrCreateStripeCustomer(
   }
 
   // Validate email before creating customer
-  if (!account.email || !account.email.includes('@')) {
-    throw new Error('Invalid email address for billing account');
+  if (!account.email || !account.email.includes("@")) {
+    throw new Error("Invalid email address for billing account");
   }
 
   // Create new Stripe customer with idempotency and rate limit handling
-  const { safeStripeCall } = await import('@/lib/stripe/rate-limit-handler');
+  const { safeStripeCall } = await import("@/lib/stripe/rate-limit-handler");
   const result = await safeStripeCall(async (stripe) => {
     return await stripe.customers.create(
       {
@@ -139,7 +143,7 @@ export async function getOrCreateStripeCustomer(
         },
       },
       {
-        idempotencyKey: generateIdempotencyKey('create_customer', billingAccountId),
+        idempotencyKey: generateIdempotencyKey("create_customer", billingAccountId),
       }
     );
   });
@@ -165,30 +169,22 @@ export async function createCheckoutSession(
 ): Promise<Stripe.Checkout.Session> {
   // Input validation
   if (!billingAccountId || !isValidUUID(billingAccountId)) {
-    throw new Error('Invalid billing account ID');
+    throw new Error("Invalid billing account ID");
   }
 
   if (!isValidUrl(successUrl) || !isValidUrl(cancelUrl)) {
-    throw new Error('Invalid URL format for success or cancel URL');
+    throw new Error("Invalid URL format for success or cancel URL");
   }
 
   // Ensure URLs are from same origin (security)
-  const origin = process.env.NEXT_PUBLIC_APP_URL || 'https://settler.dev';
+  const origin = process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev";
   if (!successUrl.startsWith(origin) || !cancelUrl.startsWith(origin)) {
-    throw new Error('URLs must be from the same origin');
+    throw new Error("URLs must be from the same origin");
   }
 
   // Check if Stripe is configured
   if (!isStripeConfigured()) {
-    // Demo mode: return a mock checkout session
-     
-    console.warn('[Stripe] Demo mode: returning mock checkout session');
-    return {
-      id: 'cs_demo_' + Date.now(),
-      object: 'checkout.session',
-      url: `${successUrl}?demo=true&plan=${planCode}`,
-      // Add minimal required fields
-    } as Stripe.Checkout.Session;
+    throw new StripeConfigurationError();
   }
 
   const planConfig = getPlanConfig(planCode);
@@ -199,12 +195,12 @@ export async function createCheckoutSession(
   const customerId = await getOrCreateStripeCustomer(billingAccountId);
 
   // Use safe Stripe call with rate limit handling
-  const { safeStripeCall } = await import('@/lib/stripe/rate-limit-handler');
+  const { safeStripeCall } = await import("@/lib/stripe/rate-limit-handler");
   const result = await safeStripeCall(async (stripe) => {
     return await stripe.checkout.sessions.create(
       {
         customer: customerId,
-        mode: 'subscription',
+        mode: "subscription",
         line_items: [
           {
             price: planConfig.stripePriceId,
@@ -225,7 +221,7 @@ export async function createCheckoutSession(
         },
       },
       {
-        idempotencyKey: generateIdempotencyKey('checkout_session', billingAccountId, planCode),
+        idempotencyKey: generateIdempotencyKey("checkout_session", billingAccountId, planCode),
       }
     );
   });
@@ -242,24 +238,16 @@ export async function createCustomerPortalSession(
 ): Promise<Stripe.BillingPortal.Session> {
   // Input validation
   if (!billingAccountId || !isValidUUID(billingAccountId)) {
-    throw new Error('Invalid billing account ID');
+    throw new Error("Invalid billing account ID");
   }
 
   if (!isValidUrl(returnUrl)) {
-    throw new Error('Invalid URL format for return URL');
+    throw new Error("Invalid URL format for return URL");
   }
 
   // Check if Stripe is configured
   if (!isStripeConfigured()) {
-    // Demo mode: return a mock portal session
-     
-    console.warn('[Stripe] Demo mode: returning mock portal session');
-    return {
-      id: 'bps_demo_' + Date.now(),
-      object: 'billing_portal.session',
-      url: `${returnUrl}?demo=true`,
-      // Add minimal required fields
-    } as Stripe.BillingPortal.Session;
+    throw new StripeConfigurationError();
   }
 
   const account = await prisma.billingAccount.findUnique({
@@ -268,14 +256,14 @@ export async function createCustomerPortalSession(
   });
 
   if (!account || !account.stripeCustomerId) {
-    throw new Error('No Stripe customer found for this account');
+    throw new Error("No Stripe customer found for this account");
   }
 
   // Use safe Stripe call with rate limit handling
-  const { safeStripeCall } = await import('@/lib/stripe/rate-limit-handler');
+  const { safeStripeCall } = await import("@/lib/stripe/rate-limit-handler");
   const result = await safeStripeCall(async (stripe) => {
     return await stripe.billingPortal.sessions.create({
-      customer: account.stripeCustomerId || '',
+      customer: account.stripeCustomerId || "",
       return_url: returnUrl,
     });
   });
@@ -286,13 +274,14 @@ export async function createCustomerPortalSession(
 /**
  * Sync subscription from Stripe webhook event
  */
-export async function syncSubscriptionFromWebhook(
-  event: Stripe.Event
-): Promise<void> {
-  if (event.type === 'customer.subscription.created' || event.type === 'customer.subscription.updated') {
+export async function syncSubscriptionFromWebhook(event: Stripe.Event): Promise<void> {
+  if (
+    event.type === "customer.subscription.created" ||
+    event.type === "customer.subscription.updated"
+  ) {
     const subscription = event.data.object as Stripe.Subscription;
     await syncSubscription(subscription);
-  } else if (event.type === 'customer.subscription.deleted') {
+  } else if (event.type === "customer.subscription.deleted") {
     const subscription = event.data.object as Stripe.Subscription;
     await handleSubscriptionDeleted(subscription);
   }
@@ -304,10 +293,10 @@ export async function syncSubscriptionFromWebhook(
  */
 export async function syncSubscription(stripeSubscription: Stripe.Subscription): Promise<void> {
   const billingAccountId = stripeSubscription.metadata?.billingAccountId;
-  if (!billingAccountId || typeof billingAccountId !== 'string' || !isValidUUID(billingAccountId)) {
+  if (!billingAccountId || typeof billingAccountId !== "string" || !isValidUUID(billingAccountId)) {
     // Log error but don't throw - webhook processing should be resilient
-     
-    console.error('[Stripe] Subscription missing valid billingAccountId metadata', {
+
+    console.error("[Stripe] Subscription missing valid billingAccountId metadata", {
       subscriptionId: stripeSubscription.id,
       metadata: stripeSubscription.metadata,
     });
@@ -320,58 +309,66 @@ export async function syncSubscription(stripeSubscription: Stripe.Subscription):
     select: { id: true },
   });
   if (!accountExists) {
-     
-    console.error('[Stripe] Billing account not found', { billingAccountId, subscriptionId: stripeSubscription.id });
+    console.error("[Stripe] Billing account not found", {
+      billingAccountId,
+      subscriptionId: stripeSubscription.id,
+    });
     return;
   }
 
   // Get plan code from metadata or price
-  const planCode = (stripeSubscription.metadata?.planCode || 'starter') as PlanCode;
+  const planCode = (stripeSubscription.metadata?.planCode || "starter") as PlanCode;
   const planConfig = getPlanConfig(planCode);
   if (!planConfig) {
-     
-    console.error('[Stripe] Invalid plan code', { planCode, subscriptionId: stripeSubscription.id });
+    console.error("[Stripe] Invalid plan code", {
+      planCode,
+      subscriptionId: stripeSubscription.id,
+    });
     return;
   }
 
   // Map to legacy planId for compatibility
   const planIdMap: Partial<Record<PlanCode, string>> = {
-    starter: 'base',
-    growth: 'pro',
-    scale: 'enterprise',
-    enterprise: 'enterprise',
+    starter: "base",
+    growth: "pro",
+    scale: "enterprise",
+    enterprise: "enterprise",
   };
-  const planId = planIdMap[planCode] || 'base';
+  const planId = planIdMap[planCode] || "base";
 
   // Extract period dates safely with type checking
   // Stripe subscription properties are numbers (Unix timestamps)
-  const periodStart = (stripeSubscription as unknown as { current_period_start: number }).current_period_start;
-  const periodEnd = (stripeSubscription as unknown as { current_period_end: number }).current_period_end;
-  const currentPeriodStart = typeof periodStart === 'number' && periodStart > 0
-    ? new Date(periodStart * 1000)
-    : new Date();
-  const currentPeriodEnd = typeof periodEnd === 'number' && periodEnd > 0
-    ? new Date(periodEnd * 1000)
-    : new Date();
+  const periodStart = (stripeSubscription as unknown as { current_period_start: number })
+    .current_period_start;
+  const periodEnd = (stripeSubscription as unknown as { current_period_end: number })
+    .current_period_end;
+  const currentPeriodStart =
+    typeof periodStart === "number" && periodStart > 0 ? new Date(periodStart * 1000) : new Date();
+  const currentPeriodEnd =
+    typeof periodEnd === "number" && periodEnd > 0 ? new Date(periodEnd * 1000) : new Date();
 
   // Safely extract optional dates
   const canceledAt = (stripeSubscription as unknown as { canceled_at: number | null }).canceled_at;
   const trialStart = (stripeSubscription as unknown as { trial_start: number | null }).trial_start;
   const trialEnd = (stripeSubscription as unknown as { trial_end: number | null }).trial_end;
 
-  const cancelledAt = canceledAt && typeof canceledAt === 'number' && canceledAt > 0
-    ? new Date(canceledAt * 1000)
-    : null;
-  const trialStartDate = trialStart && typeof trialStart === 'number' && trialStart > 0
-    ? new Date(trialStart * 1000)
-    : null;
-  const trialEndDate = trialEnd && typeof trialEnd === 'number' && trialEnd > 0
-    ? new Date(trialEnd * 1000)
-    : null;
+  const cancelledAt =
+    canceledAt && typeof canceledAt === "number" && canceledAt > 0
+      ? new Date(canceledAt * 1000)
+      : null;
+  const trialStartDate =
+    trialStart && typeof trialStart === "number" && trialStart > 0
+      ? new Date(trialStart * 1000)
+      : null;
+  const trialEndDate =
+    trialEnd && typeof trialEnd === "number" && trialEnd > 0 ? new Date(trialEnd * 1000) : null;
 
   // Safely serialize metadata for Prisma JSON type
   const metadata = stripeSubscription.metadata
-    ? (safeJsonParse(safeJsonStringify(stripeSubscription.metadata, '{}', 'stripe subscription metadata'), 'stripe subscription metadata') as unknown)
+    ? (safeJsonParse(
+        safeJsonStringify(stripeSubscription.metadata, "{}", "stripe subscription metadata"),
+        "stripe subscription metadata"
+      ) as unknown)
     : null;
 
   // Upsert subscription with transaction for atomicity
@@ -420,7 +417,7 @@ async function handleSubscriptionDeleted(stripeSubscription: Stripe.Subscription
       stripeSubscriptionId: stripeSubscription.id,
     },
     data: {
-      status: 'canceled',
+      status: "canceled",
       cancelledAt: new Date(),
     },
   });

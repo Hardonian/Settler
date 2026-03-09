@@ -8,7 +8,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/shared/db/prismaClient";
-import { createCheckoutSession } from "@/domain/billing/stripeService";
+import { createCheckoutSession, StripeConfigurationError } from "@/domain/billing/stripeService";
 import { PlanCode, getPlanConfig } from "@/domain/billing/planConfig";
 import { requestSizeLimits } from "@/middleware/request-size-limit";
 import { redisRateLimiters } from "@/lib/security/rate-limiter-redis";
@@ -179,6 +179,19 @@ export const POST = withSecurity(
 
       return NextResponse.json({ url: session.url });
     } catch (error) {
+      if (error instanceof StripeConfigurationError) {
+        return NextResponse.json(
+          {
+            error: "Billing is not configured",
+            message:
+              "Stripe is not configured for this environment yet. Add STRIPE_SECRET_KEY and Stripe price IDs to enable upgrades.",
+            setupRequired: true,
+            retryable: false,
+          },
+          { status: 503 }
+        );
+      }
+
       appLogger.error("[Stripe Checkout] Error creating checkout session", error, {
         error: error instanceof Error ? error.message : "Unknown error",
         stack: error instanceof Error ? error.stack : undefined,
