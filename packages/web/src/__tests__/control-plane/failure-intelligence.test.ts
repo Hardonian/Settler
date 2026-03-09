@@ -1,54 +1,210 @@
 import {
-  computeControlPlaneInsights,
-  diagnoseFailure,
+  classifyFailure,
+  clusterFailures,
+  computeFailureDashboardMetrics,
+  FAILURE_CLASSES,
+  listFailures,
+  operatorGuidance,
+  recordFailure,
+  remediateFailure,
+  resetFailureIntelligenceStore,
 } from "@/lib/control-plane/failure-intelligence";
 
-describe("failure intelligence diagnosis", () => {
-  it("maps API key errors to API_KEY_MISSING", () => {
-    const diagnosis = diagnoseFailure({ error: "Missing API key for provider" });
-    expect(diagnosis.category).toBe("API_KEY_MISSING");
-    expect(diagnosis.safeAutoRemediationEligible).toBe(false);
+describe("failure taxonomy", () => {
+  beforeEach(() => {
+    resetFailureIntelligenceStore();
   });
 
-  it("maps throttling errors to RATE_LIMITED", () => {
-    const diagnosis = diagnoseFailure({ error: "429 rate limit exceeded" });
-    expect(diagnosis.category).toBe("RATE_LIMITED");
-    expect(diagnosis.safeAutoRemediationEligible).toBe(true);
+  it("supports canonical failure class catalog", () => {
+    expect(FAILURE_CLASSES).toContain("VALIDATION_ERROR");
+    expect(FAILURE_CLASSES).toContain("OPERATOR_ACTION_REQUIRED");
+    expect(FAILURE_CLASSES).toHaveLength(17);
   });
 
-  it("falls back to UNKNOWN_FATAL when unmatched", () => {
-    const diagnosis = diagnoseFailure({ error: "segmentation-fault-ish-unexpected" });
-    expect(diagnosis.category).toBe("UNKNOWN_FATAL");
-    expect(diagnosis.escalationRequired).toBe(true);
+  it("classifies rate limit errors as retryable and auto-remediable", () => {
+    const classified = classifyFailure({
+      traceId: "trace-1",
+      component: "api",
+      operation: "POST /jobs",
+      error: "429 rate limit exceeded",
+    });
+
+    expect(classified.failureClass).toBe("RATE_LIMIT_ERROR");
+    expect(classified.retryable).toBe(true);
+    expect(classified.safeToAutoRemediate).toBe(true);
+  });
+
+  it("classifies tenant isolation failures as non-remediable critical", () => {
+    const classified = classifyFailure({
+      traceId: "trace-2",
+      component: "authz",
+      operation: "tenant boundary check",
+      error: "cross-tenant access blocked by guard",
+    });
+
+    expect(classified.failureClass).toBe("TENANT_ISOLATION_ERROR");
+    expect(classified.severity).toBe("critical");
+    expect(classified.safeToAutoRemediate).toBe(false);
   });
 });
 
-describe("control-plane computed insights", () => {
-  const originalEnv = process.env;
-
+describe("recurrence and root-cause evidence", () => {
   beforeEach(() => {
-    process.env = { ...originalEnv };
+    resetFailureIntelligenceStore();
   });
 
-  afterAll(() => {
-    process.env = originalEnv;
+  it("clusters repeated signatures and estimates blast radius", () => {
+    recordFailure({
+      traceId: "trace-a",
+      tenantId: "tenant-a",
+      component: "queue-worker",
+      operation: "drain",
+      routeOrCommand: "settler reconcile run",
+      error: "timeout while waiting for upstream",
+    });
+
+    recordFailure({
+      traceId: "trace-b",
+      tenantId: "tenant-b",
+      component: "queue-worker",
+      operation: "drain",
+      routeOrCommand: "settler reconcile run",
+      error: "timeout while waiting for upstream",
+    });
+
+    const clusters = clusterFailures();
+    expect(clusters).toHaveLength(1);
+    expect(clusters[0]?.occurrenceCount).toBe(2);
+    expect(clusters[0]?.blastRadiusEstimate).toBe("multi-tenant");
   });
 
-  it("returns provider-key insight when model providers are unavailable", () => {
-    delete process.env.OPENAI_API_KEY;
-    delete process.env.ANTHROPIC_API_KEY;
+  it("adds recurring-signature root-cause hypothesis from history", () => {
+    recordFailure({
+      traceId: "trace-c-1",
+      component: "proof-engine",
+      operation: "verify",
+      error: "proof verification signature mismatch",
+    });
 
-    const insights = computeControlPlaneInsights();
-    expect(insights.some((insight) => insight.id === "insight-provider-key-missing")).toBe(true);
+    const second = recordFailure({
+      traceId: "trace-c-2",
+      component: "proof-engine",
+      operation: "verify",
+      error: "proof verification signature mismatch",
+    });
+
+    expect(second.rootCauseHypothesis[0]?.probableCause).toMatch(/Recurring execution defect/);
+    expect(second.rootCauseHypothesis[0]?.confidence).toBeGreaterThan(0.5);
+  });
+});
+
+describe("remediation runner safety guardrails", () => {
+  beforeEach(() => {
+    resetFailureIntelligenceStore();
   });
 
-  it("returns insufficient-data insight when base configuration exists", () => {
-    process.env.OPENAI_API_KEY = "sk-test-123456789";
-    process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "anon-test-12345";
+  it("blocks auto-remediation when idempotency proof is missing", () => {
+    const failure = recordFailure({
+      traceId: "trace-r1",
+      component: "queue",
+      operation: "process",
+      error: "queue dead letter due to transient lock",
+    });
 
-    const insights = computeControlPlaneInsights();
-    expect(insights).toHaveLength(1);
-    expect(insights[0]?.id).toBe("insight-insufficient-failures");
+    const attempt = remediateFailure(failure.failureId, {
+      triggeredBy: "auto",
+      idempotencyKeyPresent: false,
+    });
+
+    expect(attempt?.outcome).toBe("blocked");
+    expect(attempt?.notes.join(" ")).toMatch(/idempotency-key-missing/);
+  });
+
+  it("succeeds for bounded safe remediation with idempotency key", () => {
+    const failure = recordFailure({
+      traceId: "trace-r2",
+      component: "queue",
+      operation: "process",
+      error: "queue dead letter due to transient lock",
+    });
+
+    const attempt = remediateFailure(failure.failureId, {
+      triggeredBy: "auto",
+      idempotencyKeyPresent: true,
+    });
+
+    expect(attempt?.outcome).toBe("succeeded");
+    expect(attempt?.actionTaken).toBe("retry-queue-job-with-fence");
+  });
+
+  it("enforces max remediation attempts", () => {
+    const failure = recordFailure({
+      traceId: "trace-r3",
+      component: "worker",
+      operation: "timeout-handler",
+      error: "timeout waiting for operation commit",
+    });
+
+    remediateFailure(failure.failureId, {
+      triggeredBy: "operator",
+      idempotencyKeyPresent: true,
+    });
+
+    const second = remediateFailure(failure.failureId, {
+      triggeredBy: "operator",
+      idempotencyKeyPresent: true,
+    });
+
+    expect(second?.outcome).toBe("blocked");
+    expect(second?.notes.join(" ")).toMatch(/max-attempts-exceeded/);
+  });
+});
+
+describe("operator guidance and dashboard metrics", () => {
+  beforeEach(() => {
+    resetFailureIntelligenceStore();
+  });
+
+  it("produces specific operator guidance with artifact links", () => {
+    const failure = recordFailure({
+      traceId: "trace-g1",
+      executionId: "exec-g1",
+      tenantId: "tenant-guided",
+      component: "storage",
+      operation: "init",
+      error: "missing env var OBJECT_STORAGE_BUCKET",
+      linkedLogs: ["https://logs.local/trace-g1"],
+      linkedExecutionReceipt: "https://receipts.local/exec-g1",
+    });
+
+    const guidance = operatorGuidance(failure);
+    expect(guidance.whatFailed).toBe("storage.init");
+    expect(guidance.recommendedNextSteps[0]).toMatch(/Inspect trace/);
+    expect(guidance.artifactLinks).toContain("https://logs.local/trace-g1");
+  });
+
+  it("computes failure dashboard metrics", () => {
+    const first = recordFailure({
+      traceId: "trace-m1",
+      component: "api",
+      operation: "POST /ingest",
+      error: "429 rate limit exceeded",
+    });
+
+    remediateFailure(first.failureId, { triggeredBy: "auto", idempotencyKeyPresent: true });
+
+    recordFailure({
+      traceId: "trace-m2",
+      component: "api",
+      operation: "POST /ingest",
+      error: "429 rate limit exceeded",
+    });
+
+    const metrics = computeFailureDashboardMetrics();
+    expect(metrics.topRecurringFailures.length).toBeGreaterThan(0);
+    expect(metrics.classesOverTime[0]?.failureClass).toBe("RATE_LIMIT_ERROR");
+    expect(metrics.autoRemediationSuccessRate).toBe(1);
+    expect(metrics.highestErrorBurdenComponents[0]?.component).toBe("api");
+    expect(listFailures()).toHaveLength(2);
   });
 });
