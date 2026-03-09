@@ -203,6 +203,13 @@ const commandRegistry: Record<
       return { command: doctorCommand };
     },
   },
+  dev: {
+    description: "Local development stack management (settler dev stack)",
+    load: async () => {
+      const { devCommand } = await import("./commands/runtime");
+      return { command: devCommand };
+    },
+  },
 
   replay: {
     description: "Deterministic execution replay lab",
@@ -238,6 +245,20 @@ const commandRegistry: Record<
     load: async () => {
       const { foundryCommand } = await import("./commands/foundry");
       return { command: foundryCommand };
+    },
+  },
+  failures: {
+    description: "Inspect structured failure records from reconciliation runs",
+    load: async () => {
+      const { failuresCommand } = await import("./commands/failures");
+      return { command: failuresCommand };
+    },
+  },
+  policy: {
+    description: "Policy governance simulation engine",
+    load: async () => {
+      const { policyCommand } = await import("./commands/policy");
+      return { command: policyCommand };
     },
   },
   verify: {
