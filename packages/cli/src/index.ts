@@ -261,6 +261,41 @@ const commandRegistry: Record<
       return { command: policyCommand };
     },
   },
+  history: {
+    description: "Show execution ledger history",
+    load: async () => {
+      const { historyCommand } = await import("./commands/history");
+      return { command: historyCommand };
+    },
+  },
+  show: {
+    description: "Show one execution ledger receipt",
+    load: async () => {
+      const { showCommand } = await import("./commands/history");
+      return { command: showCommand };
+    },
+  },
+  diff: {
+    description: "Diff two execution ledger receipts",
+    load: async () => {
+      const { diffCommand } = await import("./commands/history");
+      return { command: diffCommand };
+    },
+  },
+  "verify-execution": {
+    description: "Verify a ledger execution receipt",
+    load: async () => {
+      const { verifyExecutionCommand } = await import("./commands/history");
+      return { command: verifyExecutionCommand };
+    },
+  },
+  "export-ledger": {
+    description: "Export execution ledger bundles for audits",
+    load: async () => {
+      const { exportLedgerCommand } = await import("./commands/history");
+      return { command: exportLedgerCommand };
+    },
+  },
   verify: {
     description: "Verify a Reconciliation Proof Capsule (RPC)",
     load: async () => {
