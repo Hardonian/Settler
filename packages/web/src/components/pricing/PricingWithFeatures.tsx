@@ -1,18 +1,18 @@
 /**
  * Enhanced Pricing Component
- * 
+ *
  * Shows pricing tiers with feature highlights and AI token management.
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Sparkles, Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle2, Sparkles, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 interface PricingTier {
   id: string;
@@ -22,7 +22,7 @@ interface PricingTier {
   features: string[];
   aiAnalysis: {
     included: number;
-    period: 'day' | 'week' | 'month';
+    period: "day" | "week" | "month";
     addOnAvailable: boolean;
     overageAllowed: boolean;
   };
@@ -32,73 +32,73 @@ interface PricingTier {
 
 const tiers: PricingTier[] = [
   {
-    id: 'free',
-    name: 'Free',
-    price: '$0',
-    description: 'Great for getting started',
+    id: "free",
+    name: "Free",
+    price: "$0",
+    description: "Great for getting started",
     features: [
-      'Meaningful Changes Feed',
-      'Basic Reconciliation',
-      'Receipt Hash Chain',
-      'Basic Alerts',
-      '1 AI Analysis per week',
-      'Community Support',
+      "Meaningful Changes Feed",
+      "Basic Reconciliation",
+      "Receipt Hash Chain",
+      "Basic Alerts",
+      "1 AI Analysis per week",
+      "Community Support",
     ],
     aiAnalysis: {
       included: 1,
-      period: 'week',
+      period: "week",
       addOnAvailable: false,
       overageAllowed: false,
     },
-    gradient: 'from-slate-400 to-slate-600',
+    gradient: "from-slate-400 to-slate-600",
   },
   {
-    id: 'pro',
-    name: 'Pro',
-    price: '$99',
-    description: 'For growing businesses',
+    id: "pro",
+    name: "Pro",
+    price: "$99",
+    description: "For growing businesses",
     features: [
-      'Everything in Free',
-      'Advanced Reconciliation',
-      'Priority Alerts',
-      '10 AI Analyses per month',
-      'AI Token Add-ons Available',
-      'Overage Spending Allowed',
-      'Email Support',
-      'Feature Flags as Policy',
+      "Everything in Free",
+      "Advanced Reconciliation",
+      "Priority Alerts",
+      "10 AI Analyses per month",
+      "AI Token Add-ons Available",
+      "Overage Spending Allowed",
+      "Email Support",
+      "Feature Flags as Policy",
     ],
     aiAnalysis: {
       included: 10,
-      period: 'month',
+      period: "month",
       addOnAvailable: true,
       overageAllowed: true,
     },
     highlight: true,
-    gradient: 'from-blue-500 to-cyan-500',
+    gradient: "from-blue-500 to-cyan-500",
   },
   {
-    id: 'enterprise',
-    name: 'Enterprise',
-    price: 'Custom',
-    description: 'For large organizations',
+    id: "enterprise",
+    name: "Enterprise",
+    price: "Custom",
+    description: "For large organizations",
     features: [
-      'Everything in Pro',
-      'Unlimited AI Analyses',
-      'Base AI Token Allocation',
-      'Custom AI Token Packages',
-      'Advanced Judgment Layer',
-      'Dedicated Support',
-      'SLA-backed (Enterprise)',
-      'Custom Integrations',
-      'On-Premise Options',
+      "Everything in Pro",
+      "Unlimited AI Analyses",
+      "Base AI Token Allocation",
+      "Custom AI Token Packages",
+      "Advanced Judgment Layer",
+      "Dedicated Support",
+      "SLA-backed (Enterprise)",
+      "Custom Integrations",
+      "On-Premise Options",
     ],
     aiAnalysis: {
       included: -1, // Unlimited
-      period: 'month',
+      period: "month",
       addOnAvailable: true,
       overageAllowed: true,
     },
-    gradient: 'from-purple-500 to-pink-500',
+    gradient: "from-purple-500 to-pink-500",
   },
 ];
 
@@ -108,22 +108,22 @@ export function PricingWithFeatures() {
   const router = useRouter();
 
   const handleUpgrade = async (planCode: string) => {
-    if (planCode === 'starter' || planCode === 'enterprise') {
+    if (planCode === "starter" || planCode === "enterprise") {
       // Free plan: redirect to signup
       // Enterprise: redirect to contact
-      if (planCode === 'enterprise') {
-        router.push('/enterprise');
+      if (planCode === "enterprise") {
+        router.push("/enterprise");
       } else {
-        router.push('/signup');
+        router.push("/signup");
       }
       return;
     }
 
     try {
       setLoadingPlan(planCode);
-      const response = await fetch('/api/stripe/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           planCode,
           successUrl: `${window.location.origin}/console/billing?success=true`,
@@ -131,20 +131,19 @@ export function PricingWithFeatures() {
         }),
       });
 
+      const payload = await response.json();
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to create checkout session');
+        throw new Error(payload.message || payload.error || "Failed to create checkout session");
       }
 
-      const { url } = await response.json();
+      const { url } = payload;
       if (url) {
         window.location.href = url;
       }
     } catch (error: unknown) {
-       
-      console.error('Failed to start checkout:', error);
+      console.error("Failed to start checkout:", error);
       // Fallback to signup page
-      router.push('/signup');
+      router.push("/signup");
     } finally {
       setLoadingPlan(null);
     }
@@ -163,20 +162,20 @@ export function PricingWithFeatures() {
           <Badge className="mb-4 bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
             Pricing
           </Badge>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Choose Your Plan
-          </h2>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">Choose Your Plan</h2>
           <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            All plans include core features. Upgrade for AI-powered insights and advanced capabilities.
+            All plans include core features. Upgrade for AI-powered insights and advanced
+            capabilities.
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {tiers.map((tier, index) => {
             const isHighlighted = tier.highlight;
-            const aiIncluded = tier.aiAnalysis.included === -1 
-              ? 'Unlimited' 
-              : `${tier.aiAnalysis.included} per ${tier.aiAnalysis.period}`;
+            const aiIncluded =
+              tier.aiAnalysis.included === -1
+                ? "Unlimited"
+                : `${tier.aiAnalysis.included} per ${tier.aiAnalysis.period}`;
 
             return (
               <motion.div
@@ -187,15 +186,15 @@ export function PricingWithFeatures() {
                 transition={{ delay: index * 0.1, duration: 0.5 }}
                 onHoverStart={() => setHoveredTier(tier.id)}
                 onHoverEnd={() => setHoveredTier(null)}
-                className={isHighlighted ? 'md:-mt-4 md:mb-4' : ''}
+                className={isHighlighted ? "md:-mt-4 md:mb-4" : ""}
               >
                 <Card
                   className={`relative h-full transition-all duration-300 ${
                     isHighlighted
-                      ? 'border-2 border-blue-500 shadow-2xl scale-105'
+                      ? "border-2 border-blue-500 shadow-2xl scale-105"
                       : hoveredTier === tier.id
-                      ? 'shadow-xl scale-102'
-                      : 'shadow-lg'
+                        ? "shadow-xl scale-102"
+                        : "shadow-lg"
                   }`}
                 >
                   {isHighlighted && (
@@ -208,7 +207,7 @@ export function PricingWithFeatures() {
 
                   <div
                     className={`absolute inset-0 bg-gradient-to-br ${tier.gradient} opacity-0 transition-opacity duration-300 ${
-                      hoveredTier === tier.id ? 'opacity-5' : ''
+                      hoveredTier === tier.id ? "opacity-5" : ""
                     }`}
                   />
 
@@ -216,7 +215,7 @@ export function PricingWithFeatures() {
                     <CardTitle className="text-2xl mb-2">{tier.name}</CardTitle>
                     <div className="flex items-baseline gap-2 mb-2">
                       <span className="text-4xl font-bold">{tier.price}</span>
-                      {tier.price !== 'Custom' && (
+                      {tier.price !== "Custom" && (
                         <span className="text-slate-600 dark:text-slate-400">/month</span>
                       )}
                     </div>
@@ -271,22 +270,22 @@ export function PricingWithFeatures() {
                       disabled={loadingPlan === tier.id}
                       className={`w-full ${
                         isHighlighted
-                          ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700'
-                          : ''
+                          ? "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
+                          : ""
                       }`}
-                      variant={isHighlighted ? 'default' : 'outline'}
+                      variant={isHighlighted ? "default" : "outline"}
                     >
                       {loadingPlan === tier.id ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                           Processing...
                         </>
-                      ) : tier.id === 'enterprise' ? (
-                        'Contact Sales'
-                      ) : tier.id === 'free' ? (
-                        'Get Started'
+                      ) : tier.id === "enterprise" ? (
+                        "Contact Sales"
+                      ) : tier.id === "free" ? (
+                        "Get Started"
                       ) : (
-                        'Upgrade Now'
+                        "Upgrade Now"
                       )}
                     </Button>
                   </CardContent>
@@ -304,7 +303,8 @@ export function PricingWithFeatures() {
           className="mt-12 text-center"
         >
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            All plans include core features. AI Analysis tokens can be purchased as add-ons or used as overage on Growth+ plans.
+            All plans include core features. AI Analysis tokens can be purchased as add-ons or used
+            as overage on Growth+ plans.
           </p>
         </motion.div>
       </div>

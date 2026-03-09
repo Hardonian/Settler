@@ -68,10 +68,11 @@ export default function BillingPage() {
           returnUrl: `${window.location.origin}/console/billing`,
         }),
       });
+      const payload = await response.json();
       if (!response.ok) {
-        throw new Error("Failed to create portal session");
+        throw new Error(payload.message || payload.error || "Failed to create portal session");
       }
-      const { url } = await response.json();
+      const { url } = payload;
       window.location.href = url;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to open billing portal");
@@ -91,10 +92,11 @@ export default function BillingPage() {
           cancelUrl: `${window.location.origin}/console/billing?canceled=true`,
         }),
       });
+      const payload = await response.json();
       if (!response.ok) {
-        throw new Error("Failed to create checkout session");
+        throw new Error(payload.message || payload.error || "Failed to create checkout session");
       }
-      const { url } = await response.json();
+      const { url } = payload;
       window.location.href = url;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to start checkout");
