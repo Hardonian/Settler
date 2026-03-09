@@ -1,0 +1,9 @@
+{
+  "name": "@settler/sdk-csharp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Settler C# SDK workspace metadata",
+  "scripts": {
+    "verify:presence": "echo 'csharp sdk metadata workspace'"
+  }
+}

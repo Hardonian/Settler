@@ -9,13 +9,12 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "build": "tsc"
+    "build": "tsc --noEmit"
   },
   "dependencies": {
     "@jobforge/errors": "workspace:*"
   },
   "devDependencies": {
-    "@jobforge/config": "workspace:*",
     "@jobforge/typescript-config": "workspace:*",
     "@types/node": "^20.11.0",
     "eslint": "^8.56.0",
