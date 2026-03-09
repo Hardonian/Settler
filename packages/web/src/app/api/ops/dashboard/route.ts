@@ -84,11 +84,14 @@ interface DashboardPayload {
   aiInsights: AIInsight[];
 }
 
+type TenantRunRow = { tenant_id: string | null };
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-function buildAIInsights(payload: Omit<DashboardPayload, "aiInsights" | "ok" | "traceId" | "generatedAt">): AIInsight[] {
+function buildAIInsights(
+  payload: Omit<DashboardPayload, "aiInsights" | "ok" | "traceId" | "generatedAt">
+): AIInsight[] {
   const insights: AIInsight[] = [];
 
   if (payload.replay.deterministicRate < 0.99) {
@@ -97,7 +100,8 @@ function buildAIInsights(payload: Omit<DashboardPayload, "aiInsights" | "ok" | "
       severity: "critical",
       category: "determinism",
       message: `Replay determinism rate dropped to ${(payload.replay.deterministicRate * 100).toFixed(1)}%`,
-      recommendation: "Investigate connector outputs for nondeterministic fields (timestamps, UUIDs). Enable replay breakpoints.",
+      recommendation:
+        "Investigate connector outputs for nondeterministic fields (timestamps, UUIDs). Enable replay breakpoints.",
     });
   }
 
@@ -107,7 +111,8 @@ function buildAIInsights(payload: Omit<DashboardPayload, "aiInsights" | "ok" | "
       severity: "warning",
       category: "execution",
       message: `Execution success rate is ${(payload.executions.successRate * 100).toFixed(1)}% (below 95% threshold)`,
-      recommendation: "Check failure breakdown — dependency failures suggest connector instability.",
+      recommendation:
+        "Check failure breakdown — dependency failures suggest connector instability.",
     });
   }
 
@@ -117,7 +122,8 @@ function buildAIInsights(payload: Omit<DashboardPayload, "aiInsights" | "ok" | "
       severity: "critical",
       category: "determinism",
       message: `${payload.failures.byCategory.nondeterminism} nondeterminism failures detected`,
-      recommendation: "Run `settler replay <executionId>` to inspect divergence. Check policy changes in last 24h.",
+      recommendation:
+        "Run `settler replay <executionId>` to inspect divergence. Check policy changes in last 24h.",
     });
   }
 
@@ -127,7 +133,8 @@ function buildAIInsights(payload: Omit<DashboardPayload, "aiInsights" | "ok" | "
       severity: "warning",
       category: "policy",
       message: "Policy rejection rate exceeds 5% of executions",
-      recommendation: "Run `settler policy simulate` to evaluate policy impact before next deployment.",
+      recommendation:
+        "Run `settler policy simulate` to evaluate policy impact before next deployment.",
     });
   }
 
@@ -137,7 +144,8 @@ function buildAIInsights(payload: Omit<DashboardPayload, "aiInsights" | "ok" | "
       severity: "info",
       category: "performance",
       message: "Execution throughput below 1 run/hour",
-      recommendation: "Expected for low-traffic windows. Alert if this persists during business hours.",
+      recommendation:
+        "Expected for low-traffic windows. Alert if this persists during business hours.",
     });
   }
 
@@ -147,7 +155,8 @@ function buildAIInsights(payload: Omit<DashboardPayload, "aiInsights" | "ok" | "
       severity: "info",
       category: "system",
       message: "All operational metrics within normal bounds",
-      recommendation: "Continue monitoring. Schedule next benchmark run with `pnpm benchmark:full`.",
+      recommendation:
+        "Continue monitoring. Schedule next benchmark run with `pnpm benchmark:full`.",
     });
   }
 
@@ -164,10 +173,17 @@ async function getDashboard(request: NextRequest): Promise<NextResponse> {
 
   // Authenticate
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json(
-      { type: "https://settler.dev/errors/unauthorized", title: "Unauthorized", status: 401, trace_id: traceId },
+      {
+        type: "https://settler.dev/errors/unauthorized",
+        title: "Unauthorized",
+        status: 401,
+        trace_id: traceId,
+      },
       { status: 401, headers: { "content-type": "application/problem+json" } }
     );
   }
@@ -234,9 +250,7 @@ async function getDashboard(request: NextRequest): Promise<NextResponse> {
     replayHealth.totalReplays = replayTotal ?? 0;
     replayHealth.matchedReplays = replayMatched ?? 0;
     replayHealth.deterministicRate =
-      replayHealth.totalReplays > 0
-        ? replayHealth.matchedReplays / replayHealth.totalReplays
-        : 1.0;
+      replayHealth.totalReplays > 0 ? replayHealth.matchedReplays / replayHealth.totalReplays : 1.0;
   } catch {
     // Graceful degradation
   }
@@ -272,15 +286,17 @@ async function getDashboard(request: NextRequest): Promise<NextResponse> {
       .gte("created_at", since24h);
 
     if (tenantData) {
-      const tenantCounts = tenantData.reduce<Record<string, number>>((acc, row) => {
-        const tid = String(row.tenant_id);
+      const tenantRows = tenantData as TenantRunRow[];
+      const tenantCounts = tenantRows.reduce<Record<string, number>>((acc, row) => {
+        const tid = row.tenant_id ?? "unknown";
         acc[tid] = (acc[tid] ?? 0) + 1;
         return acc;
       }, {});
       const counts = Object.values(tenantCounts);
       tenantUsage.activeTenants = counts.length;
       tenantUsage.topTenantsRunCount = Math.max(0, ...counts);
-      tenantUsage.averageRunsPerTenant = counts.length > 0 ? counts.reduce((s, v) => s + v, 0) / counts.length : 0;
+      tenantUsage.averageRunsPerTenant =
+        counts.length > 0 ? counts.reduce((s, v) => s + v, 0) / counts.length : 0;
     }
   } catch {
     // Graceful degradation
@@ -293,7 +309,14 @@ async function getDashboard(request: NextRequest): Promise<NextResponse> {
     successRate,
   };
 
-  const aiInsights = buildAIInsights({ window: { hours: 24 }, executions, replay: replayHealth, failures: { totalLast24h: 0, byCategory: failureBreakdown }, policyViolations, tenantUsage });
+  const aiInsights = buildAIInsights({
+    window: { hours: 24 },
+    executions,
+    replay: replayHealth,
+    failures: { totalLast24h: 0, byCategory: failureBreakdown },
+    policyViolations,
+    tenantUsage,
+  });
 
   const payload: DashboardPayload = {
     ok: true,
@@ -317,7 +340,7 @@ async function getDashboard(request: NextRequest): Promise<NextResponse> {
   return response;
 }
 
-export const GET = withSecurity(
-  publicRoute(getDashboard),
-  { rateLimit: { windowMs: 60000, maxRequests: 60 }, requireAuth: false }
-);
+export const GET = withSecurity(publicRoute(getDashboard), {
+  rateLimit: { windowMs: 60000, maxRequests: 60 },
+  requireAuth: false,
+});
