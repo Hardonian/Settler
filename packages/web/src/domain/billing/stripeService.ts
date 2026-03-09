@@ -30,9 +30,9 @@ function getStripe(): Stripe | null {
   if (!stripeInstance) {
     const secretKey = process.env.STRIPE_SECRET_KEY;
     if (!secretKey) {
-      // Demo mode: return null instead of throwing
-
-      console.warn("[Stripe] STRIPE_SECRET_KEY not configured, running in demo mode");
+      console.warn(
+        "[Stripe] STRIPE_SECRET_KEY not configured; Stripe billing features are disabled."
+      );
       return null;
     }
     stripeInstance = new Stripe(secretKey, {
@@ -44,16 +44,15 @@ function getStripe(): Stripe | null {
 }
 
 /**
- * Check if Stripe is configured (not in demo mode)
+ * Check if Stripe is configured for live billing operations.
  */
 export function isStripeConfigured(): boolean {
   return !!process.env.STRIPE_SECRET_KEY;
 }
 
 /**
- * Export stripe client getter function
- * Use this to get the Stripe instance when needed
- * Returns null if Stripe is not configured (demo mode)
+ * Export stripe client getter function.
+ * Returns null when Stripe configuration is unavailable.
  */
 export function getStripeClient(): Stripe | null {
   return getStripe();
@@ -64,14 +63,13 @@ export function getStripeClient(): Stripe | null {
  * This allows existing code to use `stripe` as before
  * The proxy lazily initializes the Stripe client when properties are accessed
  */
-// Proxy that handles demo mode gracefully
+// Backward-compatible proxy that fails fast when Stripe is unavailable
 export const stripe = new Proxy({} as Stripe, {
   get(_target, prop) {
     const instance = getStripe();
     if (!instance) {
-      // Return a no-op function for demo mode
       return () => {
-        throw new Error("Stripe is not configured. Running in demo mode.");
+        throw new StripeConfigurationError();
       };
     }
     return (instance as any)[prop];
