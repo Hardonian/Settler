@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ReconciliationSyntheticSuite",
+  "type": "object",
+  "required": ["manifest", "sources", "scenarios", "golden"],
+  "properties": {
+    "manifest": {
+      "type": "object",
+      "required": ["seed", "profile", "generated_at", "workspace_id", "scenario_mix"],
+      "properties": {
+        "seed": { "type": "integer" },
+        "profile": { "enum": ["smoke", "integration", "load", "chaos"] },
+        "generated_at": { "type": "string" },
+        "workspace_id": { "type": "string" },
+        "scenario_mix": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "sources": { "type": "object" },
+    "scenarios": { "type": "array" },
+    "golden": {
+      "type": "object",
+      "required": ["expected_summary", "per_transaction", "expected_results"],
+      "properties": {
+        "expected_summary": { "type": "object" },
+        "per_transaction": { "type": "object" },
+        "expected_results": { "type": "object" }
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "seed": 42,
+  "profile": "smoke",
+  "complexity": "low",
+  "generated_at": "2026-03-09T23:43:00.829Z",
+  "workspace_id": "ws_SYNTH_000042",
+  "scenario_mix": [
+    "HAPPY_PATH",
+    "TIMING_MISMATCHES",
+    "FEES_NET_VS_GROSS",
+    "REFUNDS_REVERSALS",
+    "DISPUTES_CHARGEBACKS",
+    "DUPLICATES_NEAR_DUPLICATES",
+    "SPLIT_MERGED_MATCHING",
+    "FX_CURRENCY",
+    "MISSING_BROKEN_REFERENCES",
+    "STATUS_MISMATCHES",
+    "EDGE_CASE_SWAMP"
+  ]
+}

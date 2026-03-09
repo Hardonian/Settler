@@ -1,0 +1,79 @@
+[
+  {
+    "scenario_id": "scenario_happy_path",
+    "category": "HAPPY_PATH",
+    "description": "Validates happy_path behavior across processor/bank/ledger variance paths.",
+    "expected_match_classes": ["exact_match"],
+    "expected_exception_categories": []
+  },
+  {
+    "scenario_id": "scenario_timing_mismatches",
+    "category": "TIMING_MISMATCHES",
+    "description": "Validates timing_mismatches behavior across processor/bank/ledger variance paths.",
+    "expected_match_classes": ["timing_variance"],
+    "expected_exception_categories": ["timing_variance"]
+  },
+  {
+    "scenario_id": "scenario_fees_net_vs_gross",
+    "category": "FEES_NET_VS_GROSS",
+    "description": "Validates fees_net_vs_gross behavior across processor/bank/ledger variance paths.",
+    "expected_match_classes": ["exact_match"],
+    "expected_exception_categories": []
+  },
+  {
+    "scenario_id": "scenario_refunds_reversals",
+    "category": "REFUNDS_REVERSALS",
+    "description": "Validates refunds_reversals behavior across processor/bank/ledger variance paths.",
+    "expected_match_classes": ["exact_match"],
+    "expected_exception_categories": []
+  },
+  {
+    "scenario_id": "scenario_disputes_chargebacks",
+    "category": "DISPUTES_CHARGEBACKS",
+    "description": "Validates disputes_chargebacks behavior across processor/bank/ledger variance paths.",
+    "expected_match_classes": ["exact_match"],
+    "expected_exception_categories": []
+  },
+  {
+    "scenario_id": "scenario_duplicates_near_duplicates",
+    "category": "DUPLICATES_NEAR_DUPLICATES",
+    "description": "Validates duplicates_near_duplicates behavior across processor/bank/ledger variance paths.",
+    "expected_match_classes": ["exact_match"],
+    "expected_exception_categories": []
+  },
+  {
+    "scenario_id": "scenario_split_merged_matching",
+    "category": "SPLIT_MERGED_MATCHING",
+    "description": "Validates split_merged_matching behavior across processor/bank/ledger variance paths.",
+    "expected_match_classes": ["grouped_match"],
+    "expected_exception_categories": ["grouped_match"]
+  },
+  {
+    "scenario_id": "scenario_fx_currency",
+    "category": "FX_CURRENCY",
+    "description": "Validates fx_currency behavior across processor/bank/ledger variance paths.",
+    "expected_match_classes": ["fx_variance"],
+    "expected_exception_categories": ["fx_variance"]
+  },
+  {
+    "scenario_id": "scenario_missing_broken_references",
+    "category": "MISSING_BROKEN_REFERENCES",
+    "description": "Validates missing_broken_references behavior across processor/bank/ledger variance paths.",
+    "expected_match_classes": ["fuzzy_match"],
+    "expected_exception_categories": ["fuzzy_match"]
+  },
+  {
+    "scenario_id": "scenario_status_mismatches",
+    "category": "STATUS_MISMATCHES",
+    "description": "Validates status_mismatches behavior across processor/bank/ledger variance paths.",
+    "expected_match_classes": ["status_conflict"],
+    "expected_exception_categories": ["status_conflict"]
+  },
+  {
+    "scenario_id": "scenario_edge_case_swamp",
+    "category": "EDGE_CASE_SWAMP",
+    "description": "Validates edge_case_swamp behavior across processor/bank/ledger variance paths.",
+    "expected_match_classes": ["manual_review"],
+    "expected_exception_categories": ["manual_review"]
+  }
+]

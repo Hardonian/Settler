@@ -242,7 +242,13 @@
     "verify:security:full": "pnpm run security:evidence && node scripts/security/verdict.mjs",
     "verify:security:enterprise": "SECURITY_DEPENDENCY_EVIDENCE_MODE=strict SECURITY_RLS_EVIDENCE_MODE=runtime-rls-required pnpm run security:evidence && node scripts/security/verdict.mjs",
     "bootstrap": "node scripts/bootstrap.mjs",
-    "dev:stack": "set -a; [ -f .env.local ] && . ./.env.local; set +a; (cd packages/api && PORT=${API_PORT:-4000} pnpm run dev) & (cd packages/web && PORT=${WEB_PORT:-3000} pnpm run dev) & wait"
+    "dev:stack": "set -a; [ -f .env.local ] && . ./.env.local; set +a; (cd packages/api && PORT=${API_PORT:-4000} pnpm run dev) & (cd packages/web && PORT=${WEB_PORT:-3000} pnpm run dev) & wait",
+    "generate:test-data": "pnpm exec tsx packages/cli/src/index.ts foundry reconciliation-generate --seed 42 --profile smoke --output test-data/exports/latest",
+    "generate:test-data:smoke": "pnpm exec tsx packages/cli/src/index.ts foundry reconciliation-generate --seed 42 --profile smoke --output test-data/exports/smoke-seed42",
+    "generate:test-data:chaos": "pnpm exec tsx packages/cli/src/index.ts foundry reconciliation-generate --seed 42 --profile chaos --output test-data/exports/chaos-seed42",
+    "verify:test-data": "pnpm exec tsx packages/cli/src/index.ts foundry reconciliation-verify --seed 42 --profile smoke",
+    "test:reconciliation": "pnpm --filter @settler/cli exec tsx src/tools/reconciliation-harness.ts && pnpm --filter @settler/cli exec jest src/__tests__/reconciliation-foundry.test.ts",
+    "benchmark:reconciliation": "pnpm --filter @settler/cli exec tsx src/tools/benchmark-reconciliation.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

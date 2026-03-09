@@ -1,0 +1,2 @@
+source_record_id,transaction_id,currency,gross_amount
+"BROKEN","txn_missing_quote,USD,123.00
