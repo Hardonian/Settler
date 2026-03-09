@@ -11,6 +11,7 @@ import { prisma } from '@/shared/db/prismaClient';
 import { getAccountUsage } from '@/domain/billing/usageService';
 import { getAccountPlanCode } from '@/domain/billing/entitlements';
 import { getPlanConfig } from '@/domain/billing/planConfig';
+import { isStripeConfigured } from '@/domain/billing/stripeService';
 import { withApiWrapper } from '@/middleware/api-wrapper';
 import { redisRateLimiters } from '@/lib/security/rate-limiter-redis';
 import { appLogger } from '@/lib/utils/logger';
@@ -138,6 +139,7 @@ async function getBillingHandler(_request: NextRequest) {
           }
         : null,
       usage: usageWithLimits,
+      stripeConfigured: isStripeConfigured(),
     });
   } catch (error) {
     appLogger.error('[Console Billing] Error fetching billing data', error, {
