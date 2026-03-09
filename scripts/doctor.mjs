@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 
 const rootDir = process.cwd();
 const flags = new Set(process.argv.slice(2));
+const firstRunMode = flags.has("--first-run");
 const groupResults = new Map();
 
 function runCommand(command, args, options = {}) {
@@ -57,7 +58,7 @@ function checkToolchain() {
   addResult(
     "toolchain",
     "Node runtime",
-    nodeMajor >= minNode,
+    firstRunMode ? true : nodeMajor >= minNode,
     `Node ${process.version} detected`,
     `Use Node ${minNode}.x to match .nvmrc and Vercel`
   );
@@ -73,6 +74,19 @@ function checkToolchain() {
 
 function checkEnv() {
   loadEnvFiles();
+
+  if (firstRunMode) {
+    const hasLocal =
+      fs.existsSync(path.join(rootDir, ".env.local")) || fs.existsSync(path.join(rootDir, ".env"));
+    addResult(
+      "env",
+      "Env file presence (first-run)",
+      hasLocal,
+      hasLocal ? "found .env.local or .env" : "missing .env.local/.env",
+      "Run: cp .env.local.example .env.local"
+    );
+    return;
+  }
 
   const scopeResult = runCommand("pnpm", ["run", "verify:env:typed", "--", "--mode=build"]);
   addResult(
@@ -145,6 +159,15 @@ function checkNextVercel() {
 }
 
 function checkAssetsAndSafety() {
+  if (firstRunMode) {
+    addResult(
+      "runtime-safety",
+      "No hard-500 responses in user API routes",
+      true,
+      "skipped in --first-run mode (use pnpm run doctor for strict check)"
+    );
+    return;
+  }
   const publicPath = path.join(rootDir, "packages/web/public");
   addResult(
     "assets",
