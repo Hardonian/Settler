@@ -7,6 +7,7 @@ JobForge is now integrated into Settler as a first-class background job processi
 ## Overview
 
 JobForge enables Settler to:
+
 - Enqueue background jobs (contract processing, notifications, data ingestion)
 - Process jobs asynchronously with workers
 - Retry failed jobs with exponential backoff
@@ -52,6 +53,7 @@ npm run db:migrate:apply
 ```
 
 This creates:
+
 - `jobforge_jobs` - Main job queue table
 - `jobforge_job_results` - Job execution results
 - `jobforge_job_attempts` - Attempt history for debugging
@@ -86,27 +88,27 @@ JOBFORGE_BUNDLE_EXECUTION_ENABLED=false
 #### From Server-Side Code (Next.js API Routes, Server Actions)
 
 ```typescript
-import { JobForgeClient } from '@jobforge/sdk-ts'
-import { SettlerJobTypes } from '@jobforge/adapter-settler'
+import { JobForgeClient } from "@jobforge/sdk-ts";
+import { SettlerJobTypes } from "@jobforge/adapter-settler";
 
 // Initialize client (server-side only!)
 const jobforge = new JobForgeClient({
   supabaseUrl: process.env.SUPABASE_URL!,
   supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-})
+});
 
 // Example: Contract processing job
 const job = await jobforge.enqueueJob({
   tenant_id: user.tenantId,
   type: SettlerJobTypes.CONTRACT_PROCESS,
   payload: {
-    contractId: 'contract-123',
-    action: 'validate',
+    contractId: "contract-123",
+    action: "validate",
   },
   idempotency_key: `contract-process-${contractId}`, // Prevents duplicates
-})
+});
 
-console.log(`Job enqueued: ${job.id}`)
+console.log(`Job enqueued: ${job.id}`);
 ```
 
 #### Settler-Specific Job Types
@@ -114,42 +116,42 @@ console.log(`Job enqueued: ${job.id}`)
 The `@jobforge/adapter-settler` package provides pre-configured job types:
 
 ```typescript
-import { SettlerJobTypes } from '@jobforge/adapter-settler'
+import { SettlerJobTypes } from "@jobforge/adapter-settler";
 
 // Available job types:
-SettlerJobTypes.CONTRACT_PROCESS      // Contract processing
-SettlerJobTypes.CONTRACT_NOTIFICATION // Send contract notifications
-SettlerJobTypes.RECON_INGEST         // Data reconciliation ingestion
-SettlerJobTypes.RECON_AUDIT          // Audit reconciliation results
-SettlerJobTypes.WEBHOOK_DELIVER      // Webhook delivery with retries
-SettlerJobTypes.HTTP_REQUEST         // Generic HTTP requests
+SettlerJobTypes.CONTRACT_PROCESS; // Contract processing
+SettlerJobTypes.CONTRACT_NOTIFICATION; // Send contract notifications
+SettlerJobTypes.RECON_INGEST; // Data reconciliation ingestion
+SettlerJobTypes.RECON_AUDIT; // Audit reconciliation results
+SettlerJobTypes.WEBHOOK_DELIVER; // Webhook delivery with retries
+SettlerJobTypes.HTTP_REQUEST; // Generic HTTP requests
 ```
 
 ### Monitoring Jobs
 
 ```typescript
-import { JobForgeClient } from '@jobforge/sdk-ts'
+import { JobForgeClient } from "@jobforge/sdk-ts";
 
 const jobforge = new JobForgeClient({
   supabaseUrl: process.env.SUPABASE_URL!,
   supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-})
+});
 
 // Get job status
-const job = await jobforge.getJob(jobId, tenantId)
-console.log(job.status) // 'queued' | 'running' | 'succeeded' | 'failed' | 'dead'
+const job = await jobforge.getJob(jobId, tenantId);
+console.log(job.status); // 'queued' | 'running' | 'succeeded' | 'failed' | 'dead'
 
 // List jobs for a tenant
 const jobs = await jobforge.listJobs(tenantId, {
-  status: 'failed',
+  status: "failed",
   type: SettlerJobTypes.CONTRACT_PROCESS,
   limit: 50,
-})
+});
 
 // Get job result
 if (job.result_id) {
-  const result = await jobforge.getJobResult(job.result_id, tenantId)
-  console.log(result.result) // Job output
+  const result = await jobforge.getJobResult(job.result_id, tenantId);
+  console.log(result.result); // Job output
 }
 ```
 
@@ -162,6 +164,7 @@ Settler exposes a minimal JobForge admin page for super admins at:
 ```
 
 Capabilities:
+
 - Submit event (explicit tenant + project mapping)
 - Run module (dry-run)
 - View report + request bundle execution (gated by `JOBFORGE_BUNDLE_EXECUTION_ENABLED`)
@@ -226,58 +229,58 @@ settler admin jobforge:report \
 Create a worker script in `scripts/jobforge-worker.ts`:
 
 ```typescript
-import { JobForgeClient } from '@jobforge/sdk-ts'
-import { createSettlerHandlers } from '@jobforge/adapter-settler'
+import { JobForgeClient } from "@jobforge/sdk-ts";
+import { createSettlerHandlers } from "@jobforge/adapter-settler";
 
 const client = new JobForgeClient({
   supabaseUrl: process.env.SUPABASE_URL!,
   supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-})
+});
 
 // Register Settler-specific job handlers
 const handlers = createSettlerHandlers({
   // Add Settler-specific context (e.g., Supabase client, etc.)
   supabaseClient: client.supabase,
-})
+});
 
 // Worker loop
 async function runWorker() {
-  console.log('JobForge worker started')
+  console.log("JobForge worker started");
 
   while (true) {
     try {
-      const jobs = await client.claimJobs('settler-worker-1', 10)
+      const jobs = await client.claimJobs("settler-worker-1", 10);
 
       for (const job of jobs) {
-        const handler = handlers[job.type]
+        const handler = handlers[job.type];
         if (!handler) {
-          await client.completeJob(job.id, 'settler-worker-1', 'failed', {
+          await client.completeJob(job.id, "settler-worker-1", "failed", {
             error: `No handler for job type: ${job.type}`,
-          })
-          continue
+          });
+          continue;
         }
 
         try {
-          const result = await handler(job.payload)
-          await client.completeJob(job.id, 'settler-worker-1', 'succeeded', null, result)
+          const result = await handler(job.payload);
+          await client.completeJob(job.id, "settler-worker-1", "succeeded", null, result);
         } catch (error) {
-          await client.completeJob(job.id, 'settler-worker-1', 'failed', {
+          await client.completeJob(job.id, "settler-worker-1", "failed", {
             error: error.message,
             stack: error.stack,
-          })
+          });
         }
       }
 
       // Poll interval
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     } catch (error) {
-      console.error('Worker error:', error)
-      await new Promise(resolve => setTimeout(resolve, 5000))
+      console.error("Worker error:", error);
+      await new Promise((resolve) => setTimeout(resolve, 5000));
     }
   }
 }
 
-runWorker()
+runWorker();
 ```
 
 Run the worker:
@@ -307,18 +310,18 @@ JobForge ensures jobs are not duplicated:
 ```typescript
 // These will create only ONE job (same tenant + type + idempotency_key)
 await jobforge.enqueueJob({
-  tenant_id: 'tenant-123',
-  type: 'contract.process',
-  payload: { contractId: 'abc' },
-  idempotency_key: 'contract-abc-process',
-})
+  tenant_id: "tenant-123",
+  type: "contract.process",
+  payload: { contractId: "abc" },
+  idempotency_key: "contract-abc-process",
+});
 
 await jobforge.enqueueJob({
-  tenant_id: 'tenant-123',
-  type: 'contract.process',
-  payload: { contractId: 'abc' },
-  idempotency_key: 'contract-abc-process', // Same key = no duplicate
-})
+  tenant_id: "tenant-123",
+  type: "contract.process",
+  payload: { contractId: "abc" },
+  idempotency_key: "contract-abc-process", // Same key = no duplicate
+});
 ```
 
 ### Automatic Retries
@@ -357,11 +360,11 @@ Jobs that don't complete will be unlocked after 5 minutes of no heartbeat:
 
 ```typescript
 // Reset stuck jobs manually
-await client.supabase.rpc('jobforge_reschedule_job', {
+await client.supabase.rpc("jobforge_reschedule_job", {
   p_job_id: jobId,
   p_tenant_id: tenantId,
   p_run_at: new Date().toISOString(),
-})
+});
 ```
 
 ### Dead Letter Queue
@@ -370,16 +373,16 @@ View permanently failed jobs:
 
 ```typescript
 const deadJobs = await jobforge.listJobs(tenantId, {
-  status: 'dead',
+  status: "dead",
   limit: 100,
-})
+});
 
 // Manually retry a dead job
-await client.supabase.rpc('jobforge_reschedule_job', {
+await client.supabase.rpc("jobforge_reschedule_job", {
   p_job_id: deadJob.id,
   p_tenant_id: tenantId,
   p_run_at: new Date().toISOString(),
-})
+});
 ```
 
 ### Monitoring
@@ -431,6 +434,7 @@ Jobs are claimed with `FOR UPDATE SKIP LOCKED`, preventing race conditions.
 ### Database Indexing
 
 JobForge includes optimized indexes for:
+
 - Job claiming: `idx_jobforge_jobs_claim`
 - Status filtering: `idx_jobforge_jobs_status`
 - Type filtering: `idx_jobforge_jobs_type`
@@ -449,10 +453,9 @@ packages/
 ├── jobforge-sdk-ts/           # TypeScript SDK (server-only)
 ├── jobforge-adapter-settler/  # Settler-specific job types & handlers
 ├── jobforge-shared/           # Shared types & utilities
-├── jobforge-database/         # Database utilities
 ├── jobforge-errors/           # Error types
 ├── jobforge-fetch/            # HTTP utilities with SSRF protection
-└── jobforge-config/           # Shared configs
+└── jobforge-typescript-config/ # Shared TypeScript config
 ```
 
 ## Migration Details
@@ -460,6 +463,7 @@ packages/
 **File:** `supabase/migrations/20260131000003_jobforge_integration.sql`
 
 Creates:
+
 - 4 tables with RLS enabled
 - 7 RPC functions for job lifecycle
 - Indexes for performance

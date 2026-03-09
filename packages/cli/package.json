@@ -23,7 +23,10 @@
     "clean": "rm -rf dist",
     "perf:hot-path": "node scripts/perf-hot-path.mjs",
     "mcp:smoke": "tsx src/index.ts mcp ping",
-    "test:mcp-smoke": "node --test tests/mcp-smoke.test.mjs"
+    "test:mcp-smoke": "node --test tests/mcp-smoke.test.mjs",
+    "foundry:core": "tsx src/index.ts foundry vectors run --suite core --seeds 1,2",
+    "foundry:metamorphic": "tsx src/index.ts foundry metamorphic generate --base-suite core --per 1 --seed 1",
+    "foundry:faults": "tsx src/index.ts foundry generate --type faults --seeds 1 && FOUNDRY_FAULTS=1 tsx src/index.ts foundry report --last 1"
   },
   "dependencies": {
     "@jobforge/sdk-ts": "workspace:*",

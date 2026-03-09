@@ -40,7 +40,6 @@
       "@settler/react-settler": ["./packages/react-settler/src"],
       "@jobforge/sdk-ts": ["./packages/jobforge-sdk-ts/src"],
       "@jobforge/shared": ["./packages/jobforge-shared/src"],
-      "@jobforge/config": ["./packages/jobforge-config/src"],
       "@jobforge/errors": ["./packages/jobforge-errors/src"],
       "@jobforge/fetch": ["./packages/jobforge-fetch/src"]
     }

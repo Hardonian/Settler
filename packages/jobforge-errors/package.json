@@ -8,10 +8,10 @@
     "lint": "eslint \"**/*.ts\"",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "build": "tsc --noEmit"
   },
   "devDependencies": {
-    "@jobforge/config": "workspace:*",
     "@jobforge/typescript-config": "workspace:*",
     "@types/node": "^20.11.0",
     "eslint": "^8.56.0",
