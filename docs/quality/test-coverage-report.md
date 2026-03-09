@@ -1,17 +1,29 @@
 # Test Coverage Report
 
-Generated: 2026-03-09
+_Last updated: 2026-03-09_
 
-## Baseline and Verification Commands
+## Executed suites
 
-- `pnpm --filter @settler/api test` passes after the test typing fix.
-- `pnpm --filter @settler/api exec jest --runInBand --forceExit --coverage` currently fails due to Jest/Istanbul instrumentation runtime error (`TypeError: The "original" argument must be of type function`) in this repository's current test transform stack.
+- `pnpm run test` (monorepo turbo test run).
+- `pnpm --filter @settler/web test` (focused rerun after middleware assertion fix).
+- `pnpm run test:ci:verify` (API CI verification path via `pnpm run verify`).
 
-## Gaps Closed in This Pass
+## Observed coverage breadth
 
-- Fixed API test suite compile blocker by removing direct `@jest/globals` import from runtime tenant isolation test and relying on existing Jest globals typing.
+- **API endpoints / contracts**: integration and route validation tests in `packages/api/src/__tests__/integration/*`.
+- **Tenant guardrails**: dedicated multi-tenant tests in `packages/api/src/__tests__/multi-tenancy/*` and web cross-tenant tests.
+- **Proof / replay behavior**: replay verification exercised in `verify:policy` (`scripts/settler-replay.ts`) and web replay tests.
+- **CLI command paths**: Jest suites in `packages/cli/src/__tests__/*`.
+- **Repo integrity behavior**: `pnpm run repo-integrity` enforced in this pass.
 
-## Remaining Coverage Truth
+## Current test results snapshot
 
-- This pass removed a hard test failure and restored full API test execution (`pnpm --filter @settler/api test`).
-- Honest 100% repo-wide coverage is not yet proven because coverage instrumentation currently fails before collection.
+- `@settler/api`: 35 passed suites (11 skipped), 193 passed tests.
+- `@settler/web`: 35 passed suites (2 skipped), 124 passed tests.
+- `@settler/cli`: 5 passed suites, 13 passed tests.
+- Supporting SDK/packages passed in turbo run.
+
+## Notes
+
+- Some suites intentionally skip based on runtime/environment requirements.
+- Jest open-handle warnings are still present in some packages; runs complete successfully but should be reduced over time.

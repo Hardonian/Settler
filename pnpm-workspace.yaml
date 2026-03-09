@@ -1,7 +1,5 @@
 packages:
   - "packages/*"
-  - "!packages/sdk-csharp"
-  - "!packages/sdk-java"
   - "!packages/sdk-go"
   - "!packages/sdk-python"
   - "!packages/sdk-ruby"

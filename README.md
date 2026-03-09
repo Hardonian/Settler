@@ -42,3 +42,15 @@ pnpm run dev:stack
 ## Integrity guarantee
 
 `pnpm run repo-integrity` is expected to pass on a healthy checkout and fails hard when workspace manifests, script references, or package contracts drift.
+
+## Launch Readiness Snapshot
+
+Settler launch claims in this repository are constrained to commands and artifacts that are currently reproducible:
+
+- `pnpm run typecheck`
+- `pnpm run build`
+- `pnpm run test`
+- `pnpm run repo-integrity`
+- `pnpm run verify`
+
+See `docs/demo/demo-walkthrough.md` for a deterministic walkthrough and `docs/launch/launch-checklist.md` for pre-launch gates.
