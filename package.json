@@ -244,7 +244,7 @@
     "verify:security:full": "pnpm run security:evidence && node scripts/security/verdict.mjs",
     "verify:security:enterprise": "SECURITY_DEPENDENCY_EVIDENCE_MODE=strict SECURITY_RLS_EVIDENCE_MODE=runtime-rls-required pnpm run security:evidence && node scripts/security/verdict.mjs",
     "bootstrap": "node scripts/bootstrap.mjs",
-    "dev:stack": "turbo run dev --filter @settler/api --filter @settler/web"
+    "dev:stack": "set -a; [ -f .env.local ] && . ./.env.local; set +a; (cd packages/api && PORT=${API_PORT:-4000} pnpm run dev) & (cd packages/web && PORT=${WEB_PORT:-3000} pnpm run dev) & wait"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

@@ -2,33 +2,40 @@
 
 Settler is an OSS-first deterministic execution and reconciliation platform.
 
-## Quickstart (fast path)
+## Quickstart (core local path)
 
 ```bash
 pnpm run bootstrap
-pnpm run doctor -- --skip-pipeline
 pnpm run demo
 pnpm run dev:stack
 ```
 
+`bootstrap` already runs `repo-integrity` and first-run doctor.
+
 ## Command matrix
 
-- `pnpm run bootstrap` — first-run install + integrity + first-run doctor.
-- `pnpm run doctor -- --skip-pipeline` — local diagnostics (toolchain/env/config).
-- `pnpm run demo` — deterministic demo execution with replay proof.
+- `pnpm run bootstrap` — install + repo-integrity + first-run doctor.
+- `pnpm run doctor -- --skip-pipeline --first-run` — first-run diagnostics.
+- `pnpm run doctor -- --skip-pipeline` — strict local diagnostics (expects fuller env/runtime readiness).
+- `pnpm run demo` — deterministic demo execution + replay verification.
 - `pnpm run dev:stack` — canonical local API + web stack entrypoint.
-- `pnpm run repo-integrity` — monorepo contract validator.
-- `pnpm run verify` — full lint/typecheck/build/test verification suite.
-- `pnpm run build` — production build path.
+- `pnpm run repo-integrity` — monorepo/workspace contract validator.
+- `pnpm run verify` — full lint/typecheck/build/test/security surface.
+
+## Core vs optional setup
+
+Core local onboarding does **not** require optional connectors (Stripe/Resend/Redis/etc.).
+Optional integrations should be configured only when validating those specific surfaces.
 
 ## Repository structure
 
 - `packages/api` — API/control plane.
-- `packages/web` — Next.js product/marketing UI.
+- `packages/web` — Next.js UI.
 - `packages/cli` — Settler CLI runtime.
 - `packages/sdk` + `packages/react-settler` + `packages/types` — SDK/runtime libraries.
-- `docs/getting-started/*` — onboarding flow documentation.
-- `docs/reference/repo-integrity.md` — monorepo contract rules.
+- `docs/getting-started/*` — onboarding flow docs.
+- `docs/reference/repo-integrity.md` — repo truth gate.
+- `docs/reference/workspace-contracts.md` — workspace package contract.
 
 ## Onboarding docs
 
@@ -38,6 +45,7 @@ pnpm run dev:stack
 - [First-run demo](docs/demo/first-run-demo.md)
 - [Troubleshooting](docs/troubleshooting/installation-and-setup.md)
 - [Repo integrity reference](docs/reference/repo-integrity.md)
+- [Workspace contracts](docs/reference/workspace-contracts.md)
 
 ## Integrity guarantee
 

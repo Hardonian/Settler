@@ -7,24 +7,40 @@ Run `pnpm run repo-integrity` and fix the first failing contract:
 - missing workspace manifest
 - stale script file reference
 - missing TypeScript `build` / `typecheck` scripts
+- invalid internal workspace dependency reference
 
-## `doctor` fails on Node runtime
+## `bootstrap` fails
 
-Use Node 24.x (project target), then rerun `pnpm run doctor`.
+`bootstrap` runs install + repo-integrity + first-run doctor. Inspect the first failing stage and rerun:
 
-## `doctor` fails on env validation
+```bash
+pnpm run bootstrap
+```
 
-For first-run local setup, use:
+If env file generation failed, recreate:
 
 ```bash
 cp .env.local.example .env.local
-pnpm run doctor -- --skip-pipeline --first-run
 ```
 
-For strict checks, set required runtime variables and rerun strict doctor.
+## `doctor` fails on runtime/toolchain checks
+
+- Use Node 24.x for full parity with declared toolchain targets.
+- `pnpm run doctor -- --skip-pipeline --first-run` is for first-run readiness.
+- `pnpm run doctor -- --skip-pipeline` is strict and expects fuller env/runtime readiness.
 
 ## `dev:stack` does not start cleanly
 
-- Ensure ports are available.
-- Re-run `pnpm install`.
-- Re-run `pnpm run doctor -- --skip-pipeline`.
+- Ensure required env exists (`.env.local` created from `.env.local.example`).
+- Ensure required backing runtime services are reachable (local DB/Supabase where configured).
+- Re-run `pnpm install` then `pnpm run repo-integrity`.
+
+## `demo` fails
+
+Run with a clean install and generated env first:
+
+```bash
+pnpm install
+pnpm run bootstrap
+pnpm run demo
+```

@@ -2,13 +2,30 @@
 
 Command: `pnpm run repo-integrity`
 
-Current enforced contract:
+## What it enforces
 
-1. Workspace folders included by root workspace globs must contain valid `package.json` when JS/TS workspaces.
-2. Workspace package names must resolve to real workspace directories.
-3. Internal dependencies (`@settler/*`) referenced by workspaces must exist.
-4. `package.json` scripts that invoke `tsx/node/ts-node` must reference real files.
-5. TypeScript workspaces must define `build` (or `build:vercel`) and `typecheck` scripts.
+1. Workspace folders included by root workspace globs contain valid `package.json` for JS/TS workspaces.
+2. Workspace package names resolve to real workspace directories.
+3. Internal dependencies (`@settler/*`) referenced by workspaces exist.
+4. `package.json` scripts invoking `tsx`/`node`/`ts-node` reference real files.
+5. TypeScript workspaces define `build` (or `build:vercel`) and `typecheck` scripts.
 6. No tracked `node_modules/` files.
 
-The workspace model explicitly excludes non-Node SDK folders (`sdk-csharp`, `sdk-java`, `sdk-go`, `sdk-python`, `sdk-ruby`) and `workhorse` from pnpm workspace resolution.
+## Workspace model
+
+The workspace model intentionally excludes non-Node surfaces from pnpm resolution:
+
+- `packages/sdk-csharp`
+- `packages/sdk-java`
+- `packages/sdk-go`
+- `packages/sdk-python`
+- `packages/sdk-ruby`
+- `packages/workhorse`
+
+These may exist in-repo for mirror/toolchain reasons, but they are outside the Node monorepo contract gate.
+
+## Usage
+
+- Run directly: `pnpm run repo-integrity`
+- Included in bootstrap: `pnpm run bootstrap`
+- Recommended before merging monorepo/package graph changes.
