@@ -198,3 +198,41 @@ export const bugreportCommand = new Command("bugreport")
     console.log(`bugreport=${targetPath}`);
     console.log("template=.github/ISSUE_TEMPLATE/bug_report.yml");
   });
+
+// ---------------------------------------------------------------------------
+// dev stack — local development stack launcher
+// ---------------------------------------------------------------------------
+
+export const devCommand = new Command("dev").description("Local development stack management");
+
+devCommand
+  .command("stack")
+  .description("Start control plane, worker, event log, and storage locally")
+  .option("--port <port>", "Control plane port", "3000")
+  .option("--worker-port <port>", "Worker port", "3001")
+  .option("--no-storage", "Skip local storage emulator")
+  .option("--no-event-log", "Skip event log service")
+  .action((options: { port: string; workerPort: string; storage: boolean; eventLog: boolean }) => {
+    const services: Array<{ name: string; command: string; enabled: boolean }> = [
+      { name: "control-plane", command: `pnpm --filter @settler/web dev -- --port ${options.port}`, enabled: true },
+      { name: "worker", command: `pnpm --filter @settler/api dev -- --port ${options.workerPort}`, enabled: true },
+      { name: "event-log", command: "pnpm --filter @jobforge/shared dev", enabled: options.eventLog !== false },
+      { name: "storage", command: "supabase start", enabled: options.storage !== false },
+    ];
+
+    console.log("Settler dev stack");
+    console.log("─────────────────");
+    for (const svc of services) {
+      if (svc.enabled) {
+        console.log(`  ${svc.name}: ${svc.command}`);
+      } else {
+        console.log(`  ${svc.name}: skipped`);
+      }
+    }
+    console.log();
+    console.log("To start each service, run the commands above in separate terminals.");
+    console.log("Or use pnpm dev from the repo root for Turbo-managed parallel startup.");
+    console.log();
+    console.log("Health check:  http://localhost:3000/api/health");
+    console.log("API server:    http://localhost:3001");
+  });

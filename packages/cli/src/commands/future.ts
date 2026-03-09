@@ -149,7 +149,86 @@ capsuleCommand
     console.log(`runId=${capsule.runId}`);
   });
 
+// ---------------------------------------------------------------------------
+// Execution Receipt
+// ---------------------------------------------------------------------------
+
+interface ExecutionReceipt {
+  schemaVersion: "2026-03-09";
+  receiptId: string;
+  generatedAt: string;
+  runId: string;
+  tenantRef: string;
+  canonicalInput: unknown;
+  canonicalOutput: unknown;
+  toolCalls: string[];
+  policyDecisions: string[];
+  timestamps: {
+    runStart: string | null;
+    runEnd: string | null;
+  };
+  deterministicHash: string;
+}
+
+function buildExecutionReceipt(run: RunArtifact): ExecutionReceipt {
+  const toolCalls = run.events
+    .filter((e) => e.stage === "ingest" || e.stage === "export")
+    .map((e) => e.type);
+
+  const policyDecisions = run.events
+    .filter((e) => e.stage === "policy")
+    .map((e) => e.type);
+
+  const timestamps = run.events.reduce<{ runStart: string | null; runEnd: string | null }>(
+    (acc, e) => {
+      if (!acc.runStart || e.timestamp < acc.runStart) acc.runStart = e.timestamp;
+      if (!acc.runEnd || e.timestamp > acc.runEnd) acc.runEnd = e.timestamp;
+      return acc;
+    },
+    { runStart: null, runEnd: null }
+  );
+
+  // Deterministic hash: SHA-256(canonical_json(input) + canonical_json(output) + canonical_json(tool_calls) + canonical_json(policy_decisions))
+  const deterministicHash = stableHash({
+    input: run.input,
+    output: run.output,
+    toolCalls,
+    policyDecisions,
+  });
+
+  return {
+    schemaVersion: "2026-03-09",
+    receiptId: stableHash({ runId: run.runId, generatedAt: new Date().toISOString() }).slice(0, 32),
+    generatedAt: new Date().toISOString(),
+    runId: run.runId,
+    tenantRef: redactTenant(run.tenantId),
+    canonicalInput: run.input,
+    canonicalOutput: run.output,
+    toolCalls,
+    policyDecisions,
+    timestamps,
+    deterministicHash,
+  };
+}
+
 export const proofCommand = new Command("proof").description("Produce and verify proof mode artifacts");
+
+proofCommand
+  .command("show")
+  .argument("<runIdOrPath>", "Run id or path to run JSON artifact")
+  .option("-o, --output <file>", "Write execution_receipt.json to file (default: stdout)")
+  .action(async (runIdOrPath, options) => {
+    const run = await loadRun(runIdOrPath);
+    const receipt = buildExecutionReceipt(run);
+    const formatted = `${JSON.stringify(receipt, null, 2)}\n`;
+    if (options.output) {
+      await fs.writeFile(options.output, formatted, "utf8");
+      console.log(chalk.green(`Execution receipt written to ${options.output}`));
+    } else {
+      process.stdout.write(formatted);
+    }
+    console.error(`deterministicHash=${receipt.deterministicHash}`);
+  });
 
 proofCommand
   .command("verify")
