@@ -11,8 +11,6 @@
  * attempt cross-tenant operations, assert rejection at each layer.
  */
 
-import { describe, it, expect, beforeEach } from "@jest/globals";
-
 // ---------------------------------------------------------------------------
 // Minimal in-memory fixture types
 // ---------------------------------------------------------------------------
