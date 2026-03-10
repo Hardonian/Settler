@@ -55,6 +55,14 @@ Mounted families include:
 - State-changing routes run through idempotency middleware.
 - JSON body size/depth protections are enabled.
 
+## Resilience guarantees (production behavior)
+
+- **Idempotency:** Mutating routes honor `Idempotency-Key` when provided. Duplicate keys with same payload return cached response, and payload/key mismatch returns `409 IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD`.
+- **Pagination:** Cursor pagination input is normalized with enforced page caps and invalid cursor rejection (`INVALID_CURSOR`).
+- **Rate limiting:** Tenant/API-key aware limits and global abuse limits are enforced with structured `429` responses and `Retry-After` metadata.
+- **Webhooks:** Webhook receive endpoints require signatures, enforce timestamp freshness windows, and deduplicate replayed payloads to avoid double-processing.
+- **Error envelope stability:** Error responses preserve machine-readable `error` code, message, and trace correlation.
+
 ## Verification workflow
 
 ```bash

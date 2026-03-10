@@ -5,9 +5,12 @@
 
 export interface CursorPaginationParams {
   cursor?: string; // Base64 encoded cursor: {created_at, id}
-  limit?: number; // Max items per page (default: 100, max: 1000)
+  limit?: number; // Max items per page
   direction?: 'next' | 'prev'; // Pagination direction
 }
+
+export const DEFAULT_PAGE_LIMIT = 100;
+export const MAX_PAGE_LIMIT = 250;
 
 export interface CursorPaginationResult<T> {
   items: T[];
@@ -67,7 +70,7 @@ export function buildCursorWhereClause(
 ): { whereClause: string; params: (string | number)[]; paramIndex: number } {
   const prefix = tableAlias ? `${tableAlias}.` : '';
   // Limit is reserved for future query building
-  const _limit = Math.min(params.limit || 100, 1000);
+  const _limit = Math.min(params.limit || DEFAULT_PAGE_LIMIT, MAX_PAGE_LIMIT);
   void _limit;
   const direction = params.direction || 'next';
   let paramIndex = 1;
@@ -182,9 +185,13 @@ export function parseCursorPaginationParams(req: { query: Record<string, string 
   if (req.query.cursor) {
     result.cursor = req.query.cursor;
   }
-  if (req.query.limit) {
-    result.limit = parseInt(req.query.limit, 10);
+  const rawLimit = req.query.limit ? Number.parseInt(req.query.limit, 10) : DEFAULT_PAGE_LIMIT;
+  result.limit = Number.isFinite(rawLimit) ? Math.min(Math.max(rawLimit, 1), MAX_PAGE_LIMIT) : DEFAULT_PAGE_LIMIT;
+
+  if (req.query.cursor && !decodeCursor(req.query.cursor)) {
+    throw new Error('INVALID_CURSOR');
   }
-  result.direction = (req.query.direction as 'next' | 'prev') || 'next';
+
+  result.direction = req.query.direction === 'prev' ? 'prev' : 'next';
   return result as CursorPaginationParams;
 }
