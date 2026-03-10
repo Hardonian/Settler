@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-10T03:00:20.717Z",
+  "generatedAt": "2026-03-10T03:10:03.892Z",
   "coverageModel": "route-test-mapping@v1",
   "totals": {
     "routes": 252,
@@ -8,7 +8,15 @@
     "covered": 14,
     "partial": 2,
     "missing": 236,
-    "criticalMissing": 39
+    "criticalMissing": 39,
+    "unmountedCandidates": 1,
+    "undeclaredMethodHandlers": 0,
+    "duplicateMethodPathEntries": 0
+  },
+  "diagnostics": {
+    "unmountedRouteCandidates": ["packages/web/src/app/api/console/api-keys-v2/route.ts.example"],
+    "undeclaredMethodHandlers": [],
+    "duplicateMethodPathEntries": []
   },
   "routes": [
     {

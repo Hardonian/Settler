@@ -1,6 +1,6 @@
 # API Route Inventory
 
-Generated: 2026-03-10T03:00:20.717Z
+Generated: 2026-03-10T03:10:03.892Z
 
 - Coverage model: **route-test-mapping@v1**
 - Total mounted method routes: **252**
@@ -8,6 +8,9 @@ Generated: 2026-03-10T03:00:20.717Z
 - Critical routes: **55**
 - Critical routes missing tests: **39**
 - Covered / Partial / Missing tests: **14 / 2 / 236**
+- Unmounted route candidates: **1**
+- Route handlers with undeclared HTTP methods: **0**
+- Duplicate mounted method/path entries: **0**
 
 | Method | Path                                                    | Group          | Auth | Tenant | Criticality | Test    | Test IDs                                                                                                                                             | Source                                                                               |
 | ------ | ------------------------------------------------------- | -------------- | ---: | -----: | ----------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
@@ -268,3 +271,4 @@ Generated: 2026-03-10T03:00:20.717Z
 
 - Inventory is generated from mounted Next.js App Router `route.ts` handlers under `packages/web/src/app/api`.
 - Test status is machine-derived from `docs/api/route-test-mapping.json` (no heuristic inference).
+- Unmounted route candidates capture `route.ts.*` variants and route-like helper files in `app/api` that are not mounted handlers.
