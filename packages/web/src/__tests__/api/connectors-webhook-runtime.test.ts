@@ -10,9 +10,9 @@ describe("connector webhook runtime hardening invariants", () => {
       "utf-8"
     );
 
-    expect(source).toContain("{ allowPublic: true, feature: 'Connector webhooks' }");
-    expect(source).toContain("error: 'WEBHOOK_SECRET_NOT_CONFIGURED'");
-    expect(source).toContain("error: 'WEBHOOK_SIGNATURE_MISSING'");
+    expect(source).toContain('{ allowPublic: true, feature: "Connector webhooks" }');
+    expect(source).toContain('error: "WEBHOOK_SECRET_NOT_CONFIGURED"');
+    expect(source).toContain('error: "WEBHOOK_SIGNATURE_MISSING"');
     expect(source).toContain("verifyWebhook(providerId, rawBody, signature, webhookSecret)");
   });
 
@@ -22,8 +22,8 @@ describe("connector webhook runtime hardening invariants", () => {
       "utf-8"
     );
 
-    expect(source).toContain("export const runtime = 'nodejs'");
+    expect(source).toContain('export const runtime = "nodejs"');
     expect(source).toContain("WEBHOOK_TIMESTAMP_TOLERANCE_MS = 5 * 60 * 1000");
-    expect(source).toContain("error: 'WEBHOOK_TIMESTAMP_INVALID'");
+    expect(source).toContain('error: "WEBHOOK_TIMESTAMP_INVALID"');
   });
 });
