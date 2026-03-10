@@ -21,7 +21,7 @@ async function getRecentImportWorkbenchSummary(tenantId: string): Promise<{
     canProceed?: boolean;
   };
 }> {
-  const rows = await query(
+  const rowsResult = await query(
     `SELECT id, completed_at, metadata
        FROM ingestions
       WHERE tenant_id = $1
@@ -30,6 +30,8 @@ async function getRecentImportWorkbenchSummary(tenantId: string): Promise<{
     [tenantId]
   );
 
+  const rows = Array.isArray(rowsResult) ? rowsResult : [];
+
   let importsWithBlockingDiagnostics = 0;
   const first = rows[0] as Record<string, unknown> | undefined;
 
@@ -37,7 +39,7 @@ async function getRecentImportWorkbenchSummary(tenantId: string): Promise<{
     const metadata =
       typeof row.metadata === "string"
         ? (JSON.parse(row.metadata) as Record<string, unknown>)
-        : ((row.metadata as Record<string, unknown> | undefined) || {});
+        : (row.metadata as Record<string, unknown> | undefined) || {};
     const workbench = (metadata.importWorkbench || {}) as Record<string, unknown>;
     const diagnosticsSummary = (workbench.diagnosticsSummary || {}) as Record<string, unknown>;
     const blocking = Number(diagnosticsSummary.blocking || 0);
@@ -51,12 +53,13 @@ async function getRecentImportWorkbenchSummary(tenantId: string): Promise<{
     const metadata =
       typeof first.metadata === "string"
         ? (JSON.parse(first.metadata) as Record<string, unknown>)
-        : ((first.metadata as Record<string, unknown> | undefined) || {});
+        : (first.metadata as Record<string, unknown> | undefined) || {};
     const workbench = (metadata.importWorkbench || {}) as Record<string, unknown>;
     latest = {
       ingestionId: first.id,
       completedAt: first.completed_at instanceof Date ? first.completed_at.toISOString() : null,
-      canProceed: typeof workbench.canProceed === "boolean" ? (workbench.canProceed as boolean) : undefined,
+      canProceed:
+        typeof workbench.canProceed === "boolean" ? (workbench.canProceed as boolean) : undefined,
     };
   }
 
@@ -66,7 +69,6 @@ async function getRecentImportWorkbenchSummary(tenantId: string): Promise<{
     latest,
   };
 }
-
 
 platformControlPlaneRouter.get(
   "/platform-control-plane/overview",
