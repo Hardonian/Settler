@@ -263,7 +263,8 @@
     "release:dry-run": "pnpm run verify:release && pnpm run release:artifacts && pnpm run verify:release:artifacts",
     "generate:api-route-inventory": "tsx scripts/generate-api-route-inventory.ts",
     "verify:api-route-inventory": "tsx scripts/verify-api-route-inventory.ts",
-    "verify:event-taxonomy": "tsx scripts/verify-event-taxonomy.ts"
+    "verify:event-taxonomy": "tsx scripts/verify-event-taxonomy.ts",
+    "demo:settler": "tsx scripts/settler-demo-pipeline.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
