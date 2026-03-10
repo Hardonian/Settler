@@ -6,6 +6,7 @@ export interface CapabilityStatus {
   source: "oss" | "private";
   available: boolean;
   reason?: string;
+  guarantee?: "distributed_shared" | "local_only" | "degraded" | "unavailable";
 }
 
 export interface CapabilityRegistry {
