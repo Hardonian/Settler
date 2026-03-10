@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "description": "OSS packaging boundary policy for deterministic release artifact generation.",
+  "ossPackageScopes": ["@settler/", "@jobforge/adapter-settler"],
+  "enterpriseOverlay": {
+    "mode": "optional-private-overlay",
+    "delivery": ["private-registry-modules", "provider-injection"],
+    "requiredEnvVars": ["SETTLER_ENTERPRISE_REGISTRY_TOKEN"]
+  }
+}
