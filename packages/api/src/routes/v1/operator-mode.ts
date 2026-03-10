@@ -17,19 +17,8 @@ import {
   getFailedIngestions,
   getBillingAnomalies,
 } from "../../services/operator-mode/daily-intelligence";
-import { AlertThreshold } from "../../services/operator-mode/alerting";
+import { getNotifierCapabilities, AlertThreshold } from "../../services/operator-mode/alerting";
 import {
-  checkAlertThresholds,
-  getNotifierCapabilities,
-  upsertAlertThreshold,
-  AlertThreshold,
-} from '../../services/operator-mode/alerting';
-import {
-  setTenantUsageCeiling,
-  getAllUsageCeilings,
-  checkUsageCeiling,
-  setBackgroundJobLimit,
-} from '../../services/operator-mode/cost-controls';
   getAlertRoutingProvider,
   getUsageMeteringProvider,
 } from "../../services/capabilities/registry";
@@ -183,9 +172,9 @@ const createAlertThresholdSchema = z.object({
       "usage_limit",
     ]),
     threshold: z.number(),
-    operator: z.enum(['gt', 'gte', 'lt', 'lte', 'eq', 'neq']),
-    severity: z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
-    channels: z.array(z.enum(['email', 'slack', 'teams', 'telegram', 'webhook'])).default([]),
+    operator: z.enum(["gt", "gte", "lt", "lte", "eq", "neq"]),
+    severity: z.enum(["low", "medium", "high", "critical"]).default("medium"),
+    channels: z.array(z.enum(["email", "slack", "teams", "telegram", "webhook"])).default([]),
     enabled: z.boolean().default(true),
   }),
 });
@@ -217,15 +206,14 @@ router.post(
   }
 );
 
-
 router.get(
-  '/operator/alerts/capabilities',
+  "/operator/alerts/capabilities",
   requirePermission(Permission.ADMIN_READ),
   async (req: AuthRequest, res: Response) => {
     try {
       res.json({ data: getNotifierCapabilities() });
     } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get notifier capabilities', 500, {
+      handleRouteError(res, error, "Failed to get notifier capabilities", 500, {
         userId: req.userId,
       });
     }
