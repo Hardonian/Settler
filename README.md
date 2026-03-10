@@ -47,6 +47,20 @@ Optional integrations should be configured only when validating those specific s
 - [Repo integrity reference](docs/reference/repo-integrity.md)
 - [Workspace contracts](docs/reference/workspace-contracts.md)
 
+## What makes Settler different (implemented today)
+
+Settler is positioned as **deterministic reconciliation infrastructure**, not a generic dashboard.
+
+- **Replay Lab** (`/app/replay` + `/api/v1/runs/:id/replay`) for deterministic reruns and drift checks.
+- **Run Explorer** (`/app/runs`) for operator-grade run metadata and policy context.
+- **Truth Explorer** (`/app/proofs` + trust-explorer APIs) for lineage, proof verification, and policy impact analysis.
+- **Synthetic Reconciliation Foundry** (`pnpm run test:reconciliation*`) for seeded scenario validation.
+- **Live operator surfaces** (`/app/alerts`, `/app/system-health`, `/app/metrics`) for triage and runtime telemetry.
+- **Evidence query surface** (`/app/evidence` + `/api/v1/runs/:id/evidence`) for trust artifact retrieval by run, fingerprint, or policy hash.
+- **Tenant isolation controls** (`/app/settings`) for role boundaries and runtime freeze controls.
+
+See `docs/PRODUCT_CAPABILITIES_MATRIX.md` for maturity and evidence map.
+
 ## Reconciliation synthetic verification
 
 Use the deterministic reconciliation foundry commands below during local debugging and CI parity checks:

@@ -32,17 +32,34 @@ function SignedOutScreen() {
   );
 }
 
-const navItems = [
-  { name: "Overview", href: "/app" },
-  { name: "Executions", href: "/app/executions" },
-  { name: "Reconciliation", href: "/app/reconciliation" },
-  { name: "Replay", href: "/app/replay" },
-  { name: "Proofs", href: "/app/proofs" },
-  { name: "Policies", href: "/app/policies" },
-  { name: "Audit", href: "/app/audit" },
-  { name: "Integrations", href: "/app/integrations" },
-  { name: "System Health", href: "/app/system-health" },
-  { name: "Settings", href: "/app/settings" },
+const navSections = [
+  {
+    label: "Execution Infrastructure",
+    items: [
+      { name: "Control Plane", href: "/app" },
+      { name: "Run Explorer", href: "/app/runs" },
+      { name: "Truth Explorer", href: "/app/proofs" },
+      { name: "Replay Lab", href: "/app/replay" },
+      { name: "Policy Lab", href: "/app/policies" },
+    ],
+  },
+  {
+    label: "Operator Intelligence",
+    items: [
+      { name: "Live Alerts", href: "/app/alerts" },
+      { name: "Runtime Event Signals", href: "/app/metrics" },
+      { name: "System Telemetry", href: "/app/system-health" },
+      { name: "Evidence Query Surface", href: "/app/evidence" },
+      { name: "Integrations", href: "/app/integrations" },
+    ],
+  },
+  {
+    label: "Governance",
+    items: [
+      { name: "Audit Surfaces", href: "/app/audit" },
+      { name: "Tenant Isolation Controls", href: "/app/settings" },
+    ],
+  },
 ];
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -58,7 +75,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex h-screen bg-background-light">
-      <aside className="w-64 border-r border-slate-200 bg-white">
+      <aside className="w-72 border-r border-slate-200 bg-white">
         <Link href="/" className="flex border-b border-slate-200 p-4">
           <Image
             src={SETTLER_IMAGES.logoMain.webpPath || SETTLER_IMAGES.logoMain.path}
@@ -69,15 +86,22 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             priority
           />
         </Link>
-        <nav className="p-3">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="mb-1 block rounded px-3 py-2 text-sm hover:bg-slate-100"
-            >
-              {item.name}
-            </Link>
+        <nav className="space-y-4 p-3">
+          {navSections.map((section) => (
+            <div key={section.label}>
+              <p className="mb-1 px-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                {section.label}
+              </p>
+              {section.items.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="mb-1 block rounded px-3 py-2 text-sm hover:bg-slate-100"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
           ))}
         </nav>
       </aside>
