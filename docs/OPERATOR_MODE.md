@@ -369,3 +369,13 @@ Operator mode metrics are exposed via Prometheus:
 - [ ] Multi-region backup replication
 - [ ] Predictive alerting based on trends
 - [ ] Cost forecasting and recommendations
+
+## Notifier Capability Gating
+
+Operator alerting now supports optional channel dispatch providers for:
+
+- Slack (`SLACK_ALERT_WEBHOOK_URL`)
+- Microsoft Teams (`TEAMS_ALERT_WEBHOOK_URL`)
+- Telegram (`TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID`)
+
+When credentials are absent, external dispatch is skipped and in-app alert persistence remains active. Use `GET /api/v1/operator/alerts/capabilities` to inspect runtime channel capability status.

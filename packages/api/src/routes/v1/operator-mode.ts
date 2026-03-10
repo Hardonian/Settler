@@ -19,6 +19,7 @@ import {
 } from '../../services/operator-mode/daily-intelligence';
 import {
   checkAlertThresholds,
+  getNotifierCapabilities,
   upsertAlertThreshold,
   AlertThreshold,
 } from '../../services/operator-mode/alerting';
@@ -173,7 +174,7 @@ const createAlertThresholdSchema = z.object({
     threshold: z.number(),
     operator: z.enum(['gt', 'gte', 'lt', 'lte', 'eq', 'neq']),
     severity: z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
-    channels: z.array(z.enum(['email', 'slack', 'webhook'])).default([]),
+    channels: z.array(z.enum(['email', 'slack', 'teams', 'telegram', 'webhook'])).default([]),
     enabled: z.boolean().default(true),
   }),
 });
@@ -195,6 +196,21 @@ router.post(
       });
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to create alert threshold', 500, {
+        userId: req.userId,
+      });
+    }
+  }
+);
+
+
+router.get(
+  '/operator/alerts/capabilities',
+  requirePermission(Permission.ADMIN_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      res.json({ data: getNotifierCapabilities() });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to get notifier capabilities', 500, {
         userId: req.userId,
       });
     }
