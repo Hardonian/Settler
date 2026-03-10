@@ -85,6 +85,35 @@ function inferContracts(routePath: string): string {
   return "NextResponse.json best-effort contract";
 }
 
+function inferAuthRequired(routePath: string, source: string): boolean {
+  const authSignals = [
+    /buildContext\(/,
+    /requireAuth\s*:\s*true/,
+    /authenticateApiKey\(/,
+    /requireSuperAdmin\(/,
+    /requireAdmin\(/,
+    /getServerSession\(/,
+    /assertTenantAccess\(/,
+    /assertAdminAccess\(/,
+    /assertOperatorAccess\(/,
+  ];
+
+  if (authSignals.some((pattern) => pattern.test(source))) {
+    return true;
+  }
+
+  // Defense-in-depth: admin/operator surfaces are never assumed public by default.
+  if (/^\/api\/(admin|ops|console|control-plane)\//.test(routePath)) {
+    return true;
+  }
+
+  return false;
+}
+
+function inferTenantScoped(source: string): boolean {
+  return /tenantId|tenant_id|x-tenant-id|assertTenant|requireTenant/.test(source);
+}
+
 function toRoutePath(file: string): string {
   const rel = path.relative(apiRoot, file).replace(/\\/g, "/");
   const segment = rel.replace(/\/route\.(ts|tsx|js|jsx)$/, "");
@@ -130,11 +159,8 @@ function main() {
         new RegExp(`export\\s+const\\s+${method}\\b`).test(source)
     );
 
-    const authRequired =
-      /buildContext\(/.test(source) ||
-      /requireAuth\s*:\s*true/.test(source) ||
-      /authenticateApiKey\(/.test(source);
-    const tenantScoped = /tenantId|tenant/.test(source);
+    const authRequired = inferAuthRequired(routePath, source);
+    const tenantScoped = inferTenantScoped(source);
 
     const routeMethods = methods.length > 0 ? methods : ["UNDECLARED"];
 

@@ -2,16 +2,16 @@ import express from "express";
 import request from "supertest";
 import { idempotencyMiddleware } from "../../middleware/idempotency";
 import { checkRateLimit } from "../../utils/rate-limiter";
-import {
-  MAX_PAGE_LIMIT,
-  parseCursorPaginationParams,
-  encodeCursor,
-} from "../../utils/pagination";
+import { MAX_PAGE_LIMIT, parseCursorPaginationParams, encodeCursor } from "../../utils/pagination";
 import webhookReceiveRouter from "../../routes/v1/webhooks/receive";
 import { WebhookIngestionService } from "../../application/webhooks/WebhookIngestionService";
 
 jest.mock("../../db", () => ({
   query: jest.fn(),
+}));
+
+jest.mock("../../utils/cache", () => ({
+  getRedisClient: jest.fn(() => null),
 }));
 
 const { query } = jest.requireMock("../../db") as { query: jest.Mock };
@@ -62,13 +62,42 @@ describe("API resilience primitives", () => {
       userId: "u-1",
     };
 
-    query.mockResolvedValue([{ rate_limit: 2 }]);
-    const tenantA1 = await checkRateLimit({ ...baseReq, tenantId: "tenant-a", apiKeyId: "k-a" } as never);
-    const tenantA2 = await checkRateLimit({ ...baseReq, tenantId: "tenant-a", apiKeyId: "k-a" } as never);
-    const tenantA3 = await checkRateLimit({ ...baseReq, tenantId: "tenant-a", apiKeyId: "k-a" } as never);
+    const counterByKey = new Map<string, number>();
+    query.mockImplementation((sql: string, params: unknown[]) => {
+      if (sql.includes("SELECT rate_limit FROM api_keys")) {
+        return Promise.resolve([{ rate_limit: 2 }]);
+      }
+      if (sql.includes("INSERT INTO rate_limit_counters")) {
+        const key = String(params[0]);
+        const next = (counterByKey.get(key) || 0) + 1;
+        counterByKey.set(key, next);
+        return Promise.resolve([{ count: next }]);
+      }
+      return Promise.resolve([]);
+    });
 
-    query.mockResolvedValue([{ rate_limit: 2 }]);
-    const tenantB = await checkRateLimit({ ...baseReq, tenantId: "tenant-b", apiKeyId: "k-b" } as never);
+    const tenantA1 = await checkRateLimit({
+      ...baseReq,
+      tenantId: "tenant-a",
+      apiKeyId: "k-a",
+    } as never);
+    const tenantA2 = await checkRateLimit({
+      ...baseReq,
+      tenantId: "tenant-a",
+      apiKeyId: "k-a",
+    } as never);
+    const tenantA3 = await checkRateLimit({
+      ...baseReq,
+      tenantId: "tenant-a",
+      apiKeyId: "k-a",
+    } as never);
+
+    const tenantB = await checkRateLimit({
+      ...baseReq,
+      ip: "10.0.0.2",
+      tenantId: "tenant-b",
+      apiKeyId: "k-b",
+    } as never);
 
     expect(tenantA1.allowed).toBe(true);
     expect(tenantA2.allowed).toBe(true);
@@ -96,7 +125,20 @@ describe("API resilience primitives", () => {
       events: [{ id: "evt-1", type: "payment.succeeded" } as never],
     });
 
-    query.mockResolvedValue([{ secret: "whsec_test" }]);
+    let replayInsertCount = 0;
+    query.mockImplementation((sql: string) => {
+      if (sql.includes("INSERT INTO webhook_replay_keys")) {
+        replayInsertCount += 1;
+        return Promise.resolve(replayInsertCount === 1 ? [{ inserted: true }] : []);
+      }
+      if (sql.includes("DELETE FROM webhook_replay_keys")) {
+        return Promise.resolve([]);
+      }
+      if (sql.includes("SELECT secret FROM webhook_configs")) {
+        return Promise.resolve([{ secret: "whsec_test" }]);
+      }
+      return Promise.resolve([]);
+    });
 
     const app = express();
     app.use(express.json());

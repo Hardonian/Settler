@@ -19,6 +19,19 @@ import {
 } from "../../services/operator-mode/daily-intelligence";
 import { getNotifierCapabilities, AlertThreshold } from "../../services/operator-mode/alerting";
 import {
+import {
+  checkAlertThresholds,
+  getNotifierCapabilities,
+  upsertAlertThreshold,
+  AlertThreshold,
+} from "../../services/operator-mode/alerting";
+import {
+  setTenantUsageCeiling,
+  getAllUsageCeilings,
+  checkUsageCeiling,
+  setBackgroundJobLimit,
+} from "../../services/operator-mode/cost-controls";
+import {
   getAlertRoutingProvider,
   getUsageMeteringProvider,
 } from "../../services/capabilities/registry";
