@@ -332,16 +332,22 @@ async function buildPayload(days: number) {
 
   const [systemHealth] = await prisma.$queryRaw<Array<Record<string, number>>>(
     `
-    WITH base_runs AS (
+    WITH manual_review_counts AS (
+      SELECT m.run_id, m.tenant_id, COUNT(*)::numeric AS manual_review_count
+      FROM reconciliation_matches m
+      WHERE m.reviewed = false
+        AND m.match_type IN ('manual', 'unmatched')
+      GROUP BY m.run_id, m.tenant_id
+    ), base_runs AS (
       SELECT r.id, r.tenant_id, r.status,
         COALESCE(r.source_count, 0)::numeric AS records_processed,
         COALESCE(r.matched_count, 0)::numeric AS matched_count,
         COALESCE(EXTRACT(EPOCH FROM (COALESCE(r.completed_at, NOW()) - COALESCE(r.started_at, r.created_at))) * 1000, 0)::numeric AS duration_ms,
-        (
-          SELECT COUNT(*)::numeric FROM reconciliation_matches m
-          WHERE m.run_id = r.id AND m.tenant_id = r.tenant_id AND m.reviewed = false AND m.match_type IN ('manual', 'unmatched')
-        ) AS manual_review_count
+        COALESCE(mrc.manual_review_count, 0)::numeric AS manual_review_count
       FROM reconciliation_runs r
+      LEFT JOIN manual_review_counts mrc
+        ON mrc.run_id = r.id
+       AND mrc.tenant_id = r.tenant_id
       WHERE COALESCE(r.started_at, r.created_at) >= NOW() - ($1::int || ' days')::interval
     ), api_window AS (
       SELECT
@@ -367,32 +373,36 @@ async function buildPayload(days: number) {
   );
 
   const [anomalyWindow] = await prisma.$queryRaw<Array<Record<string, number>>>(`
-    WITH recent_runs AS (
+    WITH manual_review_counts AS (
+      SELECT m.run_id, m.tenant_id, COUNT(*)::float8 AS manual_review_count
+      FROM reconciliation_matches m
+      WHERE m.reviewed = false
+        AND m.match_type IN ('manual', 'unmatched')
+      GROUP BY m.run_id, m.tenant_id
+    ), recent_runs AS (
       SELECT
         COALESCE((COUNT(*) FILTER (WHERE status = 'failed')::numeric / NULLIF(COUNT(*), 0)) * 100, 0)::float8 AS failure_rate,
-        COALESCE(AVG(CASE WHEN source_count > 0 THEN (
-          SELECT COUNT(*)::float8
-          FROM reconciliation_matches m
-          WHERE m.run_id = r.id
-            AND m.tenant_id = r.tenant_id
-            AND m.reviewed = false
-            AND m.match_type IN ('manual', 'unmatched')
-        ) / source_count::float8 * 100 ELSE 0 END), 0)::float8 AS manual_review_rate
+        COALESCE(AVG(CASE WHEN source_count > 0
+          THEN COALESCE(mrc.manual_review_count, 0) / source_count::float8 * 100
+          ELSE 0
+        END), 0)::float8 AS manual_review_rate
       FROM reconciliation_runs r
+      LEFT JOIN manual_review_counts mrc
+        ON mrc.run_id = r.id
+       AND mrc.tenant_id = r.tenant_id
       WHERE COALESCE(started_at, created_at) >= NOW() - interval '24 hours'
     ),
     baseline_runs AS (
       SELECT
         COALESCE((COUNT(*) FILTER (WHERE status = 'failed')::numeric / NULLIF(COUNT(*), 0)) * 100, 0)::float8 AS failure_rate,
-        COALESCE(AVG(CASE WHEN source_count > 0 THEN (
-          SELECT COUNT(*)::float8
-          FROM reconciliation_matches m
-          WHERE m.run_id = r.id
-            AND m.tenant_id = r.tenant_id
-            AND m.reviewed = false
-            AND m.match_type IN ('manual', 'unmatched')
-        ) / source_count::float8 * 100 ELSE 0 END), 0)::float8 AS manual_review_rate
+        COALESCE(AVG(CASE WHEN source_count > 0
+          THEN COALESCE(mrc.manual_review_count, 0) / source_count::float8 * 100
+          ELSE 0
+        END), 0)::float8 AS manual_review_rate
       FROM reconciliation_runs r
+      LEFT JOIN manual_review_counts mrc
+        ON mrc.run_id = r.id
+       AND mrc.tenant_id = r.tenant_id
       WHERE COALESCE(started_at, created_at) >= NOW() - interval '14 days'
         AND COALESCE(started_at, created_at) < NOW() - interval '24 hours'
     ),
@@ -439,7 +449,7 @@ async function buildPayload(days: number) {
       COALESCE(started_at, created_at) AS started_at, completed_at,
       COALESCE(source_count, 0) AS source_count, COALESCE(matched_count, 0) AS matched_count
     FROM reconciliation_runs
-    ORDER BY COALESCE(started_at, created_at) DESC
+    ORDER BY COALESCE(started_at, created_at) DESC, id DESC
     LIMIT 20;
   `);
 
@@ -489,20 +499,26 @@ async function buildPayload(days: number) {
   `);
 
   const tenantOverview = await prisma.$queryRaw<Array<Record<string, unknown>>>(`
-    SELECT tenant_id::text, COUNT(*)::int AS run_count,
+    WITH manual_review_counts AS (
+      SELECT m.run_id, m.tenant_id, COUNT(*)::float8 AS manual_review_count
+      FROM reconciliation_matches m
+      WHERE m.reviewed = false
+        AND m.match_type IN ('manual', 'unmatched')
+      GROUP BY m.run_id, m.tenant_id
+    )
+    SELECT r.tenant_id::text, COUNT(*)::int AS run_count,
       COALESCE(SUM(source_count), 0)::bigint AS records_processed,
       COALESCE((COUNT(*) FILTER (WHERE status = 'failed')::numeric / NULLIF(COUNT(*), 0)) * 100, 0)::float8 AS failure_rate,
-      COALESCE(AVG(CASE WHEN source_count > 0 THEN (
-        SELECT COUNT(*)::float8
-        FROM reconciliation_matches m
-        WHERE m.run_id = r.id
-          AND m.tenant_id = r.tenant_id
-          AND m.reviewed = false
-          AND m.match_type IN ('manual', 'unmatched')
-      ) / source_count::float8 * 100 ELSE 0 END), 0)::float8 AS manual_review_rate
+      COALESCE(AVG(CASE WHEN source_count > 0
+        THEN COALESCE(mrc.manual_review_count, 0) / source_count::float8 * 100
+        ELSE 0
+      END), 0)::float8 AS manual_review_rate
     FROM reconciliation_runs r
+    LEFT JOIN manual_review_counts mrc
+      ON mrc.run_id = r.id
+     AND mrc.tenant_id = r.tenant_id
     WHERE COALESCE(started_at, created_at) >= NOW() - interval '30 days'
-    GROUP BY tenant_id
+    GROUP BY r.tenant_id
     ORDER BY run_count DESC
     LIMIT 10;
   `);

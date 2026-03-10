@@ -49,6 +49,42 @@ CREATE INDEX IF NOT EXISTS idx_audit_logs_tenant_timestamp
 CREATE INDEX IF NOT EXISTS idx_audit_logs_tenant_event_timestamp 
   ON audit_logs(tenant_id, event, timestamp DESC);
 
+-- Reconciliation runs: Operator/control-plane windows and list queries
+CREATE INDEX IF NOT EXISTS idx_reconciliation_runs_started_created_id
+  ON reconciliation_runs((COALESCE(started_at, created_at)) DESC, id DESC);
+
+-- Reconciliation runs: Tenant activity and health lookups
+CREATE INDEX IF NOT EXISTS idx_reconciliation_runs_tenant_started_created
+  ON reconciliation_runs(tenant_id, (COALESCE(started_at, created_at)) DESC);
+
+-- Reconciliation runs: Failed-run scans in operator anomaly checks
+CREATE INDEX IF NOT EXISTS idx_reconciliation_runs_status_started_created
+  ON reconciliation_runs(status, (COALESCE(started_at, created_at)) DESC);
+
+-- Reconciliation matches: Join/group path used to compute manual review rates
+CREATE INDEX IF NOT EXISTS idx_reconciliation_matches_manual_review_rollup
+  ON reconciliation_matches(run_id, tenant_id)
+  WHERE reviewed = false AND match_type IN ('manual', 'unmatched');
+
+-- Runtime event stream: hot query for error signatures in control plane
+CREATE INDEX IF NOT EXISTS idx_operator_runtime_events_error_signature_recent
+  ON operator_runtime_events(event_type, occurred_at DESC)
+  INCLUDE (error_id, tenant_id, run_id, metadata)
+  WHERE event_type = 'error_thrown';
+
+-- request_metrics may be absent in slim deployments, so guard creation.
+DO $$
+BEGIN
+  IF to_regclass('public.request_metrics') IS NOT NULL THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_request_metrics_created_route_status
+      ON request_metrics(created_at DESC, route, status_code)';
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_request_metrics_created_api
+      ON request_metrics(created_at DESC)
+      WHERE route LIKE ''/api/%''';
+  END IF;
+END
+$$;
+
 -- ============================================================================
 -- 2. PARTIAL INDEXES FOR HOT SUBSETS
 -- ============================================================================
