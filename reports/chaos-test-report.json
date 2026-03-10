@@ -1,0 +1,496 @@
+{
+  "generatedAt": "2026-03-10T22:44:25.916Z",
+  "totals": {
+    "scenarios": 7,
+    "recovered": 7,
+    "failed": 0,
+    "recoverySuccessRate": 100,
+    "avgLatencyMs": 360,
+    "p95LatencyMs": 910
+  },
+  "scenarios": [
+    {
+      "scenario": "db_timeout",
+      "runId": "run-01",
+      "status": "recovered",
+      "recovered": true,
+      "recoveryMode": "retry",
+      "latencyMs": 280,
+      "retries": 1,
+      "eventsEmitted": 4,
+      "artifactsPersisted": 3,
+      "notes": ["DB timeout detected; retry with bounded backoff succeeded."]
+    },
+    {
+      "scenario": "redis_failure",
+      "runId": "run-02",
+      "status": "recovered",
+      "recovered": true,
+      "recoveryMode": "retry",
+      "latencyMs": 135,
+      "retries": 1,
+      "eventsEmitted": 4,
+      "artifactsPersisted": 3,
+      "notes": ["Reconciliation completed without Redis dependency."]
+    },
+    {
+      "scenario": "api_latency_spike",
+      "runId": "run-03",
+      "status": "recovered",
+      "recovered": true,
+      "recoveryMode": "retry",
+      "latencyMs": 910,
+      "retries": 2,
+      "eventsEmitted": 4,
+      "artifactsPersisted": 3,
+      "notes": ["Latency absorbed through retries and breaker control."]
+    },
+    {
+      "scenario": "partial_run_crash",
+      "runId": "run-04",
+      "status": "recovered",
+      "recovered": true,
+      "recoveryMode": "resume",
+      "latencyMs": 450,
+      "retries": 0,
+      "eventsEmitted": 4,
+      "artifactsPersisted": 4,
+      "notes": ["Mid-run crash recovered via checkpoint resume."]
+    },
+    {
+      "scenario": "alert_provider_outage",
+      "runId": "run-05",
+      "status": "recovered",
+      "recovered": true,
+      "recoveryMode": "retry",
+      "latencyMs": 170,
+      "retries": 2,
+      "eventsEmitted": 6,
+      "artifactsPersisted": 3,
+      "notes": ["Alert failover succeeded through retry queue + secondary provider."]
+    },
+    {
+      "scenario": "replay_divergence",
+      "runId": "run-06",
+      "status": "recovered",
+      "recovered": true,
+      "recoveryMode": "replay",
+      "latencyMs": 215,
+      "retries": 0,
+      "eventsEmitted": 5,
+      "artifactsPersisted": 4,
+      "notes": ["Replay divergence contained and corrected deterministically."]
+    },
+    {
+      "scenario": "worker_crash",
+      "runId": "run-07",
+      "status": "recovered",
+      "recovered": true,
+      "recoveryMode": "retry",
+      "latencyMs": 360,
+      "retries": 1,
+      "eventsEmitted": 4,
+      "artifactsPersisted": 3,
+      "notes": ["Worker crash isolated; retry succeeded without duplicate side effects."]
+    }
+  ],
+  "events": [
+    {
+      "ts": "2026-03-10T22:44:25.915Z",
+      "runId": "run-01",
+      "type": "run.started",
+      "severity": "info",
+      "detail": "Starting db_timeout"
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-01",
+      "type": "db.timeout",
+      "severity": "error",
+      "detail": "Primary DB query timed out at 250ms."
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-01",
+      "type": "reconciliation.degraded",
+      "severity": "warn",
+      "detail": "Falling back to cached ledger window."
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-01",
+      "type": "run.recovered",
+      "severity": "info",
+      "detail": "Recovered with mode=retry"
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-02",
+      "type": "run.started",
+      "severity": "info",
+      "detail": "Starting redis_failure"
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-02",
+      "type": "redis.unavailable",
+      "severity": "error",
+      "detail": "Redis GET failed with ECONNREFUSED."
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-02",
+      "type": "cache.bypass",
+      "severity": "warn",
+      "detail": "Continuing in no-cache mode."
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-02",
+      "type": "run.recovered",
+      "severity": "info",
+      "detail": "Recovered with mode=retry"
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-03",
+      "type": "run.started",
+      "severity": "info",
+      "detail": "Starting api_latency_spike"
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-03",
+      "type": "api.latency_spike",
+      "severity": "warn",
+      "detail": "Partner API p95 latency exceeded threshold."
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-03",
+      "type": "circuit.open",
+      "severity": "warn",
+      "detail": "Circuit breaker opened after three slow responses."
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-03",
+      "type": "run.recovered",
+      "severity": "info",
+      "detail": "Recovered with mode=retry"
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-04",
+      "type": "run.started",
+      "severity": "info",
+      "detail": "Starting partial_run_crash"
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-04",
+      "type": "worker.crash",
+      "severity": "error",
+      "detail": "Worker crashed after artifact checkpoint step-2."
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-04",
+      "type": "run.resume",
+      "severity": "info",
+      "detail": "Resuming from checkpoint step-2."
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-04",
+      "type": "run.recovered",
+      "severity": "info",
+      "detail": "Recovered with mode=resume"
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-05",
+      "type": "run.started",
+      "severity": "info",
+      "detail": "Starting alert_provider_outage"
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-05",
+      "type": "alert.primary_failed",
+      "severity": "error",
+      "detail": "Slack webhook 503."
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-05",
+      "type": "alert.retry_queued",
+      "severity": "warn",
+      "detail": "Alert queued for retry pipeline."
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-05",
+      "type": "alert.secondary_failed",
+      "severity": "warn",
+      "detail": "Telegram rate limited."
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-05",
+      "type": "alert.failover_delivered",
+      "severity": "info",
+      "detail": "PagerDuty accepted alert."
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-05",
+      "type": "run.recovered",
+      "severity": "info",
+      "detail": "Recovered with mode=retry"
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-06",
+      "type": "run.started",
+      "severity": "info",
+      "detail": "Starting replay_divergence"
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-06",
+      "type": "replay.divergence_detected",
+      "severity": "error",
+      "detail": "Output hash mismatch on replay."
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-06",
+      "type": "replay.recompute",
+      "severity": "warn",
+      "detail": "Rebuilding deterministic projection from artifacts."
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-06",
+      "type": "replay.aligned",
+      "severity": "info",
+      "detail": "Replay realigned with canonical artifact set."
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-06",
+      "type": "run.recovered",
+      "severity": "info",
+      "detail": "Recovered with mode=replay"
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-07",
+      "type": "run.started",
+      "severity": "info",
+      "detail": "Starting worker_crash"
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-07",
+      "type": "worker.panic",
+      "severity": "error",
+      "detail": "Executor process exited unexpectedly."
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-07",
+      "type": "run.retry",
+      "severity": "warn",
+      "detail": "Retrying on fresh worker with same idempotency key."
+    },
+    {
+      "ts": "2026-03-10T22:44:25.916Z",
+      "runId": "run-07",
+      "type": "run.recovered",
+      "severity": "info",
+      "detail": "Recovered with mode=retry"
+    }
+  ],
+  "artifacts": [
+    {
+      "runId": "run-01",
+      "tenantId": "tenant-run-01",
+      "step": "init",
+      "digest": "db_timeout-init",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-01",
+      "tenantId": "tenant-run-01",
+      "step": "recovery",
+      "digest": "db_timeout-retry",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-01",
+      "tenantId": "tenant-run-01",
+      "step": "final",
+      "digest": "db_timeout-final",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-02",
+      "tenantId": "tenant-run-02",
+      "step": "init",
+      "digest": "redis_failure-init",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-02",
+      "tenantId": "tenant-run-02",
+      "step": "recovery",
+      "digest": "redis_failure-retry",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-02",
+      "tenantId": "tenant-run-02",
+      "step": "final",
+      "digest": "redis_failure-final",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-03",
+      "tenantId": "tenant-run-03",
+      "step": "init",
+      "digest": "api_latency_spike-init",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-03",
+      "tenantId": "tenant-run-03",
+      "step": "recovery",
+      "digest": "api_latency_spike-retry",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-03",
+      "tenantId": "tenant-run-03",
+      "step": "final",
+      "digest": "api_latency_spike-final",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-04",
+      "tenantId": "tenant-run-04",
+      "step": "init",
+      "digest": "partial_run_crash-init",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-04",
+      "tenantId": "tenant-run-04",
+      "step": "checkpoint",
+      "digest": "step-2-ledger-snapshot",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-04",
+      "tenantId": "tenant-run-04",
+      "step": "recovery",
+      "digest": "partial_run_crash-resume",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-04",
+      "tenantId": "tenant-run-04",
+      "step": "final",
+      "digest": "partial_run_crash-final",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-05",
+      "tenantId": "tenant-run-05",
+      "step": "init",
+      "digest": "alert_provider_outage-init",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-05",
+      "tenantId": "tenant-run-05",
+      "step": "recovery",
+      "digest": "alert_provider_outage-retry",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-05",
+      "tenantId": "tenant-run-05",
+      "step": "final",
+      "digest": "alert_provider_outage-final",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-06",
+      "tenantId": "tenant-run-06",
+      "step": "init",
+      "digest": "replay_divergence-init",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-06",
+      "tenantId": "tenant-run-06",
+      "step": "replay_input",
+      "digest": "bundle-v1",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-06",
+      "tenantId": "tenant-run-06",
+      "step": "recovery",
+      "digest": "replay_divergence-replay",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-06",
+      "tenantId": "tenant-run-06",
+      "step": "final",
+      "digest": "replay_divergence-final",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-07",
+      "tenantId": "tenant-run-07",
+      "step": "init",
+      "digest": "worker_crash-init",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-07",
+      "tenantId": "tenant-run-07",
+      "step": "recovery",
+      "digest": "worker_crash-retry",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    },
+    {
+      "runId": "run-07",
+      "tenantId": "tenant-run-07",
+      "step": "final",
+      "digest": "worker_crash-final",
+      "persistedAt": "2026-03-10T22:44:25.916Z"
+    }
+  ],
+  "alertAttempts": [
+    {
+      "provider": "slack",
+      "ok": false,
+      "message": "503 Service Unavailable"
+    },
+    {
+      "provider": "telegram",
+      "ok": false,
+      "message": "429 Too Many Requests"
+    },
+    {
+      "provider": "pagerduty",
+      "ok": true,
+      "message": "Delivered by failover provider"
+    }
+  ]
+}
