@@ -1,8 +1,15 @@
-export type AlertSeverityLevel = 'info' | 'warning' | 'critical';
+import { redact } from "../../utils/redaction";
 
-export type AlertChannel = 'slack' | 'teams' | 'telegram' | 'email' | 'webhook';
+export type AlertSeverityLevel = "info" | "warning" | "critical";
 
-export type CapabilityStatus = 'installed' | 'configured' | 'unavailable' | 'degraded' | 'unsupported';
+export type AlertChannel = "slack" | "teams" | "telegram" | "email" | "webhook";
+
+export type CapabilityStatus =
+  | "installed"
+  | "configured"
+  | "unavailable"
+  | "degraded"
+  | "unsupported";
 
 export interface AlertPayload {
   alertId: string;
@@ -39,30 +46,53 @@ export interface NotifierConfig {
   dryRun?: boolean;
 }
 
+export function sanitizeAlertPayload(payload: AlertPayload): AlertPayload {
+  const safeSummary = payload.summary.replace(/\s+/g, " ").trim().slice(0, 280);
+  let safeOperatorUrl = payload.operatorUrl;
+
+  if (safeOperatorUrl) {
+    try {
+      const parsed = new URL(safeOperatorUrl);
+      parsed.search = "";
+      parsed.hash = "";
+      safeOperatorUrl = parsed.toString();
+    } catch {
+      safeOperatorUrl = undefined;
+    }
+  }
+
+  return {
+    ...payload,
+    summary: safeSummary,
+    operatorUrl: safeOperatorUrl,
+    metadata: payload.metadata ? redact(payload.metadata) : undefined,
+  };
+}
+
 export function buildNotifierCapabilities(config: NotifierConfig): NotifierCapability[] {
   return [
     {
-      channel: 'slack',
-      status: config.slackWebhookUrl ? 'configured' : 'unavailable',
-      reason: config.slackWebhookUrl ? undefined : 'SLACK_ALERT_WEBHOOK_URL is not set',
+      channel: "slack",
+      status: config.slackWebhookUrl ? "configured" : "unavailable",
+      reason: config.slackWebhookUrl ? undefined : "SLACK_ALERT_WEBHOOK_URL is not set",
     },
     {
-      channel: 'teams',
-      status: config.teamsWebhookUrl ? 'configured' : 'unavailable',
-      reason: config.teamsWebhookUrl ? undefined : 'TEAMS_ALERT_WEBHOOK_URL is not set',
+      channel: "teams",
+      status: config.teamsWebhookUrl ? "configured" : "unavailable",
+      reason: config.teamsWebhookUrl ? undefined : "TEAMS_ALERT_WEBHOOK_URL is not set",
     },
     {
-      channel: 'telegram',
+      channel: "telegram",
       status:
         config.telegramBotToken && config.telegramChatId
-          ? 'configured'
+          ? "configured"
           : config.telegramBotToken || config.telegramChatId
-            ? 'degraded'
-            : 'unavailable',
+            ? "degraded"
+            : "unavailable",
       reason:
         config.telegramBotToken && config.telegramChatId
           ? undefined
-          : 'Both TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID are required',
+          : "Both TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID are required",
     },
   ];
 }
@@ -70,15 +100,15 @@ export function buildNotifierCapabilities(config: NotifierConfig): NotifierCapab
 export function buildAlertRouter(configuredChannels: AlertChannel[]): AlertRouter {
   return {
     resolveChannels(input) {
-      if (input.severity === 'critical') {
+      if (input.severity === "critical") {
         return configuredChannels;
       }
 
-      if (input.severity === 'warning') {
-        return configuredChannels.filter((channel) => channel !== 'telegram');
+      if (input.severity === "warning") {
+        return configuredChannels.filter((channel) => channel !== "telegram");
       }
 
-      return configuredChannels.filter((channel) => channel === 'slack');
+      return configuredChannels.filter((channel) => channel === "slack");
     },
   };
 }
@@ -91,27 +121,30 @@ export function createNotifierProviders(
 
   if (config.slackWebhookUrl) {
     providers.push({
-      channel: 'slack',
+      channel: "slack",
       async send(payload) {
         if (config.dryRun) return;
 
+        const safe = sanitizeAlertPayload(payload);
+
         await fetchImpl(config.slackWebhookUrl!, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            text: `🚨 [${payload.severity.toUpperCase()}] ${payload.summary}`,
+            text: `🚨 [${safe.severity.toUpperCase()}] ${safe.summary}`,
             blocks: [
               {
-                type: 'section',
+                type: "section",
                 text: {
-                  type: 'mrkdwn',
+                  type: "mrkdwn",
                   text:
-                    `*Alert:* ${payload.alertType}\n` +
-                    `*Alert ID:* ${payload.alertId}\n` +
-                    `*Severity:* ${payload.severity}\n` +
-                    `*Tenant:* ${payload.tenantId ?? 'n/a'}\n` +
-                    `*Run:* ${payload.runId ?? 'n/a'}\n` +
-                    `*Summary:* ${payload.summary}`,
+                    `*Alert:* ${safe.alertType}\n` +
+                    `*Alert ID:* ${safe.alertId}\n` +
+                    `*Severity:* ${safe.severity}\n` +
+                    `*Tenant:* ${safe.tenantId ?? "n/a"}\n` +
+                    `*Run:* ${safe.runId ?? "n/a"}\n` +
+                    `*Summary:* ${safe.summary}` +
+                    `${safe.operatorUrl ? `\n*Operator:* ${safe.operatorUrl}` : ""}`,
                 },
               },
             ],
@@ -123,29 +156,37 @@ export function createNotifierProviders(
 
   if (config.teamsWebhookUrl) {
     providers.push({
-      channel: 'teams',
+      channel: "teams",
       async send(payload) {
         if (config.dryRun) return;
 
+        const safe = sanitizeAlertPayload(payload);
+
         await fetchImpl(config.teamsWebhookUrl!, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            '@type': 'MessageCard',
-            '@context': 'http://schema.org/extensions',
-            summary: payload.summary,
-            themeColor: payload.severity === 'critical' ? 'FF0000' : payload.severity === 'warning' ? 'FFA500' : '0076D7',
+            "@type": "MessageCard",
+            "@context": "http://schema.org/extensions",
+            summary: safe.summary,
+            themeColor:
+              safe.severity === "critical"
+                ? "FF0000"
+                : safe.severity === "warning"
+                  ? "FFA500"
+                  : "0076D7",
             sections: [
               {
-                activityTitle: `Settler Alert: ${payload.alertType}`,
+                activityTitle: `Settler Alert: ${safe.alertType}`,
                 facts: [
-                  { name: 'Alert ID', value: payload.alertId },
-                  { name: 'Severity', value: payload.severity },
-                  { name: 'Tenant', value: payload.tenantId ?? 'n/a' },
-                  { name: 'Run', value: payload.runId ?? 'n/a' },
-                  { name: 'Timestamp', value: payload.timestamp },
+                  { name: "Alert ID", value: safe.alertId },
+                  { name: "Severity", value: safe.severity },
+                  { name: "Tenant", value: safe.tenantId ?? "n/a" },
+                  { name: "Run", value: safe.runId ?? "n/a" },
+                  { name: "Timestamp", value: safe.timestamp },
+                  ...(safe.operatorUrl ? [{ name: "Operator", value: safe.operatorUrl }] : []),
                 ],
-                text: payload.summary,
+                text: safe.summary,
               },
             ],
           }),
@@ -156,25 +197,27 @@ export function createNotifierProviders(
 
   if (config.telegramBotToken && config.telegramChatId) {
     providers.push({
-      channel: 'telegram',
+      channel: "telegram",
       async send(payload) {
         if (config.dryRun) return;
 
+        const safe = sanitizeAlertPayload(payload);
         const endpoint = `https://api.telegram.org/bot${config.telegramBotToken}/sendMessage`;
         await fetchImpl(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chat_id: config.telegramChatId,
             text: [
               `🚨 Settler Alert`,
-              `Type: ${payload.alertType}`,
-              `Alert ID: ${payload.alertId}`,
-              `Severity: ${payload.severity}`,
-              `Tenant: ${payload.tenantId ?? 'n/a'}`,
-              `Run: ${payload.runId ?? 'n/a'}`,
-              `Summary: ${payload.summary}`,
-            ].join('\n'),
+              `Type: ${safe.alertType}`,
+              `Alert ID: ${safe.alertId}`,
+              `Severity: ${safe.severity}`,
+              `Tenant: ${safe.tenantId ?? "n/a"}`,
+              `Run: ${safe.runId ?? "n/a"}`,
+              `Summary: ${safe.summary}`,
+              ...(safe.operatorUrl ? [`Operator: ${safe.operatorUrl}`] : []),
+            ].join("\n"),
           }),
         });
       },
@@ -189,7 +232,9 @@ export async function dispatchAlert(
   providers: NotifierProvider[],
   router: AlertRouter
 ): Promise<Array<{ channel: AlertChannel; delivered: boolean }>> {
-  const channelSet = new Set(router.resolveChannels({ severity: payload.severity, alertType: payload.alertType }));
+  const channelSet = new Set(
+    router.resolveChannels({ severity: payload.severity, alertType: payload.alertType })
+  );
   const results: Array<{ channel: AlertChannel; delivered: boolean }> = [];
 
   for (const provider of providers) {
