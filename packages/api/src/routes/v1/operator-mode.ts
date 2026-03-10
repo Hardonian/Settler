@@ -43,6 +43,7 @@ import {
   resumeBackgroundJob,
 } from "../../services/operator-mode/kill-switches";
 import { createBackup, verifyBackup, listBackups } from "../../services/operator-mode/backups";
+import { getOperatorReplayStatus } from "../../services/operator-mode/replay-status";
 
 const router: Router = Router();
 
@@ -65,6 +66,31 @@ function shouldUseGlobalScope(req: AuthRequest): boolean {
 // ============================================================================
 // DAILY INTELLIGENCE
 // ============================================================================
+router.get(
+  "/operator/replay/:run_id",
+  requirePermission(Permission.ADMIN_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const runId = req.params.run_id;
+      if (!runId) {
+        res.status(400).json({
+          replay_status: "failed",
+          divergence: ["run_id is required"],
+          execution_time: null,
+          hash_match: false,
+        });
+        return;
+      }
+
+      const status = getOperatorReplayStatus(runId, req.tenantId);
+      res.json(status);
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to fetch replay status", 500, {
+        userId: req.userId,
+      });
+    }
+  }
+);
 
 router.get(
   "/operator/daily-intelligence",

@@ -264,6 +264,7 @@
     "generate:api-route-inventory": "tsx scripts/generate-api-route-inventory.ts",
     "verify:api-route-inventory": "tsx scripts/verify-api-route-inventory.ts",
     "verify:event-taxonomy": "tsx scripts/verify-event-taxonomy.ts",
+    "replay:run": "pnpm --filter @settler/cli exec tsx src/tools/replay-runner.ts"
     "simulate:settler": "tsx scripts/simulate-settler.ts"
   },
   "lint-staged": {
