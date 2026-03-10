@@ -12,7 +12,8 @@ export type OperatorRuntimeEventType =
   | "import_started"
   | "import_failed"
   | "replay_triggered"
-  | "error_thrown";
+  | "error_thrown"
+  | "support_intake_submitted";
 
 export interface OperatorRuntimeEvent {
   eventType: OperatorRuntimeEventType;
