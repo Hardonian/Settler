@@ -1,0 +1,5 @@
+external_id,amount,currency,occurred_at,type
+pay_1001,120.25,USD,2026-02-01T10:00:00Z,payment
+pay_1002,85.40,USD,2026-02-01T10:05:00Z,payment
+pay_1003,210.00,EUR,2026-02-01T10:10:00Z,payment
+pay_1004,59.99,USD,2026-02-01T10:20:00Z,payment

@@ -1,0 +1,4 @@
+external_id,amount,currency,occurred_at,type
+ref_2001,20.25,USD,2026-02-02T08:00:00Z,refund
+ref_2002,9.99,USD,2026-02-02T09:15:00Z,refund
+ref_2003,15.00,EUR,2026-02-02T11:00:00Z,refund
