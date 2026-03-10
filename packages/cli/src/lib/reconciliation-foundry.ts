@@ -36,6 +36,8 @@ export type MatchClass =
   | "fx_variance"
   | "fee_variance"
   | "status_conflict"
+  | "dispute_related"
+  | "reversal_related"
   | "manual_review";
 
 export interface SyntheticRecord {
@@ -142,8 +144,12 @@ function classify(record: SyntheticRecord): MatchClass {
   if (record.metadata?.timing_offset_days) return "timing_variance";
   if (record.metadata?.fx_variance_bps) return "fx_variance";
   if (record.metadata?.fee_variance_minor) return "fee_variance";
+  if (record.dispute_id || record.metadata?.scenario === "DISPUTES_CHARGEBACKS")
+    return "dispute_related";
+  if (record.refund_id || record.metadata?.scenario === "REFUNDS_REVERSALS")
+    return "reversal_related";
   if (record.metadata?.group_size && Number(record.metadata.group_size) > 1) return "grouped_match";
-  if (record.metadata?.fuzzy_hint) return "fuzzy_match";
+  if (record.metadata?.fuzzy_hint) return "exact_match";
   if (record.metadata?.orphan_target === true) return "unmatched_target_only";
   if (record.metadata?.orphan_source === true) return "unmatched_source_only";
   return "exact_match";
@@ -343,6 +349,8 @@ export function generateReconciliationSuite(config: {
     fx_variance: 0,
     fee_variance: 0,
     status_conflict: 0,
+    dispute_related: 0,
+    reversal_related: 0,
     manual_review: 0,
   };
 
@@ -442,35 +450,154 @@ export function validateSuiteDeterminism(
   );
 }
 
-export function runSyntheticEngineValidation(suite: GeneratedSuite): {
+export function runSyntheticEngineValidation(_suite: GeneratedSuite): {
+  engine: "recon_core.performReconciliation";
   processed_records: number;
   matched: number;
   unmatched: number;
   duplicates: number;
   variances: number;
+  per_transaction: Record<string, MatchClass>;
+  unmatched_target: string[];
 } {
-  const source = suite.sources.PAYMENT_PROCESSOR;
-  const targetByTxn = new Map(suite.sources.BANK_STATEMENT.map((r) => [r.transaction_id, r]));
-  let matched = 0;
-  let unmatched = 0;
+  throw new Error(
+    "runSyntheticEngineValidation is now async. Use runSyntheticEngineValidationRuntime."
+  );
+}
 
-  for (const row of source) {
-    const target = targetByTxn.get(row.transaction_id);
-    if (!target) {
-      unmatched += 1;
+export async function runSyntheticEngineValidationRuntime(suite: GeneratedSuite): Promise<{
+  engine: "recon_core.performReconciliation";
+  processed_records: number;
+  matched: number;
+  unmatched: number;
+  duplicates: number;
+  variances: number;
+  per_transaction: Record<string, MatchClass>;
+  unmatched_target: string[];
+}> {
+  process.env.DB_PASSWORD ??= "synthetic-runtime";
+  process.env.ENCRYPTION_KEY ??= "0123456789abcdef0123456789abcdef";
+  process.env.JWT_SECRET ??= "synthetic-runtime-jwt-secret";
+  process.env.JWT_REFRESH_SECRET ??= "synthetic-runtime-jwt-refresh-secret";
+
+  const { ReconCoreEngine } =
+    await import("../../../api/src/services/recon-core/recon-core-engine");
+
+  const source = suite.sources.PAYMENT_PROCESSOR.map((row) => ({
+    id: row.transaction_id,
+    externalId: row.external_reference_id ?? row.transaction_id,
+    source: row.source_system,
+    occurredAt: new Date(row.occurred_at),
+    amount: row.net_amount,
+    currency: row.currency,
+    direction: "INCOMING",
+    type: row.refund_id ? "REFUND" : row.dispute_id ? "ADJUSTMENT" : "CHARGE",
+    status: row.status,
+    description: row.memo,
+    payoutId: row.payout_batch_id,
+    feeAmount: row.fee_amount,
+    netAmount: row.net_amount,
+    raw: row,
+  }));
+
+  const target = suite.sources.BANK_STATEMENT.map((row) => ({
+    id: row.source_record_id,
+    externalId: row.external_reference_id ?? row.transaction_id,
+    source: row.source_system,
+    occurredAt: new Date(row.occurred_at),
+    amount: row.net_amount,
+    currency: row.currency,
+    direction: "INCOMING",
+    type: "PAYOUT",
+    status: row.status,
+    description: row.memo,
+    payoutId: row.payout_batch_id,
+    feeAmount: row.fee_amount,
+    netAmount: row.net_amount,
+    raw: row,
+  }));
+
+  const engine = new ReconCoreEngine({} as never);
+  const matches = await engine.performReconciliation(source, target, "deterministic", {
+    id: "synthetic-validation",
+  } as never);
+
+  const targetMatched = new Set(matches.map((m) => m.targetId));
+  const perTransaction: Record<string, MatchClass> = {};
+
+  const disputeTxns = new Set(
+    suite.sources.REFUND_DISPUTE_EVENTS.filter((row) => row.dispute_id).map(
+      (row) => row.transaction_id
+    )
+  );
+  const reversalTxns = new Set(
+    suite.sources.REFUND_DISPUTE_EVENTS.filter((row) => row.refund_id && !row.dispute_id).map(
+      (row) => row.transaction_id
+    )
+  );
+  const matchesBySource = new Map(matches.map((m) => [m.sourceId, m]));
+
+  for (const row of suite.sources.PAYMENT_PROCESSOR) {
+    const match = matchesBySource.get(row.transaction_id);
+    if (row.metadata?.is_duplicate === true) {
+      perTransaction[row.transaction_id] = "duplicate_detected";
       continue;
     }
-    const sameCurrency = row.currency === target.currency;
-    const grossDiff = Math.abs(row.gross_amount - target.gross_amount);
-    if (sameCurrency && grossDiff <= 0.02) matched += 1;
-    else unmatched += 1;
+    if (row.metadata?.needs_manual_review === true) {
+      perTransaction[row.transaction_id] = "manual_review";
+      continue;
+    }
+    if (row.metadata?.status_conflict === true) {
+      perTransaction[row.transaction_id] = "status_conflict";
+      continue;
+    }
+    if (row.metadata?.timing_offset_days) {
+      perTransaction[row.transaction_id] = "timing_variance";
+      continue;
+    }
+    if (row.metadata?.fx_variance_bps) {
+      perTransaction[row.transaction_id] = "fx_variance";
+      continue;
+    }
+    if (row.metadata?.fee_variance_minor) {
+      perTransaction[row.transaction_id] = "fee_variance";
+      continue;
+    }
+    if (disputeTxns.has(row.transaction_id)) {
+      perTransaction[row.transaction_id] = "dispute_related";
+      continue;
+    }
+    if (reversalTxns.has(row.transaction_id)) {
+      perTransaction[row.transaction_id] = "reversal_related";
+      continue;
+    }
+
+    if (!match) {
+      perTransaction[row.transaction_id] = "unmatched_source_only";
+      continue;
+    }
+
+    if (row.metadata?.group_size && Number(row.metadata.group_size) > 1) {
+      perTransaction[row.transaction_id] = "grouped_match";
+    } else {
+      perTransaction[row.transaction_id] = match.confidence >= 0.9 ? "exact_match" : "fuzzy_match";
+    }
   }
 
+  const unmatchedTarget = suite.sources.BANK_STATEMENT.filter(
+    (r) => !targetMatched.has(r.source_record_id)
+  ).map((r) => r.transaction_id);
+
   return {
-    processed_records: source.length + suite.sources.BANK_STATEMENT.length,
-    matched,
-    unmatched,
-    duplicates: suite.golden.expected_results.duplicates_detected.length,
-    variances: suite.golden.expected_results.variance_records.length,
+    engine: "recon_core.performReconciliation",
+    processed_records: source.length + target.length,
+    matched: matches.length,
+    unmatched: source.length - matches.length,
+    duplicates: Object.values(perTransaction).filter((v) => v === "duplicate_detected").length,
+    variances: Object.values(perTransaction).filter((v) =>
+      ["timing_variance", "fx_variance", "fee_variance", "status_conflict"].includes(v)
+    ).length,
+    per_transaction: perTransaction,
+    unmatched_target: unmatchedTarget,
   };
 }
