@@ -5,6 +5,7 @@
 
 import { logError, logWarn, logInfo } from "../../utils/logger";
 import { query } from "../../db";
+import { eventBus } from "../events/event-bus";
 
 export enum AlertSeverity {
   LOW = "low",
@@ -69,6 +70,33 @@ export async function createAlert(
     //   await sendPagerDutyAlert(alertId, type, message, details);
     // }
 
+    const tenantId =
+      typeof details?.tenantId === "string" && details.tenantId.length > 0
+        ? details.tenantId
+        : "system";
+    await eventBus.emitEvent(
+      "alert.created",
+      tenantId,
+      {
+        alertId,
+        type,
+        severity,
+        message,
+        details: details ?? {},
+      },
+      {
+        correlationId: `alert:${tenantId}:${alertId}:created`,
+        executionId: alertId,
+        source: "api.alert-manager",
+        severity:
+          severity === AlertSeverity.CRITICAL
+            ? "critical"
+            : severity === AlertSeverity.HIGH
+              ? "error"
+              : "warning",
+      }
+    );
+
     return alertId;
   } catch (error) {
     logError("Failed to create alert", error, { type, severity, message });
@@ -86,6 +114,21 @@ export async function resolveAlert(alertId: string): Promise<void> {
        SET resolved = TRUE, resolved_at = NOW()
        WHERE id = $1`,
       [alertId]
+    );
+
+    await eventBus.emitEvent(
+      "alert.status.changed",
+      "system",
+      {
+        alertId,
+        status: "resolved",
+      },
+      {
+        correlationId: `alert:system:${alertId}:resolved`,
+        executionId: alertId,
+        source: "api.alert-manager",
+        severity: "info",
+      }
     );
 
     logInfo("Alert resolved", { alertId });
@@ -130,32 +173,34 @@ export async function getUnresolvedAlerts(severity?: AlertSeverity): Promise<Ale
       resolved_at: Date | null;
     }>(queryStr, params as (string | number | boolean | Date | null)[]);
 
-    return results.map((r: {
-      id: string;
-      type: string;
-      severity: string;
-      message: string;
-      details: string | null;
-      resolved: boolean;
-      created_at: Date;
-      resolved_at: Date | null;
-    }) => {
-      const alert: Alert = {
-        id: r.id,
-        type: r.type,
-        severity: r.severity as AlertSeverity,
-        message: r.message,
-        resolved: r.resolved,
-        createdAt: r.created_at,
-      };
-      if (r.details) {
-        alert.details = JSON.parse(r.details) as Record<string, unknown>;
+    return results.map(
+      (r: {
+        id: string;
+        type: string;
+        severity: string;
+        message: string;
+        details: string | null;
+        resolved: boolean;
+        created_at: Date;
+        resolved_at: Date | null;
+      }) => {
+        const alert: Alert = {
+          id: r.id,
+          type: r.type,
+          severity: r.severity as AlertSeverity,
+          message: r.message,
+          resolved: r.resolved,
+          createdAt: r.created_at,
+        };
+        if (r.details) {
+          alert.details = JSON.parse(r.details) as Record<string, unknown>;
+        }
+        if (r.resolved_at) {
+          alert.resolvedAt = r.resolved_at;
+        }
+        return alert;
       }
-      if (r.resolved_at) {
-        alert.resolvedAt = r.resolved_at;
-      }
-      return alert;
-    });
+    );
   } catch (error) {
     logError("Failed to get unresolved alerts", error);
     return [];

@@ -12,6 +12,7 @@
 
 import type { PlatformEvent, PlatformEventType } from "./primitives";
 import type { TrustGraph } from "./trust-graph";
+import { normalizePlatformEvent } from "./event-protocol";
 
 export interface EventConsumer {
   readonly name: string;
@@ -37,40 +38,44 @@ export class TrustGraphConsumer implements EventConsumer {
       "trust.node.added",
       "trust.edge.added",
     ];
-    return tracked.includes(event.eventType);
+    return tracked.includes(normalizePlatformEvent(event).eventType);
   }
 
-  async process(event: PlatformEvent): Promise<void> {
+  async process(rawEvent: PlatformEvent): Promise<void> {
+    const event = normalizePlatformEvent(rawEvent);
+
     switch (event.eventType) {
       case "execution.completed": {
         const payload = event.payload as {
+          runFingerprint?: string;
           run_fingerprint?: string;
+          inputHash?: string;
           input_hash?: string;
+          configHash?: string;
           config_hash?: string;
+          outputHash?: string;
           output_hash?: string;
+          policyId?: string;
           policy_id?: string;
+          engineVersion?: string;
           engine_version?: string;
         };
         this.graph.recordExecution({
           executionId: event.executionId,
-          runId: event.executionId,
+          runId: event.correlation.runId ?? event.executionId,
           tenantId: event.tenantId,
-          policyId: payload.policy_id ?? "unknown",
-          engineVersion: payload.engine_version ?? "unknown",
+          policyId: payload.policyId ?? payload.policy_id ?? "unknown",
+          engineVersion: payload.engineVersion ?? payload.engine_version ?? "unknown",
           status: "completed",
-          startedAt: event.createdAt,
-          inputHash: payload.input_hash ?? "",
-          configHash: payload.config_hash ?? "",
-          outputHash: payload.output_hash,
-          runFingerprint: payload.run_fingerprint,
+          startedAt: event.occurredAt ?? event.createdAt ?? new Date().toISOString(),
+          inputHash: payload.inputHash ?? payload.input_hash ?? "",
+          configHash: payload.configHash ?? payload.config_hash ?? "",
+          outputHash: payload.outputHash ?? payload.output_hash,
+          runFingerprint: payload.runFingerprint ?? payload.run_fingerprint,
         });
         break;
       }
-      case "proof.artifact.generated": {
-        // Proof artifacts create nodes + edges in the trust graph
-        // The actual linking is handled when the execution record is created
-        break;
-      }
+      case "proof.artifact.generated":
       default:
         break;
     }
@@ -82,9 +87,13 @@ export class TrustGraphConsumer implements EventConsumer {
 // ────────────────────────────────────────────────────────────
 export interface ObservabilityRecord {
   traceId: string;
+  correlationId: string;
   executionId: string;
   tenantId: string;
   eventType: string;
+  eventVersion: number;
+  source: string;
+  severity: string;
   timestamp: string;
   durationMs?: number;
   metadata: Record<string, unknown>;
@@ -95,17 +104,25 @@ export class ObservabilityConsumer implements EventConsumer {
   private records: ObservabilityRecord[] = [];
 
   accept(): boolean {
-    return true; // Accept all events
+    return true;
   }
 
-  async process(event: PlatformEvent): Promise<void> {
+  async process(rawEvent: PlatformEvent): Promise<void> {
+    const event = normalizePlatformEvent(rawEvent);
     this.records.push({
-      traceId: event.idempotencyKey,
+      traceId: event.correlation.traceId ?? event.idempotencyKey ?? event.correlation.correlationId,
+      correlationId: event.correlation.correlationId,
       executionId: event.executionId,
       tenantId: event.tenantId,
       eventType: event.eventType,
-      timestamp: event.createdAt,
-      metadata: event.payload,
+      eventVersion: event.eventVersion ?? 1,
+      source: event.source ?? "platform.runtime",
+      severity: event.severity ?? "info",
+      timestamp: event.occurredAt ?? event.createdAt ?? new Date().toISOString(),
+      metadata: {
+        ...event.metadata,
+        ...event.payload,
+      },
     });
   }
 
@@ -142,6 +159,7 @@ export interface PolicyDecisionLog {
   policyId: string;
   decision: "allowed" | "denied";
   reason?: string;
+  correlationId: string;
   timestamp: string;
 }
 
@@ -150,11 +168,13 @@ export class PolicyAuditConsumer implements EventConsumer {
   private decisions: PolicyDecisionLog[] = [];
 
   accept(event: PlatformEvent): boolean {
-    return event.eventType === "policy.evaluated";
+    return normalizePlatformEvent(event).eventType === "policy.evaluated";
   }
 
-  async process(event: PlatformEvent): Promise<void> {
+  async process(rawEvent: PlatformEvent): Promise<void> {
+    const event = normalizePlatformEvent(rawEvent);
     const payload = event.payload as {
+      policyId?: string;
       policy_id?: string;
       decision?: string;
       reason?: string;
@@ -162,10 +182,11 @@ export class PolicyAuditConsumer implements EventConsumer {
     this.decisions.push({
       executionId: event.executionId,
       tenantId: event.tenantId,
-      policyId: payload.policy_id ?? "unknown",
+      policyId: payload.policyId ?? payload.policy_id ?? "unknown",
       decision: payload.decision === "denied" ? "denied" : "allowed",
       reason: payload.reason,
-      timestamp: event.createdAt,
+      correlationId: event.correlation.correlationId,
+      timestamp: event.occurredAt ?? event.createdAt ?? new Date().toISOString(),
     });
   }
 
@@ -182,6 +203,7 @@ export interface ConnectorMetric {
   connectorId: string;
   tenantId: string;
   eventType: string;
+  correlationId: string;
   timestamp: string;
   durationMs?: number;
   recordCount?: number;
@@ -193,23 +215,28 @@ export class ConnectorMetricsConsumer implements EventConsumer {
   private metrics: ConnectorMetric[] = [];
 
   accept(event: PlatformEvent): boolean {
-    return event.eventType.startsWith("connector.");
+    return normalizePlatformEvent(event).eventType.startsWith("connector.");
   }
 
-  async process(event: PlatformEvent): Promise<void> {
+  async process(rawEvent: PlatformEvent): Promise<void> {
+    const event = normalizePlatformEvent(rawEvent);
     const payload = event.payload as {
+      connectorId?: string;
       connector_id?: string;
+      durationMs?: number;
       duration_ms?: number;
+      recordCount?: number;
       record_count?: number;
       error?: string;
     };
     this.metrics.push({
-      connectorId: payload.connector_id ?? "unknown",
+      connectorId: payload.connectorId ?? payload.connector_id ?? "unknown",
       tenantId: event.tenantId,
       eventType: event.eventType,
-      timestamp: event.createdAt,
-      durationMs: payload.duration_ms,
-      recordCount: payload.record_count,
+      correlationId: event.correlation.correlationId,
+      timestamp: event.occurredAt ?? event.createdAt ?? new Date().toISOString(),
+      durationMs: payload.durationMs ?? payload.duration_ms,
+      recordCount: payload.recordCount ?? payload.record_count,
       error: payload.error,
     });
   }
@@ -230,10 +257,9 @@ export class EventConsumerRegistry {
     this.consumers.push(consumer);
   }
 
-  async dispatch(event: PlatformEvent): Promise<void> {
-    const promises = this.consumers
-      .filter((c) => c.accept(event))
-      .map((c) => c.process(event));
+  async dispatch(rawEvent: PlatformEvent): Promise<void> {
+    const event = normalizePlatformEvent(rawEvent);
+    const promises = this.consumers.filter((c) => c.accept(event)).map((c) => c.process(event));
     await Promise.allSettled(promises);
   }
 

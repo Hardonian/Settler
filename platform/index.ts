@@ -38,3 +38,15 @@ export type {
 } from "./event-consumers";
 export { ConnectorCapabilityRegistry } from "./connector-registry";
 export type { ConnectorCapability, RetryPolicy } from "./connector-registry";
+
+export {
+  createPlatformEvent,
+  normalizePlatformEvent,
+  normalizeEventType,
+  adaptPlatformEventToVersion,
+  validatePlatformEventContract,
+  EVENT_TYPE_ALIASES,
+  CANONICAL_EVENT_TYPES,
+  UnknownPlatformEventTypeError,
+} from "./event-protocol";
+export type { PlatformEventSeverity, PlatformEventCorrelation } from "./event-protocol";

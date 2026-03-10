@@ -120,12 +120,29 @@ export interface Connector {
 // ────────────────────────────────────────────────────────────
 export interface PlatformEvent {
   eventId: string;
-  idempotencyKey: string;
+  idempotencyKey?: string;
   tenantId: string;
   executionId: string;
   eventType: PlatformEventType;
+  eventVersion?: number;
   sequence: number;
-  createdAt: string;
+  occurredAt?: string;
+  createdAt?: string;
+  source?: string;
+  severity?: "debug" | "info" | "warning" | "error" | "critical";
+  metadata?: Record<string, unknown>;
+  correlation: {
+    correlationId: string;
+    traceId?: string;
+    causationId?: string;
+    tenantId: string;
+    runId?: string;
+    executionId?: string;
+    actorId?: string;
+    alertId?: string;
+    replayId?: string;
+    supportIssueId?: string;
+  };
   payload: Record<string, unknown>;
 }
 
@@ -147,7 +164,24 @@ export type PlatformEventType =
   | "ai.suggestion.accepted"
   | "ai.suggestion.rejected"
   | "chaos.fault.injected"
-  | "chaos.invariant.checked";
+  | "chaos.invariant.checked"
+  | "alert.created"
+  | "alert.status.changed"
+  | "replay.started"
+  | "replay.completed"
+  | "replay.failed"
+  | "support.issue.created"
+  | "support.issue.linked"
+  | "webhook.received"
+  | "webhook.rejected"
+  | "operator.action.executed"
+  | "stream.event.emitted"
+  | "system.degraded"
+  | "reconciliation.started"
+  | "reconciliation.completed"
+  | "reconciliation.failed"
+  | "reconciliation.value.realized"
+  | "reconciliation.errors.prevented";
 
 // ────────────────────────────────────────────────────────────
 // Proof
