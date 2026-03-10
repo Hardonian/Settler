@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security disclosure instructions
+    url: https://github.com/settler/settler/blob/main/.github/ISSUE_TEMPLATE/security_guidance.yml
+    about: Use private reporting instructions for security issues.
+  - name: Support self-help index
+    url: https://github.com/settler/settler/blob/main/docs/support/README.md
+    about: Start with support triage and diagnostics guides before filing.
+  - name: Operator triage routing guide
+    url: https://github.com/settler/settler/blob/main/docs/ops/github-triage-routing.md
+    about: Label taxonomy, routing rules, and automation-ready issue structure.

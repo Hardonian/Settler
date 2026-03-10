@@ -1,0 +1,129 @@
+name: Runtime error / incident
+description: Capture production/runtime failures with dedupe-friendly fields.
+title: "incident(runtime): "
+labels:
+  - triage
+  - incident
+  - runtime
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for runtime failures, degraded execution, or tenant-impacting incidents.
+        Keep customer data sanitized; include IDs and signatures, not raw PII.
+
+  - type: input
+    id: tenant_id
+    attributes:
+      label: Tenant ID
+      description: Tenant/workspace/org identifier from the failing run context.
+      placeholder: tenant_abc123
+    validations:
+      required: true
+
+  - type: input
+    id: run_id
+    attributes:
+      label: Run ID
+      description: Reconciliation run/job execution identifier.
+      placeholder: run_2026_02_18_01
+    validations:
+      required: false
+
+  - type: input
+    id: route_module
+    attributes:
+      label: Route + module
+      description: API route and module/service where failure happened.
+      placeholder: POST /v1/operator/backups/create · services/operator-mode/backups
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - sev0_critical
+        - sev1_high
+        - sev2_medium
+        - sev3_low
+    validations:
+      required: true
+
+  - type: dropdown
+    id: retryable
+    attributes:
+      label: Retryable
+      options:
+        - unknown
+        - retryable
+        - non_retryable
+    validations:
+      required: true
+
+  - type: input
+    id: frequency
+    attributes:
+      label: Frequency
+      description: How often is this happening?
+      placeholder: 100% / 3 in 20 runs / once
+    validations:
+      required: true
+
+  - type: input
+    id: error_signature
+    attributes:
+      label: Error signature
+      description: Stable signature used for grouping/deduping.
+      placeholder: DatabaseTimeoutError|POST /v1/operator/backups/create|operator-mode/backups
+    validations:
+      required: true
+
+  - type: textarea
+    id: stack_trace_summary
+    attributes:
+      label: Stack trace summary
+      description: Top frames and concise message; redact sensitive values.
+      placeholder: |
+        ErrorName: message
+         at service.fn (file.ts:12)
+         at route.handler (route.ts:55)
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction_context
+    attributes:
+      label: Reproduction context
+      description: Inputs, preconditions, and commands to reproduce.
+      placeholder: |
+        1. Tenant configured with ...
+        2. Trigger endpoint ...
+        3. Observe failure after ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: triage_snapshot
+    attributes:
+      label: Triage snapshot (automation-friendly)
+      value: |
+        ## Classification
+        - category:
+        - severity:
+        - retryable:
+        - dedupe_key:
+
+        ## Correlation
+        - tenant_id:
+        - run_id:
+        - route:
+        - module:
+
+        ## Evidence
+        - trace_ids:
+        - logs:
+        - dashboards:
+    validations:
+      required: true
