@@ -6,6 +6,7 @@ Use this section for first-response diagnostics before escalation.
 
 - [`api-error-guide.md`](./api-error-guide.md) — interpreting API errors, trace IDs, and tenant failures.
 - [`doctor-and-health-checks.md`](./doctor-and-health-checks.md) — what `settler doctor` and health endpoints validate.
+- [`support-intake-foundation.md`](./support-intake-foundation.md) — structured support payload contract and escalation attachment guidance.
 
 ## Most common questions
 

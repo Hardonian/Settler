@@ -1,0 +1,87 @@
+name: Telemetry regression
+description: Report missing/broken runtime telemetry or observability drift.
+title: "telemetry: regression "
+labels:
+  - triage
+  - telemetry
+body:
+  - type: input
+    id: tenant_id
+    attributes:
+      label: Tenant ID
+      placeholder: tenant_abc123
+    validations:
+      required: false
+
+  - type: input
+    id: run_id
+    attributes:
+      label: Run ID
+      placeholder: run_2026_02_18_01
+    validations:
+      required: false
+
+  - type: input
+    id: route_module
+    attributes:
+      label: Route + module
+      placeholder: POST /v1/reconciliation/run · services/reconciliation/runner
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_telemetry
+    attributes:
+      label: Expected telemetry
+      description: Expected metric/log/event names and required tags.
+    validations:
+      required: true
+
+  - type: textarea
+    id: observed_telemetry
+    attributes:
+      label: Observed telemetry
+      description: What is missing, renamed, malformed, or cardinality-exploding?
+    validations:
+      required: true
+
+  - type: input
+    id: error_signature
+    attributes:
+      label: Related error signature (if any)
+      placeholder: ValidationError|POST /v1/reconciliation/run|services/reconciliation/runner
+    validations:
+      required: false
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - sev1_high
+        - sev2_medium
+        - sev3_low
+    validations:
+      required: true
+
+  - type: textarea
+    id: triage_snapshot
+    attributes:
+      label: Triage snapshot (automation-friendly)
+      value: |
+        ## Regression type
+        - type: missing_metric | missing_tag | bad_grouping | schema_change
+        - first_seen:
+        - suspected_change_window:
+
+        ## Correlation
+        - tenant_id:
+        - run_id:
+        - route:
+        - module:
+
+        ## Evidence
+        - query_or_dashboard:
+        - logs_or_samples:
+    validations:
+      required: true

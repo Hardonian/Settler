@@ -1,0 +1,94 @@
+name: Operator / control-plane bug
+description: Report control-plane behavior defects (not runtime data bugs).
+title: "operator: bug "
+labels:
+  - triage
+  - operator
+  - bug
+body:
+  - type: input
+    id: tenant_id
+    attributes:
+      label: Tenant ID
+      placeholder: tenant_abc123
+    validations:
+      required: false
+
+  - type: input
+    id: run_id
+    attributes:
+      label: Run ID (if tied to an operation)
+      placeholder: run_2026_02_18_01
+    validations:
+      required: false
+
+  - type: input
+    id: route_module
+    attributes:
+      label: Route + module
+      placeholder: GET /v1/operator/daily-intelligence · routes/v1/operator-mode
+    validations:
+      required: true
+
+  - type: input
+    id: error_signature
+    attributes:
+      label: Error signature (if available)
+      placeholder: UpstreamUnavailable|GET /v1/operator/daily-intelligence|operator-mode/daily-intelligence
+    validations:
+      required: false
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - sev1_high
+        - sev2_medium
+        - sev3_low
+    validations:
+      required: true
+
+  - type: input
+    id: frequency
+    attributes:
+      label: Frequency
+      placeholder: always / intermittent / once
+    validations:
+      required: true
+
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Current behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: triage_snapshot
+    attributes:
+      label: Triage snapshot (automation-friendly)
+      value: |
+        ## Classification
+        - bug_class:
+        - severity:
+        - retryable:
+
+        ## Correlation
+        - tenant_id:
+        - run_id:
+        - route:
+        - module:
+
+        ## Impact
+        - affected_operator_capability:
+        - workaround:
+    validations:
+      required: true
