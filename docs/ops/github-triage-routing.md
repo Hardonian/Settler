@@ -50,3 +50,8 @@ If `tenant_id` is unknown, dedupe by `error_signature|route|module` and include 
 ## OSS/private boundary
 
 This repo only defines open intake standards. Future private automation (GitHub Apps, Slack routing, incident tooling) should attach through provider boundaries; do not hard-depend on private services here.
+
+## Automation hooks
+
+- CI validates issue template contracts via `scripts/validate-issue-templates.mjs`.
+- GitHub issue triage helper comments runbook links when `triage`-labeled issues are opened/labeled (`.github/workflows/issue-triage-runbook-comment.yml`).

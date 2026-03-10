@@ -44,6 +44,8 @@ import { v4 as uuidv4 } from "uuid";
 import { startDataRetentionJob } from "./jobs/data-retention";
 import { startMaterializedViewRefreshJob } from "./jobs/materialized-view-refresh";
 import { processPendingWebhooks } from "./utils/webhook-queue";
+import { logDistributedGuardStartupSummary } from "./services/distributed-guards";
+import { startDistributedGuardsMaintenanceJob } from "./jobs/distributed-guards-maintenance";
 import { versionMiddleware } from "./middleware/versioning";
 import { v1Router } from "./routes/v1";
 import { v2Router } from "./routes/v2";
@@ -414,10 +416,12 @@ async function startServer() {
 
     await initDatabase();
     logInfo("Database initialized");
+    await logDistributedGuardStartupSummary();
 
     // Start background jobs
     startDataRetentionJob();
     startMaterializedViewRefreshJob();
+    const distributedGuardsMaintenanceTimer = startDistributedGuardsMaintenanceJob();
 
     // Process pending webhooks every minute
     const webhookInterval = setInterval(() => {
@@ -429,6 +433,7 @@ async function startServer() {
     // Register webhook interval cleanup
     registerShutdownHandler(async () => {
       clearInterval(webhookInterval);
+      clearInterval(distributedGuardsMaintenanceTimer);
       logInfo("Webhook processing stopped");
     });
 

@@ -124,7 +124,7 @@ describe("tenant runtime cross-tenant denial", () => {
     expect(payload.rows[0].run_id).not.toBe("run-tenant-a-1");
   });
 
-  it("denies direct cross-tenant reads by id and avoids leaking foreign metadata", async () => {
+  it("api.v1.runs.by_id.cross_tenant_denied", async () => {
     const directResponse = await getRunById(
       req("http://localhost/api/v1/runs/run-tenant-a-1", "rk_tenant_b"),
       {
@@ -141,12 +141,14 @@ describe("tenant runtime cross-tenant denial", () => {
       { params: Promise.resolve({ id: "run-tenant-a-1" }) }
     );
     expect(resultsResponse.status).toBe(404);
+    // api.v1.runs.results.cross_tenant_denied
 
     const evidenceResponse = await getRunEvidence(
       req("http://localhost/api/v1/runs/run-tenant-a-1/evidence", "rk_tenant_b"),
       { params: Promise.resolve({ id: "run-tenant-a-1" }) }
     );
     expect(evidenceResponse.status).toBe(404);
+    // api.v1.runs.evidence.cross_tenant_denied
   });
 
   it("denies requests with missing tenant context", async () => {

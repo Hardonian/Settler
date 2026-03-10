@@ -30,6 +30,13 @@ Optional correlation/context fields:
 - `billing_usage`
 - `docs_other`
 
+## Minimal authenticated endpoint
+
+- `POST /api/v1/support/intake`
+- requires authenticated user context and tenant resolution
+- validates payload against `supportIntakeSubmissionSchema`
+- persists submission to `audit_logs` as `support_intake_submitted` (durable store in OSS mode)
+
 ## How to attach evidence later
 
 When wiring private/internal support systems, attach:

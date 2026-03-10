@@ -30,6 +30,8 @@ import advancedMatchingRulesRouter from "./advanced-matching-rules";
 import customIntegrationsRouter from "./custom-integrations";
 import dedicatedInfrastructureRouter from "./dedicated-infrastructure";
 import automatedReviewRouter from "./automated-review";
+import capabilitiesRouter from "./capabilities";
+import supportRouter from "./support";
 
 export const v1Router: Router = Router();
 
@@ -51,6 +53,7 @@ v1Router.use("/ingestion", ingestionRouter);
 v1Router.use("/reconciliation", reconciliationRouter);
 v1Router.use("/ingestion/exports", ingestionExportsRouter);
 v1Router.use("/automated-review", automatedReviewRouter);
+v1Router.use("/support", supportRouter);
 
 // Phase 1: Core Features
 v1Router.use("/multi-source-reconciliation", multiSourceReconciliationRouter);
@@ -73,6 +76,8 @@ v1Router.use("/dedicated-infrastructure", dedicatedInfrastructureRouter);
 // Operator mode routes
 v1Router.use("/", operatorModeRouter);
 v1Router.use("/", operatorIntelligenceRouter);
+
+v1Router.use("/", capabilitiesRouter);
 
 // Health check
 v1Router.get("/health", (_req, res) => {

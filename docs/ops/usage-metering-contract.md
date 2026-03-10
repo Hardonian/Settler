@@ -44,3 +44,8 @@ Optional fields:
 `NoopUsageMeterProvider` keeps OSS runtime buildable when billing infrastructure is absent.
 
 Future Stripe/warehouse integrations should implement `UsageMeterProvider` without changing caller contracts.
+
+## Current provider implementation
+
+- `DatabaseUsageMeterProvider` writes validated usage events to `audit_logs` with event `usage_metered` when `USAGE_METER_DB_ENABLED=true`.
+- In default OSS mode, provider status remains `unavailable` and metering is a safe no-op.

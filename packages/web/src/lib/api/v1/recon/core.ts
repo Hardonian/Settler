@@ -336,6 +336,16 @@ export function ok(res: NextResponse, requestId: string) {
 }
 
 export function fail(error: unknown, request: NextRequest, requestId: string) {
+  if (error instanceof z.ZodError) {
+    return problem(
+      400,
+      "SETTLER_INVALID_INPUT",
+      "Invalid input",
+      error.issues.map((issue) => issue.message).join("; ") || "Request payload failed validation",
+      requestId,
+      request.nextUrl.pathname
+    );
+  }
   const message = error instanceof Error ? error.message : "Unhandled API error";
   return problem(
     500,

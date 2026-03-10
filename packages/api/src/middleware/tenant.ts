@@ -9,6 +9,7 @@ import { ITenantRepository } from "../domain/repositories/ITenantRepository";
 import { Container } from "../infrastructure/di/Container";
 import { query } from "../db";
 import { sendProblemJson } from "../utils/problem-json";
+import { UserRole } from "../domain/entities/User";
 
 export interface TenantRequest extends AuthRequest {
   tenantId?: string;
@@ -54,6 +55,44 @@ export async function tenantMiddleware(
     if (!tenant) {
       const tenantId = req.get("X-Tenant-ID");
       if (tenantId) {
+        if (!req.userId) {
+          sendProblemJson(req, res, {
+            status: 401,
+            title: "Unauthorized",
+            detail: "Authenticated identity required when selecting tenant context",
+            code: "TENANT_CONTEXT_AUTH_REQUIRED",
+          });
+          return;
+        }
+
+        const userResult = await query<{ tenant_id: string; role: UserRole }>(
+          `SELECT tenant_id, role FROM users WHERE id = $1`,
+          [req.userId]
+        );
+
+        if (userResult.length === 0 || !userResult[0]) {
+          sendProblemJson(req, res, {
+            status: 403,
+            title: "Forbidden",
+            detail: "User not found",
+            code: "TENANT_CONTEXT_USER_NOT_FOUND",
+          });
+          return;
+        }
+
+        const user = userResult[0];
+        const canImpersonateTenant = user.role === UserRole.OWNER || user.role === UserRole.ADMIN;
+
+        if (tenantId !== user.tenant_id && !canImpersonateTenant) {
+          sendProblemJson(req, res, {
+            status: 403,
+            title: "Forbidden",
+            detail: "Cross-tenant context is not permitted",
+            code: "TENANT_CONTEXT_FORBIDDEN",
+          });
+          return;
+        }
+
         tenant = await tenantRepo.findById(tenantId);
       }
     }

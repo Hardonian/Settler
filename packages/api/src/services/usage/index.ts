@@ -11,3 +11,13 @@ export {
   type UsageEventName,
   type UsageMeterProvider,
 } from "./usage-metering-contract";
+
+export {
+  DatabaseUsageMeterProvider,
+  createDatabaseUsageMeterProviderFromEnv,
+} from "./usage-meter-provider-db";
+export {
+  meterFromLegacyUsageMetric,
+  meterValidatedUsageEvent,
+  resolveCanonicalUsageEventName,
+} from "./metering";

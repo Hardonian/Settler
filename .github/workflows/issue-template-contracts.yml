@@ -1,0 +1,27 @@
+name: Issue Template Contracts
+
+on:
+  pull_request:
+    paths:
+      - ".github/ISSUE_TEMPLATE/**"
+      - "scripts/validate-issue-templates.mjs"
+      - ".github/workflows/issue-template-contracts.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/ISSUE_TEMPLATE/**"
+      - "scripts/validate-issue-templates.mjs"
+      - ".github/workflows/issue-template-contracts.yml"
+  workflow_dispatch:
+
+jobs:
+  validate-templates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate issue template contracts
+        run: node scripts/validate-issue-templates.mjs

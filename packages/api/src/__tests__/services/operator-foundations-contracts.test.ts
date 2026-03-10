@@ -6,6 +6,8 @@ import {
 } from "../../services/observability/error-taxonomy";
 import { supportIntakeSubmissionSchema } from "../../services/support/support-intake-contract";
 import { USAGE_EVENT_NAME, usageEventSchema } from "../../services/usage/usage-metering-contract";
+import { resolveCanonicalUsageEventName } from "../../services/usage/metering";
+import { DatabaseUsageMeterProvider } from "../../services/usage/usage-meter-provider-db";
 
 describe("operator foundations contracts", () => {
   it("creates a stable error signature", () => {
@@ -47,6 +49,17 @@ describe("operator foundations contracts", () => {
     });
 
     expect(parsed.category).toBe("run_failure");
+  });
+
+  it("maps legacy metric types to canonical usage events", () => {
+    expect(resolveCanonicalUsageEventName("reconciliations")).toBe("runs_executed");
+    expect(resolveCanonicalUsageEventName("exports")).toBe("imports_processed");
+    expect(resolveCanonicalUsageEventName("unknown_metric")).toBeNull();
+  });
+
+  it("exposes provider capability state for DB usage meter", () => {
+    expect(new DatabaseUsageMeterProvider(true).status).toBe("configured");
+    expect(new DatabaseUsageMeterProvider(false).status).toBe("unavailable");
   });
 
   it("validates usage metering payload", () => {
