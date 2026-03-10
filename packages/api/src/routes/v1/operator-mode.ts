@@ -46,6 +46,22 @@ import { createBackup, verifyBackup, listBackups } from "../../services/operator
 
 const router: Router = Router();
 
+function requireTenantContext(req: AuthRequest, res: Response): string | undefined {
+  if (req.tenantId) {
+    return req.tenantId;
+  }
+
+  res.status(400).json({
+    error: "TENANT_CONTEXT_REQUIRED",
+    message: "Tenant context is required for this operator endpoint",
+  });
+  return undefined;
+}
+
+function shouldUseGlobalScope(req: AuthRequest): boolean {
+  return req.query.scope === "global";
+}
+
 // ============================================================================
 // DAILY INTELLIGENCE
 // ============================================================================
@@ -155,13 +171,21 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const provider = getAlertRoutingProvider();
-      const alerts = await provider.checkThresholds();
+      const useGlobalScope = shouldUseGlobalScope(req);
+      const tenantId = useGlobalScope ? undefined : requireTenantContext(req, res);
+      if (!useGlobalScope && !tenantId) {
+        return;
+      }
+
+      const alerts = await provider.checkThresholds(tenantId);
       const capability = provider.status();
       observeCapabilityStatus(capability, "/api/v1/operator/alerts/check");
 
       res.json({
         data: alerts,
         capability,
+        scope: useGlobalScope ? "global" : "tenant",
+        tenantId: tenantId ?? null,
         message: `Checked thresholds, triggered ${alerts.length} alerts`,
       });
     } catch (error: unknown) {
@@ -198,15 +222,20 @@ router.post(
     try {
       const userId = req.userId!;
       const threshold: AlertThreshold = req.body;
+      const tenantId = requireTenantContext(req, res);
+      if (!tenantId) {
+        return;
+      }
 
       const provider = getAlertRoutingProvider();
-      const thresholdId = await provider.upsertThreshold(userId, threshold);
+      const thresholdId = await provider.upsertThreshold(userId, threshold, tenantId);
       const capability = provider.status();
       observeCapabilityStatus(capability, "/api/v1/operator/alerts/thresholds");
 
       res.status(201).json({
         data: { id: thresholdId },
         capability,
+        tenantId,
         message: "Alert threshold created",
       });
     } catch (error: unknown) {
