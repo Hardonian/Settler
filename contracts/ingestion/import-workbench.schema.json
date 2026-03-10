@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://settler.dev/contracts/ingestion/import-workbench.schema.json",
+  "title": "Settler Import Workbench Preview Contract",
+  "type": "object",
+  "required": [
+    "sourceSummary",
+    "mapping",
+    "normalization",
+    "diagnostics",
+    "qualityGates",
+    "sourceProfile",
+    "canProceed",
+    "contract"
+  ],
+  "properties": {
+    "sourceSummary": { "type": "object" },
+    "mapping": { "type": "object" },
+    "normalization": { "type": "object" },
+    "diagnostics": { "type": "array" },
+    "qualityGates": { "type": "array" },
+    "schemaDrift": { "type": "object" },
+    "sourceProfile": {
+      "type": "string",
+      "enum": ["csv_generic", "bank_statement", "processor_export"]
+    },
+    "canProceed": { "type": "boolean" },
+    "contract": {
+      "type": "object",
+      "required": ["schemaUri", "version"],
+      "properties": {
+        "schemaUri": { "type": "string" },
+        "version": { "type": "string" }
+      }
+    }
+  },
+  "additionalProperties": true
+}

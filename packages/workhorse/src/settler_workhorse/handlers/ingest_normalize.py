@@ -12,6 +12,11 @@ from settler_workhorse.worker import register_handler
 
 logger = get_logger("handlers.ingest_normalize")
 
+IMPORT_WORKBENCH_CONTRACT = {
+    "schema_uri": "contracts/ingestion/import-workbench.schema.json",
+    "version": "1.0.0",
+}
+
 
 class NormalizationError(Exception):
     """Error during data normalization."""
@@ -36,6 +41,8 @@ def normalize_csv_data(
     """
     canonical_records = []
     errors = []
+    diagnostics: list[dict[str, Any]] = []
+    defaulted_currency_count = 0
 
     for idx, record in enumerate(records):
         try:
@@ -52,6 +59,15 @@ def normalize_csv_data(
                     normalized["amount"] = float(amount)
                 except (ValueError, TypeError):
                     errors.append({"row": idx + 1, "field": "amount", "error": "Invalid amount"})
+                    diagnostics.append(
+                        {
+                            "severity": "blocking",
+                            "stage": "normalize",
+                            "code": "invalid_amount",
+                            "message": "Invalid amount",
+                            "row_number": idx + 1,
+                        }
+                    )
                     normalized["amount"] = None
 
             # Date normalization
@@ -71,19 +87,65 @@ def normalize_csv_data(
 
             # Currency normalization (default to USD)
             currency = record.get("currency", "USD")
-            normalized["currency"] = str(currency).upper() if currency else "USD"
+            normalized_currency = str(currency).upper() if currency else "USD"
+            if not currency:
+                defaulted_currency_count += 1
+                diagnostics.append(
+                    {
+                        "severity": "info",
+                        "stage": "normalize",
+                        "code": "currency_defaulted",
+                        "message": "Currency defaulted to USD",
+                        "row_number": idx + 1,
+                    }
+                )
+            normalized["currency"] = normalized_currency
 
             canonical_records.append(normalized)
 
         except Exception as e:
             errors.append({"row": idx + 1, "error": str(e)})
+            diagnostics.append(
+                {
+                    "severity": "warning",
+                    "stage": "normalize",
+                    "code": "row_normalization_failure",
+                    "message": str(e),
+                    "row_number": idx + 1,
+                }
+            )
             logger.warning(f"Failed to normalize row {idx + 1}", error=str(e))
 
+    input_count = len(records)
+    output_count = len(canonical_records)
+    quality_gates = [
+        {
+            "gate": "non_empty_import",
+            "severity": "blocking",
+            "passed": input_count > 0,
+            "message": "Input contains rows" if input_count > 0 else "Input is empty",
+        },
+        {
+            "gate": "normalization_success_ratio",
+            "severity": "warning",
+            "passed": input_count > 0 and output_count / input_count >= 0.8,
+            "message": (
+                "Normalization ratio acceptable"
+                if input_count > 0 and output_count / input_count >= 0.8
+                else "Normalization ratio below threshold"
+            ),
+            "metric": {"input_count": input_count, "output_count": output_count, "threshold": 0.8},
+        },
+    ]
+
     return {
-        "input_count": len(records),
-        "output_count": len(canonical_records),
+        "input_count": input_count,
+        "output_count": output_count,
         "schema_version": schema_version,
         "errors": errors[:50],  # Limit error reporting
+        "diagnostics": diagnostics[:50],
+        "quality_gates": quality_gates,
+        "defaulted_field_counts": {"currency": defaulted_currency_count},
         "sample_output": canonical_records[:5] if canonical_records else [],
     }
 
@@ -149,6 +211,7 @@ def handle_ingest_normalize(job: Job) -> JobResult:
                 "output_count": 0,
                 "schema_version": schema_version,
                 "message": "No input data - safe no-op",
+                "contract": IMPORT_WORKBENCH_CONTRACT,
             },
             records_processed=0,
             records_failed=0,
@@ -172,7 +235,15 @@ def handle_ingest_normalize(job: Job) -> JobResult:
                 "output_count": result["output_count"],
                 "schema_version": result["schema_version"],
                 "errors_count": len(result["errors"]),
+                "diagnostics": result.get("diagnostics", []),
+                "quality_gates": result.get("quality_gates", []),
+                "defaulted_field_counts": result.get("defaulted_field_counts", {}),
                 "sample_output": result["sample_output"],
+                "can_proceed": not any(
+                    gate.get("severity") == "blocking" and not gate.get("passed")
+                    for gate in result.get("quality_gates", [])
+                ),
+                "contract": IMPORT_WORKBENCH_CONTRACT,
             },
             records_processed=result["output_count"],
             records_failed=len(result["errors"]),
