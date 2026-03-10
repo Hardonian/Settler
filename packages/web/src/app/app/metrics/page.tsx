@@ -19,9 +19,19 @@ async function getTop() {
 export default async function MetricsPage() {
   const rows = await getTop();
   return (
-    <div>
-      <h1 className="text-2xl font-semibold">Metrics</h1>
-      <div className="mt-4 rounded border border-slate-200 bg-white p-4">
+    <div className="space-y-4">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          Runtime Event Model
+        </p>
+        <h1 className="text-2xl font-semibold">Runtime Event Signals</h1>
+        <p className="mt-1 text-sm text-slate-600">
+          Event-derived route telemetry for operator triage. This surface currently focuses on top
+          slow routes and should be read as partial runtime event visibility.
+        </p>
+      </div>
+
+      <div className="rounded border border-slate-200 bg-white p-4">
         <div className="mb-2 text-sm text-slate-600">Top slow routes (7d)</div>
         <ul className="space-y-2 text-sm">
           {rows.length === 0 ? (
