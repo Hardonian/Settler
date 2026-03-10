@@ -3,17 +3,30 @@
  * Handle commands and emit events
  */
 
-import { IEventStore } from '../../../infrastructure/eventsourcing/EventStore';
+import { IEventStore } from "../../../infrastructure/eventsourcing/EventStore";
 import {
   StartReconciliationCommand,
   RetryReconciliationCommand,
   CancelReconciliationCommand,
   PauseReconciliationCommand,
   ResumeReconciliationCommand,
-} from './ReconciliationCommands';
-import { ReconciliationEvents, ReconciliationStartedData } from '../../../domain/eventsourcing/reconciliation/ReconciliationEvents';
-import { IEventBus } from '../../../infrastructure/events/IEventBus';
-import { DomainEvent } from '../../../domain/events/DomainEvent';
+} from "./ReconciliationCommands";
+import {
+  ReconciliationEvents,
+  ReconciliationStartedData,
+} from "../../../domain/eventsourcing/reconciliation/ReconciliationEvents";
+import {
+  assertCanCancel,
+  assertCanPause,
+  assertCanResume,
+  assertCanRetry,
+  assertCanStart,
+  assertTenantInvariant,
+  countExecutionAttempts,
+  getLatestStartedExecution,
+} from "../../../domain/eventsourcing/reconciliation/ReconciliationLifecycle";
+import { IEventBus } from "../../../infrastructure/events/IEventBus";
+import { DomainEvent } from "../../../domain/events/DomainEvent";
 
 export class ReconciliationCommandHandlers {
   constructor(
@@ -22,16 +35,22 @@ export class ReconciliationCommandHandlers {
   ) {}
 
   async handleStartReconciliation(command: StartReconciliationCommand): Promise<void> {
-    // Validate permissions and input
-    // In a real implementation, check tenant permissions, job exists, etc.
+    const existingEvents = await this.eventStore.getEvents(
+      command.reconciliation_id,
+      "reconciliation"
+    );
+    assertTenantInvariant(existingEvents, command.tenant_id);
+    assertCanStart(existingEvents);
 
-    // Create and emit ReconciliationStarted event
     const eventData: ReconciliationStartedData = {
       reconciliation_id: command.reconciliation_id,
       job_id: command.job_id,
       source_adapter: command.source_adapter,
       target_adapter: command.target_adapter,
       date_range: command.date_range,
+      execution_id: command.execution_id || crypto.randomUUID(),
+      attempt_number: 1,
+      execution_kind: "initial",
     };
     if (command.user_id) {
       eventData.initiated_by = command.user_id;
@@ -44,10 +63,8 @@ export class ReconciliationCommandHandlers {
       command.correlation_id || crypto.randomUUID()
     );
 
-    // Append to event store
     await this.eventStore.append(event);
 
-    // Publish to event bus for projections and saga orchestration
     await this.eventBus.publish(
       new ReconciliationStartedDomainEvent(
         command.reconciliation_id,
@@ -55,40 +72,40 @@ export class ReconciliationCommandHandlers {
         event.metadata.correlation_id,
         command.tenant_id,
         command.date_range,
-        command.source_adapter === 'shopify' ? { adapter: command.source_adapter } : undefined,
-        command.target_adapter === 'stripe' ? { adapter: command.target_adapter } : undefined
+        command.source_adapter === "shopify" ? { adapter: command.source_adapter } : undefined,
+        command.target_adapter === "stripe" ? { adapter: command.target_adapter } : undefined
       )
     );
   }
 
   async handleRetryReconciliation(command: RetryReconciliationCommand): Promise<void> {
-    // Get existing events to determine current state
-    const events = await this.eventStore.getEvents(
-      command.reconciliation_id,
-      'reconciliation'
-    );
+    const events = await this.eventStore.getEvents(command.reconciliation_id, "reconciliation");
 
-    if (events.length === 0) {
-      throw new Error('Reconciliation not found');
-    }
+    assertTenantInvariant(events, command.tenant_id);
+    assertCanRetry(events);
 
     const lastEvent = events[events.length - 1];
     if (!lastEvent) {
-      throw new Error('Reconciliation not found');
+      throw new Error("Reconciliation not found");
     }
-    const correlationId = command.correlation_id || lastEvent.metadata.correlation_id;
 
-    // Create retry event (could be a new event type)
+    const latestStartedExecution = getLatestStartedExecution(events);
+    if (!latestStartedExecution) {
+      throw new Error("Reconciliation invariant violation: missing started execution data");
+    }
+
+    const correlationId = command.correlation_id || crypto.randomUUID();
+
     const retryEventData: ReconciliationStartedData = {
       reconciliation_id: command.reconciliation_id,
-       
-      job_id: (lastEvent.data as any).job_id,
-       
-      source_adapter: (lastEvent.data as any).source_adapter,
-       
-      target_adapter: (lastEvent.data as any).target_adapter,
-       
-      date_range: (lastEvent.data as any).date_range,
+      job_id: latestStartedExecution.job_id,
+      source_adapter: latestStartedExecution.source_adapter,
+      target_adapter: latestStartedExecution.target_adapter,
+      date_range: latestStartedExecution.date_range,
+      execution_id: command.execution_id || crypto.randomUUID(),
+      attempt_number: countExecutionAttempts(events) + 1,
+      execution_kind: "retry",
+      retry_of_execution_id: latestStartedExecution.execution_id,
     };
     if (command.user_id) {
       retryEventData.initiated_by = command.user_id;
@@ -108,18 +125,14 @@ export class ReconciliationCommandHandlers {
   }
 
   async handleCancelReconciliation(command: CancelReconciliationCommand): Promise<void> {
-    const events = await this.eventStore.getEvents(
-      command.reconciliation_id,
-      'reconciliation'
-    );
+    const events = await this.eventStore.getEvents(command.reconciliation_id, "reconciliation");
 
-    if (events.length === 0) {
-      throw new Error('Reconciliation not found');
-    }
+    assertTenantInvariant(events, command.tenant_id);
+    assertCanCancel(events);
 
     const lastEvent = events[events.length - 1];
     if (!lastEvent) {
-      throw new Error('Reconciliation not found');
+      throw new Error("Reconciliation not found");
     }
     const correlationId = command.correlation_id || lastEvent.metadata.correlation_id;
 
@@ -128,8 +141,8 @@ export class ReconciliationCommandHandlers {
       {
         reconciliation_id: command.reconciliation_id,
         error: {
-          type: 'CancellationError',
-          message: command.reason || 'Reconciliation cancelled by user',
+          type: "CancellationError",
+          message: command.reason || "Reconciliation cancelled by user",
         },
         failed_at: new Date().toISOString(),
         retryable: false,
@@ -144,18 +157,56 @@ export class ReconciliationCommandHandlers {
     );
   }
 
-  async handlePauseReconciliation(_command: PauseReconciliationCommand): Promise<void> {
-    // Similar implementation for pause
-    // Would emit a ReconciliationPaused event
+  async handlePauseReconciliation(command: PauseReconciliationCommand): Promise<void> {
+    const events = await this.eventStore.getEvents(command.reconciliation_id, "reconciliation");
+
+    assertTenantInvariant(events, command.tenant_id);
+    assertCanPause(events);
+
+    const correlationId = command.correlation_id || crypto.randomUUID();
+    const pauseEvent = ReconciliationEvents.ReconciliationPaused(
+      command.reconciliation_id,
+      {
+        reconciliation_id: command.reconciliation_id,
+        paused_at: new Date().toISOString(),
+        reason: command.reason,
+      },
+      command.tenant_id,
+      command.user_id,
+      correlationId
+    );
+
+    await this.eventStore.append(pauseEvent);
+    await this.eventBus.publish(
+      new ReconciliationPausedDomainEvent(command.reconciliation_id, correlationId)
+    );
   }
 
-  async handleResumeReconciliation(_command: ResumeReconciliationCommand): Promise<void> {
-    // Similar implementation for resume
-    // Would emit a ReconciliationResumed event
+  async handleResumeReconciliation(command: ResumeReconciliationCommand): Promise<void> {
+    const events = await this.eventStore.getEvents(command.reconciliation_id, "reconciliation");
+
+    assertTenantInvariant(events, command.tenant_id);
+    assertCanResume(events);
+
+    const correlationId = command.correlation_id || crypto.randomUUID();
+    const resumeEvent = ReconciliationEvents.ReconciliationResumed(
+      command.reconciliation_id,
+      {
+        reconciliation_id: command.reconciliation_id,
+        resumed_at: new Date().toISOString(),
+      },
+      command.tenant_id,
+      command.user_id,
+      correlationId
+    );
+
+    await this.eventStore.append(resumeEvent);
+    await this.eventBus.publish(
+      new ReconciliationResumedDomainEvent(command.reconciliation_id, correlationId)
+    );
   }
 }
 
-// Domain events for event bus (simplified)
 class ReconciliationStartedDomainEvent extends DomainEvent {
   constructor(
     public readonly reconciliationId: string,
@@ -171,7 +222,7 @@ class ReconciliationStartedDomainEvent extends DomainEvent {
   }
 
   get eventName(): string {
-    return 'reconciliation.started';
+    return "reconciliation.started";
   }
 }
 
@@ -184,7 +235,7 @@ class ReconciliationRetryDomainEvent extends DomainEvent {
   }
 
   get eventName(): string {
-    return 'reconciliation.retry';
+    return "reconciliation.retry";
   }
 }
 
@@ -197,6 +248,32 @@ class ReconciliationCancelledDomainEvent extends DomainEvent {
   }
 
   get eventName(): string {
-    return 'reconciliation.cancelled';
+    return "reconciliation.cancelled";
+  }
+}
+
+class ReconciliationPausedDomainEvent extends DomainEvent {
+  constructor(
+    public readonly reconciliationId: string,
+    public readonly correlationId: string
+  ) {
+    super();
+  }
+
+  get eventName(): string {
+    return "reconciliation.paused";
+  }
+}
+
+class ReconciliationResumedDomainEvent extends DomainEvent {
+  constructor(
+    public readonly reconciliationId: string,
+    public readonly correlationId: string
+  ) {
+    super();
+  }
+
+  get eventName(): string {
+    return "reconciliation.resumed";
   }
 }
