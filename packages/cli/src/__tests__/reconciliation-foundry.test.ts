@@ -73,4 +73,17 @@ describe("reconciliation synthetic foundry", () => {
     expect(fs.existsSync(path.join(result.path, "malformed_processor_row.csv"))).toBe(true);
     expect(result.hash).toMatch(/^[a-f0-9]{64}$/);
   });
+
+  test("includes expanded realistic synthetic edge markers", () => {
+    const suite = generateReconciliationSuite({ seed: 42, profile: "chaos" });
+    const processor = suite.sources.PAYMENT_PROCESSOR;
+
+    expect(processor.some((row) => row.metadata?.duplicate_export === true)).toBe(true);
+    expect(processor.some((row) => row.metadata?.missing_reference === true)).toBe(true);
+    expect(processor.some((row) => row.metadata?.delayed_posting === true)).toBe(true);
+    expect(processor.some((row) => row.metadata?.partial_refund === true)).toBe(true);
+    expect(processor.some((row) => row.metadata?.ambiguous_amount_collision === true)).toBe(true);
+    expect(processor.some((row) => row.metadata?.group_partial_match === true)).toBe(true);
+    expect(processor.some((row) => row.metadata?.dispute_reversal_pattern === true)).toBe(true);
+  });
 });

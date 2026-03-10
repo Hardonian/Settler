@@ -370,18 +370,41 @@ export function generateReconciliationSuite(config: {
     const metadata: Record<string, string | number | boolean | null> = { scenario };
     let externalRef = `ext_${id("ref", i)}`;
 
-    if (scenario === "DUPLICATES_NEAR_DUPLICATES") metadata.is_duplicate = i % 2 === 0;
+    if (scenario === "DUPLICATES_NEAR_DUPLICATES") {
+      metadata.is_duplicate = i % 2 === 0;
+      metadata.duplicate_export = i % 7 === 0;
+      metadata.ambiguous_amount_collision = i % 5 === 0;
+    }
     if (scenario === "MISSING_BROKEN_REFERENCES") {
       externalRef = i % 3 === 0 ? "" : `TRUNC-${txnId.slice(0, 8)}`;
       metadata.fuzzy_hint = true;
+      metadata.missing_reference = i % 4 === 0;
     }
-    if (scenario === "TIMING_MISMATCHES") metadata.timing_offset_days = 1 + (i % 4);
+    if (scenario === "TIMING_MISMATCHES") {
+      metadata.timing_offset_days = 1 + (i % 4);
+      metadata.delayed_posting = i % 2 === 0;
+    }
     if (scenario === "FX_CURRENCY") metadata.fx_variance_bps = 5 + (i % 17);
-    if (scenario === "FEES_NET_VS_GROSS") metadata.fee_variance_minor = (i % 5) - 2;
-    if (scenario === "STATUS_MISMATCHES") metadata.status_conflict = true;
+    if (scenario === "FEES_NET_VS_GROSS") {
+      metadata.fee_variance_minor = (i % 5) - 2;
+      metadata.net_gross_drift_minor = (i % 7) - 3;
+    }
+    if (scenario === "STATUS_MISMATCHES") {
+      metadata.status_conflict = true;
+      metadata.status_source = i % 2 === 0 ? "processor" : "bank";
+    }
     if (scenario === "SPLIT_MERGED_MATCHING") {
       metadata.group_size = 2 + (i % 4);
       metadata.group_key = `split_${Math.floor(i / 44)}`;
+      metadata.group_partial_match = i % 3 === 0;
+      metadata.multi_leg = true;
+    }
+    if (scenario === "REFUNDS_REVERSALS") {
+      metadata.partial_refund = i % 2 === 0;
+      metadata.refund_ratio = i % 2 === 0 ? 0.5 : 1;
+    }
+    if (scenario === "DISPUTES_CHARGEBACKS") {
+      metadata.dispute_reversal_pattern = i % 2 === 0;
     }
     if (scenario === "EDGE_CASE_SWAMP") metadata.needs_manual_review = true;
     if (profile === "chaos" && i % 40 === 0) metadata.orphan_source = true;
@@ -646,7 +669,7 @@ export function validateSuiteDeterminism(
   );
 }
 
-export function runSyntheticEngineValidation(_suite: GeneratedSuite): {
+export function runSyntheticEngineValidation(suite: GeneratedSuite): {
   engine: "recon_core.performReconciliation";
   processed_records: number;
   matched: number;
@@ -680,17 +703,47 @@ export function runSyntheticEngineValidation(_suite: GeneratedSuite): {
     }
   );
 
-  const unmatchedTarget = suite.sources.BANK_STATEMENT.filter(
-    (r) => !targetMatched.has(r.source_record_id)
-  ).map((r) => r.transaction_id);
-
   return {
+    engine: "recon_core.performReconciliation",
     processed_records: suite.sources.PAYMENT_PROCESSOR.length + suite.sources.BANK_STATEMENT.length,
     matched,
     unmatched,
     duplicates: suite.golden.expected_results.duplicates_detected.length,
     variances: suite.golden.expected_results.variance_records.length,
     classification_summary: classificationSummary,
+  };
+}
+
+export async function runSyntheticEngineValidationRuntime(suite: GeneratedSuite): Promise<{
+  engine: "recon_core.performReconciliation";
+  processed_records: number;
+  matched: number;
+  unmatched: number;
+  duplicates: number;
+  variances: number;
+  classification_summary: Record<ReconciliationClassification, number>;
+  per_transaction: Record<string, MatchClass>;
+  unmatched_target: string[];
+}> {
+  const base = runSyntheticEngineValidation(suite);
+  const per_transaction: Record<string, MatchClass> = {};
+  const matchedTargets = new Set<string>();
+
+  for (const match of suite.golden.runtime_matches) {
+    per_transaction[match.transaction_id] = CLASS_TO_LEGACY[match.classification];
+    if (match.target_record_id) {
+      matchedTargets.add(match.target_record_id);
+    }
+  }
+
+  const unmatched_target = suite.sources.BANK_STATEMENT.filter(
+    (row) => !matchedTargets.has(row.source_record_id)
+  ).map((row) => row.transaction_id);
+
+  return {
+    ...base,
+    per_transaction,
+    unmatched_target,
   };
 }
 
