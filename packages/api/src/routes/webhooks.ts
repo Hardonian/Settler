@@ -1,5 +1,5 @@
 import { randomBytes } from "crypto";
-import { Router, Request, Response } from "express";
+import { Router, Response } from "express";
 import { z } from "zod";
 import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
@@ -13,20 +13,31 @@ import { handleRouteError } from "../utils/error-handler";
 import rateLimit from "express-rate-limit";
 import { isValidEventType, getPublicEvents } from "../services/webhooks/event-registry";
 import { createRawBodyMiddleware, RawBodyRequest } from "../middleware/raw-body";
+import { cache, isRedisAvailable } from "../infrastructure/redis/client";
+import {
+  buildWebhookReplayKey,
+  isAllowedWebhookAdapter,
+  validateWebhookTimestamp,
+} from "../services/webhooks/security";
 
 const router: Router = Router();
+const localReplayCache = new Map<string, number>();
+const WEBHOOK_REPLAY_WINDOW_SECONDS = 600;
 
 // Rate limiting for webhook receive endpoint
 const webhookReceiveLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 100, // Per adapter per IP
+  windowMs: 60 * 1000,
+  max: 60,
   keyGenerator: (req) => `webhook:${req.params.adapter}:${req.ip}`,
-  message: "Too many webhook requests",
+  message: {
+    error: "RATE_LIMITED",
+    message: "Webhook ingest rate limit exceeded",
+    retryAfterSeconds: 60,
+  },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-// Validation schemas
 const createWebhookSchema = z.object({
   body: z.object({
     url: z.string().url(),
@@ -41,7 +52,33 @@ const getWebhookSchema = z.object({
   }),
 });
 
-// Create webhook endpoint with SSRF protection
+async function hasSeenWebhookReplayKey(replayKey: string): Promise<"distributed" | "local" | null> {
+  if (isRedisAvailable()) {
+    const exists = await cache.exists(replayKey);
+    if (exists) {
+      return "distributed";
+    }
+
+    await cache.set(replayKey, { seen: true }, WEBHOOK_REPLAY_WINDOW_SECONDS);
+    return null;
+  }
+
+  const now = Date.now();
+  for (const [key, expiresAt] of localReplayCache.entries()) {
+    if (expiresAt <= now) {
+      localReplayCache.delete(key);
+    }
+  }
+
+  const existingExpiry = localReplayCache.get(replayKey);
+  if (existingExpiry && existingExpiry > now) {
+    return "local";
+  }
+
+  localReplayCache.set(replayKey, now + WEBHOOK_REPLAY_WINDOW_SECONDS * 1000);
+  return null;
+}
+
 router.post(
   "/",
   requirePermission(Permission.WEBHOOKS_WRITE),
@@ -51,7 +88,6 @@ router.post(
       const { url, events, secret } = req.body;
       const userId = req.userId!;
 
-      // Validate webhook URL (SSRF protection)
       const isValidUrl = await validateExternalUrl(url);
       if (!isValidUrl) {
         return res.status(400).json({
@@ -60,7 +96,6 @@ router.post(
         });
       }
 
-      // Validate all events are valid and public
       for (const event of events) {
         if (!isValidEventType(event)) {
           return res.status(400).json({
@@ -77,7 +112,6 @@ router.post(
         }
       }
 
-      // Generate secret if not provided
       const webhookSecret = secret || `whsec_${randomBytes(32).toString("base64url")}`;
 
       const result = await query<{ id: string }>(
@@ -92,15 +126,10 @@ router.post(
       }
       const webhookId = result[0].id;
 
-      // Log audit event
       await query(
         `INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`,
-        [
-          "webhook_created",
-          userId,
-          JSON.stringify({ webhookId, url: url.substring(0, 50) }), // Don't log full URL
-        ]
+        ["webhook_created", userId, JSON.stringify({ webhookId, url: url.substring(0, 50) })]
       );
 
       logInfo("Webhook created", { webhookId, userId });
@@ -124,7 +153,6 @@ router.post(
   }
 );
 
-// List webhooks with pagination
 router.get(
   "/",
   requirePermission(Permission.WEBHOOKS_READ),
@@ -187,43 +215,64 @@ router.get(
   }
 );
 
-// Webhook endpoint for receiving external webhooks with signature verification
 router.post(
   "/receive/:adapter",
   webhookReceiveLimiter,
   createRawBodyMiddleware(),
   async (req: RawBodyRequest, res: Response) => {
     try {
-      const { adapter } = req.params;
-      const signature = req.headers["x-webhook-signature"] as string;
-      const timestamp = req.headers["x-webhook-timestamp"] as string;
+      const adapter = (req.params.adapter || "").toLowerCase();
+      const signature = req.headers["x-webhook-signature"] as string | undefined;
+      const timestampHeader = req.headers["x-webhook-timestamp"] as string | undefined;
 
-      // Get raw body for signature verification
-      const rawBody = req.rawBodyString || JSON.stringify(req.body);
-
-      // Verify timestamp (prevent replay attacks)
-      if (timestamp) {
-        const requestTime = parseInt(timestamp);
-        const currentTime = Math.floor(Date.now() / 1000);
-        const timeDiff = Math.abs(currentTime - requestTime);
-
-        if (timeDiff > 300) {
-          // 5 minutes
-          logWarn("Webhook timestamp too old", { adapter, timeDiff });
-          return res.status(401).json({ error: "Request timestamp too old" });
-        }
+      if (!adapter || !isAllowedWebhookAdapter(adapter)) {
+        return res.status(400).json({
+          error: "UNSUPPORTED_ADAPTER",
+          message: "Webhook adapter is not allowed",
+        });
       }
 
-      // Verify webhook signature
+      const timestampValidation = validateWebhookTimestamp(timestampHeader);
+      if (!timestampValidation.valid) {
+        return res.status(401).json({
+          error: "INVALID_WEBHOOK_TIMESTAMP",
+          message:
+            timestampValidation.reason === "missing"
+              ? "Missing webhook timestamp"
+              : timestampValidation.reason === "invalid"
+                ? "Invalid webhook timestamp"
+                : "Webhook timestamp is outside allowed tolerance",
+        });
+      }
+
       if (!signature) {
         logWarn("Missing webhook signature", { adapter, ip: req.ip });
         return res.status(401).json({ error: "Missing webhook signature" });
       }
 
+      const rawBody = req.rawBodyString;
+      if (!rawBody) {
+        return res.status(400).json({
+          error: "RAW_BODY_REQUIRED",
+          message: "Raw body is required for webhook signature verification",
+        });
+      }
+
+      const replayKey = buildWebhookReplayKey(adapter, signature, timestampHeader!);
+      const replayHit = await hasSeenWebhookReplayKey(replayKey);
+      if (replayHit) {
+        logWarn("Rejected replayed webhook", { adapter, mode: replayHit });
+        return res.status(409).json({
+          error: "WEBHOOK_REPLAY_DETECTED",
+          mode: replayHit,
+          message:
+            replayHit === "distributed"
+              ? "Webhook already processed in distributed replay window"
+              : "Webhook already processed in local replay window",
+        });
+      }
+
       try {
-        if (!adapter) {
-          return res.status(400).json({ error: "Adapter is required" });
-        }
         const isValid = await verifyWebhookSignature(adapter, rawBody, signature);
         if (!isValid) {
           logWarn("Invalid webhook signature", { adapter, ip: req.ip });
@@ -236,19 +285,20 @@ router.post(
         return res.status(400).json({ error: message });
       }
 
-      // Store webhook payload for async processing
       await query(
         `INSERT INTO webhook_payloads (adapter, payload, signature, received_at)
            VALUES ($1, $2, $3, NOW())`,
-        [adapter || "", JSON.stringify(req.body), signature || ""]
+        [adapter, JSON.stringify(req.body), signature]
       );
 
-      // Queue for async processing (in production, use Bull/Redis queue)
-      // For now, acknowledge immediately
-      logInfo("Webhook received", { adapter, ip: req.ip });
+      logInfo("Webhook received", {
+        adapter,
+        replayProtection: isRedisAvailable() ? "distributed" : "local_only",
+      });
 
       res.status(202).json({
         received: true,
+        mode: isRedisAvailable() ? "distributed" : "local_only",
         message: "Webhook received and queued for processing",
       });
       return;
@@ -261,7 +311,6 @@ router.post(
   }
 );
 
-// Delete webhook
 router.delete(
   "/:id",
   requirePermission(Permission.WEBHOOKS_DELETE),
@@ -271,7 +320,6 @@ router.delete(
       const { id } = req.params;
       const userId = req.userId!;
 
-      // Check ownership
       await new Promise<void>((resolve, reject) => {
         requireResourceOwnership(
           req,
@@ -292,7 +340,6 @@ router.delete(
         tenantId,
       ]);
 
-      // Log audit event
       await query(
         `INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`,
