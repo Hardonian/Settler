@@ -1,0 +1,32 @@
+name: Event Protocol Guard
+
+on:
+  pull_request:
+    paths:
+      - "platform/**"
+      - "packages/api/src/services/events/**"
+      - "packages/api/src/services/recon-core/**"
+      - "packages/api/src/services/support/**"
+      - "packages/api/src/services/webhooks/**"
+      - "packages/api/src/services/alerts/**"
+      - "scripts/verify-event-taxonomy.ts"
+      - "tools/eslint-rules/event-taxonomy-rule.js"
+      - "eslint.config.js"
+      - "package.json"
+
+jobs:
+  verify-event-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run verify:event-taxonomy
+      - run: pnpm --filter @settler/api exec jest src/services/events/__tests__/event-bus.contract.test.ts --runInBand
+      - run: pnpm --filter @settler/api exec jest src/__tests__/reconciliation/ReconciliationService.test.ts --runInBand

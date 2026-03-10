@@ -8,6 +8,7 @@
 import { PrismaClient, Prisma } from "@prisma/client";
 import crypto from "crypto";
 import { logError, logInfo, logWarn } from "../../utils/logger";
+import { eventBus } from "../events/event-bus";
 
 /**
  * Standard webhook event payload structure
@@ -277,6 +278,24 @@ export class WebhookService {
       }
 
       if (!isSuccess) {
+        await eventBus.emitEvent(
+          "webhook.rejected",
+          event.tenantId,
+          {
+            webhookId,
+            eventType: event.type,
+            statusCode: response.status,
+            deliveryId: deliveryRecord.id,
+            reason: "delivery_failed",
+          },
+          {
+            correlationId: idempotencyKey ?? `webhook:${event.tenantId}:${event.id}:rejected`,
+            runId: String(event.data.runId ?? event.data.reconResultId ?? "unknown"),
+            executionId: String(event.data.reconResultId ?? event.id),
+            source: "api.webhook-service",
+            severity: "warning",
+          }
+        );
         logError("Webhook delivery failed", {
           webhookId,
           status: response.status,
@@ -324,6 +343,25 @@ export class WebhookService {
           error: errorMessage,
         });
       }
+
+      await eventBus.emitEvent(
+        "webhook.rejected",
+        event.tenantId,
+        {
+          webhookId,
+          eventType: event.type,
+          reason: "delivery_exception",
+          error: errorMessage,
+          deliveryId: failedDelivery.id,
+        },
+        {
+          correlationId: idempotencyKey ?? `webhook:${event.tenantId}:${event.id}:exception`,
+          runId: String(event.data.runId ?? event.data.reconResultId ?? "unknown"),
+          executionId: String(event.data.reconResultId ?? event.id),
+          source: "api.webhook-service",
+          severity: "error",
+        }
+      );
 
       logError("Webhook delivery failed", {
         webhookId,
@@ -388,6 +426,23 @@ export class WebhookService {
         replayCount: 0,
       },
     };
+
+    await eventBus.emitEvent(
+      "webhook.received",
+      tenantId,
+      {
+        webhookCount: subscribedWebhooks.length,
+        eventType,
+        eventId: event.id,
+      },
+      {
+        correlationId: idempotencyKey,
+        runId: String(eventData.runId ?? eventData.reconResultId ?? "unknown"),
+        executionId: String(eventData.reconResultId ?? event.id),
+        source: "api.webhook-service",
+        severity: "info",
+      }
+    );
 
     // Queue delivery for each webhook
     for (const webhook of subscribedWebhooks) {

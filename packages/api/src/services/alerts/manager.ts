@@ -5,6 +5,7 @@
 
 import { logError, logWarn, logInfo } from "../../utils/logger";
 import { query } from "../../db";
+import { eventBus } from "../events/event-bus";
 import { assertCanResolveAlert } from "./AlertLifecycle";
 
 export enum AlertSeverity {
@@ -70,6 +71,33 @@ export async function createAlert(
     //   await sendPagerDutyAlert(alertId, type, message, details);
     // }
 
+    const tenantId =
+      typeof details?.tenantId === "string" && details.tenantId.length > 0
+        ? details.tenantId
+        : "system";
+    await eventBus.emitEvent(
+      "alert.created",
+      tenantId,
+      {
+        alertId,
+        type,
+        severity,
+        message,
+        details: details ?? {},
+      },
+      {
+        correlationId: `alert:${tenantId}:${alertId}:created`,
+        executionId: alertId,
+        source: "api.alert-manager",
+        severity:
+          severity === AlertSeverity.CRITICAL
+            ? "critical"
+            : severity === AlertSeverity.HIGH
+              ? "error"
+              : "warning",
+      }
+    );
+
     return alertId;
   } catch (error) {
     logError("Failed to create alert", error, { type, severity, message });
@@ -99,6 +127,21 @@ export async function resolveAlert(alertId: string): Promise<void> {
        SET resolved = TRUE, resolved_at = NOW()
        WHERE id = $1`,
       [alertId]
+    );
+
+    await eventBus.emitEvent(
+      "alert.status.changed",
+      "system",
+      {
+        alertId,
+        status: "resolved",
+      },
+      {
+        correlationId: `alert:system:${alertId}:resolved`,
+        executionId: alertId,
+        source: "api.alert-manager",
+        severity: "info",
+      }
     );
 
     logInfo("Alert resolved", { alertId });

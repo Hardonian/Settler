@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { query } from "../../db";
 import { logError } from "../../utils/logger";
 import { supportIntakeSubmissionSchema, SupportIntakeSubmission } from "./support-intake-contract";
+import { eventBus } from "../events/event-bus";
 
 export interface StoredSupportIntake {
   submissionId: string;
@@ -30,6 +31,26 @@ export async function submitSupportIntake(params: {
       submissionId,
       payload: parsed,
     });
+
+    await eventBus.emitEvent(
+      "support.issue.created",
+      params.tenantId,
+      {
+        submissionId,
+        category: parsed.category,
+        runId: parsed.run_id ?? null,
+        route: parsed.route ?? null,
+        module: parsed.module ?? null,
+      },
+      {
+        correlationId: `support:${params.tenantId}:${submissionId}`,
+        runId: parsed.run_id ?? undefined,
+        executionId: parsed.run_id ?? submissionId,
+        actorId: params.userId,
+        source: "api.support-intake",
+        severity: "info",
+      }
+    );
   } catch (error) {
     logError("Failed to persist support intake submission", error, {
       tenantId: params.tenantId,

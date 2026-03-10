@@ -244,34 +244,58 @@ export class ReconCoreEngine {
       // Step 9.5: Record value events (reconciliation completed, anomalies detected)
       if (billingAccount) {
         try {
-          await eventBus.emitEvent("value.reconciliation_completed", tenantId, {
-            billingAccountId: billingAccount.id,
+          await eventBus.emitEvent(
+            "reconciliation.value.realized",
             tenantId,
-            userId: reconJob.userId,
-            matchedCount: results.matchedCount,
-            unmatchedCount: results.unmatchedSourceCount + results.unmatchedTargetCount,
-            totalAmount: results.totalAmountMatched
-              ? Number(results.totalAmountMatched)
-              : undefined,
-            jobId: reconJobId,
-            runId: updatedResult.id,
-          });
-
-          const totalUnmatched = results.unmatchedSourceCount + results.unmatchedTargetCount;
-          if (totalUnmatched > 0) {
-            await eventBus.emitEvent("value.errors_prevented", tenantId, {
+            {
               billingAccountId: billingAccount.id,
               tenantId,
               userId: reconJob.userId,
-              quantity: totalUnmatched,
-              unit: "anomaly",
-              metadata: {
-                source: "reconciliation_completed",
-                runId: updatedResult.id,
-                jobId: reconJobId,
-                matchedCount: results.matchedCount,
+              matchedCount: results.matchedCount,
+              unmatchedCount: results.unmatchedSourceCount + results.unmatchedTargetCount,
+              totalAmount: results.totalAmountMatched
+                ? Number(results.totalAmountMatched)
+                : undefined,
+              jobId: reconJobId,
+              runId: updatedResult.id,
+            },
+            {
+              correlationId: `recon:${tenantId}:${reconJobId}:${updatedResult.id}:value-realized`,
+              runId: updatedResult.id,
+              executionId: updatedResult.id,
+              actorId: reconJob.userId ?? undefined,
+              source: "api.recon-core",
+              severity: "info",
+            }
+          );
+
+          const totalUnmatched = results.unmatchedSourceCount + results.unmatchedTargetCount;
+          if (totalUnmatched > 0) {
+            await eventBus.emitEvent(
+              "reconciliation.errors.prevented",
+              tenantId,
+              {
+                billingAccountId: billingAccount.id,
+                tenantId,
+                userId: reconJob.userId,
+                quantity: totalUnmatched,
+                unit: "anomaly",
+                metadata: {
+                  source: "reconciliation_completed",
+                  runId: updatedResult.id,
+                  jobId: reconJobId,
+                  matchedCount: results.matchedCount,
+                },
               },
-            });
+              {
+                correlationId: `recon:${tenantId}:${reconJobId}:${updatedResult.id}:errors-prevented`,
+                runId: updatedResult.id,
+                executionId: updatedResult.id,
+                actorId: reconJob.userId ?? undefined,
+                source: "api.recon-core",
+                severity: "warning",
+              }
+            );
           }
         } catch (valueError) {
           logError("[ReconCoreEngine] Failed to emit value events", valueError);
@@ -287,11 +311,23 @@ export class ReconCoreEngine {
       });
 
       // Step 11: Emit event
-      await eventBus.emitEvent("recon.completed", tenantId, {
-        reconJobId,
-        reconResultId: updatedResult.id,
-        summary: results.summary,
-      });
+      await eventBus.emitEvent(
+        "reconciliation.completed",
+        tenantId,
+        {
+          reconJobId,
+          reconResultId: updatedResult.id,
+          summary: results.summary,
+        },
+        {
+          correlationId: `recon:${tenantId}:${reconJobId}:${updatedResult.id}:completed`,
+          runId: updatedResult.id,
+          executionId: updatedResult.id,
+          actorId: reconJob.userId ?? undefined,
+          source: "api.recon-core",
+          severity: "info",
+        }
+      );
 
       // Step 12: Send completion notification if there are exceptions
       if (results.unmatchedSourceCount > 0 || results.unmatchedTargetCount > 0) {
@@ -370,11 +406,24 @@ export class ReconCoreEngine {
       });
 
       // Emit event
-      await eventBus.emitEvent("recon.failed", tenantId, {
-        reconJobId,
-        reconResultId: failedResult.id,
-        error: errorMessage,
-      });
+      await eventBus.emitEvent(
+        "reconciliation.failed",
+        tenantId,
+        {
+          reconJobId,
+          reconResultId: failedResult.id,
+          error: errorMessage,
+        },
+        {
+          correlationId: `recon:${tenantId}:${reconJobId}:${failedResult.id}:failed`,
+          runId: failedResult.id,
+          executionId: failedResult.id,
+          actorId: reconJob.userId ?? undefined,
+          source: "api.recon-core",
+          severity: "error",
+          metadata: { failure_stage: "execute" },
+        }
+      );
 
       logError("Recon job execution failed", { error, reconJobId, tenantId });
       throw error;

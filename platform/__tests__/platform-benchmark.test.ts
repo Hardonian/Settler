@@ -11,10 +11,7 @@ import { PolicySimulator } from "../policy-simulator";
 import { AICopilot } from "../ai-copilot";
 import { DeterminismAuditor } from "../determinism";
 import { ChaosHarness } from "../chaos-harness";
-import {
-  ObservabilityConsumer,
-  EventConsumerRegistry,
-} from "../event-consumers";
+import { ObservabilityConsumer, EventConsumerRegistry } from "../event-consumers";
 import type { Execution, Policy, PlatformEvent } from "../primitives";
 
 function makeExecution(i: number, tenantId: string): Execution {
@@ -40,9 +37,18 @@ function makeEvent(i: number, tenantId: string): PlatformEvent {
     tenantId,
     executionId: `exec-${i}`,
     eventType: "execution.completed",
+    eventVersion: 1,
     sequence: i,
-    createdAt: new Date().toISOString(),
-    payload: { run_fingerprint: `fp-${i}` },
+    occurredAt: new Date().toISOString(),
+    source: "platform.benchmark",
+    severity: "info",
+    correlation: {
+      correlationId: `corr-${i}`,
+      tenantId,
+      executionId: `exec-${i}`,
+      runId: `run-${i}`,
+    },
+    payload: { runFingerprint: `fp-${i}` },
   };
 }
 
@@ -84,7 +90,12 @@ describe("Performance Benchmarks", () => {
       tenantId: "t-bench",
       evidenceLevel: "full",
       replayRequired: true,
-      budgets: { maxComputeUnits: 1500, maxMemoryUnits: 5000, maxCasIoUnits: 200, maxReplayCalls: 3 },
+      budgets: {
+        maxComputeUnits: 1500,
+        maxMemoryUnits: 5000,
+        maxCasIoUnits: 200,
+        maxReplayCalls: 3,
+      },
       identity: { requiredRole: "operator", requiredScopes: [] },
       metadata: { allowDeterministicOverride: false },
     };
@@ -149,19 +160,31 @@ describe("Performance Benchmarks", () => {
     const harness = new ChaosHarness();
     harness.registerFaultHandler("worker_crash", async () => {});
     harness.registerInvariantChecker("replay_correctness", async () => ({
-      invariantId: "rc", name: "RC", description: "ok",
-      check: "replay_correctness", passed: true,
-      checkedAt: new Date().toISOString(), details: {},
+      invariantId: "rc",
+      name: "RC",
+      description: "ok",
+      check: "replay_correctness",
+      passed: true,
+      checkedAt: new Date().toISOString(),
+      details: {},
     }));
     harness.registerInvariantChecker("proof_integrity", async () => ({
-      invariantId: "pi", name: "PI", description: "ok",
-      check: "proof_integrity", passed: true,
-      checkedAt: new Date().toISOString(), details: {},
+      invariantId: "pi",
+      name: "PI",
+      description: "ok",
+      check: "proof_integrity",
+      passed: true,
+      checkedAt: new Date().toISOString(),
+      details: {},
     }));
     harness.registerInvariantChecker("execution_idempotency", async () => ({
-      invariantId: "ei", name: "EI", description: "ok",
-      check: "execution_idempotency", passed: true,
-      checkedAt: new Date().toISOString(), details: {},
+      invariantId: "ei",
+      name: "EI",
+      description: "ok",
+      check: "execution_idempotency",
+      passed: true,
+      checkedAt: new Date().toISOString(),
+      details: {},
     }));
 
     const start = Date.now();

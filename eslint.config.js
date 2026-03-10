@@ -5,6 +5,7 @@
 
 const tseslint = require("@typescript-eslint/eslint-plugin");
 const tsparser = require("@typescript-eslint/parser");
+const eventTaxonomyRule = require("./tools/eslint-rules/event-taxonomy-rule");
 
 module.exports = [
   {
@@ -70,6 +71,25 @@ module.exports = [
     },
   },
 
+  {
+    files: [
+      "platform/**/*.ts",
+      "packages/api/src/services/**/*.ts",
+      "packages/web/src/app/api/**/*.ts",
+      "scripts/**/*.ts",
+    ],
+    ignores: ["**/__tests__/**"],
+    plugins: {
+      local: {
+        rules: {
+          "event-taxonomy": eventTaxonomyRule,
+        },
+      },
+    },
+    rules: {
+      "local/event-taxonomy": "error",
+    },
+  },
   {
     files: ["packages/web/src/app/(marketing)/**/*.{ts,tsx,js,jsx}"],
     rules: {
