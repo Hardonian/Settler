@@ -25,13 +25,7 @@ import {
   ConnectorMetricsConsumer,
   EventConsumerRegistry,
 } from "../event-consumers";
-import type {
-  Execution,
-  Artifact,
-  Proof,
-  Policy,
-  PlatformEvent,
-} from "../primitives";
+import type { Execution, Artifact, Proof, Policy, PlatformEvent } from "../primitives";
 
 // ────────────────────────────────────────────────────────────
 // Trust Graph
@@ -111,9 +105,9 @@ describe("TrustGraph", () => {
       createdAt: "2025-01-01T00:00:00Z",
       metadata: {},
     });
-    expect(() =>
-      graph.addEdge(nodeA.nodeId, nodeB.nodeId, "produced", "tenant-A")
-    ).toThrow("cross-tenant");
+    expect(() => graph.addEdge(nodeA.nodeId, nodeB.nodeId, "produced", "tenant-A")).toThrow(
+      "cross-tenant"
+    );
   });
 
   it("should produce a deterministic snapshot hash", () => {
@@ -305,10 +299,31 @@ describe("AICopilot", () => {
   it("should enforce max suggestions per execution", () => {
     const config = { maxSuggestionsPerExecution: 2 };
     const limited = new AICopilot(config);
-    limited.suggest({ tenantId: "t", executionId: "e", category: "anomaly_detection", title: "1", description: "1", confidence: 0.5 });
-    limited.suggest({ tenantId: "t", executionId: "e", category: "anomaly_detection", title: "2", description: "2", confidence: 0.5 });
+    limited.suggest({
+      tenantId: "t",
+      executionId: "e",
+      category: "anomaly_detection",
+      title: "1",
+      description: "1",
+      confidence: 0.5,
+    });
+    limited.suggest({
+      tenantId: "t",
+      executionId: "e",
+      category: "anomaly_detection",
+      title: "2",
+      description: "2",
+      confidence: 0.5,
+    });
     expect(() =>
-      limited.suggest({ tenantId: "t", executionId: "e", category: "anomaly_detection", title: "3", description: "3", confidence: 0.5 })
+      limited.suggest({
+        tenantId: "t",
+        executionId: "e",
+        category: "anomaly_detection",
+        title: "3",
+        description: "3",
+        confidence: 0.5,
+      })
     ).toThrow("Max suggestions");
   });
 });
@@ -491,9 +506,18 @@ describe("EventConsumerRegistry", () => {
       tenantId: "t-1",
       executionId: "exec-1",
       eventType: "execution.completed",
+      eventVersion: 1,
       sequence: 1,
-      createdAt: new Date().toISOString(),
-      payload: { run_fingerprint: "fp-1" },
+      occurredAt: new Date().toISOString(),
+      source: "platform.tests",
+      severity: "info",
+      correlation: {
+        correlationId: "corr-1",
+        tenantId: "t-1",
+        executionId: "exec-1",
+        runId: "run-1",
+      },
+      payload: { runFingerprint: "fp-1" },
     };
 
     await registry.dispatch(event);
@@ -519,9 +543,18 @@ describe("EventConsumerRegistry", () => {
       tenantId: "t-1",
       executionId: "exec-1",
       eventType: "connector.sync.completed",
+      eventVersion: 1,
       sequence: 2,
-      createdAt: new Date().toISOString(),
-      payload: { connector_id: "stripe", duration_ms: 1500, record_count: 42 },
+      occurredAt: new Date().toISOString(),
+      source: "platform.tests",
+      severity: "info",
+      correlation: {
+        correlationId: "corr-2",
+        tenantId: "t-1",
+        executionId: "exec-1",
+        runId: "run-1",
+      },
+      payload: { connectorId: "stripe", durationMs: 1500, recordCount: 42 },
     };
 
     await registry.dispatch(event);
@@ -542,9 +575,18 @@ describe("EventConsumerRegistry", () => {
       tenantId: "t-1",
       executionId: "exec-1",
       eventType: "policy.evaluated",
+      eventVersion: 1,
       sequence: 3,
-      createdAt: new Date().toISOString(),
-      payload: { policy_id: "p-1", decision: "allowed" },
+      occurredAt: new Date().toISOString(),
+      source: "platform.tests",
+      severity: "info",
+      correlation: {
+        correlationId: "corr-3",
+        tenantId: "t-1",
+        executionId: "exec-1",
+        runId: "run-1",
+      },
+      payload: { policyId: "p-1", decision: "allowed" },
     };
 
     await registry.dispatch(event);
@@ -628,9 +670,18 @@ describe("Platform Integration (E2E)", () => {
       tenantId,
       executionId: "exec-int-1",
       eventType: "execution.completed",
+      eventVersion: 1,
       sequence: 1,
-      createdAt: new Date().toISOString(),
-      payload: { run_fingerprint: "fp-integration" },
+      occurredAt: new Date().toISOString(),
+      source: "platform.tests",
+      severity: "info",
+      correlation: {
+        correlationId: "corr-int-1",
+        tenantId,
+        executionId: "exec-int-1",
+        runId: "run-int-1",
+      },
+      payload: { runFingerprint: "fp-integration" },
     });
 
     await registry.dispatch({
@@ -639,9 +690,18 @@ describe("Platform Integration (E2E)", () => {
       tenantId,
       executionId: "exec-int-1",
       eventType: "policy.evaluated",
+      eventVersion: 1,
       sequence: 2,
-      createdAt: new Date().toISOString(),
-      payload: { policy_id: "policy-strict", decision: "allowed" },
+      occurredAt: new Date().toISOString(),
+      source: "platform.tests",
+      severity: "info",
+      correlation: {
+        correlationId: "corr-int-2",
+        tenantId,
+        executionId: "exec-int-1",
+        runId: "run-int-1",
+      },
+      payload: { policyId: "policy-strict", decision: "allowed" },
     });
 
     // 5. Verify trust graph state
@@ -681,7 +741,12 @@ describe("Platform Integration (E2E)", () => {
       tenantId,
       evidenceLevel: "full",
       replayRequired: true,
-      budgets: { maxComputeUnits: 1500, maxMemoryUnits: 5000, maxCasIoUnits: 200, maxReplayCalls: 3 },
+      budgets: {
+        maxComputeUnits: 1500,
+        maxMemoryUnits: 5000,
+        maxCasIoUnits: 200,
+        maxReplayCalls: 3,
+      },
       identity: { requiredRole: "operator", requiredScopes: [] },
       metadata: { allowDeterministicOverride: false },
     };
