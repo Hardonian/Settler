@@ -12,6 +12,9 @@ import { prisma } from "@/shared/db/prismaClient";
 
 import { matchTransactions, type MatchResult, type MatchingRule } from "./match-engine";
 
+export { matchTransactions };
+export type { MatchResult, MatchingRule };
+
 /**
  * Run reconciliation matching and save results to database
  */

@@ -18,6 +18,10 @@ const EXPECTED_MIGRATION_SHA256: Record<string, string> = {
   "009-refresh-tokens.sql": "030063f65c43b5ef789775b5fb3113f753070cc6192e301347c94ab2ed91ae6a",
   "018-operator-runtime-events.sql":
     "93ee67491cd8fda15ff49cbb196f9f161b2f8e7eac474e373af750c217acb779",
+  "20260310140000_webhook_replay_keys.sql":
+    "9b7a2f8b0a724f2916cc6205cb897a217f88012c00f549016a87f40508ec1a2c",
+  "20260310150000_rate_limit_counters.sql":
+    "5b461b1a7fa9dae50779796a6220f3e23bcc60d2ddecc2509cd2580f9b7946c6",
   "cqrs-projections.sql": "39f1c8c7db37275cb17c012864cd6fe92634469d6178c0b44342142e7291cb36",
   "event-sourcing.sql": "ee6a18b0555c866cf3ceb1b3a22dc918cf506a1a55d0ca45990e86f015992bda",
   "materialized-views.sql": "e82c8c2f6725893cb1ffcfa6813b432b1f7a0d5784945b9a8ae0187bd5dd57df",
