@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "generatedBy": "manual-curated",
+  "mappings": [
+    {
+      "method": "GET",
+      "path": "/api/v1/runs",
+      "testId": "api.v1.runs.auth.unauthenticated_problem_contract",
+      "testFile": "packages/web/src/__tests__/api/v1-runs-route.contract.test.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/runs",
+      "testId": "api.v1.runs.create.async_contract",
+      "testFile": "packages/web/src/__tests__/api/v1-runs-route.contract.test.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/runs",
+      "testId": "api.v1.runs.idempotency.conflict",
+      "testFile": "packages/web/src/__tests__/api/v1-runs-route.contract.test.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/runs",
+      "testId": "api.v1.runs.idempotency.tenant_isolation",
+      "testFile": "packages/web/src/__tests__/api/v1-runs-route.contract.test.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/runs",
+      "testId": "api.v1.runs.validation.invalid_body",
+      "testFile": "packages/web/src/__tests__/api/v1-runs-route.contract.test.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/runs/[id]",
+      "testId": "api.v1.runs.by_id.cross_tenant_denied",
+      "testFile": "packages/web/src/__tests__/api/tenant-runtime-cross-tenant.test.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/runs/[id]/results",
+      "testId": "api.v1.runs.results.cross_tenant_denied",
+      "testFile": "packages/web/src/__tests__/api/tenant-runtime-cross-tenant.test.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/runs/[id]/evidence",
+      "testId": "api.v1.runs.evidence.cross_tenant_denied",
+      "testFile": "packages/web/src/__tests__/api/tenant-runtime-cross-tenant.test.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/audit",
+      "testId": "api.admin.audit.authz.non_superadmin_denied",
+      "testFile": "packages/web/src/__tests__/api/admin-control-plane.contract.test.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/audit",
+      "testId": "api.admin.audit.validation.invalid_query_400",
+      "testFile": "packages/web/src/__tests__/api/admin-control-plane.contract.test.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/exceptions/[id]/resolve",
+      "testId": "api.admin.exceptions.resolve.invalid_id",
+      "testFile": "packages/web/src/__tests__/api/admin-control-plane.contract.test.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/exceptions/[id]/escalate",
+      "testId": "api.admin.exceptions.escalate.invalid_id",
+      "testFile": "packages/web/src/__tests__/api/admin-control-plane.contract.test.ts"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/control-plane/policies/[policyId]",
+      "testId": "api.control_plane.policies.invalid_json",
+      "testFile": "packages/web/src/__tests__/api/admin-control-plane.contract.test.ts"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/control-plane/policies/[policyId]",
+      "testId": "api.control_plane.policies.validation.enabled_boolean",
+      "testFile": "packages/web/src/__tests__/api/admin-control-plane.contract.test.ts"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/control-plane/policies/[policyId]",
+      "testId": "api.control_plane.policies.not_found",
+      "testFile": "packages/web/src/__tests__/api/admin-control-plane.contract.test.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/billing/payment-recovery",
+      "testId": "api.billing.payment_recovery.cross_user_denied",
+      "testFile": "packages/web/src/__tests__/api/support-billing-operator-tenant-boundary.test.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/billing/payment-recovery",
+      "testId": "api.billing.payment_recovery.post.cross_user_denied",
+      "testFile": "packages/web/src/__tests__/api/support-billing-operator-tenant-boundary.test.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/support/tickets",
+      "testId": "api.support.tickets.non_admin_denied_no_leak",
+      "testFile": "packages/web/src/__tests__/api/support-billing-operator-tenant-boundary.test.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/console/support/tickets",
+      "testId": "api.console.support_tickets.degraded_no_leak",
+      "testFile": "packages/web/src/__tests__/api/support-billing-operator-tenant-boundary.test.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/console/operator/control-plane",
+      "testId": "api.console.operator_control_plane.non_admin_denied_no_leak",
+      "testFile": "packages/web/src/__tests__/api/support-billing-operator-tenant-boundary.test.ts"
+    }
+  ]
+}

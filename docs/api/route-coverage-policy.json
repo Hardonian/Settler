@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "maxCriticalMissing": 40,
+  "maxCriticalMissingIncrease": 0,
+  "baselineCriticalMissing": 40
+}

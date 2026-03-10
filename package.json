@@ -260,7 +260,9 @@
     "build:clean": "pnpm run clean:all && pnpm install --frozen-lockfile && pnpm run build:all",
     "release:artifacts": "node scripts/release/package-artifacts.mjs",
     "verify:release:artifacts": "node scripts/release/verify-artifacts.mjs",
-    "release:dry-run": "pnpm run verify:release && pnpm run release:artifacts && pnpm run verify:release:artifacts"
+    "release:dry-run": "pnpm run verify:release && pnpm run release:artifacts && pnpm run verify:release:artifacts",
+    "generate:api-route-inventory": "tsx scripts/generate-api-route-inventory.ts",
+    "verify:api-route-inventory": "tsx scripts/verify-api-route-inventory.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
