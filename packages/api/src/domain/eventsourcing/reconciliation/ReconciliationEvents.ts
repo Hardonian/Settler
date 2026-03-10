@@ -3,7 +3,7 @@
  * Core lifecycle events for reconciliation flows
  */
 
-import { EventEnvelope, createEventEnvelope, createEventMetadata } from '../EventEnvelope';
+import { EventEnvelope, createEventEnvelope, createEventMetadata } from "../EventEnvelope";
 
 // ============================================================================
 // Event Data Types
@@ -18,12 +18,27 @@ export interface ReconciliationStartedData {
     start: string;
     end: string;
   };
+  execution_id: string;
+  attempt_number: number;
+  execution_kind: "initial" | "retry";
+  retry_of_execution_id?: string;
   initiated_by?: string;
+}
+
+export interface ReconciliationPausedData {
+  reconciliation_id: string;
+  paused_at: string;
+  reason?: string;
+}
+
+export interface ReconciliationResumedData {
+  reconciliation_id: string;
+  resumed_at: string;
 }
 
 export interface OrdersFetchedData {
   reconciliation_id: string;
-  source: 'shopify' | 'stripe' | string;
+  source: "shopify" | "stripe" | string;
   count: number;
   orders: Array<{
     id: string;
@@ -37,7 +52,7 @@ export interface OrdersFetchedData {
 
 export interface PaymentsFetchedData {
   reconciliation_id: string;
-  source: 'stripe' | 'paypal' | string;
+  source: "stripe" | "paypal" | string;
   count: number;
   payments: Array<{
     id: string;
@@ -84,6 +99,10 @@ export interface ReconciliationCompletedData {
     accuracy_percentage: number;
   };
   completed_at: string;
+  finalization: {
+    finalized_at: string;
+    finalization_source: "saga" | "operator" | "system";
+  };
 }
 
 export interface ReconciliationFailedData {
@@ -112,8 +131,42 @@ export class ReconciliationEvents {
   ): EventEnvelope<ReconciliationStartedData> {
     return createEventEnvelope(
       reconciliationId,
-      'reconciliation',
-      'ReconciliationStarted',
+      "reconciliation",
+      "ReconciliationStarted",
+      data,
+      createEventMetadata(tenantId, userId, correlationId),
+      1
+    );
+  }
+
+  static ReconciliationPaused(
+    reconciliationId: string,
+    data: ReconciliationPausedData,
+    tenantId: string,
+    userId?: string,
+    correlationId?: string
+  ): EventEnvelope<ReconciliationPausedData> {
+    return createEventEnvelope(
+      reconciliationId,
+      "reconciliation",
+      "ReconciliationPaused",
+      data,
+      createEventMetadata(tenantId, userId, correlationId),
+      1
+    );
+  }
+
+  static ReconciliationResumed(
+    reconciliationId: string,
+    data: ReconciliationResumedData,
+    tenantId: string,
+    userId?: string,
+    correlationId?: string
+  ): EventEnvelope<ReconciliationResumedData> {
+    return createEventEnvelope(
+      reconciliationId,
+      "reconciliation",
+      "ReconciliationResumed",
       data,
       createEventMetadata(tenantId, userId, correlationId),
       1
@@ -128,8 +181,8 @@ export class ReconciliationEvents {
   ): EventEnvelope<OrdersFetchedData> {
     return createEventEnvelope(
       reconciliationId,
-      'reconciliation',
-      'OrdersFetched',
+      "reconciliation",
+      "OrdersFetched",
       data,
       createEventMetadata(tenantId, undefined, correlationId),
       1
@@ -144,8 +197,8 @@ export class ReconciliationEvents {
   ): EventEnvelope<PaymentsFetchedData> {
     return createEventEnvelope(
       reconciliationId,
-      'reconciliation',
-      'PaymentsFetched',
+      "reconciliation",
+      "PaymentsFetched",
       data,
       createEventMetadata(tenantId, undefined, correlationId),
       1
@@ -160,8 +213,8 @@ export class ReconciliationEvents {
   ): EventEnvelope<RecordMatchedData> {
     return createEventEnvelope(
       reconciliationId,
-      'reconciliation',
-      'RecordMatched',
+      "reconciliation",
+      "RecordMatched",
       data,
       createEventMetadata(tenantId, undefined, correlationId),
       1
@@ -176,8 +229,8 @@ export class ReconciliationEvents {
   ): EventEnvelope<RecordUnmatchedData> {
     return createEventEnvelope(
       reconciliationId,
-      'reconciliation',
-      'RecordUnmatched',
+      "reconciliation",
+      "RecordUnmatched",
       data,
       createEventMetadata(tenantId, undefined, correlationId),
       1
@@ -192,8 +245,8 @@ export class ReconciliationEvents {
   ): EventEnvelope<ReconciliationCompletedData> {
     return createEventEnvelope(
       reconciliationId,
-      'reconciliation',
-      'ReconciliationCompleted',
+      "reconciliation",
+      "ReconciliationCompleted",
       data,
       createEventMetadata(tenantId, undefined, correlationId),
       1
@@ -208,8 +261,8 @@ export class ReconciliationEvents {
   ): EventEnvelope<ReconciliationFailedData> {
     return createEventEnvelope(
       reconciliationId,
-      'reconciliation',
-      'ReconciliationFailed',
+      "reconciliation",
+      "ReconciliationFailed",
       data,
       createEventMetadata(tenantId, undefined, correlationId),
       1

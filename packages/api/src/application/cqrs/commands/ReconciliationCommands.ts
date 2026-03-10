@@ -14,6 +14,7 @@ export interface StartReconciliationCommand {
     start: string;
     end: string;
   };
+  execution_id?: string;
   correlation_id?: string;
 }
 
@@ -22,6 +23,7 @@ export interface RetryReconciliationCommand {
   tenant_id: string;
   user_id?: string;
   from_step?: string;
+  execution_id?: string;
   correlation_id?: string;
 }
 
@@ -37,6 +39,7 @@ export interface PauseReconciliationCommand {
   reconciliation_id: string;
   tenant_id: string;
   user_id?: string;
+  reason?: string;
   correlation_id?: string;
 }
 
