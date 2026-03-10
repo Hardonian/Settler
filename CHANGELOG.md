@@ -13,6 +13,9 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Added deterministic demo and replay commands that generate evidence artifacts under `examples/demo-output` and replay fixtures under `examples/demo-output-fixtures`.
 - Added verification gates for policy boundaries and replay checks (`verify:policy`) and strengthened route smoke verification requirements.
 - Added new documentation: `docs/demo.md`, `docs/determinism.md`, `docs/policies.md`, `docs/investor.md`, and `docs/one-pager.md`.
+- Added release engineering automation with deterministic artifact packaging (`release:artifacts`), checksum verification (`verify:release:artifacts`), and release dry-run orchestration (`release:dry-run`).
+- Added a dedicated `release-engineering` GitHub Actions workflow with strict release gates and artifact publication for semver tags.
+- Added OSS packaging policy enforcement to block private-workspace dependency leakage into OSS release bundles.
 
 ### Changed
 

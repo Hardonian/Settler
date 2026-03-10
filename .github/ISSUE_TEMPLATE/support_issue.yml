@@ -1,0 +1,96 @@
+name: Support issue
+description: Capture user/operator support requests with structured context.
+title: "support: "
+labels:
+  - triage
+  - support
+body:
+  - type: input
+    id: tenant_id
+    attributes:
+      label: Tenant ID
+      placeholder: tenant_abc123
+    validations:
+      required: true
+
+  - type: input
+    id: run_id
+    attributes:
+      label: Run ID (optional)
+      placeholder: run_2026_02_18_01
+    validations:
+      required: false
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Support category
+      options:
+        - run_failure
+        - data_mismatch
+        - import_export
+        - replay_divergence
+        - auth_access
+        - performance
+        - billing_usage
+        - docs_other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - sev2_medium
+        - sev3_low
+        - sev1_high
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Issue description
+      description: What is the user/operator blocked on?
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro_context
+    attributes:
+      label: Reproduction context
+      description: Steps, date range, source systems, and what changed.
+    validations:
+      required: true
+
+  - type: textarea
+    id: contact_context
+    attributes:
+      label: Contact / requester context (optional)
+      description: Non-sensitive context needed for follow-up.
+      placeholder: user_id, role, timezone, preferred response channel
+    validations:
+      required: false
+
+  - type: textarea
+    id: triage_snapshot
+    attributes:
+      label: Triage snapshot (automation-friendly)
+      value: |
+        ## Classification
+        - support_category:
+        - severity:
+        - related_error_signature:
+
+        ## Correlation
+        - tenant_id:
+        - run_id:
+        - route_module:
+
+        ## Follow-up
+        - owner:
+        - target_response_sla:
+        - linked_incident_or_bug:
+    validations:
+      required: true

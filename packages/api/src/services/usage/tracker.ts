@@ -6,6 +6,7 @@
 import { query } from "../../db";
 import { logInfo } from "../../utils/logger";
 import { trackUsageEvent } from "../analytics/events";
+import { meterFromLegacyUsageMetric } from "./metering";
 
 export interface UsageTracking {
   userId: string;
@@ -42,6 +43,13 @@ export async function trackUsage(
 
     // Also track as analytics event
     await trackUsageEvent(userId, metricType, increment, { tenantId });
+
+    await meterFromLegacyUsageMetric({
+      tenantId,
+      metricType,
+      quantity: increment,
+      metadata: { user_id: userId },
+    });
 
     logInfo("Usage tracked", { userId, tenantId, metricType, increment });
   } catch (error) {
