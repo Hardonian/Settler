@@ -47,6 +47,22 @@ Optional integrations should be configured only when validating those specific s
 - [Repo integrity reference](docs/reference/repo-integrity.md)
 - [Workspace contracts](docs/reference/workspace-contracts.md)
 
+## Reconciliation synthetic verification
+
+Use the deterministic reconciliation foundry commands below during local debugging and CI parity checks:
+
+- `pnpm run test:reconciliation` — runs CLI reconciliation harness + reconciliation foundry tests.
+- `pnpm run test:reconciliation:e2e` — executes strict reconciliation verification (`smoke` profile, seed 42).
+- `pnpm run verify:reconciliation-runtime` — executes strict reconciliation verification (`integration` profile, seed 42).
+- `pnpm run generate:test-data:smoke` — generates deterministic smoke export fixtures under `test-data/exports`.
+
+For additional seeds, run:
+
+```bash
+pnpm --filter @settler/cli exec tsx src/index.ts foundry reconciliation-verify --seed 7 --profile smoke --strict
+pnpm --filter @settler/cli exec tsx src/index.ts foundry reconciliation-verify --seed 99 --profile smoke --strict
+```
+
 ## Integrity guarantee
 
 `pnpm run repo-integrity` is expected to pass on a healthy checkout and fails hard when workspace manifests, script references, or package contracts drift.

@@ -27,7 +27,8 @@ const output = process.env.RECON_OUTPUT ?? `test-data/exports/${profile}-seed${s
     actual: MatchClass;
     reason: string;
   }> = [];
-  for (const [txn, expected] of Object.entries(suite.golden.per_transaction)) {
+  for (const [txn, expectedClassification] of Object.entries(suite.golden.per_transaction)) {
+    const expected = expectedClassification.toLowerCase() as MatchClass;
     const actual = report.per_transaction[txn] ?? "unmatched_source_only";
     if (actual !== expected) {
       if (expected === "exact_match" && actual === "unmatched_source_only") {

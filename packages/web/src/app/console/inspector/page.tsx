@@ -220,8 +220,8 @@ export default function InspectorPage() {
                 </div>
               ) : runAttempts.length === 0 ? (
                 <EmptyState
-                  title="No reconciliation runs"
-                  description="Reconciliation runs will appear here when you start reconciling data"
+                  title="No reconciliation runs in this workspace"
+                  description="This workspace has not executed any reconciliation runs yet, or your current filters returned no results. Start a run from the playground, then refresh this page to inspect attempts and replay diagnostics."
                 />
               ) : (
                 <div className="space-y-4">

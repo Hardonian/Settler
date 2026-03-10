@@ -25,7 +25,10 @@ import { CSVColumnMapping } from "../../services/ingestion/types";
 import { checkIngestionLimit } from "../../middleware/usage-enforcement";
 import { trackIngestionUsage } from "../../utils/usage-tracking";
 import { getBillingAccount } from "../../utils/billing-helpers";
-import { isConnectorDisabled, isBackgroundJobPaused } from "../../services/operator-mode/kill-switches";
+import {
+  isConnectorDisabled,
+  isBackgroundJobPaused,
+} from "../../services/operator-mode/kill-switches";
 import { canRunBackgroundJob } from "../../services/operator-mode/cost-controls";
 
 const router: Router = Router();
@@ -50,7 +53,7 @@ router.post("/sources", async (req: AuthRequest, res: Response) => {
     }
 
     // Check kill switch for connector
-    if (connectorType && await isConnectorDisabled(connectorType)) {
+    if (connectorType && (await isConnectorDisabled(connectorType))) {
       return res.status(503).json({
         error: "Service Unavailable",
         message: `Connector ${connectorType} is currently disabled`,
@@ -159,6 +162,7 @@ router.post(
       if (!file) {
         return res.status(400).json({
           error: "Bad Request",
+          code: "INGESTION_CSV_REQUIRED",
           message: "CSV file is required",
           traceId: req.traceId,
         });
@@ -170,11 +174,17 @@ router.post(
       const traceId = req.traceId || uuidv4();
 
       // Parse CSV
-      const { headers, rows } = parseCSV(file.buffer);
-      if (!rows || rows.length === 0) {
+      let headers: string[] = [];
+      let rows: Array<Record<string, string | number | null | undefined>> = [];
+      try {
+        const parsed = parseCSV(file.buffer);
+        headers = parsed.headers;
+        rows = parsed.rows;
+      } catch (error) {
         return res.status(400).json({
           error: "Bad Request",
-          message: "CSV file is empty",
+          code: "INGESTION_CSV_PARSE_FAILED",
+          message: error instanceof Error ? error.message : "Invalid CSV payload",
           traceId,
         });
       }
@@ -192,6 +202,7 @@ router.post(
       if (!validation.valid) {
         return res.status(400).json({
           error: "Bad Request",
+          code: "INGESTION_INVALID_COLUMN_MAPPING",
           message: "Invalid column mapping",
           errors: validation.errors,
           detectedHeaders: headers,
@@ -208,14 +219,7 @@ router.post(
             id, tenant_id, user_id, name, type, status, created_at, updated_at
           ) VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
           RETURNING id`,
-          [
-            uuidv4(),
-            tenantId,
-            userId,
-            `CSV Import ${new Date().toISOString()}`,
-            "csv",
-            "active",
-          ]
+          [uuidv4(), tenantId, userId, `CSV Import ${new Date().toISOString()}`, "csv", "active"]
         );
         const firstResult = sourceResult[0];
         if (!firstResult || !firstResult.id) {
@@ -225,19 +229,21 @@ router.post(
       }
 
       // Check kill switches
-      if (await isBackgroundJobPaused('ingestion')) {
+      if (await isBackgroundJobPaused("ingestion")) {
         return res.status(503).json({
           error: "Service Unavailable",
+          code: "INGESTION_PAUSED",
           message: "Ingestion jobs are currently paused",
           traceId,
         });
       }
 
       // Check background job limits
-      const jobCheck = await canRunBackgroundJob('ingestion', tenantId);
+      const jobCheck = await canRunBackgroundJob("ingestion", tenantId);
       if (!jobCheck.allowed) {
         return res.status(429).json({
           error: "Too Many Requests",
+          code: "INGESTION_RATE_LIMITED",
           message: jobCheck.reason || "Background job limit exceeded",
           traceId,
         });
@@ -266,16 +272,10 @@ router.post(
           const normalized = normalizeCSVRow(row, columnMapping);
 
           // Create raw record
-          const rawRecordId = await createRawRecord(
-            ingestionId,
-            finalSourceId,
-            tenantId,
-            row,
-            {
-              rowNumber: i + 1,
-              externalId: normalized.externalId,
-            }
-          );
+          const rawRecordId = await createRawRecord(ingestionId, finalSourceId, tenantId, row, {
+            rowNumber: i + 1,
+            externalId: normalized.externalId,
+          });
 
           normalizedTransactions.push({
             transaction: normalized,
@@ -340,6 +340,7 @@ router.post(
       });
       return res.status(500).json({
         error: "Internal Server Error",
+        code: "INGESTION_UPLOAD_FAILED",
         message: "Failed to process CSV upload",
         traceId: req.traceId,
       });
@@ -356,8 +357,8 @@ router.get("/:ingestionId", async (req: AuthRequest, res: Response) => {
     const { ingestionId } = req.params;
     const tenantId = req.tenantId!;
 
-      const results = await query(
-        `SELECT 
+    const results = await query(
+      `SELECT 
         id, source_id, status, raw_record_count, normalized_count,
         failed_count, retry_count, trace_id, started_at, completed_at,
         error_message, metadata
@@ -388,9 +389,10 @@ router.get("/:ingestionId", async (req: AuthRequest, res: Response) => {
       startedAt: ingestion.started_at as Date,
       completedAt: ingestion.completed_at as Date | null,
       errorMessage: ingestion.error_message as string | null,
-      metadata: typeof ingestion.metadata === "string"
-        ? JSON.parse(ingestion.metadata)
-        : ingestion.metadata,
+      metadata:
+        typeof ingestion.metadata === "string"
+          ? JSON.parse(ingestion.metadata)
+          : ingestion.metadata,
     });
   } catch (error) {
     logError("Failed to get ingestion", error, { traceId: req.traceId });
@@ -406,71 +408,65 @@ router.get("/:ingestionId", async (req: AuthRequest, res: Response) => {
  * GET /api/v1/ingestion/:ingestionId/transactions
  * Get normalized transactions for an ingestion
  */
-router.get(
-  "/:ingestionId/transactions",
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const { ingestionId } = req.params;
-      const tenantId = req.tenantId!;
-      const limit = parseInt(req.query.limit as string) || 100;
-      const offset = parseInt(req.query.offset as string) || 0;
+router.get("/:ingestionId/transactions", async (req: AuthRequest, res: Response) => {
+  try {
+    const { ingestionId } = req.params;
+    const tenantId = req.tenantId!;
+    const limit = parseInt(req.query.limit as string) || 100;
+    const offset = parseInt(req.query.offset as string) || 0;
 
-      const transactions = await query(
-        `SELECT 
+    const transactions = await query(
+      `SELECT 
           id, external_id, amount, currency, date, description,
           category, payment_method, reference, metadata, created_at
         FROM normalized_transactions
         WHERE ingestion_id = $1 AND tenant_id = $2
         ORDER BY date DESC
         LIMIT $3 OFFSET $4`,
-        [ingestionId || "", tenantId, limit.toString(), offset.toString()]
-      );
+      [ingestionId || "", tenantId, limit.toString(), offset.toString()]
+    );
 
-      const totalResults = await query(
-        `SELECT COUNT(*) as count
+    const totalResults = await query(
+      `SELECT COUNT(*) as count
         FROM normalized_transactions
         WHERE ingestion_id = $1 AND tenant_id = $2`,
-        [ingestionId || "", tenantId]
-      );
+      [ingestionId || "", tenantId]
+    );
 
-      const firstTotalResult = totalResults[0];
-      if (!firstTotalResult) {
-        throw new Error("Failed to get transaction count");
-      }
-      const total = (firstTotalResult as { count: string }).count;
-
-      return res.json({
-        transactions: transactions.map((t: Record<string, unknown>) => ({
-          id: t.id as string,
-          externalId: t.external_id as string | null,
-          amount: t.amount as number,
-          currency: t.currency as string,
-          date: t.date as Date,
-          description: t.description as string | null,
-          category: t.category as string | null,
-          paymentMethod: t.payment_method as string | null,
-          reference: t.reference as string | null,
-          metadata:
-            typeof t.metadata === "string"
-              ? JSON.parse(t.metadata)
-              : t.metadata,
-          createdAt: t.created_at as Date,
-        })),
-        pagination: {
-          limit,
-          offset,
-          total: parseInt(total),
-        },
-      });
-    } catch (error) {
-      logError("Failed to get transactions", error, { traceId: req.traceId });
-      return res.status(500).json({
-        error: "Internal Server Error",
-        message: "Failed to get transactions",
-        traceId: req.traceId,
-      });
+    const firstTotalResult = totalResults[0];
+    if (!firstTotalResult) {
+      throw new Error("Failed to get transaction count");
     }
+    const total = (firstTotalResult as { count: string }).count;
+
+    return res.json({
+      transactions: transactions.map((t: Record<string, unknown>) => ({
+        id: t.id as string,
+        externalId: t.external_id as string | null,
+        amount: t.amount as number,
+        currency: t.currency as string,
+        date: t.date as Date,
+        description: t.description as string | null,
+        category: t.category as string | null,
+        paymentMethod: t.payment_method as string | null,
+        reference: t.reference as string | null,
+        metadata: typeof t.metadata === "string" ? JSON.parse(t.metadata) : t.metadata,
+        createdAt: t.created_at as Date,
+      })),
+      pagination: {
+        limit,
+        offset,
+        total: parseInt(total),
+      },
+    });
+  } catch (error) {
+    logError("Failed to get transactions", error, { traceId: req.traceId });
+    return res.status(500).json({
+      error: "Internal Server Error",
+      message: "Failed to get transactions",
+      traceId: req.traceId,
+    });
   }
-);
+});
 
 export default router;
