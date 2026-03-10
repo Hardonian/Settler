@@ -118,3 +118,16 @@ func hashBytes(content []byte) string {
 	_, _ = hasher.Write(content)
 	return hex.EncodeToString(hasher.Sum(nil))
 }
+
+func parseRateToMilliBps(value string) (int64, error) {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return 0, errors.New("empty rate")
+	}
+	rat, ok := new(big.Rat).SetString(value)
+	if !ok {
+		return 0, fmt.Errorf("invalid rate %s", value)
+	}
+	rat.Mul(rat, big.NewRat(100000000, 1))
+	return roundRatToInt64(rat, "bankers")
+}

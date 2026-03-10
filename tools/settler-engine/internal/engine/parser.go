@@ -320,6 +320,20 @@ func normalizeRow(recordType string, mapping FieldMapping, data map[string]strin
 	if err != nil {
 		return NormalizedRecord{}, fmt.Errorf("invalid date: %w", err)
 	}
+	feeAmountCents := int64(0)
+	if feeRaw := strings.TrimSpace(data[mapping.FeeAmount]); feeRaw != "" {
+		feeAmountCents, err = parseAmountToCents(feeRaw, roundingMode)
+		if err != nil {
+			return NormalizedRecord{}, fmt.Errorf("invalid fee amount: %w", err)
+		}
+	}
+	fxRateMilliBps := int64(0)
+	if fxRaw := strings.TrimSpace(data[mapping.FXRate]); fxRaw != "" {
+		fxRateMilliBps, err = parseRateToMilliBps(fxRaw)
+		if err != nil {
+			return NormalizedRecord{}, fmt.Errorf("invalid fx rate: %w", err)
+		}
+	}
 
 	return NormalizedRecord{
 		RecordType:            recordType,
@@ -330,6 +344,10 @@ func normalizeRow(recordType string, mapping FieldMapping, data map[string]strin
 		ReferenceID:           strings.TrimSpace(data[mapping.ReferenceID]),
 		ProviderTransactionID: strings.TrimSpace(data[mapping.ProviderTransactionID]),
 		ProviderSettlementID:  strings.TrimSpace(data[mapping.ProviderSettlementID]),
+		Status:                strings.TrimSpace(data[mapping.Status]),
+		FeeAmountCents:        feeAmountCents,
+		FXRateMilliBps:        fxRateMilliBps,
+		GroupKey:              strings.TrimSpace(data[mapping.GroupKey]),
 		SourceFile:            sourceFile,
 		SourceRow:             row,
 	}, nil
@@ -350,6 +368,10 @@ func defaultMappingConfig() MappingConfig {
 			ReferenceID:           "reference_id",
 			ProviderTransactionID: "provider_transaction_id",
 			ProviderSettlementID:  "provider_settlement_id",
+			Status:                "status",
+			FeeAmount:             "fee_amount",
+			FXRate:                "fx_rate",
+			GroupKey:              "group_key",
 		},
 		Settlements: FieldMapping{
 			ID:                    "id",
@@ -359,6 +381,10 @@ func defaultMappingConfig() MappingConfig {
 			ReferenceID:           "reference_id",
 			ProviderTransactionID: "provider_transaction_id",
 			ProviderSettlementID:  "provider_settlement_id",
+			Status:                "status",
+			FeeAmount:             "fee_amount",
+			FXRate:                "fx_rate",
+			GroupKey:              "group_key",
 		},
 	}
 }
@@ -385,6 +411,18 @@ func withDefaultFieldMapping(mapping FieldMapping) FieldMapping {
 	}
 	if mapping.ProviderSettlementID == "" {
 		mapping.ProviderSettlementID = defaults.ProviderSettlementID
+	}
+	if mapping.Status == "" {
+		mapping.Status = defaults.Status
+	}
+	if mapping.FeeAmount == "" {
+		mapping.FeeAmount = defaults.FeeAmount
+	}
+	if mapping.FXRate == "" {
+		mapping.FXRate = defaults.FXRate
+	}
+	if mapping.GroupKey == "" {
+		mapping.GroupKey = defaults.GroupKey
 	}
 	return mapping
 }

@@ -40,7 +40,7 @@ export abstract class ApiError extends Error {
 
 export class ValidationError extends ApiError {
   readonly statusCode = 400;
-  readonly errorCode = 'VALIDATION_ERROR';
+  readonly errorCode = "VALIDATION_ERROR";
   readonly field?: string;
   declare readonly details?: Array<{
     field: string;
@@ -48,11 +48,7 @@ export class ValidationError extends ApiError {
     code: string;
   }>;
 
-  constructor(
-    message: string,
-    field?: string,
-    details?: unknown
-  ) {
+  constructor(message: string, field?: string, details?: unknown) {
     super(message, details);
     if (field !== undefined) {
       this.field = field;
@@ -66,17 +62,17 @@ export class ValidationError extends ApiError {
 
 export class AuthenticationError extends ApiError {
   readonly statusCode = 401;
-  readonly errorCode = 'AUTHENTICATION_ERROR';
+  readonly errorCode = "AUTHENTICATION_ERROR";
 }
 
 export class AuthorizationError extends ApiError {
   readonly statusCode = 403;
-  readonly errorCode = 'AUTHORIZATION_ERROR';
+  readonly errorCode = "AUTHORIZATION_ERROR";
 }
 
 export class NotFoundError extends ApiError {
   readonly statusCode = 404;
-  readonly errorCode = 'NOT_FOUND';
+  readonly errorCode = "NOT_FOUND";
   readonly resourceType?: string;
   readonly resourceId?: string;
 
@@ -93,12 +89,12 @@ export class NotFoundError extends ApiError {
 
 export class ConflictError extends ApiError {
   readonly statusCode = 409;
-  readonly errorCode = 'CONFLICT';
+  readonly errorCode = "CONFLICT";
 }
 
 export class RateLimitError extends ApiError {
   readonly statusCode = 429;
-  readonly errorCode = 'RATE_LIMIT_EXCEEDED';
+  readonly errorCode = "RATE_LIMIT_EXCEEDED";
   readonly retryAfter?: number;
   readonly limit?: number;
   readonly remaining?: number;
@@ -125,12 +121,12 @@ export class RateLimitError extends ApiError {
 
 export class InternalServerError extends ApiError {
   readonly statusCode = 500;
-  readonly errorCode = 'INTERNAL_SERVER_ERROR';
+  readonly errorCode = "INTERNAL_SERVER_ERROR";
 }
 
 export class ServiceUnavailableError extends ApiError {
   readonly statusCode = 503;
-  readonly errorCode = 'SERVICE_UNAVAILABLE';
+  readonly errorCode = "SERVICE_UNAVAILABLE";
   readonly retryAfter?: number;
 
   constructor(message: string, retryAfter?: number, details?: unknown) {
@@ -143,7 +139,7 @@ export class ServiceUnavailableError extends ApiError {
 
 export class PayloadTooLargeError extends ApiError {
   readonly statusCode = 413;
-  readonly errorCode = 'PAYLOAD_TOO_LARGE';
+  readonly errorCode = "PAYLOAD_TOO_LARGE";
 }
 
 /**
@@ -168,13 +164,27 @@ export function toApiError(error: unknown): ApiError {
       type?: string;
     };
     const status = errorWithStatus.status ?? errorWithStatus.statusCode;
-    if (status === 413 || errorWithStatus.type === 'entity.too.large') {
-      return new PayloadTooLargeError('Request entity too large', {
+    if (status === 413 || errorWithStatus.type === "entity.too.large") {
+      return new PayloadTooLargeError("Request entity too large", {
         originalError: error.name,
       });
     }
+
+    const transitionLikeError = error as Error & {
+      code?: string;
+      currentState?: string;
+      attemptedAction?: string;
+    };
+    if (transitionLikeError.code === "INVALID_RECONCILIATION_TRANSITION") {
+      return new ConflictError(error.message, {
+        code: transitionLikeError.code,
+        currentState: transitionLikeError.currentState,
+        attemptedAction: transitionLikeError.attemptedAction,
+      });
+    }
+
     return new InternalServerError(error.message, { originalError: error.name });
   }
 
-  return new InternalServerError('An unexpected error occurred', { error });
+  return new InternalServerError("An unexpected error occurred", { error });
 }

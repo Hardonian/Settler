@@ -3,19 +3,21 @@
  * Main service that orchestrates reconciliation workflows
  */
 
-import { ReconciliationCommandHandlers } from '../cqrs/commands/ReconciliationCommandHandlers';
-import { SagaOrchestrator } from '../sagas/SagaOrchestrator';
-import { ShopifyStripeReconciliationSaga } from '../sagas/ShopifyStripeReconciliationSaga';
-import { IEventStore } from '../../infrastructure/eventsourcing/EventStore';
-import { IEventBus } from '../../infrastructure/events/IEventBus';
-import { DomainEvent } from '../../domain/events/DomainEvent';
-import { ShopifyAdapter } from '@settler/adapters';
-import { StripeAdapter } from '@settler/adapters';
+import { ReconciliationCommandHandlers } from "../cqrs/commands/ReconciliationCommandHandlers";
+import { SagaOrchestrator } from "../sagas/SagaOrchestrator";
+import { ShopifyStripeReconciliationSaga } from "../sagas/ShopifyStripeReconciliationSaga";
+import { IEventStore } from "../../infrastructure/eventsourcing/EventStore";
+import { IEventBus } from "../../infrastructure/events/IEventBus";
+import { DomainEvent } from "../../domain/events/DomainEvent";
+import { ShopifyAdapter } from "@settler/adapters";
+import { StripeAdapter } from "@settler/adapters";
 import {
   StartReconciliationCommand,
   RetryReconciliationCommand,
   CancelReconciliationCommand,
-} from '../cqrs/commands/ReconciliationCommands';
+  PauseReconciliationCommand,
+  ResumeReconciliationCommand,
+} from "../cqrs/commands/ReconciliationCommands";
 
 export class ReconciliationService {
   private commandHandlers: ReconciliationCommandHandlers;
@@ -28,7 +30,7 @@ export class ReconciliationService {
     stripeAdapter: StripeAdapter
   ) {
     this.commandHandlers = new ReconciliationCommandHandlers(eventStore, eventBus);
-    
+
     this.sagaOrchestrator = new SagaOrchestrator(
       undefined, // Will use default pool
       eventStore,
@@ -44,21 +46,33 @@ export class ReconciliationService {
     this.sagaOrchestrator.registerSaga(shopifyStripeSaga.createDefinition());
 
     // Subscribe to reconciliation started events to trigger saga
-    eventBus.subscribe('reconciliation.started', async (event: DomainEvent) => {
+    eventBus.subscribe("reconciliation.started", async (event: DomainEvent) => {
       // Type guard to check if event has required properties
-      if ('reconciliationId' in event && 'jobId' in event && 'correlationId' in event) {
+      if ("reconciliationId" in event && "jobId" in event && "correlationId" in event) {
         const reconciliationId = (event as { reconciliationId: string }).reconciliationId;
         const jobId = (event as { jobId: string }).jobId;
         const correlationId = (event as { correlationId: string }).correlationId;
-        const tenantId = 'tenantId' in event ? (event as { tenantId: string }).tenantId : 'default';
-        const dateRange = 'dateRange' in event ? (event as { dateRange?: { start: string; end: string } }).dateRange : undefined;
-        const shopifyConfig = 'shopifyConfig' in event ? (event as { shopifyConfig?: Record<string, unknown> }).shopifyConfig : undefined;
-        const stripeConfig = 'stripeConfig' in event ? (event as { stripeConfig?: Record<string, unknown> }).stripeConfig : undefined;
-        const matchingRules = 'matchingRules' in event ? (event as { matchingRules?: Record<string, unknown> }).matchingRules : undefined;
+        const tenantId = "tenantId" in event ? (event as { tenantId: string }).tenantId : "default";
+        const dateRange =
+          "dateRange" in event
+            ? (event as { dateRange?: { start: string; end: string } }).dateRange
+            : undefined;
+        const shopifyConfig =
+          "shopifyConfig" in event
+            ? (event as { shopifyConfig?: Record<string, unknown> }).shopifyConfig
+            : undefined;
+        const stripeConfig =
+          "stripeConfig" in event
+            ? (event as { stripeConfig?: Record<string, unknown> }).stripeConfig
+            : undefined;
+        const matchingRules =
+          "matchingRules" in event
+            ? (event as { matchingRules?: Record<string, unknown> }).matchingRules
+            : undefined;
 
         // Start saga
         await this.sagaOrchestrator.startSaga(
-          'shopify_stripe_monthly_reconciliation',
+          "shopify_stripe_monthly_reconciliation",
           reconciliationId,
           {
             job_id: jobId,
@@ -94,6 +108,20 @@ export class ReconciliationService {
    */
   async cancelReconciliation(command: CancelReconciliationCommand): Promise<void> {
     await this.commandHandlers.handleCancelReconciliation(command);
+  }
+
+  /**
+   * Pause a reconciliation
+   */
+  async pauseReconciliation(command: PauseReconciliationCommand): Promise<void> {
+    await this.commandHandlers.handlePauseReconciliation(command);
+  }
+
+  /**
+   * Resume a reconciliation
+   */
+  async resumeReconciliation(command: ResumeReconciliationCommand): Promise<void> {
+    await this.commandHandlers.handleResumeReconciliation(command);
   }
 
   /**

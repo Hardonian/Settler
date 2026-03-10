@@ -331,8 +331,8 @@ export async function batchCreateNormalizedTransactions(
       // Update raw record status if provided
       if (rawRecordId) {
         await client.query(
-          `UPDATE raw_records SET status = 'normalized', updated_at = NOW() WHERE id = $1`,
-          [rawRecordId]
+          `UPDATE raw_records SET status = 'normalized', updated_at = NOW() WHERE id = $1 AND tenant_id = $2`,
+          [rawRecordId, tenantId]
         );
       }
     }

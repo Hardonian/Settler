@@ -8,8 +8,65 @@ import {
 } from "../services/capabilities/registry";
 import { isMissingOptionalCapabilityDependency } from "../services/capabilities/errors";
 import { observeCapabilityStatus } from "../services/capabilities/telemetry";
+import { query } from "../db";
 
 export const platformControlPlaneRouter: Router = Router();
+
+async function getRecentImportWorkbenchSummary(tenantId: string): Promise<{
+  totalImports: number;
+  importsWithBlockingDiagnostics: number;
+  latest?: {
+    ingestionId: string;
+    completedAt: string | null;
+    canProceed?: boolean;
+  };
+}> {
+  const rows = await query(
+    `SELECT id, completed_at, metadata
+       FROM ingestions
+      WHERE tenant_id = $1
+      ORDER BY created_at DESC
+      LIMIT 20`,
+    [tenantId]
+  );
+
+  let importsWithBlockingDiagnostics = 0;
+  const first = rows[0] as Record<string, unknown> | undefined;
+
+  for (const row of rows as Record<string, unknown>[]) {
+    const metadata =
+      typeof row.metadata === "string"
+        ? (JSON.parse(row.metadata) as Record<string, unknown>)
+        : ((row.metadata as Record<string, unknown> | undefined) || {});
+    const workbench = (metadata.importWorkbench || {}) as Record<string, unknown>;
+    const diagnosticsSummary = (workbench.diagnosticsSummary || {}) as Record<string, unknown>;
+    const blocking = Number(diagnosticsSummary.blocking || 0);
+    if (blocking > 0) {
+      importsWithBlockingDiagnostics += 1;
+    }
+  }
+
+  let latest: { ingestionId: string; completedAt: string | null; canProceed?: boolean } | undefined;
+  if (first && typeof first.id === "string") {
+    const metadata =
+      typeof first.metadata === "string"
+        ? (JSON.parse(first.metadata) as Record<string, unknown>)
+        : ((first.metadata as Record<string, unknown> | undefined) || {});
+    const workbench = (metadata.importWorkbench || {}) as Record<string, unknown>;
+    latest = {
+      ingestionId: first.id,
+      completedAt: first.completed_at instanceof Date ? first.completed_at.toISOString() : null,
+      canProceed: typeof workbench.canProceed === "boolean" ? (workbench.canProceed as boolean) : undefined,
+    };
+  }
+
+  return {
+    totalImports: rows.length,
+    importsWithBlockingDiagnostics,
+    latest,
+  };
+}
+
 
 platformControlPlaneRouter.get(
   "/platform-control-plane/overview",
@@ -31,13 +88,17 @@ platformControlPlaneRouter.get(
         tenantId,
         Number.isFinite(days) ? Math.max(1, days) : 7
       );
+      const importWorkbench = await getRecentImportWorkbenchSummary(tenantId);
 
       const capability = provider.status();
       observeCapabilityStatus(capability, "/platform-control-plane/overview");
       observeCapabilityStatus(analyticsCapability, "/platform-control-plane/overview");
 
       res.json({
-        data: overview,
+        data: {
+          ...overview,
+          importWorkbench,
+        },
         capability: { operatorIntelligence: capability, enterpriseAnalytics: analyticsCapability },
         metadata: {
           tenantId,
@@ -54,7 +115,10 @@ platformControlPlaneRouter.get(
         observeCapabilityStatus(capability, "/platform-control-plane/overview");
         observeCapabilityStatus(analyticsCapability, "/platform-control-plane/overview");
         res.status(200).json({
-          data: await provider.getPlatformOverview(tenantId, 7),
+          data: {
+            ...(await provider.getPlatformOverview(tenantId, 7)),
+            importWorkbench: await getRecentImportWorkbenchSummary(tenantId),
+          },
           capability: {
             operatorIntelligence: capability,
             enterpriseAnalytics: analyticsCapability,

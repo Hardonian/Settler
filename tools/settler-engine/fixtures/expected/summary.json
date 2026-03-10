@@ -5,7 +5,7 @@
   "variance_by_type": {
     "amount_mismatch": 1,
     "currency_mismatch": 1,
-    "date_mismatch": 1,
-    "missing_transaction": 1
+    "missing_transaction": 1,
+    "manual_review_date": 1
   }
 }
