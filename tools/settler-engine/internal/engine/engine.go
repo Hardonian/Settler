@@ -74,7 +74,8 @@ func Run(inputPath string) (EngineOutput, error) {
 	}
 
 	transactions, settlements := splitRecords(normalized)
-	matches, variances := MatchRecords(transactions, settlements, ruleset, input.RoundingMode, location)
+	policyContext := BuildPolicyContext(ruleset)
+	matches, variances, ruleMetrics := MatchRecords(transactions, settlements, policyContext.Snapshot, ruleset, input.RoundingMode, location)
 
 	varianceSummary := summarizeVariances(variances)
 	normalizationSummary := NormalizationSummary{
@@ -117,6 +118,8 @@ func Run(inputPath string) (EngineOutput, error) {
 		NormalizationSummary:   normalizationSummary,
 		VarianceSummary:        varianceSummary,
 		VarianceItemsPath:      variancesPath,
+		PolicyContext:          policyContext,
+		RuleMetrics:            ruleMetrics,
 		DeterministicStatement: deterministicStatement(input),
 	}
 
