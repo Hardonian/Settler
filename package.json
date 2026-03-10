@@ -267,7 +267,7 @@
     "demo:settler": "tsx scripts/settler-demo-pipeline.ts",
     "replay:run": "pnpm --filter @settler/cli exec tsx src/tools/replay-runner.ts",
     "simulate:settler": "tsx scripts/simulate-settler.ts",
-    "tenant:create": "tsx scripts/tenant-create.ts"
+    "tenant:create": "tsx scripts/tenant-create.ts",
     "chaos:test": "tsx scripts/chaos-test.ts"
   },
   "lint-staged": {
