@@ -11,20 +11,32 @@ import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
 import { query } from "../db";
 import { handleRouteError } from "../utils/error-handler";
+import { getSupportIntakeProvider } from "../services/capabilities/registry";
+import { observeCapabilityStatus } from "../services/capabilities/telemetry";
+import { isMissingOptionalCapabilityDependency } from "../services/capabilities/errors";
 import { trackEventAsync } from "../utils/event-tracker";
 
 const router: Router = Router();
 
 const createFeedbackSchema = z.object({
   body: z.object({
-    source: z.enum(["sales_call", "user_interview", "support_ticket", "github_issue", "community", "survey"]),
+    source: z.enum([
+      "sales_call",
+      "user_interview",
+      "support_ticket",
+      "github_issue",
+      "community",
+      "survey",
+    ]),
     persona: z.enum(["cto", "cfo", "finance_ops", "developer"]).optional(),
     company: z.string().max(255).optional(),
-    context: z.object({
-      stage: z.enum(["evaluating", "onboarding", "active", "churned"]).optional(),
-      useCase: z.string().optional(),
-      transactionVolume: z.string().optional(),
-    }).optional(),
+    context: z
+      .object({
+        stage: z.enum(["evaluating", "onboarding", "active", "churned"]).optional(),
+        useCase: z.string().optional(),
+        transactionVolume: z.string().optional(),
+      })
+      .optional(),
     pain: z.object({
       description: z.string().min(1),
       severity: z.enum(["high", "medium", "low"]),
@@ -34,16 +46,22 @@ const createFeedbackSchema = z.object({
       description: z.string().min(1),
       successMetric: z.string().optional(),
     }),
-    workaround: z.object({
-      description: z.string(),
-      painPoints: z.array(z.string()),
-    }).optional(),
+    workaround: z
+      .object({
+        description: z.string(),
+        painPoints: z.array(z.string()),
+      })
+      .optional(),
     quotes: z.array(z.string()).optional(),
-    featureRequests: z.array(z.object({
-      feature: z.string(),
-      priority: z.enum(["high", "medium", "low"]),
-      rationale: z.string(),
-    })).optional(),
+    featureRequests: z
+      .array(
+        z.object({
+          feature: z.string(),
+          priority: z.enum(["high", "medium", "low"]),
+          rationale: z.string(),
+        })
+      )
+      .optional(),
     tags: z.array(z.string()).optional(),
   }),
 });
@@ -68,6 +86,7 @@ router.post(
     try {
       const userId = req.userId!;
       const feedback = req.body;
+      const provider = getSupportIntakeProvider();
 
       const result = await query<{ id: string }>(
         `INSERT INTO feedback (
@@ -92,23 +111,39 @@ router.post(
       );
 
       if (!result[0]) {
-        throw new Error('Failed to create feedback');
+        throw new Error("Failed to create feedback");
       }
 
       // Track event
-      trackEventAsync(userId, 'FeedbackCreated', {
+      trackEventAsync(userId, "FeedbackCreated", {
         feedbackId: result[0].id,
         source: feedback.source,
         persona: feedback.persona,
       });
 
+      const capability = provider.status();
+      observeCapabilityStatus(capability, "/feedback");
       res.status(201).json({
         data: {
           id: result[0].id,
         },
+        capability,
         message: "Feedback created successfully",
       });
     } catch (error: unknown) {
+      if (isMissingOptionalCapabilityDependency(error)) {
+        const capability = {
+          ...getSupportIntakeProvider().status(),
+          state: "unavailable" as const,
+          available: false,
+          reason: "Support intake storage is not configured in this OSS deployment",
+        };
+        observeCapabilityStatus(capability, "/feedback");
+        res
+          .status(200)
+          .json({ data: null, capability, message: "Support intake capability unavailable" });
+        return;
+      }
       handleRouteError(res, error, "Failed to create feedback", 500, { userId: req.userId });
     }
   }
@@ -122,6 +157,7 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const userId = req.userId!;
+      const provider = getSupportIntakeProvider();
       const queryParams = listFeedbackSchema.parse({ query: req.query });
       const { persona, source, startDate, endDate, limit, offset } = queryParams.query;
 
@@ -153,7 +189,7 @@ router.get(
         values.push(new Date(endDate));
       }
 
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
       const feedback = await query<{
         id: string;
@@ -185,28 +221,33 @@ router.get(
       );
 
       if (!countResult[0]) {
-        throw new Error('Failed to get feedback count');
+        throw new Error("Failed to get feedback count");
       }
       const total = parseInt(countResult[0].count);
 
+      const capability = provider.status();
+      observeCapabilityStatus(capability, "/feedback");
       res.json({
-        data: feedback.map((f) => {
-          if (!f) return null;
-          return {
-            id: f.id,
-            source: f.source,
-            persona: f.persona,
-            company: f.company,
-            context: f.context,
-            pain: f.pain,
-            desiredOutcome: f.desired_outcome,
-            workaround: f.workaround,
-            quotes: f.quotes,
-            featureRequests: f.feature_requests,
-            tags: f.tags,
-            createdAt: f.created_at.toISOString(),
-          };
-        }).filter((f) => f !== null),
+        data: feedback
+          .map((f) => {
+            if (!f) return null;
+            return {
+              id: f.id,
+              source: f.source,
+              persona: f.persona,
+              company: f.company,
+              context: f.context,
+              pain: f.pain,
+              desiredOutcome: f.desired_outcome,
+              workaround: f.workaround,
+              quotes: f.quotes,
+              featureRequests: f.feature_requests,
+              tags: f.tags,
+              createdAt: f.created_at.toISOString(),
+            };
+          })
+          .filter((f) => f !== null),
+        capability,
         pagination: {
           limit,
           offset,
@@ -215,6 +256,23 @@ router.get(
         },
       });
     } catch (error: unknown) {
+      if (isMissingOptionalCapabilityDependency(error)) {
+        const capability = {
+          ...getSupportIntakeProvider().status(),
+          state: "unavailable" as const,
+          available: false,
+          reason: "Support intake storage is not configured in this OSS deployment",
+        };
+        observeCapabilityStatus(capability, "/feedback");
+        res
+          .status(200)
+          .json({
+            data: [],
+            capability,
+            pagination: { limit: 0, offset: 0, total: 0, totalPages: 0 },
+          });
+        return;
+      }
       handleRouteError(res, error, "Failed to list feedback", 500, { userId: req.userId });
     }
   }
@@ -232,7 +290,9 @@ router.get(
         endDate?: string;
       };
 
-      const start = startDate ? new Date(startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      const start = startDate
+        ? new Date(startDate)
+        : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       const end = endDate ? new Date(endDate) : new Date();
 
       // Top pains by frequency
@@ -282,12 +342,12 @@ router.get(
 
       res.json({
         data: {
-          topPains: topPains.map(p => ({
+          topPains: topPains.map((p) => ({
             description: p.pain_description,
             count: parseInt(p.count),
             avgSeverity: parseFloat(p.avg_severity),
           })),
-          topFeatureRequests: topFeatureRequests.map(f => ({
+          topFeatureRequests: topFeatureRequests.map((f) => ({
             feature: f.feature,
             count: parseInt(f.count),
             avgPriority: parseFloat(f.avg_priority),
