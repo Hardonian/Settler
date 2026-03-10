@@ -254,7 +254,7 @@
     "verify:reconciliation:strict": "node scripts/verify-reconciliation-strict.mjs",
     "reconciliation:summary": "node scripts/reconciliation-run-tools.mjs summary test-data/exports/latest",
     "reconciliation:compare": "node scripts/reconciliation-run-tools.mjs compare test-data/exports/smoke-seed42 test-data/exports/latest",
-    "verify:issue-templates": "node scripts/validate-issue-templates.mjs"
+    "verify:issue-templates": "node scripts/validate-issue-templates.mjs",
     "version:sync": "node scripts/release/version-manager.mjs sync",
     "version:bump": "node scripts/release/version-manager.mjs bump",
     "build:clean": "pnpm run clean:all && pnpm install --frozen-lockfile && pnpm run build:all",

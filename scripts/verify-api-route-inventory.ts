@@ -37,7 +37,17 @@ function toPath(file: string): string {
 function main() {
   const mounted = new Set(walk(apiRoot).map(toPath));
   const inv = JSON.parse(readFileSync(inventoryPath, "utf8")) as {
-    totals: { criticalMissing?: number };
+    totals: {
+      criticalMissing?: number;
+      unmountedCandidates?: number;
+      undeclaredMethodHandlers?: number;
+      duplicateMethodPathEntries?: number;
+    };
+    diagnostics?: {
+      unmountedRouteCandidates?: string[];
+      undeclaredMethodHandlers?: Array<{ path: string; source: string }>;
+      duplicateMethodPathEntries?: string[];
+    };
     routes: Array<{ path: string; method: string; criticality: string; testStatus: string }>;
   };
   const mapping = JSON.parse(readFileSync(mappingPath, "utf8")) as { mappings: MappingEntry[] };
@@ -58,6 +68,15 @@ function main() {
   const staleInInventory = [...inventoryPaths].filter((p) => !mounted.has(p));
 
   const inventoryRouteKeys = new Set(inv.routes.map((r) => `${r.method} ${r.path}`));
+
+  const duplicateRouteKeys = new Map<string, number>();
+  for (const route of inv.routes) {
+    const key = `${route.method} ${route.path}`;
+    duplicateRouteKeys.set(key, (duplicateRouteKeys.get(key) ?? 0) + 1);
+  }
+  const duplicateRoutes = [...duplicateRouteKeys.entries()].filter(([, count]) => count > 1);
+  const diagnosticDuplicates = inv.diagnostics?.duplicateMethodPathEntries ?? [];
+
   const mappingMissingRoute = mapping.mappings.filter(
     (m) => !inventoryRouteKeys.has(`${m.method} ${m.path}`)
   );
@@ -91,6 +110,18 @@ function main() {
       `Route-test mappings reference missing test IDs/files (${mappingMissingTestId.length})`
     );
   }
+
+  if (duplicateRoutes.length > 0) {
+    errors.push(
+      `Inventory contains duplicate method/path route entries (${duplicateRoutes.length})`
+    );
+  }
+  if (diagnosticDuplicates.length !== duplicateRoutes.length) {
+    errors.push(
+      `Inventory diagnostics duplicate count (${diagnosticDuplicates.length}) does not match computed duplicates (${duplicateRoutes.length})`
+    );
+  }
+
   if (criticalMissing > policy.maxCriticalMissing) {
     errors.push(
       `Critical missing routes (${criticalMissing}) exceeds policy maxCriticalMissing (${policy.maxCriticalMissing})`
@@ -114,7 +145,7 @@ function main() {
   }
 
   console.log(
-    `API route inventory verification passed. criticalMissing=${criticalMissing}, max=${policy.maxCriticalMissing}`
+    `API route inventory verification passed. criticalMissing=${criticalMissing}, max=${policy.maxCriticalMissing}, unmountedCandidates=${inv.totals.unmountedCandidates ?? 0}, undeclaredMethodHandlers=${inv.totals.undeclaredMethodHandlers ?? 0}`
   );
 }
 
