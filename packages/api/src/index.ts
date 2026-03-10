@@ -69,6 +69,7 @@ import cookieParser from "cookie-parser";
 import { initializeWebSocket } from "./infrastructure/websocket";
 import { createServer } from "http";
 import { scanJsonDepth } from "./utils/json-depth";
+import { emitOperatorRuntimeEvent } from "./services/ops-intelligence/runtime-events";
 
 const app: Express = express();
 const PORT = config.port;
@@ -150,6 +151,39 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   if (authReq.tenantId) {
     res.setHeader("X-Tenant-Id", authReq.tenantId);
   }
+  next();
+});
+
+// Runtime operator event stream (best-effort, non-blocking)
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const startedAt = Date.now();
+  res.on("finish", () => {
+    const tenantId =
+      (req as AuthRequest).tenantId || (req.headers["x-tenant-id"] as string | undefined);
+    if (!tenantId || !req.path.startsWith("/api/")) return;
+
+    void emitOperatorRuntimeEvent({
+      eventType: "api_request",
+      tenantId,
+      recordsProcessed: 1,
+      durationMs: Date.now() - startedAt,
+      errorId: res.statusCode >= 500 ? (req as AuthRequest).traceId || null : null,
+      metadata: {
+        method: req.method,
+        path: req.path,
+        statusCode: res.statusCode,
+      },
+    });
+
+    if (res.statusCode >= 500) {
+      void emitOperatorRuntimeEvent({
+        eventType: "error_thrown",
+        tenantId,
+        errorId: (req as AuthRequest).traceId || null,
+        metadata: { method: req.method, path: req.path, statusCode: res.statusCode },
+      });
+    }
+  });
   next();
 });
 
