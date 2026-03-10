@@ -148,7 +148,7 @@ export default function OperatorControlPlanePage() {
         <p className="text-sm text-amber-600">Degraded mode: partial data available.</p>
       ) : null}
 
-      <section className="grid grid-cols-2 md:grid-cols-5 gap-3">
+      <section className="grid grid-cols-2 md:grid-cols-7 gap-3">
         <Metric label="Runs/day" value={health?.runs_per_day ?? 0} />
         <Metric
           label="Failure rate"
@@ -160,6 +160,11 @@ export default function OperatorControlPlanePage() {
           value={`${Number(health?.manual_review_rate ?? 0).toFixed(2)}%`}
         />
         <Metric label="API error" value={`${Number(health?.api_error_rate ?? 0).toFixed(2)}%`} />
+        <Metric label="API p95" value={`${Math.round(Number(health?.api_latency_p95 ?? 0))}ms`} />
+        <Metric
+          label="Recon p95"
+          value={`${Math.round(Number(health?.run_duration_p95 ?? 0))}ms`}
+        />
       </section>
 
       <section className="grid md:grid-cols-2 gap-4">
@@ -182,6 +187,12 @@ export default function OperatorControlPlanePage() {
           <p className="text-sm">Error spikes in 24h: {recentErrorSpikeCount}</p>
           <p className="text-sm">Alert history entries: {payload.data.alerts.length}</p>
         </div>
+      </section>
+
+      <section>
+        <a className="text-sm underline" href="/operator/incidents">
+          Open incident queue (/operator/incidents)
+        </a>
       </section>
 
       <section className="rounded border p-4">

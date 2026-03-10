@@ -33,6 +33,16 @@ interface AlertCandidate {
   message: string;
 }
 
+interface IncidentCandidate {
+  incidentType: "match_rate_drop" | "run_failure" | "latency_spike" | "error_spike";
+  severity: "warning" | "critical";
+  tenantId: string | null;
+  runId: string | null;
+  status: "open";
+  summary: string;
+  evidence: Record<string, number | string | null>;
+}
+
 const supportSchema = z.object({
   subject: z.string().min(3).max(180),
   description: z.string().min(5).max(5000),
@@ -80,6 +90,24 @@ async function ensureOperatorTables(): Promise<void> {
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
     CREATE INDEX IF NOT EXISTS idx_operator_error_issue_links_last_seen ON operator_error_issue_links(last_seen_at DESC);
+
+    CREATE TABLE IF NOT EXISTS system_incidents (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      incident_type TEXT NOT NULL,
+      severity TEXT NOT NULL,
+      tenant_id UUID,
+      run_id UUID,
+      status TEXT NOT NULL DEFAULT 'open',
+      summary TEXT NOT NULL,
+      evidence JSONB NOT NULL DEFAULT '{}'::jsonb,
+      acknowledged_at TIMESTAMPTZ,
+      acknowledged_by TEXT,
+      linked_run_id UUID,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS idx_system_incidents_created_at ON system_incidents(created_at DESC);
+    CREATE INDEX IF NOT EXISTS idx_system_incidents_status ON system_incidents(status);
   `);
 }
 
@@ -138,6 +166,66 @@ function computeAnomalies(row: Record<string, number | null | undefined>): Alert
   return anomalies;
 }
 
+function computeIncidentCandidates(row: Record<string, number | null | undefined>): IncidentCandidate[] {
+  const toNumber = (v: number | null | undefined) => Number(v ?? 0);
+  const recentFailure = toNumber(row.recent_failure_rate);
+  const baseFailure = toNumber(row.baseline_failure_rate);
+  const recentMatchRate = toNumber(row.recent_match_rate);
+  const baseMatchRate = toNumber(row.baseline_match_rate);
+  const recentP95 = toNumber(row.recent_api_p95_ms);
+  const baseP95 = toNumber(row.baseline_api_p95_ms);
+  const recentApiError = toNumber(row.recent_api_error_rate);
+  const baseApiError = toNumber(row.baseline_api_error_rate);
+
+  const incidents: IncidentCandidate[] = [];
+  if (recentMatchRate < Math.max(85, baseMatchRate - 6)) {
+    incidents.push({
+      incidentType: "match_rate_drop",
+      severity: recentMatchRate < Math.max(75, baseMatchRate - 12) ? "critical" : "warning",
+      tenantId: null,
+      runId: null,
+      status: "open",
+      summary: `Match rate dropped to ${recentMatchRate.toFixed(2)}% (baseline ${baseMatchRate.toFixed(2)}%).`,
+      evidence: { recentMatchRate, baselineMatchRate: baseMatchRate },
+    });
+  }
+  if (recentFailure > Math.max(6, baseFailure * 1.75)) {
+    incidents.push({
+      incidentType: "run_failure",
+      severity: recentFailure > Math.max(12, baseFailure * 2.2) ? "critical" : "warning",
+      tenantId: null,
+      runId: null,
+      status: "open",
+      summary: `Run failure rate spiked to ${recentFailure.toFixed(2)}% (baseline ${baseFailure.toFixed(2)}%).`,
+      evidence: { recentFailureRate: recentFailure, baselineFailureRate: baseFailure },
+    });
+  }
+  if (recentP95 > Math.max(1200, baseP95 * 1.8)) {
+    incidents.push({
+      incidentType: "latency_spike",
+      severity: recentP95 > Math.max(2500, baseP95 * 2.5) ? "critical" : "warning",
+      tenantId: null,
+      runId: null,
+      status: "open",
+      summary: `API latency p95 rose to ${Math.round(recentP95)}ms (baseline ${Math.round(baseP95)}ms).`,
+      evidence: { recentApiLatencyP95Ms: recentP95, baselineApiLatencyP95Ms: baseP95 },
+    });
+  }
+  if (recentApiError > Math.max(2.5, baseApiError * 2)) {
+    incidents.push({
+      incidentType: "error_spike",
+      severity: recentApiError > Math.max(7, baseApiError * 2.5) ? "critical" : "warning",
+      tenantId: null,
+      runId: null,
+      status: "open",
+      summary: `API error rate increased to ${recentApiError.toFixed(2)}% (baseline ${baseApiError.toFixed(2)}%).`,
+      evidence: { recentApiErrorRate: recentApiError, baselineApiErrorRate: baseApiError },
+    });
+  }
+
+  return incidents;
+}
+
 async function persistAlerts(anomalies: AlertCandidate[]): Promise<void> {
   for (const alert of anomalies) {
     await prisma.$executeRaw`
@@ -164,6 +252,41 @@ async function persistAlerts(anomalies: AlertCandidate[]): Promise<void> {
         message = EXCLUDED.message,
         payload = EXCLUDED.payload,
         updated_at = NOW();
+    `;
+  }
+}
+
+async function persistIncidents(candidates: IncidentCandidate[]): Promise<void> {
+  for (const incident of candidates) {
+    await prisma.$executeRaw`
+      INSERT INTO system_incidents (
+        incident_type,
+        severity,
+        tenant_id,
+        run_id,
+        status,
+        summary,
+        evidence,
+        created_at,
+        updated_at
+      )
+      SELECT
+        ${incident.incidentType},
+        ${incident.severity},
+        ${incident.tenantId}::uuid,
+        ${incident.runId}::uuid,
+        ${incident.status},
+        ${incident.summary},
+        ${JSON.stringify(incident.evidence)}::jsonb,
+        NOW(),
+        NOW()
+      WHERE NOT EXISTS (
+        SELECT 1
+        FROM system_incidents si
+        WHERE si.incident_type = ${incident.incidentType}
+          AND si.status = 'open'
+          AND si.created_at >= NOW() - interval '6 hours'
+      );
     `;
   }
 }
@@ -382,6 +505,7 @@ async function buildPayload(days: number) {
     ), recent_runs AS (
       SELECT
         COALESCE((COUNT(*) FILTER (WHERE status = 'failed')::numeric / NULLIF(COUNT(*), 0)) * 100, 0)::float8 AS failure_rate,
+        COALESCE((SUM(matched_count)::numeric / NULLIF(SUM(source_count), 0)) * 100, 0)::float8 AS match_rate,
         COALESCE(AVG(CASE WHEN source_count > 0
           THEN COALESCE(mrc.manual_review_count, 0) / source_count::float8 * 100
           ELSE 0
@@ -395,6 +519,7 @@ async function buildPayload(days: number) {
     baseline_runs AS (
       SELECT
         COALESCE((COUNT(*) FILTER (WHERE status = 'failed')::numeric / NULLIF(COUNT(*), 0)) * 100, 0)::float8 AS failure_rate,
+        COALESCE((SUM(matched_count)::numeric / NULLIF(SUM(source_count), 0)) * 100, 0)::float8 AS match_rate,
         COALESCE(AVG(CASE WHEN source_count > 0
           THEN COALESCE(mrc.manual_review_count, 0) / source_count::float8 * 100
           ELSE 0
@@ -424,6 +549,8 @@ async function buildPayload(days: number) {
     SELECT
       recent_runs.failure_rate AS recent_failure_rate,
       baseline_runs.failure_rate AS baseline_failure_rate,
+      recent_runs.match_rate AS recent_match_rate,
+      baseline_runs.match_rate AS baseline_match_rate,
       recent_runs.manual_review_rate AS recent_manual_review_rate,
       baseline_runs.manual_review_rate AS baseline_manual_review_rate,
       recent_api.p95_ms AS recent_api_p95_ms,
@@ -435,6 +562,8 @@ async function buildPayload(days: number) {
 
   const anomalies = computeAnomalies(anomalyWindow ?? {});
   await persistAlerts(anomalies);
+  const incidentCandidates = computeIncidentCandidates(anomalyWindow ?? {});
+  await persistIncidents(incidentCandidates);
 
   const persistedAlerts = await prisma.$queryRaw<Array<Record<string, unknown>>>(`
     SELECT dedupe_key, metric, severity, status, triggered_count,
@@ -589,6 +718,13 @@ async function buildPayload(days: number) {
 
   return {
     systemHealth: systemHealth ?? null,
+    runtimeMetrics: {
+      runThroughputPerDay: Number(systemHealth?.runs_per_day ?? 0),
+      apiLatencyP95Ms: Number(systemHealth?.api_latency_p95 ?? 0),
+      reconciliationDurationP95Ms: Number(systemHealth?.run_duration_p95 ?? 0),
+      manualReviewRate: Number(systemHealth?.manual_review_rate ?? 0),
+      errorRate: Number(systemHealth?.api_error_rate ?? 0),
+    },
     activity: {
       recentRuns,
       failedRuns: recentRuns.filter((r) => r.status === "failed").slice(0, 10),
