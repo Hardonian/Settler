@@ -11,6 +11,7 @@ import {
   exportReconciliationSuite,
   generateReconciliationSuite,
   validateSuiteDeterminism,
+  verifyReconciliationContract,
 } from "../lib/reconciliation-foundry";
 
 function parseSeeds(raw: string): number[] {
@@ -280,13 +281,39 @@ foundryCommand
 
 foundryCommand
   .command("reconciliation-verify")
-  .description("Verify deterministic generation for reconciliation suites")
+  .description("Verify deterministic generation and runtime reconciliation contract")
   .option("--seed <seed>", "Deterministic seed", "42")
   .option("--profile <profile>", "smoke|integration|load|chaos", "smoke")
-  .action((options: { seed: string; profile: "smoke" | "integration" | "load" | "chaos" }) => {
-    const ok = validateSuiteDeterminism(Number(options.seed) || 42, options.profile);
-    if (!ok) {
-      throw new Error("Determinism verification failed for reconciliation synthetic suite");
+  .option("--strict", "Fail on any runtime contract diff", false)
+  .action(
+    (options: {
+      seed: string;
+      profile: "smoke" | "integration" | "load" | "chaos";
+      strict?: boolean;
+    }) => {
+      const seed = Number(options.seed) || 42;
+      const deterministic = validateSuiteDeterminism(seed, options.profile);
+      if (!deterministic) {
+        throw new Error("Determinism verification failed for reconciliation synthetic suite");
+      }
+
+      const suite = generateReconciliationSuite({ seed, profile: options.profile });
+      const contract = verifyReconciliationContract(suite);
+      if (options.strict && !contract.ok) {
+        throw new Error(
+          `Runtime reconciliation contract diff detected: ${JSON.stringify(contract, null, 2)}`
+        );
+      }
+
+      logJson({
+        deterministic,
+        seed,
+        profile: options.profile,
+        strict: Boolean(options.strict),
+        contract_ok: contract.ok,
+        non_tolerated_diffs: contract.diffs.length + contract.summaryDiffs.length,
+        diff_preview: contract.diffs.slice(0, 5),
+        summary_diffs: contract.summaryDiffs,
+      });
     }
-    logJson({ deterministic: true, seed: Number(options.seed) || 42, profile: options.profile });
-  });
+  );

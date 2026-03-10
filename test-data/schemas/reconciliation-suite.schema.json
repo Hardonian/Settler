@@ -8,22 +8,48 @@
       "type": "object",
       "required": ["seed", "profile", "generated_at", "workspace_id", "scenario_mix"],
       "properties": {
-        "seed": { "type": "integer" },
-        "profile": { "enum": ["smoke", "integration", "load", "chaos"] },
-        "generated_at": { "type": "string" },
-        "workspace_id": { "type": "string" },
-        "scenario_mix": { "type": "array", "items": { "type": "string" } }
+        "seed": {
+          "type": "integer"
+        },
+        "profile": {
+          "enum": ["smoke", "integration", "load", "chaos"]
+        },
+        "generated_at": {
+          "type": "string"
+        },
+        "workspace_id": {
+          "type": "string"
+        },
+        "scenario_mix": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
-    "sources": { "type": "object" },
-    "scenarios": { "type": "array" },
+    "sources": {
+      "type": "object"
+    },
+    "scenarios": {
+      "type": "array"
+    },
     "golden": {
       "type": "object",
-      "required": ["expected_summary", "per_transaction", "expected_results"],
+      "required": ["expected_summary", "per_transaction", "runtime_matches", "expected_results"],
       "properties": {
-        "expected_summary": { "type": "object" },
-        "per_transaction": { "type": "object" },
-        "expected_results": { "type": "object" }
+        "expected_summary": {
+          "type": "object"
+        },
+        "per_transaction": {
+          "type": "object"
+        },
+        "expected_results": {
+          "type": "object"
+        },
+        "runtime_matches": {
+          "type": "array"
+        }
       }
     }
   }

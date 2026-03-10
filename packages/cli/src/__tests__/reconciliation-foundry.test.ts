@@ -9,6 +9,7 @@ import {
   exportReconciliationSuite,
   generateReconciliationSuite,
   validateSuiteDeterminism,
+  verifyReconciliationContract,
 } from "../lib/reconciliation-foundry";
 
 describe("reconciliation synthetic foundry", () => {
@@ -21,6 +22,43 @@ describe("reconciliation synthetic foundry", () => {
     const categories = new Set(suite.scenarios.map((scenario) => scenario.category));
     expect(categories.size).toBe(11);
     expect(suite.sources.BANK_STATEMENT.length).toBe(100);
+    expect(suite.scenarios.every((scenario) => scenario.expected_classifications.length > 0)).toBe(
+      true
+    );
+  });
+
+  test("emits first-class runtime semantics and stable contract", () => {
+    const suite = generateReconciliationSuite({ seed: 42, profile: "chaos" });
+    const contract = verifyReconciliationContract(suite);
+
+    expect(contract.ok).toBe(true);
+    expect(suite.golden.runtime_matches.length).toBe(suite.sources.PAYMENT_PROCESSOR.length);
+    expect(suite.golden.runtime_matches.some((m) => m.classification === "DISPUTE_RELATED")).toBe(
+      true
+    );
+    expect(suite.golden.runtime_matches.some((m) => m.classification === "REVERSAL_RELATED")).toBe(
+      true
+    );
+    expect(
+      suite.golden.runtime_matches
+        .filter((m) => m.classification === "MANUAL_REVIEW")
+        .every((m) => m.manual_review_rationale_codes.length > 0)
+    ).toBe(true);
+    const disputeRelated = suite.golden.runtime_matches.filter(
+      (m) => m.classification === "DISPUTE_RELATED"
+    );
+    expect(disputeRelated.every((m) => Boolean(m.dispute_phase))).toBe(true);
+    expect(disputeRelated.some((m) => m.manual_review_rationale_codes.length > 0)).toBe(true);
+    expect(
+      suite.golden.runtime_matches
+        .filter((m) => m.classification === "REVERSAL_RELATED")
+        .every((m) => m.reversal_phase)
+    ).toBe(true);
+    const grouped = suite.golden.runtime_matches.filter(
+      (m) => m.classification === "GROUPED_MATCH"
+    );
+    expect(grouped.every((m) => Boolean(m.group_id))).toBe(true);
+    expect(grouped.some((m) => (m.group_member_transaction_ids?.length ?? 0) > 1)).toBe(true);
   });
 
   test("exports JSON, CSV, expectation matrix, malformed input", () => {

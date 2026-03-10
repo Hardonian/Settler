@@ -31,7 +31,7 @@ Each generated run exports:
 
 - source raw datasets (`*.json`, `*.csv`)
 - scenario manifest (`scenarios.json`)
-- reconciliation golden truth (`golden.json`)
+- reconciliation golden truth (`golden.json`) including `runtime_matches` with classification, group metadata, rationale codes, and dispute/reversal markers
 - expected result matrix (`expected_results.json`)
 - generation manifest (`manifest.json`)
 - deterministic integrity hash (`integrity.sha256`)
@@ -40,7 +40,8 @@ Each generated run exports:
 
 - `pnpm --filter @settler/cli exec tsx src/index.ts foundry reconciliation-generate --seed 42 --profile smoke --output test-data/exports/smoke-seed42`
 - `pnpm --filter @settler/cli exec tsx src/index.ts foundry reconciliation-generate --seed 42 --profile chaos --output test-data/exports/chaos-seed42`
-- `pnpm --filter @settler/cli exec tsx src/index.ts foundry reconciliation-verify --seed 42 --profile smoke`
+- `pnpm --filter @settler/cli exec tsx src/index.ts foundry reconciliation-verify --seed 42 --profile smoke --strict`
+- `pnpm run verify:reconciliation:strict` (writes persistent snapshots to `artifacts/reconciliation/strict-matrix/latest.json` and timestamped history files)
 
 ## Profiles
 
@@ -49,19 +50,21 @@ Each generated run exports:
 - `load`: ~50,000 records per core stream
 - `chaos`: ~10,000 records per core stream with heavy adverse cases
 
-## Expected outcomes / match classes
+## Runtime classification enum
 
-- exact_match
-- fuzzy_match
-- grouped_match
-- duplicate_detected
-- timing_variance
-- fx_variance
-- fee_variance
-- status_conflict
-- manual_review
-- unmatched_source_only (reserved for future unresolved orphan generation)
-- unmatched_target_only (reserved for future unresolved orphan generation)
+- EXACT_MATCH
+- FUZZY_MATCH
+- GROUPED_MATCH
+- UNMATCHED_SOURCE_ONLY
+- UNMATCHED_TARGET_ONLY
+- DUPLICATE_DETECTED
+- TIMING_VARIANCE
+- FEE_VARIANCE
+- FX_VARIANCE
+- STATUS_CONFLICT
+- DISPUTE_RELATED
+- REVERSAL_RELATED
+- MANUAL_REVIEW
 
 ## Extending the suite
 
@@ -74,4 +77,4 @@ Each generated run exports:
 
 - No real parser round-trip for external third-party raw files beyond generated CSV/JSON.
 - Dispute lifecycle is represented, but representment timeline states are simplified.
-- Grouped matching expectations are generated as labels, not yet asserted against API engine grouped-match endpoint behavior.
+- Grouped matching is first-class in `runtime_matches`, but API/UI surfaces still have legacy fields to migrate.
