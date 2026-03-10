@@ -2,41 +2,7 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "../middleware/auth";
 import { query } from "../db";
 import { config } from "../config";
-
-interface RateLimitEntry {
-  count: number;
-  resetAt: number;
-}
-
-const tenantStore = new Map<string, RateLimitEntry>();
-const globalStore = new Map<string, RateLimitEntry>();
-
-function consume(store: Map<string, RateLimitEntry>, key: string, limit: number, windowMs: number) {
-  const now = Date.now();
-  const entry = store.get(key);
-
-  if (!entry || entry.resetAt <= now) {
-    const next = { count: 1, resetAt: now + windowMs };
-    store.set(key, next);
-    return { allowed: true, remaining: Math.max(0, limit - 1), resetAt: next.resetAt };
-  }
-
-  if (entry.count >= limit) {
-    return { allowed: false, remaining: 0, resetAt: entry.resetAt };
-  }
-
-  entry.count += 1;
-  return { allowed: true, remaining: Math.max(0, limit - entry.count), resetAt: entry.resetAt };
-}
-
-function cleanupExpired(store: Map<string, RateLimitEntry>) {
-  const now = Date.now();
-  for (const [key, value] of store.entries()) {
-    if (value.resetAt <= now) {
-      store.delete(key);
-    }
-  }
-}
+import { consumeRateLimitShared, logRateLimitTriggered } from "../services/distributed-guards";
 
 function shouldBypass(req: AuthRequest): boolean {
   const path = req.path.toLowerCase();
@@ -57,6 +23,7 @@ export async function checkRateLimit(req: AuthRequest): Promise<{
   remaining: number;
   resetAt: number;
   scope: "tenant" | "global" | "bypass";
+  guarantee?: "distributed_shared" | "local_only" | "degraded" | "unavailable";
 }> {
   const windowMs = config.rateLimiting.windowMs;
 
@@ -65,21 +32,29 @@ export async function checkRateLimit(req: AuthRequest): Promise<{
   }
 
   const tenantKey = req.tenantId || req.apiKeyId || req.userId || req.ip || "anonymous";
+  const routeScope = `${req.method.toUpperCase()}:${req.route?.path || req.path}`.toLowerCase();
   const tenantLimit = await resolveTenantLimit(req);
-  const tenantResult = consume(tenantStore, tenantKey, tenantLimit, windowMs);
+  const tenantResult = await consumeRateLimitShared({
+    tenantScope: tenantKey,
+    routeScope,
+    limit: tenantLimit,
+    windowMs,
+  });
   if (!tenantResult.allowed) {
     return { ...tenantResult, scope: "tenant" };
   }
 
   const globalKey = req.ip || "global";
   const globalLimit = Math.max(tenantLimit * 5, 500);
-  const globalResult = consume(globalStore, globalKey, globalLimit, windowMs);
+  const globalResult = await consumeRateLimitShared({
+    tenantScope: globalKey,
+    routeScope: "global",
+    limit: globalLimit,
+    windowMs,
+  });
   if (!globalResult.allowed) {
     return { ...globalResult, scope: "global" };
   }
-
-  if (tenantStore.size > 20000) cleanupExpired(tenantStore);
-  if (globalStore.size > 20000) cleanupExpired(globalStore);
 
   return { ...tenantResult, scope: "tenant" };
 }
@@ -92,16 +67,21 @@ export function rateLimitMiddleware() {
       res.setHeader("X-RateLimit-Limit", config.rateLimiting.defaultLimit);
       res.setHeader("X-RateLimit-Remaining", result.remaining);
       res.setHeader("X-RateLimit-Reset", new Date(result.resetAt).toISOString());
+      if (result.guarantee) {
+        res.setHeader("X-RateLimit-Guarantee", result.guarantee);
+      }
     }
 
     if (!result.allowed) {
       const retryAfter = Math.max(1, Math.ceil((result.resetAt - Date.now()) / 1000));
       res.setHeader("Retry-After", retryAfter.toString());
+      logRateLimitTriggered(result.scope, result.guarantee || "local_only");
       res.status(429).json({
         error: "RATE_LIMITED",
         message: "Rate limit exceeded",
         scope: result.scope,
         retryAfter,
+        guarantee: result.guarantee || "local_only",
       });
       return;
     }

@@ -51,3 +51,31 @@ Boundary rule of thumb:
 1. Core reconciliation, auth, tenancy, safety invariants stay in OSS runtime.
 2. Enterprise-only modules attach via provider interfaces in `services/capabilities/providers/*`.
 3. Routes must gate behavior from provider status and expose machine-readable capability truth.
+
+## Distributed rate limiting + webhook replay guarantees
+
+Settler now exposes truthful guard levels for both API rate limiting and webhook replay dedupe:
+
+- `distributed_shared`: Redis-backed, safe across multiple API instances.
+- `local_only`: in-process memory fallback; safe only for single-instance/local runs.
+- `degraded`: feature still active on a shared fallback with tradeoffs (DB counters/ledger) or on local fallback when shared backing is unavailable.
+- `unavailable`: guard cannot be enforced and is surfaced as unavailable.
+
+### Runtime behavior by mode
+
+- **Enterprise/hosted (Redis configured and reachable):** rate limiting and webhook replay dedupe run in `distributed_shared` mode.
+- **OSS/local with Redis:** same `distributed_shared` guarantees for multi-process local testing.
+- **OSS/local without Redis:** rate limiting falls back to DB counters (`degraded`, shared but lower-throughput) and then memory (`local_only`) if DB is unavailable; webhook replay uses DB ledger fallback (`degraded`) and memory fallback only when DB is also unavailable.
+
+Capability statuses are available at `GET /api/v1/capabilities` under:
+
+- `rate_limiting_guard`
+- `webhook_replay_guard`
+
+Webhook receive responses now include `X-Webhook-Replay-Guarantee`; rate-limited responses include `X-RateLimit-Guarantee` and a stable structured 429 payload including `guarantee`.
+
+Observability metrics:
+
+- `distributed_guard_guarantee_state` (Gauge)
+- `distributed_guard_guarantee_transitions_total` (Counter)
+- `webhook_replay_rejected_total` (Counter)

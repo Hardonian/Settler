@@ -5,17 +5,18 @@
  */
 
 import { Router, Request, Response } from "express";
-import { createHash } from "crypto";
 import { WebhookIngestionService } from "../../../application/webhooks/WebhookIngestionService";
 import { sendSuccess, sendError } from "../../../utils/api-response";
 import { handleRouteError } from "../../../utils/error-handler";
+import {
+  consumeWebhookReplayKey,
+  logWebhookReplayRejected,
+} from "../../../services/distributed-guards";
 
 const router: Router = Router();
 const webhookService = new WebhookIngestionService();
-const processedWebhookKeys = new Map<string, number>();
 
 const MAX_TIMESTAMP_SKEW_MS = 5 * 60 * 1000;
-const WEBHOOK_DEDUP_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 function parseWebhookTimestamp(req: Request): number | null {
   const header = req.headers["x-webhook-timestamp"] || req.headers["x-timestamp"];
@@ -30,36 +31,6 @@ function parseWebhookTimestamp(req: Request): number | null {
   }
 
   return asNumber > 9999999999 ? asNumber : asNumber * 1000;
-}
-
-function getReplayKey(adapter: string, tenantId: string, payload: unknown, signature: string): string {
-  const fingerprint = createHash("sha256")
-    .update(JSON.stringify(payload))
-    .update(signature)
-    .digest("hex");
-
-  return `${adapter}:${tenantId}:${fingerprint}`;
-}
-
-function isReplay(key: string): boolean {
-  const now = Date.now();
-  const existing = processedWebhookKeys.get(key);
-
-  if (existing && now - existing <= WEBHOOK_DEDUP_WINDOW_MS) {
-    return true;
-  }
-
-  processedWebhookKeys.set(key, now);
-
-  if (processedWebhookKeys.size > 5000) {
-    for (const [entryKey, createdAt] of processedWebhookKeys.entries()) {
-      if (now - createdAt > WEBHOOK_DEDUP_WINDOW_MS) {
-        processedWebhookKeys.delete(entryKey);
-      }
-    }
-  }
-
-  return false;
 }
 
 /**
@@ -89,12 +60,30 @@ router.post("/:adapter", async (req: Request, res: Response) => {
 
     const webhookTimestamp = parseWebhookTimestamp(req);
     if (webhookTimestamp && Math.abs(Date.now() - webhookTimestamp) > MAX_TIMESTAMP_SKEW_MS) {
-      return sendError(res, 400, "WEBHOOK_TIMESTAMP_EXPIRED", "Webhook timestamp outside accepted window");
+      return sendError(
+        res,
+        400,
+        "WEBHOOK_TIMESTAMP_EXPIRED",
+        "Webhook timestamp outside accepted window"
+      );
     }
 
-    const replayKey = getReplayKey(adapter, tenantId, req.body, String(signature));
-    if (isReplay(replayKey)) {
-      return sendSuccess(res, { processed: true, deduplicated: true, events: 0 }, "Duplicate webhook ignored");
+    const replay = await consumeWebhookReplayKey({
+      adapter,
+      tenantId,
+      payload: req.body,
+      signature: String(signature),
+    });
+
+    res.setHeader("X-Webhook-Replay-Guarantee", replay.guarantee);
+
+    if (replay.duplicate) {
+      logWebhookReplayRejected(replay.guarantee, adapter);
+      return sendSuccess(
+        res,
+        { processed: true, deduplicated: true, events: 0, guarantee: replay.guarantee },
+        "Duplicate webhook ignored"
+      );
     }
 
     const secret = await getWebhookSecret(adapter, tenantId);
@@ -124,6 +113,7 @@ router.post("/:adapter", async (req: Request, res: Response) => {
       processed: true,
       deduplicated: false,
       events: result.events.length,
+      guarantee: replay.guarantee,
     });
     return;
   } catch (error: unknown) {

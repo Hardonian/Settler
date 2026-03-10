@@ -1,5 +1,6 @@
 import { logWarn } from "../../utils/logger";
 import type { CapabilityRegistry, CapabilityStatus } from "./types";
+import { getDistributedGuarantees } from "../distributed-guards";
 import {
   OssOperatorIntelligenceProvider,
   UnavailableOperatorIntelligenceProvider,
@@ -120,6 +121,7 @@ export async function getCapabilityRegistry(): Promise<CapabilityRegistry> {
   const usageMetering = getUsageMeteringProvider();
   const supportIntake = getSupportIntakeProvider();
   const enterpriseAnalytics = getEnterpriseAnalyticsProvider();
+  const guarantees = await getDistributedGuarantees();
 
   return new InMemoryCapabilityRegistry([
     operatorIntelligence.status(),
@@ -127,6 +129,32 @@ export async function getCapabilityRegistry(): Promise<CapabilityRegistry> {
     usageMetering.status(),
     supportIntake.status(),
     enterpriseAnalytics.status(),
+    {
+      key: "rate_limiting_guard",
+      available: guarantees.rateLimiting !== "unavailable",
+      state:
+        guarantees.rateLimiting === "distributed_shared"
+          ? "available"
+          : guarantees.rateLimiting === "local_only"
+            ? "degraded"
+            : "degraded",
+      source: "oss",
+      reason: `Guarantee: ${guarantees.rateLimiting}`,
+      guarantee: guarantees.rateLimiting,
+    },
+    {
+      key: "webhook_replay_guard",
+      available: guarantees.webhookReplayDedup !== "unavailable",
+      state:
+        guarantees.webhookReplayDedup === "distributed_shared"
+          ? "available"
+          : guarantees.webhookReplayDedup === "local_only"
+            ? "degraded"
+            : "degraded",
+      source: "oss",
+      reason: `Guarantee: ${guarantees.webhookReplayDedup}`,
+      guarantee: guarantees.webhookReplayDedup,
+    },
     {
       key: "enterprise_surface",
       available: false,

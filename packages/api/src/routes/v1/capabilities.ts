@@ -17,6 +17,8 @@ const capabilityPermissionMap: Record<string, Permission[]> = {
   enterprise_analytics: [Permission.ADMIN_READ],
   enterprise_surface: [Permission.ADMIN_READ],
   support_intake: [Permission.USERS_READ],
+  rate_limiting_guard: [Permission.USERS_READ],
+  webhook_replay_guard: [Permission.USERS_READ],
 };
 
 async function resolveRequestPermissions(
