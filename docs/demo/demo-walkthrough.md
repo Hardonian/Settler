@@ -1,25 +1,44 @@
-# Demo Walkthrough (Deterministic Operator Flow)
+# Demo Walkthrough (Settler Operator Flow)
 
-## CLI + artifact validation
+This walkthrough assumes `pnpm demo:settler` has completed successfully.
 
-1. `pnpm run bootstrap`
-2. `pnpm run demo`
-3. Inspect `examples/demo-output/evidence.json` for proof envelope and evidence metadata.
-4. Inspect `examples/demo-output/run.json` for execution metadata.
-5. Replay evidence: `pnpm exec tsx scripts/settler-replay.ts examples/demo-output/evidence.json`
+## 1) Bootstrap the demo
 
-## In-product operator story
+```bash
+pnpm demo:settler
+```
 
-1. Open `/app` (**Control Plane**) for workflow entrypoints.
-2. Open `/app/runs` and select a run from **Run Explorer**.
-3. From run detail, inspect deterministic replay status and evidence summary.
-4. Open `/app/proofs` (**Truth Explorer**) for proof-chain and lineage investigation.
-5. Open `/app/evidence` (**Evidence Query Surface**) and verify retrieval modes (run id, fingerprint, policy hash).
-6. Open `/app/alerts` (**Live Alerts**) for incident context.
-7. Open `/app/replay` (**Replay Lab**) to re-run deterministic checks.
-8. Open `/app/settings` (**Tenant Isolation Controls**) to inspect boundary and governance controls.
-9. Open `/app/metrics` (**Runtime Event Signals**) for event-derived telemetry.
+The command verifies the environment, attempts migrations, loads demo data, starts local services, runs a deterministic reconciliation simulation, and verifies replay.
 
-## Route integrity
+## 2) Explore operator surfaces
 
-- Optional UI verification: `pnpm run verify:routes`
+- **Run Explorer**: `http://localhost:3000/app/runs`
+- **Truth Explorer**: `http://localhost:3000/app/proofs`
+- **Live Event Stream**: `http://localhost:3000/app/metrics`
+- **Alerts**: `http://localhost:3000/app/alerts`
+- **Replay Lab**: `http://localhost:3000/app/replay`
+
+## 3) Validate replay determinism
+
+```bash
+pnpm replay:run
+```
+
+For direct replay file verification:
+
+```bash
+pnpm exec tsx scripts/settler-replay.ts examples/demo-output/evidence.json
+```
+
+## 4) Validate policy simulation
+
+```bash
+pnpm simulate:settler
+```
+
+## 5) Inspect generated artifacts
+
+- `examples/demo-output/run.json`
+- `examples/demo-output/results.json`
+- `examples/demo-output/evidence.json`
+- `examples/demo-output/operator-demo-artifacts.json`

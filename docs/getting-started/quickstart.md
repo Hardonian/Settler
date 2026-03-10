@@ -1,24 +1,25 @@
 # Quickstart
 
-## Fast path (core local)
+## Fast path
 
 ```bash
-pnpm run bootstrap
-pnpm run demo
-pnpm run dev:stack
+pnpm install
+cp .env.local.example .env.local
+pnpm demo:settler
 ```
 
-## Full path
+## What `pnpm demo:settler` does
 
-1. Install Node 24.x and pnpm 10.13.1.
-2. Run `pnpm run bootstrap`.
-3. Re-run `pnpm run repo-integrity` to validate monorepo contract manually.
-4. Run `pnpm run doctor -- --skip-pipeline` for strict diagnostics once env/runtime services are available.
-5. Run `pnpm run demo` to validate deterministic execution + replay proof.
+1. Verifies environment with `pnpm doctor -- --skip-pipeline --first-run`.
+2. Attempts migrations when `DATABASE_URL` is set.
+3. Loads demo dataset into `examples/demo-data/dataset.json`.
+4. Starts local services (`pnpm dev:stack`) if not already running.
+5. Runs deterministic reconciliation simulation (`pnpm demo`).
+6. Runs replay verification and prints guided operator URLs.
 
 ## Success criteria
 
-- `repo-integrity` passes.
-- `doctor --first-run` passes.
-- `demo` prints run fingerprint + replay verified.
-- `dev:stack` starts API and web processes (with required local runtime dependencies available).
+- `demo:settler` exits successfully.
+- Demo artifacts are generated in `examples/demo-output/`.
+- Web console is reachable at `http://localhost:3000`.
+- API is reachable at `http://localhost:4000`.
