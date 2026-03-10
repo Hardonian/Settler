@@ -2,9 +2,10 @@ import { Router, Response } from "express";
 import { AuthRequest } from "../middleware/auth";
 import { handleRouteError } from "../utils/error-handler";
 import {
-  buildPlatformOverview,
-  loadTenantTelemetry,
-} from "../services/ops-intelligence/control-plane-analytics";
+  getOperatorIntelligenceProvider,
+  getUnavailableOperatorIntelligenceProvider,
+} from "../services/capabilities/registry";
+import { isMissingOptionalCapabilityDependency } from "../services/capabilities/errors";
 
 export const platformControlPlaneRouter: Router = Router();
 
@@ -22,21 +23,33 @@ platformControlPlaneRouter.get(
 
     try {
       const days = Number(req.query.days || 7);
-      const telemetry = await loadTenantTelemetry(
+      const provider = await getOperatorIntelligenceProvider();
+      const overview = await provider.getPlatformOverview(
         tenantId,
         Number.isFinite(days) ? Math.max(1, days) : 7
       );
-      const overview = buildPlatformOverview(telemetry);
 
       res.json({
         data: overview,
+        capability: provider.status(),
         metadata: {
           tenantId,
-          recordCount: telemetry.length,
           generatedAt: new Date().toISOString(),
         },
       });
     } catch (error) {
+      if (isMissingOptionalCapabilityDependency(error)) {
+        const provider = getUnavailableOperatorIntelligenceProvider(
+          "Operator intelligence storage tables are not present in OSS mode"
+        );
+        res.status(200).json({
+          data: await provider.getPlatformOverview(tenantId, 7),
+          capability: provider.status(),
+          metadata: { tenantId, generatedAt: new Date().toISOString() },
+        });
+        return;
+      }
+
       handleRouteError(res, error, "Failed to load platform control plane overview", 500, {
         tenantId,
         userId: req.userId,
@@ -59,7 +72,8 @@ platformControlPlaneRouter.get(
     try {
       const format = (req.query.format as string) || "json";
       const days = Number(req.query.days || 30);
-      const telemetry = await loadTenantTelemetry(
+      const provider = await getOperatorIntelligenceProvider();
+      const telemetry = await provider.getTelemetryForExport(
         tenantId,
         Number.isFinite(days) ? Math.max(1, days) : 30
       );
@@ -109,6 +123,7 @@ platformControlPlaneRouter.get(
 
       res.json({
         data: telemetry,
+        capability: provider.status(),
         metadata: {
           tenantId,
           count: telemetry.length,
@@ -116,6 +131,18 @@ platformControlPlaneRouter.get(
         },
       });
     } catch (error) {
+      if (isMissingOptionalCapabilityDependency(error)) {
+        const provider = getUnavailableOperatorIntelligenceProvider(
+          "Operator intelligence storage tables are not present in OSS mode"
+        );
+        res.status(200).json({
+          data: await provider.getTelemetryForExport(tenantId, 30),
+          capability: provider.status(),
+          metadata: { tenantId, count: 0, generatedAt: new Date().toISOString() },
+        });
+        return;
+      }
+
       handleRouteError(res, error, "Failed to export analytics dataset", 500, {
         tenantId,
         userId: req.userId,

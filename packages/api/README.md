@@ -34,3 +34,19 @@ pnpm --filter @settler/api test:tenant-safety
 
 - Stable core: health/metrics, middleware chain, v1 operational APIs.
 - Strategic/internal expansion: much of v2 surface.
+
+## OSS/private capability boundary
+
+The API now uses a capability registry to separate OSS-safe runtime behavior from optional private providers.
+
+- `services/capabilities/registry.ts` is the single loader/registry for optional capabilities.
+- OSS core **must not** hard-import private modules. Private providers are loaded only through `SETTLER_OPERATOR_INTELLIGENCE_PROVIDER_MODULE` dynamic import.
+- Operator intelligence endpoints (`/api/v1/operator/intelligence/*`, `/platform-control-plane/*`) always return truthful capability metadata.
+- If optional storage or provider dependencies are absent, these endpoints degrade safely with deterministic empty datasets and capability state `unavailable` instead of hard 500s.
+- Capability inventory is exposed at `GET /api/v1/capabilities`.
+
+Boundary rule of thumb:
+
+1. Core reconciliation, auth, tenancy, safety invariants stay in OSS runtime.
+2. Enterprise-only modules attach via provider interfaces in `services/capabilities/providers/*`.
+3. Routes must gate behavior from provider status and expose machine-readable capability truth.
