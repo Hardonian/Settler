@@ -10,6 +10,7 @@ import {
   getUnavailableOperatorIntelligenceProvider,
 } from "../../services/capabilities/registry";
 import { isMissingOptionalCapabilityDependency } from "../../services/capabilities/errors";
+import { observeCapabilityStatus } from "../../services/capabilities/telemetry";
 
 const router: Router = Router();
 
@@ -29,15 +30,19 @@ router.get(
         tenantId,
         Number.isFinite(days) ? days : 7
       );
-      return res.json({ data, capability: provider.status() });
+      const capability = provider.status();
+      observeCapabilityStatus(capability, "/api/v1/operator/intelligence/system-health");
+      return res.json({ data, capability });
     } catch (error: unknown) {
       if (isMissingOptionalCapabilityDependency(error)) {
         const provider = getUnavailableOperatorIntelligenceProvider(
           "Operator intelligence storage tables are not present in OSS mode"
         );
+        const capability = provider.status();
+        observeCapabilityStatus(capability, "/api/v1/operator/intelligence/system-health");
         return res.status(200).json({
           data: await provider.getSystemHealthSnapshot(tenantId, 7),
-          capability: provider.status(),
+          capability,
         });
       }
 
@@ -73,15 +78,19 @@ router.get(
         runId: typeof req.query.runId === "string" ? req.query.runId : undefined,
         limit: typeof req.query.limit === "string" ? Number(req.query.limit) : undefined,
       });
-      return res.json({ data: runs, capability: provider.status() });
+      const capability = provider.status();
+      observeCapabilityStatus(capability, "/api/v1/operator/intelligence/run-explorer");
+      return res.json({ data: runs, capability });
     } catch (error: unknown) {
       if (isMissingOptionalCapabilityDependency(error)) {
         const provider = getUnavailableOperatorIntelligenceProvider(
           "Operator intelligence storage tables are not present in OSS mode"
         );
+        const capability = provider.status();
+        observeCapabilityStatus(capability, "/api/v1/operator/intelligence/run-explorer");
         return res.status(200).json({
           data: await provider.getRunExplorer(tenantId, {}),
-          capability: provider.status(),
+          capability,
         });
       }
 

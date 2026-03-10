@@ -43,7 +43,8 @@ The API now uses a capability registry to separate OSS-safe runtime behavior fro
 - OSS core **must not** hard-import private modules. Private providers are loaded only through `SETTLER_OPERATOR_INTELLIGENCE_PROVIDER_MODULE` dynamic import.
 - Operator intelligence endpoints (`/api/v1/operator/intelligence/*`, `/platform-control-plane/*`) always return truthful capability metadata.
 - If optional storage or provider dependencies are absent, these endpoints degrade safely with deterministic empty datasets and capability state `unavailable` instead of hard 500s.
-- Capability inventory is exposed at `GET /api/v1/capabilities`.
+- Capability inventory is exposed at `GET /api/v1/capabilities` with role/scope projection at `GET /api/v1/capabilities/projected`.
+- Capability state observations are emitted to `capability_status_observed_total` Prometheus metric for operator observability.
 
 Boundary rule of thumb:
 

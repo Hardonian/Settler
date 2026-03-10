@@ -2,10 +2,12 @@ import { Router, Response } from "express";
 import { AuthRequest } from "../middleware/auth";
 import { handleRouteError } from "../utils/error-handler";
 import {
+  getEnterpriseAnalyticsProvider,
   getOperatorIntelligenceProvider,
   getUnavailableOperatorIntelligenceProvider,
 } from "../services/capabilities/registry";
 import { isMissingOptionalCapabilityDependency } from "../services/capabilities/errors";
+import { observeCapabilityStatus } from "../services/capabilities/telemetry";
 
 export const platformControlPlaneRouter: Router = Router();
 
@@ -24,14 +26,19 @@ platformControlPlaneRouter.get(
     try {
       const days = Number(req.query.days || 7);
       const provider = await getOperatorIntelligenceProvider();
+      const analyticsCapability = getEnterpriseAnalyticsProvider().status();
       const overview = await provider.getPlatformOverview(
         tenantId,
         Number.isFinite(days) ? Math.max(1, days) : 7
       );
 
+      const capability = provider.status();
+      observeCapabilityStatus(capability, "/platform-control-plane/overview");
+      observeCapabilityStatus(analyticsCapability, "/platform-control-plane/overview");
+
       res.json({
         data: overview,
-        capability: provider.status(),
+        capability: { operatorIntelligence: capability, enterpriseAnalytics: analyticsCapability },
         metadata: {
           tenantId,
           generatedAt: new Date().toISOString(),
@@ -42,9 +49,16 @@ platformControlPlaneRouter.get(
         const provider = getUnavailableOperatorIntelligenceProvider(
           "Operator intelligence storage tables are not present in OSS mode"
         );
+        const capability = provider.status();
+        const analyticsCapability = getEnterpriseAnalyticsProvider().status();
+        observeCapabilityStatus(capability, "/platform-control-plane/overview");
+        observeCapabilityStatus(analyticsCapability, "/platform-control-plane/overview");
         res.status(200).json({
           data: await provider.getPlatformOverview(tenantId, 7),
-          capability: provider.status(),
+          capability: {
+            operatorIntelligence: capability,
+            enterpriseAnalytics: analyticsCapability,
+          },
           metadata: { tenantId, generatedAt: new Date().toISOString() },
         });
         return;
@@ -73,6 +87,7 @@ platformControlPlaneRouter.get(
       const format = (req.query.format as string) || "json";
       const days = Number(req.query.days || 30);
       const provider = await getOperatorIntelligenceProvider();
+      const analyticsCapability = getEnterpriseAnalyticsProvider().status();
       const telemetry = await provider.getTelemetryForExport(
         tenantId,
         Number.isFinite(days) ? Math.max(1, days) : 30
@@ -117,13 +132,18 @@ platformControlPlaneRouter.get(
           "Content-Disposition",
           `attachment; filename=tenant-${tenantId}-telemetry.csv`
         );
+        observeCapabilityStatus(provider.status(), "/platform-control-plane/analytics/export");
+        observeCapabilityStatus(analyticsCapability, "/platform-control-plane/analytics/export");
         res.send(csv);
         return;
       }
 
+      const capability = provider.status();
+      observeCapabilityStatus(capability, "/platform-control-plane/analytics/export");
+      observeCapabilityStatus(analyticsCapability, "/platform-control-plane/analytics/export");
       res.json({
         data: telemetry,
-        capability: provider.status(),
+        capability: { operatorIntelligence: capability, enterpriseAnalytics: analyticsCapability },
         metadata: {
           tenantId,
           count: telemetry.length,
@@ -135,9 +155,16 @@ platformControlPlaneRouter.get(
         const provider = getUnavailableOperatorIntelligenceProvider(
           "Operator intelligence storage tables are not present in OSS mode"
         );
+        const capability = provider.status();
+        const analyticsCapability = getEnterpriseAnalyticsProvider().status();
+        observeCapabilityStatus(capability, "/platform-control-plane/analytics/export");
+        observeCapabilityStatus(analyticsCapability, "/platform-control-plane/analytics/export");
         res.status(200).json({
           data: await provider.getTelemetryForExport(tenantId, 30),
-          capability: provider.status(),
+          capability: {
+            operatorIntelligence: capability,
+            enterpriseAnalytics: analyticsCapability,
+          },
           metadata: { tenantId, count: 0, generatedAt: new Date().toISOString() },
         });
         return;

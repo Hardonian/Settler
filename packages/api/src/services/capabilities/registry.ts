@@ -5,6 +5,22 @@ import {
   UnavailableOperatorIntelligenceProvider,
   type OperatorIntelligenceProvider,
 } from "./providers/operator-intelligence-provider";
+import {
+  OssAlertRoutingProvider,
+  type AlertRoutingProvider,
+} from "./providers/alert-routing-provider";
+import {
+  OssUsageMeteringProvider,
+  type UsageMeteringProvider,
+} from "./providers/usage-metering-provider";
+import {
+  OssSupportIntakeProvider,
+  type SupportIntakeProvider,
+} from "./providers/support-intake-provider";
+import {
+  OssEnterpriseAnalyticsProvider,
+  type EnterpriseAnalyticsProvider,
+} from "./providers/enterprise-analytics-provider";
 
 interface PrivateOperatorIntelligenceProviderModule {
   createOperatorIntelligenceProvider: () => OperatorIntelligenceProvider;
@@ -23,6 +39,10 @@ class InMemoryCapabilityRegistry implements CapabilityRegistry {
 }
 
 let operatorIntelligenceProvider: OperatorIntelligenceProvider | null = null;
+let alertRoutingProvider: AlertRoutingProvider | null = null;
+let usageMeteringProvider: UsageMeteringProvider | null = null;
+let supportIntakeProvider: SupportIntakeProvider | null = null;
+let enterpriseAnalyticsProvider: EnterpriseAnalyticsProvider | null = null;
 
 async function loadPrivateOperatorIntelligenceProvider(): Promise<OperatorIntelligenceProvider | null> {
   const modulePath = process.env.SETTLER_OPERATOR_INTELLIGENCE_PROVIDER_MODULE;
@@ -66,11 +86,47 @@ export async function getOperatorIntelligenceProvider(): Promise<OperatorIntelli
   return operatorIntelligenceProvider;
 }
 
+export function getAlertRoutingProvider(): AlertRoutingProvider {
+  if (!alertRoutingProvider) {
+    alertRoutingProvider = new OssAlertRoutingProvider();
+  }
+  return alertRoutingProvider;
+}
+
+export function getUsageMeteringProvider(): UsageMeteringProvider {
+  if (!usageMeteringProvider) {
+    usageMeteringProvider = new OssUsageMeteringProvider();
+  }
+  return usageMeteringProvider;
+}
+
+export function getSupportIntakeProvider(): SupportIntakeProvider {
+  if (!supportIntakeProvider) {
+    supportIntakeProvider = new OssSupportIntakeProvider();
+  }
+  return supportIntakeProvider;
+}
+
+export function getEnterpriseAnalyticsProvider(): EnterpriseAnalyticsProvider {
+  if (!enterpriseAnalyticsProvider) {
+    enterpriseAnalyticsProvider = new OssEnterpriseAnalyticsProvider();
+  }
+  return enterpriseAnalyticsProvider;
+}
+
 export async function getCapabilityRegistry(): Promise<CapabilityRegistry> {
-  const provider = await getOperatorIntelligenceProvider();
+  const operatorIntelligence = await getOperatorIntelligenceProvider();
+  const alertRouting = getAlertRoutingProvider();
+  const usageMetering = getUsageMeteringProvider();
+  const supportIntake = getSupportIntakeProvider();
+  const enterpriseAnalytics = getEnterpriseAnalyticsProvider();
 
   return new InMemoryCapabilityRegistry([
-    provider.status(),
+    operatorIntelligence.status(),
+    alertRouting.status(),
+    usageMetering.status(),
+    supportIntake.status(),
+    enterpriseAnalytics.status(),
     {
       key: "enterprise_surface",
       available: false,
