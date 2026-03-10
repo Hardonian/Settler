@@ -11,21 +11,33 @@
     "variance_summary",
     "variance_items_path",
     "evidence_manifest",
+    "policy_context",
+    "rule_metrics",
     "deterministic_statement"
   ],
   "properties": {
-    "schema_version": { "type": "string" },
-    "tool_version": { "type": "string" },
+    "schema_version": {
+      "type": "string"
+    },
+    "tool_version": {
+      "type": "string"
+    },
     "normalization_summary": {
       "type": "object",
       "additionalProperties": false,
       "required": ["transactions", "settlements", "warnings"],
       "properties": {
-        "transactions": { "type": "integer" },
-        "settlements": { "type": "integer" },
+        "transactions": {
+          "type": "integer"
+        },
+        "settlements": {
+          "type": "integer"
+        },
         "warnings": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -34,7 +46,9 @@
       "additionalProperties": false,
       "required": ["total", "by_type"],
       "properties": {
-        "total": { "type": "integer" },
+        "total": {
+          "type": "integer"
+        },
         "by_type": {
           "type": "array",
           "items": {
@@ -42,22 +56,34 @@
             "additionalProperties": false,
             "required": ["type", "count"],
             "properties": {
-              "type": { "type": "string" },
-              "count": { "type": "integer" }
+              "type": {
+                "type": "string"
+              },
+              "count": {
+                "type": "integer"
+              }
             }
           }
         }
       }
     },
-    "variance_items_path": { "type": "string" },
+    "variance_items_path": {
+      "type": "string"
+    },
     "evidence_manifest": {
       "type": "object",
       "additionalProperties": false,
       "required": ["schema_version", "tool_version", "generated_at", "input_files", "outputs"],
       "properties": {
-        "schema_version": { "type": "string" },
-        "tool_version": { "type": "string" },
-        "generated_at": { "type": "string" },
+        "schema_version": {
+          "type": "string"
+        },
+        "tool_version": {
+          "type": "string"
+        },
+        "generated_at": {
+          "type": "string"
+        },
         "input_files": {
           "type": "array",
           "items": {
@@ -65,8 +91,12 @@
             "additionalProperties": false,
             "required": ["path", "sha256"],
             "properties": {
-              "path": { "type": "string" },
-              "sha256": { "type": "string" }
+              "path": {
+                "type": "string"
+              },
+              "sha256": {
+                "type": "string"
+              }
             }
           }
         },
@@ -77,13 +107,167 @@
             "additionalProperties": false,
             "required": ["path", "sha256"],
             "properties": {
-              "path": { "type": "string" },
-              "sha256": { "type": "string" }
+              "path": {
+                "type": "string"
+              },
+              "sha256": {
+                "type": "string"
+              }
             }
           }
         }
       }
     },
-    "deterministic_statement": { "type": "string" }
+    "deterministic_statement": {
+      "type": "string"
+    },
+    "policy_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_version", "policy_hash", "snapshot"],
+      "properties": {
+        "policy_version": {
+          "type": "string"
+        },
+        "policy_hash": {
+          "type": "string"
+        },
+        "snapshot": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ruleset_id",
+            "ruleset_name",
+            "match_precedence",
+            "amount_tolerance_cents",
+            "date_tolerance_days",
+            "currency_mismatch_is_variance",
+            "missing_settlement_is_variance",
+            "missing_transaction_is_variance",
+            "manual_review_amount_delta_cents",
+            "manual_review_date_delta_days",
+            "conflict_resolution",
+            "fee_tolerance_cents",
+            "fx_variance_tolerance_bps",
+            "duplicate_window_days",
+            "duplicate_amount_tolerance_cents",
+            "duplicate_reference_similarity_percent",
+            "grouped_match_enabled",
+            "grouped_match_min_records",
+            "status_compatibility",
+            "enabled_rule_ids"
+          ],
+          "properties": {
+            "ruleset_id": {
+              "type": "string"
+            },
+            "ruleset_name": {
+              "type": "string"
+            },
+            "match_precedence": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "amount_tolerance_cents": {
+              "type": "integer"
+            },
+            "date_tolerance_days": {
+              "type": "integer"
+            },
+            "currency_mismatch_is_variance": {
+              "type": "boolean"
+            },
+            "missing_settlement_is_variance": {
+              "type": "boolean"
+            },
+            "missing_transaction_is_variance": {
+              "type": "boolean"
+            },
+            "manual_review_amount_delta_cents": {
+              "type": "integer"
+            },
+            "manual_review_date_delta_days": {
+              "type": "integer"
+            },
+            "enabled_rule_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "conflict_resolution": {
+              "type": "string"
+            },
+            "fee_tolerance_cents": {
+              "type": "integer"
+            },
+            "fx_variance_tolerance_bps": {
+              "type": "integer"
+            },
+            "duplicate_window_days": {
+              "type": "integer"
+            },
+            "duplicate_amount_tolerance_cents": {
+              "type": "integer"
+            },
+            "duplicate_reference_similarity_percent": {
+              "type": "integer"
+            },
+            "grouped_match_enabled": {
+              "type": "boolean"
+            },
+            "grouped_match_min_records": {
+              "type": "integer"
+            },
+            "status_compatibility": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "rule_metrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rule_id",
+          "evaluations",
+          "matches",
+          "misses",
+          "first_match_wins",
+          "best_match_select"
+        ],
+        "properties": {
+          "evaluations": {
+            "type": "integer"
+          },
+          "matches": {
+            "type": "integer"
+          },
+          "misses": {
+            "type": "integer"
+          },
+          "first_match_wins": {
+            "type": "integer"
+          },
+          "best_match_select": {
+            "type": "integer"
+          },
+          "rule_id": {
+            "type": "string"
+          }
+        }
+      }
+    }
   }
 }
