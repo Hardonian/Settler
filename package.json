@@ -255,6 +255,12 @@
     "reconciliation:summary": "node scripts/reconciliation-run-tools.mjs summary test-data/exports/latest",
     "reconciliation:compare": "node scripts/reconciliation-run-tools.mjs compare test-data/exports/smoke-seed42 test-data/exports/latest",
     "verify:issue-templates": "node scripts/validate-issue-templates.mjs"
+    "version:sync": "node scripts/release/version-manager.mjs sync",
+    "version:bump": "node scripts/release/version-manager.mjs bump",
+    "build:clean": "pnpm run clean:all && pnpm install --frozen-lockfile && pnpm run build:all",
+    "release:artifacts": "node scripts/release/package-artifacts.mjs",
+    "verify:release:artifacts": "node scripts/release/verify-artifacts.mjs",
+    "release:dry-run": "pnpm run verify:release && pnpm run release:artifacts && pnpm run verify:release:artifacts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
