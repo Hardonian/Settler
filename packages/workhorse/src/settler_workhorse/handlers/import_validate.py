@@ -31,11 +31,67 @@ except ImportError:
 
 logger = get_logger("handlers.import_validate")
 
+IMPORT_WORKBENCH_CONTRACT = {
+    "schema_uri": "contracts/ingestion/import-workbench.schema.json",
+    "version": "1.0.0",
+}
+
 
 class ImportValidationError(Exception):
     """Error during import validation."""
 
     pass
+
+
+def _diag(severity: str, stage: str, code: str, message: str, **kwargs: Any) -> dict[str, Any]:
+    diagnostic = {
+        "severity": severity,
+        "stage": stage,
+        "code": code,
+        "message": message,
+    }
+    diagnostic.update({k: v for k, v in kwargs.items() if v is not None})
+    return diagnostic
+
+
+def _build_quality_gates(
+    stats: dict[str, Any], required_columns: list[str]
+) -> list[dict[str, Any]]:
+    total_rows = int(stats.get("total_rows", 0) or 0)
+    error_rows = int(stats.get("error_rows", 0) or 0)
+    missing_required = stats.get("missing_required", []) or []
+
+    return [
+        {
+            "gate": "required_columns_present",
+            "severity": "blocking",
+            "passed": len(missing_required) == 0 and len(required_columns) > 0,
+            "message": (
+                "Required columns present"
+                if len(missing_required) == 0
+                else f"Missing required columns: {', '.join(missing_required)}"
+            ),
+            "metric": {"required_columns": required_columns, "missing_required": missing_required},
+        },
+        {
+            "gate": "non_empty_import",
+            "severity": "blocking",
+            "passed": total_rows > 0,
+            "message": "Import has data rows" if total_rows > 0 else "Import has no data rows",
+            "metric": {"total_rows": total_rows},
+        },
+        {
+            "gate": "row_validation_success_ratio",
+            "severity": "warning",
+            "passed": total_rows > 0 and (total_rows - error_rows) / total_rows >= 0.8,
+            "message": (
+                "Validation ratio acceptable"
+                if total_rows > 0 and (total_rows - error_rows) / total_rows >= 0.8
+                else "Validation ratio below 80%"
+            ),
+            "metric": {"total_rows": total_rows, "error_rows": error_rows, "threshold": 0.8},
+        },
+    ]
 
 
 def validate_payload(payload: dict[str, Any]) -> dict[str, Any]:
@@ -343,6 +399,38 @@ def handle_import_validate(job: Job) -> JobResult:
                 records_failed=0,
             )
 
+        diagnostics: list[dict[str, Any]] = []
+        missing_required = stats.get("missing_required", [])
+        if missing_required:
+            diagnostics.append(
+                _diag(
+                    "blocking",
+                    "mapping",
+                    "required_columns_missing",
+                    f"Missing required columns: {', '.join(missing_required)}",
+                    details={"missing_required": missing_required},
+                )
+            )
+
+        for row in preview_rows:
+            row_errors = row.get("errors", [])
+            for row_error in row_errors:
+                diagnostics.append(
+                    _diag(
+                        "warning",
+                        "normalize",
+                        "row_validation_warning",
+                        str(row_error),
+                        row_number=row.get("row_number"),
+                    )
+                )
+
+        quality_gates = _build_quality_gates(stats, required_columns)
+        can_proceed = all(
+            gate.get("passed", False) or gate.get("severity") != "blocking"
+            for gate in quality_gates
+        ) and not any(diag.get("severity") == "blocking" for diag in diagnostics)
+
         return JobResult(
             success=True,
             data={
@@ -356,8 +444,12 @@ def handle_import_validate(job: Job) -> JobResult:
                 "statistics": stats,
                 "preview_rows": preview_rows,
                 "column_mapping": column_mapping,
+                "diagnostics": diagnostics[:50],
+                "quality_gates": quality_gates,
+                "can_proceed": can_proceed,
                 "idempotency_key": idempotency_key,
                 "validated_at": datetime.utcnow().isoformat(),
+                "contract": IMPORT_WORKBENCH_CONTRACT,
             },
             records_processed=stats.get("total_rows", 0),
             records_failed=stats.get("error_rows", 0),

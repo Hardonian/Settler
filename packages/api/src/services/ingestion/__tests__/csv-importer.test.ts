@@ -8,6 +8,7 @@ import {
   autoDetectColumnMapping,
   normalizeCSVRow,
   validateMapping,
+  buildImportWorkbenchPreview,
 } from "../csv-importer";
 import { CSVColumnMapping } from "../types";
 
@@ -41,13 +42,7 @@ describe("CSV Importer", () => {
 
   describe("autoDetectColumnMapping", () => {
     it("should detect common column names", () => {
-      const headers = [
-        "Date",
-        "Description",
-        "Amount",
-        "Currency",
-        "Transaction ID",
-      ];
+      const headers = ["Date", "Description", "Amount", "Currency", "Transaction ID"];
       const mapping = autoDetectColumnMapping(headers);
 
       expect(mapping.date).toBe("Date");
@@ -84,7 +79,6 @@ describe("CSV Importer", () => {
     it("should reject missing required fields", () => {
       const mapping: CSVColumnMapping = {
         amount: "Amount",
-        // Missing date
       };
       const result = validateMapping(mapping);
 
@@ -146,14 +140,13 @@ describe("CSV Importer", () => {
 
       const normalized = normalizeCSVRow(row, mapping);
 
-      expect(normalized.amount).toBe(100); // Always positive
+      expect(normalized.amount).toBe(100);
     });
 
     it("should throw error for missing required fields", () => {
       const row = {
         Description: "Test",
         Amount: 100,
-        // Missing date
       };
       const mapping: CSVColumnMapping = {
         date: "Date",
@@ -161,6 +154,88 @@ describe("CSV Importer", () => {
       };
 
       expect(() => normalizeCSVRow(row, mapping)).toThrow();
+    });
+  });
+
+  describe("buildImportWorkbenchPreview", () => {
+    it("should produce preview diagnostics and normalized sample records", () => {
+      const parsed = parseCSV(sampleCSV);
+      const preview = buildImportWorkbenchPreview({
+        fileName: "sample.csv",
+        fileSizeBytes: Buffer.byteLength(sampleCSV),
+        headers: parsed.headers,
+        rows: parsed.rows,
+      });
+
+      expect(preview.canProceed).toBe(true);
+      expect(preview.normalization.normalizedRows).toBe(2);
+      expect(preview.normalization.failedRows).toBe(0);
+      expect(preview.normalization.sampleNormalizedRecords).toHaveLength(2);
+      expect(preview.mapping.requiredMissing).toHaveLength(0);
+      expect(preview.qualityGates.find((g) => g.gate === "required_mapping_present")?.passed).toBe(
+        true
+      );
+    });
+
+    it("should block when required mappings are missing", () => {
+      const csv = `Memo,Total\nSubscription payment,100`;
+      const parsed = parseCSV(csv);
+
+      const preview = buildImportWorkbenchPreview({
+        fileName: "bad.csv",
+        fileSizeBytes: Buffer.byteLength(csv),
+        headers: parsed.headers,
+        rows: parsed.rows,
+      });
+
+      expect(preview.canProceed).toBe(false);
+      expect(preview.mapping.requiredMissing).toContain("date");
+      expect(
+        preview.diagnostics.some((d) => d.code === "required_mapping_missing" && d.field === "date")
+      ).toBe(true);
+    });
+
+
+
+    it("should include remediation hints and contract metadata for blocking diagnostics", () => {
+      const csv = `Memo,Total
+Subscription payment,100`;
+      const parsed = parseCSV(csv);
+
+      const preview = buildImportWorkbenchPreview({
+        fileName: "bad.csv",
+        fileSizeBytes: Buffer.byteLength(csv),
+        headers: parsed.headers,
+        rows: parsed.rows,
+      });
+
+      const missingDateDiagnostic = preview.diagnostics.find(
+        (d) => d.code === "required_mapping_missing" && d.field === "date"
+      );
+      expect(missingDateDiagnostic?.remediation).toBeDefined();
+      expect(preview.contract.schemaUri).toContain("contracts/ingestion/import-workbench.schema.json");
+      expect(preview.contract.version).toBe("1.0.0");
+    });
+
+    it("should surface ambiguous slash date warnings", () => {
+      const csv = `Date,Amount\n01/02/2024,125.00`;
+      const parsed = parseCSV(csv);
+
+      const preview = buildImportWorkbenchPreview({
+        fileName: "ambiguous.csv",
+        fileSizeBytes: Buffer.byteLength(csv),
+        headers: parsed.headers,
+        rows: parsed.rows,
+      });
+
+      expect(preview.canProceed).toBe(true);
+      expect(preview.normalization.failedRows).toBe(1);
+      expect(
+        preview.diagnostics.some((d) => d.code === "ambiguous_date" && d.severity === "warning")
+      ).toBe(true);
+      expect(
+        preview.qualityGates.find((g) => g.gate === "normalization_success_ratio")?.passed
+      ).toBe(false);
     });
   });
 });

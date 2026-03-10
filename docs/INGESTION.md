@@ -65,6 +65,40 @@ If auto-detection fails, you can provide a manual mapping:
 }
 ```
 
+### Import Workbench Preview (Truthful Raw → Mapped → Normalized)
+
+Before running `/upload`, operators can call `/api/v1/ingestion/preview` with the same file/mapping payload.
+The preview executes the same parser + mapping + normalization logic and returns:
+
+- `sourceSummary`: filename, size, headers, duplicate header detection, total rows
+- `mapping`: provided mapping, auto-detected mapping, effective mapping, missing required mappings
+- `normalization`: attempted/normalized/failed row counts, dropped rows, defaulted fields, sample normalized records
+- `diagnostics`: structured stage-aware diagnostics (`raw|parse|mapping|normalize|quality_gate`) and severity (`info|warning|blocking`), each with machine-readable remediation hints for blocking codes
+- `qualityGates`: lightweight pre-reconciliation gates (required mapping, non-empty import, normalization success ratio, duplicate row ratio, currency distribution)
+- `schemaDrift`: drift comparison against last completed ingestion for the same source (when `sourceId` is provided) plus historical drift-trend escalation over the recent window
+- `canProceed`: machine-visible go/no-go decision based on blocking diagnostics/gates
+
+Example:
+
+```bash
+curl -X POST https://api.settler.dev/api/v1/ingestion/preview \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@transactions.csv" \
+  -F "columnMapping={\"amount\":\"Total\",\"date\":\"Transaction Date\"}"
+```
+
+`/upload` now returns a preview summary as part of the ingestion response and stores import workbench metadata on the ingestion record (`ingestions.metadata.importWorkbench`) for diagnostics/recovery.
+
+Additional operator endpoints:
+
+- `GET /api/v1/ingestion/workbench/recent`: recent ingestion workbench summaries + deep links for control-plane surfaces.
+- `POST /api/v1/ingestion/:ingestionId/retry`: remap-and-retry from stored `raw_records` (`dryRun` defaults to `true`).
+
+The workbench metadata now stores bounded diagnostic samples (`diagnosticsSample`) to speed support/debug triage without unbounded payload growth.
+
+All workbench payloads include a shared runtime-neutral contract reference (`contracts/ingestion/import-workbench.schema.json`, versioned) so API and workhorse outputs can be validated against the same artifact.
+
 ### API Usage
 
 #### Upload CSV
@@ -327,6 +361,7 @@ Full API documentation available at `/api/v1` endpoint.
 ## Support
 
 For issues or questions:
+
 - Check trace IDs in error responses
 - Review logs with trace ID
 - Contact support with trace ID for debugging
