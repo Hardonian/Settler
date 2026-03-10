@@ -566,7 +566,9 @@ async function buildPayload(days: number) {
   const capabilities = {
     githubIssueTriage: Boolean(process.env.GITHUB_TOKEN && parseGithubRepo()),
     stripeRevenue: Boolean(process.env.STRIPE_SECRET_KEY),
-    slackAlerts: Boolean(process.env.SLACK_WEBHOOK_URL),
+    slackAlerts: Boolean(process.env.SLACK_ALERT_WEBHOOK_URL || process.env.SLACK_WEBHOOK_URL),
+    teamsAlerts: Boolean(process.env.TEAMS_ALERT_WEBHOOK_URL),
+    telegramAlerts: Boolean(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID),
   };
 
   return {

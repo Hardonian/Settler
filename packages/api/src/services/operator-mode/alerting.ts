@@ -6,6 +6,15 @@
 import { query } from '../../db';
 import { logError, logWarn, logInfo } from '../../utils/logger';
 import { generateDailyIntelligence } from './daily-intelligence';
+import {
+  buildAlertRouter,
+  buildNotifierCapabilities,
+  createNotifierProviders,
+  dispatchAlert,
+  type AlertChannel,
+  type AlertPayload,
+  type NotifierCapability,
+} from './notifier-provider';
 
 export interface AlertThreshold {
   id?: string;
@@ -14,7 +23,7 @@ export interface AlertThreshold {
   threshold: number;
   operator: 'gt' | 'gte' | 'lt' | 'lte' | 'eq' | 'neq';
   severity: 'low' | 'medium' | 'high' | 'critical';
-  channels: Array<'email' | 'slack' | 'webhook'>;
+  channels: AlertChannel[];
   enabled: boolean;
   emailRecipients?: string[];
   slackWebhookUrl?: string;
@@ -33,6 +42,18 @@ export interface Alert {
   metadata?: Record<string, unknown>;
   triggeredAt: Date;
   resolvedAt?: Date;
+}
+
+const notificationCooldownMs = Number(process.env.ALERT_NOTIFICATION_COOLDOWN_MS ?? 300000);
+const notificationDedupCache = new Map<string, number>();
+
+export function getNotifierCapabilities(): NotifierCapability[] {
+  return buildNotifierCapabilities({
+    slackWebhookUrl: process.env.SLACK_ALERT_WEBHOOK_URL || process.env.SLACK_WEBHOOK_URL,
+    teamsWebhookUrl: process.env.TEAMS_ALERT_WEBHOOK_URL,
+    telegramBotToken: process.env.TELEGRAM_BOT_TOKEN,
+    telegramChatId: process.env.TELEGRAM_CHAT_ID,
+  });
 }
 
 /**
@@ -104,7 +125,7 @@ export async function checkAlertThresholds(): Promise<Alert[]> {
       metric: string;
       threshold: number;
       operator: string;
-      channels: string[];
+      channels: AlertChannel[];
       severity: string;
       user_id: string;
     }>(
@@ -188,7 +209,7 @@ export async function checkAlertThresholds(): Promise<Alert[]> {
         });
 
         // Send notifications
-        await sendAlertNotifications(alertId, rule.channels, {
+        await sendAlertNotifications(alertId, (rule.channels || []) as AlertChannel[], {
           ruleName: rule.name,
           metric: rule.metric,
           value,
@@ -269,7 +290,7 @@ async function createAlert(alert: Omit<Alert, 'id' | 'triggeredAt'>): Promise<st
  */
 async function sendAlertNotifications(
   alertId: string,
-  channels: string[],
+  channels: AlertChannel[],
   alertData: {
     ruleName: string;
     metric: string;
@@ -278,18 +299,62 @@ async function sendAlertNotifications(
     severity: string;
   }
 ): Promise<void> {
+  const dedupeKey = `${alertData.metric}:${alertData.ruleName}:${alertData.severity}`;
+  const lastSentAt = notificationDedupCache.get(dedupeKey);
+  if (lastSentAt && Date.now() - lastSentAt < notificationCooldownMs) {
+    logInfo('Alert notification suppressed due to cooldown window', {
+      alertId,
+      dedupeKey,
+      cooldownMs: notificationCooldownMs,
+    });
+    return;
+  }
+
+  const providers = createNotifierProviders({
+    slackWebhookUrl: process.env.SLACK_ALERT_WEBHOOK_URL || process.env.SLACK_WEBHOOK_URL,
+    teamsWebhookUrl: process.env.TEAMS_ALERT_WEBHOOK_URL,
+    telegramBotToken: process.env.TELEGRAM_BOT_TOKEN,
+    telegramChatId: process.env.TELEGRAM_CHAT_ID,
+    dryRun: process.env.ALERT_NOTIFIER_DRY_RUN === 'true',
+  });
+
+  const router = buildAlertRouter(channels);
+  const payload: AlertPayload = {
+    alertId,
+    alertType: alertData.metric,
+    severity: alertData.severity === 'critical' ? 'critical' : alertData.severity === 'high' ? 'warning' : 'info',
+    summary: `${alertData.ruleName} threshold crossed (${alertData.value} vs ${alertData.threshold})`,
+    timestamp: new Date().toISOString(),
+    metadata: {
+      ruleName: alertData.ruleName,
+      threshold: alertData.threshold,
+      value: alertData.value,
+      source: 'operator-mode.alerting',
+    },
+  };
+
+  const delivered = await dispatchAlert(payload, providers, router);
+
+  for (const delivery of delivered) {
+    await query(
+      `INSERT INTO alert_notifications (alert_id, notification_type, recipient, status, sent_at)
+       VALUES ($1, $2, $3, $4, NOW())`,
+      [alertId, delivery.channel, delivery.channel, 'sent']
+    );
+  }
+
+  notificationDedupCache.set(dedupeKey, Date.now());
+
   for (const channel of channels) {
+    if (channel !== 'email' && channel !== 'webhook') {
+      continue;
+    }
+
     try {
-      switch (channel) {
-        case 'email':
-          await sendEmailAlert(alertId, alertData);
-          break;
-        case 'slack':
-          await sendSlackAlert(alertId, alertData);
-          break;
-        case 'webhook':
-          await sendWebhookAlert(alertId, alertData);
-          break;
+      if (channel === 'email') {
+        await sendEmailAlert(alertId, alertData);
+      } else if (channel === 'webhook') {
+        await sendWebhookAlert(alertId, alertData);
       }
     } catch (error) {
       logError(`Failed to send ${channel} alert`, error, { alertId });
@@ -349,7 +414,7 @@ async function sendSlackAlert(
     severity: string;
   }
 ): Promise<void> {
-  const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
+  const slackWebhookUrl = process.env.SLACK_ALERT_WEBHOOK_URL || process.env.SLACK_WEBHOOK_URL;
   if (!slackWebhookUrl) {
     logWarn('Slack webhook URL not configured', { alertId });
     return;

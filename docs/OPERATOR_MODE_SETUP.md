@@ -265,3 +265,35 @@ For issues or questions:
 2. Review `docs/OPERATOR_MODE.md` for detailed documentation
 3. Check `docs/OPERATOR_MODE_QUICK_START.md` for quick reference
 4. Review `docs/INCIDENT_POSTMORTEM_TEMPLATE.md` for incident response
+
+## Notifier Channels (Slack / Teams / Telegram)
+
+External notifier dispatch is optional and capability-gated. In-app alert records continue to work when notifier credentials are missing.
+
+### Environment variables
+
+Set any channel you want to enable:
+
+- `SLACK_ALERT_WEBHOOK_URL`
+- `TEAMS_ALERT_WEBHOOK_URL`
+- `TELEGRAM_BOT_TOKEN`
+- `TELEGRAM_CHAT_ID`
+
+Optional controls:
+
+- `ALERT_NOTIFIER_DRY_RUN=true|false` (default recommended true for first setup validation)
+- `ALERT_NOTIFICATION_COOLDOWN_MS` (dedupe cooldown, default 300000)
+
+### Capability status API
+
+Use:
+
+- `GET /api/v1/operator/alerts/capabilities`
+
+Each channel reports one of:
+
+- `configured`
+- `unavailable`
+- `degraded`
+
+`degraded` is used for partial Telegram configuration (token without chat id or vice versa).
