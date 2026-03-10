@@ -120,6 +120,7 @@ const TENANT_SCOPED_TABLES = new Set([
   "audit_exports",
   "alert_rules",
   "alert_history",
+  "operator_runtime_events",
 ]);
 
 /**

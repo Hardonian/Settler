@@ -11,6 +11,7 @@ import { MatchResult, ReconciliationConfig } from "./types";
 import { mlMatchingEngine } from "../matching/ml-matching-engine";
 import { enhancedCrossCustomerIntelligence } from "../matching/enhanced-cross-customer-intelligence";
 import { appendRunIntegrityEntry } from "../reconciliation/integrity";
+import { emitOperatorRuntimeEvent } from "../ops-intelligence/runtime-events";
 
 const DEFAULT_CONFIG: Required<ReconciliationConfig> = {
   dateWindowDays: 7,
@@ -365,6 +366,13 @@ export async function runReconciliation(
       [runId, ingestionId, tenantId, userId, "running", traceId, JSON.stringify(config)]
     );
 
+    await emitOperatorRuntimeEvent({
+      eventType: "reconciliation_run_started",
+      tenantId,
+      runId,
+      metadata: { ingestionId, traceId },
+    });
+
     // Get source transactions (from this ingestion)
     const sourceTransactions = await query(
       `SELECT id FROM normalized_transactions
@@ -466,6 +474,17 @@ export async function runReconciliation(
 
     await appendRunIntegrityEntry(runId, tenantId);
 
+    await emitOperatorRuntimeEvent({
+      eventType: "reconciliation_run_completed",
+      tenantId,
+      runId,
+      recordsProcessed: sourceIds.length,
+      durationMs: undefined,
+      classificationCounts: { matched: matchedCount, unmatched: unmatchedCount },
+      manualReviewCount: unmatchedCount,
+      metadata: { traceId, avgConfidence },
+    });
+
     logInfo("Reconciliation completed", {
       runId,
       matchedCount,
@@ -542,6 +561,13 @@ export async function runReconciliation(
       WHERE id = $2`,
       [error instanceof Error ? error.message : String(error), runId]
     );
+    await emitOperatorRuntimeEvent({
+      eventType: "reconciliation_run_failed",
+      tenantId,
+      runId,
+      errorId: traceId,
+      metadata: { message: error instanceof Error ? error.message : String(error), traceId },
+    });
     await appendRunIntegrityEntry(runId, tenantId);
     throw error;
   }

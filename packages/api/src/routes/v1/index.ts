@@ -17,6 +17,7 @@ import ingestionRouter from "./ingestion";
 import reconciliationRouter from "./reconciliation";
 import ingestionExportsRouter from "./ingestion-exports";
 import { operatorModeRouter } from "./operator-mode";
+import operatorIntelligenceRouter from "./operator-intelligence";
 import multiSourceReconciliationRouter from "./multi-source-reconciliation";
 import approvalsRouter from "./approvals";
 import progressRouter from "./progress";
@@ -71,6 +72,7 @@ v1Router.use("/dedicated-infrastructure", dedicatedInfrastructureRouter);
 
 // Operator mode routes
 v1Router.use("/", operatorModeRouter);
+v1Router.use("/", operatorIntelligenceRouter);
 
 // Health check
 v1Router.get("/health", (_req, res) => {
