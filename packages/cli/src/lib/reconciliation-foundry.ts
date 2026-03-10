@@ -646,7 +646,8 @@ export function validateSuiteDeterminism(
   );
 }
 
-export function runSyntheticEngineValidation(suite: GeneratedSuite): {
+export function runSyntheticEngineValidation(_suite: GeneratedSuite): {
+  engine: "recon_core.performReconciliation";
   processed_records: number;
   matched: number;
   unmatched: number;
@@ -678,6 +679,10 @@ export function runSyntheticEngineValidation(suite: GeneratedSuite): {
       MANUAL_REVIEW: 0,
     }
   );
+
+  const unmatchedTarget = suite.sources.BANK_STATEMENT.filter(
+    (r) => !targetMatched.has(r.source_record_id)
+  ).map((r) => r.transaction_id);
 
   return {
     processed_records: suite.sources.PAYMENT_PROCESSOR.length + suite.sources.BANK_STATEMENT.length,
