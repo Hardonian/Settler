@@ -109,15 +109,17 @@ async function validateApiKey(req: AuthRequest, apiKey: string): Promise<void> {
   const keys = await query<{
     id: string;
     user_id: string;
+    tenant_id: string;
     key_hash: string;
     scopes: string[];
     rate_limit: number;
     revoked_at: Date | null;
     expires_at: Date | null;
   }>(
-    `SELECT id, user_id, key_hash, scopes, rate_limit, revoked_at, expires_at
-     FROM api_keys
-     WHERE key_prefix = $1`,
+    `SELECT ak.id, ak.user_id, u.tenant_id, ak.key_hash, ak.scopes, ak.rate_limit, ak.revoked_at, ak.expires_at
+     FROM api_keys ak
+     JOIN users u ON u.id = ak.user_id
+     WHERE ak.key_prefix = $1`,
     [prefix]
   );
 
@@ -175,6 +177,7 @@ async function validateApiKey(req: AuthRequest, apiKey: string): Promise<void> {
 
   // Set request properties
   req.userId = keyRecord.user_id;
+  req.tenantId = keyRecord.tenant_id;
   req.apiKeyId = keyRecord.id;
   req.apiKey = apiKey;
 }
@@ -188,7 +191,7 @@ async function validateJWT(req: AuthRequest, token: string): Promise<void> {
     const decoded = jwt.verify(token, config.jwt.secret, {
       issuer: "settler-api",
       audience: "settler-client",
-    }) as { userId: string; type?: string };
+    }) as { userId: string; tenantId?: string; type?: string };
 
     // Check token type (access vs refresh)
     if (decoded.type === "refresh") {
@@ -196,6 +199,20 @@ async function validateJWT(req: AuthRequest, token: string): Promise<void> {
     }
 
     req.userId = decoded.userId;
+
+    if (decoded.tenantId) {
+      req.tenantId = decoded.tenantId;
+      return;
+    }
+
+    const userRows = await query<{ tenant_id: string }>(
+      "SELECT tenant_id FROM users WHERE id = $1",
+      [decoded.userId]
+    );
+
+    if (userRows.length > 0 && userRows[0]) {
+      req.tenantId = userRows[0].tenant_id;
+    }
   } catch (error: unknown) {
     if (error instanceof Error) {
       if (error.name === "TokenExpiredError") {
