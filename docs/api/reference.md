@@ -2,6 +2,8 @@
 
 **Settler.dev REST API - Complete endpoint documentation**
 
+> Reality note: this reference includes representative endpoint patterns. For route-family truth (auth + tenant classes and mounted paths), use `docs/api/route-classes.md`, `docs/api/route-families.md`, and `docs/api/route-inventory.md` generated from live route inventory.
+
 ---
 
 ## Base URL

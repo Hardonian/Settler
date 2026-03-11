@@ -93,11 +93,11 @@ export default async function RunDetail({ params }: { params: Promise<{ id: stri
           <p className="mt-2 text-slate-500">Evidence endpoint unavailable for this run.</p>
         )}
         <div className="mt-4 flex flex-wrap gap-4">
-          <Link href="/app/proofs" className="font-medium text-blue-600">
-            Open Truth Explorer →
+          <Link href={`/app/proofs/${run.id}`} className="font-medium text-blue-600">
+            Open Truth Explorer for this run →
           </Link>
-          <Link href="/app/replay" className="font-medium text-blue-600">
-            Open Replay Lab →
+          <Link href={`/app/replay?runId=${run.id}`} className="font-medium text-blue-600">
+            Replay this run →
           </Link>
           <Link href="/app/alerts" className="font-medium text-blue-600">
             Open Live Alerts →

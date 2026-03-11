@@ -6,7 +6,7 @@ Settler is an OSS-first deterministic execution and reconciliation platform.
 
 ```bash
 pnpm run bootstrap
-pnpm run demo
+pnpm run demo:settler
 pnpm run dev:stack
 ```
 
@@ -17,7 +17,13 @@ pnpm run dev:stack
 - `pnpm run bootstrap` — install + repo-integrity + first-run doctor.
 - `pnpm run doctor -- --skip-pipeline --first-run` — first-run diagnostics.
 - `pnpm run doctor -- --skip-pipeline` — strict local diagnostics (expects fuller env/runtime readiness).
-- `pnpm run demo` — deterministic demo execution + replay verification.
+- `pnpm run demo:settler` — deterministic Settler demo pipeline (CLI-first showcase).
+- `pnpm run simulate:settler` — simulation harness for reconciliation/operator scenarios.
+- `pnpm run replay:run` — deterministic replay runner for run investigations.
+- `pnpm run benchmark` — benchmark harness for runtime throughput/latency checks.
+- `pnpm run chaos:test` — failure-injection/chaos pass for resilience validation.
+- `pnpm run tenant:create` — tenant bootstrap utility for local/operator workflows.
+- `pnpm run help:surface` — print canonical CLI/UI/API capability workflows from the registry.
 - `pnpm run dev:stack` — canonical local API + web stack entrypoint.
 - `pnpm run repo-integrity` — monorepo/workspace contract validator.
 - `pnpm run verify` — full lint/typecheck/build/test/security surface.
@@ -46,6 +52,8 @@ Optional integrations should be configured only when validating those specific s
 - [Troubleshooting](docs/troubleshooting/installation-and-setup.md)
 - [Repo integrity reference](docs/reference/repo-integrity.md)
 - [Workspace contracts](docs/reference/workspace-contracts.md)
+- [Surface area convergence matrix](docs/reference/surface-area-convergence.md)
+- [API route classes (auth/tenant taxonomy)](docs/api/route-classes.md)
 
 ## What makes Settler different (implemented today)
 
