@@ -8,11 +8,14 @@ The CLI kernel bridge resolves execution in this order:
 2. Optional cargo fallback when explicitly allowed (`runnerMode: "cargo-run"`)
 3. Safe TS fallback (`runnerMode: "fallback-ts"`)
 
-Kernel feature flags remain:
+Kernel feature flags:
 
 - `SETTLER_KERNEL_ENABLED=1`
 - `SETTLER_KERNEL_CANONICALIZE=1`
-- `SETTLER_KERNEL_SHADOW_MODE=1` (shadow compare mode)
+- `SETTLER_KERNEL_EXECUTION_MODE=disabled|compare_only|shadow|primary`
+- `SETTLER_KERNEL_PRIMARY_ALLOWLIST=canonicalize_hash,proof_bundle_hash,artifact_identity_hash`
+
+`SETTLER_KERNEL_SHADOW_MODE=1` is still honored for backward compatibility and maps to `shadow` when explicit execution mode is absent.
 
 ## Binary-first policy
 
@@ -22,39 +25,66 @@ Production-like environments should set:
 - `NODE_ENV=production`
 - `CI=true`
 
-If the binary is missing, non-executable, times out, returns malformed output, or fails compatibility checks, the CLI degrades to TS hashing and remains route-safe.
+Use the helper to resolve binary location predictably:
 
-## Cargo fallback (local/dev only)
+```bash
+node scripts/kernel/resolve-kernel-bin.mjs
+```
 
-Cargo fallback is intentionally explicit:
+If the binary is missing, non-executable, times out, returns malformed output, fails compatibility checks, or does not support an operation, the CLI degrades to TS hashing and remains route-safe.
 
-- `SETTLER_KERNEL_ALLOW_CARGO=1` **or**
-- `SETTLER_KERNEL_DEV_FALLBACK=1`
+## Promotion/readiness guardrails
 
-Without one of these flags, production-like envs (`NODE_ENV=production` + `CI=true`) do not use `cargo run` automatically.
+Primary mode is never broad by default:
+
+- operation must be in `SETTLER_KERNEL_PRIMARY_ALLOWLIST`
+- handshake must succeed (`operation: "handshake"`)
+- operation must be listed in `supported_operations`
+- wrapper always retains TS fallback path
+
+This allows targeted promotion (one operation at a time) with immediate rollback by:
+
+- `SETTLER_KERNEL_EXECUTION_MODE=disabled` (global TS-only)
+- `SETTLER_KERNEL_EXECUTION_MODE=shadow` (TS primary + compare)
+- removing operation from `SETTLER_KERNEL_PRIMARY_ALLOWLIST`
 
 ## Handshake and compatibility
 
-Before kernel work, the TS wrapper performs a handshake (`operation: "handshake"`) and validates:
+Before kernel work, the TS wrapper performs handshake validation:
 
 - `kernel_version` present
 - `protocol_version` compatible (`v1`)
-- operation envelope integrity
+- operation support list includes requested operation
+- operation envelope/schema integrity
 
-On mismatch, TS fallback is selected and telemetry counters are incremented.
+On mismatch, TS fallback is selected and telemetry counters are incremented with machine-visible fallback reason.
 
 ## Telemetry signal
 
-Foundry export logs now include:
+Foundry export logs include:
 
 - `kernel_mode` (`ts`, `rust_primary`, `ts_with_shadow`)
 - `kernel_runner_mode` (`binary`, `cargo-run`, `disabled`, `fallback-ts`)
+- `kernel_execution` metadata (`operation`, `executionMode`, `usedPrimary`, `shadowCompared`, `fallbackReason`)
 - per-path durations (`kernel_duration_ms`, `ts_duration_ms`)
-- `kernel_telemetry` counters (attempted/success/fallback/timeout/malformed/version-mismatch/divergence/hash-mismatch)
+- `kernel_telemetry` counters:
+  - attempts/success/primary/shadow-compare/compare-only
+  - fallback totals and fallback-by-reason
+  - timeout, malformed output, version mismatch, binary unavailable
+  - divergence totals and divergence-by-operation
+
+## CI binary packaging
+
+`Kernel Binary CI` workflow builds `settler-kernel-cli` (release), validates handshake support matrix, and uploads binary artifact with auditable metadata (version + sha256).
 
 ## Local smoke
 
 ```bash
 cargo build -p settler-kernel-cli
-SETTLER_KERNEL_ENABLED=1 SETTLER_KERNEL_CANONICALIZE=1 SETTLER_KERNEL_BIN=$PWD/target/debug/settler-kernel-cli pnpm --filter @settler/cli exec tsx src/index.ts foundry reconciliation-generate --profile smoke --seed 42 --output test-data/exports/latest
+SETTLER_KERNEL_ENABLED=1 \
+SETTLER_KERNEL_CANONICALIZE=1 \
+SETTLER_KERNEL_EXECUTION_MODE=shadow \
+SETTLER_KERNEL_PRIMARY_ALLOWLIST=canonicalize_hash \
+SETTLER_KERNEL_BIN=$PWD/target/debug/settler-kernel-cli \
+pnpm --filter @settler/cli exec tsx src/index.ts foundry reconciliation-generate --profile smoke --seed 42 --output test-data/exports/latest
 ```

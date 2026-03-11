@@ -1,0 +1,77 @@
+name: Kernel Binary CI
+
+on:
+  pull_request:
+    paths:
+      - "crates/settler-kernel/**"
+      - "crates/settler-kernel-cli/**"
+      - "packages/cli/src/lib/kernel-client.ts"
+      - "packages/cli/src/lib/replay-verification.ts"
+      - "packages/cli/src/lib/reconciliation-foundry.ts"
+      - "packages/cli/src/commands/foundry.ts"
+      - "packages/cli/src/__tests__/kernel-client.test.ts"
+      - "packages/cli/src/__tests__/replay-verification.test.ts"
+      - "scripts/kernel/**"
+      - "docs/architecture/rust-kernel-boundary.md"
+      - "packages/cli/KERNEL_RUNNER.md"
+      - ".github/workflows/kernel-binary-ci.yml"
+  push:
+    branches: [main, develop]
+    paths:
+      - "crates/settler-kernel/**"
+      - "crates/settler-kernel-cli/**"
+      - "packages/cli/src/lib/kernel-client.ts"
+      - "scripts/kernel/**"
+      - ".github/workflows/kernel-binary-ci.yml"
+  workflow_dispatch:
+
+jobs:
+  kernel-binary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cargo fmt check
+        run: cargo fmt --all -- --check
+
+      - name: Cargo clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Cargo test
+        run: cargo test --all
+
+      - name: Build kernel binary (release)
+        run: cargo build --locked --release -p settler-kernel-cli
+
+      - name: Capture binary metadata
+        id: metadata
+        run: |
+          BIN=target/release/settler-kernel-cli
+          echo "binary_path=${BIN}" >> "$GITHUB_OUTPUT"
+          echo "binary_sha256=$(sha256sum $BIN | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+          echo "kernel_version=$($BIN <<<'{"operation":"handshake","payload":{}}' | jq -r '.kernel_version')" >> "$GITHUB_OUTPUT"
+
+      - name: Kernel handshake smoke
+        run: |
+          BIN="${{ steps.metadata.outputs.binary_path }}"
+          HANDSHAKE=$($BIN <<<'{"operation":"handshake","payload":{}}')
+          echo "$HANDSHAKE"
+          echo "$HANDSHAKE" | jq -e '.ok == true and .operation == "handshake" and .protocol_version == "v1" and (.supported_operations | index("canonicalize_hash")) != null and (.supported_operations | index("proof_bundle_hash")) != null and (.supported_operations | index("artifact_identity_hash")) != null'
+
+      - name: Upload kernel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: settler-kernel-cli-linux-amd64-${{ steps.metadata.outputs.kernel_version }}
+          path: ${{ steps.metadata.outputs.binary_path }}
+          if-no-files-found: error
+
+      - name: Publish metadata summary
+        run: |
+          echo "### Kernel Binary Artifact" >> "$GITHUB_STEP_SUMMARY"
+          echo "- binary: \\`${{ steps.metadata.outputs.binary_path }}\\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- version: \\`${{ steps.metadata.outputs.kernel_version }}\\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- sha256: \\`${{ steps.metadata.outputs.binary_sha256 }}\\`" >> "$GITHUB_STEP_SUMMARY"

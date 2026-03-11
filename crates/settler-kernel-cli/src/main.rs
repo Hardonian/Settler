@@ -113,7 +113,12 @@ fn run(req: KernelRequest) -> KernelResponse {
                 operation: "handshake",
                 protocol_version: KERNEL_PROTOCOL_VERSION,
                 kernel_version: env!("CARGO_PKG_VERSION"),
-                supported_operations: vec!["handshake", "canonicalize_hash", "proof_bundle_hash"],
+                supported_operations: vec![
+                    "handshake",
+                    "canonicalize_hash",
+                    "proof_bundle_hash",
+                    "artifact_identity_hash",
+                ],
             };
             match serde_json::to_value(result) {
                 Ok(value) => success("handshake", value),
@@ -142,6 +147,19 @@ fn run(req: KernelRequest) -> KernelResponse {
             },
             Err(e) => failure("proof_bundle_hash", "KERNEL_SERIALIZATION_FAILED", e),
         },
+        "artifact_identity_hash" => {
+            match build_hash_result(&req.payload, "artifact_identity_hash@v1") {
+                Ok(result) => match serde_json::to_value(result) {
+                    Ok(value) => success("artifact_identity_hash", value),
+                    Err(e) => failure(
+                        "artifact_identity_hash",
+                        "KERNEL_SERIALIZATION_FAILED",
+                        e.to_string(),
+                    ),
+                },
+                Err(e) => failure("artifact_identity_hash", "KERNEL_SERIALIZATION_FAILED", e),
+            }
+        }
         other => failure(
             other,
             "KERNEL_UNKNOWN_OPERATION",
@@ -220,6 +238,20 @@ mod tests {
         assert_ne!(
             response.result.as_ref().unwrap()["rule_hash"],
             Value::String(hash_str("canonicalize_hash@v1"))
+        );
+    }
+
+    #[test]
+    fn artifact_identity_hash_uses_distinct_rule_hash() {
+        let payload = serde_json::json!({"artifact":"bundle"});
+        let response = run(KernelRequest {
+            operation: "artifact_identity_hash".to_string(),
+            payload,
+        });
+        assert!(response.ok);
+        assert_eq!(
+            response.result.as_ref().unwrap()["rule_hash"],
+            Value::String(hash_str("artifact_identity_hash@v1"))
         );
     }
 

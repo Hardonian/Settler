@@ -7,7 +7,9 @@ import os from "node:os";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import {
+  artifactIdentityHashWithFallback,
   canonicalizeHashWithFallback,
+  getKernelTelemetrySnapshot,
   proofBundleHashWithFallback,
   readKernelFlags,
   resetKernelTelemetry,
@@ -21,11 +23,15 @@ describe("kernel client", () => {
       SETTLER_KERNEL_ENABLED: "1",
       SETTLER_KERNEL_CANONICALIZE: "0",
       SETTLER_KERNEL_SHADOW_MODE: "1",
+      SETTLER_KERNEL_EXECUTION_MODE: "shadow",
+      SETTLER_KERNEL_PRIMARY_ALLOWLIST: "canonicalize_hash",
     } as NodeJS.ProcessEnv);
 
     expect(flags.enabled).toBe(true);
     expect(flags.canonicalize).toBe(false);
     expect(flags.shadowMode).toBe(true);
+    expect(flags.executionMode).toBe("shadow");
+    expect(flags.primaryAllowlist.has("canonicalize_hash")).toBe(true);
   });
 
   test("resolves binary runner when executable path is provided", () => {
@@ -74,27 +80,52 @@ describe("kernel client", () => {
     process.env.SETTLER_KERNEL_ENABLED = "0";
     process.env.SETTLER_KERNEL_CANONICALIZE = "0";
     process.env.SETTLER_KERNEL_SHADOW_MODE = "0";
+    process.env.SETTLER_KERNEL_EXECUTION_MODE = "disabled";
     resetKernelTelemetry();
 
     const result = await canonicalizeHashWithFallback({ b: 1, a: 2 });
     expect(result.mode).toBe("ts");
     expect(result.runnerMode).toBe("disabled");
+    expect(result.metadata.fallbackReason).toBe("kernel_disabled");
     expect(result.result.normalizedHash).toMatch(/^[a-f0-9]{64}$/);
   });
 
-  test("proof bundle fallback uses ts rule hash when runner unavailable", async () => {
+  test("proof bundle fallback uses ts rule hash when primary not allowlisted", async () => {
     process.env.SETTLER_KERNEL_ENABLED = "1";
     process.env.SETTLER_KERNEL_CANONICALIZE = "1";
-    process.env.SETTLER_KERNEL_BIN = "/definitely/missing/settler-kernel";
+    process.env.SETTLER_KERNEL_EXECUTION_MODE = "primary";
+    process.env.SETTLER_KERNEL_PRIMARY_ALLOWLIST = "canonicalize_hash";
+    process.env.SETTLER_KERNEL_BIN = process.execPath;
     process.env.SETTLER_KERNEL_ALLOW_CARGO = "0";
     process.env.NODE_ENV = "production";
     process.env.CI = "true";
+    resetKernelTelemetry();
 
     const result = await proofBundleHashWithFallback({ evidence: { b: 2, a: 1 } });
     expect(result.mode).toBe("ts");
     expect(result.runnerMode).toBe("fallback-ts");
+    expect(result.metadata.fallbackReason).toBe("primary_not_allowed");
     const expected = createHash("sha256").update("proof_bundle_hash@v1").digest("hex");
     expect(result.result.ruleHash).toBe(expected);
     expect(result.result.ruleHash).not.toBe(tsCanonicalizeHash({ a: 1 }).ruleHash);
+
+    const telemetry = getKernelTelemetrySnapshot();
+    expect(telemetry.fallbackByReason.primary_not_allowed).toBe(1);
+  });
+
+  test("artifact identity hash is deterministic with ts fallback", async () => {
+    process.env.SETTLER_KERNEL_ENABLED = "1";
+    process.env.SETTLER_KERNEL_CANONICALIZE = "1";
+    process.env.SETTLER_KERNEL_EXECUTION_MODE = "primary";
+    process.env.SETTLER_KERNEL_PRIMARY_ALLOWLIST = "artifact_identity_hash";
+    process.env.SETTLER_KERNEL_BIN = "/missing/bin";
+    process.env.SETTLER_KERNEL_ALLOW_CARGO = "0";
+    process.env.NODE_ENV = "production";
+    process.env.CI = "true";
+
+    const a = await artifactIdentityHashWithFallback({ b: 2, a: 1 });
+    const b = await artifactIdentityHashWithFallback({ a: 1, b: 2 });
+    expect(a.result.normalizedHash).toBe(b.result.normalizedHash);
+    expect(a.metadata.fallbackReason).toBe("binary_unavailable");
   });
 });

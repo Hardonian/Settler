@@ -1,7 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
-import { canonicalizeHashWithFallback, getKernelTelemetrySnapshot } from "./kernel-client";
+import {
+  canonicalizeHashWithFallback,
+  getKernelTelemetrySnapshot,
+  type KernelExecutionMetadata,
+} from "./kernel-client";
 
 export type SourceSystem =
   | "BANK_STATEMENT"
@@ -669,6 +673,7 @@ export async function exportReconciliationSuiteWithKernel(
   divergence?: { normalizedHashMatch: boolean };
   durations: { kernel?: number; ts: number };
   telemetry: ReturnType<typeof getKernelTelemetrySnapshot>;
+  execution: KernelExecutionMetadata;
 }> {
   const exported = exportReconciliationSuite(suite, outputRoot);
   const kernel = await canonicalizeHashWithFallback({
@@ -684,6 +689,7 @@ export async function exportReconciliationSuiteWithKernel(
     divergence: kernel.divergence,
     durations: kernel.durationMs,
     telemetry: getKernelTelemetrySnapshot(),
+    execution: kernel.metadata,
   };
 }
 
