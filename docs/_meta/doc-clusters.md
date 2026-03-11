@@ -1,604 +1,443 @@
-# Documentation Overlap Clusters
+# Documentation Clusters
 
-## architecture-notes (54)
-- `ARCHITECTURE.md`
-- `agents/architecture-agent.md`
-- `docs/ARCHITECTURE.md`
-- `docs/ARCHITECTURE_OVERVIEW.md`
-- `docs/ENGINE.md`
-- `docs/SECURITY_ARCHITECTURE.md`
-- `docs/architecture/README.md`
-- `docs/architecture/TEST_DATA_FOUNDRY.md`
-- `docs/architecture/analytics-system.md`
-- `docs/architecture/autonomous-operations.md`
-- `docs/architecture/benchmarking-framework.md`
-- `docs/architecture/canonical-event-protocol.md`
-- `docs/architecture/data-flow.md`
-- `docs/architecture/event-telemetry-pipeline.md`
-- `docs/architecture/execution-ledger.md`
-- `docs/architecture/execution-lifecycle.md`
-- `docs/architecture/failure-intelligence.md`
-- `docs/architecture/failure-surface-map.md`
-- `docs/architecture/frontend-surface-separation.md`
-- `docs/architecture/monorepo-structure.md`
-- `docs/architecture/observability-platform.md`
-- `docs/architecture/plugin-marketplace.md`
-- `docs/architecture/proof-explorer.md`
-- `docs/architecture/reconciliation-pipeline.md`
-- `docs/architecture/repo-health.md`
-- `docs/architecture/route-map.md`
-- `docs/architecture/site-partition-contract.md`
-- `docs/architecture/system-architecture.md`
-- `docs/architecture/system-surface-map.md`
-- `docs/architecture/technical-reality-hardening.md`
-- `docs/architecture/traceability.md`
-- `docs/architecture-ui.md`
-- `docs/architecture.md`
-- `docs/archive/ARCHITECTURE.md`
-- `docs/archive/architecture-settler.md`
-- `docs/billing-architecture.md`
-- `docs/data-architecture-initial.md`
-- `docs/data-architecture.md`
-- `docs/dd/ARCHITECTURE.md`
-- `docs/engine/DETERMINISM.md`
-- `docs/engine/EVIDENCE_BUNDLES.md`
-- `docs/engine/QUICKSTART.md`
-- `docs/frontend-architecture.md`
-- `docs/i18n-architecture.md`
-- `docs/jobforge/ARCHITECTURE.md`
-- `docs/monthly_cadence_engine.md`
-- `docs/observability-architecture.md`
-- `docs/packages/api/EVENT_DRIVEN_ARCHITECTURE.md`
-- `docs/release/RELEASE_ENGINEERING.md`
-- `docs/settler-edge-architecture.md`
-- `domain-packs/data-engineering/README.md`
-- `tools/reconciliation_engine/INTEGRATION.md`
-- `tools/reconciliation_engine/README.md`
-- `tools/settler-engine/POLICY_TOLERANCE_LAB.md`
+Generated snapshot grouping markdown files by top-level docs section.
 
-## audits-reviews (254)
-- `FRONTEND_DESIGN_REVIEW.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/07-ip-exit-preparedness/ip-audit.md`
-- `PRODUCT_CLARITY_AUDIT.md`
-- `REALITY_AUDIT.md`
-- `archive/audit-reports/SETTLER_AUDIT_PHASE1_ROUTE_INVENTORY.md`
-- `archive/audit-reports/SETTLER_AUDIT_PHASE2_SCROLL_FLOW.md`
-- `archive/audit-reports/SETTLER_AUDIT_PHASE4_ASSETS.md`
-- `archive/audit-reports/SETTLER_AUDIT_PHASE5_VISUAL_SYSTEM.md`
-- `archive/audit-reports/SETTLER_AUDIT_PHASE7_ACCESSIBILITY_SEO.md`
-- `archive/audit-reports/SETTLER_AUDIT_PHASE8_PERFORMANCE.md`
-- `archive/audit-reports/SETTLER_AUDIT_PHASE9_FINAL_VERIFICATION.md`
-- `archive/completed-work/2024-12/AUDIT_IMPLEMENTATION_SUMMARY.md`
-- `archive/completed-work/2024-12/FINAL_STATUS_REPORT.md`
-- `archive/completed-work/2024-12/FRONTEND_TYPOGRAPHY_HARDENING_REPORT.md`
-- `archive/completed-work/2024-12/REPO_AUDIT_REPORT.md`
-- `archive/completion-reports/.vercel-build-optimizations.md`
-- `archive/completion-reports/ADDITIONAL_SERVICES_COMPLETE.md`
-- `archive/completion-reports/AI_PRICING_IMPLEMENTATION_COMPLETE.md`
-- `archive/completion-reports/ALL_STATIC_PAGES_OPTIMIZED.md`
-- `archive/completion-reports/AUDIT_COMPLETE_SUMMARY.md`
-- `archive/completion-reports/AUDIT_SUMMARY.md`
-- `archive/completion-reports/AUTOMATED_CONSOLE_CHECKS_SUMMARY.md`
-- `archive/completion-reports/BACKEND_INVENTORY_AND_RECONCILIATION.md`
-- `archive/completion-reports/BACKEND_MIGRATIONS_COMPLETE.md`
-- `archive/completion-reports/BACKEND_RECONCILIATION_SUMMARY.md`
-- `archive/completion-reports/BILLING_CODE_REVIEW_SUMMARY.md`
-- `archive/completion-reports/BILLING_IMPLEMENTATION_SUMMARY.md`
-- `archive/completion-reports/BUILD_ERRORS_FIXED.md`
-- `archive/completion-reports/BUILD_FIXES_APPLIED.md`
-- `archive/completion-reports/BUILD_FIXES_COMPLETE.md`
-- `archive/completion-reports/BUILD_FIXES_SUMMARY.md`
-- `archive/completion-reports/BUILD_FIX_FINAL.md`
-- `archive/completion-reports/BUILD_GUARDIAN_COMPLETE.md`
-- `archive/completion-reports/BUILD_GUARDIAN_SETUP.md`
-- `archive/completion-reports/BUILD_GUARDIAN_STATUS.md`
-- `archive/completion-reports/BUILD_ISSUES_FIXED.md`
-- `archive/completion-reports/BUILD_OPTIMIZATION_COMPLETE.md`
-- `archive/completion-reports/BUILD_OPTIMIZATION_SUMMARY.md`
-- `archive/completion-reports/BUILD_SETUP_COMPLETE.md`
-- `archive/completion-reports/BUILD_STATUS_COMPLETE.md`
-- `archive/completion-reports/BUILD_VERIFICATION.md`
-- `archive/completion-reports/CI_FIX_SUMMARY.md`
-- `archive/completion-reports/CODEBASE_REVIEW.md`
-- `archive/completion-reports/CODE_CHANGES_SUMMARY.md`
-- `archive/completion-reports/CODE_REVIEW.md`
-- `archive/completion-reports/CODE_REVIEW_COMPLETE.md`
-- `archive/completion-reports/COMPLETE_IMPLEMENTATION_SUMMARY.md`
-- `archive/completion-reports/COMPLETE_STATUS.md`
-- `archive/completion-reports/COMPLETION_SUMMARY.md`
-- `archive/completion-reports/COMPREHENSIVE_REVIEW_SUMMARY.md`
-- `archive/completion-reports/CONSISTENCY_CHECKLIST.md`
-- `archive/completion-reports/CONSOLE_COMPLETE_IMPLEMENTATION.md`
-- `archive/completion-reports/CONSOLE_FINAL_IMPLEMENTATION_SUMMARY.md`
-- `archive/completion-reports/CONSOLE_MIGRATION_QUICK_START.md`
-- `archive/completion-reports/CONSOLE_MIGRATION_SUMMARY.md`
-- `archive/completion-reports/CONSOLE_RESTRICTED_TO_API_SERVICES.md`
-- `archive/completion-reports/CONSOLE_SDK_CLI_IMPLEMENTATION.md`
-- `archive/completion-reports/CONSOLE_SUBSCRIPTION_ACCESS_CONTROL.md`
-- `archive/completion-reports/CONSOLE_TIERED_ACCESS_IMPLEMENTATION.md`
-- `archive/completion-reports/DATABASE_SCHEMA_SOURCE_OF_TRUTH_COMPLETE.md`
-- `archive/completion-reports/DATABASE_URL_CONFIGURED.md`
-- `archive/completion-reports/DEPLOYMENT_CHECKLIST.md`
-- `archive/completion-reports/DEPLOYMENT_FIXES_SUMMARY.md`
-- `archive/completion-reports/DEPLOYMENT_READY.md`
-- `archive/completion-reports/DEPLOYMENT_VERIFICATION.md`
-- `archive/completion-reports/DEVELOPER_CONSOLE_COMPLETE.md`
-- `archive/completion-reports/DEVELOPER_CONSOLE_FINAL_SUMMARY.md`
-- `archive/completion-reports/DYNAMIC_IMPORTS_GUIDE.md`
-- `archive/completion-reports/E2E_DATABASE_OPTIMIZATION_SUMMARY.md`
-- `archive/completion-reports/ECOSYSTEM_IMPLEMENTATION_SUMMARY.md`
-- `archive/completion-reports/ENHANCED_MONITORING_COMPLETE.md`
-- `archive/completion-reports/ENHANCEMENTS_COMPLETE.md`
-- `archive/completion-reports/ENTERPRISE_GRADE_INTEGRATION_COMPLETE.md`
-- `archive/completion-reports/ENTERPRISE_POLISH_SUMMARY.md`
-- `archive/completion-reports/ERROR_FIXES_SUMMARY.md`
-- `archive/completion-reports/FINAL_BUILD_FIX.md`
-- `archive/completion-reports/FINAL_COMPLETE_SUMMARY.md`
-- `archive/completion-reports/FINAL_HARDENING_COMPLETE.md`
-- `archive/completion-reports/FINAL_IMPLEMENTATION_SUMMARY.md`
-- `archive/completion-reports/FINAL_LAUNCH_SUMMARY.md`
-- `archive/completion-reports/FINAL_POLISH_SUMMARY.md`
-- `archive/completion-reports/FINAL_STATUS.md`
-- `archive/completion-reports/FINAL_SUMMARY.md`
-- `archive/completion-reports/FIXES_APPLIED.md`
-- `archive/completion-reports/FIXES_SUMMARY.md`
-- `archive/completion-reports/FIX_PR_ISSUE.md`
-- `archive/completion-reports/FIX_SECRET_SCANNING.md`
-- `archive/completion-reports/FOUNDER_CHECKLIST_STACK_GAPS.md`
-- `archive/completion-reports/GAP_DISCOVERY_IMPLEMENTATION_SUMMARY.md`
-- `archive/completion-reports/GITHUB_ACTIONS_MIGRATIONS_COMPLETE.md`
-- `archive/completion-reports/GOLDEN_MIGRATION_PUSHED.md`
-- `archive/completion-reports/GTM_HARDENING_COMPLETE.md`
-- `archive/completion-reports/HIGH_ROI_FEATURES_COMPLETE.md`
-- `archive/completion-reports/IMAGE_PLACEMENT_SUMMARY.md`
-- `archive/completion-reports/IMAGE_QA_ACCESSIBILITY_SUMMARY.md`
-- `archive/completion-reports/IMAGE_RESPONSIVENESS_FIXES.md`
-- `archive/completion-reports/IMPLEMENTATION_COMPLETE.md`
-- `archive/completion-reports/IMPLEMENTATION_SUMMARY.md`
-- `archive/completion-reports/INGESTION_SETUP_COMPLETE.md`
-- `archive/completion-reports/INTEGRATIONS_IMPLEMENTATION_SUMMARY.md`
-- `archive/completion-reports/INTEGRATION_COMPLETE.md`
-- `archive/completion-reports/LOAD_TESTS.md`
-- `archive/completion-reports/MAINTENANCE_IMPROVEMENTS.md`
-- `archive/completion-reports/MANUAL_SECRETS_CHECKLIST.md`
-- `archive/completion-reports/MIGRATION_APPLICATION_GUIDE.md`
-- `archive/completion-reports/MIGRATION_AUTOMATION_COMPLETE.md`
-- `archive/completion-reports/MIGRATION_COMPLETE.md`
-- `archive/completion-reports/MIGRATION_EXECUTION_SUMMARY.md`
-- `archive/completion-reports/MIGRATION_INSTRUCTIONS.md`
-- `archive/completion-reports/MIGRATION_NOTES.md`
-- `archive/completion-reports/MIGRATION_READY.md`
-- `archive/completion-reports/MIGRATION_STATUS.md`
-- `archive/completion-reports/NEW_IMAGES_COMPLETE.md`
-- `archive/completion-reports/NEXT_STEPS_COMPLETE.md`
-- `archive/completion-reports/ONBOARDING_IMPLEMENTATION_SUMMARY.md`
-- `archive/completion-reports/OPERATIONAL_EXCELLENCE_SUMMARY.md`
-- `archive/completion-reports/OPERATOR_MODE_IMPLEMENTATION_SUMMARY.md`
-- `archive/completion-reports/OPERATOR_MODE_NEXT_STEPS_COMPLETE.md`
-- `archive/completion-reports/OPTIMIZATION_COMPLETE.md`
-- `archive/completion-reports/OSS_REPO_NEXT_STEPS.md`
-- ... and 134 more
-
-## changelogs-milestones (14)
-- `CHANGELOG.md`
-- `RELEASE_NOTES.md`
-- `docs/FIRST_VALUE_MILESTONE.md`
-- `docs/_meta/DOCS_CONSOLIDATION_CHANGELOG.md`
-- `docs/api/families/milestones.md`
-- `docs/investor/MILESTONES.md`
-- `docs/packages/react-settler/CHANGELOG.md`
-- `packages/web/content/changelog/2025-07-01-sdk-v2.mdx`
-- `packages/web/content/changelog/2025-09-01-multi-source-joins.mdx`
-- `packages/web/content/changelog/2025-09-10-recon-rules.mdx`
-- `packages/web/content/changelog/2025-10-01-evidence-replay-v2.mdx`
-- `packages/web/content/changelog/2025-10-01-node-sdk-v1.mdx`
-- `packages/web/content/changelog/2025-11-15-receipts-api.mdx`
-- `packages/web/content/changelog/2025-12-11-trust-layer.mdx`
-
-## launch-docs (29)
-- `INVESTOR-RELATIONS-PRIVATE/business/03-customer-onboarding-success/product-launch-feedback-pipeline.md`
-- `LAUNCH_CHECKLIST.md`
-- `docs/LAUNCH_CHECKLIST.md`
-- `docs/SOLO_FOUNDER_LAUNCH_SUMMARY.md`
-- `docs/archive/2026-03/root-superseded/GO_LIVE.md`
-- `docs/archive/2026-03/root-superseded/GO_LIVE_COMPLETE.md`
-- `docs/archive/2026-03/root-superseded/LAUNCHKIT.md`
-- `docs/archive/2026-03/root-superseded/LAUNCH_READY.md`
-- `docs/archive/2026-03/root-superseded/README_LAUNCH.md`
-- `docs/archive/2026-03/root-superseded/RELEASE_PREP_SUMMARY.md`
-- `docs/launch/ARTIFACT_CAPTURE.md`
-- `docs/launch/EXAMPLE_WORKFLOWS.md`
-- `docs/launch/QUICK_START.md`
-- `docs/launch/README.md`
-- `docs/launch/blog-post.md`
-- `docs/launch/demo-video-script.md`
-- `docs/launch/hacker-news.md`
-- `docs/launch/launch-checklist.md`
-- `docs/launch/product-hunt.md`
-- `docs/launch/release-notes.md`
-- `docs/metrics/LAUNCH_KPI_FRAMEWORK.md`
-- `docs/security/LAUNCH_GATE.md`
-- `launch/hn.md`
-- `launch/launch-summary.md`
-- `launch/ph.md`
-- `launch/reddit.md`
-- `launch/twitter-thread.md`
-- `launch/workflow-artifacts.md`
-- `marketing/customer-acquisition-kit/social-launch-post.md`
-
-## misc (767)
-- `github/AUTOMATION_GUIDE.md`
-- `github/MIGRATION_GUARDIAN_SETUP.md`
-- `github/MIGRATION_SECRETS_SETUP.md`
-- `github/MIGRATION_SETUP.md`
-- `github/PULL_REQUEST_TEMPLATE.md`
-- `github/PULL_REQUEST_TEMPLATE_infrastructure.md`
-- `github/PULL_REQUEST_TEMPLATE_integration.md`
-- `github/SECRETS_SETUP.md`
-- `github/pull_request_template.md`
-- `release-checklist.md`
-- `AGENTS.md`
-- `BUILDER_IO_SETUP.md`
-- `CODE_OF_CONDUCT.md`
-- `CONTRIBUTING.md`
-- `DATA_PORTABILITY.md`
-- `GOVERNANCE.md`
-- `INVESTOR-RELATIONS-PRIVATE/04-product-collateral-sales-pilots-investors.md`
-- `INVESTOR-RELATIONS-PRIVATE/05-team-onboarding-handover.md`
-- `INVESTOR-RELATIONS-PRIVATE/08-metrics-product-iteration.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/01-business-model-market-story/competitive-matrix.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/01-business-model-market-story/comprehensive-competitive-analysis.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/01-business-model-market-story/elevator-pitch.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/01-business-model-market-story/founder-story.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/01-business-model-market-story/ideal-customer-profile.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/01-business-model-market-story/pricing-page.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/02-investor-press-sales/customer-narratives-case-studies.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/02-investor-press-sales/enterprise-pilot-template.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/02-investor-press-sales/five-year-vision.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/02-investor-press-sales/investor-pitch-deck.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/02-investor-press-sales/partner-integration-template.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/02-investor-press-sales/press-release.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/03-customer-onboarding-success/customer-champion-program.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/03-customer-onboarding-success/email-templates.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/03-customer-onboarding-success/feedback-cycles.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/03-customer-onboarding-success/onboarding-playbook.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/03-customer-onboarding-success/support-workflows.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/05-team-culture-operations/operating-manual.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/05-team-culture-operations/org-chart.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/06-growth-experiments-feedback/growth-experiments.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/06-growth-experiments-feedback/metrics-framework-investor-story.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/06-growth-experiments-feedback/metrics-kpis.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/06-growth-experiments-feedback/viral-growth-flywheels.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/07-ip-exit-preparedness/due-diligence-checklist.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/07-ip-exit-preparedness/license-readiness.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/COMPETITIVE_ANALYSIS.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/INVESTOR_DECK.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/MARKETING_ONEPAGER.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/api-business-outcomes.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/brand-one-pager.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/investor-deck.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/press-kit.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/pricing-model.md`
-- `LEGAL/COMMERCIAL_LICENSE.md`
-- `LEGAL/TERMS_OF_SERVICE.md`
-- `MODEL_SPEC.md`
-- `REALITY_MAP.md`
-- `RELEASE.md`
-- `REPO_POLICY.md`
-- `SKILLS.md`
-- `SUPABASE_BACKEND_VALIDATION_SUMMARY.md`
-- `SUPPORT.md`
-- `WINDOWS_DEVELOPMENT.md`
-- `WINDOWS_SYMLINK_FIX.md`
-- `agents/code-quality-agent.md`
-- `agents/design-agent.md`
-- `agents/documentation-agent.md`
-- `agents/infrastructure-agent.md`
-- `agents/release-agent.md`
-- `archive/ARCHIVE_INDEX.md`
-- `archive/completed-work/2024-12/COMPLETE_SETUP_VERIFICATION.md`
-- `archive/completed-work/2024-12/CONSOLE_AUTH_FIX_SUMMARY.md`
-- `archive/completed-work/2024-12/CONSOLE_ENHANCEMENT_SUMMARY.md`
-- `archive/completed-work/2024-12/DOM-REALITY-COMPLETE.md`
-- `archive/completed-work/2024-12/FRONTEND_REALITY_FIXES.md`
-- `archive/completed-work/2024-12/IMPLEMENTATION_COMPLETE.md`
-- `archive/completed-work/2024-12/INDEX.md`
-- `archive/completed-work/2024-12/RELEASE_READINESS_CHECKLIST.md`
-- `archive/completed-work/2024-12/SETUP_COMPLETE_SUMMARY.md`
-- `archive/completed-work/auth-fix-2024-12.md`
-- `archive/completed-work/console-enhancement-2024-12.md`
-- `archive/internal-notes/01-demo-onboarding-walkthrough-qa.md`
-- `archive/internal-notes/02-customer-beta-feedback-system.md`
-- `archive/internal-notes/03-synthetic-load-sre-reliability.md`
-- `archive/internal-notes/06-billing-pricing-support-validation.md`
-- `archive/internal-notes/ALERTS.md`
-- `archive/internal-notes/APPLY_MIGRATION_VIA_GITHUB.md`
-- `archive/internal-notes/DEVELOPER_CONSOLE_IMPLEMENTATION.md`
-- `archive/internal-notes/GITHUB_ACTIONS_SETUP.md`
-- `archive/internal-notes/INVESTOR_OUTREACH_TEMPLATES.md`
-- `archive/internal-notes/JOURNEY_TO_MARKET_INDEX.md`
-- `archive/internal-notes/NOTES.md`
-- `archive/internal-notes/OBSERVABILITY.md`
-- `archive/internal-notes/OPEN_CORE_READY_TO_MERGE.md`
-- `archive/internal-notes/OPERATOR_IN_A_BOX.md`
-- `archive/internal-notes/PERFORMANCE_OPTIMIZATION_GUIDE.md`
-- `archive/internal-notes/PITCH_DECK_SEED_ROUND.md`
-- `archive/internal-notes/PLATFORM_READY.md`
-- `archive/internal-notes/PR_READY.md`
-- `archive/internal-notes/PUSH_AND_MERGE.md`
-- `archive/internal-notes/PUSH_TO_OSS_REPO.md`
-- `archive/internal-notes/QUICK_ANSWER.md`
-- `archive/internal-notes/QUICK_FIX_GITHUB_CLI.md`
-- `archive/internal-notes/QUICK_OPTIMIZATION_REFERENCE.md`
-- `archive/internal-notes/QUICK_START_MANUAL_TASKS.md`
-- `archive/internal-notes/QUICK_START_MIGRATION.md`
-- `archive/internal-notes/REACT_SETTLER_DOCUMENTATION_CONSISTENCY.md`
-- `archive/internal-notes/READY_TO_PUSH.md`
-- `archive/internal-notes/REALTIME_DASHBOARD_NOTES.md`
-- `archive/internal-notes/REDEPLOY_NOW.md`
-- `archive/internal-notes/REDIS_SETUP_QUICK.md`
-- `archive/internal-notes/STRATEGIC_BLUEPRINT_INDEX.md`
-- `archive/internal-notes/STRATEGIC_COMPONENTS_SCAFFOLDED.md`
-- `archive/internal-notes/YOUR_REDIS_CONFIG.md`
-- `archive/internal-notes/YOUR_RESEND_CONFIG.md`
-- `archive/oss-info/OPEN_CORE_READY_TO_MERGE.md`
-- `archive/oss-info/OSS_MIRROR_SETUP.md`
-- `archive/oss-info/OSS_REPO_MANUAL_SETUP.md`
-- `archive/oss-info/OSS_REPO_NEXT_STEPS.md`
-- `archive/oss-info/OSS_REPO_READY.md`
-- `archive/oss-info/OSS_REPO_SETUP_COMPLETE.md`
-- ... and 647 more
-
-## onboarding-setup (68)
-- `github/workflows/README.md`
-- `INVESTOR-RELATIONS-PRIVATE/README.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/README.md`
-- `README.md`
-- `archive/completed-work/2024-12/README-DOM-REALITY.md`
-- `archive/completed-work/2024-12/README.md`
-- `archive/internal-notes/README_ECOSYSTEM.md`
-- `archive/internal-notes/README_QA_FIXES.md`
-- `archive/oss-info/README.md`
-- `archive/setup-guides/README.public.md`
-- `archive/setup-guides/README_OPEN_CORE_SETUP.md`
-- `docs/QUICKSTART.md`
-- `docs/QUICKSTART_CLI.md`
-- `docs/README.md`
-- `docs/api/README.md`
-- `docs/archive/README.md`
-- `docs/autonomous-company/README.md`
-- `docs/billing-developer-quickstart.md`
-- `docs/getting-started/README.md`
-- `docs/getting-started/bootstrap.md`
-- `docs/getting-started/core-vs-full-setup.md`
-- `docs/getting-started/doctor.md`
-- `docs/getting-started/quickstart.md`
-- `docs/getting-started.md`
-- `docs/integrations/connectors/README.md`
-- `docs/operations/README.md`
-- `docs/ops/README.md`
-- `docs/packages/api/README.md`
-- `docs/packages/react-settler/README.md`
-- `docs/product/README.md`
-- `docs/quickstart-cli.md`
-- `docs/quickstart.md`
-- `docs/reality-system/README.md`
-- `docs/reconciliation/README.md`
-- `docs/replay/README.md`
-- `docs/scripts/MIGRATION_GUARDIAN_README.md`
-- `docs/scripts/README.md`
-- `docs/support/README.md`
-- `docs/troubleshooting/README.md`
-- `docs/verify/QUICKSTART.md`
-- `domain-packs/ecommerce/README.md`
-- `domain-packs/edtech/README.md`
-- `domain-packs/finance/README.md`
-- `domain-packs/legal/README.md`
-- `emails/README.md`
-- `examples/README.md`
-- `examples/external-integration/README.md`
-- `examples/starter-kits/settler-recon-starter/README.md`
-- `examples/starter-kits/settler-workflow-starter/README.md`
-- `marketing/customer-acquisition-kit/README.md`
-- `marketing/customer-acquisition-kit/npm-readme-quickstart.md`
-- `marketing/customer-acquisition-kit/website-getting-started.md`
-- `marketplace/README.md`
-- `packages/api/README.md`
-- `packages/cli/README.md`
-- `packages/protocol/README.md`
-- `packages/sdk-go/README.md`
-- `packages/sdk-python/README.md`
-- `packages/sdk-ruby/README.md`
-- `packages/workhorse/OPS_README.md`
-- `packages/workhorse/README.md`
-- `pilot-data/README.md`
-- `scaffold-repro/README.md`
-- `strategic/README.md`
-- `supabase/migrations/_archive/README.md`
-- `test-data/generators/README.md`
-- `tests/load/README.md`
-- `tools/reconciliation_intel/README.md`
-
-## plans-roadmaps (94)
-- `DEPENDENCY_FIX_PLAN.md`
-- `HISTORICAL-PLANNING-ARCHIVE/18_MONTH_POST_FUNDING_HIRING_ROADMAP.md`
-- `HISTORICAL-PLANNING-ARCHIVE/ALL_PHASES_COMPLETE.md`
-- `HISTORICAL-PLANNING-ARCHIVE/ALL_TASKS_COMPLETE.md`
-- `HISTORICAL-PLANNING-ARCHIVE/AUTOMATION_COMPLETE.md`
-- `HISTORICAL-PLANNING-ARCHIVE/BLUEPRINT.md`
-- `HISTORICAL-PLANNING-ARCHIVE/BUILD_FIX_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/BUSINESS_MODEL.md`
-- `HISTORICAL-PLANNING-ARCHIVE/COMPLETE_BUSINESS_MODEL_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/COMPLETE_IMPLEMENTATION_FINAL.md`
-- `HISTORICAL-PLANNING-ARCHIVE/COMPLETE_IMPLEMENTATION_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/DELIVERY_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/DEVELOPER_PERSONA_STRATEGY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/DOMAIN_MIGRATION_COMPLETE.md`
-- `HISTORICAL-PLANNING-ARCHIVE/ENV_AUDIT_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/FINAL_AUTOMATION_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/FINAL_COMPLETE_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/FINAL_IMPLEMENTATION_STATUS.md`
-- `HISTORICAL-PLANNING-ARCHIVE/FINAL_MIGRATION_STATUS.md`
-- `HISTORICAL-PLANNING-ARCHIVE/FINAL_REFACTOR_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/FRONTEND_PAGES_COMPLETE.md`
-- `HISTORICAL-PLANNING-ARCHIVE/HIGH_CONFIDENCE_IMPLEMENTATION_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/HOMEPAGE_ENHANCEMENTS_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/HOMEPAGE_IMPROVEMENTS_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/IMPLEMENTATION_ACTION_ITEMS_COMPLETE.md`
-- `HISTORICAL-PLANNING-ARCHIVE/IMPLEMENTATION_COMPLETE.md`
-- `HISTORICAL-PLANNING-ARCHIVE/IMPLEMENTATION_COMPLETE_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/IMPLEMENTATION_FINAL_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/IMPLEMENTATION_ROADMAP.md`
-- `HISTORICAL-PLANNING-ARCHIVE/IMPLEMENTATION_STATUS.md`
-- `HISTORICAL-PLANNING-ARCHIVE/IMPLEMENTATION_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/IMPLEMENTATION_TASK_LISTS.md`
-- `HISTORICAL-PLANNING-ARCHIVE/IMPROVEMENTS_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/INFRASTRUCTURE_SETUP_COMPLETE.md`
-- `HISTORICAL-PLANNING-ARCHIVE/LAUNCH_READINESS.md`
-- `HISTORICAL-PLANNING-ARCHIVE/MASTER_BUSINESS_PLAN.md`
-- `HISTORICAL-PLANNING-ARCHIVE/MCP_MIGRATION_APPROACH.md`
-- `HISTORICAL-PLANNING-ARCHIVE/MIGRATION_INSTRUCTIONS.md`
-- `HISTORICAL-PLANNING-ARCHIVE/MIGRATION_READY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/MIGRATION_SETUP_COMPLETE.md`
-- `HISTORICAL-PLANNING-ARCHIVE/NEXT_STEPS_COMPLETE.md`
-- `HISTORICAL-PLANNING-ARCHIVE/PHASE3_COMPLETE_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/PHASES_COMPLETE_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/REACT_SETTLER_COMPLETE.md`
-- `HISTORICAL-PLANNING-ARCHIVE/REACT_SETTLER_COMPLETE_FINAL.md`
-- `HISTORICAL-PLANNING-ARCHIVE/REACT_SETTLER_IMPLEMENTATION_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/REACT_SETTLER_INTEGRATIONS_COMPLETE.md`
-- `HISTORICAL-PLANNING-ARCHIVE/REACT_SETTLER_LICENSING_COMPLETE.md`
-- `HISTORICAL-PLANNING-ARCHIVE/README.md`
-- `HISTORICAL-PLANNING-ARCHIVE/REFACTOR_COMPLETE_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/SECURITY_FIXES_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/SEED_ROUND_READINESS_SUMMARY.md`
-- `HISTORICAL-PLANNING-ARCHIVE/SEO_CONVERSION_ENHANCEMENTS_COMPLETE.md`
-- `HISTORICAL-PLANNING-ARCHIVE/STRATEGIC_IMPLEMENTATION_COMPLETE.md`
-- `HISTORICAL-PLANNING-ARCHIVE/SUPABASE_MIGRATION_SETUP_COMPLETE.md`
-- `HISTORICAL-PLANNING-ARCHIVE/TYPESCRIPT_REFACTOR_PROGRESS.md`
-- `HISTORICAL-PLANNING-ARCHIVE/ULTIMATE_COMBINED_IMPLEMENTATION_PLAN.md`
-- `HISTORICAL-PLANNING-ARCHIVE/VDR_STRUCTURE_TEMPLATE.md`
-- `HISTORICAL-PLANNING-ARCHIVE/settler-revenue-storyboard.md`
-- `INVESTOR-RELATIONS-PRIVATE/07-launch-plan-growth-loop.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/01-business-model-market-story/go-to-market-strategy.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/01-business-model-market-story/revenue-expansion-platform-strategy.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/04-external-risks-compliance/incident-communication-plan.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/04-external-risks-compliance/plan-b-pivot-roadmap.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/05-team-culture-operations/hiring-plan.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/07-ip-exit-preparedness/exit-planning.md`
-- `SAFE_BREAKING_CHANGES_PLAN.md`
-- `archive/completion-reports/NEW_IMAGES_PLACEMENT_PLAN.md`
-- `archive/setup-guides/DEPLOYMENT_EXECUTION_PLAN.md`
-- `docs/AUTOMATED_RECONCILIATION_REVIEW_PLAN.md`
-- `docs/COMPLETE_IMPLEMENTATION_ROADMAP.md`
-- `docs/GTM_STRATEGY.md`
-- `docs/IMPLEMENTATION_PLAN.md`
-- `docs/ROADMAP_90D.md`
-- `docs/api/families/control-plane.md`
-- `docs/architecture/operator-control-plane.md`
-- `docs/audit/REMEDIATION_PLAN.md`
-- `docs/business/PARTNERSHIP_STRATEGY.md`
-- `docs/business/ROADMAP.md`
-- `docs/community-strategy.md`
-- `docs/content-strategy-implementation.md`
-- `docs/content_backfill_plan.md`
-- `docs/expansion-revenue-strategy.md`
-- `docs/funnel_strategy.md`
-- `docs/integration-roadmap.md`
-- `docs/marketing_strategy.md`
-- `docs/operations/operator-control-plane.md`
-- `docs/packages/react-settler/rollout-plan.md`
-- `docs/phase-2-plan.md`
-- `docs/settler-pricing-strategy.md`
-- `docs/strategic/ROADMAP_COMPLETE_FINAL.md`
-- `docs/strategy/DIFFERENTIATOR_FIT_MATRIX.md`
-- `docs/strategy/POSITIONING_TRUTH.md`
-- `marketing/product-hunt-launch-plan.md`
-
-## prompts (10)
-- `INVESTOR-RELATIONS-PRIVATE/business/06-growth-experiments-feedback/customer-insight-prompts.md`
-- `archive/internal-notes/SUPABASE_AI_VERIFICATION_PROMPT.md`
-- `docs/MISSING_IMAGES_PROMPTS.md`
-- `docs/SUPABASE_AI_CHATBOT_PROMPT.md`
-- `docs/infrastructure/AI_PROMPT_COMPLETE.md`
-- `docs/infrastructure/ai-prompt-schema.md`
-- `docs/prompts/README.md`
-- `prompts/GEMINI_IMAGE_PROMPT.md`
-- `prompts/STITCH_UI_PROMPT.md`
-- `prompts/VIDEO_PROMPT.md`
-
-## security-docs (44)
-- `INVESTOR-RELATIONS-PRIVATE/business/02-investor-press-sales/security-trust-soc2-faq.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/04-external-risks-compliance/comprehensive-legal-ip-risk-management.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/04-external-risks-compliance/regulatory-mapping.md`
-- `INVESTOR-RELATIONS-PRIVATE/business/04-external-risks-compliance/risk-register.md`
-- `LEGAL/PRIVACY_POLICY.md`
-- `PRIVACY.md`
-- `SECURITY.md`
-- `SECURITY_INVARIANTS.md`
-- `docs/COMPLIANCE_MATURITY.md`
-- `docs/PRIVACY_BY_DESIGN.md`
-- `docs/PRIVACY_MODEL.md`
-- `docs/SECURITY.md`
-- `docs/SECURITY_INVARIANTS.md`
-- `docs/WEBHOOK_SECURITY.md`
-- `docs/compliance/COMPLIANCE_DOCUMENTATION.md`
-- `docs/compliance/SOC2_PREPARATION.md`
-- `docs/dd/COMPLIANCE.md`
-- `docs/dd/SECURITY.md`
-- `docs/infrastructure/SECURITY_HARDENING.md`
-- `docs/jobforge/SECURITY.md`
-- `docs/packages/api/COMPLIANCE_SKELETON.md`
-- `docs/packages/api/PRIVACY_SKELETON.md`
-- `docs/packages/api/SECURITY_SUMMARY.md`
-- `docs/packages/react-settler/SECURITY.md`
-- `docs/security/DEPENDENCY_EVIDENCE.md`
-- `docs/security/RATE_LIMITING_PRODUCTION.md`
-- `docs/security/README.md`
-- `docs/security/RLS_VERIFICATION.md`
-- `docs/security/VERIFICATION_MODEL.md`
-- `docs/security/VERIFICATION_SURFACES.md`
-- `docs/security/account-and-tenant-management.md`
-- `docs/security-implementation-summary.md`
-- `docs/security-readme.md`
-- `docs/tax-compliance-regions.md`
-- `domain-packs/compliance/README.md`
-- `packages/api/SECURITY.md`
-- `scripts/security-hardening-checklist.md`
-- `security/evidence/security-summary.md`
-- `security/header-contract.md`
-- `security/release-bundle/security-summary.md`
-- `security/rls-live-verification.md`
-- `security/vulnerability-triage.md`
-- `strategic/04-compliance-regulated-markets.md`
-- `tools/reconciliation_intel/output/reconciliation_intel/compliance_snapshot.md`
-
-## Near-duplicate candidates (heading/inline-command similarity)
-- (1.00) `github/PULL_REQUEST_TEMPLATE.md` <-> `github/pull_request_template.md` [misc]
-- (1.00) `docs/archive/DEVELOPER_GUIDE.md` <-> `docs/developer-guide.md` [misc]
-- (1.00) `docs/WORKFLOWS.md` <-> `docs/workflows.md` [misc]
-- (1.00) `docs/WEEKLY_REVIEW_TEMPLATE.md` <-> `docs/weekly-review-template.md` [audits-reviews]
-- (1.00) `docs/VOC_FEEDBACK_SYSTEM.md` <-> `docs/voc-feedback-system.md` [misc]
-- (1.00) `docs/UPSTASH_TCP_SETUP.md` <-> `docs/upstash-tcp-setup.md` [misc]
-- (1.00) `docs/SUPABASE_MIGRATION_SETUP.md` <-> `docs/supabase-migration-setup.md` [misc]
-- (1.00) `docs/QUICK_START_OBSERVABILITY.md` <-> `docs/quick-start-observability.md` [misc]
-- (1.00) `docs/QUICKSTART_CLI.md` <-> `docs/quickstart-cli.md` [onboarding-setup]
-- (1.00) `docs/OPERATIONS.md` <-> `docs/operations.md` [misc]
-- (1.00) `docs/ONBOARDING.md` <-> `docs/onboarding.md` [misc]
-- (1.00) `docs/LOCAL_DEV_SETUP.md` <-> `docs/local-dev-setup.md` [misc]
-- (1.00) `docs/INTEGRATION_RECIPES.md` <-> `docs/i-n-t-e-g-r-a-t-i-o-n-r-e-c-i-p-e-s.md` [misc]
-- (1.00) `docs/GITOPS_CONFIG.md` <-> `docs/gitops-config.md` [misc]
-- (1.00) `docs/GITHUB_SECRETS_SETUP.md` <-> `docs/github-secrets-setup.md` [misc]
-- (1.00) `docs/ECOSYSTEM_POSITIONING.md` <-> `docs/ecosystem-positioning.md` [misc]
-- (1.00) `docs/ARCHITECTURE.md` <-> `docs/architecture.md` [architecture-notes]
-- (1.00) `archive/oss-info/OSS_REPO_MANUAL_SETUP.md` <-> `archive/setup-guides/OSS_REPO_MANUAL_SETUP.md` [misc]
-- (1.00) `archive/oss-info/OSS_MIRROR_SETUP.md` <-> `archive/setup-guides/OSS_MIRROR_SETUP.md` [misc]
-- (1.00) `archive/internal-notes/OPEN_CORE_READY_TO_MERGE.md` <-> `archive/oss-info/OPEN_CORE_READY_TO_MERGE.md` [misc]
-- (0.83) `docs/_meta/doc-inventory.md` <-> `docs/_meta/orphan-docs.md` [misc]
-- (0.82) `packages/sdk-python/README.md` <-> `packages/sdk-ruby/README.md` [onboarding-setup]
-- (0.74) `docs/API.md` <-> `docs/api-reference.md` [misc]
-- (0.72) `docs/OBJECTION_HANDLING.md` <-> `kits/sales/OBJECTION_HANDLING_PLAYBOOK.md` [misc]
-- (0.69) `docs/integrations/connectors/plaid.md` <-> `docs/integrations/connectors/truelayer.md` [misc]
-- (0.63) `docs/INVESTOR_READY_SUMMARY.md` <-> `docs/investor/INVESTOR_READY_SUMMARY.md` [misc]
-- (0.56) `archive/completion-reports/CODE_REVIEW_COMPLETE.md` <-> `archive/completion-reports/COMPREHENSIVE_REVIEW_SUMMARY.md` [audits-reviews]
-- (0.53) `HISTORICAL-PLANNING-ARCHIVE/AUTOMATION_COMPLETE.md` <-> `HISTORICAL-PLANNING-ARCHIVE/FINAL_AUTOMATION_SUMMARY.md` [plans-roadmaps]
+| Section | Markdown files |
+| --- | ---: |
+| archive | 361 |
+| api | 51 |
+| packages | 39 |
+| architecture | 28 |
+| _meta | 18 |
+| quality | 15 |
+| strategic | 15 |
+| ops | 13 |
+| launch | 11 |
+| autonomous-company | 10 |
+| investor | 9 |
+| operations | 9 |
+| security | 9 |
+| audit | 7 |
+| dd | 7 |
+| postgres-scale-audit | 7 |
+| reference | 7 |
+| business | 6 |
+| getting-started | 6 |
+| infrastructure | 6 |
+| integrations | 6 |
+| reality-validation | 6 |
+| reality-system | 5 |
+| scripts | 5 |
+| troubleshooting | 5 |
+| sre | 4 |
+| support | 4 |
+| contract-templates | 3 |
+| demo | 3 |
+| engine | 3 |
+| gtm | 3 |
+| jobforge | 3 |
+| positioning | 3 |
+| release | 3 |
+| strategy | 3 |
+| audits | 2 |
+| compliance | 2 |
+| deployment | 2 |
+| go-to-market | 2 |
+| marketing | 2 |
+| metrics | 2 |
+| reality | 2 |
+| reconciliation | 2 |
+| reports | 2 |
+| runbook | 2 |
+| 24-7-OPERATIONS_CHECKLIST.md | 1 |
+| ACCESS_CONTROLS.md | 1 |
+| ADMIN_CAPABILITIES.md | 1 |
+| AI_CONSOLE_BACKEND_GUIDE.md | 1 |
+| API_REFERENCE.md | 1 |
+| APPLY_MIGRATIONS_NOW.md | 1 |
+| ARCHITECTURE.md | 1 |
+| ARCHITECTURE_OVERVIEW.md | 1 |
+| ARENA.md | 1 |
+| AUTH.md | 1 |
+| AUTOMATED_RECONCILIATION_IMPLEMENTATION_SUMMARY.md | 1 |
+| AUTOMATED_RECONCILIATION_QUICK_REFERENCE.md | 1 |
+| AUTOMATED_RECONCILIATION_REVIEW_PLAN.md | 1 |
+| AUTOMATIC_MIGRATIONS.md | 1 |
+| AUTOMATION_INVENTORY.md | 1 |
+| BACKEND_CONSOLE_DIAGNOSTICS.md | 1 |
+| BENCHMARKS.md | 1 |
+| BILLING.md | 1 |
+| BILLING_FAQ.md | 1 |
+| BUILD.md | 1 |
+| CANONICAL_PRODUCT_NARRATIVE.md | 1 |
+| CATEGORY_POSITIONING.md | 1 |
+| CITATIONS.md | 1 |
+| CODE_REVIEW_AUTOMATION_IMPLEMENTATION.md | 1 |
+| COMPETITIVE_BOUNDARIES.md | 1 |
+| COMPLETE_IMPLEMENTATION_ROADMAP.md | 1 |
+| COMPLIANCE_MATURITY.md | 1 |
+| COMPREHENSIVE_IMPLEMENTATION_SUMMARY.md | 1 |
+| CONFIGURATION.md | 1 |
+| CONSOLE_BACKEND_QUICK_REFERENCE.md | 1 |
+| CONSOLE_COMPLETE.md | 1 |
+| CONSOLE_SETUP.md | 1 |
+| CRITICAL_PATHS.md | 1 |
+| CTO_INTERROGATION.md | 1 |
+| CUSTOMER_HEALTH_SIGNALS.md | 1 |
+| DATABASE_OPTIMIZATION_GUIDE.md | 1 |
+| DATABASE_URL_SYNTAX.md | 1 |
+| DATA_MODEL.md | 1 |
+| DEPLOYMENT_CHECKLIST.md | 1 |
+| DEPLOYMENT_ONBOARDING.md | 1 |
+| DIFFERENTIATORS.md | 1 |
+| DISCOVERY_QUESTIONS.md | 1 |
+| DOCUMENTATION_INDEX.md | 1 |
+| DUE_DILIGENCE.md | 1 |
+| ECONOMICS.md | 1 |
+| ECOSYSTEM_POSITIONING.md | 1 |
+| ELEVATOR_PITCHES.md | 1 |
+| EMERGENCY_PLAYBOOK.md | 1 |
+| ENGINE.md | 1 |
+| ENTERPRISE.md | 1 |
+| ENTERPRISE_QA.md | 1 |
+| EVENT_MODEL.md | 1 |
+| EVIDENCE.md | 1 |
+| EXECUTIVE_SUMMARY.md | 1 |
+| EXPLAIN.md | 1 |
+| EXTENSIONS.md | 1 |
+| FAILURE_MODES.md | 1 |
+| FAQ.md | 1 |
+| FINAL_CLOSURE_PACK.md | 1 |
+| FIRST_VALUE_MILESTONE.md | 1 |
+| FLOW_EXPLORER.md | 1 |
+| FRONTEND_AUTOMATION_UPDATE_SUMMARY.md | 1 |
+| FRONTEND_ENHANCEMENTS.md | 1 |
+| FUTURE_PROOF_UI.md | 1 |
+| GAMIFICATION.md | 1 |
+| GETTING_STARTED.md | 1 |
+| GITHUB_SECRETS_SETUP.md | 1 |
+| GITOPS_CONFIG.md | 1 |
+| GLOSSARY.md | 1 |
+| GOVERNANCE_MODEL.md | 1 |
+| GTM_CHECKLIST.md | 1 |
+| GTM_FIT.md | 1 |
+| GTM_STRATEGY.md | 1 |
+| HARDENING_ASSESSMENT.md | 1 |
+| HOW_SETTLER_RUNS_ITSELF.md | 1 |
+| ICP_DEFINITIONS.md | 1 |
+| IMAGE_FIXES_COMPLETE.md | 1 |
+| IMAGE_USAGE_AUDIT.md | 1 |
+| IMPLEMENTATION_GUIDE.md | 1 |
+| IMPLEMENTATION_PLAN.md | 1 |
+| IMPLEMENTATION_SUMMARY.md | 1 |
+| INCIDENT_POSTMORTEM_TEMPLATE.md | 1 |
+| INCIDENT_RESPONSE.md | 1 |
+| INCIDENT_RESPONSE_PLAYBOOK.md | 1 |
+| INDEX.md | 1 |
+| INGESTION.md | 1 |
+| INTEGRATION_PASS.md | 1 |
+| INTEGRATION_RECIPES.md | 1 |
+| INVESTOR_NARRATIVE.md | 1 |
+| INVESTOR_READY_SUMMARY.md | 1 |
+| KNOWN_LIMITATIONS.md | 1 |
+| LAUNCH_READINESS_AUDIT.md | 1 |
+| LEGAL_RISK_AUDIT.md | 1 |
+| LICENSING_OVERVIEW.md | 1 |
+| LINEAGE.md | 1 |
+| LOCAL_DEV_SETUP.md | 1 |
+| MAINTAINER_GUIDE.md | 1 |
+| MIGRATIONS.md | 1 |
+| MIGRATION_GUIDE.md | 1 |
+| NARRATIVE_ALIGNMENT_PROCESS.md | 1 |
+| NARRATIVE_PASS_COMPLETE.md | 1 |
+| NARRATIVE_PASS_IMPLEMENTATION_COMPLETE.md | 1 |
+| NEXT_STEPS_COMPLETE.md | 1 |
+| NON_GOALS.md | 1 |
+| OBJECTION_HANDLING.md | 1 |
+| ONBOARDING.md | 1 |
+| ONBOARDING_GUIDE.md | 1 |
+| ONE_PAGER.md | 1 |
+| OPERATIONS.md | 1 |
+| OPERATIONS_RUNBOOK.md | 1 |
+| OPERATOR_MODE.md | 1 |
+| OPERATOR_MODE_QUICK_START.md | 1 |
+| OPERATOR_MODE_SETUP.md | 1 |
+| OPS_CHECKLIST.md | 1 |
+| OPS_INTELLIGENCE.md | 1 |
+| OPS_INTELLIGENCE_IMPROVEMENTS.md | 1 |
+| OPTIMIZATION_IMPLEMENTATION.md | 1 |
+| OSS_CHATBOT_IMPLEMENTATION.md | 1 |
+| OSS_VS_ENTERPRISE.md | 1 |
+| PILOT_DEPLOYMENT_CHECKLIST.md | 1 |
+| PILOT_OPERATOR_RUNBOOK.md | 1 |
+| PILOT_PROGRAM.md | 1 |
+| PILOT_RISKS.md | 1 |
+| PILOT_SUCCESS_CRITERIA.md | 1 |
+| PITCH.md | 1 |
+| POSITIONING.md | 1 |
+| PRICING.md | 1 |
+| PRICING_LOGIC.md | 1 |
+| PRIVACY_BY_DESIGN.md | 1 |
+| PRIVACY_MODEL.md | 1 |
+| PROCUREMENT_FAQ.md | 1 |
+| PRODUCTION_READINESS_SUMMARY.md | 1 |
+| PRODUCT_CAPABILITIES_MATRIX.md | 1 |
+| PRODUCT_CLARITY_AUDIT.md | 1 |
+| PRODUCT_OVERVIEW.md | 1 |
+| PROOF_MODE.md | 1 |
+| QUICK_START.md | 1 |
+| QUICK_START_GUIDE.md | 1 |
+| QUICK_START_OBSERVABILITY.md | 1 |
+| README.md | 1 |
+| REALITY_MAP.md | 1 |
+| RECONCILIATION_CONTRACT.md | 1 |
+| RED_TEAM_SIMULATION.md | 1 |
+| REFLECTION_REPORT.md | 1 |
+| REGISTRY.md | 1 |
+| REPOSITORY_OVERVIEW.md | 1 |
+| REPO_BOUNDARIES.md | 1 |
+| RETENTION_LOOPS.md | 1 |
+| REVENUE_BOOTSTRAP_COMPLETE.md | 1 |
+| REVENUE_BOOTSTRAP_SUMMARY.md | 1 |
+| REVENUE_METRICS.md | 1 |
+| REVIEW_AND_DEPLOYMENT_GUIDE.md | 1 |
+| RLS_POLICY_VERIFICATION.md | 1 |
+| ROADMAP_90D.md | 1 |
+| RUNBOOK.md | 1 |
+| SALES_QUALIFICATION.md | 1 |
+| SDK_CLI_CONSOLE_INTEGRATION.md | 1 |
+| SDK_PARITY.md | 1 |
+| SECRETS_CHECKLIST.md | 1 |
+| SECRETS_MANAGEMENT.md | 1 |
+| SECRETS_QUICK_START.md | 1 |
+| SECURITY.md | 1 |
+| SECURITY_ARCHITECTURE.md | 1 |
+| SECURITY_INVARIANTS.md | 1 |
+| SETTLER_UX_AUDIT.md | 1 |
+| SHIP_STATUS.md | 1 |
+| SITE_REALITY_AUDIT_REPORT.md | 1 |
+| SLA_POSITION.md | 1 |
+| SOURCE_OF_TRUTH.md | 1 |
+| STACK_CONNECTIONS_ANALYSIS.md | 1 |
+| STACK_GAPS_SUMMARY.md | 1 |
+| STAKEHOLDER_READINESS.md | 1 |
+| START_HERE.md | 1 |
+| SUPABASE_MIGRATION_SETUP.md | 1 |
+| SUPPORT_BOT.md | 1 |
+| SUPPORT_MODEL.md | 1 |
+| SYSTEM_GUARANTEES.md | 1 |
+| TECHNICAL_DUE_DILIGENCE.md | 1 |
+| TEMPLATES.md | 1 |
+| TENANT_ISOLATION_VERIFICATION.md | 1 |
+| TERMINOLOGY.md | 1 |
+| TEST_DATA_FOUNDRY.md | 1 |
+| THREAT_MODEL.md | 1 |
+| TIME_CAPSULE.md | 1 |
+| TRANSFORMATION_STATUS.md | 1 |
+| TRUST_GAPS_RANKED.md | 1 |
+| ULTRA_FUTURE_SUPERBLOCK_COMPLETE.md | 1 |
+| UNIT_ECONOMICS.md | 1 |
+| UPSTASH_TCP_SETUP.md | 1 |
+| USE_CASES.md | 1 |
+| UX_NOTES.md | 1 |
+| VALUE_PROPOSITIONS.md | 1 |
+| VERCEL_DEPLOYMENT_SETUP.md | 1 |
+| VERIFY.md | 1 |
+| VERTICAL_MODULES.md | 1 |
+| VOC_FEEDBACK_SYSTEM.md | 1 |
+| WEAKNESS_MAP.md | 1 |
+| WEBHOOKS.md | 1 |
+| WEBHOOK_IDEMPOTENCY.md | 1 |
+| WEBHOOK_SECURITY.md | 1 |
+| WEEKLY_REVIEW_TEMPLATE.md | 1 |
+| WHO_THIS_IS_NOT_FOR.md | 1 |
+| WORKFLOWS.md | 1 |
+| access-control-policies.md | 1 |
+| accessibility-report.md | 1 |
+| adapters.md | 1 |
+| addons-catalog.md | 1 |
+| admin-analytics-implementation-summary.md | 1 |
+| admin-analytics-runbook.md | 1 |
+| ael | 1 |
+| api-contracts.md | 1 |
+| api-quick-start.md | 1 |
+| api-reference.md | 1 |
+| api.md | 1 |
+| architecture-ui.md | 1 |
+| auth-edge-guard-setup.md | 1 |
+| backend-contract-verification.md | 1 |
+| background-jobs.md | 1 |
+| benchmarks | 1 |
+| billing-architecture.md | 1 |
+| billing-developer-quickstart.md | 1 |
+| billing-implementation-progress.md | 1 |
+| build-and-deploy.md | 1 |
+| build-fixes-complete.md | 1 |
+| build-safety-guide.md | 1 |
+| build-validation-summary.md | 1 |
+| builder-io-fusion.md | 1 |
+| case-studies | 1 |
+| category-narrative.md | 1 |
+| ci-cd-initial.md | 1 |
+| community-strategy.md | 1 |
+| competitor-teardown-matrix.md | 1 |
+| component-inventory.md | 1 |
+| console.md | 1 |
+| content-calendar-public.md | 1 |
+| content-strategy-implementation.md | 1 |
+| content_audit.md | 1 |
+| content_backfill_plan.md | 1 |
+| content_surface_map.md | 1 |
+| contributing.md | 1 |
+| data-architecture-initial.md | 1 |
+| data-architecture.md | 1 |
+| demo.md | 1 |
+| demos | 1 |
+| deployment-guide.md | 1 |
+| deployment-notes.md | 1 |
+| design-system.md | 1 |
+| determinism.md | 1 |
+| developer-guide.md | 1 |
+| diagnostics-playbook.md | 1 |
+| dom-reality-completion-report.md | 1 |
+| dom-reality-deliverables.md | 1 |
+| dom-reality-fix-log.md | 1 |
+| dom-reality-implementation-complete.md | 1 |
+| dom-reality-quick-start.md | 1 |
+| dom-reality-summary.md | 1 |
+| dom-reality-verification-checklist.md | 1 |
+| dr-scenarios.md | 1 |
+| ecosystem-positioning.md | 1 |
+| enhancements-implemented.md | 1 |
+| enterprise-battlecard.md | 1 |
+| enterprise-faq.md | 1 |
+| enterprise-onboarding.md | 1 |
+| env-build-helper.md | 1 |
+| env-sync-summary.md | 1 |
+| error-handling.md | 1 |
+| event-catalog.md | 1 |
+| event-taxonomy.md | 1 |
+| expansion-revenue-strategy.md | 1 |
+| external | 1 |
+| feature-flags-and-experiments.md | 1 |
+| feature-gating-design.md | 1 |
+| final-build-audit-complete.md | 1 |
+| financial-projection-3-5-years.md | 1 |
+| founder-story.md | 1 |
+| frontend-additional-stakeholder-analyses.md | 1 |
+| frontend-architecture.md | 1 |
+| frontend-audit.md | 1 |
+| frontend-content-overhaul.md | 1 |
+| frontend-optimization-implementation-summary.md | 1 |
+| frontend-review-report-final.md | 1 |
+| frontend-review-report.md | 1 |
+| frontend-routes-overview.md | 1 |
+| funnel_strategy.md | 1 |
+| getting-started.md | 1 |
+| github-secrets-checklist.md | 1 |
+| github-secrets-guide.md | 1 |
+| github-secrets-migration.md | 1 |
+| github-secrets-setup.md | 1 |
+| gitops-config.md | 1 |
+| go-live-checklist.md | 1 |
+| gtm-channel-playbook.md | 1 |
+| gtm-execution-report.md | 1 |
+| gtm-integration-guide.md | 1 |
+| i-n-t-e-g-r-a-t-i-o-n-r-e-c-i-p-e-s.md | 1 |
+| i18n-architecture.md | 1 |
+| icons.md | 1 |
+| images.md | 1 |
+| implementation_notes.md | 1 |
+| incident-runbook.md | 1 |
+| infra-setup.md | 1 |
+| integration-marketplace.md | 1 |
+| integration-recipes.md | 1 |
+| integration-roadmap.md | 1 |
+| investor-faq.md | 1 |
+| investor-narrative.md | 1 |
+| investor.md | 1 |
+| jobforge-integration.md | 1 |
+| kernel | 1 |
+| limitations.md | 1 |
+| live-debug-report.md | 1 |
+| local-dev-setup.md | 1 |
+| marketing_strategy.md | 1 |
+| matching-rules.md | 1 |
+| metrics.md | 1 |
+| microcopy-guidelines.md | 1 |
+| migration-automation-setup.md | 1 |
+| mission-vision.md | 1 |
+| moat.md | 1 |
+| model-pipeline-overview.md | 1 |
+| monthly_cadence_engine.md | 1 |
+| multi-currency-reconciliation.md | 1 |
+| observability-architecture.md | 1 |
+| observability.md | 1 |
+| one-pager.md | 1 |
+| open-source-developer-relations-program.md | 1 |
+| open-source-licensing.md | 1 |
+| ops-intelligence.md | 1 |
+| oss-vs-enterprise.md | 1 |
+| overview.md | 1 |
+| partner-ecosystem-map.md | 1 |
+| performance-report.md | 1 |
+| performance-tuning-guide.md | 1 |
+| performance | 1 |
+| phase-2-plan.md | 1 |
+| policies.md | 1 |
+| pricing-one-liner.md | 1 |
+| pricing-rationale.md | 1 |
+| product-analytics-dashboards.md | 1 |
+| product | 1 |
+| prompts | 1 |
+| qa-notes.md | 1 |
+| qa-report.md | 1 |
+| qa-summary.md | 1 |
+| quick-start-observability.md | 1 |
+| quickstart-cli.md | 1 |
+| quickstart.md | 1 |
+| redis-decision.md | 1 |
+| release-evidence-bundle.md | 1 |
+| replay | 1 |
+| repo | 1 |
+| route-inventory.md | 1 |
+| security-audit.md | 1 |
+| security-implementation-summary.md | 1 |
+| security-readme.md | 1 |
+| settler-aias-integration.md | 1 |
+| settler-defense-moat.md | 1 |
+| settler-edge-architecture.md | 1 |
+| settler-edge-node-deployment.md | 1 |
+| settler-pricing-strategy.md | 1 |
+| settler-receipts-feature-flags-setup.md | 1 |
+| site-builder-complete.md | 1 |
+| site-builder-implementation-status.md | 1 |
+| sla-slo-documentation.md | 1 |
+| social-brand-identity.md | 1 |
+| stack-overview.md | 1 |
+| state-patterns.md | 1 |
+| strategic-moat-analysis.md | 1 |
+| stripe-catalog.md | 1 |
+| summary_for_founder.md | 1 |
+| supabase-gaps.md | 1 |
+| supabase-migration-setup.md | 1 |
+| supabase-secrets-guide.md | 1 |
+| tax-compliance-regions.md | 1 |
+| trial_to_paid_cadence.md | 1 |
+| troubleshooting.md | 1 |
+| upstash-tcp-setup.md | 1 |
+| usage-events-reference.md | 1 |
+| usage-tracking-integration-example.md | 1 |
+| ux-guidelines.md | 1 |
+| ux-interaction-spec.md | 1 |
+| ux-system-implementation-summary.md | 1 |
+| ux-system-verification.md | 1 |
+| value-metrics.md | 1 |
+| vendor-risk-assessment-matrix.md | 1 |
+| vercel-build-readiness.md | 1 |
+| vercel-env-sync-guide.md | 1 |
+| vercel-integration.md | 1 |
+| verify | 1 |
+| voc-feedback-system.md | 1 |
+| webhook-setup.md | 1 |
+| weekly-review-template.md | 1 |
