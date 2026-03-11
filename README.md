@@ -45,3 +45,11 @@ Use `pnpm demo:settler` to run a deterministic end-to-end demo pipeline.
 ## Contributing
 
 See `CONTRIBUTING.md` for contribution workflow and quality gates.
+
+## Security
+
+See `SECURITY.md` for vulnerability reporting instructions and security policy scope.
+
+## License
+
+See `LICENSE` for repository licensing terms and `docs/LICENSING_OVERVIEW.md` for component-level licensing details.

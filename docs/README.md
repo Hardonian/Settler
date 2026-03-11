@@ -12,6 +12,9 @@ This directory is the canonical documentation surface for Settler.
 - Security + compliance: `docs/security/`, `docs/compliance/`
 - API/reference: `docs/api/`, `docs/reference/`
 - Product + positioning context: `docs/product/README.md`, `docs/positioning/`
+- Contribution guide: `CONTRIBUTING.md`
+- Security policy + disclosure process: `SECURITY.md`
+- Licensing model: `LICENSE`, `docs/LICENSING_OVERVIEW.md`
 
 ## Documentation governance surfaces
 

@@ -2,16 +2,20 @@
 """
 Verify that the patch was applied successfully
 """
+import os
 import psycopg2
 
 def verify_patch():
     conn_params = {
-        'host': 'aws-0-us-west-2.pooler.supabase.com',
-        'port': 5432,
-        'database': 'postgres',
-        'user': 'postgres.johfcvvmtfiomzxipspz',
-        'password': 'JtLWi74CXuTcaeha'
+        'host': os.getenv('SUPABASE_DB_HOST', 'localhost'),
+        'port': int(os.getenv('SUPABASE_DB_PORT', '5432')),
+        'database': os.getenv('SUPABASE_DB_NAME', 'postgres'),
+        'user': os.getenv('SUPABASE_DB_USER'),
+        'password': os.getenv('SUPABASE_DB_PASSWORD')
     }
+
+    if not conn_params['user'] or not conn_params['password']:
+        raise RuntimeError('Missing SUPABASE_DB_USER or SUPABASE_DB_PASSWORD environment variables')
     
     conn = psycopg2.connect(**conn_params)
     cursor = conn.cursor()

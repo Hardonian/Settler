@@ -16,7 +16,7 @@ The current environment cannot connect to your Supabase database because:
    ```bash
    cp .env.template .env
    # Edit .env and add:
-   DATABASE_URL=postgresql://postgres:XoogH4uSsWQ3mhFD@db.johfcvvmtfiomzxipspz.supabase.co:5432/postgres
+   DATABASE_URL=postgresql://postgres:[REDACTED_PASSWORD]@db.johfcvvmtfiomzxipspz.supabase.co:5432/postgres
    ```
 
 3. **Install dependencies:**
@@ -56,11 +56,11 @@ supabase db push
 If you have `psql` installed locally:
 
 ```bash
-psql "postgresql://postgres:XoogH4uSsWQ3mhFD@db.johfcvvmtfiomzxipspz.supabase.co:5432/postgres" -f supabase/migrations/20251128193735_initial_schema.sql
-psql "postgresql://postgres:XoogH4uSsWQ3mhFD@db.johfcvvmtfiomzxipspz.supabase.co:5432/postgres" -f supabase/migrations/20251128193816_functions_and_triggers.sql
-psql "postgresql://postgres:XoogH4uSsWQ3mhFD@db.johfcvvmtfiomzxipspz.supabase.co:5432/postgres" -f supabase/migrations/20251128193816_reconciliation_graph_tables.sql
-psql "postgresql://postgres:XoogH4uSsWQ3mhFD@db.johfcvvmtfiomzxipspz.supabase.co:5432/postgres" -f supabase/migrations/20251128193816_rls_policies.sql
-psql "postgresql://postgres:XoogH4uSsWQ3mhFD@db.johfcvvmtfiomzxipspz.supabase.co:5432/postgres" -f supabase/seeds/seed.sql
+psql "postgresql://postgres:[REDACTED_PASSWORD]@db.johfcvvmtfiomzxipspz.supabase.co:5432/postgres" -f supabase/migrations/20251128193735_initial_schema.sql
+psql "postgresql://postgres:[REDACTED_PASSWORD]@db.johfcvvmtfiomzxipspz.supabase.co:5432/postgres" -f supabase/migrations/20251128193816_functions_and_triggers.sql
+psql "postgresql://postgres:[REDACTED_PASSWORD]@db.johfcvvmtfiomzxipspz.supabase.co:5432/postgres" -f supabase/migrations/20251128193816_reconciliation_graph_tables.sql
+psql "postgresql://postgres:[REDACTED_PASSWORD]@db.johfcvvmtfiomzxipspz.supabase.co:5432/postgres" -f supabase/migrations/20251128193816_rls_policies.sql
+psql "postgresql://postgres:[REDACTED_PASSWORD]@db.johfcvvmtfiomzxipspz.supabase.co:5432/postgres" -f supabase/seeds/seed.sql
 ```
 
 ## What Gets Migrated
