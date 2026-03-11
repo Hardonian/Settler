@@ -28,7 +28,7 @@ The migrations are **100% ready** - they just need to run from a machine with pr
 
 2. **The `.env` file is already configured** with your connection:
    ```
-   DATABASE_URL=postgresql://postgres:XoogH4uSsWQ3mhFD@db.johfcvvmtfiomzxipspz.supabase.co:5432/postgres
+   DATABASE_URL=postgresql://postgres:[REDACTED_PASSWORD]@db.johfcvvmtfiomzxipspz.supabase.co:5432/postgres
    ```
 
 3. **Run migrations:**

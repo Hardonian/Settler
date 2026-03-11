@@ -17,7 +17,7 @@ All required artifacts have been generated:
 
 ```bash
 # Connect to your Supabase database
-export DATABASE_URL="postgresql://postgres.johfcvvmtfiomzxipspz:[JtLWi74CXuTcaeha]@aws-0-us-west-2.pooler.supabase.com:5432/postgres"
+export DATABASE_URL="postgresql://postgres.johfcvvmtfiomzxipspz:[REDACTED_PASSWORD]@aws-0-us-west-2.pooler.supabase.com:5432/postgres"
 
 # Run introspection
 psql $DATABASE_URL -f supabase/migrations/INTROSPECTION.sql

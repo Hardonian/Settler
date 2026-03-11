@@ -5,6 +5,7 @@ Execute Supabase validation scripts
 import sys
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+import os
 import re
 
 def execute_sql(conn_string, sql_content, script_name):
@@ -95,12 +96,15 @@ def execute_sql(conn_string, sql_content, script_name):
 def main():
     # Connection parameters (brackets in connection string are delimiters, not part of password)
     conn_params = {
-        'host': 'aws-0-us-west-2.pooler.supabase.com',
-        'port': 5432,
-        'database': 'postgres',
-        'user': 'postgres.johfcvvmtfiomzxipspz',
-        'password': 'JtLWi74CXuTcaeha'
+        'host': os.getenv('SUPABASE_DB_HOST', 'localhost'),
+        'port': int(os.getenv('SUPABASE_DB_PORT', '5432')),
+        'database': os.getenv('SUPABASE_DB_NAME', 'postgres'),
+        'user': os.getenv('SUPABASE_DB_USER'),
+        'password': os.getenv('SUPABASE_DB_PASSWORD')
     }
+
+    if not conn_params['user'] or not conn_params['password']:
+        raise RuntimeError('Missing SUPABASE_DB_USER or SUPABASE_DB_PASSWORD environment variables')
     conn_string = f"postgresql://{conn_params['user']}:{conn_params['password']}@{conn_params['host']}:{conn_params['port']}/{conn_params['database']}"
     
     scripts = [
