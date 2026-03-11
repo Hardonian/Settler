@@ -24,6 +24,12 @@ Recommended local placement:
 - `packages/web/.env.local` for local development secrets (gitignored)
 - root `.env` only when a shared workspace script explicitly requires it
 
+## Environment entrypoint
+
+For env-file placement, variable scope, and safety rules, use:
+
+- [`env-files.md`](./env-files.md)
+
 ## Remote database quick setup
 
 ```bash

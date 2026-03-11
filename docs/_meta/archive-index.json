@@ -222,5 +222,143 @@
       "docs/prompts/README.md"
     ],
     "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "DEPENDENCY_FIX_PLAN.md",
+    "archived_path": "docs/archive/2026-03/root-superseded/DEPENDENCY_FIX_PLAN.md",
+    "reason": "Superseded dependency remediation plan; retained as historical planning context.",
+    "merged_into": [
+      "docs/reference/dependency-policy.md"
+    ],
+    "public_safe": true,
+    "notes": "Root planning doc moved out of canonical root surface."
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "FRONTEND_DESIGN_REVIEW.md",
+    "archived_path": "docs/archive/2026-03/root-superseded/FRONTEND_DESIGN_REVIEW.md",
+    "reason": "Point-in-time frontend review snapshot; not canonical product architecture guidance.",
+    "merged_into": [
+      "docs/product/README.md",
+      "docs/architecture/README.md"
+    ],
+    "public_safe": true,
+    "notes": "Historical design review retained for traceability."
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "PRODUCT_CLARITY_AUDIT.md",
+    "archived_path": "docs/archive/2026-03/root-superseded/PRODUCT_CLARITY_AUDIT.md",
+    "reason": "Historical product messaging audit superseded by product hub and positioning docs.",
+    "merged_into": [
+      "docs/product/README.md",
+      "docs/positioning/"
+    ],
+    "public_safe": true,
+    "notes": "Archive move to reduce root clutter."
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "REALITY_AUDIT.md",
+    "archived_path": "docs/archive/2026-03/root-superseded/REALITY_AUDIT.md",
+    "reason": "Historical reality audit summary superseded by ongoing verification docs.",
+    "merged_into": [
+      "docs/reality-validation/",
+      "docs/verify/"
+    ],
+    "public_safe": true,
+    "notes": "Retained as forensic evidence."
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "SAFE_BREAKING_CHANGES_PLAN.md",
+    "archived_path": "docs/archive/2026-03/root-superseded/SAFE_BREAKING_CHANGES_PLAN.md",
+    "reason": "Superseded change-management plan with historical decision context.",
+    "merged_into": [
+      "RELEASE.md",
+      "docs/release/"
+    ],
+    "public_safe": true,
+    "notes": "Archived to keep root docs focused on active policy."
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "SUPABASE_BACKEND_VALIDATION_SUMMARY.md",
+    "archived_path": "docs/archive/2026-03/root-superseded/SUPABASE_BACKEND_VALIDATION_SUMMARY.md",
+    "reason": "Backend validation snapshot superseded by current setup/verification docs.",
+    "merged_into": [
+      "docs/getting-started/README.md",
+      "docs/infrastructure/"
+    ],
+    "public_safe": true,
+    "notes": "Historical verification artifact."
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "docs/QUICKSTART.md",
+    "archived_path": "docs/archive/2026-03/docs-root-superseded/QUICKSTART.md",
+    "reason": "Legacy SaaS-style quickstart superseded by canonical getting-started quickstart.",
+    "merged_into": [
+      "docs/getting-started/quickstart.md",
+      "docs/quickstart.md"
+    ],
+    "public_safe": true,
+    "notes": "Avoid split canonical quickstart paths."
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "docs/API.md",
+    "archived_path": "docs/archive/2026-03/docs-root-superseded/API.md",
+    "reason": "Uppercase case-collision doc superseded by canonical lowercase path.",
+    "merged_into": [
+      "docs/api.md"
+    ],
+    "public_safe": true,
+    "notes": "Resolved docs case-collision without destructive deletion."
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "docs/CONSOLE.md",
+    "archived_path": "docs/archive/2026-03/docs-root-superseded/CONSOLE.md",
+    "reason": "Uppercase case-collision doc superseded by canonical lowercase path.",
+    "merged_into": [
+      "docs/console.md"
+    ],
+    "public_safe": true,
+    "notes": "Resolved docs case-collision without destructive deletion."
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "docs/CONTRIBUTING.md",
+    "archived_path": "docs/archive/2026-03/docs-root-superseded/CONTRIBUTING.md",
+    "reason": "Uppercase case-collision doc superseded by canonical lowercase path.",
+    "merged_into": [
+      "docs/contributing.md"
+    ],
+    "public_safe": true,
+    "notes": "Resolved docs case-collision without destructive deletion."
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "docs/DEMO.md",
+    "archived_path": "docs/archive/2026-03/docs-root-superseded/DEMO.md",
+    "reason": "Uppercase case-collision doc superseded by canonical lowercase path.",
+    "merged_into": [
+      "docs/demo.md"
+    ],
+    "public_safe": true,
+    "notes": "Resolved docs case-collision without destructive deletion."
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "docs/METRICS.md",
+    "archived_path": "docs/archive/2026-03/docs-root-superseded/METRICS.md",
+    "reason": "Uppercase case-collision doc superseded by canonical lowercase path.",
+    "merged_into": [
+      "docs/metrics.md"
+    ],
+    "public_safe": true,
+    "notes": "Resolved docs case-collision without destructive deletion."
   }
 ]

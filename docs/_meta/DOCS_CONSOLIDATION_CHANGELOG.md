@@ -137,3 +137,25 @@ Updated references in touched docs to point to canonical active paths, including
 - Broad audit/review report clusters under `archive/completion-reports/` and root `docs/*SUMMARY*.md` where forensic or stakeholder context may still be needed.
 - Strategic narrative overlaps (`docs/strategy/*`, root strategy docs) needing product-owner decision on final canonical narrative.
 - Security-summary overlaps where timelines differ but controls language is still partially unique.
+
+---
+
+## 10) Structural correction pass (2026-03-11)
+
+### Scope
+
+- Verification-first pass for duplicate/case collisions, archive topology, strategy split, quickstart canon, and architecture stubs.
+
+### Actions completed
+
+- Archived root planning/audit docs into `docs/archive/2026-03/root-superseded/`.
+- Archived legacy `docs/QUICKSTART.md` and made `docs/quickstart.md` a canonical pointer.
+- Unified archive topology by moving legacy root archive folders under `docs/archive/legacy/`.
+- Clarified strategy canon with `docs/strategy/README.md` and legacy marker in `docs/strategic/README.md`.
+- Expanded thin architecture stubs and added `docs/architecture/data-model.md` entrypoint.
+- Added env-file entrypoint (`docs/getting-started/env-files.md`) and linked from getting-started/docs hub.
+- Extended docs verification script with checks for case-collision duplicates, canonical hub reachability, and orphan archive directories outside approved locations.
+
+### Safety notes
+
+- No markdown deletions were executed in this pass because no verified exact content-equivalent duplicate case-collision pairs were found.

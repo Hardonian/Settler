@@ -9,6 +9,16 @@ const rootDir = path.join(__dirname, "..");
 const readFile = (filePath) => fs.readFileSync(filePath, "utf-8");
 
 const errors = [];
+const warnings = [];
+
+const parseJsonFile = (filePath, label) => {
+  try {
+    return JSON.parse(readFile(filePath));
+  } catch (error) {
+    warnings.push(`${label} is not valid JSON: ${error.message}`);
+    return {};
+  }
+};
 
 const readmePath = path.join(rootDir, "README.md");
 const contributingPath = path.join(rootDir, "CONTRIBUTING.md");
@@ -43,12 +53,12 @@ const getSection = (content, heading) => {
   return rest.slice(0, nextHeadingMatch.index);
 };
 
-const quickStartSection = getSection(readme, "Quick Start");
+const quickStartSection = getSection(readme, "Quick Start") || getSection(readme, "Quick start") || getSection(readme, "Quickstart");
 if (!quickStartSection) {
-  errors.push("README.md is missing a 'Quick Start' section.");
+  errors.push("README.md is missing a Quick Start section.");
 }
 
-const packageJson = JSON.parse(readFile(path.join(rootDir, "package.json")));
+const packageJson = parseJsonFile(path.join(rootDir, "package.json"), "package.json");
 const rootScripts = packageJson.scripts || {};
 
 const workspaceScripts = new Map();
@@ -59,7 +69,7 @@ if (fs.existsSync(packagesDir)) {
     if (!fs.existsSync(pkgPath)) {
       continue;
     }
-    const pkgJson = JSON.parse(readFile(pkgPath));
+    const pkgJson = parseJsonFile(pkgPath, `workspace package.json (${path.relative(rootDir, pkgPath)})`);
     if (pkgJson.name) {
       workspaceScripts.set(pkgJson.name, pkgJson.scripts || {});
     }
@@ -173,6 +183,92 @@ while ((linkMatch = linkRegex.exec(readme)) !== null) {
   if (!fileExists(target)) {
     errors.push(`README.md references missing file: ${target}`);
   }
+}
+
+
+
+const walkMarkdownFiles = (dir) => {
+  const out = [];
+  if (!fs.existsSync(dir)) {
+    return out;
+  }
+  const stack = [dir];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    const entries = fs.readdirSync(current, { withFileTypes: true });
+    for (const entry of entries) {
+      if (entry.name === "node_modules" || entry.name === ".git" || entry.name === ".next") {
+        continue;
+      }
+      const fullPath = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        stack.push(fullPath);
+      } else if (entry.isFile() && entry.name.endsWith(".md")) {
+        out.push(path.relative(rootDir, fullPath));
+      }
+    }
+  }
+  return out;
+};
+
+const docsMarkdownFiles = walkMarkdownFiles(path.join(rootDir, "docs"));
+const docsCaseMap = new Map();
+for (const file of docsMarkdownFiles) {
+  const key = file.toLowerCase();
+  const list = docsCaseMap.get(key) || [];
+  list.push(file);
+  docsCaseMap.set(key, list);
+}
+for (const [, variants] of docsCaseMap.entries()) {
+  if (variants.length > 1) {
+    errors.push(`Case-collision markdown paths detected under docs/: ${variants.join(", ")}`);
+  }
+}
+
+const canonicalDocs = [
+  "docs/README.md",
+  "docs/architecture/README.md",
+  "docs/operations/README.md",
+  "docs/product/README.md",
+  "docs/getting-started/README.md",
+  "docs/getting-started/quickstart.md",
+  "docs/getting-started/env-files.md",
+];
+for (const canonicalDoc of canonicalDocs) {
+  if (!fileExists(canonicalDoc)) {
+    errors.push(`Missing canonical doc: ${canonicalDoc}`);
+  }
+}
+
+const docsReadmePath = path.join(rootDir, "docs/README.md");
+if (fs.existsSync(docsReadmePath)) {
+  const docsReadme = readFile(docsReadmePath);
+  ["docs/getting-started/quickstart.md", "docs/architecture/README.md", "docs/operations/README.md", "docs/product/README.md"].forEach((target) => {
+    const targetRelative = target.replace("docs/", "");
+    if (!docsReadme.includes(target) && !docsReadme.includes(targetRelative)) {
+      errors.push(`docs/README.md missing canonical hub/discovery link: ${target}`);
+    }
+  });
+}
+
+const disallowedArchiveRoots = [
+  path.join(rootDir, "archive"),
+  path.join(rootDir, "HISTORICAL-PLANNING-ARCHIVE"),
+];
+for (const archiveRoot of disallowedArchiveRoots) {
+  if (!fs.existsSync(archiveRoot)) {
+    continue;
+  }
+  const markdownCount = walkMarkdownFiles(archiveRoot).length;
+  if (markdownCount > 0) {
+    errors.push(`Orphan archive markdown found outside docs/archive/: ${path.relative(rootDir, archiveRoot)} (${markdownCount} files)`);
+  }
+}
+
+if (warnings.length > 0) {
+  console.warn("Docs verification warnings:\n");
+  warnings.forEach((warning) => console.warn(`- ${warning}`));
+  console.warn("");
 }
 
 if (errors.length > 0) {
