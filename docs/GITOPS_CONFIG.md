@@ -430,5 +430,5 @@ settler jobs export <job_id> --format yaml >> settler-jobs.yaml
 ## See Also
 
 - [Quickstart Guide](./QUICKSTART.md)
-- [CLI Documentation](./QUICKSTART_CLI.md)
+- [CLI Documentation](./quickstart-cli.md)
 - [API Reference](./api.md)

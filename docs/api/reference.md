@@ -910,7 +910,7 @@ Full OpenAPI 3.0 specification available at:
 - [Error Handling Guide](../error-handling.md)
 - [Webhook Setup Guide](../webhook-setup.md)
 - [Matching Rules Documentation](../matching-rules.md)
-- [Common Workflows](../workflows.md)
+- [Common Workflows](../WORKFLOWS.md)
 
 ---
 

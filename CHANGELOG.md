@@ -30,7 +30,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 ### Added
 
 - Added `pnpm demo:assets` automation (`scripts/demo-assets.mjs`) to generate operator dashboard, run explorer, truth explorer, replay verification, and system health screenshots under `docs/assets`.
-- Added launch-readiness documentation: `docs/DIFFERENTIATORS.md`, `docs/LAUNCH_CHECKLIST.md`, `docs/BENCHMARKS.md`, and architecture diagram docs under `docs/architecture`.
+- Added launch-readiness documentation: `docs/DIFFERENTIATORS.md`, `docs/launch/launch-checklist.md`, `docs/BENCHMARKS.md`, and architecture diagram docs under `docs/architecture`.
 
 ### Changed
 

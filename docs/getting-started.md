@@ -184,7 +184,7 @@ try {
 
 - 📖 [API Reference](./api.md) - Complete API documentation
 - 🔔 [Webhook Setup Guide](./webhook-setup.md) - Set up event notifications
-- 🏗️ [Architecture](./architecture.md) - Understand system design
+- 🏗️ [Architecture](./ARCHITECTURE.md) - Understand system design
 - 💡 [Integration Recipes](./INTEGRATION_RECIPES.md) - Common use cases and examples
 
 ## Need Help?

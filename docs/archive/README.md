@@ -31,3 +31,9 @@ Archived docs are historical context, not default truth. If reviving content:
 Every archived move must be recorded in:
 - `docs/_meta/archive-index.md`
 - `docs/_meta/archive-index.json`
+
+
+## Execution wave folders
+
+- `2026-03/root-superseded/`: first consolidation wave (root superseded docs).
+- `2026-03/execution-wave-2/`: launch, onboarding, and prompt historical docs moved during inventory execution wave.
