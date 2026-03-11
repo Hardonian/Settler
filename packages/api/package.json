@@ -96,7 +96,7 @@
     "@opentelemetry/exporter-trace-otlp-http": "^0.52.0",
     "@opentelemetry/resources": "^1.28.0",
     "@opentelemetry/sdk-node": "^0.52.0",
-    "@opentelemetry/semantic-conventions": "^1.28.0",
+    "@opentelemetry/semantic-conventions": "^1.40.0",
     "@sentry/node": "^7.91.0",
     "@sentry/profiling-node": "^7.91.0",
     "@settler/adapters": "workspace:*",
