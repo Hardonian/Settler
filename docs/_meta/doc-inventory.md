@@ -1,0 +1,1340 @@
+# Documentation Inventory
+
+Total markdown files scanned: **1334** (excluding common generated/vendor directories).
+
+| Path | Purpose | Audience | Status | Value | Action | Confidence | Cluster |
+|---|---|---|---|---|---|---|---|
+| `github/AUTOMATION_GUIDE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `github/MIGRATION_GUARDIAN_SETUP.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `github/MIGRATION_SECRETS_SETUP.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `github/MIGRATION_SETUP.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `github/PULL_REQUEST_TEMPLATE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `github/PULL_REQUEST_TEMPLATE_infrastructure.md` | implementation/reference notes | internal maintainer/operator | current | medium | investigate | low | misc |
+| `github/PULL_REQUEST_TEMPLATE_integration.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `github/SECRETS_SETUP.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `github/pull_request_template.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `github/workflows/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `release-checklist.md` | release/change tracking | unknown | partially current | medium | archive | medium | misc |
+| `AGENTS.md` | implementation/reference notes | unknown | superseded | high | investigate | low | misc |
+| `ARCHITECTURE.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `BUILDER_IO_SETUP.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `CHANGELOG.md` | release/change tracking | unknown | current | high | keep | high | changelogs-milestones |
+| `CODE_OF_CONDUCT.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `CONTRIBUTING.md` | implementation/reference notes | OSS contributor | superseded | high | keep | high | misc |
+| `DATA_PORTABILITY.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `DEPENDENCY_FIX_PLAN.md` | planning/strategy | unknown | partially current | high | archive | medium | plans-roadmaps |
+| `FRONTEND_DESIGN_REVIEW.md` | implementation/reference notes | unknown | current | high | investigate | low | audits-reviews |
+| `GOVERNANCE.md` | implementation/reference notes | unknown | superseded | high | investigate | low | misc |
+| `HISTORICAL-PLANNING-ARCHIVE/18_MONTH_POST_FUNDING_HIRING_ROADMAP.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/ALL_PHASES_COMPLETE.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/ALL_TASKS_COMPLETE.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/AUTOMATION_COMPLETE.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/BLUEPRINT.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/BUILD_FIX_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/BUSINESS_MODEL.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/COMPLETE_BUSINESS_MODEL_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/COMPLETE_IMPLEMENTATION_FINAL.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/COMPLETE_IMPLEMENTATION_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/DELIVERY_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/DEVELOPER_PERSONA_STRATEGY.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/DOMAIN_MIGRATION_COMPLETE.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/ENV_AUDIT_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/FINAL_AUTOMATION_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/FINAL_COMPLETE_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/FINAL_IMPLEMENTATION_STATUS.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/FINAL_MIGRATION_STATUS.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/FINAL_REFACTOR_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/FRONTEND_PAGES_COMPLETE.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/HIGH_CONFIDENCE_IMPLEMENTATION_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/HOMEPAGE_ENHANCEMENTS_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/HOMEPAGE_IMPROVEMENTS_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/IMPLEMENTATION_ACTION_ITEMS_COMPLETE.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/IMPLEMENTATION_COMPLETE.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/IMPLEMENTATION_COMPLETE_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/IMPLEMENTATION_FINAL_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/IMPLEMENTATION_ROADMAP.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/IMPLEMENTATION_STATUS.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/IMPLEMENTATION_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/IMPLEMENTATION_TASK_LISTS.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/IMPROVEMENTS_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/INFRASTRUCTURE_SETUP_COMPLETE.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/LAUNCH_READINESS.md` | planning/strategy | launch/marketing | current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/MASTER_BUSINESS_PLAN.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/MCP_MIGRATION_APPROACH.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/MIGRATION_INSTRUCTIONS.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/MIGRATION_READY.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/MIGRATION_SETUP_COMPLETE.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/NEXT_STEPS_COMPLETE.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/PHASE3_COMPLETE_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/PHASES_COMPLETE_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/REACT_SETTLER_COMPLETE.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/REACT_SETTLER_COMPLETE_FINAL.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/REACT_SETTLER_IMPLEMENTATION_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/REACT_SETTLER_INTEGRATIONS_COMPLETE.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/REACT_SETTLER_LICENSING_COMPLETE.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/README.md` | hub/entrypoint | historical/archive | current | medium | keep | high | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/REFACTOR_COMPLETE_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/SECURITY_FIXES_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/SEED_ROUND_READINESS_SUMMARY.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/SEO_CONVERSION_ENHANCEMENTS_COMPLETE.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/STRATEGIC_IMPLEMENTATION_COMPLETE.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/SUPABASE_MIGRATION_SETUP_COMPLETE.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/TYPESCRIPT_REFACTOR_PROGRESS.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/ULTIMATE_COMBINED_IMPLEMENTATION_PLAN.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/VDR_STRUCTURE_TEMPLATE.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `HISTORICAL-PLANNING-ARCHIVE/settler-revenue-storyboard.md` | planning/strategy | historical/archive | current | high | investigate | low | plans-roadmaps |
+| `INVESTOR-RELATIONS-PRIVATE/04-product-collateral-sales-pilots-investors.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/05-team-onboarding-handover.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/07-launch-plan-growth-loop.md` | planning/strategy | launch/marketing | partially current | high | archive | medium | plans-roadmaps |
+| `INVESTOR-RELATIONS-PRIVATE/08-metrics-product-iteration.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `INVESTOR-RELATIONS-PRIVATE/business/01-business-model-market-story/competitive-matrix.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/01-business-model-market-story/comprehensive-competitive-analysis.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/01-business-model-market-story/elevator-pitch.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/01-business-model-market-story/founder-story.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/01-business-model-market-story/go-to-market-strategy.md` | planning/strategy | unknown | current | high | investigate | low | plans-roadmaps |
+| `INVESTOR-RELATIONS-PRIVATE/business/01-business-model-market-story/ideal-customer-profile.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/01-business-model-market-story/pricing-page.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/01-business-model-market-story/revenue-expansion-platform-strategy.md` | planning/strategy | unknown | current | high | investigate | low | plans-roadmaps |
+| `INVESTOR-RELATIONS-PRIVATE/business/02-investor-press-sales/customer-narratives-case-studies.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/02-investor-press-sales/enterprise-pilot-template.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/02-investor-press-sales/five-year-vision.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/02-investor-press-sales/investor-pitch-deck.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/02-investor-press-sales/partner-integration-template.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/02-investor-press-sales/press-release.md` | release/change tracking | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/02-investor-press-sales/security-trust-soc2-faq.md` | security/compliance | internal maintainer/operator | superseded | high | investigate | low | security-docs |
+| `INVESTOR-RELATIONS-PRIVATE/business/03-customer-onboarding-success/customer-champion-program.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/03-customer-onboarding-success/email-templates.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/03-customer-onboarding-success/feedback-cycles.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/03-customer-onboarding-success/onboarding-playbook.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/03-customer-onboarding-success/product-launch-feedback-pipeline.md` | implementation/reference notes | launch/marketing | current | high | archive | medium | launch-docs |
+| `INVESTOR-RELATIONS-PRIVATE/business/03-customer-onboarding-success/support-workflows.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/04-external-risks-compliance/comprehensive-legal-ip-risk-management.md` | security/compliance | unknown | current | high | investigate | low | security-docs |
+| `INVESTOR-RELATIONS-PRIVATE/business/04-external-risks-compliance/incident-communication-plan.md` | planning/strategy | unknown | partially current | high | archive | medium | plans-roadmaps |
+| `INVESTOR-RELATIONS-PRIVATE/business/04-external-risks-compliance/plan-b-pivot-roadmap.md` | planning/strategy | unknown | partially current | high | archive | medium | plans-roadmaps |
+| `INVESTOR-RELATIONS-PRIVATE/business/04-external-risks-compliance/regulatory-mapping.md` | security/compliance | unknown | current | high | investigate | low | security-docs |
+| `INVESTOR-RELATIONS-PRIVATE/business/04-external-risks-compliance/risk-register.md` | security/compliance | unknown | current | high | investigate | low | security-docs |
+| `INVESTOR-RELATIONS-PRIVATE/business/05-team-culture-operations/hiring-plan.md` | planning/strategy | internal maintainer/operator | partially current | high | archive | medium | plans-roadmaps |
+| `INVESTOR-RELATIONS-PRIVATE/business/05-team-culture-operations/operating-manual.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/05-team-culture-operations/org-chart.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/06-growth-experiments-feedback/customer-insight-prompts.md` | prompt asset | agent/prompt workflow | current | high | investigate | low | prompts |
+| `INVESTOR-RELATIONS-PRIVATE/business/06-growth-experiments-feedback/growth-experiments.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/06-growth-experiments-feedback/metrics-framework-investor-story.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/06-growth-experiments-feedback/metrics-kpis.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/06-growth-experiments-feedback/viral-growth-flywheels.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/07-ip-exit-preparedness/due-diligence-checklist.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/07-ip-exit-preparedness/exit-planning.md` | planning/strategy | unknown | partially current | high | archive | medium | plans-roadmaps |
+| `INVESTOR-RELATIONS-PRIVATE/business/07-ip-exit-preparedness/ip-audit.md` | audit/report | unknown | partially current | high | investigate | low | audits-reviews |
+| `INVESTOR-RELATIONS-PRIVATE/business/07-ip-exit-preparedness/license-readiness.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/COMPETITIVE_ANALYSIS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/INVESTOR_DECK.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/MARKETING_ONEPAGER.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `INVESTOR-RELATIONS-PRIVATE/business/api-business-outcomes.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/brand-one-pager.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/investor-deck.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/press-kit.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `INVESTOR-RELATIONS-PRIVATE/business/pricing-model.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `LAUNCH_CHECKLIST.md` | implementation/reference notes | launch/marketing | partially current | high | archive | medium | launch-docs |
+| `LEGAL/COMMERCIAL_LICENSE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `LEGAL/PRIVACY_POLICY.md` | security/compliance | unknown | current | high | investigate | low | security-docs |
+| `LEGAL/TERMS_OF_SERVICE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `MODEL_SPEC.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `PRIVACY.md` | security/compliance | unknown | current | high | investigate | low | security-docs |
+| `PRODUCT_CLARITY_AUDIT.md` | audit/report | unknown | partially current | high | investigate | low | audits-reviews |
+| `README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `REALITY_AUDIT.md` | audit/report | unknown | partially current | high | investigate | low | audits-reviews |
+| `REALITY_MAP.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `RELEASE.md` | release/change tracking | unknown | current | high | investigate | low | misc |
+| `RELEASE_NOTES.md` | release/change tracking | unknown | current | high | investigate | low | changelogs-milestones |
+| `REPO_POLICY.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `SAFE_BREAKING_CHANGES_PLAN.md` | planning/strategy | unknown | partially current | high | archive | medium | plans-roadmaps |
+| `SECURITY.md` | security/compliance | internal maintainer/operator | current | high | keep | high | security-docs |
+| `SECURITY_INVARIANTS.md` | security/compliance | internal maintainer/operator | current | high | investigate | low | security-docs |
+| `SKILLS.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `SUPABASE_BACKEND_VALIDATION_SUMMARY.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `SUPPORT.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `WINDOWS_DEVELOPMENT.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `WINDOWS_SYMLINK_FIX.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `agents/architecture-agent.md` | architecture/design | unknown | current | medium | investigate | low | architecture-notes |
+| `agents/code-quality-agent.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `agents/design-agent.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `agents/documentation-agent.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `agents/infrastructure-agent.md` | implementation/reference notes | internal maintainer/operator | current | medium | investigate | low | misc |
+| `agents/release-agent.md` | release/change tracking | unknown | current | medium | investigate | low | misc |
+| `archive/ARCHIVE_INDEX.md` | implementation/reference notes | historical/archive | superseded | high | investigate | low | misc |
+| `archive/audit-reports/SETTLER_AUDIT_PHASE1_ROUTE_INVENTORY.md` | audit/report | historical/archive | partially current | high | investigate | low | audits-reviews |
+| `archive/audit-reports/SETTLER_AUDIT_PHASE2_SCROLL_FLOW.md` | audit/report | historical/archive | partially current | high | investigate | low | audits-reviews |
+| `archive/audit-reports/SETTLER_AUDIT_PHASE4_ASSETS.md` | audit/report | historical/archive | partially current | high | investigate | low | audits-reviews |
+| `archive/audit-reports/SETTLER_AUDIT_PHASE5_VISUAL_SYSTEM.md` | audit/report | historical/archive | partially current | high | investigate | low | audits-reviews |
+| `archive/audit-reports/SETTLER_AUDIT_PHASE7_ACCESSIBILITY_SEO.md` | audit/report | historical/archive | partially current | high | investigate | low | audits-reviews |
+| `archive/audit-reports/SETTLER_AUDIT_PHASE8_PERFORMANCE.md` | audit/report | historical/archive | partially current | high | investigate | low | audits-reviews |
+| `archive/audit-reports/SETTLER_AUDIT_PHASE9_FINAL_VERIFICATION.md` | audit/report | historical/archive | partially current | high | investigate | low | audits-reviews |
+| `archive/completed-work/2024-12/AUDIT_IMPLEMENTATION_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completed-work/2024-12/COMPLETE_SETUP_VERIFICATION.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/completed-work/2024-12/CONSOLE_AUTH_FIX_SUMMARY.md` | implementation/reference notes | historical/archive | partially current | high | archive | medium | misc |
+| `archive/completed-work/2024-12/CONSOLE_ENHANCEMENT_SUMMARY.md` | implementation/reference notes | historical/archive | partially current | high | archive | medium | misc |
+| `archive/completed-work/2024-12/DOM-REALITY-COMPLETE.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/completed-work/2024-12/FINAL_STATUS_REPORT.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completed-work/2024-12/FRONTEND_REALITY_FIXES.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/completed-work/2024-12/FRONTEND_TYPOGRAPHY_HARDENING_REPORT.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completed-work/2024-12/IMPLEMENTATION_COMPLETE.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/completed-work/2024-12/INDEX.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/completed-work/2024-12/README-DOM-REALITY.md` | hub/entrypoint | historical/archive | current | high | investigate | low | onboarding-setup |
+| `archive/completed-work/2024-12/README.md` | hub/entrypoint | historical/archive | current | medium | keep | high | onboarding-setup |
+| `archive/completed-work/2024-12/RELEASE_READINESS_CHECKLIST.md` | release/change tracking | historical/archive | partially current | high | archive | medium | misc |
+| `archive/completed-work/2024-12/REPO_AUDIT_REPORT.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completed-work/2024-12/SETUP_COMPLETE_SUMMARY.md` | implementation/reference notes | historical/archive | partially current | high | archive | medium | misc |
+| `archive/completed-work/auth-fix-2024-12.md` | implementation/reference notes | historical/archive | current | medium | investigate | low | misc |
+| `archive/completed-work/console-enhancement-2024-12.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/completion-reports/.vercel-build-optimizations.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/ADDITIONAL_SERVICES_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/AI_PRICING_IMPLEMENTATION_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/ALL_STATIC_PAGES_OPTIMIZED.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/AUDIT_COMPLETE_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/AUDIT_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/AUTOMATED_CONSOLE_CHECKS_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/BACKEND_INVENTORY_AND_RECONCILIATION.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/BACKEND_MIGRATIONS_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/BACKEND_RECONCILIATION_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/BILLING_CODE_REVIEW_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/BILLING_IMPLEMENTATION_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/BUILD_ERRORS_FIXED.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/BUILD_FIXES_APPLIED.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/BUILD_FIXES_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/BUILD_FIXES_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/BUILD_FIX_FINAL.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/BUILD_GUARDIAN_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/BUILD_GUARDIAN_SETUP.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/BUILD_GUARDIAN_STATUS.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/BUILD_ISSUES_FIXED.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/BUILD_OPTIMIZATION_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/BUILD_OPTIMIZATION_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/BUILD_SETUP_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/BUILD_STATUS_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/BUILD_VERIFICATION.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/CI_FIX_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/CODEBASE_REVIEW.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/CODE_CHANGES_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/CODE_REVIEW.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/CODE_REVIEW_COMPLETE.md` | audit/report | historical/archive | superseded | high | investigate | low | audits-reviews |
+| `archive/completion-reports/COMPLETE_IMPLEMENTATION_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/COMPLETE_STATUS.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/COMPLETION_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/COMPREHENSIVE_REVIEW_SUMMARY.md` | audit/report | historical/archive | superseded | high | archive | medium | audits-reviews |
+| `archive/completion-reports/CONSISTENCY_CHECKLIST.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/CONSOLE_COMPLETE_IMPLEMENTATION.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/CONSOLE_FINAL_IMPLEMENTATION_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/CONSOLE_MIGRATION_QUICK_START.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/CONSOLE_MIGRATION_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/CONSOLE_RESTRICTED_TO_API_SERVICES.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/CONSOLE_SDK_CLI_IMPLEMENTATION.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/CONSOLE_SUBSCRIPTION_ACCESS_CONTROL.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/CONSOLE_TIERED_ACCESS_IMPLEMENTATION.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/DATABASE_SCHEMA_SOURCE_OF_TRUTH_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/DATABASE_URL_CONFIGURED.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/DEPLOYMENT_CHECKLIST.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/DEPLOYMENT_FIXES_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/DEPLOYMENT_READY.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/DEPLOYMENT_VERIFICATION.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/DEVELOPER_CONSOLE_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/DEVELOPER_CONSOLE_FINAL_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/DYNAMIC_IMPORTS_GUIDE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/E2E_DATABASE_OPTIMIZATION_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/ECOSYSTEM_IMPLEMENTATION_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/ENHANCED_MONITORING_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/ENHANCEMENTS_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/ENTERPRISE_GRADE_INTEGRATION_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/ENTERPRISE_POLISH_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/ERROR_FIXES_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/FINAL_BUILD_FIX.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/FINAL_COMPLETE_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/FINAL_HARDENING_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/FINAL_IMPLEMENTATION_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/FINAL_LAUNCH_SUMMARY.md` | audit/report | launch/marketing | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/FINAL_POLISH_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/FINAL_STATUS.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/FINAL_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/FIXES_APPLIED.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/FIXES_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/FIX_PR_ISSUE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/FIX_SECRET_SCANNING.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/FOUNDER_CHECKLIST_STACK_GAPS.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/GAP_DISCOVERY_IMPLEMENTATION_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/GITHUB_ACTIONS_MIGRATIONS_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/GOLDEN_MIGRATION_PUSHED.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/GTM_HARDENING_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/HIGH_ROI_FEATURES_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/IMAGE_PLACEMENT_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/IMAGE_QA_ACCESSIBILITY_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/IMAGE_RESPONSIVENESS_FIXES.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/IMPLEMENTATION_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/IMPLEMENTATION_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/INGESTION_SETUP_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/INTEGRATIONS_IMPLEMENTATION_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/INTEGRATION_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/LOAD_TESTS.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/MAINTENANCE_IMPROVEMENTS.md` | audit/report | historical/archive | superseded | high | investigate | low | audits-reviews |
+| `archive/completion-reports/MANUAL_SECRETS_CHECKLIST.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/MIGRATION_APPLICATION_GUIDE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/MIGRATION_AUTOMATION_COMPLETE.md` | audit/report | historical/archive | superseded | high | investigate | low | audits-reviews |
+| `archive/completion-reports/MIGRATION_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/MIGRATION_EXECUTION_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/MIGRATION_INSTRUCTIONS.md` | audit/report | historical/archive | superseded | high | investigate | low | audits-reviews |
+| `archive/completion-reports/MIGRATION_NOTES.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/MIGRATION_READY.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/MIGRATION_STATUS.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/NEW_IMAGES_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/NEW_IMAGES_PLACEMENT_PLAN.md` | audit/report | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `archive/completion-reports/NEXT_STEPS_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/ONBOARDING_IMPLEMENTATION_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/OPERATIONAL_EXCELLENCE_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/OPERATOR_MODE_IMPLEMENTATION_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/OPERATOR_MODE_NEXT_STEPS_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/OPTIMIZATION_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/OSS_REPO_NEXT_STEPS.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/OSS_REPO_READY.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/OSS_REPO_SETUP_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/OSS_REPO_STATUS.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/PACKAGE_LOCK_UPDATE.md` | audit/report | historical/archive | current | medium | investigate | low | audits-reviews |
+| `archive/completion-reports/PENETRATION_TESTING_CHECKLIST.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/PLATFORM_BUILD_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/PRICING_CONSISTENCY_FIXES.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/PRISMA_CLIENT_GENERATION_SUCCESS.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/PRODUCTION_HARDENING_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/PRODUCTION_READINESS_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/PROFESSIONALIZATION_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/QA_AUDIT_COMPLETE.md` | audit/report | historical/archive | partially current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/QUICK_SETUP_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/RBAC_GATES_APPLIED.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/README.md` | hub/entrypoint | historical/archive | current | high | keep | high | audits-reviews |
+| `archive/completion-reports/RECEIPT_CONSOLE_FIXES_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/REFINED_MIGRATION_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/RELEASE_SUMMARY.md` | release/change tracking | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/SCHEMA_AUDIT_COMPLETE.md` | audit/report | historical/archive | partially current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/SECURITY_ENFORCEMENT_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/SECURITY_HARDENING_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/SECURITY_THREAT_MATRIX.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/SETTLER_API_PRODUCT_SPECIFICATION.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/SETTLER_AUDIT_COMPLETE_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/SETTLER_FIXES_IMPLEMENTED.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/SETTLER_RECEIPTS_FEATURE_FLAGS_IMPLEMENTATION.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/SETUP_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/SETUP_GIT_CRYPT.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/SITE_INTEGRITY_FIXES.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/SUPABASE_AI_FULL_RECONCILE_PROMPT.md` | prompt asset | agent/prompt workflow | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/SUPABASE_AI_MINIMAL_PATCH_PROMPT.md` | prompt asset | agent/prompt workflow | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/SUPABASE_AI_SCHEMA_PROMPT.md` | prompt asset | agent/prompt workflow | superseded | high | investigate | low | audits-reviews |
+| `archive/completion-reports/TABLES_CONNECTED_TO_FRONTEND.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/TEAM_REVIEW_CHECKLIST.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/TEXT_OVERFLOW_FIXES.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/TYPESCRIPT_ERROR_PREVENTION.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/TYPESCRIPT_FIXES.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/TYPESCRIPT_FIXES_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/TYPE_ERROR_FIXES.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/TYPE_SAFETY_AND_BUILD_COMPATIBILITY.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/TYPE_SAFETY_VERIFICATION.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/ULTRA_FUTURE_SUPERBLOCK_STATUS.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/UX_ENHANCEMENTS_SUMMARY.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/VERCEL_BUILD_COMPLETE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/VERCEL_BUILD_FIX.md` | audit/report | historical/archive | superseded | high | investigate | low | audits-reviews |
+| `archive/completion-reports/VERCEL_BUILD_FIXES.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/VERCEL_BUILD_OPTIMIZATION_GUIDE.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/VERCEL_BUILD_READY.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/VERCEL_DEPLOYMENT_FIXES.md` | audit/report | historical/archive | superseded | high | investigate | low | audits-reviews |
+| `archive/completion-reports/VERCEL_DEPLOYMENT_VERIFICATION.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/VERCEL_ENV_SETUP.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/VERIFICATION_CHECKLIST.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/completion-reports/WEBSITE_REVIEW_IMPROVEMENTS.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/completion-reports/summary.md` | audit/report | historical/archive | partially current | high | archive | medium | audits-reviews |
+| `archive/implementation-reports/COMPLETE_IMPLEMENTATION.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/implementation-reports/COMPLETE_UX_IMPLEMENTATION.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/implementation-reports/INGESTION_PIPELINE_IMPLEMENTATION.md` | audit/report | historical/archive | current | high | investigate | low | audits-reviews |
+| `archive/internal-notes/01-demo-onboarding-walkthrough-qa.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/02-customer-beta-feedback-system.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/03-synthetic-load-sre-reliability.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/06-billing-pricing-support-validation.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/ALERTS.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/APPLY_MIGRATION_VIA_GITHUB.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/DEVELOPER_CONSOLE_IMPLEMENTATION.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/GITHUB_ACTIONS_SETUP.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/INVESTOR_OUTREACH_TEMPLATES.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/JOURNEY_TO_MARKET_INDEX.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/NOTES.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/OBSERVABILITY.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/OPEN_CORE_READY_TO_MERGE.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/OPERATOR_IN_A_BOX.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/PERFORMANCE_OPTIMIZATION_GUIDE.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/PITCH_DECK_SEED_ROUND.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/PLATFORM_READY.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/PR_READY.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/PUSH_AND_MERGE.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/PUSH_TO_OSS_REPO.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/QUICK_ANSWER.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/QUICK_FIX_GITHUB_CLI.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/QUICK_OPTIMIZATION_REFERENCE.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/QUICK_START_MANUAL_TASKS.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/QUICK_START_MIGRATION.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/REACT_SETTLER_DOCUMENTATION_CONSISTENCY.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/README_ECOSYSTEM.md` | hub/entrypoint | historical/archive | current | high | investigate | low | onboarding-setup |
+| `archive/internal-notes/README_QA_FIXES.md` | hub/entrypoint | historical/archive | current | high | investigate | low | onboarding-setup |
+| `archive/internal-notes/READY_TO_PUSH.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/REALTIME_DASHBOARD_NOTES.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/REDEPLOY_NOW.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/REDIS_SETUP_QUICK.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/STRATEGIC_BLUEPRINT_INDEX.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/STRATEGIC_COMPONENTS_SCAFFOLDED.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/SUPABASE_AI_VERIFICATION_PROMPT.md` | prompt asset | agent/prompt workflow | current | high | investigate | low | prompts |
+| `archive/internal-notes/YOUR_REDIS_CONFIG.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/internal-notes/YOUR_RESEND_CONFIG.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/oss-info/OPEN_CORE_READY_TO_MERGE.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/oss-info/OSS_MIRROR_SETUP.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/oss-info/OSS_REPO_MANUAL_SETUP.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/oss-info/OSS_REPO_NEXT_STEPS.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/oss-info/OSS_REPO_READY.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/oss-info/OSS_REPO_SETUP_COMPLETE.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/oss-info/OSS_REPO_STATUS.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/oss-info/README.md` | hub/entrypoint | historical/archive | current | high | keep | high | onboarding-setup |
+| `archive/setup-guides/APPLY_MIGRATIONS_GUIDE.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/setup-guides/APPLY_MIGRATIONS_INSTRUCTIONS.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/setup-guides/AUTOMATIC_MIGRATIONS_SETUP.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/setup-guides/CONSOLE_SETUP_GUIDE.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/setup-guides/DAILY_OPERATIONS_CHECKLIST.md` | implementation/reference notes | historical/archive | partially current | high | archive | medium | misc |
+| `archive/setup-guides/DEPLOYMENT_EXECUTION_PLAN.md` | planning/strategy | historical/archive | partially current | high | archive | medium | plans-roadmaps |
+| `archive/setup-guides/DEVELOPER_GUIDE.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/setup-guides/EXECUTION_INSTRUCTIONS.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/setup-guides/EXTERNAL_SERVICES_SETUP.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/setup-guides/GITHUB_SETUP_CHECKLIST.md` | implementation/reference notes | historical/archive | partially current | high | archive | medium | misc |
+| `archive/setup-guides/INGESTION_WORKFLOW_SETUP.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/setup-guides/MANUAL_EXECUTION_CHECKLIST.md` | implementation/reference notes | historical/archive | partially current | high | archive | medium | misc |
+| `archive/setup-guides/MERGE_TO_MAIN_GUIDE.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/setup-guides/MIGRATION_APPLICATION_GUIDE.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/setup-guides/OSS_MIRROR_SETUP.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/setup-guides/OSS_REPO_MANUAL_SETUP.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/setup-guides/QUICK_START_GUIDE.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/setup-guides/README.public.md` | hub/entrypoint | historical/archive | current | high | investigate | low | onboarding-setup |
+| `archive/setup-guides/README_OPEN_CORE_SETUP.md` | hub/entrypoint | historical/archive | current | high | investigate | low | onboarding-setup |
+| `archive/setup-guides/REDEPLOY_CHECKLIST.md` | implementation/reference notes | historical/archive | partially current | high | archive | medium | misc |
+| `archive/setup-guides/RELEASE_READINESS_CHECKLIST.md` | release/change tracking | historical/archive | partially current | high | archive | medium | misc |
+| `archive/setup-guides/SETUP_GUIDE.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/setup-guides/STRIPE_WEBHOOK_SETUP_GUIDE.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/setup-guides/SUPABASE_SETUP.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/setup-guides/TROUBLESHOOTING_GUIDE.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `archive/setup-guides/VERCEL_BUILD_CHECKLIST.md` | implementation/reference notes | historical/archive | superseded | high | archive | medium | misc |
+| `archive/setup-guides/repo-structure.md` | implementation/reference notes | historical/archive | current | high | investigate | low | misc |
+| `design/VISUAL_SYSTEM.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `design-system/ACCESSIBILITY_CHECK.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `design-system/TOKEN_SYSTEM.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/24-7-OPERATIONS_CHECKLIST.md` | implementation/reference notes | internal maintainer/operator | partially current | high | archive | medium | misc |
+| `docs/ACCESS_CONTROLS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/ADMIN_CAPABILITIES.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/AI_CONSOLE_BACKEND_GUIDE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/API.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/API_REFERENCE.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/APPLY_MIGRATIONS_NOW.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/ARCHITECTURE.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/ARCHITECTURE_OVERVIEW.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/ARENA.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/AUTH.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/AUTOMATED_RECONCILIATION_IMPLEMENTATION_SUMMARY.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/AUTOMATED_RECONCILIATION_QUICK_REFERENCE.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/AUTOMATED_RECONCILIATION_REVIEW_PLAN.md` | planning/strategy | unknown | partially current | high | archive | medium | plans-roadmaps |
+| `docs/AUTOMATIC_MIGRATIONS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/AUTOMATION_INVENTORY.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/BACKEND_CONSOLE_DIAGNOSTICS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/BENCHMARKS.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/BILLING.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/BILLING_FAQ.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/BUILD.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/CANONICAL_PRODUCT_NARRATIVE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/CATEGORY_POSITIONING.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/CITATIONS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/CODE_REVIEW_AUTOMATION_IMPLEMENTATION.md` | implementation/reference notes | unknown | current | high | investigate | low | audits-reviews |
+| `docs/COMPETITIVE_BOUNDARIES.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/COMPLETE_IMPLEMENTATION_ROADMAP.md` | planning/strategy | unknown | current | high | investigate | low | plans-roadmaps |
+| `docs/COMPLIANCE_MATURITY.md` | security/compliance | unknown | current | high | investigate | low | security-docs |
+| `docs/COMPREHENSIVE_IMPLEMENTATION_SUMMARY.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/CONFIGURATION.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/CONSOLE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/CONSOLE_BACKEND_QUICK_REFERENCE.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/CONSOLE_COMPLETE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/CONSOLE_SETUP.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/CONTRIBUTING.md` | implementation/reference notes | OSS contributor | current | high | keep | high | misc |
+| `docs/CRITICAL_PATHS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/CTO_INTERROGATION.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/CUSTOMER_HEALTH_SIGNALS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/DATABASE_OPTIMIZATION_GUIDE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/DATABASE_URL_SYNTAX.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/DATA_MODEL.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/DEMO.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/DEPLOYMENT_CHECKLIST.md` | implementation/reference notes | internal maintainer/operator | partially current | high | archive | medium | misc |
+| `docs/DEPLOYMENT_ONBOARDING.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/DEVELOPER_GUIDE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/DIFFERENTIATORS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/DISCOVERY_QUESTIONS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/DOCUMENTATION_INDEX.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/DUE_DILIGENCE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/ECONOMICS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/ECOSYSTEM_POSITIONING.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/ELEVATOR_PITCHES.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/EMERGENCY_PLAYBOOK.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/ENGINE.md` | implementation/reference notes | unknown | current | high | investigate | low | architecture-notes |
+| `docs/ENTERPRISE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/ENTERPRISE_QA.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/ENV_SETUP_GUIDE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/EVENT_MODEL.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/EVIDENCE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/EXECUTIVE_SUMMARY.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/EXPLAIN.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/EXTENSIONS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/FAILURE_MODES.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/FAQ.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/FINAL_CLOSURE_PACK.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/FIRST_VALUE_MILESTONE.md` | implementation/reference notes | unknown | current | high | investigate | low | changelogs-milestones |
+| `docs/FLOW_EXPLORER.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/FRONTEND_AUTOMATION_UPDATE_SUMMARY.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/FRONTEND_ENHANCEMENTS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/FUTURE_PROOF_UI.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/GAMIFICATION.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/GETTING_STARTED.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/GITHUB_SECRETS_SETUP.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/GITOPS_CONFIG.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/GLOSSARY.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/GOVERNANCE_MODEL.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/GTM_CHECKLIST.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/GTM_FIT.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/GTM_STRATEGY.md` | planning/strategy | unknown | current | high | investigate | low | plans-roadmaps |
+| `docs/HARDENING_ASSESSMENT.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/HOW_SETTLER_RUNS_ITSELF.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/ICP_DEFINITIONS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/IMAGE_FIXES_COMPLETE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/IMAGE_USAGE_AUDIT.md` | audit/report | unknown | partially current | high | investigate | low | audits-reviews |
+| `docs/IMPLEMENTATION_GUIDE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/IMPLEMENTATION_PLAN.md` | planning/strategy | unknown | partially current | high | archive | medium | plans-roadmaps |
+| `docs/IMPLEMENTATION_SUMMARY.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/INCIDENT_POSTMORTEM_TEMPLATE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/INCIDENT_RESPONSE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/INCIDENT_RESPONSE_PLAYBOOK.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/INDEX.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/INGESTION.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/INTEGRATION_PASS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/INTEGRATION_RECIPES.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/INVESTOR_NARRATIVE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/INVESTOR_READY_SUMMARY.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/KNOWN_LIMITATIONS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/LAUNCH_CHECKLIST.md` | implementation/reference notes | launch/marketing | partially current | medium | archive | medium | launch-docs |
+| `docs/LAUNCH_READINESS_AUDIT.md` | audit/report | launch/marketing | partially current | high | archive | medium | audits-reviews |
+| `docs/LEGAL_RISK_AUDIT.md` | audit/report | unknown | partially current | high | investigate | low | audits-reviews |
+| `docs/LICENSING_OVERVIEW.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/LINEAGE.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/LOCAL_DEV_SETUP.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/MAINTAINER_GUIDE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/METRICS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/MIGRATIONS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/MIGRATION_GUIDE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/MISSING_IMAGES_PROMPTS.md` | prompt asset | agent/prompt workflow | current | high | investigate | low | prompts |
+| `docs/NARRATIVE_ALIGNMENT_PROCESS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/NARRATIVE_PASS_COMPLETE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/NARRATIVE_PASS_IMPLEMENTATION_COMPLETE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/NEXT_STEPS_COMPLETE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/NON_GOALS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/OBJECTION_HANDLING.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/ONBOARDING.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/ONBOARDING_GUIDE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/ONE_PAGER.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/OPERATIONS.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/OPERATIONS_RUNBOOK.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/OPERATOR_MODE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/OPERATOR_MODE_QUICK_START.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/OPERATOR_MODE_SETUP.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/OPS_CHECKLIST.md` | implementation/reference notes | internal maintainer/operator | partially current | high | archive | medium | misc |
+| `docs/OPS_INTELLIGENCE.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/OPS_INTELLIGENCE_IMPROVEMENTS.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/OPTIMIZATION_IMPLEMENTATION.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/OSS_CHATBOT_IMPLEMENTATION.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/OSS_VS_ENTERPRISE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/PILOT_DEPLOYMENT_CHECKLIST.md` | implementation/reference notes | internal maintainer/operator | partially current | high | archive | medium | misc |
+| `docs/PILOT_OPERATOR_RUNBOOK.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/PILOT_PROGRAM.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/PILOT_RISKS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/PILOT_SUCCESS_CRITERIA.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/PITCH.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/POSITIONING.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/PRICING.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/PRICING_LOGIC.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/PRIVACY_BY_DESIGN.md` | security/compliance | unknown | current | high | investigate | low | security-docs |
+| `docs/PRIVACY_MODEL.md` | security/compliance | unknown | current | high | investigate | low | security-docs |
+| `docs/PROCUREMENT_FAQ.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/PRODUCTION_READINESS_SUMMARY.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/PRODUCT_CAPABILITIES_MATRIX.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/PRODUCT_CLARITY_AUDIT.md` | audit/report | unknown | partially current | high | investigate | low | audits-reviews |
+| `docs/PRODUCT_OVERVIEW.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/PROOF_MODE.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/QUICKSTART.md` | implementation/reference notes | unknown | current | high | investigate | low | onboarding-setup |
+| `docs/QUICKSTART_CLI.md` | implementation/reference notes | unknown | current | high | investigate | low | onboarding-setup |
+| `docs/QUICK_START.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/QUICK_START_GUIDE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/QUICK_START_OBSERVABILITY.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/README.md` | hub/entrypoint | external user | superseded | high | keep | high | onboarding-setup |
+| `docs/REALITY_MAP.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/RECONCILIATION_CONTRACT.md` | implementation/reference notes | unknown | superseded | high | investigate | low | misc |
+| `docs/RED_TEAM_SIMULATION.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/REFLECTION_REPORT.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/REGISTRY.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/REMOTE_SETUP_GUIDE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/REPOSITORY_OVERVIEW.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/REPO_BOUNDARIES.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/RETENTION_LOOPS.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/REVENUE_BOOTSTRAP_COMPLETE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/REVENUE_BOOTSTRAP_SUMMARY.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/REVENUE_METRICS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/REVIEW_AND_DEPLOYMENT_GUIDE.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | audits-reviews |
+| `docs/RLS_POLICY_VERIFICATION.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/ROADMAP_90D.md` | planning/strategy | unknown | current | high | investigate | low | plans-roadmaps |
+| `docs/RUNBOOK.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/SALES_QUALIFICATION.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/SDK_CLI_CONSOLE_INTEGRATION.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/SDK_PARITY.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/SECRETS_CHECKLIST.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/SECRETS_MANAGEMENT.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/SECRETS_QUICK_START.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/SECURITY.md` | security/compliance | internal maintainer/operator | current | high | keep | high | security-docs |
+| `docs/SECURITY_ARCHITECTURE.md` | architecture/design | internal maintainer/operator | current | high | investigate | low | architecture-notes |
+| `docs/SECURITY_INVARIANTS.md` | security/compliance | internal maintainer/operator | superseded | high | investigate | low | security-docs |
+| `docs/SETTLER_UX_AUDIT.md` | audit/report | unknown | partially current | high | investigate | low | audits-reviews |
+| `docs/SHIP_STATUS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/SITE_REALITY_AUDIT_REPORT.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/SLA_POSITION.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/SOLO_FOUNDER_LAUNCH_SUMMARY.md` | implementation/reference notes | launch/marketing | partially current | high | archive | medium | launch-docs |
+| `docs/SOURCE_OF_TRUTH.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/STACK_CONNECTIONS_ANALYSIS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/STACK_GAPS_SUMMARY.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/STAKEHOLDER_READINESS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/START_HERE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/SUPABASE_AI_CHATBOT_PROMPT.md` | prompt asset | agent/prompt workflow | current | high | investigate | low | prompts |
+| `docs/SUPABASE_MIGRATION_SETUP.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/SUPPORT_BOT.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/SUPPORT_MODEL.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/SYSTEM_GUARANTEES.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/TECHNICAL_DUE_DILIGENCE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/TEMPLATES.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/TENANT_ISOLATION_VERIFICATION.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/TERMINOLOGY.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/TEST_DATA_FOUNDRY.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/THREAT_MODEL.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/TIME_CAPSULE.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/TRANSFORMATION_STATUS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/TRUST_GAPS_RANKED.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/ULTRA_FUTURE_SUPERBLOCK_COMPLETE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/UNIT_ECONOMICS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/UPSTASH_TCP_SETUP.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/USE_CASES.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/UX_NOTES.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/VALUE_PROPOSITIONS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/VERCEL_DEPLOYMENT_SETUP.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/VERIFY.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/VERTICAL_MODULES.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/VOC_FEEDBACK_SYSTEM.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/WEAKNESS_MAP.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/WEBHOOKS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/WEBHOOK_IDEMPOTENCY.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/WEBHOOK_SECURITY.md` | security/compliance | internal maintainer/operator | current | high | investigate | low | security-docs |
+| `docs/WEEKLY_REVIEW_TEMPLATE.md` | implementation/reference notes | unknown | current | high | investigate | low | audits-reviews |
+| `docs/WHO_THIS_IS_NOT_FOR.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/WORKFLOWS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/_meta/DOCS_CONSOLIDATION_CHANGELOG.md` | release/change tracking | unknown | superseded | high | investigate | low | changelogs-milestones |
+| `docs/_meta/DOCS_GOVERNANCE.md` | implementation/reference notes | unknown | superseded | high | investigate | low | misc |
+| `docs/_meta/DOC_MAP.md` | implementation/reference notes | unknown | superseded | high | investigate | low | misc |
+| `docs/_meta/archive-index.md` | implementation/reference notes | historical/archive | superseded | high | investigate | low | misc |
+| `docs/_meta/doc-clusters.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/_meta/doc-inventory.md` | implementation/reference notes | unknown | superseded | high | investigate | low | misc |
+| `docs/_meta/orphan-docs.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/_meta/package-readme-audit.md` | hub/entrypoint | unknown | partially current | medium | investigate | low | audits-reviews |
+| `docs/access-control-policies.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/accessibility-report.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/adapters.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/addons-catalog.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/admin-analytics-implementation-summary.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/admin-analytics-runbook.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/ael/EVOLVE_LOG.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/api/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `docs/api/families/admin.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/api/families/ai.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/billing.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/builder.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/connectors.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/api/families/console.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/api/families/control-plane.md` | planning/strategy | unknown | partially current | high | archive | medium | plans-roadmaps |
+| `docs/api/families/cron.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/api/families/data.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/docs.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/enterprise.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/explorer.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/exports.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/feedback-loops.md` | implementation/reference notes | internal maintainer/operator | current | medium | investigate | low | misc |
+| `docs/api/families/foundry.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/gtm.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/health.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/image-optimize.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/imports.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/integrations.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/api/families/internal.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/invite.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/jobs.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/api/families/metrics.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/milestones.md` | implementation/reference notes | unknown | current | medium | investigate | low | changelogs-milestones |
+| `docs/api/families/onboarding.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/ops.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/api/families/oss.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/pricing.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/projects.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/api/families/public.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/quota.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/rbac.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/receipts.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/referrals.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/runs.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/seo.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/share.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/status.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/stripe.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/support.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/user.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/v1.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/api/families/vercel-example.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/api/families/workspaces.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/api/reference.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/api/route-classes.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/api/route-families.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/api/route-inventory.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/api/route-registry.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/api-contracts.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/api-quick-start.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/api-reference.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/api.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/architecture/README.md` | hub/entrypoint | external user | current | high | keep | high | architecture-notes |
+| `docs/architecture/TEST_DATA_FOUNDRY.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/architecture/analytics-system.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/architecture/autonomous-operations.md` | architecture/design | internal maintainer/operator | current | medium | investigate | low | architecture-notes |
+| `docs/architecture/benchmarking-framework.md` | architecture/design | unknown | current | medium | investigate | low | architecture-notes |
+| `docs/architecture/canonical-event-protocol.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/architecture/data-flow.md` | architecture/design | unknown | current | medium | investigate | low | architecture-notes |
+| `docs/architecture/event-telemetry-pipeline.md` | architecture/design | unknown | current | medium | investigate | low | architecture-notes |
+| `docs/architecture/execution-ledger.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/architecture/execution-lifecycle.md` | architecture/design | unknown | current | medium | investigate | low | architecture-notes |
+| `docs/architecture/failure-intelligence.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/architecture/failure-surface-map.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/architecture/frontend-surface-separation.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/architecture/monorepo-structure.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/architecture/observability-platform.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/architecture/operator-control-plane.md` | architecture/design | unknown | partially current | medium | archive | medium | plans-roadmaps |
+| `docs/architecture/plugin-marketplace.md` | architecture/design | unknown | current | medium | investigate | low | architecture-notes |
+| `docs/architecture/proof-explorer.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/architecture/reconciliation-pipeline.md` | architecture/design | unknown | current | medium | investigate | low | architecture-notes |
+| `docs/architecture/repo-health.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/architecture/route-map.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/architecture/site-partition-contract.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/architecture/system-architecture.md` | architecture/design | unknown | current | medium | investigate | low | architecture-notes |
+| `docs/architecture/system-audit-report.md` | architecture/design | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/architecture/system-surface-map.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/architecture/technical-reality-hardening.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/architecture/traceability.md` | architecture/design | unknown | current | medium | investigate | low | architecture-notes |
+| `docs/architecture-ui.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/architecture.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/archive/2026-03/root-superseded/FRONTEND_IMPROVEMENTS.md` | implementation/reference notes | historical/archive | superseded | high | keep | high | misc |
+| `docs/archive/2026-03/root-superseded/GO_LIVE.md` | implementation/reference notes | historical/archive | superseded | high | keep | high | launch-docs |
+| `docs/archive/2026-03/root-superseded/GO_LIVE_COMPLETE.md` | implementation/reference notes | historical/archive | superseded | high | keep | high | launch-docs |
+| `docs/archive/2026-03/root-superseded/HARDENING_SUMMARY.md` | implementation/reference notes | historical/archive | superseded | high | keep | high | misc |
+| `docs/archive/2026-03/root-superseded/LAUNCHKIT.md` | implementation/reference notes | launch/marketing | superseded | high | keep | high | launch-docs |
+| `docs/archive/2026-03/root-superseded/LAUNCH_READY.md` | implementation/reference notes | launch/marketing | superseded | high | keep | high | launch-docs |
+| `docs/archive/2026-03/root-superseded/MERGE_SUMMARY.md` | implementation/reference notes | historical/archive | superseded | high | keep | high | misc |
+| `docs/archive/2026-03/root-superseded/OPS_IMPLEMENTATION_SUMMARY.md` | implementation/reference notes | historical/archive | superseded | high | keep | high | misc |
+| `docs/archive/2026-03/root-superseded/README_LAUNCH.md` | hub/entrypoint | launch/marketing | superseded | high | keep | high | launch-docs |
+| `docs/archive/2026-03/root-superseded/REALITY_MODE_SUMMARY.md` | implementation/reference notes | historical/archive | superseded | high | keep | high | misc |
+| `docs/archive/2026-03/root-superseded/REALITY_SCORECARD.md` | implementation/reference notes | historical/archive | superseded | high | keep | high | audits-reviews |
+| `docs/archive/2026-03/root-superseded/RELEASE_PREP_SUMMARY.md` | release/change tracking | historical/archive | superseded | high | keep | high | launch-docs |
+| `docs/archive/2026-03/root-superseded/UI_CONSISTENCY_REPORT.md` | audit/report | historical/archive | superseded | high | keep | high | audits-reviews |
+| `docs/archive/ARCHITECTURE.md` | architecture/design | historical/archive | superseded | high | keep | high | architecture-notes |
+| `docs/archive/BUILD_GUARDIAN.md` | implementation/reference notes | historical/archive | superseded | high | keep | high | misc |
+| `docs/archive/BUILD_STATUS.md` | implementation/reference notes | historical/archive | superseded | high | keep | high | misc |
+| `docs/archive/COMPLETION_REPORT.md` | audit/report | historical/archive | superseded | high | keep | high | audits-reviews |
+| `docs/archive/COMPLETION_SUMMARY.md` | implementation/reference notes | historical/archive | superseded | high | keep | high | misc |
+| `docs/archive/COMPONENT_LIBRARY.md` | implementation/reference notes | historical/archive | superseded | high | keep | high | misc |
+| `docs/archive/CONTRIBUTING.md` | implementation/reference notes | historical/archive | superseded | high | keep | high | misc |
+| `docs/archive/DEVELOPER_GUIDE.md` | implementation/reference notes | historical/archive | superseded | high | keep | high | misc |
+| `docs/archive/README.md` | hub/entrypoint | historical/archive | superseded | high | keep | high | onboarding-setup |
+| `docs/archive/architecture-settler.md` | architecture/design | historical/archive | superseded | high | keep | high | architecture-notes |
+| `docs/audit/AUDIT_100.md` | audit/report | unknown | partially current | high | investigate | low | audits-reviews |
+| `docs/audit/AUDIT_100_FINAL.md` | audit/report | unknown | partially current | high | investigate | low | audits-reviews |
+| `docs/audit/CHANGELOG_OF_FIXES.md` | release/change tracking | unknown | current | medium | investigate | low | audits-reviews |
+| `docs/audit/M1-boundaries.md` | audit/report | unknown | current | high | investigate | low | audits-reviews |
+| `docs/audit/REMEDIATION_CHECKLIST.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/audit/REMEDIATION_PLAN.md` | audit/report | unknown | partially current | high | archive | medium | plans-roadmaps |
+| `docs/audit/REPO_TRUTH.md` | audit/report | unknown | current | high | investigate | low | audits-reviews |
+| `docs/audits/FINAL_LAUNCH_SCORECARD.md` | audit/report | launch/marketing | current | high | archive | medium | audits-reviews |
+| `docs/audits/FINAL_RECONCILIATION_MATRIX.md` | audit/report | unknown | current | high | investigate | low | audits-reviews |
+| `docs/auth-edge-guard-setup.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/autonomous-company/DEPLOYMENT_COMPLETE.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/autonomous-company/OPENAI_SETUP.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/autonomous-company/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `docs/autonomous-company/SUMMARY.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/autonomous-company/deployment-checklist.md` | implementation/reference notes | internal maintainer/operator | partially current | high | archive | medium | misc |
+| `docs/autonomous-company/openai-integration.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/autonomous-company/quick-start.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/autonomous-company/role-replacement-map.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/autonomous-company/setup-guide.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/autonomous-company/verification-report.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/backend-contract-verification.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/background-jobs.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/benchmarks/benchmark-summary.md` | implementation/reference notes | unknown | partially current | medium | archive | medium | misc |
+| `docs/billing-architecture.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/billing-developer-quickstart.md` | implementation/reference notes | unknown | current | high | investigate | low | onboarding-setup |
+| `docs/billing-implementation-progress.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/build-and-deploy.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/build-fixes-complete.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/build-safety-guide.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/build-validation-summary.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/builder-io-fusion.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/business/ENTERPRISE_SALES.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/business/INVESTOR_PITCH.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/business/PARTNERSHIP_STRATEGY.md` | planning/strategy | unknown | current | high | investigate | low | plans-roadmaps |
+| `docs/business/ROADMAP.md` | planning/strategy | unknown | current | high | investigate | low | plans-roadmaps |
+| `docs/business/SALES_GUIDE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/business/SALES_HIT_LIST.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/case-studies/TEMPLATE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/category-narrative.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/ci-cd-initial.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/community-strategy.md` | planning/strategy | unknown | current | high | investigate | low | plans-roadmaps |
+| `docs/competitor-teardown-matrix.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/compliance/COMPLIANCE_DOCUMENTATION.md` | security/compliance | unknown | current | high | investigate | low | security-docs |
+| `docs/compliance/SOC2_PREPARATION.md` | security/compliance | unknown | current | high | investigate | low | security-docs |
+| `docs/component-inventory.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/console.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/content-calendar-public.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/content-strategy-implementation.md` | planning/strategy | unknown | current | high | investigate | low | plans-roadmaps |
+| `docs/content_audit.md` | audit/report | unknown | partially current | high | investigate | low | audits-reviews |
+| `docs/content_backfill_plan.md` | planning/strategy | unknown | partially current | high | archive | medium | plans-roadmaps |
+| `docs/content_surface_map.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/contract-templates/dpa-template.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/contract-templates/msa-template.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/contract-templates/sla-template.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/contributing.md` | implementation/reference notes | OSS contributor | current | high | keep | high | misc |
+| `docs/data-architecture-initial.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/data-architecture.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/dd/API_MODEL.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/dd/ARCHITECTURE.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/dd/COMPLIANCE.md` | security/compliance | unknown | current | high | investigate | low | security-docs |
+| `docs/dd/RISK_REGISTER.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/dd/SCALING.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/dd/SECURITY.md` | security/compliance | internal maintainer/operator | current | high | keep | high | security-docs |
+| `docs/dd/TEST_COVERAGE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/demo/SETTLER_DEMO_GUIDE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/demo/demo-walkthrough.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/demo/first-run-demo.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/demo.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/demos/FOUNDRY_DEMO.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/deployment/DEPLOYMENT_BLUEPRINT.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/deployment/route-parity.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/deployment-guide.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/deployment-notes.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/design-system.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/determinism.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/developer-guide.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/diagnostics-playbook.md` | implementation/reference notes | unknown | superseded | high | investigate | low | misc |
+| `docs/dom-reality-completion-report.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/dom-reality-deliverables.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/dom-reality-fix-log.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/dom-reality-implementation-complete.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/dom-reality-quick-start.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/dom-reality-summary.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/dom-reality-verification-checklist.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/dr-scenarios.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/ecosystem-positioning.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/engine/DETERMINISM.md` | implementation/reference notes | unknown | current | high | investigate | low | architecture-notes |
+| `docs/engine/EVIDENCE_BUNDLES.md` | implementation/reference notes | unknown | current | medium | investigate | low | architecture-notes |
+| `docs/engine/QUICKSTART.md` | implementation/reference notes | unknown | current | high | investigate | low | architecture-notes |
+| `docs/enhancements-implemented.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/enterprise-battlecard.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/enterprise-faq.md` | implementation/reference notes | unknown | superseded | high | investigate | low | misc |
+| `docs/enterprise-onboarding.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/env-build-helper.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/env-sync-summary.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/error-handling.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/event-catalog.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/event-taxonomy.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/expansion-revenue-strategy.md` | planning/strategy | unknown | current | high | investigate | low | plans-roadmaps |
+| `docs/external/product-overview.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/feature-flags-and-experiments.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/feature-gating-design.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/final-build-audit-complete.md` | audit/report | unknown | partially current | high | investigate | low | audits-reviews |
+| `docs/financial-projection-3-5-years.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/founder-story.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/frontend-additional-stakeholder-analyses.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/frontend-architecture.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/frontend-audit.md` | audit/report | unknown | partially current | high | investigate | low | audits-reviews |
+| `docs/frontend-content-overhaul.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/frontend-optimization-implementation-summary.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/frontend-review-report-final.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/frontend-review-report.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/frontend-routes-overview.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/funnel_strategy.md` | planning/strategy | unknown | current | high | investigate | low | plans-roadmaps |
+| `docs/getting-started/README.md` | hub/entrypoint | OSS contributor | current | medium | keep | high | onboarding-setup |
+| `docs/getting-started/bootstrap.md` | implementation/reference notes | OSS contributor | current | medium | investigate | low | onboarding-setup |
+| `docs/getting-started/core-vs-full-setup.md` | implementation/reference notes | OSS contributor | current | medium | investigate | low | onboarding-setup |
+| `docs/getting-started/doctor.md` | implementation/reference notes | OSS contributor | current | medium | investigate | low | onboarding-setup |
+| `docs/getting-started/quickstart.md` | implementation/reference notes | OSS contributor | current | medium | investigate | low | onboarding-setup |
+| `docs/getting-started.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | onboarding-setup |
+| `docs/github-secrets-checklist.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/github-secrets-guide.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/github-secrets-migration.md` | implementation/reference notes | unknown | superseded | high | investigate | low | misc |
+| `docs/github-secrets-setup.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/gitops-config.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/go-live-checklist.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/go-to-market/JOBS_TO_BE_DONE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/go-to-market/PERSONA_MAP.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/gtm/CATEGORY_POSITIONING.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/gtm/GTM_FOUNDATION.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/gtm/PERSONA_MESSAGING.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/gtm-channel-playbook.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/gtm-execution-report.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/gtm-integration-guide.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/i-n-t-e-g-r-a-t-i-o-n-r-e-c-i-p-e-s.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/i18n-architecture.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/icons.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/images.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/implementation_notes.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/incident-runbook.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/infra-setup.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/infrastructure/AI_PROMPT_COMPLETE.md` | prompt asset | agent/prompt workflow | current | high | investigate | low | prompts |
+| `docs/infrastructure/CONSOLIDATION_SUMMARY.md` | implementation/reference notes | internal maintainer/operator | partially current | high | archive | medium | misc |
+| `docs/infrastructure/PRODUCTION_PARITY.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/infrastructure/SCHEMA_SUMMARY.md` | implementation/reference notes | internal maintainer/operator | partially current | high | archive | medium | misc |
+| `docs/infrastructure/SECURITY_HARDENING.md` | security/compliance | internal maintainer/operator | current | high | investigate | low | security-docs |
+| `docs/infrastructure/ai-prompt-schema.md` | prompt asset | agent/prompt workflow | current | high | investigate | low | prompts |
+| `docs/infrastructure/database-indexes.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/integration-marketplace.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/integration-recipes.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/integration-roadmap.md` | planning/strategy | unknown | current | high | investigate | low | plans-roadmaps |
+| `docs/integrations/connectors/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `docs/integrations/connectors/plaid.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/integrations/connectors/truelayer.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/integrations/connectors-overview.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/integrations/enhanced-monitoring.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/integrations/operator-runbook.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/investor/INVESTOR_READY_SUMMARY.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/investor/MARKET_LANDSCAPE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/investor/MILESTONES.md` | implementation/reference notes | unknown | current | high | investigate | low | changelogs-milestones |
+| `docs/investor/MOAT_ANALYSIS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/investor/POSITIONING.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/investor/PROBLEM_INSIGHT_SOLUTION.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/investor/REVENUE_MODEL.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/investor/VISION_AND_MISSION.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/investor/deck.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/investor-faq.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/investor-narrative.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/investor.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/jobforge/ARCHITECTURE.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/jobforge/RUNBOOK.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/jobforge/SECURITY.md` | security/compliance | internal maintainer/operator | current | high | keep | high | security-docs |
+| `docs/jobforge-integration.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/kernel/DETERMINISM.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/launch/ARTIFACT_CAPTURE.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | launch-docs |
+| `docs/launch/EXAMPLE_WORKFLOWS.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | launch-docs |
+| `docs/launch/QUICK_START.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | launch-docs |
+| `docs/launch/README.md` | hub/entrypoint | launch/marketing | current | medium | keep | high | launch-docs |
+| `docs/launch/blog-post.md` | implementation/reference notes | launch/marketing | current | medium | investigate | low | launch-docs |
+| `docs/launch/demo-video-script.md` | implementation/reference notes | launch/marketing | current | medium | investigate | low | launch-docs |
+| `docs/launch/hacker-news.md` | implementation/reference notes | launch/marketing | current | medium | investigate | low | launch-docs |
+| `docs/launch/launch-checklist.md` | implementation/reference notes | launch/marketing | partially current | medium | archive | medium | launch-docs |
+| `docs/launch/launch-prep-report.md` | audit/report | launch/marketing | partially current | medium | archive | medium | audits-reviews |
+| `docs/launch/product-hunt.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | launch-docs |
+| `docs/launch/release-notes.md` | release/change tracking | launch/marketing | current | medium | investigate | low | launch-docs |
+| `docs/limitations.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/live-debug-report.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/local-dev-setup.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/marketing/IA.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `docs/marketing/STITCH_RECONCILIATION.md` | implementation/reference notes | launch/marketing | superseded | high | investigate | low | misc |
+| `docs/marketing_strategy.md` | planning/strategy | unknown | current | high | investigate | low | plans-roadmaps |
+| `docs/matching-rules.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/metrics/EVENT_TAXONOMY.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/metrics/LAUNCH_KPI_FRAMEWORK.md` | implementation/reference notes | launch/marketing | current | high | archive | medium | launch-docs |
+| `docs/metrics.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/microcopy-guidelines.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/migration-automation-setup.md` | implementation/reference notes | unknown | superseded | high | investigate | low | misc |
+| `docs/mission-vision.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/moat.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/model-pipeline-overview.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/monthly_cadence_engine.md` | implementation/reference notes | unknown | current | high | investigate | low | architecture-notes |
+| `docs/multi-currency-reconciliation.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/observability-architecture.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/observability.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/onboarding.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/one-pager.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/open-source-developer-relations-program.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/open-source-licensing.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/operations/README.md` | hub/entrypoint | internal maintainer/operator | current | high | keep | high | onboarding-setup |
+| `docs/operations/audit-workflows.md` | audit/report | internal maintainer/operator | partially current | medium | investigate | low | audits-reviews |
+| `docs/operations/failure-taxonomy.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/operations/observability.md` | implementation/reference notes | internal maintainer/operator | current | medium | investigate | low | misc |
+| `docs/operations/operator-control-plane.md` | planning/strategy | internal maintainer/operator | partially current | high | archive | medium | plans-roadmaps |
+| `docs/operations/performance-report.md` | audit/report | internal maintainer/operator | partially current | high | archive | medium | audits-reviews |
+| `docs/operations/remediation-playbook.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/operations/reporting-and-exports.md` | audit/report | internal maintainer/operator | partially current | high | archive | medium | audits-reviews |
+| `docs/operations/self-healing-guardrails.md` | implementation/reference notes | internal maintainer/operator | current | medium | investigate | low | misc |
+| `docs/operations.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/ops/FOUNDRY_RUNBOOK.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/ops/IMPLEMENTATION_SUMMARY.md` | implementation/reference notes | internal maintainer/operator | partially current | high | archive | medium | misc |
+| `docs/ops/OPS_ACCEPTANCE.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/ops/OPS_MODULES_SPEC.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/ops/README.md` | hub/entrypoint | internal maintainer/operator | current | high | keep | high | onboarding-setup |
+| `docs/ops/SETUP_INSTRUCTIONS.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/ops/deployment_contract.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/ops/github-triage-routing.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/ops/observability-error-contract.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/ops/production-parity.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/ops/production_readiness.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/ops/usage-metering-contract.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/ops/vercel_parity_report.md` | audit/report | internal maintainer/operator | partially current | high | archive | medium | audits-reviews |
+| `docs/ops-intelligence.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/oss-vs-enterprise.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/overview.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/packages/api/COLD_START_OPTIMIZATION.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/api/COMPLIANCE_SKELETON.md` | security/compliance | OSS contributor | current | high | investigate | low | security-docs |
+| `docs/packages/api/CQRS_AND_EVENT_SOURCING.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/api/EVENT_DRIVEN_ARCHITECTURE.md` | architecture/design | OSS contributor | current | high | investigate | low | architecture-notes |
+| `docs/packages/api/INCIDENT_RESPONSE.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/api/JSDOC_EXAMPLES.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/api/MIGRATION.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/api/MIGRATIONS.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/api/MIGRATION_RUNBOOK.md` | implementation/reference notes | OSS contributor | superseded | high | investigate | low | misc |
+| `docs/packages/api/MULTI_TENANCY.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/api/ONBOARDING_FAQ.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/api/OWASP_HARDENING.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/api/PRIVACY_SKELETON.md` | security/compliance | OSS contributor | current | high | investigate | low | security-docs |
+| `docs/packages/api/PROTOCOL.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/api/README.md` | hub/entrypoint | OSS contributor | current | high | keep | high | onboarding-setup |
+| `docs/packages/api/RECONCILIATION_PIPELINE.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/api/REPLAY.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/api/SAGAS_AND_RECOVERY.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/api/SDK_FEATURES.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/api/SECURITY_SUMMARY.md` | security/compliance | OSS contributor | partially current | high | archive | medium | security-docs |
+| `docs/packages/api/SRE_RUNBOOK.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/api/VERSIONING.md` | implementation/reference notes | OSS contributor | superseded | high | investigate | low | misc |
+| `docs/packages/api/ZERO_TRUST_NETWORKING.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/api/query-optimizations.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/react-settler/ACCESSIBILITY.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/react-settler/CHANGELOG.md` | release/change tracking | OSS contributor | current | high | keep | high | changelogs-milestones |
+| `docs/packages/react-settler/CONTRIBUTING.md` | implementation/reference notes | OSS contributor | current | high | keep | high | misc |
+| `docs/packages/react-settler/INTEGRATIONS.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/react-settler/OSS_VS_COMMERCIAL.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/react-settler/PERFORMANCE.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/react-settler/PRICING.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/react-settler/QUICK_START.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/react-settler/README.md` | hub/entrypoint | OSS contributor | current | high | keep | high | onboarding-setup |
+| `docs/packages/react-settler/SECURITY.md` | security/compliance | OSS contributor | current | high | keep | high | security-docs |
+| `docs/packages/react-settler/TESTING.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/react-settler/customer-overview.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/react-settler/internal-design.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/packages/react-settler/rollout-plan.md` | planning/strategy | OSS contributor | partially current | high | archive | medium | plans-roadmaps |
+| `docs/packages/react-settler/use-cases.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/partner-ecosystem-map.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/performance/benchmark-report.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/performance-report.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/performance-tuning-guide.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/phase-2-plan.md` | planning/strategy | unknown | partially current | medium | archive | medium | plans-roadmaps |
+| `docs/policies.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/positioning/CANONICAL_POSITIONING.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/positioning/CLAIM_VALIDATION.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/positioning/MESSAGING_HIERARCHY.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/postgres-scale-audit/00-architecture-truth.md` | architecture/design | unknown | current | high | investigate | low | audits-reviews |
+| `docs/postgres-scale-audit/01-findings.md` | audit/report | unknown | current | high | investigate | low | audits-reviews |
+| `docs/postgres-scale-audit/02-changes.md` | audit/report | unknown | current | high | investigate | low | audits-reviews |
+| `docs/postgres-scale-audit/03-verification.md` | audit/report | unknown | current | high | investigate | low | audits-reviews |
+| `docs/postgres-scale-audit/04-runbook.md` | audit/report | internal maintainer/operator | current | high | investigate | low | audits-reviews |
+| `docs/postgres-scale-audit/05-future-scaling.md` | audit/report | unknown | current | high | investigate | low | audits-reviews |
+| `docs/postgres-scale-audit/README.md` | hub/entrypoint | external user | current | high | keep | high | audits-reviews |
+| `docs/pricing-one-liner.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/pricing-rationale.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/product/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `docs/product-analytics-dashboards.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/prompts/README.md` | hub/entrypoint | agent/prompt workflow | current | medium | keep | high | prompts |
+| `docs/qa-notes.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/qa-report.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/qa-summary.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/quality/advanced-qa-system.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/quality/dependency-pruning-report.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/quality/documentation-truth-report.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/quality/failure-intelligence-verification.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/quality/first-run-verification-report.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/quality/onboarding-and-repo-contract-audit.md` | audit/report | unknown | partially current | high | investigate | low | audits-reviews |
+| `docs/quality/package-graph-audit.md` | audit/report | unknown | partially current | high | investigate | low | audits-reviews |
+| `docs/quality/post-simplification-audit.md` | audit/report | unknown | partially current | high | investigate | low | audits-reviews |
+| `docs/quality/post-simplification-stabilization-report.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/quality/qa-verification-system.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/quality/release-readiness.md` | release/change tracking | unknown | current | high | investigate | low | misc |
+| `docs/quality/repo-truth-report.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/quality/route-surface-map.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/quality/test-coverage-report.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `docs/quality/type-safety-report.md` | audit/report | unknown | partially current | medium | archive | medium | audits-reviews |
+| `docs/quick-start-observability.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/quickstart-cli.md` | implementation/reference notes | unknown | current | high | investigate | low | onboarding-setup |
+| `docs/quickstart.md` | implementation/reference notes | unknown | current | high | investigate | low | onboarding-setup |
+| `docs/reality/claims-vs-code-matrix.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/reality/final-reality-map.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/reality-system/COMPLETION_SUMMARY.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/reality-system/DEPLOYMENT.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/reality-system/NEXT_STEPS_CHECKLIST.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/reality-system/QUICK_START.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/reality-system/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `docs/reality-validation/QUICK_START.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/reality-validation/admin_capabilities.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/reality-validation/deploy_matrix.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/reality-validation/gtm_conversion_flow.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/reality-validation/investor_readiness.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/reality-validation/reconciliation-runtime-e2e.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/reconciliation/README.md` | hub/entrypoint | external user | current | medium | keep | high | onboarding-setup |
+| `docs/reconciliation/decision-workbench.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/redis-decision.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/reference/dependency-policy.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/reference/glossary.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/reference/operator-terminology.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/reference/package-categories.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/reference/repo-integrity.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/reference/surface-area-convergence.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/reference/workspace-contracts.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/release/RELEASE_ENGINEERING.md` | release/change tracking | unknown | current | high | investigate | low | architecture-notes |
+| `docs/release/THREAT_ASSESSMENT.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/release/VERIFICATION.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/release-evidence-bundle.md` | release/change tracking | unknown | current | high | investigate | low | misc |
+| `docs/replay/README.md` | hub/entrypoint | external user | current | medium | keep | high | onboarding-setup |
+| `docs/repo/ROOT_POLICY.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/reports/baseline-verification.md` | audit/report | unknown | current | high | investigate | low | audits-reviews |
+| `docs/reports/launch-readiness.md` | audit/report | launch/marketing | current | high | archive | medium | audits-reviews |
+| `docs/route-inventory.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/runbook/operator-failure-triage.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/runbook/production-deployment.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/scripts/MIGRATION_GUARDIAN_README.md` | hub/entrypoint | unknown | current | high | investigate | low | onboarding-setup |
+| `docs/scripts/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `docs/scripts/first-deploy-checklist.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/scripts/get-password-info.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/scripts/setup-supabase.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/security/DEPENDENCY_EVIDENCE.md` | security/compliance | internal maintainer/operator | current | high | investigate | low | security-docs |
+| `docs/security/LAUNCH_GATE.md` | security/compliance | launch/marketing | current | medium | archive | medium | launch-docs |
+| `docs/security/RATE_LIMITING_PRODUCTION.md` | security/compliance | internal maintainer/operator | current | high | investigate | low | security-docs |
+| `docs/security/README.md` | hub/entrypoint | internal maintainer/operator | current | high | keep | high | security-docs |
+| `docs/security/RLS_VERIFICATION.md` | security/compliance | internal maintainer/operator | current | medium | investigate | low | security-docs |
+| `docs/security/VERIFICATION_MODEL.md` | security/compliance | internal maintainer/operator | current | high | investigate | low | security-docs |
+| `docs/security/VERIFICATION_SURFACES.md` | security/compliance | internal maintainer/operator | current | high | investigate | low | security-docs |
+| `docs/security/account-and-tenant-management.md` | security/compliance | internal maintainer/operator | current | high | investigate | low | security-docs |
+| `docs/security/security-review.md` | security/compliance | internal maintainer/operator | current | high | investigate | low | audits-reviews |
+| `docs/security-audit.md` | audit/report | internal maintainer/operator | superseded | high | investigate | low | audits-reviews |
+| `docs/security-implementation-summary.md` | security/compliance | internal maintainer/operator | partially current | high | archive | medium | security-docs |
+| `docs/security-readme.md` | hub/entrypoint | internal maintainer/operator | current | high | investigate | low | security-docs |
+| `docs/settler-aias-integration.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/settler-defense-moat.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/settler-edge-architecture.md` | architecture/design | unknown | current | high | investigate | low | architecture-notes |
+| `docs/settler-edge-node-deployment.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/settler-pricing-strategy.md` | planning/strategy | unknown | current | high | investigate | low | plans-roadmaps |
+| `docs/settler-receipts-feature-flags-setup.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/site-builder-complete.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/site-builder-implementation-status.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/sla-slo-documentation.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/social-brand-identity.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/sre/COMPLIANCE_AUDIT_CHECKLIST.md` | audit/report | internal maintainer/operator | partially current | high | archive | medium | audits-reviews |
+| `docs/sre/DEPLOYMENT_GUIDE.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/sre/INCIDENT_RUNBOOK.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/sre/SRE_RUNBOOK.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `docs/stack-overview.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/state-patterns.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/strategic/ACTION_ITEMS_SUMMARY.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/strategic/BUILD_FIXES_SUMMARY.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/strategic/COMPLETE_DELIVERY_SUMMARY.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/strategic/COMPLETE_IMPLEMENTATION_SUMMARY.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/strategic/DEFENSIVE_MOAT_ANALYSIS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/strategic/FINAL_BUILD_SUCCESS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/strategic/IMPLEMENTATION_GUIDE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/strategic/IMPLEMENTATION_METRICS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/strategic/IMPLEMENTATION_ONBOARDING.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/strategic/IMPLEMENTATION_USAGE_TRACKING.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/strategic/MOAT_HARDENING_IMPLEMENTATION.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/strategic/ROADMAP_COMPLETE_FINAL.md` | planning/strategy | unknown | current | high | investigate | low | plans-roadmaps |
+| `docs/strategic/ROI_ANALYSIS.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/strategic/STAKEHOLDER_REVIEW.md` | implementation/reference notes | unknown | current | high | investigate | low | audits-reviews |
+| `docs/strategic-moat-analysis.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/strategy/DIFFERENTIATOR_FIT_MATRIX.md` | planning/strategy | unknown | current | high | investigate | low | plans-roadmaps |
+| `docs/strategy/POSITIONING_TRUTH.md` | planning/strategy | unknown | current | high | investigate | low | plans-roadmaps |
+| `docs/stripe-catalog.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/summary_for_founder.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/supabase-gaps.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/supabase-migration-setup.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/supabase-secrets-guide.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/support/README.md` | hub/entrypoint | external user | current | medium | keep | high | onboarding-setup |
+| `docs/support/api-error-guide.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/support/doctor-and-health-checks.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/support/support-intake-foundation.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/tax-compliance-regions.md` | security/compliance | unknown | current | high | investigate | low | security-docs |
+| `docs/trial_to_paid_cadence.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/troubleshooting/README.md` | hub/entrypoint | external user | current | medium | keep | high | onboarding-setup |
+| `docs/troubleshooting/installation-and-setup.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/troubleshooting/local-setup.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/troubleshooting/proof-verification-failures.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/troubleshooting/replay-divergence.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `docs/troubleshooting.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/upstash-tcp-setup.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/usage-events-reference.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `docs/usage-tracking-integration-example.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/ux-guidelines.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/ux-interaction-spec.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/ux-system-implementation-summary.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `docs/ux-system-verification.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/value-metrics.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/vendor-risk-assessment-matrix.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/vercel-build-readiness.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/vercel-env-sync-guide.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/vercel-integration.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/verify/QUICKSTART.md` | implementation/reference notes | unknown | current | medium | investigate | low | onboarding-setup |
+| `docs/voc-feedback-system.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/webhook-setup.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `docs/weekly-review-template.md` | implementation/reference notes | unknown | current | high | investigate | low | audits-reviews |
+| `docs/workflows.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `domain-packs/compliance/README.md` | hub/entrypoint | external user | current | high | keep | high | security-docs |
+| `domain-packs/data-engineering/README.md` | hub/entrypoint | external user | current | high | keep | high | architecture-notes |
+| `domain-packs/ecommerce/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `domain-packs/edtech/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `domain-packs/finance/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `domain-packs/legal/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `emails/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `enterprise/SELF_HOSTING.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `examples/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `examples/external-integration/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `examples/starter-kits/settler-recon-starter/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `examples/starter-kits/settler-workflow-starter/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `kits/customer-success/CUSTOMER_INPUT_CHECKLIST.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `kits/customer-success/OFFBOARDING_CHECKLIST.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `kits/customer-success/PILOT_CONVERSION_EMAIL.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `kits/customer-success/PILOT_KICKOFF_AGENDA.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `kits/customer-success/SUCCESS_REPORT_TEMPLATE.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `kits/customer-success/WEEKLY_CHECK-IN_TEMPLATE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `kits/founder-ops/CUSTOMER_HEALTH_REVIEW.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | audits-reviews |
+| `kits/founder-ops/DAILY_OPERATING_CHECKLIST.md` | implementation/reference notes | internal maintainer/operator | partially current | high | archive | medium | misc |
+| `kits/founder-ops/DECISION_LOG_TEMPLATE.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `kits/founder-ops/PIPELINE_REVIEW_TEMPLATE.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | audits-reviews |
+| `kits/founder-ops/WEEKLY_REVIEW_CHECKLIST.md` | implementation/reference notes | internal maintainer/operator | partially current | high | archive | medium | audits-reviews |
+| `kits/revenue-ops/ACTIVATION_FUNNEL.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `kits/revenue-ops/CHURN_RISK_SIGNALS.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `kits/revenue-ops/MARGIN_MONITORING.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `kits/revenue-ops/METRICS_DEFINITION.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `kits/revenue-ops/PILOT_TO_PAID_CONVERSION_TRACKER.md` | implementation/reference notes | internal maintainer/operator | current | high | investigate | low | misc |
+| `kits/sales/CLOSE_CHECKLIST.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `kits/sales/DEMO_RUN_OF_SHOW.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `kits/sales/DISCOVERY_CALL_SCRIPT.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `kits/sales/OBJECTION_HANDLING_PLAYBOOK.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `kits/sales/OUTREACH_EMAIL_TEMPLATES.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `kits/sales/QUALIFICATION_CHECKLIST.md` | implementation/reference notes | unknown | partially current | high | archive | medium | misc |
+| `launch/hn.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | launch-docs |
+| `launch/launch-summary.md` | implementation/reference notes | launch/marketing | partially current | medium | archive | medium | launch-docs |
+| `launch/ph.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | launch-docs |
+| `launch/reddit.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | launch-docs |
+| `launch/twitter-thread.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | launch-docs |
+| `launch/workflow-artifacts.md` | implementation/reference notes | launch/marketing | current | medium | investigate | low | launch-docs |
+| `legal/DPA_TEMPLATE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `legal/MSA_TEMPLATE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `legal/PILOT_AGREEMENT_TEMPLATE.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `marketing/api-directory-listings.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/blog-posts/01-how-we-built-settler.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/blog-posts/02-reconciliation-best-practices.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/blog-posts/03-stripe-shopify-reconciliation-guide.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/blog-posts/04-quickbooks-api-integration.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/blog-posts/05-webhook-reliability-patterns.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/case-studies/brand-reconciliation-case-study.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/content-calendar.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/customer-acquisition-kit/README.md` | hub/entrypoint | launch/marketing | current | high | keep | high | onboarding-setup |
+| `marketing/customer-acquisition-kit/api-best-practices.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/customer-acquisition-kit/api-reference-comprehensive.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/customer-acquisition-kit/community-oss-contributor-guidelines.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/customer-acquisition-kit/customer-journey-map.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/customer-acquisition-kit/developer-toolkit.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/customer-acquisition-kit/examples-recipes.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/customer-acquisition-kit/npm-readme-quickstart.md` | hub/entrypoint | launch/marketing | current | high | investigate | low | onboarding-setup |
+| `marketing/customer-acquisition-kit/onboarding-email-cto.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/customer-acquisition-kit/onboarding-email-developer.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/customer-acquisition-kit/onboarding-experience.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/customer-acquisition-kit/social-launch-post.md` | implementation/reference notes | launch/marketing | current | high | archive | medium | launch-docs |
+| `marketing/customer-acquisition-kit/support-interactions.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/customer-acquisition-kit/website-faq.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/customer-acquisition-kit/website-getting-started.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | onboarding-setup |
+| `marketing/demo-video-script.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/press-release.md` | release/change tracking | launch/marketing | current | high | investigate | low | misc |
+| `marketing/product-hunt-launch-plan.md` | planning/strategy | launch/marketing | partially current | high | archive | medium | plans-roadmaps |
+| `marketing/shopify-app-store-listing.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketing/stripe-partner-directory-application.md` | implementation/reference notes | launch/marketing | current | high | investigate | low | misc |
+| `marketplace/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `ops/reports/CODE_QUALITY_AUDIT.md` | audit/report | internal maintainer/operator | partially current | high | investigate | low | audits-reviews |
+| `ops/reports/CODE_QUALITY_SUMMARY.md` | audit/report | internal maintainer/operator | partially current | high | archive | medium | audits-reviews |
+| `ops/reports/FUTURE_ENHANCEMENTS_IMPLEMENTED.md` | audit/report | internal maintainer/operator | current | high | investigate | low | audits-reviews |
+| `ops/reports/LAUNCH_READINESS_REPORT.md` | audit/report | launch/marketing | partially current | high | archive | medium | audits-reviews |
+| `packages/api/README.md` | hub/entrypoint | OSS contributor | current | high | keep | high | onboarding-setup |
+| `packages/api/SECURITY.md` | security/compliance | OSS contributor | current | high | keep | high | security-docs |
+| `packages/api/src/docs/reconciliation-lifecycle.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `packages/cli/README.md` | hub/entrypoint | OSS contributor | current | high | keep | high | onboarding-setup |
+| `packages/protocol/README.md` | hub/entrypoint | OSS contributor | current | high | keep | high | onboarding-setup |
+| `packages/sdk-go/README.md` | hub/entrypoint | OSS contributor | current | high | keep | high | onboarding-setup |
+| `packages/sdk-python/README.md` | hub/entrypoint | OSS contributor | current | high | keep | high | onboarding-setup |
+| `packages/sdk-ruby/README.md` | hub/entrypoint | OSS contributor | current | high | keep | high | onboarding-setup |
+| `packages/web/BUNDLE_BUDGETS.md` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `packages/web/content/changelog/2025-07-01-sdk-v2.mdx` | implementation/reference notes | OSS contributor | superseded | high | investigate | low | changelogs-milestones |
+| `packages/web/content/changelog/2025-08-01-ai-exception-review.mdx` | implementation/reference notes | OSS contributor | current | high | investigate | low | audits-reviews |
+| `packages/web/content/changelog/2025-09-01-multi-source-joins.mdx` | implementation/reference notes | OSS contributor | current | high | investigate | low | changelogs-milestones |
+| `packages/web/content/changelog/2025-09-10-recon-rules.mdx` | implementation/reference notes | OSS contributor | current | high | investigate | low | changelogs-milestones |
+| `packages/web/content/changelog/2025-10-01-evidence-replay-v2.mdx` | implementation/reference notes | OSS contributor | current | high | investigate | low | changelogs-milestones |
+| `packages/web/content/changelog/2025-10-01-node-sdk-v1.mdx` | implementation/reference notes | OSS contributor | current | medium | investigate | low | changelogs-milestones |
+| `packages/web/content/changelog/2025-11-15-receipts-api.mdx` | implementation/reference notes | OSS contributor | current | high | investigate | low | changelogs-milestones |
+| `packages/web/content/changelog/2025-12-11-trust-layer.mdx` | implementation/reference notes | OSS contributor | current | medium | investigate | low | changelogs-milestones |
+| `packages/web/content/pages/about.mdx` | implementation/reference notes | OSS contributor | current | medium | investigate | low | misc |
+| `packages/web/content/pages/enterprise.mdx` | implementation/reference notes | OSS contributor | current | medium | investigate | low | misc |
+| `packages/web/content/pages/integrations.mdx` | implementation/reference notes | OSS contributor | current | medium | investigate | low | misc |
+| `packages/web/content/pages/open-source.mdx` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `packages/web/content/pages/product.mdx` | implementation/reference notes | OSS contributor | current | high | investigate | low | misc |
+| `packages/web/content/pages/security-and-audit.mdx` | audit/report | OSS contributor | partially current | high | investigate | low | audits-reviews |
+| `packages/workhorse/OPS_README.md` | hub/entrypoint | OSS contributor | current | high | investigate | low | onboarding-setup |
+| `packages/workhorse/PHASE4_SUMMARY.md` | implementation/reference notes | OSS contributor | partially current | high | archive | medium | misc |
+| `packages/workhorse/README.md` | hub/entrypoint | OSS contributor | current | high | keep | high | onboarding-setup |
+| `pilot-data/README.md` | hub/entrypoint | external user | current | medium | keep | high | onboarding-setup |
+| `prompts/GEMINI_IMAGE_PROMPT.md` | prompt asset | agent/prompt workflow | current | medium | investigate | low | prompts |
+| `prompts/STITCH_UI_PROMPT.md` | prompt asset | agent/prompt workflow | current | medium | investigate | low | prompts |
+| `prompts/VIDEO_PROMPT.md` | prompt asset | agent/prompt workflow | current | medium | investigate | low | prompts |
+| `recon_mismatch/recon_exceptions.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `recon_output/recon_exceptions.md` | implementation/reference notes | unknown | current | medium | investigate | low | misc |
+| `reports/chaos-test-report.md` | audit/report | unknown | partially current | high | archive | medium | audits-reviews |
+| `reports/dogfood-simulation.md` | audit/report | unknown | current | medium | investigate | low | audits-reviews |
+| `scaffold-repro/README.md` | hub/entrypoint | external user | current | medium | keep | high | onboarding-setup |
+| `scripts/pilot/sample-connectors.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `scripts/security-hardening-checklist.md` | security/compliance | internal maintainer/operator | partially current | high | archive | medium | security-docs |
+| `security/evidence/security-summary.md` | security/compliance | internal maintainer/operator | partially current | high | archive | medium | security-docs |
+| `security/header-contract.md` | security/compliance | internal maintainer/operator | current | high | investigate | low | security-docs |
+| `security/release-bundle/security-summary.md` | security/compliance | internal maintainer/operator | partially current | medium | archive | medium | security-docs |
+| `security/rls-live-verification.md` | security/compliance | internal maintainer/operator | current | high | investigate | low | security-docs |
+| `security/vulnerability-triage.md` | security/compliance | internal maintainer/operator | current | high | investigate | low | security-docs |
+| `strategic/01-future-trends-disruption-radar.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `strategic/02-ai-native-leverage-automation.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `strategic/03-data-network-effects-ecosystem.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `strategic/04-compliance-regulated-markets.md` | security/compliance | unknown | current | high | investigate | low | security-docs |
+| `strategic/05-platform-expansion-adaptable-core.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `strategic/06-antifragility-adversarial-moves.md` | implementation/reference notes | unknown | superseded | high | investigate | low | misc |
+| `strategic/07-org-second-brain-knowledge.md` | implementation/reference notes | unknown | superseded | high | investigate | low | misc |
+| `strategic/08-endgame-non-zero-sum-expansion.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `strategic/EXECUTIVE_SUMMARY.md` | implementation/reference notes | unknown | superseded | high | archive | medium | misc |
+| `strategic/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `supabase/migrations/QUICK_START.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `supabase/migrations/REALITY.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `supabase/migrations/_archive/README.md` | hub/entrypoint | historical/archive | current | high | keep | high | onboarding-setup |
+| `test-data/TEST_DATA_FOUNDRY.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `test-data/docs/reconciliation-scenario-matrix.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `test-data/generators/README.md` | hub/entrypoint | external user | current | medium | keep | high | onboarding-setup |
+| `tests/load/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `tools/reconciliation_engine/INTEGRATION.md` | implementation/reference notes | unknown | current | high | investigate | low | architecture-notes |
+| `tools/reconciliation_engine/README.md` | hub/entrypoint | external user | current | high | keep | high | architecture-notes |
+| `tools/reconciliation_intel/README.md` | hub/entrypoint | external user | current | high | keep | high | onboarding-setup |
+| `tools/reconciliation_intel/output/reconciliation_intel/anomaly_alert.md` | implementation/reference notes | unknown | current | high | investigate | low | misc |
+| `tools/reconciliation_intel/output/reconciliation_intel/compliance_snapshot.md` | security/compliance | unknown | current | high | investigate | low | security-docs |
+| `tools/settler-engine/POLICY_TOLERANCE_LAB.md` | implementation/reference notes | unknown | current | high | investigate | low | architecture-notes |
