@@ -56,6 +56,6 @@ Scripts for ongoing maintenance and operations.
 ## Documentation
 
 For detailed documentation on specific scripts, see:
-- [Remote Setup Guide](../REMOTE_SETUP_GUIDE.md)
+- [Remote Setup Guide](../getting-started/README.md)
 - [Implementation Complete](../IMPLEMENTATION_COMPLETE.md)
 - [Console Documentation](../docs/CONSOLE.md)

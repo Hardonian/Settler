@@ -329,7 +329,7 @@ Settler follows a **Hexagonal Architecture** (Ports & Adapters) pattern with **C
 
 ## For More Information
 
-- **Detailed Architecture:** See [docs/architecture.md](./architecture.md)
+- **Detailed Architecture:** See [docs/ARCHITECTURE.md](./ARCHITECTURE.md)
 - **Deployment Guide:** See [docs/DEPLOYMENT.md](./DEPLOYMENT.md)
 - **Configuration:** See [docs/CONFIGURATION.md](./CONFIGURATION.md)
 - **Operations:** See [docs/OPERATIONS_RUNBOOK.md](./OPERATIONS_RUNBOOK.md)

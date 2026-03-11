@@ -45,5 +45,5 @@ pnpm run verify:fast
 
 - [Console Documentation](./CONSOLE.md)
 - [API Documentation](./API.md)
-- [Architecture Overview](./architecture.md)
-- [Remote Setup Guide](./REMOTE_SETUP_GUIDE.md)
+- [Architecture Overview](./ARCHITECTURE.md)
+- [Remote Setup Guide](./getting-started/README.md)

@@ -572,5 +572,5 @@ const job = await client.jobs.create({
 
 - [Quickstart Guide](./QUICKSTART.md)
 - [API Reference](./api.md)
-- [CLI Documentation](./QUICKSTART_CLI.md)
+- [CLI Documentation](./quickstart-cli.md)
 - [GitOps Configuration](./GITOPS_CONFIG.md)
