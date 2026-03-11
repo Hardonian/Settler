@@ -1,94 +1,97 @@
 # Settler
 
-Settler is an OSS-first deterministic execution and reconciliation platform.
+Settler is a deterministic reconciliation and operations platform for teams that need reproducible runs, replayable outcomes, and operator-visible evidence.
 
-## Quickstart (core local path)
+## Project overview
 
-```bash
-pnpm run bootstrap
-pnpm run demo
-pnpm run dev:stack
-```
+The repository contains:
+- an API/control plane (`packages/api`),
+- a web operator console (`packages/web`), and
+- a CLI/foundry runtime (`packages/cli`) for deterministic scenario generation, replay, and verification.
 
-`bootstrap` already runs `repo-integrity` and first-run doctor.
+Settler focuses on proving behavior under replay rather than only showing a success/failure status.
 
-## Command matrix
+## Key capabilities
 
-- `pnpm run bootstrap` — install + repo-integrity + first-run doctor.
-- `pnpm run doctor -- --skip-pipeline --first-run` — first-run diagnostics.
-- `pnpm run doctor -- --skip-pipeline` — strict local diagnostics (expects fuller env/runtime readiness).
-- `pnpm run demo` — deterministic demo execution + replay verification.
-- `pnpm run dev:stack` — canonical local API + web stack entrypoint.
-- `pnpm run repo-integrity` — monorepo/workspace contract validator.
-- `pnpm run verify` — full lint/typecheck/build/test/security surface.
+- Deterministic reconciliation execution with replay verification.
+- Run Explorer for inspecting run metadata and outcomes.
+- Truth Explorer / evidence surfaces for run provenance.
+- Policy simulation for scenario-based operational decisions.
+- Operator telemetry and health surfaces for alerts and triage.
+- Synthetic reconciliation foundry for seeded test-data and regressions.
 
-## Core vs optional setup
+See `docs/DIFFERENTIATORS.md` for capability-to-code mapping.
 
-Core local onboarding does **not** require optional connectors (Stripe/Resend/Redis/etc.).
-Optional integrations should be configured only when validating those specific surfaces.
-
-## Repository structure
-
-- `packages/api` — API/control plane.
-- `packages/web` — Next.js UI.
-- `packages/cli` — Settler CLI runtime.
-- `packages/sdk` + `packages/react-settler` + `packages/types` — SDK/runtime libraries.
-- `docs/getting-started/*` — onboarding flow docs.
-- `docs/reference/repo-integrity.md` — repo truth gate.
-- `docs/reference/workspace-contracts.md` — workspace package contract.
-
-## Onboarding docs
-
-- [Quickstart](docs/getting-started/quickstart.md)
-- [Bootstrap](docs/getting-started/bootstrap.md)
-- [Doctor](docs/getting-started/doctor.md)
-- [First-run demo](docs/demo/first-run-demo.md)
-- [Troubleshooting](docs/troubleshooting/installation-and-setup.md)
-- [Repo integrity reference](docs/reference/repo-integrity.md)
-- [Workspace contracts](docs/reference/workspace-contracts.md)
-
-## What makes Settler different (implemented today)
-
-Settler is positioned as **deterministic reconciliation infrastructure**, not a generic dashboard.
-
-- **Replay Lab** (`/app/replay` + `/api/v1/runs/:id/replay`) for deterministic reruns and drift checks.
-- **Run Explorer** (`/app/runs`) for operator-grade run metadata and policy context.
-- **Truth Explorer** (`/app/proofs` + trust-explorer APIs) for lineage, proof verification, and policy impact analysis.
-- **Synthetic Reconciliation Foundry** (`pnpm run test:reconciliation*`) for seeded scenario validation.
-- **Live operator surfaces** (`/app/alerts`, `/app/system-health`, `/app/metrics`) for triage and runtime telemetry.
-- **Evidence query surface** (`/app/evidence` + `/api/v1/runs/:id/evidence`) for trust artifact retrieval by run, fingerprint, or policy hash.
-- **Tenant isolation controls** (`/app/settings`) for role boundaries and runtime freeze controls.
-
-See `docs/PRODUCT_CAPABILITIES_MATRIX.md` for maturity and evidence map.
-
-## Reconciliation synthetic verification
-
-Use the deterministic reconciliation foundry commands below during local debugging and CI parity checks:
-
-- `pnpm run test:reconciliation` — runs CLI reconciliation harness + reconciliation foundry tests.
-- `pnpm run test:reconciliation:e2e` — executes strict reconciliation verification (`smoke` profile, seed 42).
-- `pnpm run verify:reconciliation-runtime` — executes strict reconciliation verification (`integration` profile, seed 42).
-- `pnpm run generate:test-data:smoke` — generates deterministic smoke export fixtures under `test-data/exports`.
-
-For additional seeds, run:
+## Quick start
 
 ```bash
-pnpm --filter @settler/cli exec tsx src/index.ts foundry reconciliation-verify --seed 7 --profile smoke --strict
-pnpm --filter @settler/cli exec tsx src/index.ts foundry reconciliation-verify --seed 99 --profile smoke --strict
+pnpm install
+pnpm demo:settler
+pnpm dev:stack
 ```
 
-## Integrity guarantee
+If you are setting up from a fresh environment, use the expanded flow in `docs/QUICK_START.md`.
 
-`pnpm run repo-integrity` is expected to pass on a healthy checkout and fails hard when workspace manifests, script references, or package contracts drift.
+## Demo walkthrough
 
-## Launch Readiness Snapshot
+Run the reproducible operator demo:
 
-Settler launch claims in this repository are constrained to commands and artifacts that are currently reproducible:
+```bash
+pnpm demo:settler
+```
 
-- `pnpm run typecheck`
-- `pnpm run build`
-- `pnpm run test`
-- `pnpm run repo-integrity`
-- `pnpm run verify`
+The demo performs:
+1. sample dataset load,
+2. reconciliation execution,
+3. runtime event + alert generation,
+4. run inspection data output,
+5. deterministic replay,
+6. policy simulation output.
 
-See `docs/demo/demo-walkthrough.md` for a deterministic walkthrough and `docs/launch/launch-checklist.md` for pre-launch gates.
+After completion, the command prints guided next actions:
+- Open Run Explorer
+- Inspect reconciliation results
+- Replay run
+- Trigger policy simulation
+
+## Architecture summary
+
+```mermaid
+flowchart LR
+  A[Data Imports] --> B[Reconciliation Engine]
+  B --> C[Execution Ledger]
+  C --> D[Run Explorer]
+  C --> E[Replay Verification]
+  C --> F[Truth / Evidence Explorer]
+  B --> G[Alert + Telemetry Stream]
+  G --> H[Operator Control Plane]
+```
+
+Additional architecture artifacts are in `docs/architecture/` and `ARCHITECTURE.md`.
+
+## Screenshots and demo artifacts
+
+Generate operator screenshots:
+
+```bash
+pnpm demo:assets
+```
+
+Generated files are saved to `docs/assets`:
+- `operator-dashboard.png`
+- `run-explorer.png`
+- `truth-explorer.png`
+- `replay-verification.png`
+- `system-health-metrics.png`
+
+## Benchmark evidence
+
+```bash
+pnpm benchmark
+```
+
+This writes `docs/BENCHMARKS.md` with throughput, run duration, API latency proxy, and memory usage.
+
+## Contributing
+
+See `CONTRIBUTING.md` for contribution workflow, testing expectations, and module conventions.

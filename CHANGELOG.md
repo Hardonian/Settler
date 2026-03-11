@@ -27,6 +27,17 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Updated root `verify` and `verify:oss` scripts to enforce lint/typecheck/build/test plus boundaries/policy/routes.
 - Updated README proof sections to link directly to deterministic demo evidence and replay contract.
 
+### Added
+
+- Added `pnpm demo:assets` automation (`scripts/demo-assets.mjs`) to generate operator dashboard, run explorer, truth explorer, replay verification, and system health screenshots under `docs/assets`.
+- Added launch-readiness documentation: `docs/DIFFERENTIATORS.md`, `docs/LAUNCH_CHECKLIST.md`, `docs/BENCHMARKS.md`, and architecture diagram docs under `docs/architecture`.
+
+### Changed
+
+- Updated `pnpm demo:settler` pipeline to enforce a full demo flow (dataset load, reconciliation, runtime alerts, run inspection, replay, policy simulation) and print guided operator actions.
+- Updated benchmark harness to write `docs/BENCHMARKS.md` by default with reconciliation throughput, run duration, API latency proxy, and memory usage.
+- Refined core launch docs (`README.md`, `CONTRIBUTING.md`, `ARCHITECTURE.md`, `docs/API_REFERENCE.md`) to align claims with executable repo surfaces.
+
 ## [1.0.0] - 2026-02-23
 
 ### Added

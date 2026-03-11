@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-03-11T00:40:50.434Z",
+  "status": "degraded",
+  "baseUrl": "http://127.0.0.1:3000",
+  "reason": "playwright dependency unavailable",
+  "targets": [
+    {
+      "name": "operator-dashboard",
+      "route": "/app"
+    },
+    {
+      "name": "run-explorer",
+      "route": "/app/runs"
+    },
+    {
+      "name": "truth-explorer",
+      "route": "/app/proofs"
+    },
+    {
+      "name": "replay-verification",
+      "route": "/app/replay"
+    },
+    {
+      "name": "system-health-metrics",
+      "route": "/app/system-health"
+    }
+  ],
+  "error": "Cannot find package 'playwright' imported from /workspace/Settler/scripts/demo-assets.mjs"
+}
