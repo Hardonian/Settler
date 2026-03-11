@@ -101,8 +101,8 @@ importers:
         specifier: ^2.39.0
         version: 2.93.3
       stripe:
-        specifier: ^14.21.0
-        version: 14.25.0
+        specifier: ^20.4.1
+        version: 20.4.1(@types/node@24.10.9)
       zod:
         specifier: ^3.22.4
         version: 3.25.76
@@ -249,8 +249,8 @@ importers:
         specifier: ^4.7.2
         version: 4.8.3
       stripe:
-        specifier: ^14.25.0
-        version: 14.25.0
+        specifier: ^20.4.1
+        version: 20.4.1(@types/node@24.10.9)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -817,8 +817,8 @@ importers:
         specifier: ^0.33.0
         version: 0.33.5
       stripe:
-        specifier: ^20.0.0
-        version: 20.3.0(@types/node@24.10.9)
+        specifier: ^20.4.1
+        version: 20.4.1(@types/node@24.10.9)
       tailwind-merge:
         specifier: ^2.2.0
         version: 2.6.0
@@ -9516,12 +9516,8 @@ packages:
   strip-literal@2.1.1:
     resolution: {integrity: sha512-631UJ6O00eNGfMiWG78ck80dfBab8X6IVFB51jZK5Icd7XAs60Z5y7QdSd/wGIklnWvRbUNloVzhOKKmutxQ6Q==}
 
-  stripe@14.25.0:
-    resolution: {integrity: sha512-wQS3GNMofCXwH8TSje8E1SE8zr6ODiGtHQgPtO95p9Mb4FhKC9jvXR2NUTpZ9ZINlckJcFidCmaTFV4P6vsb9g==}
-    engines: {node: '>=12.*'}
-
-  stripe@20.3.0:
-    resolution: {integrity: sha512-DYzcmV1MfYhycr1GwjCjeQVYk9Gu8dpxyTlu7qeDCsuguug7oUTxPsUQuZeSf/OPzK7pofqobvOKVqAwlpgf/Q==}
+  stripe@20.4.1:
+    resolution: {integrity: sha512-axCguHItc8Sxt0HC6aSkdVRPffjYPV7EQqZRb2GkIa8FzWDycE7nHJM19C6xAIynH1Qp1/BHiopSi96jGBxT0w==}
     engines: {node: '>=16'}
     peerDependencies:
       '@types/node': '>=16'
@@ -21922,12 +21918,7 @@ snapshots:
     dependencies:
       js-tokens: 9.0.1
 
-  stripe@14.25.0:
-    dependencies:
-      '@types/node': 24.10.9
-      qs: 6.14.1
-
-  stripe@20.3.0(@types/node@24.10.9):
+  stripe@20.4.1(@types/node@24.10.9):
     optionalDependencies:
       '@types/node': 24.10.9
 
