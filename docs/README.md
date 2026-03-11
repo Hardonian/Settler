@@ -1,19 +1,31 @@
-# Settler Documentation
+# Settler Documentation Hub
 
 This directory is the canonical documentation surface for Settler.
 
-## Primary entry points
+## Start here
 
-- **Role-based map**: [`docs/INDEX.md`](./INDEX.md)
-- **Terminology standard**: [`docs/reference/glossary.md`](./reference/glossary.md)
-- **Developer fast path**: [`docs/getting-started/README.md`](./getting-started/README.md)
-- **Product/architecture truth**: [`docs/architecture/README.md`](./architecture/README.md)
-- **API route contract**: [`docs/api/README.md`](./api/README.md)
-- **Operations and runbooks**: [`docs/operations/README.md`](./operations/README.md)
-- **Support and troubleshooting**: [`docs/support/README.md`](./support/README.md), [`docs/troubleshooting/README.md`](./troubleshooting/README.md)
+- Getting started: `docs/getting-started/`
+- Architecture overview: `docs/architecture/`
+- Operations and runbooks: `docs/operations/`, `docs/runbook/`, `docs/sre/`
+- Security + compliance: `docs/security/`, `docs/compliance/`
+- API/reference: `docs/api/`, `docs/reference/`
+- Product + positioning context: `docs/product/`, `docs/positioning/`
 
-## Scope rules
+## Documentation governance surfaces
 
-- If implementation and docs disagree, narrow docs or fix code immediately.
-- Experimental/internal features must be explicitly marked.
-- Public website copy, README, and docs must use the same terms.
+- Documentation map: `docs/_meta/DOC_MAP.md`
+- Governance rules: `docs/_meta/DOCS_GOVERNANCE.md`
+- Full inventory: `docs/_meta/doc-inventory.md` + `docs/_meta/doc-inventory.json`
+- Overlap clusters: `docs/_meta/doc-clusters.md`
+- Orphan candidates: `docs/_meta/orphan-docs.md`
+- Consolidation changelog: `docs/_meta/DOCS_CONSOLIDATION_CHANGELOG.md`
+- Package README audit: `docs/_meta/package-readme-audit.md`
+
+## Archive policy
+
+Historical/superseded docs are kept under `docs/archive/` with index entries in:
+
+- `docs/_meta/archive-index.md`
+- `docs/_meta/archive-index.json`
+
+Do not delete operationally meaningful docs unless they are either merged into canonical docs or intentionally archived with traceability.

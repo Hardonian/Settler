@@ -1,28 +1,53 @@
 # Getting Started
 
-## One quickstart path (canonical)
-
-1. Install dependencies and configure environment.
-2. Run migrations.
-3. Run web app.
-4. Execute demo and replay evidence.
+## Canonical onboarding path
 
 ```bash
 pnpm install
-cp .env.example .env
-pnpm exec tsx scripts/run-migrations-remote.ts
-pnpm --filter @settler/web dev
-pnpm demo
-pnpm settler:replay examples/demo-output/evidence.json
+cp .env.local.example .env.local
+pnpm demo:settler
+```
+
+This path is optimized for first-time contributors and operators.
+
+## Environment setup essentials
+
+Use these minimum variables before running migrations or API/server workflows:
+
+- `DATABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` (server-only)
+
+Recommended local placement:
+
+- `packages/web/.env.local` for local development secrets (gitignored)
+- root `.env` only when a shared workspace script explicitly requires it
+
+## Remote database quick setup
+
+```bash
+export DATABASE_URL="postgresql://user:pass@host:port/db?sslmode=require"
+pnpm tsx scripts/run-migrations-remote.ts
+pnpm tsx scripts/test-setup.ts
+```
+
+If you need super-admin bootstrapping, run:
+
+```bash
+export USER_EMAIL="admin@settler.dev"
+pnpm tsx scripts/configure-super-admin.ts
 ```
 
 ## Inputs and outputs
 
-- **Inputs:** transaction feeds, documents, connector payloads, reconciliation rules, policy configuration.
-- **Outputs:** run results (matched and mismatched records), exception queue items, evidence packs (`run.json`, `results.json`, `evidence.json`, `report.html`).
+- **Inputs:** reconciliation feeds, connector payloads, rules, and policy configuration.
+- **Outputs:** run results, mismatch queues, and evidence artifacts (`run.json`, `results.json`, `evidence.json`).
 
-## Where to go next
+## Next docs
 
 - Developer API + SDK: [`docs/api/README.md`](../api/README.md)
-- Product and operator workflow: [`docs/product/README.md`](../product/README.md)
-- Security/reliability trust path: [`docs/security/README.md`](../security/README.md)
+- Architecture overview: [`docs/architecture/README.md`](../architecture/README.md)
+- Demo walkthrough: [`docs/demo/demo-walkthrough.md`](../demo/demo-walkthrough.md)
+- Security and tenant boundaries: [`docs/security/README.md`](../security/README.md)
+- CLI quickstart: [`docs/quickstart-cli.md`](../quickstart-cli.md)

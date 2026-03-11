@@ -6,6 +6,7 @@
 import { logError, logWarn, logInfo } from "../../utils/logger";
 import { query } from "../../db";
 import { eventBus } from "../events/event-bus";
+import { assertCanResolveAlert } from "./AlertLifecycle";
 
 export enum AlertSeverity {
   LOW = "low",
@@ -109,6 +110,18 @@ export async function createAlert(
  */
 export async function resolveAlert(alertId: string): Promise<void> {
   try {
+    const current = await query<{ resolved: boolean }>(
+      `SELECT resolved FROM alerts WHERE id = $1`,
+      [alertId]
+    );
+
+    const row = current[0];
+    if (!row) {
+      throw new Error(`Alert ${alertId} not found`);
+    }
+
+    assertCanResolveAlert(row.resolved ? "resolved" : "open");
+
     await query(
       `UPDATE alerts
        SET resolved = TRUE, resolved_at = NOW()
@@ -134,6 +147,7 @@ export async function resolveAlert(alertId: string): Promise<void> {
     logInfo("Alert resolved", { alertId });
   } catch (error) {
     logError("Failed to resolve alert", error, { alertId });
+    throw error;
   }
 }
 

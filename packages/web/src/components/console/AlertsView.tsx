@@ -6,6 +6,7 @@
 
 'use client';
 
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -80,6 +81,32 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
     } finally {
       setAcknowledging(null);
     }
+  };
+
+
+  const inferRunId = (alert: Alert): string | null => {
+    const candidates: string[] = [];
+
+    for (const evidence of alert.explanation.evidence ?? []) {
+      if (typeof evidence.value === 'string') {
+        candidates.push(evidence.value);
+      }
+    }
+
+    const messageCandidates = [alert.message, alert.title].filter(Boolean);
+    candidates.push(...messageCandidates);
+
+    for (const candidate of candidates) {
+      const runMatch = candidate.match(/\brun[_:-]([A-Za-z0-9_-]+)/i);
+      if (runMatch) return runMatch[0].replace(':', '_').replace('-', '_');
+
+      const uuidMatch = candidate.match(
+        /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/i
+      );
+      if (uuidMatch) return uuidMatch[0];
+    }
+
+    return null;
   };
 
   const getSeverityIcon = (severity: Alert['severity']) => {
@@ -198,7 +225,9 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
         </Card>
       ) : (
         <div className="space-y-4">
-          {alerts.map((alert) => (
+          {alerts.map((alert) => {
+            const runId = inferRunId(alert);
+            return (
             <Card
               key={alert.id}
               className={`hover:shadow-lg transition-shadow ${
@@ -282,7 +311,7 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
                   )}
 
                   {/* Actions */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <Button
                       variant="outline"
                       size="sm"
@@ -293,6 +322,16 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
                     >
                       View Details
                     </Button>
+                    {runId && (
+                      <>
+                        <Link href={`/app/runs/${runId}`} className="inline-flex items-center rounded-md border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                          Open affected run
+                        </Link>
+                        <Link href={`/app/replay?runId=${runId}`} className="inline-flex items-center rounded-md border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                          Replay affected run
+                        </Link>
+                      </>
+                    )}
                     {!alert.acknowledged && (
                       <Button
                         variant="outline"
@@ -322,7 +361,8 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
                 </div>
               </CardContent>
             </Card>
-          ))}
+          );
+          })}
         </div>
       )}
 

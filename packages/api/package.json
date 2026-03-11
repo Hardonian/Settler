@@ -81,7 +81,7 @@
     "test": "jest --runInBand --forceExit",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage --runInBand --forceExit",
-    "test:operator-mode": "jest src/__tests__/operator-mode-verification.ts",
+    "test:operator-mode": "jest src/__tests__/operator-mode-verification.test.ts",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",

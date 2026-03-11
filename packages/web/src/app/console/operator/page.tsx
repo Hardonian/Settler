@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 
 interface OperatorPayload {
   data: {
@@ -13,30 +13,12 @@ interface OperatorPayload {
       apiRequests30d: number;
       uiRequests30d: number;
     };
-    financial: {
-      estimatedComputeCostPerRunUsd: number;
-      estimatedComputeCost30dUsd: number;
-      realizedRevenue30dProxyUsd: number;
-      revenuePerRunUsd: number | null;
-      marginProxyPercent: number | null;
-      assumptions: string[];
-      tenantEconomics: Array<{
-        tenant_id: string;
-        runs_30d: number;
-        records_30d: number;
-        estimated_mrr_usd: number;
-      }>;
-    };
     activity: {
+      recentRuns: Array<{ run_id: string; tenant_id: string; status: string; started_at: string }>;
+      failedRuns: Array<{ run_id: string; tenant_id: string; status: string; started_at: string }>;
       errorSignatures: Array<{ signature: string; occurrences_24h: number }>;
       githubIssueTriage: { mode: string; triaged: number; skipped: number; errors: string[] };
     };
-    tenantOverview: Array<{
-      tenant_id: string;
-      run_count: number;
-      failure_rate: number;
-      manual_review_rate: number;
-    }>;
     errorIntelligence: {
       top24h: Array<{ signature: string; occurrences_24h: number }>;
       newSignatures: Array<{ signature: string }>;
@@ -48,31 +30,75 @@ interface OperatorPayload {
       severity: string;
       triggered_count: number;
       message: string;
-      last_value: number;
-      baseline_value: number;
       last_triggered_at: string;
     }>;
-    capabilities: { githubIssueTriage: boolean; stripeRevenue: boolean; slackAlerts: boolean };
   } | null;
   degraded?: boolean;
   error?: string;
 }
 
+interface RunExplorerResponse {
+  data: Array<{
+    run_id: string;
+    tenant_id: string;
+    status: string;
+    started_at: string;
+    completed_at: string | null;
+    duration_ms: number;
+    match_rate: number;
+    manual_review_count: number;
+    error_count: number;
+  }>;
+  pagination: { page: number; pageSize: number; total: number; totalPages: number };
+}
+
 export default function OperatorControlPlanePage() {
   const [payload, setPayload] = useState<OperatorPayload | null>(null);
   const [loading, setLoading] = useState(true);
-  const [ticketResult, setTicketResult] = useState<string>("");
+  const [ticketResult, setTicketResult] = useState("");
+
+  const [runs, setRuns] = useState<RunExplorerResponse | null>(null);
+  const [tenantFilter, setTenantFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [runPage, setRunPage] = useState(1);
+
+  const [liveEvents, setLiveEvents] = useState<
+    Array<{ id: string; level: string; message: string }>
+  >([]);
 
   useEffect(() => {
-    void load();
+    void loadControlPlane();
   }, []);
 
-  async function load() {
-    setLoading(true);
+  useEffect(() => {
+    void loadRuns();
+  }, [tenantFilter, statusFilter, runPage]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      void loadControlPlane(true);
+    }, 15000);
+    return () => clearInterval(timer);
+  }, []);
+
+  async function loadControlPlane(isRealtimeRefresh = false) {
+    if (!isRealtimeRefresh) setLoading(true);
     const res = await fetch("/api/console/operator/control-plane?days=7");
     const data = (await res.json()) as OperatorPayload;
     setPayload(data);
-    setLoading(false);
+    if (data.data) {
+      setLiveEvents(buildLiveEvents(data.data));
+    }
+    if (!isRealtimeRefresh) setLoading(false);
+  }
+
+  async function loadRuns() {
+    const params = new URLSearchParams({ page: String(runPage), pageSize: "8" });
+    if (tenantFilter) params.set("tenantId", tenantFilter);
+    if (statusFilter) params.set("status", statusFilter);
+    const res = await fetch(`/api/console/operator/runs?${params.toString()}`);
+    const data = (await res.json()) as RunExplorerResponse;
+    setRuns(data);
   }
 
   async function submitTicket(e: FormEvent<HTMLFormElement>) {
@@ -101,22 +127,19 @@ export default function OperatorControlPlanePage() {
     );
   }
 
+  const health = payload?.data?.systemHealth;
+  const recentRuns = payload?.data?.activity.recentRuns ?? [];
+  const failedRuns = payload?.data?.activity.failedRuns ?? [];
+  const recentErrorSpikeCount = useMemo(
+    () => payload?.data?.errorIntelligence.regressions.length ?? 0,
+    [payload]
+  );
+
   if (loading) return <div className="p-6">Loading operator control plane…</div>;
   if (!payload?.data)
     return (
       <div className="p-6">Operator control plane unavailable: {payload?.error ?? "unknown"}</div>
     );
-
-  const {
-    systemHealth,
-    usage,
-    financial,
-    tenantOverview,
-    errorIntelligence,
-    capabilities,
-    alerts,
-    activity,
-  } = payload.data;
 
   return (
     <div className="p-6 space-y-6">
@@ -125,104 +148,137 @@ export default function OperatorControlPlanePage() {
         <p className="text-sm text-amber-600">Degraded mode: partial data available.</p>
       ) : null}
 
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Metric label="Runs/day" value={systemHealth?.runs_per_day ?? 0} />
+      <section className="grid grid-cols-2 md:grid-cols-7 gap-3">
+        <Metric label="Runs/day" value={health?.runs_per_day ?? 0} />
         <Metric
           label="Failure rate"
-          value={`${Number(systemHealth?.run_failure_rate ?? 0).toFixed(2)}%`}
+          value={`${Number(health?.run_failure_rate ?? 0).toFixed(2)}%`}
         />
-        <Metric label="Match rate" value={`${Number(systemHealth?.match_rate ?? 0).toFixed(2)}%`} />
+        <Metric label="Match rate" value={`${Number(health?.match_rate ?? 0).toFixed(2)}%`} />
         <Metric
           label="Manual review"
-          value={`${Number(systemHealth?.manual_review_rate ?? 0).toFixed(2)}%`}
+          value={`${Number(health?.manual_review_rate ?? 0).toFixed(2)}%`}
         />
-        <Metric label="Run p95" value={`${Math.round(systemHealth?.run_duration_p95 ?? 0)}ms`} />
-        <Metric label="API p95" value={`${Math.round(systemHealth?.api_latency_p95 ?? 0)}ms`} />
+        <Metric label="API error" value={`${Number(health?.api_error_rate ?? 0).toFixed(2)}%`} />
+        <Metric label="API p95" value={`${Math.round(Number(health?.api_latency_p95 ?? 0))}ms`} />
         <Metric
-          label="API error"
-          value={`${Number(systemHealth?.api_error_rate ?? 0).toFixed(2)}%`}
+          label="Recon p95"
+          value={`${Math.round(Number(health?.run_duration_p95 ?? 0))}ms`}
         />
       </section>
 
-      <section>
-        <h2 className="font-semibold mb-2">Usage analytics</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          <Metric label="Active tenants (7d)" value={usage.activeTenants7d} />
-          <Metric label="Active tenants (30d)" value={usage.activeTenants30d} />
-          <Metric label="Runs (30d)" value={usage.runs30d} />
-          <Metric label="Records (30d)" value={usage.records30d} />
-          <Metric label="API requests (30d)" value={usage.apiRequests30d} />
-          <Metric label="UI requests (30d)" value={usage.uiRequests30d} />
+      <section className="grid md:grid-cols-2 gap-4">
+        <div className="rounded border p-4">
+          <h2 className="font-semibold">Recent reconciliation runs</h2>
+          <ul className="text-sm mt-2 space-y-1">
+            {recentRuns.slice(0, 8).map((run) => (
+              <li key={run.run_id}>
+                {run.run_id.slice(0, 8)} · {run.tenant_id.slice(0, 8)} · {run.status} ·{" "}
+                {new Date(run.started_at).toLocaleString()}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="rounded border p-4">
+          <h2 className="font-semibold">Operator risk signals</h2>
+          <p className="text-sm mt-2">
+            Manual review count pressure: {failedRuns.length} failed runs in latest window
+          </p>
+          <p className="text-sm">Error spikes in 24h: {recentErrorSpikeCount}</p>
+          <p className="text-sm">Alert history entries: {payload.data.alerts.length}</p>
         </div>
       </section>
 
       <section>
-        <h2 className="font-semibold mb-2">Financial / unit economics</h2>
-        <p>Revenue proxy (30d): ${financial.realizedRevenue30dProxyUsd}</p>
-        <p>Compute cost proxy (30d): ${financial.estimatedComputeCost30dUsd}</p>
-        <p>Revenue / run: {financial.revenuePerRunUsd ?? "n/a"}</p>
-        <p>
-          Margin proxy:{" "}
-          {financial.marginProxyPercent === null
-            ? "unavailable"
-            : `${financial.marginProxyPercent}%`}
-        </p>
+        <a className="text-sm underline" href="/operator/incidents">
+          Open incident queue (/operator/incidents)
+        </a>
       </section>
 
-      <section>
-        <h2 className="font-semibold mb-2">Alert history (deduped)</h2>
-        <ul className="text-sm space-y-1">
-          {alerts.map((alert) => (
-            <li key={alert.dedupe_key}>
-              [{alert.severity}] {alert.message} · seen {alert.triggered_count}x ·{" "}
-              {new Date(alert.last_triggered_at).toLocaleString()}
+      <section className="rounded border p-4">
+        <h2 className="font-semibold mb-2">Run explorer</h2>
+        <div className="flex flex-wrap gap-2 mb-3">
+          <input
+            value={tenantFilter}
+            onChange={(e) => {
+              setRunPage(1);
+              setTenantFilter(e.target.value);
+            }}
+            className="border rounded px-2 py-1"
+            placeholder="Filter tenant"
+          />
+          <select
+            value={statusFilter}
+            onChange={(e) => {
+              setRunPage(1);
+              setStatusFilter(e.target.value);
+            }}
+            className="border rounded px-2 py-1"
+          >
+            <option value="">All statuses</option>
+            <option value="completed">completed</option>
+            <option value="failed">failed</option>
+            <option value="running">running</option>
+          </select>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left border-b">
+                <th>Run ID</th>
+                <th>Tenant</th>
+                <th>Duration</th>
+                <th>Match rate</th>
+                <th>Manual review</th>
+                <th>Errors</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(runs?.data ?? []).map((run) => (
+                <tr className="border-b" key={run.run_id}>
+                  <td className="py-2">{run.run_id.slice(0, 8)}</td>
+                  <td>{run.tenant_id.slice(0, 8)}</td>
+                  <td>{Math.round(run.duration_ms)}ms</td>
+                  <td>{run.match_rate.toFixed(2)}%</td>
+                  <td>{run.manual_review_count}</td>
+                  <td>{run.error_count}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="flex gap-2 mt-3 text-sm">
+          <button
+            className="border rounded px-2 py-1"
+            disabled={runPage <= 1}
+            onClick={() => setRunPage((p) => p - 1)}
+          >
+            Prev
+          </button>
+          <span>
+            Page {runs?.pagination.page ?? 1} / {runs?.pagination.totalPages ?? 1}
+          </span>
+          <button
+            className="border rounded px-2 py-1"
+            disabled={runPage >= (runs?.pagination.totalPages ?? 1)}
+            onClick={() => setRunPage((p) => p + 1)}
+          >
+            Next
+          </button>
+        </div>
+      </section>
+
+      <section className="rounded border p-4">
+        <h2 className="font-semibold">Real-time alert stream</h2>
+        <p className="text-xs text-slate-500">Auto-refreshes every 15s</p>
+        <ul className="text-sm mt-2 space-y-1">
+          {liveEvents.map((event) => (
+            <li key={event.id}>
+              [{event.level}] {event.message}
             </li>
           ))}
-          {!alerts.length ? <li>No active anomalies.</li> : null}
+          {!liveEvents.length ? <li>No live alert events.</li> : null}
         </ul>
-      </section>
-
-      <section>
-        <h2 className="font-semibold mb-2">Error intelligence</h2>
-        <p>New signatures (24h): {errorIntelligence.newSignatures.length}</p>
-        <p>Regressions: {errorIntelligence.regressions.length}</p>
-        <ul className="text-sm space-y-1 mt-2">
-          {errorIntelligence.top24h.map((err) => (
-            <li key={err.signature}>
-              {err.signature} — {err.occurrences_24h} in 24h
-            </li>
-          ))}
-          {!errorIntelligence.top24h.length ? <li>No signatures in last 24h.</li> : null}
-        </ul>
-      </section>
-
-      <section>
-        <h2 className="font-semibold mb-2">GitHub triage automation</h2>
-        <p>Mode: {activity.githubIssueTriage.mode}</p>
-        <p>Triaged this cycle: {activity.githubIssueTriage.triaged}</p>
-        <p>Skipped (dedupe/cooldown): {activity.githubIssueTriage.skipped}</p>
-        {activity.githubIssueTriage.errors.length ? (
-          <p className="text-red-600">{activity.githubIssueTriage.errors[0]}</p>
-        ) : null}
-      </section>
-
-      <section>
-        <h2 className="font-semibold mb-2">Top tenants by run volume</h2>
-        <ul className="text-sm space-y-1">
-          {tenantOverview.map((t) => (
-            <li key={t.tenant_id}>
-              {t.tenant_id} — {t.run_count} runs, failure {t.failure_rate.toFixed(2)}%, manual
-              review {t.manual_review_rate.toFixed(2)}%
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section>
-        <h2 className="font-semibold mb-2">Capability status</h2>
-        <p>GitHub triage: {capabilities.githubIssueTriage ? "available" : "unavailable"}</p>
-        <p>Stripe revenue: {capabilities.stripeRevenue ? "available" : "unavailable"}</p>
-        <p>Slack alerts: {capabilities.slackAlerts ? "available" : "unavailable"}</p>
       </section>
 
       <section>
@@ -264,6 +320,45 @@ export default function OperatorControlPlanePage() {
       </section>
     </div>
   );
+}
+
+function buildLiveEvents(data: NonNullable<OperatorPayload["data"]>) {
+  const events: Array<{ id: string; level: string; message: string }> = [];
+  const matchRate = Number(data.systemHealth?.match_rate ?? 100);
+  const failureRate = Number(data.systemHealth?.run_failure_rate ?? 0);
+  const apiErrorRate = Number(data.systemHealth?.api_error_rate ?? 0);
+
+  if (failureRate >= 6) {
+    events.push({
+      id: "reconciliation-failures",
+      level: "critical",
+      message: `Reconciliation failures elevated (${failureRate.toFixed(2)}%).`,
+    });
+  }
+  if (matchRate <= 97) {
+    events.push({
+      id: "match-rate-drop",
+      level: "warning",
+      message: `Match rate dropped to ${matchRate.toFixed(2)}%.`,
+    });
+  }
+  if (apiErrorRate >= 2.5) {
+    events.push({
+      id: "api-error-spike",
+      level: "critical",
+      message: `API errors spiked (${apiErrorRate.toFixed(2)}%).`,
+    });
+  }
+
+  for (const alert of data.alerts.slice(0, 5)) {
+    events.push({
+      id: alert.dedupe_key,
+      level: alert.severity,
+      message: `${alert.message} (last seen ${new Date(alert.last_triggered_at).toLocaleTimeString()})`,
+    });
+  }
+
+  return events.slice(0, 8);
 }
 
 function Metric({ label, value }: { label: string; value: string | number }) {

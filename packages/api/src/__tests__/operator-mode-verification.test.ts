@@ -4,7 +4,6 @@
  * and kill switches work without redeploy
  */
 
-import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
 import { query } from "../db";
 import { generateDailyIntelligence } from "../services/operator-mode/daily-intelligence";
 import { checkAlertThresholds, upsertAlertThreshold } from "../services/operator-mode/alerting";
@@ -19,10 +18,15 @@ import {
 import { createIngestion, updateIngestionStatus } from "../services/ingestion/ingestion-service";
 import { v4 as uuidv4 } from "uuid";
 
-describe("Operator Mode Verification", () => {
+const hasDatabaseTestEnv = process.env.RUN_DATABASE_TESTS === "true";
+
+const describeWithDatabase = hasDatabaseTestEnv ? describe : describe.skip;
+
+describeWithDatabase("Operator Mode Verification", () => {
   const testUserId = uuidv4();
   const testTenantId = uuidv4();
   const testBillingAccountId = uuidv4();
+  const otherTenantId = uuidv4();
 
   beforeAll(async () => {
     // Setup test data
@@ -46,12 +50,20 @@ describe("Operator Mode Verification", () => {
        ON CONFLICT DO NOTHING`,
       [testBillingAccountId, testUserId]
     );
+
+    await query(
+      `INSERT INTO tenants (id, slug, name)
+       VALUES ($1, 'other-tenant', 'Other Tenant')
+       ON CONFLICT DO NOTHING`,
+      [otherTenantId]
+    );
   });
 
   afterAll(async () => {
     // Cleanup test data
     await query(`DELETE FROM alert_rules WHERE user_id = $1`, [testUserId]);
     await query(`DELETE FROM ingestions WHERE tenant_id = $1`, [testTenantId]);
+    await query(`DELETE FROM ingestions WHERE tenant_id = $1`, [otherTenantId]);
     await query(`DELETE FROM kill_switches WHERE target = 'test-connector'`);
     await query(`DELETE FROM kill_switches WHERE target = 'test-job'`);
   });
@@ -83,9 +95,9 @@ describe("Operator Mode Verification", () => {
       );
 
       expect(ingestions.length).toBe(1);
-      expect(ingestions[0].status).toBe("failed");
-      expect(ingestions[0].trace_id).toBe(traceId);
-      expect(ingestions[0].error_message).toContain("Simulated failure");
+      expect(ingestions[0]!.status).toBe("failed");
+      expect(ingestions[0]!.trace_id).toBe(traceId);
+      expect(ingestions[0]!.error_message).toContain("Simulated failure");
     });
 
     it("should include failed ingestion in daily intelligence", async () => {
@@ -117,17 +129,51 @@ describe("Operator Mode Verification", () => {
       expect(failedIngestion?.errorMessage).toContain("Test failure");
     });
 
+    it("should scope daily intelligence failed ingestions by tenant", async () => {
+      const sourceId = uuidv4();
+
+      const scopedIngestionId = await createIngestion({
+        sourceId,
+        tenantId: testTenantId,
+        userId: testUserId,
+        traceId: `trace-${uuidv4()}`,
+      });
+      await updateIngestionStatus(scopedIngestionId, "failed", {
+        errorMessage: "Scoped tenant failure",
+      });
+
+      const otherIngestionId = await createIngestion({
+        sourceId,
+        tenantId: otherTenantId,
+        userId: testUserId,
+        traceId: `trace-${uuidv4()}`,
+      });
+      await updateIngestionStatus(otherIngestionId, "failed", {
+        errorMessage: "Other tenant failure",
+      });
+
+      const scoped = await generateDailyIntelligence(new Date(), testTenantId);
+      const scopedIds = new Set(scoped.failedIngestions.map((ing) => ing.ingestionId));
+
+      expect(scopedIds.has(scopedIngestionId)).toBe(true);
+      expect(scopedIds.has(otherIngestionId)).toBe(false);
+    });
+
     it("should trigger alert when threshold exceeded", async () => {
       // Create alert rule for failed ingestions
-      const thresholdId = await upsertAlertThreshold(testUserId, {
-        name: "Test Failed Ingestion Alert",
-        metric: "failed_ingestion",
-        threshold: 0, // Alert if any failures
-        operator: "gt",
-        severity: "high",
-        channels: ["email"],
-        enabled: true,
-      });
+      const thresholdId = await upsertAlertThreshold(
+        testUserId,
+        {
+          name: "Test Failed Ingestion Alert",
+          metric: "failed_ingestion",
+          threshold: 0, // Alert if any failures
+          operator: "gt",
+          severity: "high",
+          channels: ["email"],
+          enabled: true,
+        },
+        testTenantId
+      );
 
       // Create multiple failed ingestions to trigger alert
       const sourceId = uuidv4();
@@ -153,7 +199,7 @@ describe("Operator Mode Verification", () => {
       expect(failedIngestionAlerts.length).toBeGreaterThan(0);
 
       // Verify alert has trace ID reference
-      const alertHistory = await query(
+      const alertHistory = await query<{ tenant_id: string | null }>(
         `SELECT ah.*, ar.name
          FROM alert_history ah
          JOIN alert_rules ar ON ah.rule_id = ar.id
@@ -164,6 +210,7 @@ describe("Operator Mode Verification", () => {
       );
 
       expect(alertHistory.length).toBeGreaterThan(0);
+      expect(alertHistory[0]!.tenant_id).toBe(testTenantId);
     });
   });
 
@@ -190,7 +237,7 @@ describe("Operator Mode Verification", () => {
       );
 
       expect(killSwitches.length).toBe(1);
-      expect(killSwitches[0].reason).toContain("Disabling connector");
+      expect(killSwitches[0]!.reason).toContain("Disabling connector");
     });
 
     it("should enable connector via kill switch", async () => {
@@ -238,7 +285,7 @@ describe("Operator Mode Verification", () => {
       );
 
       expect(killSwitches.length).toBe(1);
-      expect(killSwitches[0].reason).toContain("Pausing job");
+      expect(killSwitches[0]!.reason).toContain("Pausing job");
     });
 
     it("should resume background job via kill switch", async () => {

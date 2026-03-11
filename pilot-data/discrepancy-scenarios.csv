@@ -1,0 +1,4 @@
+scenario_id,external_id,scenario,expected_outcome
+disc_1,pay_1002,missing_settlement,raise_alert_unsettled_payment
+disc_2,ref_2003,currency_mismatch,raise_alert_currency_divergence
+disc_3,pay_1004,duplicate_ingestion,mark_idempotent_replay

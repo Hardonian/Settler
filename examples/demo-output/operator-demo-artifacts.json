@@ -1,0 +1,32 @@
+{
+  "generatedAt": "2026-03-11T00:40:49.586Z",
+  "executionMode": "fixture-fallback",
+  "degradedReason": "pnpm run demo unavailable in current environment; copied deterministic fixture artifacts",
+  "run": {
+    "runId": "demo-run-1",
+    "recordsProcessed": 2,
+    "matchRate": 100
+  },
+  "alerts": [
+    {
+      "id": "match-rate-drop",
+      "severity": "warning",
+      "type": "match_rate_drop",
+      "message": "Synthetic anomaly: match rate dropped to 94.50%.",
+      "triggeredAt": "2026-03-11T00:40:48.839Z"
+    },
+    {
+      "id": "api-error-spike",
+      "severity": "critical",
+      "type": "api_error_spike",
+      "message": "Synthetic API error spike triggered for operator demo.",
+      "triggeredAt": "2026-03-11T00:40:48.840Z"
+    }
+  ],
+  "policySimulation": {
+    "policy": "review-queue-cap",
+    "threshold": 2,
+    "observedReviewQueue": 0,
+    "verdict": "pass"
+  }
+}

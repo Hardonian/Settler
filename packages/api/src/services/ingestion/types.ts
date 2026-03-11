@@ -29,6 +29,84 @@ export interface CSVColumnMapping {
   reference?: string; // Column name for reference
 }
 
+export type IngestionDiagnosticSeverity = "info" | "warning" | "blocking";
+
+export type IngestionDiagnosticStage = "raw" | "parse" | "mapping" | "normalize" | "quality_gate";
+
+export interface IngestionDiagnostic {
+  severity: IngestionDiagnosticSeverity;
+  stage: IngestionDiagnosticStage;
+  code: string;
+  message: string;
+  remediation?: {
+    action: string;
+    hint: string;
+  };
+  rowNumber?: number;
+  field?: string;
+  details?: Record<string, unknown>;
+}
+
+export interface IngestionQualityGate {
+  gate: string;
+  severity: IngestionDiagnosticSeverity;
+  passed: boolean;
+  message: string;
+  metric?: Record<string, unknown>;
+}
+
+export interface ImportSchemaDrift {
+  hasDrift: boolean;
+  baselineIngestionId?: string;
+  baselineCapturedAt?: string;
+  addedHeaders: string[];
+  removedHeaders: string[];
+  severity: IngestionDiagnosticSeverity;
+  trend?: {
+    historyWindow: number;
+    driftedRuns: number;
+    churnRate: number;
+    escalationThreshold: number;
+  };
+}
+
+export type ImportSourceProfile = "csv_generic" | "bank_statement" | "processor_export";
+
+export interface ImportContractReference {
+  schemaUri: string;
+  version: string;
+}
+
+export interface ImportWorkbenchPreview {
+  sourceSummary: {
+    fileName?: string;
+    sizeBytes: number;
+    totalRows: number;
+    headers: string[];
+    duplicateHeaders: string[];
+  };
+  mapping: {
+    provided: CSVColumnMapping | null;
+    detected: CSVColumnMapping;
+    effective: CSVColumnMapping;
+    requiredMissing: string[];
+  };
+  normalization: {
+    attemptedRows: number;
+    normalizedRows: number;
+    failedRows: number;
+    droppedRows: number;
+    defaultedFieldCounts: Record<string, number>;
+    sampleNormalizedRecords: NormalizedTransactionInput[];
+  };
+  diagnostics: IngestionDiagnostic[];
+  qualityGates: IngestionQualityGate[];
+  schemaDrift?: ImportSchemaDrift;
+  sourceProfile: ImportSourceProfile;
+  canProceed: boolean;
+  contract: ImportContractReference;
+}
+
 /**
  * Normalized transaction schema (internal format)
  */

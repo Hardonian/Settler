@@ -97,7 +97,7 @@
 
 - [Console Documentation](docs/CONSOLE.md)
 - [API Documentation](docs/API.md)
-- [Setup Guide](REMOTE_SETUP_GUIDE.md)
+- [Setup Guide](docs/getting-started/README.md)
 - [Implementation Details](IMPLEMENTATION_COMPLETE.md)
 
 ## 🚀 Upgrade Guide

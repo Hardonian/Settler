@@ -3,9 +3,9 @@
  * Threshold-based alerting with email/Slack support
  */
 
-import { query } from '../../db';
-import { logError, logWarn, logInfo } from '../../utils/logger';
-import { generateDailyIntelligence } from './daily-intelligence';
+import { query } from "../../db";
+import { logError, logWarn, logInfo } from "../../utils/logger";
+import { generateDailyIntelligence } from "./daily-intelligence";
 import {
   buildAlertRouter,
   buildNotifierCapabilities,
@@ -14,15 +14,15 @@ import {
   type AlertChannel,
   type AlertPayload,
   type NotifierCapability,
-} from './notifier-provider';
+} from "./notifier-provider";
 
 export interface AlertThreshold {
   id?: string;
   name: string;
-  metric: 'error_rate' | 'slow_endpoint' | 'failed_ingestion' | 'billing_anomaly' | 'usage_limit';
+  metric: "error_rate" | "slow_endpoint" | "failed_ingestion" | "billing_anomaly" | "usage_limit";
   threshold: number;
-  operator: 'gt' | 'gte' | 'lt' | 'lte' | 'eq' | 'neq';
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  operator: "gt" | "gte" | "lt" | "lte" | "eq" | "neq";
+  severity: "low" | "medium" | "high" | "critical";
   channels: AlertChannel[];
   enabled: boolean;
   emailRecipients?: string[];
@@ -61,7 +61,8 @@ export function getNotifierCapabilities(): NotifierCapability[] {
  */
 export async function upsertAlertThreshold(
   userId: string,
-  threshold: AlertThreshold
+  threshold: AlertThreshold,
+  tenantId?: string
 ): Promise<string> {
   try {
     if (threshold.id) {
@@ -69,7 +70,7 @@ export async function upsertAlertThreshold(
       await query(
         `UPDATE alert_rules
          SET name = $1, metric = $2, threshold = $3, operator = $4, 
-             channels = $5, enabled = $6, updated_at = NOW()
+             channels = $5, enabled = $6, tenant_id = COALESCE($9, tenant_id), updated_at = NOW()
          WHERE id = $7 AND user_id = $8`,
         [
           threshold.name,
@@ -80,17 +81,19 @@ export async function upsertAlertThreshold(
           threshold.enabled,
           threshold.id,
           userId,
+          tenantId ?? null,
         ]
       );
       return threshold.id;
     } else {
       // Create new
       const result = await query<{ id: string }>(
-        `INSERT INTO alert_rules (user_id, name, metric, threshold, operator, channels, enabled)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `INSERT INTO alert_rules (user_id, tenant_id, name, metric, threshold, operator, channels, enabled)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
          RETURNING id`,
         [
           userId,
+          tenantId ?? null,
           threshold.name,
           threshold.metric,
           threshold.threshold,
@@ -101,12 +104,12 @@ export async function upsertAlertThreshold(
       );
       const newId = result[0]?.id;
       if (!newId) {
-        throw new Error('Failed to create alert rule: no ID returned');
+        throw new Error("Failed to create alert rule: no ID returned");
       }
       return newId;
     }
   } catch (error) {
-    logError('Failed to upsert alert threshold', error);
+    logError("Failed to upsert alert threshold", error);
     throw error;
   }
 }
@@ -114,7 +117,7 @@ export async function upsertAlertThreshold(
 /**
  * Check thresholds against current metrics and trigger alerts
  */
-export async function checkAlertThresholds(): Promise<Alert[]> {
+export async function checkAlertThresholds(tenantId?: string): Promise<Alert[]> {
   const triggeredAlerts: Alert[] = [];
 
   try {
@@ -128,29 +131,45 @@ export async function checkAlertThresholds(): Promise<Alert[]> {
       channels: AlertChannel[];
       severity: string;
       user_id: string;
+      tenant_id: string | null;
     }>(
-      `SELECT id, name, metric, threshold, operator, channels, severity, user_id
+      `SELECT id, name, metric, threshold, operator, channels, severity, user_id, tenant_id
        FROM alert_rules
-       WHERE enabled = true`
+       WHERE enabled = true
+         AND ($1::uuid IS NULL OR tenant_id IS NULL OR tenant_id = $1)`,
+      [tenantId ?? null]
     );
 
     if (!rules || rules.length === 0) {
       return triggeredAlerts;
     }
 
-    // Generate daily intelligence to check against
-    let intelligence;
-    try {
-      intelligence = await generateDailyIntelligence();
-    } catch (error) {
-      logError('Failed to generate daily intelligence for alert checking', error);
-      return triggeredAlerts;
-    }
+    const intelligenceCache = new Map<
+      string,
+      Awaited<ReturnType<typeof generateDailyIntelligence>>
+    >();
 
     for (const rule of rules) {
       if (!rule || !rule.id || !rule.metric) {
-        logWarn('Invalid alert rule skipped', { rule });
+        logWarn("Invalid alert rule skipped", { rule });
         continue;
+      }
+
+      const effectiveTenantId = rule.tenant_id ?? tenantId;
+      const intelligenceCacheKey = effectiveTenantId ?? "__all_tenants__";
+
+      let intelligence = intelligenceCache.get(intelligenceCacheKey);
+      if (!intelligence) {
+        try {
+          intelligence = await generateDailyIntelligence(undefined, effectiveTenantId ?? undefined);
+          intelligenceCache.set(intelligenceCacheKey, intelligence);
+        } catch (error) {
+          logError("Failed to generate daily intelligence for alert checking", error, {
+            tenantId: effectiveTenantId ?? null,
+            ruleId: rule.id,
+          });
+          continue;
+        }
       }
 
       let value: number | null = null;
@@ -159,52 +178,54 @@ export async function checkAlertThresholds(): Promise<Alert[]> {
       try {
         // Evaluate threshold based on metric type
         switch (rule.metric) {
-          case 'error_rate':
+          case "error_rate":
             value = intelligence?.errorRate?.overall ?? 0;
             shouldAlert = evaluateThreshold(value, rule.threshold, rule.operator);
             break;
 
-          case 'slow_endpoint': {
+          case "slow_endpoint": {
             // Check if any endpoint exceeds threshold (using P95)
             const slowestEndpoint = intelligence?.slowEndpoints?.[0];
-            if (slowestEndpoint && typeof slowestEndpoint.p95 === 'number') {
+            if (slowestEndpoint && typeof slowestEndpoint.p95 === "number") {
               value = slowestEndpoint.p95;
               shouldAlert = evaluateThreshold(value, rule.threshold, rule.operator);
             }
             break;
           }
 
-          case 'failed_ingestion':
+          case "failed_ingestion":
             value = intelligence?.failedIngestions?.length ?? 0;
             shouldAlert = evaluateThreshold(value, rule.threshold, rule.operator);
             break;
 
-          case 'billing_anomaly':
+          case "billing_anomaly":
             value = intelligence?.billingAnomalies?.length ?? 0;
             shouldAlert = evaluateThreshold(value, rule.threshold, rule.operator);
             break;
 
           default:
-            logWarn('Unknown alert metric', { metric: rule.metric });
+            logWarn("Unknown alert metric", { metric: rule.metric });
             continue;
         }
       } catch (error) {
-        logError('Error evaluating alert rule', error, { ruleId: rule.id, metric: rule.metric });
+        logError("Error evaluating alert rule", error, { ruleId: rule.id, metric: rule.metric });
         continue;
       }
 
-      if (shouldAlert && value !== null && typeof value === 'number' && !isNaN(value)) {
+      if (shouldAlert && value !== null && typeof value === "number" && !isNaN(value)) {
         // Create alert record
         const alertId = await createAlert({
+          tenantId: rule.tenant_id ?? tenantId,
           thresholdId: rule.id,
           metric: rule.metric,
           value,
           threshold: rule.threshold,
-          severity: rule.severity || 'medium',
+          severity: rule.severity || "medium",
           message: `Alert: ${rule.name} - ${rule.metric} = ${value} (threshold: ${rule.threshold})`,
           metadata: {
             ruleName: rule.name,
             operator: rule.operator,
+            tenantId: effectiveTenantId ?? null,
           },
         });
 
@@ -215,6 +236,7 @@ export async function checkAlertThresholds(): Promise<Alert[]> {
           value,
           threshold: rule.threshold,
           severity: rule.severity,
+          tenantId: effectiveTenantId ?? null,
         });
 
         triggeredAlerts.push({
@@ -232,7 +254,7 @@ export async function checkAlertThresholds(): Promise<Alert[]> {
 
     return triggeredAlerts;
   } catch (error) {
-    logError('Failed to check alert thresholds', error);
+    logError("Failed to check alert thresholds", error);
     return triggeredAlerts;
   }
 }
@@ -240,23 +262,19 @@ export async function checkAlertThresholds(): Promise<Alert[]> {
 /**
  * Evaluate threshold condition
  */
-function evaluateThreshold(
-  value: number,
-  threshold: number,
-  operator: string
-): boolean {
+function evaluateThreshold(value: number, threshold: number, operator: string): boolean {
   switch (operator) {
-    case 'gt':
+    case "gt":
       return value > threshold;
-    case 'gte':
+    case "gte":
       return value >= threshold;
-    case 'lt':
+    case "lt":
       return value < threshold;
-    case 'lte':
+    case "lte":
       return value <= threshold;
-    case 'eq':
+    case "eq":
       return value === threshold;
-    case 'neq':
+    case "neq":
       return value !== threshold;
     default:
       return false;
@@ -266,21 +284,23 @@ function evaluateThreshold(
 /**
  * Create alert record in database
  */
-async function createAlert(alert: Omit<Alert, 'id' | 'triggeredAt'>): Promise<string> {
+async function createAlert(
+  alert: Omit<Alert, "id" | "triggeredAt"> & { tenantId?: string | null }
+): Promise<string> {
   try {
     const result = await query<{ id: string }>(
-      `INSERT INTO alert_history (rule_id, metric, value, threshold, triggered_at)
-       VALUES ($1, $2, $3, $4, NOW())
+      `INSERT INTO alert_history (rule_id, tenant_id, metric, value, threshold, triggered_at)
+       VALUES ($1, $2, $3, $4, $5, NOW())
        RETURNING id`,
-      [alert.thresholdId, alert.metric, alert.value, alert.threshold]
+      [alert.thresholdId, alert.tenantId ?? null, alert.metric, alert.value, alert.threshold]
     );
     const alertId = result[0]?.id;
     if (!alertId) {
-      throw new Error('Failed to create alert: no ID returned');
+      throw new Error("Failed to create alert: no ID returned");
     }
     return alertId;
   } catch (error) {
-    logError('Failed to create alert record', error, { alert });
+    logError("Failed to create alert record", error, { alert });
     throw error;
   }
 }
@@ -297,12 +317,13 @@ async function sendAlertNotifications(
     value: number;
     threshold: number;
     severity: string;
+    tenantId?: string | null;
   }
 ): Promise<void> {
-  const dedupeKey = `${alertData.metric}:${alertData.ruleName}:${alertData.severity}`;
+  const dedupeKey = `${alertData.tenantId ?? "global"}:${alertData.metric}:${alertData.ruleName}:${alertData.severity}`;
   const lastSentAt = notificationDedupCache.get(dedupeKey);
   if (lastSentAt && Date.now() - lastSentAt < notificationCooldownMs) {
-    logInfo('Alert notification suppressed due to cooldown window', {
+    logInfo("Alert notification suppressed due to cooldown window", {
       alertId,
       dedupeKey,
       cooldownMs: notificationCooldownMs,
@@ -315,21 +336,27 @@ async function sendAlertNotifications(
     teamsWebhookUrl: process.env.TEAMS_ALERT_WEBHOOK_URL,
     telegramBotToken: process.env.TELEGRAM_BOT_TOKEN,
     telegramChatId: process.env.TELEGRAM_CHAT_ID,
-    dryRun: process.env.ALERT_NOTIFIER_DRY_RUN === 'true',
+    dryRun: process.env.ALERT_NOTIFIER_DRY_RUN === "true",
   });
 
   const router = buildAlertRouter(channels);
   const payload: AlertPayload = {
     alertId,
     alertType: alertData.metric,
-    severity: alertData.severity === 'critical' ? 'critical' : alertData.severity === 'high' ? 'warning' : 'info',
+    severity:
+      alertData.severity === "critical"
+        ? "critical"
+        : alertData.severity === "high"
+          ? "warning"
+          : "info",
     summary: `${alertData.ruleName} threshold crossed (${alertData.value} vs ${alertData.threshold})`,
     timestamp: new Date().toISOString(),
     metadata: {
       ruleName: alertData.ruleName,
       threshold: alertData.threshold,
       value: alertData.value,
-      source: 'operator-mode.alerting',
+      source: "operator-mode.alerting",
+      tenantId: alertData.tenantId ?? null,
     },
   };
 
@@ -339,21 +366,21 @@ async function sendAlertNotifications(
     await query(
       `INSERT INTO alert_notifications (alert_id, notification_type, recipient, status, sent_at)
        VALUES ($1, $2, $3, $4, NOW())`,
-      [alertId, delivery.channel, delivery.channel, 'sent']
+      [alertId, delivery.channel, delivery.channel, "sent"]
     );
   }
 
   notificationDedupCache.set(dedupeKey, Date.now());
 
   for (const channel of channels) {
-    if (channel !== 'email' && channel !== 'webhook') {
+    if (channel !== "email" && channel !== "webhook") {
       continue;
     }
 
     try {
-      if (channel === 'email') {
+      if (channel === "email") {
         await sendEmailAlert(alertId, alertData);
-      } else if (channel === 'webhook') {
+      } else if (channel === "webhook") {
         await sendWebhookAlert(alertId, alertData);
       }
     } catch (error) {
@@ -373,31 +400,32 @@ async function sendEmailAlert(
     value: number;
     threshold: number;
     severity: string;
+    tenantId?: string | null;
   }
 ): Promise<void> {
   // Send email alert via Resend
   try {
-    const { sendNotificationEmail } = await import('../../lib/email');
-    const recipientEmail = process.env.OPERATOR_EMAIL || 'operator@settler.dev';
-    
+    const { sendNotificationEmail } = await import("../../lib/email");
+    const recipientEmail = process.env.OPERATOR_EMAIL || "operator@settler.dev";
+
     await sendNotificationEmail(
       recipientEmail,
       `Alert: ${alertData.ruleName} - ${alertData.severity}`,
       `Metric: ${alertData.metric}\nValue: ${alertData.value}\nThreshold: ${alertData.threshold}\nSeverity: ${alertData.severity}`,
-      `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.settler.dev'}/admin/alerts/${alertId}`,
-      'View Alert'
+      `${process.env.NEXT_PUBLIC_APP_URL || "https://app.settler.dev"}/admin/alerts/${alertId}`,
+      "View Alert"
     );
-    
-    logInfo('Email alert sent', { alertId, recipient: recipientEmail, ...alertData });
+
+    logInfo("Email alert sent", { alertId, recipient: recipientEmail, ...alertData });
   } catch (emailError) {
-    logError('Failed to send email alert', emailError, { alertId });
+    logError("Failed to send email alert", emailError, { alertId });
   }
-  
+
   // Record notification
   await query(
     `INSERT INTO alert_notifications (alert_id, notification_type, recipient, status, sent_at)
      VALUES ($1, 'email', $2, 'sent', NOW())`,
-    [alertId, process.env.OPERATOR_EMAIL || 'operator@settler.dev']
+    [alertId, process.env.OPERATOR_EMAIL || "operator@settler.dev"]
   );
 }
 
@@ -412,45 +440,47 @@ async function sendSlackAlert(
     value: number;
     threshold: number;
     severity: string;
+    tenantId?: string | null;
   }
 ): Promise<void> {
   const slackWebhookUrl = process.env.SLACK_ALERT_WEBHOOK_URL || process.env.SLACK_WEBHOOK_URL;
   if (!slackWebhookUrl) {
-    logWarn('Slack webhook URL not configured', { alertId });
+    logWarn("Slack webhook URL not configured", { alertId });
     return;
   }
 
   try {
     await fetch(slackWebhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         text: `🚨 Alert: ${alertData.ruleName}`,
         blocks: [
           {
-            type: 'section',
+            type: "section",
             text: {
-              type: 'mrkdwn',
-              text: `*${alertData.severity.toUpperCase()} Alert: ${alertData.ruleName}*\n` +
-                    `Metric: ${alertData.metric}\n` +
-                    `Value: ${alertData.value}\n` +
-                    `Threshold: ${alertData.threshold}\n` +
-                    `Alert ID: ${alertId}`,
+              type: "mrkdwn",
+              text:
+                `*${alertData.severity.toUpperCase()} Alert: ${alertData.ruleName}*\n` +
+                `Metric: ${alertData.metric}\n` +
+                `Value: ${alertData.value}\n` +
+                `Threshold: ${alertData.threshold}\n` +
+                `Alert ID: ${alertId}`,
             },
           },
         ],
       }),
     });
 
-    logInfo('Slack alert sent', { alertId, ...alertData });
-    
+    logInfo("Slack alert sent", { alertId, ...alertData });
+
     await query(
       `INSERT INTO alert_notifications (alert_id, notification_type, recipient, status, sent_at)
        VALUES ($1, 'webhook', $2, 'sent', NOW())`,
       [alertId, slackWebhookUrl]
     );
   } catch (error) {
-    logError('Failed to send Slack alert', error, { alertId });
+    logError("Failed to send Slack alert", error, { alertId });
     throw error;
   }
 }
@@ -466,18 +496,19 @@ async function sendWebhookAlert(
     value: number;
     threshold: number;
     severity: string;
+    tenantId?: string | null;
   }
 ): Promise<void> {
   const webhookUrl = process.env.ALERT_WEBHOOK_URL;
   if (!webhookUrl) {
-    logWarn('Alert webhook URL not configured', { alertId });
+    logWarn("Alert webhook URL not configured", { alertId });
     return;
   }
 
   try {
     await fetch(webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         alertId,
         ...alertData,
@@ -485,15 +516,15 @@ async function sendWebhookAlert(
       }),
     });
 
-    logInfo('Webhook alert sent', { alertId, ...alertData });
-    
+    logInfo("Webhook alert sent", { alertId, ...alertData });
+
     await query(
       `INSERT INTO alert_notifications (alert_id, notification_type, recipient, status, sent_at)
        VALUES ($1, 'webhook', $2, 'sent', NOW())`,
       [alertId, webhookUrl]
     );
   } catch (error) {
-    logError('Failed to send webhook alert', error, { alertId });
+    logError("Failed to send webhook alert", error, { alertId });
     throw error;
   }
 }

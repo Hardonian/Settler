@@ -9,6 +9,11 @@
       "id": "st_2",
       "invoice_number": "INV-101",
       "amount": 205.75
+    },
+    {
+      "id": "st_3",
+      "invoice_number": "INV-102",
+      "amount": 310.25
     }
   ],
   "quickbooks": [
@@ -21,6 +26,11 @@
       "id": "qb_2",
       "invoice_number": "INV-101",
       "amount": 205.7
+    },
+    {
+      "id": "qb_3",
+      "invoice_number": "INV-102",
+      "amount": 299
     }
   ]
 }

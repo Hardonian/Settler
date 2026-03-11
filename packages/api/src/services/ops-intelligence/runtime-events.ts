@@ -1,7 +1,7 @@
 import { query, queryWithTenant } from "../../db";
 import { logError } from "../../utils/logger";
 
-export type OperatorRuntimeEventType =
+export type RuntimeEventType =
   | "reconciliation_run_started"
   | "reconciliation_run_completed"
   | "reconciliation_run_failed"
@@ -11,12 +11,15 @@ export type OperatorRuntimeEventType =
   | "api_request"
   | "import_started"
   | "import_failed"
-  | "replay_triggered"
+  | "replay_execution_started"
+  | "replay_execution_completed"
+  | "replay_execution_failed"
+  | "policy_simulation_executed"
   | "error_thrown"
   | "support_intake_submitted";
 
-export interface OperatorRuntimeEvent {
-  eventType: OperatorRuntimeEventType;
+export interface RuntimeEvent {
+  eventType: RuntimeEventType;
   tenantId: string;
   runId?: string | null;
   recordsProcessed?: number;
@@ -28,7 +31,7 @@ export interface OperatorRuntimeEvent {
   occurredAt?: Date;
 }
 
-export async function emitOperatorRuntimeEvent(event: OperatorRuntimeEvent): Promise<void> {
+export async function emitRuntimeEvent(event: RuntimeEvent): Promise<void> {
   try {
     await query(
       `INSERT INTO operator_runtime_events (
@@ -65,6 +68,10 @@ export async function emitOperatorRuntimeEvent(event: OperatorRuntimeEvent): Pro
     });
   }
 }
+
+export type OperatorRuntimeEventType = RuntimeEventType;
+export type OperatorRuntimeEvent = RuntimeEvent;
+export const emitOperatorRuntimeEvent = emitRuntimeEvent;
 
 export interface RunExplorerEntry {
   runId: string;

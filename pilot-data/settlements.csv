@@ -1,0 +1,3 @@
+external_id,amount,currency,occurred_at,type
+set_3001,176.15,USD,2026-02-03T00:00:00Z,settlement
+set_3002,195.00,EUR,2026-02-03T00:00:00Z,settlement

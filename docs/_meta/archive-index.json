@@ -1,0 +1,226 @@
+[
+  {
+    "date": "2026-03-11",
+    "original_path": "README_LAUNCH.md",
+    "archived_path": "docs/archive/2026-03/root-superseded/README_LAUNCH.md",
+    "reason": "Superseded launch quickstart; root-level duplication of setup/launch guidance.",
+    "merged_into": [
+      "README.md",
+      "docs/README.md"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "LAUNCHKIT.md",
+    "archived_path": "docs/archive/2026-03/root-superseded/LAUNCHKIT.md",
+    "reason": "Superseded launch collateral; not canonical runtime entrypoint.",
+    "merged_into": [
+      "README.md",
+      "docs/README.md"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "LAUNCH_READY.md",
+    "archived_path": "docs/archive/2026-03/root-superseded/LAUNCH_READY.md",
+    "reason": "Snapshot status report with stale/generated timestamp markers.",
+    "merged_into": [
+      "docs/_meta/DOCS_CONSOLIDATION_CHANGELOG.md"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "GO_LIVE.md",
+    "archived_path": "docs/archive/2026-03/root-superseded/GO_LIVE.md",
+    "reason": "Milestone go-live decision log superseded by current ops/security docs.",
+    "merged_into": [
+      "docs/operations/",
+      "docs/security/"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "GO_LIVE_COMPLETE.md",
+    "archived_path": "docs/archive/2026-03/root-superseded/GO_LIVE_COMPLETE.md",
+    "reason": "Superseded milestone completion report.",
+    "merged_into": [
+      "docs/_meta/DOCS_CONSOLIDATION_CHANGELOG.md"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "RELEASE_PREP_SUMMARY.md",
+    "archived_path": "docs/archive/2026-03/root-superseded/RELEASE_PREP_SUMMARY.md",
+    "reason": "Superseded release prep notes duplicated by release docs.",
+    "merged_into": [
+      "CHANGELOG.md",
+      "RELEASE.md"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "MERGE_SUMMARY.md",
+    "archived_path": "docs/archive/2026-03/root-superseded/MERGE_SUMMARY.md",
+    "reason": "Point-in-time merge snapshot not canonical long-term reference.",
+    "merged_into": [
+      "docs/_meta/DOCS_CONSOLIDATION_CHANGELOG.md"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "REALITY_MODE_SUMMARY.md",
+    "archived_path": "docs/archive/2026-03/root-superseded/REALITY_MODE_SUMMARY.md",
+    "reason": "Historical mode summary superseded by current reality docs.",
+    "merged_into": [
+      "docs/reality/",
+      "docs/reality-system/"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "REALITY_SCORECARD.md",
+    "archived_path": "docs/archive/2026-03/root-superseded/REALITY_SCORECARD.md",
+    "reason": "Snapshot scorecard superseded by ongoing verification docs.",
+    "merged_into": [
+      "docs/verify/",
+      "docs/reality-validation/"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "UI_CONSISTENCY_REPORT.md",
+    "archived_path": "docs/archive/2026-03/root-superseded/UI_CONSISTENCY_REPORT.md",
+    "reason": "Point-in-time UI report not canonical root doc.",
+    "merged_into": [
+      "docs/product/",
+      "docs/quality/"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "FRONTEND_IMPROVEMENTS.md",
+    "archived_path": "docs/archive/2026-03/root-superseded/FRONTEND_IMPROVEMENTS.md",
+    "reason": "Milestone implementation notes superseded by package/docs references.",
+    "merged_into": [
+      "docs/product/",
+      "docs/architecture/"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "OPS_IMPLEMENTATION_SUMMARY.md",
+    "archived_path": "docs/archive/2026-03/root-superseded/OPS_IMPLEMENTATION_SUMMARY.md",
+    "reason": "Historical ops rollout summary no longer canonical.",
+    "merged_into": [
+      "docs/operations/",
+      "docs/runbook/"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "HARDENING_SUMMARY.md",
+    "archived_path": "docs/archive/2026-03/root-superseded/HARDENING_SUMMARY.md",
+    "reason": "Hardening phase summary superseded by live security/quality docs.",
+    "merged_into": [
+      "SECURITY.md",
+      "docs/security/",
+      "docs/quality/"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "docs/LAUNCH_CHECKLIST.md",
+    "archived_path": "docs/archive/2026-03/execution-wave-2/launch/LAUNCH_CHECKLIST.md",
+    "reason": "Superseded duplicate launch checklist; merged actionable quality gates into docs/launch/launch-checklist.md",
+    "merged_into": [
+      "docs/launch/launch-checklist.md",
+      "docs/launch/README.md"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "docs/SOLO_FOUNDER_LAUNCH_SUMMARY.md",
+    "archived_path": "docs/archive/2026-03/execution-wave-2/launch/SOLO_FOUNDER_LAUNCH_SUMMARY.md",
+    "reason": "Historical milestone summary with stale completion state; preserved as launch history",
+    "merged_into": [
+      "docs/launch/README.md"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "docs/DEVELOPER_GUIDE.md",
+    "archived_path": "docs/archive/2026-03/execution-wave-2/onboarding/DEVELOPER_GUIDE.md",
+    "reason": "Superseded by maintained lowercase developer guide",
+    "merged_into": [
+      "docs/developer-guide.md"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "docs/QUICKSTART_CLI.md",
+    "archived_path": "docs/archive/2026-03/execution-wave-2/onboarding/QUICKSTART_CLI.md",
+    "reason": "Case-variant duplicate superseded by docs/quickstart-cli.md",
+    "merged_into": [
+      "docs/quickstart-cli.md"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "docs/ENV_SETUP_GUIDE.md",
+    "archived_path": "docs/archive/2026-03/execution-wave-2/onboarding/ENV_SETUP_GUIDE.md",
+    "reason": "Setup content merged into canonical getting-started guide",
+    "merged_into": [
+      "docs/getting-started/README.md"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "docs/REMOTE_SETUP_GUIDE.md",
+    "archived_path": "docs/archive/2026-03/execution-wave-2/onboarding/REMOTE_SETUP_GUIDE.md",
+    "reason": "Remote migration/test bootstrap merged into canonical getting-started guide",
+    "merged_into": [
+      "docs/getting-started/README.md"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "docs/SUPABASE_AI_CHATBOT_PROMPT.md",
+    "archived_path": "docs/archive/2026-03/execution-wave-2/prompts/SUPABASE_AI_CHATBOT_PROMPT.md",
+    "reason": "One-off historical prompt retained for provenance only",
+    "merged_into": [
+      "docs/prompts/README.md",
+      "docs/infrastructure/ai-prompt-schema.md"
+    ],
+    "public_safe": true
+  },
+  {
+    "date": "2026-03-11",
+    "original_path": "docs/infrastructure/AI_PROMPT_COMPLETE.md",
+    "archived_path": "docs/archive/2026-03/execution-wave-2/prompts/AI_PROMPT_COMPLETE.md",
+    "reason": "Completion-status prompt doc superseded by schema documentation",
+    "merged_into": [
+      "docs/infrastructure/ai-prompt-schema.md",
+      "docs/prompts/README.md"
+    ],
+    "public_safe": true
+  }
+]

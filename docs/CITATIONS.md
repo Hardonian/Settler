@@ -64,7 +64,7 @@
 - `docs/CONSOLE.md` - Console user guide
 - `docs/API.md` - API documentation
 - `docs/README.md` - Documentation index
-- `REMOTE_SETUP_GUIDE.md` - Remote setup instructions
+- `docs/getting-started/README.md` - Remote setup instructions
 - `DEPLOYMENT_CHECKLIST.md` - Deployment checklist
 
 #### Release Documentation
@@ -133,5 +133,5 @@
 
 - [Console Documentation](./CONSOLE.md)
 - [API Documentation](./API.md)
-- [Architecture Documentation](./architecture.md)
+- [Architecture Documentation](./ARCHITECTURE.md)
 - [Security Documentation](../SECURITY.md)

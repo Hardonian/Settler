@@ -35,4 +35,5 @@ CREATE INDEX IF NOT EXISTS idx_alert_rules_tenant_id ON alert_rules(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_alert_rules_enabled ON alert_rules(enabled) WHERE enabled = true;
 CREATE INDEX IF NOT EXISTS idx_alert_history_rule_id ON alert_history(rule_id);
 CREATE INDEX IF NOT EXISTS idx_alert_history_triggered_at ON alert_history(triggered_at DESC);
+CREATE INDEX IF NOT EXISTS idx_alert_history_tenant_triggered_at ON alert_history(tenant_id, triggered_at DESC);
 CREATE INDEX IF NOT EXISTS idx_alert_history_resolved ON alert_history(resolved_at) WHERE resolved_at IS NULL;

@@ -12,6 +12,13 @@ This document tracks the currently implemented route surfaces from `packages/api
 | `/metrics`        | GET    | Prometheus metrics       | No (protect at edge in prod) |
 | `/api/csrf-token` | GET    | CSRF token for web flows | No                           |
 
+## Route taxonomy and discoverability
+
+- Canonical route classes with auth + tenant coverage: [`route-classes.md`](./route-classes.md)
+- Per-route-family generated docs: [`route-families.md`](./route-families.md)
+- Full route inventory with per-endpoint metadata: [`route-inventory.md`](./route-inventory.md)
+- Machine-readable inventory source: [`route-inventory.json`](./route-inventory.json)
+
 ## Versioned API roots
 
 - `/api/v1/*` — primary API surface.

@@ -2,6 +2,8 @@
 
 **Settler.dev REST API - Complete endpoint documentation**
 
+> Reality note: this reference includes representative endpoint patterns. For route-family truth (auth + tenant classes and mounted paths), use `docs/api/route-classes.md`, `docs/api/route-families.md`, and `docs/api/route-inventory.md` generated from live route inventory.
+
 ---
 
 ## Base URL
@@ -908,7 +910,7 @@ Full OpenAPI 3.0 specification available at:
 - [Error Handling Guide](../error-handling.md)
 - [Webhook Setup Guide](../webhook-setup.md)
 - [Matching Rules Documentation](../matching-rules.md)
-- [Common Workflows](../workflows.md)
+- [Common Workflows](../WORKFLOWS.md)
 
 ---
 

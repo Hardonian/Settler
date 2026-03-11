@@ -7,8 +7,8 @@ import type { CapabilityStatus } from "../types";
 
 export interface AlertRoutingProvider {
   status(): CapabilityStatus;
-  checkThresholds(): ReturnType<typeof checkAlertThresholds>;
-  upsertThreshold(userId: string, threshold: AlertThreshold): Promise<string>;
+  checkThresholds(tenantId?: string): ReturnType<typeof checkAlertThresholds>;
+  upsertThreshold(userId: string, threshold: AlertThreshold, tenantId?: string): Promise<string>;
 }
 
 export class OssAlertRoutingProvider implements AlertRoutingProvider {
@@ -22,11 +22,15 @@ export class OssAlertRoutingProvider implements AlertRoutingProvider {
     };
   }
 
-  public checkThresholds(): ReturnType<typeof checkAlertThresholds> {
-    return checkAlertThresholds();
+  public checkThresholds(tenantId?: string): ReturnType<typeof checkAlertThresholds> {
+    return checkAlertThresholds(tenantId);
   }
 
-  public upsertThreshold(userId: string, threshold: AlertThreshold): Promise<string> {
-    return upsertAlertThreshold(userId, threshold);
+  public upsertThreshold(
+    userId: string,
+    threshold: AlertThreshold,
+    tenantId?: string
+  ): Promise<string> {
+    return upsertAlertThreshold(userId, threshold, tenantId);
   }
 }
