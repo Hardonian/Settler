@@ -46,6 +46,9 @@ Textual system flow:
 Fastest local path:
 
 ```bash
+pnpm run bootstrap
+pnpm run demo:settler
+pnpm run dev:stack
 git clone <your-fork-or-upstream-url>
 cd Settler
 pnpm install
@@ -57,6 +60,19 @@ pnpm demo:settler
 
 ## Demo Walkthrough
 
+- `pnpm run bootstrap` — install + repo-integrity + first-run doctor.
+- `pnpm run doctor -- --skip-pipeline --first-run` — first-run diagnostics.
+- `pnpm run doctor -- --skip-pipeline` — strict local diagnostics (expects fuller env/runtime readiness).
+- `pnpm run demo:settler` — deterministic Settler demo pipeline (CLI-first showcase).
+- `pnpm run simulate:settler` — simulation harness for reconciliation/operator scenarios.
+- `pnpm run replay:run` — deterministic replay runner for run investigations.
+- `pnpm run benchmark` — benchmark harness for runtime throughput/latency checks.
+- `pnpm run chaos:test` — failure-injection/chaos pass for resilience validation.
+- `pnpm run tenant:create` — tenant bootstrap utility for local/operator workflows.
+- `pnpm run help:surface` — print canonical CLI/UI/API capability workflows from the registry.
+- `pnpm run dev:stack` — canonical local API + web stack entrypoint.
+- `pnpm run repo-integrity` — monorepo/workspace contract validator.
+- `pnpm run verify` — full lint/typecheck/build/test/security surface.
 After `pnpm demo:settler` completes:
 
 1. Open **Run Explorer** at `/app/runs`.
@@ -78,6 +94,15 @@ For CLI artifacts, inspect `examples/demo-output/` and replay with `pnpm replay:
 
 ## Development Commands
 
+- [Quickstart](docs/getting-started/quickstart.md)
+- [Bootstrap](docs/getting-started/bootstrap.md)
+- [Doctor](docs/getting-started/doctor.md)
+- [First-run demo](docs/demo/first-run-demo.md)
+- [Troubleshooting](docs/troubleshooting/installation-and-setup.md)
+- [Repo integrity reference](docs/reference/repo-integrity.md)
+- [Workspace contracts](docs/reference/workspace-contracts.md)
+- [Surface area convergence matrix](docs/reference/surface-area-convergence.md)
+- [API route classes (auth/tenant taxonomy)](docs/api/route-classes.md)
 ### Core
 
 - `pnpm install`

@@ -87,6 +87,9 @@ jobs:
       - name: Verify
         run: pnpm run verify
 
+      - name: Verify surface docs drift gate
+        run: pnpm run verify:surface-docs && pnpm run verify:route-classes-doc && pnpm run verify:api-family-docs
+
   api-tests-serial:
     needs: conflict-markers
     runs-on: ubuntu-latest

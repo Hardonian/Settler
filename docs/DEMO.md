@@ -4,12 +4,14 @@ Demo mode provides a self-contained, deterministic demonstration of Settler's co
 
 ## Quick Start
 
+For the canonical full-system demo path, run `pnpm run demo:settler` (pipeline wrapper).
+
 ```bash
 # 1. Generate demo data
-npm run demo:seed
+pnpm run demo:seed
 
 # 2. Start the API server
-npm run dev
+pnpm run dev
 
 # 3. Try the demo endpoints
 curl http://localhost:3000/api/v1/playground/demo-dataset
@@ -99,7 +101,7 @@ Runs reconciliation on demo data:
 ### Custom Seed
 
 ```bash
-DEMO_SEED=12345 npm run demo:seed
+DEMO_SEED=12345 pnpm run demo:seed
 ```
 
 Different seeds produce different transaction amounts and dates while maintaining the same structure.
@@ -107,7 +109,7 @@ Different seeds produce different transaction amounts and dates while maintainin
 ### Reset Demo Data
 
 ```bash
-npm run demo:seed:reset
+pnpm run demo:seed:reset
 ```
 
 This clears existing demo data and regenerates from scratch.
@@ -122,9 +124,9 @@ demo-mode:
   runs-on: ubuntu-latest
   steps:
     - uses: actions/checkout@v4
-    - run: npm ci
-    - run: npm run demo:seed
-    - run: npm run test:e2e -- --grep="Demo Mode"
+    - run: pnpm install --frozen-lockfile
+    - run: pnpm run demo:seed
+    - run: pnpm run test:e2e -- --grep="Demo Mode"
 ```
 
 ### CI Environment Variables
@@ -184,17 +186,17 @@ After running demo mode, verify:
 ### Demo data not found
 
 ```
-Error: Demo data not found. Run 'npx tsx scripts/seed-demo.ts' first.
+Error: Demo data not found. Run 'pnpm run demo:seed' first.
 ```
 
-**Fix:** Run `npm run demo:seed` before starting the server.
+**Fix:** Run `pnpm run demo:seed` before starting the server.
 
 ### Port already in use
 
 The demo endpoints require the API server to be running:
 
 ```bash
-npm run dev --workspace=packages/api
+pnpm --filter @settler/api run dev
 ```
 
 ### Seed script fails
@@ -202,7 +204,7 @@ npm run dev --workspace=packages/api
 Ensure dependencies are installed:
 
 ```bash
-npm ci
+pnpm install --frozen-lockfile
 ```
 
 ## Next Steps
@@ -210,7 +212,7 @@ npm ci
 1. **Add Real Integrations**: Configure Stripe/Shopify credentials
 2. **Try Custom Data**: Upload your own CSV for reconciliation
 3. **Explore Console**: Visit `/console` for the admin UI
-4. **Run Full E2E**: Execute `npm run test:e2e` for comprehensive tests
+4. **Run Full E2E**: Execute `pnpm run test:e2e` for comprehensive tests
 
 ## See Also
 

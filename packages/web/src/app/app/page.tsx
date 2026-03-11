@@ -60,6 +60,11 @@ const quickLinks = [
     detail: "Control-plane health and runtime posture",
   },
   {
+    label: "Capability Status",
+    href: "/app/capability-status",
+    detail: "Availability, gating, and degraded-mode truth",
+  },
+  {
     label: "Audit Surfaces",
     href: "/app/audit",
     detail: "Security and evidence-facing system surfaces",
