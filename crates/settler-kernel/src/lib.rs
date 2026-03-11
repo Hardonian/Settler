@@ -146,7 +146,7 @@ fn canonicalize_records(mut records: Vec<NormalizedRecord>) -> Vec<NormalizedRec
             record.schema_version = SCHEMA_VERSION.to_string();
         }
     }
-    records.sort_by(|a, b| stable_record_sort_key(a).cmp(&stable_record_sort_key(b)));
+    records.sort_by_key(stable_record_sort_key);
     records
 }
 
@@ -222,8 +222,8 @@ pub fn compute_variances(
         let mut left_records = left_map.remove(&key).unwrap_or_default();
         let mut right_records = right_map.remove(&key).unwrap_or_default();
 
-        left_records.sort_by(|a, b| stable_record_sort_key(a).cmp(&stable_record_sort_key(b)));
-        right_records.sort_by(|a, b| stable_record_sort_key(a).cmp(&stable_record_sort_key(b)));
+        left_records.sort_by_key(stable_record_sort_key);
+        right_records.sort_by_key(stable_record_sort_key);
 
         let max_len = left_records.len().max(right_records.len());
         for idx in 0..max_len {

@@ -274,7 +274,11 @@ foundryCommand
           output: result.path,
           hash: result.hash,
           kernel_mode: result.kernelMode,
+          kernel_runner_mode: result.runnerMode,
           kernel_divergence: result.divergence ?? null,
+          kernel_duration_ms: result.durations.kernel ?? null,
+          ts_duration_ms: result.durations.ts,
+          kernel_telemetry: result.telemetry,
           profile: suite.manifest.profile,
           records: Object.fromEntries(Object.entries(suite.sources).map(([k, v]) => [k, v.length])),
         });

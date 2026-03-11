@@ -1,12 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
-import { createHash } from "node:crypto";
 import {
   generateReconciliationSuite,
   runSyntheticEngineValidationRuntime,
   type GeneratedSuite,
   type RuntimeReconMatch,
 } from "./reconciliation-foundry";
+import { proofBundleHashWithFallback } from "./kernel-client";
 
 export interface ReplayBundle {
   run_id: string;
@@ -57,13 +57,9 @@ function stableStringify(value: unknown): string {
   return `{${entries.map(([k, v]) => `${JSON.stringify(k)}:${stableStringify(v)}`).join(",")}}`;
 }
 
-function hashBLAKE3(value: unknown): string {
-  const payload = stableStringify(value);
-  try {
-    return createHash("blake3").update(payload).digest("hex");
-  } catch {
-    return createHash("blake2s256").update(`blake3-unavailable:${payload}`).digest("hex");
-  }
+async function hashProofBundle(value: unknown): Promise<string> {
+  const hashed = await proofBundleHashWithFallback(value);
+  return hashed.result.normalizedHash;
 }
 
 function normalizeManualReview(
@@ -166,8 +162,8 @@ export async function runReplayVerification(
     });
 
   const replayOutput = await outputFromSuite(suite);
-  const originalHash = hashBLAKE3(bundle.original_output);
-  const replayHash = hashBLAKE3(replayOutput);
+  const originalHash = await hashProofBundle(bundle.original_output);
+  const replayHash = await hashProofBundle(replayOutput);
   const hashMatch = originalHash === replayHash;
 
   const executionTimeMs = Date.now() - startedAt;
