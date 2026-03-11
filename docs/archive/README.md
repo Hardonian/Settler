@@ -37,3 +37,12 @@ Every archived move must be recorded in:
 
 - `2026-03/root-superseded/`: first consolidation wave (root superseded docs).
 - `2026-03/execution-wave-2/`: launch, onboarding, and prompt historical docs moved during inventory execution wave.
+
+## Unified archive model
+
+Canonical archive root is `docs/archive/`.
+
+- Active archive waves: `docs/archive/2026-03/...`
+- Legacy imported archives: `docs/archive/legacy/root-archive/` and `docs/archive/legacy/historical-planning-archive/`
+
+Do not create new root-level archive folders outside `docs/archive/`.

@@ -35,3 +35,12 @@ Settler provides deterministic execution with replayable verification and audita
 3. Replay same inputs.
 4. Compare hash/result equivalence.
 5. Investigate divergence via failure records and audit trail.
+
+
+## Canonical entrypoints
+
+- [System architecture](./system-architecture.md)
+- [Reconciliation pipeline](./reconciliation-pipeline.md)
+- [Data model entrypoint](./data-model.md)
+- [Execution ledger](./execution-ledger.md)
+- [Traceability](./traceability.md)

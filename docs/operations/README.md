@@ -25,3 +25,11 @@
 
 - Use remediation/policy simulation first when available.
 - Escalate when tenant boundary risk, persistent replay divergence, or failed integrity checks are detected.
+
+
+## Canonical links
+
+- [Docs hub](../README.md)
+- [Getting started](../getting-started/README.md)
+- [Architecture hub](../architecture/README.md)
+- [Security hub](../security/README.md)

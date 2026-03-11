@@ -4,12 +4,14 @@ This directory is the canonical documentation surface for Settler.
 
 ## Start here
 
+- Canonical quickstart: `docs/getting-started/quickstart.md`
+- Environment files: `docs/getting-started/env-files.md`
 - Getting started: `docs/getting-started/`
-- Architecture overview: `docs/architecture/`
-- Operations and runbooks: `docs/operations/`, `docs/runbook/`, `docs/sre/`
+- Architecture overview: `docs/architecture/README.md`
+- Operations and runbooks: `docs/operations/README.md`, `docs/runbook/`, `docs/sre/`
 - Security + compliance: `docs/security/`, `docs/compliance/`
 - API/reference: `docs/api/`, `docs/reference/`
-- Product + positioning context: `docs/product/`, `docs/positioning/`
+- Product + positioning context: `docs/product/README.md`, `docs/positioning/`
 
 ## Documentation governance surfaces
 
