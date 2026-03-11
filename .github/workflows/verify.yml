@@ -35,6 +35,9 @@ jobs:
       - name: Verify gate
         run: pnpm run verify --skip-audit
 
+      - name: Verify surface docs drift gate
+        run: pnpm run verify:surface-docs && pnpm run verify:route-classes-doc && pnpm run verify:api-family-docs
+
       - name: Verify OSS mode
         run: pnpm run verify:oss
 
