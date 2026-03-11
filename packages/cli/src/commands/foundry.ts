@@ -8,7 +8,7 @@ import {
   runDataset,
 } from "../lib/foundry";
 import {
-  exportReconciliationSuite,
+  exportReconciliationSuiteWithKernel,
   generateReconciliationSuite,
   validateSuiteDeterminism,
   verifyReconciliationContract,
@@ -269,12 +269,15 @@ foundryCommand
         seed: Number(options.seed) || 42,
         profile: options.profile,
       });
-      const result = exportReconciliationSuite(suite, options.output);
-      logJson({
-        output: result.path,
-        hash: result.hash,
-        profile: suite.manifest.profile,
-        records: Object.fromEntries(Object.entries(suite.sources).map(([k, v]) => [k, v.length])),
+      return exportReconciliationSuiteWithKernel(suite, options.output).then((result) => {
+        logJson({
+          output: result.path,
+          hash: result.hash,
+          kernel_mode: result.kernelMode,
+          kernel_divergence: result.divergence ?? null,
+          profile: suite.manifest.profile,
+          records: Object.fromEntries(Object.entries(suite.sources).map(([k, v]) => [k, v.length])),
+        });
       });
     }
   );

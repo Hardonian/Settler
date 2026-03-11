@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
   "crates/settler-kernel",
+  "crates/settler-kernel-cli",
   "crates/settler-verify-wasm",
   "crates/settler-verify-cli",
 ]
