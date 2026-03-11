@@ -55,7 +55,7 @@
     "@types/bcrypt": "^6.0.0",
     "@upstash/redis": "^1.25.0",
     "@vercel/analytics": "^1.1.1",
-    "@vercel/blob": "^0.26.0",
+    "@vercel/blob": "^2.3.1",
     "@vercel/edge-config": "^1.0.0",
     "@vercel/kv": "^0.2.0",
     "@vercel/speed-insights": "^1.0.2",
