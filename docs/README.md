@@ -1,37 +1,31 @@
-# Settler Documentation
+# Settler Documentation Hub
 
 This directory is the canonical documentation surface for Settler.
 
-## Documentation Structure
+## Start here
 
-- [`architecture/`](./architecture/) — system and control-plane architecture.
-- [`reconciliation/`](./reconciliation/) — Reconciliation Engine behavior and operator workflows.
-- [`replay/`](./replay/) — Replay Lab and deterministic replay guidance.
-- [`operations/`](./operations/) — Operator Intelligence, runbooks, and operational procedures.
-- [`integrations/`](./integrations/) — alert integrations and connector guidance.
-- [`demo/`](./demo/) — demo bootstrap and walkthrough.
-- [`deployment/`](./deployment/) — deployment and runtime rollout docs.
-- [`security/`](./security/) — security model, controls, and verification.
-- [`troubleshooting/`](./troubleshooting/) — recovery and debugging references.
-- [`reference/`](./reference/) — terminology and command reference.
+- Getting started: `docs/getting-started/`
+- Architecture overview: `docs/architecture/`
+- Operations and runbooks: `docs/operations/`, `docs/runbook/`, `docs/sre/`
+- Security + compliance: `docs/security/`, `docs/compliance/`
+- API/reference: `docs/api/`, `docs/reference/`
+- Product + positioning context: `docs/product/`, `docs/positioning/`
 
-## Canonical topic map
+## Documentation governance surfaces
 
-To keep naming consistent with product surfaces, treat these terms as canonical in docs:
+- Documentation map: `docs/_meta/DOC_MAP.md`
+- Governance rules: `docs/_meta/DOCS_GOVERNANCE.md`
+- Full inventory: `docs/_meta/doc-inventory.md` + `docs/_meta/doc-inventory.json`
+- Overlap clusters: `docs/_meta/doc-clusters.md`
+- Orphan candidates: `docs/_meta/orphan-docs.md`
+- Consolidation changelog: `docs/_meta/DOCS_CONSOLIDATION_CHANGELOG.md`
+- Package README audit: `docs/_meta/package-readme-audit.md`
 
-- Reconciliation Engine
-- Truth Explorer
-- Replay Lab
-- Policy Lab
-- Operator Intelligence
-- Run Explorer
-- Import Workbench
-- Synthetic Foundry
-- Live Event Stream
+## Archive policy
 
-## High-signal entry points
+Historical/superseded docs are kept under `docs/archive/` with index entries in:
 
-- [`docs/getting-started/README.md`](./getting-started/README.md)
-- [`docs/demo/demo-walkthrough.md`](./demo/demo-walkthrough.md)
-- [`docs/reference/operator-terminology.md`](./reference/operator-terminology.md)
-- [`docs/CONTRIBUTING.md`](./CONTRIBUTING.md)
+- `docs/_meta/archive-index.md`
+- `docs/_meta/archive-index.json`
+
+Do not delete operationally meaningful docs unless they are either merged into canonical docs or intentionally archived with traceability.
