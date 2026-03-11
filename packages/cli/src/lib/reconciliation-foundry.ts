@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
+import { canonicalizeHashWithFallback } from "./kernel-client";
 
 export type SourceSystem =
   | "BANK_STATEMENT"
@@ -655,6 +656,21 @@ export function exportReconciliationSuite(
   const hash = stableHash({ manifest: suite.manifest, golden: suite.golden });
   fs.writeFileSync(path.join(outputRoot, "integrity.sha256"), `${hash}\n`);
   return { path: outputRoot, hash };
+}
+
+export async function exportReconciliationSuiteWithKernel(
+  suite: GeneratedSuite,
+  outputRoot: string
+): Promise<{ path: string; hash: string; kernelMode: string; divergence?: { normalizedHashMatch: boolean } }> {
+  const exported = exportReconciliationSuite(suite, outputRoot);
+  const kernel = await canonicalizeHashWithFallback({ manifest: suite.manifest, golden: suite.golden });
+  fs.writeFileSync(path.join(outputRoot, "integrity.sha256"), `${kernel.result.normalizedHash}\n`);
+  return {
+    path: exported.path,
+    hash: kernel.result.normalizedHash,
+    kernelMode: kernel.mode,
+    divergence: kernel.divergence,
+  };
 }
 
 export function validateSuiteDeterminism(
