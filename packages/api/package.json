@@ -122,7 +122,7 @@
     "ioredis": "^5.3.2",
     "isomorphic-dompurify": "^2.9.0",
     "jsonwebtoken": "^9.0.2",
-    "multer": "^2.0.2",
+    "multer": "^2.1.1",
     "node-cron": "^3.0.3",
     "opossum": "^9.0.0",
     "p-retry": "^6.2.0",
