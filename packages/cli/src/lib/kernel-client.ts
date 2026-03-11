@@ -6,7 +6,9 @@ const KERNEL_STDIO_CAPTURE_LIMIT = 4096;
 const KERNEL_PROTOCOL_VERSION = "v1";
 const KERNEL_MIN_VERSION_PREFIX = "0.";
 
-type KernelOperation = "canonicalize_hash" | "proof_bundle_hash";
+type KernelOperation = "canonicalize_hash" | "proof_bundle_hash" | "artifact_identity_hash";
+
+export type KernelExecutionMode = "disabled" | "compare_only" | "shadow" | "primary";
 
 export interface CanonicalizeHashResult {
   schemaVersion: string;
@@ -20,6 +22,8 @@ export interface KernelFlags {
   enabled: boolean;
   canonicalize: boolean;
   shadowMode: boolean;
+  executionMode: KernelExecutionMode;
+  primaryAllowlist: Set<KernelOperation>;
 }
 
 export type KernelRunnerMode = "binary" | "cargo-run" | "disabled" | "fallback-ts";
@@ -70,12 +74,26 @@ interface ResolvedKernelRunner {
 interface KernelTelemetrySnapshot {
   attempted: number;
   success: number;
+  primaryMode: number;
+  shadowCompare: number;
+  compareOnly: number;
   fallbackTs: number;
+  fallbackByReason: Record<string, number>;
   timeout: number;
   malformedOutput: number;
   versionMismatch: number;
+  binaryUnavailable: number;
   divergence: number;
+  divergenceByOperation: Record<string, number>;
   hashMismatch: number;
+}
+
+export interface KernelExecutionMetadata {
+  operation: KernelOperation;
+  executionMode: KernelExecutionMode;
+  usedPrimary: boolean;
+  shadowCompared: boolean;
+  fallbackReason?: string;
 }
 
 class KernelInvocationError extends Error {
@@ -90,11 +108,17 @@ class KernelInvocationError extends Error {
 const telemetry: KernelTelemetrySnapshot = {
   attempted: 0,
   success: 0,
+  primaryMode: 0,
+  shadowCompare: 0,
+  compareOnly: 0,
   fallbackTs: 0,
+  fallbackByReason: {},
   timeout: 0,
   malformedOutput: 0,
   versionMismatch: 0,
+  binaryUnavailable: 0,
   divergence: 0,
+  divergenceByOperation: {},
   hashMismatch: 0,
 };
 
@@ -123,11 +147,79 @@ function shouldAllowCargoFallback(env: NodeJS.ProcessEnv): boolean {
   return env.NODE_ENV !== "production" && env.CI !== "true";
 }
 
+function parseExecutionMode(env: NodeJS.ProcessEnv): KernelExecutionMode {
+  const explicit = env.SETTLER_KERNEL_EXECUTION_MODE?.trim().toLowerCase();
+  if (
+    explicit === "disabled" ||
+    explicit === "compare_only" ||
+    explicit === "shadow" ||
+    explicit === "primary"
+  ) {
+    return explicit;
+  }
+  if (env.SETTLER_KERNEL_SHADOW_MODE === "1") return "shadow";
+  return "primary";
+}
+
+function parsePrimaryAllowlist(env: NodeJS.ProcessEnv): Set<KernelOperation> {
+  const configured =
+    env.SETTLER_KERNEL_PRIMARY_ALLOWLIST?.split(",")
+      .map((item) => item.trim())
+      .filter(Boolean) ?? [];
+  const out = new Set<KernelOperation>();
+  for (const candidate of configured) {
+    if (
+      candidate === "canonicalize_hash" ||
+      candidate === "proof_bundle_hash" ||
+      candidate === "artifact_identity_hash"
+    ) {
+      out.add(candidate);
+    }
+  }
+  return out;
+}
+
+function recordFallback(reason: string): void {
+  telemetry.fallbackTs += 1;
+  telemetry.fallbackByReason[reason] = (telemetry.fallbackByReason[reason] ?? 0) + 1;
+}
+
+function classifyErrorReason(error: unknown, defaultReason: string): string {
+  if (error instanceof KernelInvocationError) {
+    switch (error.kind) {
+      case "BINARY_MISSING":
+      case "BINARY_NOT_EXECUTABLE":
+        return "binary_unavailable";
+      case "VERSION_MISMATCH":
+        return "protocol_mismatch";
+      case "UNKNOWN_OPERATION":
+        return "unsupported_operation";
+      case "TIMEOUT":
+        return "timeout";
+      default:
+        return defaultReason;
+    }
+  }
+  return defaultReason;
+}
+
+function recordDivergence(operation: KernelOperation): void {
+  telemetry.divergence += 1;
+  telemetry.divergenceByOperation[operation] =
+    (telemetry.divergenceByOperation[operation] ?? 0) + 1;
+}
+
+function shouldUsePrimary(flags: KernelFlags, operation: KernelOperation): boolean {
+  return flags.executionMode === "primary" && flags.primaryAllowlist.has(operation);
+}
+
 export function readKernelFlags(env: NodeJS.ProcessEnv = process.env): KernelFlags {
   return {
     enabled: env.SETTLER_KERNEL_ENABLED === "1",
     canonicalize: env.SETTLER_KERNEL_CANONICALIZE === "1",
     shadowMode: env.SETTLER_KERNEL_SHADOW_MODE === "1",
+    executionMode: parseExecutionMode(env),
+    primaryAllowlist: parsePrimaryAllowlist(env),
   };
 }
 
@@ -195,6 +287,14 @@ function tsProofBundleHash(value: unknown): CanonicalizeHashResult {
   return {
     ...base,
     ruleHash: createHash("sha256").update("proof_bundle_hash@v1").digest("hex"),
+  };
+}
+
+function tsArtifactIdentityHash(value: unknown): CanonicalizeHashResult {
+  const base = tsCanonicalizeHash(value);
+  return {
+    ...base,
+    ruleHash: createHash("sha256").update("artifact_identity_hash@v1").digest("hex"),
   };
 }
 
@@ -319,6 +419,16 @@ async function ensureHandshake(runner: ResolvedKernelRunner, timeoutMs: number):
   handshakeCache.set(cacheKey, result);
 }
 
+function ensureOperationSupport(runner: ResolvedKernelRunner, operation: KernelOperation): void {
+  const handshake = handshakeCache.get(runnerCacheKey(runner));
+  if (!handshake) {
+    throw new KernelInvocationError("VERSION_MISMATCH");
+  }
+  if (!handshake.supported_operations.includes(operation)) {
+    throw new KernelInvocationError("UNKNOWN_OPERATION", { code: "KERNEL_UNKNOWN_OPERATION" });
+  }
+}
+
 async function invokeKernelOperation(
   operation: KernelOperation,
   value: unknown,
@@ -330,6 +440,7 @@ async function invokeKernelOperation(
 }> {
   const resolved = resolveKernelRunner();
   if (!resolved.runner) {
+    telemetry.binaryUnavailable += 1;
     if (resolved.reason === "binary_missing") {
       throw new KernelInvocationError("BINARY_MISSING");
     }
@@ -340,6 +451,7 @@ async function invokeKernelOperation(
   }
 
   await ensureHandshake(resolved.runner, Math.min(1500, timeoutMs));
+  ensureOperationSupport(resolved.runner, operation);
 
   const req = JSON.stringify({ operation, payload: value });
   const { envelope, durationMs } = await spawnKernelRequest(resolved.runner, req, timeoutMs);
@@ -380,30 +492,60 @@ export async function invokeKernelProofBundleHash(
   return invokeKernelOperation("proof_bundle_hash", value, timeoutMs);
 }
 
+export async function invokeKernelArtifactIdentityHash(
+  value: unknown,
+  timeoutMs = 5000
+): Promise<{
+  result: CanonicalizeHashResult;
+  runnerMode: Extract<KernelRunnerMode, "binary" | "cargo-run">;
+  durationMs: number;
+}> {
+  return invokeKernelOperation("artifact_identity_hash", value, timeoutMs);
+}
+
 export async function canonicalizeHashWithFallback(value: unknown): Promise<{
   result: CanonicalizeHashResult;
   mode: "ts" | "rust_primary" | "ts_with_shadow";
   runnerMode: KernelRunnerMode;
   divergence?: { normalizedHashMatch: boolean };
   durationMs: { kernel?: number; ts: number };
+  metadata: KernelExecutionMetadata;
 }> {
   const flags = readKernelFlags();
   const tsStartedAt = Date.now();
   const ts = tsCanonicalizeHash(value);
   const tsDuration = Date.now() - tsStartedAt;
 
-  if (!flags.enabled || !flags.canonicalize) {
-    return { result: ts, mode: "ts", runnerMode: "disabled", durationMs: { ts: tsDuration } };
+  if (!flags.enabled || !flags.canonicalize || flags.executionMode === "disabled") {
+    return {
+      result: ts,
+      mode: "ts",
+      runnerMode: "disabled",
+      durationMs: { ts: tsDuration },
+      metadata: {
+        operation: "canonicalize_hash",
+        executionMode: "disabled",
+        usedPrimary: false,
+        shadowCompared: false,
+        fallbackReason: "kernel_disabled",
+      },
+    };
   }
 
   telemetry.attempted += 1;
 
-  if (flags.shadowMode) {
+  const compare = flags.executionMode === "shadow" || flags.executionMode === "compare_only";
+  if (compare) {
+    if (flags.executionMode === "compare_only") {
+      telemetry.compareOnly += 1;
+    } else {
+      telemetry.shadowCompare += 1;
+    }
     try {
       const rust = await invokeKernelCanonicalizeHash(value);
       const match = rust.result.normalizedHash === ts.normalizedHash;
       if (!match) {
-        telemetry.divergence += 1;
+        recordDivergence("canonicalize_hash");
         telemetry.hashMismatch += 1;
       }
       telemetry.success += 1;
@@ -413,36 +555,82 @@ export async function canonicalizeHashWithFallback(value: unknown): Promise<{
         runnerMode: rust.runnerMode,
         divergence: { normalizedHashMatch: match },
         durationMs: { kernel: rust.durationMs, ts: tsDuration },
+        metadata: {
+          operation: "canonicalize_hash",
+          executionMode: flags.executionMode,
+          usedPrimary: false,
+          shadowCompared: true,
+        },
       };
-    } catch {
-      telemetry.fallbackTs += 1;
-      telemetry.divergence += 1;
+    } catch (error) {
+      const reason = classifyErrorReason(error, "shadow_kernel_failed");
+      recordFallback(reason);
+      recordDivergence("canonicalize_hash");
       return {
         result: ts,
         mode: "ts_with_shadow",
         runnerMode: "fallback-ts",
         divergence: { normalizedHashMatch: false },
         durationMs: { ts: tsDuration },
+        metadata: {
+          operation: "canonicalize_hash",
+          executionMode: flags.executionMode,
+          usedPrimary: false,
+          shadowCompared: true,
+          fallbackReason: reason,
+        },
       };
     }
   }
 
-  try {
-    const rust = await invokeKernelCanonicalizeHash(value);
-    telemetry.success += 1;
-    return {
-      result: rust.result,
-      mode: "rust_primary",
-      runnerMode: rust.runnerMode,
-      durationMs: { kernel: rust.durationMs, ts: tsDuration },
-    };
-  } catch {
-    telemetry.fallbackTs += 1;
+  if (!shouldUsePrimary(flags, "canonicalize_hash")) {
+    recordFallback("primary_not_allowed");
     return {
       result: ts,
       mode: "ts",
       runnerMode: "fallback-ts",
       durationMs: { ts: tsDuration },
+      metadata: {
+        operation: "canonicalize_hash",
+        executionMode: flags.executionMode,
+        usedPrimary: false,
+        shadowCompared: false,
+        fallbackReason: "primary_not_allowed",
+      },
+    };
+  }
+
+  try {
+    const rust = await invokeKernelCanonicalizeHash(value);
+    telemetry.success += 1;
+    telemetry.primaryMode += 1;
+    return {
+      result: rust.result,
+      mode: "rust_primary",
+      runnerMode: rust.runnerMode,
+      durationMs: { kernel: rust.durationMs, ts: tsDuration },
+      metadata: {
+        operation: "canonicalize_hash",
+        executionMode: flags.executionMode,
+        usedPrimary: true,
+        shadowCompared: false,
+      },
+    };
+  } catch (error) {
+    const reason = classifyErrorReason(error, "primary_kernel_failed");
+    recordFallback(reason);
+    return {
+      result: ts,
+      mode: "ts",
+      runnerMode: "fallback-ts",
+      durationMs: { ts: tsDuration },
+      metadata: {
+        operation: "canonicalize_hash",
+        executionMode: flags.executionMode,
+        usedPrimary: false,
+        shadowCompared: false,
+        fallbackReason: reason,
+      },
     };
   }
 }
@@ -452,33 +640,159 @@ export async function proofBundleHashWithFallback(value: unknown): Promise<{
   mode: "ts" | "rust_primary";
   runnerMode: KernelRunnerMode;
   durationMs: { kernel?: number; ts: number };
+  metadata: KernelExecutionMetadata;
 }> {
   const flags = readKernelFlags();
   const tsStartedAt = Date.now();
   const ts = tsProofBundleHash(value);
   const tsDuration = Date.now() - tsStartedAt;
 
-  if (!flags.enabled || !flags.canonicalize) {
-    return { result: ts, mode: "ts", runnerMode: "disabled", durationMs: { ts: tsDuration } };
+  if (!flags.enabled || !flags.canonicalize || flags.executionMode === "disabled") {
+    return {
+      result: ts,
+      mode: "ts",
+      runnerMode: "disabled",
+      durationMs: { ts: tsDuration },
+      metadata: {
+        operation: "proof_bundle_hash",
+        executionMode: "disabled",
+        usedPrimary: false,
+        shadowCompared: false,
+        fallbackReason: "kernel_disabled",
+      },
+    };
+  }
+
+  if (!shouldUsePrimary(flags, "proof_bundle_hash")) {
+    recordFallback("primary_not_allowed");
+    return {
+      result: ts,
+      mode: "ts",
+      runnerMode: "fallback-ts",
+      durationMs: { ts: tsDuration },
+      metadata: {
+        operation: "proof_bundle_hash",
+        executionMode: flags.executionMode,
+        usedPrimary: false,
+        shadowCompared: false,
+        fallbackReason: "primary_not_allowed",
+      },
+    };
   }
 
   telemetry.attempted += 1;
   try {
     const rust = await invokeKernelProofBundleHash(value);
     telemetry.success += 1;
+    telemetry.primaryMode += 1;
     return {
       result: rust.result,
       mode: "rust_primary",
       runnerMode: rust.runnerMode,
       durationMs: { kernel: rust.durationMs, ts: tsDuration },
+      metadata: {
+        operation: "proof_bundle_hash",
+        executionMode: flags.executionMode,
+        usedPrimary: true,
+        shadowCompared: false,
+      },
     };
-  } catch {
-    telemetry.fallbackTs += 1;
+  } catch (error) {
+    const reason = classifyErrorReason(error, "primary_kernel_failed");
+    recordFallback(reason);
     return {
       result: ts,
       mode: "ts",
       runnerMode: "fallback-ts",
       durationMs: { ts: tsDuration },
+      metadata: {
+        operation: "proof_bundle_hash",
+        executionMode: flags.executionMode,
+        usedPrimary: false,
+        shadowCompared: false,
+        fallbackReason: reason,
+      },
+    };
+  }
+}
+
+export async function artifactIdentityHashWithFallback(value: unknown): Promise<{
+  result: CanonicalizeHashResult;
+  mode: "ts" | "rust_primary";
+  runnerMode: KernelRunnerMode;
+  durationMs: { kernel?: number; ts: number };
+  metadata: KernelExecutionMetadata;
+}> {
+  const flags = readKernelFlags();
+  const tsStartedAt = Date.now();
+  const ts = tsArtifactIdentityHash(value);
+  const tsDuration = Date.now() - tsStartedAt;
+
+  if (!flags.enabled || !flags.canonicalize || flags.executionMode === "disabled") {
+    return {
+      result: ts,
+      mode: "ts",
+      runnerMode: "disabled",
+      durationMs: { ts: tsDuration },
+      metadata: {
+        operation: "artifact_identity_hash",
+        executionMode: "disabled",
+        usedPrimary: false,
+        shadowCompared: false,
+        fallbackReason: "kernel_disabled",
+      },
+    };
+  }
+
+  if (!shouldUsePrimary(flags, "artifact_identity_hash")) {
+    recordFallback("primary_not_allowed");
+    return {
+      result: ts,
+      mode: "ts",
+      runnerMode: "fallback-ts",
+      durationMs: { ts: tsDuration },
+      metadata: {
+        operation: "artifact_identity_hash",
+        executionMode: flags.executionMode,
+        usedPrimary: false,
+        shadowCompared: false,
+        fallbackReason: "primary_not_allowed",
+      },
+    };
+  }
+
+  telemetry.attempted += 1;
+  try {
+    const rust = await invokeKernelArtifactIdentityHash(value);
+    telemetry.success += 1;
+    telemetry.primaryMode += 1;
+    return {
+      result: rust.result,
+      mode: "rust_primary",
+      runnerMode: rust.runnerMode,
+      durationMs: { kernel: rust.durationMs, ts: tsDuration },
+      metadata: {
+        operation: "artifact_identity_hash",
+        executionMode: flags.executionMode,
+        usedPrimary: true,
+        shadowCompared: false,
+      },
+    };
+  } catch (error) {
+    const reason = classifyErrorReason(error, "primary_kernel_failed");
+    recordFallback(reason);
+    return {
+      result: ts,
+      mode: "ts",
+      runnerMode: "fallback-ts",
+      durationMs: { ts: tsDuration },
+      metadata: {
+        operation: "artifact_identity_hash",
+        executionMode: flags.executionMode,
+        usedPrimary: false,
+        shadowCompared: false,
+        fallbackReason: reason,
+      },
     };
   }
 }
@@ -490,11 +804,17 @@ export function getKernelTelemetrySnapshot(): KernelTelemetrySnapshot {
 export function resetKernelTelemetry(): void {
   telemetry.attempted = 0;
   telemetry.success = 0;
+  telemetry.primaryMode = 0;
+  telemetry.shadowCompare = 0;
+  telemetry.compareOnly = 0;
   telemetry.fallbackTs = 0;
+  telemetry.fallbackByReason = {};
   telemetry.timeout = 0;
   telemetry.malformedOutput = 0;
   telemetry.versionMismatch = 0;
+  telemetry.binaryUnavailable = 0;
   telemetry.divergence = 0;
+  telemetry.divergenceByOperation = {};
   telemetry.hashMismatch = 0;
   handshakeCache.clear();
 }

@@ -20,6 +20,12 @@ describe("replay verification", () => {
 
     expect(reports.every((report) => report.hash_match)).toBe(true);
     expect(reports.every((report) => report.replay_status === "matched")).toBe(true);
+    expect(
+      reports.every(
+        (report) =>
+          report.hashes.artifact_identity_original === report.hashes.artifact_identity_replay
+      )
+    ).toBe(true);
   });
 
   test("replays 50 random simulation runs with identical outputs", async () => {
@@ -39,6 +45,12 @@ describe("replay verification", () => {
 
     expect(reports.every((report) => report.hash_match)).toBe(true);
     expect(reports.every((report) => report.replay_status === "matched")).toBe(true);
+    expect(
+      reports.every(
+        (report) =>
+          report.hashes.artifact_identity_original === report.hashes.artifact_identity_replay
+      )
+    ).toBe(true);
   });
 
   test("detects divergence and emits detailed report", async () => {
@@ -57,6 +69,9 @@ describe("replay verification", () => {
     const report = await runReplayVerification(tampered);
     expect(report.hash_match).toBe(false);
     expect(report.replay_status).toBe("diverged");
+    expect(report.hashes.artifact_identity_original).not.toBe(
+      report.hashes.artifact_identity_replay
+    );
     expect(report.divergence?.field_differences.length).toBeGreaterThan(0);
     expect(report.divergence?.policy_path_differences.length).toBeGreaterThan(0);
     expect(report.divergence?.timing_differences.length).toBeGreaterThan(0);

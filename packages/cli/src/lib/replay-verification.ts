@@ -6,7 +6,7 @@ import {
   type GeneratedSuite,
   type RuntimeReconMatch,
 } from "./reconciliation-foundry";
-import { proofBundleHashWithFallback } from "./kernel-client";
+import { artifactIdentityHashWithFallback, proofBundleHashWithFallback } from "./kernel-client";
 
 export interface ReplayBundle {
   run_id: string;
@@ -41,6 +41,8 @@ export interface ReplayVerificationReport {
   hashes: {
     original: string;
     replay: string;
+    artifact_identity_original: string;
+    artifact_identity_replay: string;
   };
 }
 
@@ -59,6 +61,11 @@ function stableStringify(value: unknown): string {
 
 async function hashProofBundle(value: unknown): Promise<string> {
   const hashed = await proofBundleHashWithFallback(value);
+  return hashed.result.normalizedHash;
+}
+
+async function hashArtifactIdentity(value: unknown): Promise<string> {
+  const hashed = await artifactIdentityHashWithFallback(value);
   return hashed.result.normalizedHash;
 }
 
@@ -164,7 +171,10 @@ export async function runReplayVerification(
   const replayOutput = await outputFromSuite(suite);
   const originalHash = await hashProofBundle(bundle.original_output);
   const replayHash = await hashProofBundle(replayOutput);
-  const hashMatch = originalHash === replayHash;
+  const originalArtifactIdentityHash = await hashArtifactIdentity(bundle.original_output);
+  const replayArtifactIdentityHash = await hashArtifactIdentity(replayOutput);
+  const hashMatch =
+    originalHash === replayHash && originalArtifactIdentityHash === replayArtifactIdentityHash;
 
   const executionTimeMs = Date.now() - startedAt;
   const fieldDiffs = diffPaths(bundle.original_output, replayOutput);
@@ -190,6 +200,8 @@ export async function runReplayVerification(
     hashes: {
       original: originalHash,
       replay: replayHash,
+      artifact_identity_original: originalArtifactIdentityHash,
+      artifact_identity_replay: replayArtifactIdentityHash,
     },
   };
 

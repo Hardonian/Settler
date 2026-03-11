@@ -279,6 +279,7 @@ foundryCommand
           kernel_duration_ms: result.durations.kernel ?? null,
           ts_duration_ms: result.durations.ts,
           kernel_telemetry: result.telemetry,
+          kernel_execution: result.execution,
           profile: suite.manifest.profile,
           records: Object.fromEntries(Object.entries(suite.sources).map(([k, v]) => [k, v.length])),
         });
