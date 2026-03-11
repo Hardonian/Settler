@@ -1,18 +1,64 @@
 # Settler
 
-Settler is an OSS-first deterministic execution and reconciliation platform.
+Settler is a deterministic financial reconciliation platform for teams that need reliable run outcomes, replayable execution, and operator-grade investigation.
 
-## Quickstart (core local path)
+It combines a reconciliation runtime with investigation and simulation tools so operators can answer three questions quickly:
+
+1. **What happened?**
+2. **Why did it happen?**
+3. **What changes if we adjust policy?**
+
+## Project Overview
+
+Settler runs reconciliation as a deterministic execution flow, records evidence for every run, and gives operators clear tooling to inspect outcomes, replay behavior, and evaluate policy changes before they are applied.
+
+This repository contains the API, web console, CLI tools, demo harnesses, and documentation for local development and operational evaluation.
+
+## Key Capabilities
+
+- **Reconciliation Engine** — deterministic matching, mismatch classification, and review queues.
+- **Truth Explorer** — evidence and lineage inspection for completed runs.
+- **Replay Lab** — deterministic re-execution checks to detect drift.
+- **Policy Lab** — simulation surfaces for policy impact before rollout.
+- **Operator Intelligence** — incident triage and investigative context.
+- **Live Event Stream** — runtime telemetry and operator-facing event visibility.
+- **Alert Integrations** — Slack/Teams/Telegram alert fan-out paths.
+- **Import Workbench** — controlled ingest path for reconciliation data.
+- **Synthetic Foundry** — seeded deterministic data generation for testing and demo flows.
+
+## Architecture Overview
+
+Settler is organized as a monorepo with six core runtime layers:
+
+- **API** (`packages/api`) — route surface, orchestration, tenancy-aware contracts.
+- **Reconciliation Engine** (`scripts/moat`, CLI runtime) — deterministic run execution.
+- **Operator Services** (API + web app modules) — run investigation, alerts, and controls.
+- **Runtime Telemetry** (`scripts`, metrics routes, event pipelines) — health and event capture.
+- **Policy Engine / Policy Lab** — policy checks and simulation workflows.
+- **Replay System / Replay Lab** — evidence replay and drift verification.
+
+Textual system flow:
+
+`Import Workbench -> Reconciliation Engine -> Run Explorer + Truth Explorer -> Replay Lab + Policy Lab -> Alert Integrations + Live Event Stream`
+
+## Quick Start
+
+Fastest local path:
 
 ```bash
 pnpm run bootstrap
 pnpm run demo:settler
 pnpm run dev:stack
+git clone <your-fork-or-upstream-url>
+cd Settler
+pnpm install
+cp .env.local.example .env.local
+pnpm demo:settler
 ```
 
-`bootstrap` already runs `repo-integrity` and first-run doctor.
+`pnpm demo:settler` runs environment validation, attempts migrations, loads demo data, starts local services, executes a reconciliation simulation, and prints guided next steps.
 
-## Command matrix
+## Demo Walkthrough
 
 - `pnpm run bootstrap` — install + repo-integrity + first-run doctor.
 - `pnpm run doctor -- --skip-pipeline --first-run` — first-run diagnostics.
@@ -27,23 +73,26 @@ pnpm run dev:stack
 - `pnpm run dev:stack` — canonical local API + web stack entrypoint.
 - `pnpm run repo-integrity` — monorepo/workspace contract validator.
 - `pnpm run verify` — full lint/typecheck/build/test/security surface.
+After `pnpm demo:settler` completes:
 
-## Core vs optional setup
+1. Open **Run Explorer** at `/app/runs`.
+2. Open **Truth Explorer** at `/app/proofs`.
+3. Review **Alerts** at `/app/alerts`.
+4. Open **Replay Lab** at `/app/replay` and replay the generated run.
+5. Run policy simulation with `pnpm simulate:settler` for Policy Lab verification.
 
-Core local onboarding does **not** require optional connectors (Stripe/Resend/Redis/etc.).
-Optional integrations should be configured only when validating those specific surfaces.
+For CLI artifacts, inspect `examples/demo-output/` and replay with `pnpm replay:run`.
 
-## Repository structure
+## Project Structure
 
-- `packages/api` — API/control plane.
-- `packages/web` — Next.js UI.
-- `packages/cli` — Settler CLI runtime.
-- `packages/sdk` + `packages/react-settler` + `packages/types` — SDK/runtime libraries.
-- `docs/getting-started/*` — onboarding flow docs.
-- `docs/reference/repo-integrity.md` — repo truth gate.
-- `docs/reference/workspace-contracts.md` — workspace package contract.
+- `packages/api` — API and reconciliation control-plane services.
+- `packages/web` — operator UI (Run Explorer, Truth Explorer, Replay Lab, Policy Lab).
+- `packages/cli` — CLI runtime and deterministic foundry tooling.
+- `scripts` — bootstrap, diagnostics, simulation, verification, and demo orchestration.
+- `prisma` — schema and migrations.
+- `docs` — architecture, operations, demo, deployment, and contribution docs.
 
-## Onboarding docs
+## Development Commands
 
 - [Quickstart](docs/getting-started/quickstart.md)
 - [Bootstrap](docs/getting-started/bootstrap.md)
@@ -54,49 +103,56 @@ Optional integrations should be configured only when validating those specific s
 - [Workspace contracts](docs/reference/workspace-contracts.md)
 - [Surface area convergence matrix](docs/reference/surface-area-convergence.md)
 - [API route classes (auth/tenant taxonomy)](docs/api/route-classes.md)
+### Core
 
-## What makes Settler different (implemented today)
+- `pnpm install`
+- `pnpm build`
+- `pnpm dev`
+- `pnpm test`
+- `pnpm doctor`
 
-Settler is positioned as **deterministic reconciliation infrastructure**, not a generic dashboard.
+### Demo and Simulation
 
-- **Replay Lab** (`/app/replay` + `/api/v1/runs/:id/replay`) for deterministic reruns and drift checks.
-- **Run Explorer** (`/app/runs`) for operator-grade run metadata and policy context.
-- **Truth Explorer** (`/app/proofs` + trust-explorer APIs) for lineage, proof verification, and policy impact analysis.
-- **Synthetic Reconciliation Foundry** (`pnpm run test:reconciliation*`) for seeded scenario validation.
-- **Live operator surfaces** (`/app/alerts`, `/app/system-health`, `/app/metrics`) for triage and runtime telemetry.
-- **Evidence query surface** (`/app/evidence` + `/api/v1/runs/:id/evidence`) for trust artifact retrieval by run, fingerprint, or policy hash.
-- **Tenant isolation controls** (`/app/settings`) for role boundaries and runtime freeze controls.
+- `pnpm demo:settler`
+- `pnpm simulate:settler`
+- `pnpm replay:run`
 
-See `docs/PRODUCT_CAPABILITIES_MATRIX.md` for maturity and evidence map.
+### Command Discovery Index
 
-## Reconciliation synthetic verification
+- `pnpm demo:settler` — full local demo bootstrap flow.
+- `pnpm simulate:settler` — deterministic policy/reconciliation simulation harness.
+- `pnpm replay:run` — run replay utility.
+- `pnpm chaos:test` — deterministic chaos test harness.
+- `pnpm tenant:create` — tenant bootstrap utility.
+- `pnpm doctor` — environment and dependency diagnostics.
 
-Use the deterministic reconciliation foundry commands below during local debugging and CI parity checks:
+## Environment Configuration
 
-- `pnpm run test:reconciliation` — runs CLI reconciliation harness + reconciliation foundry tests.
-- `pnpm run test:reconciliation:e2e` — executes strict reconciliation verification (`smoke` profile, seed 42).
-- `pnpm run verify:reconciliation-runtime` — executes strict reconciliation verification (`integration` profile, seed 42).
-- `pnpm run generate:test-data:smoke` — generates deterministic smoke export fixtures under `test-data/exports`.
+Settler reads `.env.local` first, then `.env`.
 
-For additional seeds, run:
+Common required variables:
 
-```bash
-pnpm --filter @settler/cli exec tsx src/index.ts foundry reconciliation-verify --seed 7 --profile smoke --strict
-pnpm --filter @settler/cli exec tsx src/index.ts foundry reconciliation-verify --seed 99 --profile smoke --strict
-```
+- `DATABASE_URL` (or `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`)
+- `REDIS_URL`
+- `NEXT_PUBLIC_API_URL` (for local web/API connectivity)
 
-## Integrity guarantee
+Optional integration variables are validated by feature-specific checks and should only be set when those integrations are enabled.
 
-`pnpm run repo-integrity` is expected to pass on a healthy checkout and fails hard when workspace manifests, script references, or package contracts drift.
+Run `pnpm doctor` to validate runtime prerequisites (Node version, env shape, database connectivity, Redis connectivity).
 
-## Launch Readiness Snapshot
+## Contributing
 
-Settler launch claims in this repository are constrained to commands and artifacts that are currently reproducible:
+- Read [`CONTRIBUTING.md`](./CONTRIBUTING.md) for repository-wide standards.
+- Read [`docs/CONTRIBUTING.md`](./docs/CONTRIBUTING.md) for contributor workflow, CI expectations, and PR readiness checks.
+- Keep claims in docs constrained to commands that pass in this repository.
 
-- `pnpm run typecheck`
-- `pnpm run build`
-- `pnpm run test`
-- `pnpm run repo-integrity`
-- `pnpm run verify`
+## License and Project Philosophy
 
-See `docs/demo/demo-walkthrough.md` for a deterministic walkthrough and `docs/launch/launch-checklist.md` for pre-launch gates.
+Licensed under the repository license terms.
+
+Project philosophy:
+
+- deterministic behavior over opaque automation
+- tenant-safe defaults over convenience shortcuts
+- explicit evidence over implied guarantees
+- operator clarity over marketing language

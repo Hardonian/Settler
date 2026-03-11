@@ -2,18 +2,36 @@
 
 This directory is the canonical documentation surface for Settler.
 
-## Primary entry points
+## Documentation Structure
 
-- **Role-based map**: [`docs/INDEX.md`](./INDEX.md)
-- **Terminology standard**: [`docs/reference/glossary.md`](./reference/glossary.md)
-- **Developer fast path**: [`docs/getting-started/README.md`](./getting-started/README.md)
-- **Product/architecture truth**: [`docs/architecture/README.md`](./architecture/README.md)
-- **API route contract**: [`docs/api/README.md`](./api/README.md)
-- **Operations and runbooks**: [`docs/operations/README.md`](./operations/README.md)
-- **Support and troubleshooting**: [`docs/support/README.md`](./support/README.md), [`docs/troubleshooting/README.md`](./troubleshooting/README.md)
+- [`architecture/`](./architecture/) — system and control-plane architecture.
+- [`reconciliation/`](./reconciliation/) — Reconciliation Engine behavior and operator workflows.
+- [`replay/`](./replay/) — Replay Lab and deterministic replay guidance.
+- [`operations/`](./operations/) — Operator Intelligence, runbooks, and operational procedures.
+- [`integrations/`](./integrations/) — alert integrations and connector guidance.
+- [`demo/`](./demo/) — demo bootstrap and walkthrough.
+- [`deployment/`](./deployment/) — deployment and runtime rollout docs.
+- [`security/`](./security/) — security model, controls, and verification.
+- [`troubleshooting/`](./troubleshooting/) — recovery and debugging references.
+- [`reference/`](./reference/) — terminology and command reference.
 
-## Scope rules
+## Canonical topic map
 
-- If implementation and docs disagree, narrow docs or fix code immediately.
-- Experimental/internal features must be explicitly marked.
-- Public website copy, README, and docs must use the same terms.
+To keep naming consistent with product surfaces, treat these terms as canonical in docs:
+
+- Reconciliation Engine
+- Truth Explorer
+- Replay Lab
+- Policy Lab
+- Operator Intelligence
+- Run Explorer
+- Import Workbench
+- Synthetic Foundry
+- Live Event Stream
+
+## High-signal entry points
+
+- [`docs/getting-started/README.md`](./getting-started/README.md)
+- [`docs/demo/demo-walkthrough.md`](./demo/demo-walkthrough.md)
+- [`docs/reference/operator-terminology.md`](./reference/operator-terminology.md)
+- [`docs/CONTRIBUTING.md`](./CONTRIBUTING.md)

@@ -3,7 +3,6 @@
 import { spawnSync } from "child_process";
 import fs from "fs";
 import path from "path";
-import dotenv from "dotenv";
 
 const rootDir = process.cwd();
 const flags = new Set(process.argv.slice(2));
@@ -35,7 +34,16 @@ function loadEnvFiles() {
   [".env.local", ".env"].forEach((filename) => {
     const fullPath = path.join(rootDir, filename);
     if (fs.existsSync(fullPath)) {
-      dotenv.config({ path: fullPath, override: false });
+      const rows = fs.readFileSync(fullPath, "utf-8").split("\n");
+      for (const row of rows) {
+        const line = row.trim();
+        if (!line || line.startsWith("#") || !line.includes("=")) continue;
+        const idx = line.indexOf("=");
+        const key = line.slice(0, idx).trim();
+        const raw = line.slice(idx + 1).trim();
+        const value = raw.replace(/^"|"$/g, "").replace(/^'|'$/g, "");
+        if (!(key in process.env)) process.env[key] = value;
+      }
     }
   });
 }
@@ -75,6 +83,19 @@ function checkToolchain() {
 function checkEnv() {
   loadEnvFiles();
 
+  const requiredVars = ["DATABASE_URL", "REDIS_URL", "NEXT_PUBLIC_API_URL"];
+  const missingRequired = requiredVars.filter((variable) => !process.env[variable]);
+
+  addResult(
+    "env",
+    "Required environment variables",
+    missingRequired.length === 0,
+    missingRequired.length === 0
+      ? "DATABASE_URL, REDIS_URL, NEXT_PUBLIC_API_URL present"
+      : `missing: ${missingRequired.join(", ")}`,
+    "Populate .env.local from .env.local.example"
+  );
+
   if (firstRunMode) {
     const hasLocal =
       fs.existsSync(path.join(rootDir, ".env.local")) || fs.existsSync(path.join(rootDir, ".env"));
@@ -108,6 +129,54 @@ function checkEnv() {
       result.ok
         ? "validated without leaking secret values"
         : result.stderr.split("\n").slice(-6).join("\n")
+    );
+  }
+}
+
+function checkRuntimeDependencies() {
+  const databaseProbe = runCommand("node", [
+    "-e",
+    `import net from 'node:net'; const raw = process.env.DATABASE_URL; if (!raw) process.exit(2); let url; try { url = new URL(raw); } catch { process.exit(1); } const socket = net.createConnection({ host: url.hostname, port: Number(url.port || '5432') }); socket.setTimeout(1500); socket.on('connect', () => { socket.end(); process.exit(0); }); socket.on('timeout', () => { socket.destroy(); process.exit(1); }); socket.on('error', () => process.exit(1));`,
+  ]);
+
+  if (databaseProbe.status === 2) {
+    addResult(
+      "runtime",
+      "Database connection",
+      false,
+      "DATABASE_URL missing",
+      "Set DATABASE_URL to a reachable PostgreSQL endpoint"
+    );
+  } else {
+    addResult(
+      "runtime",
+      "Database connection",
+      databaseProbe.ok,
+      databaseProbe.ok ? "Connected to PostgreSQL" : databaseProbe.stderr || databaseProbe.stdout,
+      "Check DATABASE_URL and network path to PostgreSQL"
+    );
+  }
+
+  const redisProbe = runCommand("node", [
+    "-e",
+    `import net from 'node:net'; const raw = process.env.REDIS_URL; if (!raw) { process.exit(2); } const url = new URL(raw); const socket = net.createConnection({ host: url.hostname, port: Number(url.port || '6379') }); socket.setTimeout(1500); socket.on('connect', () => { socket.end(); process.exit(0); }); socket.on('timeout', () => { socket.destroy(); process.exit(1); }); socket.on('error', () => process.exit(1));`,
+  ]);
+
+  if (redisProbe.status === 2) {
+    addResult(
+      "runtime",
+      "Redis connection",
+      false,
+      "REDIS_URL missing",
+      "Set REDIS_URL to a reachable Redis endpoint"
+    );
+  } else {
+    addResult(
+      "runtime",
+      "Redis connection",
+      redisProbe.ok,
+      redisProbe.ok ? "Connected to Redis socket" : "Unable to open Redis socket",
+      "Check REDIS_URL and network path to Redis"
     );
   }
 }
@@ -252,6 +321,7 @@ function printSummary() {
 
 checkToolchain();
 checkEnv();
+checkRuntimeDependencies();
 checkNextVercel();
 checkAssetsAndSafety();
 if (!flags.has("--skip-pipeline")) {
