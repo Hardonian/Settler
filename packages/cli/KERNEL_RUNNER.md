@@ -14,6 +14,9 @@ Kernel feature flags:
 - `SETTLER_KERNEL_CANONICALIZE=1`
 - `SETTLER_KERNEL_EXECUTION_MODE=disabled|compare_only|shadow|primary`
 - `SETTLER_KERNEL_PRIMARY_ALLOWLIST=canonicalize_hash,proof_bundle_hash,artifact_identity_hash`
+- `SETTLER_DISABLE_KERNEL=1` (hard global rollback; forces disabled mode)
+- `SETTLER_KERNEL_SHADOW_ONLY=1` (forces shadow mode for safe compare rollout)
+- `SETTLER_DISABLE_OPERATION=canonicalize_hash,proof_bundle_hash,artifact_identity_hash` (operation-scoped rollback)
 
 `SETTLER_KERNEL_SHADOW_MODE=1` is still honored for backward compatibility and maps to `shadow` when explicit execution mode is absent.
 
@@ -59,6 +62,17 @@ Before kernel work, the TS wrapper performs handshake validation:
 
 On mismatch, TS fallback is selected and telemetry counters are incremented with machine-visible fallback reason.
 
+## Readiness checks
+
+`checkKernelOperationReadiness(operation)` reports:
+
+- `kernelBinaryAvailable`
+- `handshakeSuccess`
+- `operationReady`
+- `runnerMode`
+- `reason` when not ready
+
+Use readiness preflight before enabling `primary` mode in production-like environments.
 At startup, call `getKernelStartupHealth()` to preflight handshake health and runner readiness (`healthy`, `runnerMode`, `reason`, protocol/version, supported operations).
 
 ## Telemetry signal
