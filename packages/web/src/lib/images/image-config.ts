@@ -22,41 +22,38 @@ export interface ImageConfig {
 
 /**
  * Settler brand images configuration
- * Brand assets are centralized in /public/brand/settler and /public/assets/images
+ * All active brand images are located in /public/brand/settler/
  */
 const SETTLER_IMAGES_CONFIG = {
   // Favicons
   favicon: {
-    path: "/brand/settler/logo-icon.svg",
-    width: 64,
-    height: 64,
+    path: "/brand/settler/favicon-192x192.svg",
+    width: 192,
+    height: 192,
     alt: "Settler Favicon",
     category: "favicon" as const,
     mimeType: "image/svg+xml",
-    webpPath: "/brand/settler/logo-icon.svg",
   },
   favicon192: {
-    path: "/brand/settler/logo-icon.svg",
+    path: "/brand/settler/favicon-192x192.svg",
     width: 192,
     height: 192,
     alt: "Settler Icon 192x192",
     category: "favicon" as const,
     mimeType: "image/svg+xml",
-    webpPath: "/brand/settler/logo-icon.svg",
   },
   favicon512: {
-    path: "/brand/settler/logo-icon.svg",
+    path: "/brand/settler/favicon-512x512.svg",
     width: 512,
     height: 512,
     alt: "Settler Icon 512x512",
     category: "favicon" as const,
     mimeType: "image/svg+xml",
-    webpPath: "/brand/settler/logo-icon.svg",
   },
 
   // Social Media Images
   ogImage: {
-    path: "/assets/images/Settler_seo.png",
+    path: "/opengraph-image",
     width: 1200,
     height: 630,
     alt: "Settler - Financial Infrastructure for Developers",
@@ -64,7 +61,7 @@ const SETTLER_IMAGES_CONFIG = {
     mimeType: "image/png",
   },
   twitterCard: {
-    path: "/assets/images/Settler_seo.png",
+    path: "/opengraph-image",
     width: 1200,
     height: 630,
     alt: "Settler - Financial Infrastructure for Developers",
@@ -74,7 +71,7 @@ const SETTLER_IMAGES_CONFIG = {
 
   // Logos
   logoMain: {
-    path: "/brand/settler/logo-primary-horizontal.svg",
+    path: "/brand/settler/logo-horizontal.svg",
     width: 160,
     height: 40,
     alt: "Settler Logo",
@@ -82,13 +79,12 @@ const SETTLER_IMAGES_CONFIG = {
     mimeType: "image/svg+xml",
   },
   logoSEO: {
-    path: "/assets/images/Settler_seo.png",
+    path: "/opengraph-image",
     width: 1073,
     height: 357,
     alt: "Settler SEO Logo",
     category: "logo" as const,
     mimeType: "image/png",
-    webpPath: "/assets/images/Settler_seo.webp",
   },
 
   // Thumbnails

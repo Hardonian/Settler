@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { SettlerLogo } from "@/components/brand/SettlerLogo";
 import { cn } from "@/lib/utils";
 import { Menu, ChevronDown } from "lucide-react";
 import { SettlerLogo } from "@/components/brand/SettlerLogo";

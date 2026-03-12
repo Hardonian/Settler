@@ -91,13 +91,13 @@ export async function generateMetadata({ params }: PageProps) {
     openGraph: {
       title: content.data?.title || "Settler",
       description: content.data?.description || "",
-      images: [content.data?.ogImage || "/og-image.png"],
+      images: [content.data?.ogImage || "/opengraph-image"],
     },
     twitter: {
       card: "summary_large_image",
       title: content.data?.title || "Settler",
       description: content.data?.description || "",
-      images: [content.data?.ogImage || "/og-image.png"],
+      images: [content.data?.ogImage || "/opengraph-image"],
     },
   };
 }

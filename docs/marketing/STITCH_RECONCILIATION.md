@@ -174,12 +174,10 @@ packages/web/src/app/
 
 ### Changes Made This Pass
 
-1. **`/public/logo-dark.svg`** — Created dark-mode logo variant. Text fills changed from `#0F172A`
-   (invisible on dark backgrounds) to `#F1F5F9` (near-white). Icon box updated to `#1E293B`/`#475569`
-   for visibility on dark nav/footer.
+1. **Brand canonicalization update** — Active logo sources now resolve from `/public/brand/settler/` via the shared `SettlerLogo` component (`logo-horizontal.svg` and `logo-horizontal-dark.svg`).
 
-2. **`Navigation.tsx`** — Logo now conditionally renders light (`/logo.svg`, `dark:hidden`) and
-   dark (`/logo-dark.svg`, `hidden dark:block`) variants. Added "Features" dropdown to desktop nav
+2. **`Navigation.tsx`** — Logo now conditionally renders light (`/brand/settler/logo-horizontal.svg`, `dark:hidden`) and
+   dark (`/brand/settler/logo-horizontal-dark.svg`, `hidden dark:block`) variants. Added "Features" dropdown to desktop nav
    exposing: How It Works, Replay Lab, Proof Explorer. Added Features section to mobile sheet nav.
    Fixed `/security` nav link → now points directly at `/security-and-audit`.
 

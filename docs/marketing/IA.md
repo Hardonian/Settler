@@ -26,10 +26,10 @@
 
 ## Route Groups
 
-| Group | Purpose |
-|---|---|
-| `(marketing)/` | Public-facing marketing surface. Currently contains `home/`. |
-| `(authenticated)/` | App routes behind auth. Not marketing. |
+| Group              | Purpose                                                      |
+| ------------------ | ------------------------------------------------------------ |
+| `(marketing)/`     | Public-facing marketing surface. Currently contains `home/`. |
+| `(authenticated)/` | App routes behind auth. Not marketing.                       |
 
 ## Page Ownership Model
 
@@ -38,6 +38,7 @@
 **File:** `packages/web/src/app/(marketing)/home/page.tsx`
 
 Single canonical homepage. Section order:
+
 1. Navigation
 2. Hero — product headline, CTAs, trust strip
 3. Core Capabilities — 6 capability cards (no feature-page overflow)
@@ -50,6 +51,7 @@ Single canonical homepage. Section order:
 10. Footer
 
 **Invariants:**
+
 - Exactly one hero
 - Exactly one FAQ block
 - Exactly one footer
@@ -57,13 +59,14 @@ Single canonical homepage. Section order:
 
 ### Feature Pages
 
-| Route | File | Purpose |
-|---|---|---|
-| `/how-it-works` | `app/how-it-works/page.tsx` | Architecture walkthrough |
-| `/replay-lab` | `app/replay-lab/page.tsx` | Deterministic Replay Lab |
+| Route             | File                          | Purpose                         |
+| ----------------- | ----------------------------- | ------------------------------- |
+| `/how-it-works`   | `app/how-it-works/page.tsx`   | Architecture walkthrough        |
+| `/replay-lab`     | `app/replay-lab/page.tsx`     | Deterministic Replay Lab        |
 | `/proof-explorer` | `app/proof-explorer/page.tsx` | Proof Explorer + audit evidence |
 
 All feature pages share:
+
 - `<Navigation />` component
 - `<Footer />` component
 - `bg-slate-50 dark:bg-slate-950` base background
@@ -71,17 +74,18 @@ All feature pages share:
 
 ### Marketing Support Pages
 
-| Route | File | Purpose |
-|---|---|---|
-| `/platform` | `app/platform/page.tsx` | Platform overview |
-| `/pricing` | `app/pricing/page.tsx` | Engagement models |
+| Route                 | File                              | Purpose            |
+| --------------------- | --------------------------------- | ------------------ |
+| `/platform`           | `app/platform/page.tsx`           | Platform overview  |
+| `/pricing`            | `app/pricing/page.tsx`            | Engagement models  |
 | `/security-and-audit` | `app/security-and-audit/page.tsx` | Trust + compliance |
-| `/about` | `app/about/page.tsx` | About |
-| `/blog` | `app/blog/page.tsx` | Blog |
+| `/about`              | `app/about/page.tsx`              | About              |
+| `/blog`               | `app/blog/page.tsx`               | Blog               |
 
 ## Navigation Model
 
 **Primary nav (desktop + mobile):**
+
 - Platform
 - Features ▾ (dropdown: How It Works, Replay Lab, Proof Explorer)
 - Pricing
@@ -89,36 +93,38 @@ All feature pages share:
 - Docs
 
 **Secondary nav ("More" dropdown):**
+
 - Contact
 - Privacy
 - Terms
 
 **Right-side actions:**
+
 - Dark mode toggle
 - Login
 - Get Started (CTA)
 
 ## Footer Structure
 
-| Section | Links |
-|---|---|
-| Product | Platform, How It Works, Pricing, Security, Login, Get Started |
-| Features | Replay Lab, Proof Explorer, Quickstart, Documentation |
-| Company | About, Contact, GitHub, Terms, Privacy |
+| Section  | Links                                                         |
+| -------- | ------------------------------------------------------------- |
+| Product  | Platform, How It Works, Pricing, Security, Login, Get Started |
+| Features | Replay Lab, Proof Explorer, Quickstart, Documentation         |
+| Company  | About, Contact, GitHub, Terms, Privacy                        |
 
 ## Brand Assets
 
-| Asset | Path | Usage |
-|---|---|---|
-| Logo (light mode) | `/logo.svg` | Navigation, footer — light theme |
-| Logo (dark mode) | `/logo-dark.svg` | Navigation, footer — dark theme |
-| Favicon | `/favicon.svg` | Browser tab |
-| Favicon PNG | `/assets/images/settler-favicon.png` | Metadata, PWA |
-| OG Image | `/assets/images/social/settler-og-image.jpg` | Social preview |
-| Twitter Card | `/assets/images/social/settler-twitter-card.png` | Twitter |
-| Hero Visual | `/illustrations/hero-visual.svg` | Homepage hero |
-| How it works | `/illustrations/how-settler-works.svg` | How it works page |
-| Feature illustrations | `/illustrations/feature-*.svg` | Dev workflow steps |
+| Asset                 | Path                                      | Usage                            |
+| --------------------- | ----------------------------------------- | -------------------------------- |
+| Logo (light mode)     | `/brand/settler/logo-horizontal.svg`      | Navigation, footer — light theme |
+| Logo (dark mode)      | `/brand/settler/logo-horizontal-dark.svg` | Navigation, footer — dark theme  |
+| Favicon               | `/brand/settler/logo-icon.svg`            | Browser tab                      |
+| Favicon (PWA)         | `/brand/settler/favicon-192x192.svg`      | Metadata, PWA                    |
+| OG Image              | `/opengraph-image`                        | Social preview                   |
+| Twitter Card          | `/opengraph-image`                        | Twitter                          |
+| Hero Visual           | `/illustrations/hero-visual.svg`          | Homepage hero                    |
+| How it works          | `/illustrations/how-settler-works.svg`    | How it works page                |
+| Feature illustrations | `/illustrations/feature-*.svg`            | Dev workflow steps               |
 
 ## Design System Conventions
 

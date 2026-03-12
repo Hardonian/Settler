@@ -1,59 +1,77 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-type SettlerLogoVariant = "horizontal" | "stacked" | "icon" | "wordmark";
+type SettlerLogoVariant = "horizontal" | "icon" | "wordmark";
 
 interface SettlerLogoProps {
   variant?: SettlerLogoVariant;
+  theme?: "auto" | "light" | "dark";
   className?: string;
   priority?: boolean;
+  alt?: string;
 }
 
-const BRAND_LOGOS: Record<
-  SettlerLogoVariant,
-  { src: string; alt: string; width: number; height: number }
-> = {
+const LOGO_CONFIG = {
   horizontal: {
-    src: "/brand/settler/logo-primary-horizontal.svg",
-    alt: "Settler logo",
-    width: 160,
-    height: 40,
-  },
-  stacked: {
-    src: "/brand/settler/logo-stacked.svg",
-    alt: "Settler stacked logo",
-    width: 680,
-    height: 680,
+    light: "/brand/settler/logo-horizontal.svg",
+    dark: "/brand/settler/logo-horizontal-dark.svg",
+    width: 130,
+    height: 34,
   },
   icon: {
-    src: "/brand/settler/logo-icon.svg",
-    alt: "Settler icon",
-    width: 40,
-    height: 40,
+    light: "/brand/settler/logo-icon.svg",
+    dark: "/brand/settler/logo-icon.svg",
+    width: 32,
+    height: 32,
   },
   wordmark: {
-    src: "/brand/settler/logo-wordmark.svg",
-    alt: "Settler wordmark",
-    width: 92,
-    height: 16,
+    light: "/brand/settler/logo-horizontal.svg",
+    dark: "/brand/settler/logo-horizontal.svg",
+    width: 520,
+    height: 160,
   },
-};
+} as const;
 
 export function SettlerLogo({
   variant = "horizontal",
+  theme = "auto",
   className,
   priority = false,
+  alt = "Settler",
 }: SettlerLogoProps) {
-  const logo = BRAND_LOGOS[variant];
+  const config = LOGO_CONFIG[variant];
+
+  if (theme === "light" || theme === "dark") {
+    return (
+      <Image
+        src={theme === "dark" ? config.dark : config.light}
+        alt={alt}
+        width={config.width}
+        height={config.height}
+        className={className}
+        priority={priority}
+      />
+    );
+  }
 
   return (
-    <Image
-      src={logo.src}
-      alt={logo.alt}
-      width={logo.width}
-      height={logo.height}
-      className={cn("h-auto w-auto", className)}
-      priority={priority}
-    />
+    <>
+      <Image
+        src={config.light}
+        alt={alt}
+        width={config.width}
+        height={config.height}
+        className={cn(className, "dark:hidden")}
+        priority={priority}
+      />
+      <Image
+        src={config.dark}
+        alt={alt}
+        width={config.width}
+        height={config.height}
+        className={cn("hidden dark:block", className)}
+        priority={priority}
+      />
+    </>
   );
 }

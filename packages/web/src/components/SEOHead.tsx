@@ -46,7 +46,8 @@ export function SEOHead({
 
       {/* Favicon */}
       <link rel="icon" type={SETTLER_IMAGES.favicon.mimeType} href={SETTLER_IMAGES.favicon.path} />
-      <link rel="apple-touch-icon" href={SETTLER_IMAGES.favicon.path} />
+      <link rel="icon" type="image/svg+xml" href="/brand/settler/logo-icon.svg" />
+      <link rel="apple-touch-icon" href={SETTLER_IMAGES.favicon192.path} />
 
       {/* Structured Data */}
       <script
