@@ -1,5 +1,7 @@
 # Deployment Readiness (Operator Truth)
 
+> Canonical platform index: [`docs/platform-index.md`](../platform-index.md)
+
 This document defines the minimum verifiable path to deploy Settler without hidden assumptions.
 
 ## 1) Preconditions

@@ -1,5 +1,7 @@
 # Operations Guide
 
+> Canonical platform index: [`docs/platform-index.md`](../platform-index.md)
+
 ## Health and status checks
 
 - `GET /health` — root platform health.
@@ -25,7 +27,6 @@
 
 - Use remediation/policy simulation first when available.
 - Escalate when tenant boundary risk, persistent replay divergence, or failed integrity checks are detected.
-
 
 ## Canonical links
 

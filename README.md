@@ -34,6 +34,7 @@ Use `pnpm demo:settler` to run a deterministic end-to-end demo pipeline.
 
 ## Documentation map
 
+- Platform truth index: `docs/platform-index.md`
 - Documentation hub: `docs/README.md`
 - Architecture: `docs/architecture/`
 - Operations/runbooks: `docs/operations/`
