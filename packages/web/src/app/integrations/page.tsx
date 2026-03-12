@@ -1,15 +1,17 @@
-import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { MdxPlainRenderer } from '@/components/content/MdxPlainRenderer';
-import { PageLayout } from '@/components/content/PageLayout';
-import { getContentPage } from '@/lib/content/pages';
+import { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { MdxPlainRenderer } from "@/components/content/MdxPlainRenderer";
+import { PageLayout } from "@/components/content/PageLayout";
+import { getContentPage } from "@/lib/content/pages";
+import { IntegrationFlowDiagram } from "@/components/feature-visual-proof";
+import { RealityEvidencePanel } from "@/components/RealityEvidencePanel";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export function generateMetadata(): Metadata {
-  const page = getContentPage('integrations');
+  const page = getContentPage("integrations");
   if (!page) {
-    return { title: 'Integrations' };
+    return { title: "Integrations" };
   }
   return {
     title: page.title,
@@ -18,7 +20,7 @@ export function generateMetadata(): Metadata {
 }
 
 export default function IntegrationsPage() {
-  const page = getContentPage('integrations');
+  const page = getContentPage("integrations");
   if (!page) {
     notFound();
   }
@@ -26,6 +28,10 @@ export default function IntegrationsPage() {
   return (
     <PageLayout title={page.title} description={page.description}>
       <MdxPlainRenderer source={page.content} />
+      <div className="mt-10 space-y-8">
+        <IntegrationFlowDiagram />
+        <RealityEvidencePanel scope="integrations" />
+      </div>
     </PageLayout>
   );
 }

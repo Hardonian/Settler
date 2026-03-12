@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { RealityEvidencePanel } from "@/components/RealityEvidencePanel";
 
 interface IncidentRecord {
   id: string;
@@ -28,6 +29,7 @@ export default function OperatorIncidentsPage() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [linkRunByIncident, setLinkRunByIncident] = useState<Record<string, string>>({});
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     void loadIncidents();
@@ -37,10 +39,22 @@ export default function OperatorIncidentsPage() {
     setLoading(true);
     const params = new URLSearchParams({ page: String(page), pageSize: "20" });
     if (statusFilter) params.set("status", statusFilter);
-    const res = await fetch(`/api/operator/incidents?${params.toString()}`);
-    const payload = (await res.json()) as IncidentResponse;
-    setItems(payload.data ?? []);
-    setLoading(false);
+    try {
+      const res = await fetch(`/api/operator/incidents?${params.toString()}`);
+      if (!res.ok) {
+        setLoadError(`Unable to load incidents (${res.status}).`);
+        setItems([]);
+        return;
+      }
+      const payload = (await res.json()) as IncidentResponse;
+      setLoadError(null);
+      setItems(payload.data ?? []);
+    } catch {
+      setLoadError("Unable to load incidents due to network/runtime error.");
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function acknowledge(incidentId: string) {
@@ -88,6 +102,12 @@ export default function OperatorIncidentsPage() {
         </select>
       </div>
 
+      {loadError ? (
+        <div className="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+          {loadError}
+        </div>
+      ) : null}
+
       {loading ? (
         <div className="text-sm">Loading incidents…</div>
       ) : (
@@ -112,7 +132,9 @@ export default function OperatorIncidentsPage() {
                   <td className="p-2">{item.severity}</td>
                   <td className="p-2">{item.status}</td>
                   <td className="p-2 font-mono">{item.tenant_id?.slice(0, 8) ?? "—"}</td>
-                  <td className="p-2 font-mono">{(item.linked_run_id ?? item.run_id)?.slice(0, 8) ?? "—"}</td>
+                  <td className="p-2 font-mono">
+                    {(item.linked_run_id ?? item.run_id)?.slice(0, 8) ?? "—"}
+                  </td>
                   <td className="p-2 max-w-[360px]">{item.summary}</td>
                   <td className="p-2">{new Date(item.created_at).toLocaleString()}</td>
                   <td className="p-2 space-y-2">
@@ -155,6 +177,8 @@ export default function OperatorIncidentsPage() {
           </table>
         </div>
       )}
+
+      <RealityEvidencePanel scope="console" title="Operator incident evidence references" />
     </div>
   );
 }
