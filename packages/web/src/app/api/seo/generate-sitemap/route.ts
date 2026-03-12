@@ -4,48 +4,37 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
-import { appLogger } from '@/lib/utils/logger';
+import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
+import { appLogger } from "@/lib/utils/logger";
+import { useCases } from "@/content/useCases";
 
-export const GET = withUniversalBillingGate(async function GET(_request: NextRequest) {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev";
-    
-    // Static pages
-    const staticPages = [
-      "",
-      "/pricing",
-      "/docs",
-      "/docs/getting-started",
-      "/docs/api",
-      "/docs/billing",
-      "/support",
-      "/enterprise",
-      "/why-settler",
-      "/architecture",
-      "/security",
-    ];
+export const GET = withUniversalBillingGate(
+  async function GET(_request: NextRequest) {
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev";
 
-    // Programmatic pages - use cases
-    const useCases = [
-      "ecommerce-reconciliation",
-      "payment-reconciliation",
-      "receipt-processing",
-      "multi-currency-reconciliation",
-      "compliance-auditing",
-    ];
+      // Static pages
+      const staticPages = [
+        "",
+        "/pricing",
+        "/docs",
+        "/docs/getting-started",
+        "/docs/api",
+        "/docs/billing",
+        "/support",
+        "/enterprise",
+        "/why-settler",
+        "/architecture",
+        "/security",
+      ];
 
-    // Programmatic pages - integrations
-    const integrations = [
-      "stripe",
-      "shopify",
-      "paypal",
-      "quickbooks",
-      "xero",
-    ];
+      const useCaseSlugs = useCases.map((useCase) => useCase.slug);
 
-    // Generate sitemap XML
-    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+      // Programmatic pages - integrations
+      const integrations = ["stripe", "shopify", "paypal", "quickbooks", "xero"];
+
+      // Generate sitemap XML
+      const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${staticPages
   .map(
@@ -56,7 +45,7 @@ ${staticPages
   </url>`
   )
   .join("\n")}
-${useCases
+${useCaseSlugs
   .map(
     (useCase) => `  <url>
     <loc>${baseUrl}/use-cases/${useCase}</loc>
@@ -76,21 +65,23 @@ ${integrations
   .join("\n")}
 </urlset>`;
 
-    return new NextResponse(sitemap, {
-      headers: {
-        "Content-Type": "application/xml",
-        "Cache-Control": "public, max-age=3600, s-maxage=3600",
-      },
-    });
-  } catch (error) {
-    appLogger.error("Sitemap generation error", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to generate sitemap',
-        message: 'Please try again later or contact support if the issue persists',
-      },
-      { status: 200 }
-    );
-  }
-}, { feature: 'GET API' });
+      return new NextResponse(sitemap, {
+        headers: {
+          "Content-Type": "application/xml",
+          "Cache-Control": "public, max-age=3600, s-maxage=3600",
+        },
+      });
+    } catch (error) {
+      appLogger.error("Sitemap generation error", error);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Failed to generate sitemap",
+          message: "Please try again later or contact support if the issue persists",
+        },
+        { status: 200 }
+      );
+    }
+  },
+  { feature: "GET API" }
+);

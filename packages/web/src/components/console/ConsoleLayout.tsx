@@ -30,13 +30,26 @@ import {
   Database,
   FileText,
   Building2,
+  ShieldCheck,
+  RotateCcw,
+  ClipboardCheck,
+  Scale,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { BackendHealthBadge } from "./BackendHealthBadge";
 
 const consoleNavItems = [
-  { href: "/console", label: "Overview", icon: LayoutDashboard },
+  { href: "/console", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/console/reconciliations", label: "Reconciliations", icon: Scale },
+  { href: "/console/audits", label: "Audits", icon: ClipboardCheck },
+  { href: "/console/proof-explorer", label: "Proof Explorer", icon: ShieldCheck },
+  { href: "/console/replay-lab", label: "Replay Lab", icon: RotateCcw },
+  { href: "/console/policies", label: "Policies", icon: Shield },
+  { href: "/console/organizations", label: "Organizations", icon: Building2 },
+  { href: "/console/api-keys", label: "API Keys", icon: Key },
+  { href: "/console/settings", label: "Settings", icon: Settings },
   { href: "/console/api-test", label: "API Test Console", icon: Code },
   { href: "/console/api-playground", label: "API Playground", icon: Code },
   { href: "/console/tables", label: "API Service Tables", icon: Database },
@@ -45,16 +58,25 @@ const consoleNavItems = [
   { href: "/console/workflows", label: "Workflows", icon: Zap },
   { href: "/console/control-plane", label: "Control Plane", icon: Shield },
   { href: "/console/inspector", label: "Inspector", icon: Search },
-  { href: "/console/api-keys", label: "API Keys", icon: Key },
   { href: "/console/usage", label: "Usage & Metrics", icon: BarChart3 },
   { href: "/console/performance", label: "Performance", icon: Activity },
   { href: "/console/insights", label: "AI Insights", icon: Sparkles },
+  { href: "/console/analytics", label: "Analytics Studio", icon: BarChart3 },
   { href: "/console/webhooks", label: "Webhooks", icon: Webhook },
   { href: "/console/billing", label: "Billing & Plan", icon: CreditCard },
   { href: "/console/receipts", label: "Receipts", icon: Receipt },
   { href: "/console/feature-flags", label: "Feature Flags", icon: ToggleLeft },
   { href: "/console/site", label: "Site Designer", icon: Palette },
   { href: "/console/docs", label: "Docs & Examples", icon: BookOpen },
+];
+
+const enterpriseNavItems = [
+  { href: "/console/replay", label: "Replay Lab", icon: ScanSearch },
+  { href: "/console/audit-trail", label: "Audit Trail", icon: ShieldCheck },
+  { href: "/console/bulk-operations", label: "Bulk Operations", icon: ClipboardCheck },
+  { href: "/console/approvals", label: "Approvals", icon: Gavel },
+  { href: "/console/rules-engine", label: "Rules Engine", icon: Shield },
+  { href: "/console/operator", label: "Operator Console", icon: Bot },
 ];
 
 const adminNavItems = [
@@ -94,7 +116,42 @@ export function ConsoleLayout({ children }: ConsoleLayoutProps) {
           Console
         </h3>
       </div>
-      {consoleNavItems.map((item) => {
+      {coreNavItems.map((item) => {
+        const Icon = item.icon;
+        const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
+
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={() => setOpen(false)}
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+              isActive
+                ? "bg-electric-cyan/10 text-electric-cyan dark:bg-electric-cyan/20 dark:text-electric-cyan shadow-sm"
+                : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:translate-x-0.5"
+            )}
+          >
+            <Icon className={cn("w-5 h-5 transition-transform", isActive && "scale-110")} />
+            {item.label}
+            {isActive && (
+              <span className="ml-auto w-1.5 h-1.5 rounded-full bg-electric-cyan animate-pulse" />
+            )}
+          </Link>
+        );
+      })}
+
+      <div className="pt-4 mt-4 border-t border-slate-200 dark:border-slate-700">
+        <div className="px-3 py-2 mt-2 mb-1 flex items-center justify-between">
+          <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            Enterprise
+          </h3>
+          <span className="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded bg-electric-cyan/10 text-electric-cyan">
+            Premium
+          </span>
+        </div>
+      </div>
+      {enterpriseNavItems.map((item) => {
         const Icon = item.icon;
         const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
 
