@@ -21,7 +21,12 @@ function runCommand(command: string, args: string[], cwd: string): Promise<void>
       stdio: "pipe",
     });
 
+    let stdoutOutput = "";
     let stderrOutput = "";
+
+    child.stdout.on("data", (chunk) => {
+      stdoutOutput += chunk.toString();
+    });
 
     child.stderr.on("data", (chunk) => {
       stderrOutput += chunk.toString();
@@ -33,7 +38,9 @@ function runCommand(command: string, args: string[], cwd: string): Promise<void>
         return;
       }
 
-      reject(new Error(`Command failed: ${command} ${args.join(" ")}\n${stderrOutput}`));
+      reject(
+        new Error(`Command failed: ${command} ${args.join(" ")}\n${stdoutOutput}\n${stderrOutput}`)
+      );
     });
 
     child.on("error", reject);
@@ -73,8 +80,10 @@ describe("content pages in production build mode", () => {
     serverProcess = spawn("pnpm", ["exec", "next", "start", "-p", String(PRODUCTION_PORT)], {
       cwd: WEB_PACKAGE_DIR,
       env: { ...process.env, NODE_ENV: "production" },
-      stdio: "pipe",
+      stdio: "ignore",
     });
+
+    serverProcess.unref();
 
     await waitForServer(`${BASE_URL}/product`);
   });
@@ -82,9 +91,21 @@ describe("content pages in production build mode", () => {
   afterAll(async () => {
     if (serverProcess && !serverProcess.killed) {
       serverProcess.kill("SIGTERM");
-    }
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+      await Promise.race([
+        new Promise<void>((resolve) => {
+          serverProcess?.once("exit", () => resolve());
+        }),
+        new Promise<void>((resolve) => {
+          setTimeout(() => {
+            if (serverProcess && !serverProcess.killed) {
+              serverProcess.kill("SIGKILL");
+            }
+            resolve();
+          }, 2_000);
+        }),
+      ]);
+    }
   });
 
   it("serves all MDX-backed content routes without hard-500 errors", async () => {
