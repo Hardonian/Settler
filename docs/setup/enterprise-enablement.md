@@ -4,6 +4,12 @@
 
 This file documents enterprise/premium-only env controls that are active in code.
 
+## Enablement tiers
+
+- **OSS baseline (self-serve):** JobForge flags remain off.
+- **Enterprise self-serve:** operator enables JobForge flags and provides required credential encryption + Supabase privileged keys.
+- **Managed-service assisted:** same technical controls, but key provisioning/rotation and rollout sequencing are coordinated with platform operators.
+
 ## Required for enterprise integrations
 
 - `JOBFORGE_INTEGRATION_ENABLED=1`
@@ -23,3 +29,4 @@ This file documents enterprise/premium-only env controls that are active in code
 - Do not enable JobForge flags without credential encryption keying.
 - Keep service-role keys out of `NEXT_PUBLIC_*` scope.
 - For multi-tenant safety, keep schema and tenant controls aligned with verified migration state before enabling tenant-specific schema behavior.
+- Treat enterprise feature rollout as staged: shadow/observe first, then enable primary paths.

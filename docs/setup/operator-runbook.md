@@ -1,24 +1,25 @@
 # Operator Runbook (Canonical)
 
-> Back to platform truth index: [`docs/platform-index.md`](../platform-index.md)
+## First 5 minutes (degraded production)
+
+1. Freeze blast radius: set `SETTLER_DISABLE_KERNEL=1` if hash/canonicalization path is suspect.
+2. Validate process config and typed env: `pnpm run doctor -- --first-run`.
+3. Inspect kernel status and operation readiness: `pnpm run kernel:health`.
+4. Classify outage source: env/config failure vs kernel runner failure vs upstream integration failure.
+
+## Startup checks
 
 1. Validate env file against `docs/setup/env-matrix.md`.
-2. Run `pnpm run verify:setup` and clear all ❌ findings before deploy.
-3. Verify API env parsing by running `pnpm typecheck` and API startup command.
-4. Verify web can initialize Supabase client (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`).
-This runbook defines the minimum deterministic procedure for operating Settler safely.
+2. Verify API/web baseline via `pnpm lint && pnpm typecheck && pnpm build`.
+3. Run setup checks: `pnpm run doctor -- --first-run`.
+4. Run kernel diagnostics: `pnpm run kernel:health`.
 
 ## 1) Initial setup
 
-1. Copy and populate environment file(s) from repository templates.
-2. Validate required variables against [`docs/setup/env-matrix.md`](./env-matrix.md).
-3. Install dependencies and run baseline quality gates:
-   - `pnpm install --frozen-lockfile`
-   - `pnpm lint`
-   - `pnpm typecheck`
-   - `pnpm build`
-4. Start local stack for smoke checks:
-   - `pnpm dev:stack`
+- API health/readiness endpoints return success.
+- Database connectivity succeeds using `DATABASE_URL`.
+- Redis path (if configured) accepts read/write.
+- Stripe webhook signature verification succeeds in staging before production rollout.
 
 ## 2) Deployment steps
 
@@ -34,12 +35,18 @@ This runbook defines the minimum deterministic procedure for operating Settler s
 
 ## 3) Kernel verification
 
-Before enabling kernel primary mode:
+### Kernel binary unavailable / handshake failure / protocol mismatch
 
-1. Ensure kernel binary resolves and protocol handshake succeeds.
-2. Run in `shadow` or `compare_only` mode first.
-3. Confirm no unacceptable divergence/fallback patterns.
-4. Promote operation-by-operation through `SETTLER_KERNEL_PRIMARY_ALLOWLIST`.
+- Symptom: kernel diagnostics show `binary_unavailable`, `handshake_failed`, or `protocol_mismatch` style reasons.
+- Action order:
+  1. `SETTLER_DISABLE_KERNEL=1` for immediate stabilization.
+  2. Optionally restore compare mode: `SETTLER_KERNEL_EXECUTION_MODE=shadow`.
+  3. Reconcile binary path/version (`SETTLER_KERNEL_BIN`) and protocol compatibility.
+
+### Scoped operation instability
+
+- Symptom: one kernel operation fails while others are healthy.
+- Action: disable only the failing operation via `SETTLER_DISABLE_OPERATION=<operation>`.
 
 Reference: [`docs/architecture/rust-kernel-boundary.md`](../architecture/rust-kernel-boundary.md).
 
@@ -47,48 +54,18 @@ Reference: [`docs/architecture/rust-kernel-boundary.md`](../architecture/rust-ke
 
 Use explicit runtime controls (machine-visible) during degraded conditions:
 
-- Disable kernel globally: `SETTLER_DISABLE_KERNEL=1`
-- Force TS-only execution: `SETTLER_KERNEL_EXECUTION_MODE=disabled`
-- Shadow compare during recovery: `SETTLER_KERNEL_EXECUTION_MODE=shadow`
-- Disable specific operation: `SETTLER_DISABLE_OPERATION=<op_name>`
-- Dry-run alert channels: `ALERT_NOTIFIER_DRY_RUN=1`
+- Symptom: webhook endpoint rejects valid Stripe events.
+- Action: re-sync `STRIPE_WEBHOOK_SECRET` from Stripe dashboard and replay test events.
 
 Reference: [`docs/setup/feature-flag-matrix.md`](./feature-flag-matrix.md).
 
-## 5) Health checks
+- Disable kernel globally: `SETTLER_DISABLE_KERNEL=1`
+- Shadow-only kernel execution: `SETTLER_KERNEL_EXECUTION_MODE=shadow`
+- Disable one kernel operation: `SETTLER_DISABLE_OPERATION=proof_bundle_hash`
+- Keep app operational without optional subsystems: leave optional keys unset (Sentry, PostHog, GA4, alert webhooks)
 
-Operational checks to run during rollout and incident triage:
+## Post-incident exit criteria
 
-- `GET /health`
-- `GET /health/live`
-- `GET /health/ready`
-- `GET /metrics`
-- `pnpm doctor`
-- `pnpm suite-doctor`
-- `pnpm validate:tenant-isolation`
-
-## 6) Rollback procedures
-
-### A. Runtime rollback (fastest)
-
-1. Disable or shadow kernel via environment controls.
-2. Revert risky feature flags to known-safe values.
-3. Keep core API/web surfaces live with degraded but explicit behavior.
-
-### B. Release rollback
-
-1. Redeploy last known good artifact.
-2. Re-validate health/readiness endpoints.
-3. Re-run smoke and tenant-isolation checks.
-4. Log incident + remediation notes.
-
-### C. Data-risk rollback guardrails
-
-- Never bypass tenant policy checks during rollback.
-- Preserve auditability (trace IDs, incident timeline, explicit degraded state).
-- Require confirmation that cross-tenant boundaries remain enforced.
-
-## 7) Incident response path
-
-- Follow [`docs/INCIDENT_RESPONSE_PLAYBOOK.md`](../INCIDENT_RESPONSE_PLAYBOOK.md) for severity handling and communications.
-- Use [`docs/operations/remediation-playbook.md`](../operations/remediation-playbook.md) for tactical remediation procedures.
+- Kernel diagnostics show healthy startup and expected operation readiness.
+- Rollback flags are removed in a controlled deploy.
+- `pnpm run check:production` and targeted runtime smoke checks pass.
