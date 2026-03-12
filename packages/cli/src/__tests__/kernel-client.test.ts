@@ -8,6 +8,7 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 import {
   artifactIdentityHashWithFallback,
+  checkKernelOperationReadiness,
   canonicalizeHashWithFallback,
   getKernelTelemetrySnapshot,
   proofBundleHashWithFallback,
@@ -32,6 +33,24 @@ describe("kernel client", () => {
     expect(flags.shadowMode).toBe(true);
     expect(flags.executionMode).toBe("shadow");
     expect(flags.primaryAllowlist.has("canonicalize_hash")).toBe(true);
+    expect(flags.disabledOperations.size).toBe(0);
+  });
+
+  test("supports operational safety env overrides", () => {
+    const flags = readKernelFlags({
+      SETTLER_DISABLE_KERNEL: "1",
+      SETTLER_KERNEL_ENABLED: "1",
+      SETTLER_KERNEL_CANONICALIZE: "1",
+      SETTLER_KERNEL_SHADOW_ONLY: "1",
+      SETTLER_DISABLE_OPERATION: "proof_bundle_hash,artifact_identity_hash",
+    } as NodeJS.ProcessEnv);
+
+    expect(flags.enabled).toBe(false);
+    expect(flags.canonicalize).toBe(false);
+    expect(flags.executionMode).toBe("disabled");
+    expect(flags.shadowMode).toBe(true);
+    expect(flags.disabledOperations.has("proof_bundle_hash")).toBe(true);
+    expect(flags.disabledOperations.has("artifact_identity_hash")).toBe(true);
   });
 
   test("resolves binary runner when executable path is provided", () => {
@@ -127,5 +146,33 @@ describe("kernel client", () => {
     const b = await artifactIdentityHashWithFallback({ a: 1, b: 2 });
     expect(a.result.normalizedHash).toBe(b.result.normalizedHash);
     expect(a.metadata.fallbackReason).toBe("binary_unavailable");
+  });
+
+  test("operation disable flag forces explicit fallback reason", async () => {
+    process.env.SETTLER_KERNEL_ENABLED = "1";
+    process.env.SETTLER_KERNEL_CANONICALIZE = "1";
+    process.env.SETTLER_KERNEL_EXECUTION_MODE = "primary";
+    process.env.SETTLER_KERNEL_PRIMARY_ALLOWLIST = "proof_bundle_hash";
+    process.env.SETTLER_DISABLE_OPERATION = "proof_bundle_hash";
+    resetKernelTelemetry();
+
+    const result = await proofBundleHashWithFallback({ a: 1, b: 2 });
+    expect(result.mode).toBe("ts");
+    expect(result.runnerMode).toBe("disabled");
+    expect(result.metadata.fallbackReason).toBe("operation_disabled_env");
+
+    const telemetry = getKernelTelemetrySnapshot();
+    expect(telemetry.fallbackByReason.operation_disabled_env).toBe(1);
+  });
+
+  test("readiness check reports disabled state without throwing", async () => {
+    process.env.SETTLER_DISABLE_KERNEL = "1";
+    process.env.SETTLER_KERNEL_ENABLED = "1";
+    process.env.SETTLER_KERNEL_CANONICALIZE = "1";
+
+    const readiness = await checkKernelOperationReadiness("canonicalize_hash");
+    expect(readiness.operationReady).toBe(false);
+    expect(readiness.reason).toBe("kernel_disabled");
+    expect(readiness.runnerMode).toBe("disabled");
   });
 });

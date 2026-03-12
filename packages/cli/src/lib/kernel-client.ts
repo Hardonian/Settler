@@ -24,6 +24,7 @@ export interface KernelFlags {
   shadowMode: boolean;
   executionMode: KernelExecutionMode;
   primaryAllowlist: Set<KernelOperation>;
+  disabledOperations: Set<KernelOperation>;
 }
 
 export type KernelRunnerMode = "binary" | "cargo-run" | "disabled" | "fallback-ts";
@@ -148,6 +149,8 @@ function shouldAllowCargoFallback(env: NodeJS.ProcessEnv): boolean {
 }
 
 function parseExecutionMode(env: NodeJS.ProcessEnv): KernelExecutionMode {
+  if (env.SETTLER_DISABLE_KERNEL === "1") return "disabled";
+  if (env.SETTLER_KERNEL_SHADOW_ONLY === "1") return "shadow";
   const explicit = env.SETTLER_KERNEL_EXECUTION_MODE?.trim().toLowerCase();
   if (
     explicit === "disabled" ||
@@ -164,6 +167,24 @@ function parseExecutionMode(env: NodeJS.ProcessEnv): KernelExecutionMode {
 function parsePrimaryAllowlist(env: NodeJS.ProcessEnv): Set<KernelOperation> {
   const configured =
     env.SETTLER_KERNEL_PRIMARY_ALLOWLIST?.split(",")
+      .map((item) => item.trim())
+      .filter(Boolean) ?? [];
+  const out = new Set<KernelOperation>();
+  for (const candidate of configured) {
+    if (
+      candidate === "canonicalize_hash" ||
+      candidate === "proof_bundle_hash" ||
+      candidate === "artifact_identity_hash"
+    ) {
+      out.add(candidate);
+    }
+  }
+  return out;
+}
+
+function parseDisabledOperations(env: NodeJS.ProcessEnv): Set<KernelOperation> {
+  const configured =
+    env.SETTLER_DISABLE_OPERATION?.split(",")
       .map((item) => item.trim())
       .filter(Boolean) ?? [];
   const out = new Set<KernelOperation>();
@@ -210,17 +231,97 @@ function recordDivergence(operation: KernelOperation): void {
 }
 
 function shouldUsePrimary(flags: KernelFlags, operation: KernelOperation): boolean {
+  if (flags.disabledOperations.has(operation)) return false;
   return flags.executionMode === "primary" && flags.primaryAllowlist.has(operation);
 }
 
+function operationExplicitlyDisabled(flags: KernelFlags, operation: KernelOperation): boolean {
+  return flags.disabledOperations.has(operation);
+}
+
 export function readKernelFlags(env: NodeJS.ProcessEnv = process.env): KernelFlags {
+  const executionMode = parseExecutionMode(env);
+  const enabled = env.SETTLER_DISABLE_KERNEL === "1" ? false : env.SETTLER_KERNEL_ENABLED === "1";
+  const canonicalize =
+    env.SETTLER_DISABLE_KERNEL === "1" ? false : env.SETTLER_KERNEL_CANONICALIZE === "1";
   return {
-    enabled: env.SETTLER_KERNEL_ENABLED === "1",
-    canonicalize: env.SETTLER_KERNEL_CANONICALIZE === "1",
-    shadowMode: env.SETTLER_KERNEL_SHADOW_MODE === "1",
-    executionMode: parseExecutionMode(env),
+    enabled,
+    canonicalize,
+    shadowMode:
+      env.SETTLER_KERNEL_SHADOW_MODE === "1" ||
+      env.SETTLER_KERNEL_SHADOW_ONLY === "1" ||
+      executionMode === "shadow",
+    executionMode,
     primaryAllowlist: parsePrimaryAllowlist(env),
+    disabledOperations: parseDisabledOperations(env),
   };
+}
+
+export async function checkKernelOperationReadiness(
+  operation: KernelOperation,
+  timeoutMs = 1500
+): Promise<{
+  operation: KernelOperation;
+  kernelBinaryAvailable: boolean;
+  handshakeSuccess: boolean;
+  operationReady: boolean;
+  runnerMode: KernelRunnerMode;
+  reason?: string;
+}> {
+  const flags = readKernelFlags();
+  if (!flags.enabled || !flags.canonicalize || flags.executionMode === "disabled") {
+    return {
+      operation,
+      kernelBinaryAvailable: false,
+      handshakeSuccess: false,
+      operationReady: false,
+      runnerMode: "disabled",
+      reason: "kernel_disabled",
+    };
+  }
+  if (operationExplicitlyDisabled(flags, operation)) {
+    return {
+      operation,
+      kernelBinaryAvailable: false,
+      handshakeSuccess: false,
+      operationReady: false,
+      runnerMode: "disabled",
+      reason: "operation_disabled_env",
+    };
+  }
+
+  const resolved = resolveKernelRunner();
+  if (!resolved.runner) {
+    return {
+      operation,
+      kernelBinaryAvailable: false,
+      handshakeSuccess: false,
+      operationReady: false,
+      runnerMode: resolved.mode,
+      reason: resolved.reason ?? "no_runner_available",
+    };
+  }
+
+  try {
+    await ensureHandshake(resolved.runner, timeoutMs);
+    ensureOperationSupport(resolved.runner, operation);
+    return {
+      operation,
+      kernelBinaryAvailable: true,
+      handshakeSuccess: true,
+      operationReady: true,
+      runnerMode: resolved.runner.mode,
+    };
+  } catch (error) {
+    return {
+      operation,
+      kernelBinaryAvailable: true,
+      handshakeSuccess: false,
+      operationReady: false,
+      runnerMode: resolved.runner.mode,
+      reason: classifyErrorReason(error, "readiness_failed"),
+    };
+  }
 }
 
 export function resolveKernelRunner(env: NodeJS.ProcessEnv = process.env): {
@@ -532,6 +633,23 @@ export async function canonicalizeHashWithFallback(value: unknown): Promise<{
     };
   }
 
+  if (operationExplicitlyDisabled(flags, "canonicalize_hash")) {
+    recordFallback("operation_disabled_env");
+    return {
+      result: ts,
+      mode: "ts",
+      runnerMode: "disabled",
+      durationMs: { ts: tsDuration },
+      metadata: {
+        operation: "canonicalize_hash",
+        executionMode: flags.executionMode,
+        usedPrimary: false,
+        shadowCompared: false,
+        fallbackReason: "operation_disabled_env",
+      },
+    };
+  }
+
   telemetry.attempted += 1;
 
   const compare = flags.executionMode === "shadow" || flags.executionMode === "compare_only";
@@ -663,6 +781,23 @@ export async function proofBundleHashWithFallback(value: unknown): Promise<{
     };
   }
 
+  if (operationExplicitlyDisabled(flags, "proof_bundle_hash")) {
+    recordFallback("operation_disabled_env");
+    return {
+      result: ts,
+      mode: "ts",
+      runnerMode: "disabled",
+      durationMs: { ts: tsDuration },
+      metadata: {
+        operation: "proof_bundle_hash",
+        executionMode: flags.executionMode,
+        usedPrimary: false,
+        shadowCompared: false,
+        fallbackReason: "operation_disabled_env",
+      },
+    };
+  }
+
   if (!shouldUsePrimary(flags, "proof_bundle_hash")) {
     recordFallback("primary_not_allowed");
     return {
@@ -740,6 +875,23 @@ export async function artifactIdentityHashWithFallback(value: unknown): Promise<
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: "kernel_disabled",
+      },
+    };
+  }
+
+  if (operationExplicitlyDisabled(flags, "artifact_identity_hash")) {
+    recordFallback("operation_disabled_env");
+    return {
+      result: ts,
+      mode: "ts",
+      runnerMode: "disabled",
+      durationMs: { ts: tsDuration },
+      metadata: {
+        operation: "artifact_identity_hash",
+        executionMode: flags.executionMode,
+        usedPrimary: false,
+        shadowCompared: false,
+        fallbackReason: "operation_disabled_env",
       },
     };
   }
