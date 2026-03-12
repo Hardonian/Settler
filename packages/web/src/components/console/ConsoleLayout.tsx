@@ -30,13 +30,26 @@ import {
   Database,
   FileText,
   Building2,
+  ShieldCheck,
+  RotateCcw,
+  ClipboardCheck,
+  Scale,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { BackendHealthBadge } from "./BackendHealthBadge";
 
 const consoleNavItems = [
-  { href: "/console", label: "Overview", icon: LayoutDashboard },
+  { href: "/console", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/console/reconciliations", label: "Reconciliations", icon: Scale },
+  { href: "/console/audits", label: "Audits", icon: ClipboardCheck },
+  { href: "/console/proof-explorer", label: "Proof Explorer", icon: ShieldCheck },
+  { href: "/console/replay-lab", label: "Replay Lab", icon: RotateCcw },
+  { href: "/console/policies", label: "Policies", icon: Shield },
+  { href: "/console/organizations", label: "Organizations", icon: Building2 },
+  { href: "/console/api-keys", label: "API Keys", icon: Key },
+  { href: "/console/settings", label: "Settings", icon: Settings },
   { href: "/console/api-test", label: "API Test Console", icon: Code },
   { href: "/console/api-playground", label: "API Playground", icon: Code },
   { href: "/console/tables", label: "API Service Tables", icon: Database },
@@ -45,7 +58,6 @@ const consoleNavItems = [
   { href: "/console/workflows", label: "Workflows", icon: Zap },
   { href: "/console/control-plane", label: "Control Plane", icon: Shield },
   { href: "/console/inspector", label: "Inspector", icon: Search },
-  { href: "/console/api-keys", label: "API Keys", icon: Key },
   { href: "/console/usage", label: "Usage & Metrics", icon: BarChart3 },
   { href: "/console/performance", label: "Performance", icon: Activity },
   { href: "/console/insights", label: "AI Insights", icon: Sparkles },
