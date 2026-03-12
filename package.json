@@ -278,7 +278,8 @@
     "replay:run": "node scripts/surface-command-runner.mjs replay:run",
     "simulate:settler": "node scripts/surface-command-runner.mjs simulate:settler",
     "tenant:create": "node scripts/surface-command-runner.mjs tenant:create",
-    "chaos:test": "node scripts/surface-command-runner.mjs chaos:test"
+    "chaos:test": "node scripts/surface-command-runner.mjs chaos:test",
+    "kernel:health": "tsx scripts/kernel-health.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

@@ -1,8 +1,8 @@
 #!/usr/bin/env tsx
 /**
- * Canonical Production Check
- * 
- * Single source of truth for production readiness.
+ * Production Verification Gate
+ *
+ * Repository-level confidence gate for build/test quality.
  * MUST execute in order:
  * 1. repo-integrity (workspace/package validation)
  * 2. lint (all packages)
@@ -11,6 +11,9 @@
  * 5. smoke tests (no hard 500s)
  * 
  * If a package exists, it must be validated - even if not deployed.
+ *
+ * IMPORTANT: this does not validate cloud secret population,
+ * external service reachability, or deployment rollout safety.
  * 
  * Usage: tsx scripts/check-production-readiness.ts
  */
@@ -51,9 +54,9 @@ function runCommand(command: string, description: string): boolean {
  * Canonical production check
  */
 async function checkProduction(): Promise<void> {
-  console.log('🚀 Running Canonical Production Check\n');
+  console.log('🚀 Running Production Verification Gate\n');
   console.log('=' .repeat(60));
-  console.log('This check ensures the repo is ready for production deployment');
+  console.log('This check validates repo integrity and build/test quality gates');
   console.log('=' .repeat(60));
 
   const steps: CheckStep[] = [
@@ -65,19 +68,19 @@ async function checkProduction(): Promise<void> {
     },
     {
       name: 'lint',
-      command: 'npm run lint',
+      command: 'pnpm run lint',
       description: 'Lint all packages',
       required: true,
     },
     {
       name: 'typecheck',
-      command: 'npm run typecheck',
+      command: 'pnpm run typecheck',
       description: 'Type check all packages',
       required: true,
     },
     {
       name: 'build',
-      command: 'npm run build',
+      command: 'pnpm run build',
       description: 'Build all deployable apps',
       required: true,
     },
@@ -89,9 +92,21 @@ async function checkProduction(): Promise<void> {
     },
     {
       name: 'smoke-test',
-      command: 'npm run test:smoke',
+      command: 'pnpm run test:smoke',
       description: 'Smoke tests (no hard 500s)',
       required: false, // Optional but recommended
+    },
+    {
+      name: 'doctor',
+      command: 'pnpm run doctor -- --first-run',
+      description: 'Setup/doctor first-run validation',
+      required: false,
+    },
+    {
+      name: 'kernel-health',
+      command: 'pnpm run kernel:health',
+      description: 'Kernel health diagnostics (readiness + operation support)',
+      required: false,
     },
   ];
 
@@ -134,7 +149,7 @@ async function checkProduction(): Promise<void> {
     if (optionalFailed > 0) {
       console.warn(`   ⚠️  ${optionalFailed} optional check(s) failed`);
     }
-    console.error('\n   CI will block merge until these issues are resolved.\n');
+    console.error('\n   Resolve required failures before trusting this gate in release CI.\n');
     process.exit(1);
   }
 
@@ -142,16 +157,16 @@ async function checkProduction(): Promise<void> {
     console.warn(`\n⚠️  Production check passed with warnings`);
     console.log(`   ✅ All ${requiredPassed} required checks passed`);
     console.warn(`   ⚠️  ${optionalFailed} optional check(s) failed (recommended to fix)`);
-    console.log('\n   Merge allowed, but consider fixing warnings.\n');
+    console.log('\n   Required gates passed; review warnings before go-live.\n');
     process.exit(0);
   }
 
-  console.log(`\n✅ Production check PASSED`);
+  console.log(`\n✅ Production verification gate PASSED`);
   console.log(`   ✅ All ${requiredPassed} required checks passed`);
   if (optionalPassed > 0) {
     console.log(`   ✅ All ${optionalPassed} optional checks passed`);
   }
-  console.log('\n   Ready for production deployment.\n');
+  console.log('\n   Repo-level quality gate passed; run operator rollout checks separately.\n');
   process.exit(0);
 }
 

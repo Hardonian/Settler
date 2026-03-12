@@ -4,9 +4,9 @@ This document defines the minimum verifiable path to deploy Settler without hidd
 
 ## 1) Preconditions
 
-- Node `>=22` and pnpm `>=10.13.1`.
+- Node `>=24` and pnpm `>=10.13.1`.
 - Postgres/Supabase credentials available.
-- Vercel and Supabase CI credentials available if using GitHub Actions deployments.
+- CI credentials available for workflows you will actually run.
 
 ## 2) Local readiness
 
@@ -19,12 +19,15 @@ This document defines the minimum verifiable path to deploy Settler without hidd
 3. Install and verify baseline:
    - `pnpm install --frozen-lockfile`
    - `pnpm lint && pnpm typecheck && pnpm build`
-4. Start stack:
+   - `pnpm run doctor -- --first-run`
+4. Validate kernel behavior explicitly:
+   - `pnpm run kernel:health`
+5. Start stack:
    - `pnpm dev:stack`
 
 ## 3) CI readiness
 
-Ensure GitHub secrets are populated for workflows you intend to run:
+Ensure secrets are populated only for workflows you intend to run.
 
 - Build/deploy: `TURBO_TOKEN`, `TURBO_TEAM`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`
 - Supabase migration: `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_REF`, `SUPABASE_DB_PASSWORD`, `DATABASE_URL`
@@ -49,12 +52,18 @@ Ensure GitHub secrets are populated for workflows you intend to run:
 
 ## 5) Rollback posture
 
-- Kernel emergency disable: set `SETTLER_DISABLE_KERNEL=1`.
-- Kernel shadow mode: set `SETTLER_KERNEL_EXECUTION_MODE=shadow`.
+- Kernel emergency disable: `SETTLER_DISABLE_KERNEL=1`.
+- Kernel shadow mode for compare rollout: `SETTLER_KERNEL_EXECUTION_MODE=shadow`.
 - Disable specific kernel operations: `SETTLER_DISABLE_OPERATION=<comma-separated-ops>`.
 
 ## 6) Misconfiguration behavior to expect
 
-- API env validation throws on critical prod key violations (`JWT_SECRET`, `ENCRYPTION_KEY`, `DB_PASSWORD` placeholder state).
-- Web Supabase client bootstrap throws when public Supabase env is absent.
+- API env validation rejects critical production key violations (`JWT_SECRET`, `ENCRYPTION_KEY`, placeholder DB password state).
+- Web Supabase bootstrap fails when required public Supabase env is absent.
 - Billing webhook verification fails closed when webhook secret is missing.
+
+## 7) Command honesty
+
+- `pnpm run check:production` is a **repo quality gate** (integrity/lint/typecheck/build/parity/smoke + optional doctor/kernel diagnostics).
+- It does **not** prove cloud secret population, DNS/TLS correctness, managed-service availability, or real deploy safety.
+- Treat production rollout confidence as: quality gate + env audit + runtime smoke + rollback controls.
