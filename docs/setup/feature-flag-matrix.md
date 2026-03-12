@@ -1,5 +1,7 @@
 # Feature Flag Matrix
 
+> Canonical platform index: [`docs/platform-index.md`](../platform-index.md)
+
 This matrix tracks environment-controlled flags that alter runtime behavior.
 
 | Flag                                | Subsystem              | Default              | Effect when enabled                                            | Failure/rollback note                                                        |

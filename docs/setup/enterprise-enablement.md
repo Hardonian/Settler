@@ -1,5 +1,7 @@
 # Enterprise Enablement
 
+> Canonical platform index: [`docs/platform-index.md`](../platform-index.md)
+
 This file documents enterprise/premium-only env controls that are active in code.
 
 ## Enablement tiers

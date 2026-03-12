@@ -1,5 +1,7 @@
 # Deployment Readiness (Operator Truth)
 
+> Canonical platform index: [`docs/platform-index.md`](../platform-index.md)
+
 This document defines the minimum verifiable path to deploy Settler without hidden assumptions.
 
 ## 1) Preconditions
@@ -18,6 +20,7 @@ This document defines the minimum verifiable path to deploy Settler without hidd
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 3. Install and verify baseline:
    - `pnpm install --frozen-lockfile`
+   - `pnpm run verify:setup`
    - `pnpm lint && pnpm typecheck && pnpm build`
    - `pnpm run doctor -- --first-run`
 4. Validate kernel behavior explicitly:

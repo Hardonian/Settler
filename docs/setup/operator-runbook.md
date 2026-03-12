@@ -1,4 +1,4 @@
-# Operator Runbook
+# Operator Runbook (Canonical)
 
 ## First 5 minutes (degraded production)
 
@@ -14,19 +14,26 @@
 3. Run setup checks: `pnpm run doctor -- --first-run`.
 4. Run kernel diagnostics: `pnpm run kernel:health`.
 
-## Health checklist
+## 1) Initial setup
 
 - API health/readiness endpoints return success.
 - Database connectivity succeeds using `DATABASE_URL`.
 - Redis path (if configured) accepts read/write.
 - Stripe webhook signature verification succeeds in staging before production rollout.
 
-## Failure modes and immediate actions
+## 2) Deployment steps
 
-### Missing/invalid auth or encryption secrets
+1. Confirm deployment preconditions in [`docs/setup/deployment-readiness.md`](./deployment-readiness.md).
+2. Verify CI/deployment secrets are present and scoped correctly.
+3. Execute release quality gates:
+   - `pnpm lint`
+   - `pnpm typecheck`
+   - `pnpm build`
+   - `pnpm test`
+4. Deploy to staging first; validate health + readiness endpoints.
+5. Promote to production only after staging verification and rollback controls are validated.
 
-- Symptom: runtime boot failure in production.
-- Action: rotate/fix `JWT_SECRET` and `ENCRYPTION_KEY`, redeploy.
+## 3) Kernel verification
 
 ### Kernel binary unavailable / handshake failure / protocol mismatch
 
@@ -41,17 +48,16 @@
 - Symptom: one kernel operation fails while others are healthy.
 - Action: disable only the failing operation via `SETTLER_DISABLE_OPERATION=<operation>`.
 
-### Supabase privileged operations failing
+Reference: [`docs/architecture/rust-kernel-boundary.md`](../architecture/rust-kernel-boundary.md).
 
-- Symptom: service-role operations fail with authorization errors.
-- Action: validate `SUPABASE_SERVICE_ROLE_KEY` and project URL pairing.
+## 4) Fallback modes
 
-### Billing webhook failures
+Use explicit runtime controls (machine-visible) during degraded conditions:
 
 - Symptom: webhook endpoint rejects valid Stripe events.
 - Action: re-sync `STRIPE_WEBHOOK_SECRET` from Stripe dashboard and replay test events.
 
-## Rollback and safe-mode controls
+Reference: [`docs/setup/feature-flag-matrix.md`](./feature-flag-matrix.md).
 
 - Disable kernel globally: `SETTLER_DISABLE_KERNEL=1`
 - Shadow-only kernel execution: `SETTLER_KERNEL_EXECUTION_MODE=shadow`
