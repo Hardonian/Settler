@@ -16,11 +16,26 @@ This policy keeps Settler docs navigable, truthful, and low-entropy.
 ## When to create a new doc
 
 Create a new doc only when one of these is true:
+
 1. the topic is durable and distinct from existing canonical docs;
 2. the audience and ownership are clear;
 3. cross-linking from a hub location is added in the same change.
 
 Otherwise, extend an existing canonical doc.
+
+## Documentation status model
+
+Use these labels consistently where status clarity matters:
+
+- **CANONICAL**: active source of truth.
+- **SUPPORTING**: non-authoritative supporting reference.
+- **SUPERSEDED**: replaced by newer canonical docs; must point to replacement.
+- **ARCHIVED**: historical artifact under `docs/archive/`.
+- **GENERATED**: reproducible machine-generated/report output.
+- **DRAFT**: in-progress or exploratory content not yet validated.
+- **META**: governance and repository-hygiene artifacts under `docs/_meta/`.
+
+Canonical tie-breaker is always `docs/platform-index.md`.
 
 ## Naming conventions
 
@@ -37,6 +52,7 @@ Otherwise, extend an existing canonical doc.
 ## Archive requirements
 
 Any archived doc must be represented in both:
+
 - `docs/_meta/archive-index.md`
 - `docs/_meta/archive-index.json`
 
@@ -45,6 +61,7 @@ Each entry must include original path, archived path, reason, merge target (if a
 ## Deletion criteria
 
 Delete markdown only when at least one condition is provable:
+
 - empty/trivial placeholder;
 - exact duplicate with no unique context;
 - fully merged content with no forensic value;
@@ -60,5 +77,6 @@ When uncertain: `merge > archive > manual-review > delete`.
 ## Change traceability
 
 For significant doc moves/archives/deletions, update:
+
 - `docs/_meta/DOCS_CONSOLIDATION_CHANGELOG.md`
 - `docs/_meta/archive-index.*` (if archiving)

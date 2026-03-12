@@ -1,5 +1,9 @@
 # Architecture Overview
 
+> **Status:** SUPERSEDED
+> **Canonical architecture authority:** [`docs/architecture/platform-architecture.md`](./architecture/platform-architecture.md)
+> **Compatibility note:** Retained for historical context and inbound links.
+
 **Last Updated:** January 2026  
 **Audience:** Engineers, Architects, Technical Evaluators
 
@@ -44,12 +48,14 @@ Settler follows a **Hexagonal Architecture** (Ports & Adapters) pattern with **C
 **Purpose:** Core business logic, independent of infrastructure.
 
 **Components:**
+
 - **Entities:** Core business objects (User, Job, Execution, ApiKey, Tenant)
 - **Value Objects:** Immutable objects representing domain concepts
 - **Domain Events:** Events representing business occurrences
 - **Repository Interfaces:** Contracts for data persistence (ports)
 
 **Principles:**
+
 - No dependencies on external frameworks
 - Pure business logic
 - Rich domain models with behavior
@@ -62,6 +68,7 @@ Settler follows a **Hexagonal Architecture** (Ports & Adapters) pattern with **C
 **Purpose:** Orchestrates domain objects to fulfill use cases.
 
 **Components:**
+
 - **Services:** Application services orchestrating domain logic
 - **Commands:** CQRS command handlers (write operations)
 - **Queries:** Read operations
@@ -70,6 +77,7 @@ Settler follows a **Hexagonal Architecture** (Ports & Adapters) pattern with **C
 - **DTOs:** Data Transfer Objects for API boundaries
 
 **Principles:**
+
 - Thin layer that delegates to domain
 - Transaction boundaries
 - Use case orchestration
@@ -81,6 +89,7 @@ Settler follows a **Hexagonal Architecture** (Ports & Adapters) pattern with **C
 **Purpose:** Implements technical concerns and adapters.
 
 **Components:**
+
 - **Repositories:** Database implementations of repository interfaces
 - **Database:** PostgreSQL connection and queries
 - **Events:** Event bus implementation
@@ -89,6 +98,7 @@ Settler follows a **Hexagonal Architecture** (Ports & Adapters) pattern with **C
 - **Resilience:** Retry, circuit breakers, dead letter queues
 
 **Principles:**
+
 - Implements interfaces defined in domain/application
 - Can be swapped without changing business logic
 - Handles technical concerns
@@ -100,6 +110,7 @@ Settler follows a **Hexagonal Architecture** (Ports & Adapters) pattern with **C
 **Purpose:** HTTP adapters exposing the application to the outside world.
 
 **Components:**
+
 - **Routes:** Express route handlers
 - **Middleware:** Auth, validation, error handling
 - **Controllers:** Thin controllers calling application services
@@ -107,6 +118,7 @@ Settler follows a **Hexagonal Architecture** (Ports & Adapters) pattern with **C
 - **Web App:** Next.js application with Developer Console
 
 **Principles:**
+
 - Thin adapters translating HTTP to application calls
 - Input validation and output formatting
 - Error handling and status codes

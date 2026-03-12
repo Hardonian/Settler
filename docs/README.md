@@ -20,6 +20,9 @@ This directory is the canonical documentation surface for Settler.
 ## Documentation governance surfaces
 
 - Documentation map: `docs/_meta/DOC_MAP.md`
+- Governance map: `docs/_meta/document-governance-map.md`
+- Status matrix: `docs/_meta/document-status-matrix.md`
+- Path normalization notes: `docs/_meta/path-normalization-notes.md`
 - Governance rules: `docs/_meta/DOCS_GOVERNANCE.md`
 - Full inventory: `docs/_meta/doc-inventory.md` + `docs/_meta/doc-inventory.json`
 - Overlap clusters: `docs/_meta/doc-clusters.md`
