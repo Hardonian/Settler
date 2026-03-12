@@ -22,49 +22,49 @@ export interface ImageConfig {
 
 /**
  * Settler brand images configuration
- * All images are located in /public/assets/images/
+ * Brand assets are centralized in /public/brand/settler and /public/assets/images
  */
 const SETTLER_IMAGES_CONFIG = {
   // Favicons
   favicon: {
-    path: "/assets/images/settler-favicon.png",
-    width: 680,
-    height: 680,
+    path: "/brand/settler/logo-icon.svg",
+    width: 64,
+    height: 64,
     alt: "Settler Favicon",
     category: "favicon" as const,
-    mimeType: "image/png",
-    webpPath: "/assets/images/settler-favicon.webp",
+    mimeType: "image/svg+xml",
+    webpPath: "/brand/settler/logo-icon.svg",
   },
   favicon192: {
-    path: "/assets/images/settler-favicon.png",
+    path: "/brand/settler/logo-icon.svg",
     width: 192,
     height: 192,
     alt: "Settler Icon 192x192",
     category: "favicon" as const,
-    mimeType: "image/png",
-    webpPath: "/assets/images/settler-favicon.webp",
+    mimeType: "image/svg+xml",
+    webpPath: "/brand/settler/logo-icon.svg",
   },
   favicon512: {
-    path: "/assets/images/settler-favicon.png",
+    path: "/brand/settler/logo-icon.svg",
     width: 512,
     height: 512,
     alt: "Settler Icon 512x512",
     category: "favicon" as const,
-    mimeType: "image/png",
-    webpPath: "/assets/images/settler-favicon.webp",
+    mimeType: "image/svg+xml",
+    webpPath: "/brand/settler/logo-icon.svg",
   },
 
   // Social Media Images
   ogImage: {
-    path: "/assets/images/social/settler-og-image.jpg",
+    path: "/assets/images/Settler_seo.png",
     width: 1200,
     height: 630,
     alt: "Settler - Financial Infrastructure for Developers",
     category: "social" as const,
-    mimeType: "image/jpeg",
+    mimeType: "image/png",
   },
   twitterCard: {
-    path: "/assets/images/social/settler-twitter-card.png",
+    path: "/assets/images/Settler_seo.png",
     width: 1200,
     height: 630,
     alt: "Settler - Financial Infrastructure for Developers",
@@ -74,7 +74,7 @@ const SETTLER_IMAGES_CONFIG = {
 
   // Logos
   logoMain: {
-    path: "/logo.svg",
+    path: "/brand/settler/logo-primary-horizontal.svg",
     width: 160,
     height: 40,
     alt: "Settler Logo",

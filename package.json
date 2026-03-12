@@ -32,6 +32,7 @@
     "validate:all": "pnpm run validate:eslint-config && pnpm run validate:build-safety && pnpm run validate:nextjs && pnpm run validate:lint-config && pnpm run validate:comprehensive",
     "doctor": "node scripts/doctor.mjs",
     "settler:doctor": "pnpm run doctor -- --first-run",
+    "verify:setup": "tsx scripts/verify-setup.ts",
     "suite-doctor": "node scripts/suite-doctor.mjs",
     "suite-doctor:fast": "node scripts/suite-doctor.mjs --fast",
     "suite-doctor:json": "node scripts/suite-doctor.mjs --json",

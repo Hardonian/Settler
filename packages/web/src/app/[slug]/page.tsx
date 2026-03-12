@@ -110,11 +110,7 @@ export default async function TenantPageRoute({ params }: PageProps) {
       tenantSlug={tenantContext.tenantSlug}
     >
       <div className="min-h-screen">
-        <TenantNavigation
-          navItems={tenantContext.navigation?.navItems || []}
-          {...(tenantContext.branding?.logoUrl ? { logoUrl: tenantContext.branding.logoUrl } : {})}
-          tenantName={tenantContext.tenantSlug || "Settler"}
-        />
+        <TenantNavigation navItems={tenantContext.navigation?.navItems || []} />
         <main className="pt-16">
           <PageRenderer blocks={page.blocks} />
         </main>

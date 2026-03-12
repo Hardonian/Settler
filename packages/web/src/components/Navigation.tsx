@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { Menu, ChevronDown } from "lucide-react";
+import { SettlerLogo } from "@/components/brand/SettlerLogo";
 
 // Primary navigation items (always visible on desktop)
 const siteMode = process.env.NEXT_PUBLIC_SITE_MODE || "oss";
@@ -154,22 +154,9 @@ export function Navigation() {
               aria-label="Settler homepage"
             >
               <div className="relative overflow-hidden rounded">
-                {/* Light mode logo */}
-                <Image
-                  src="/logo.svg"
-                  alt="Settler Logo"
-                  width={130}
-                  height={34}
-                  className="h-8 w-auto relative z-10 transition-all duration-300 group-hover:brightness-110 group-hover:drop-shadow-lg dark:hidden"
-                  priority
-                />
-                {/* Dark mode logo */}
-                <Image
-                  src="/logo-dark.svg"
-                  alt="Settler Logo"
-                  width={130}
-                  height={34}
-                  className="h-8 w-auto relative z-10 transition-all duration-300 group-hover:brightness-110 group-hover:drop-shadow-lg hidden dark:block"
+                <SettlerLogo
+                  variant="horizontal"
+                  className="h-8 w-auto relative z-10 transition-all duration-300 group-hover:brightness-110 group-hover:drop-shadow-lg"
                   priority
                 />
                 {/* Shine effect overlay */}
