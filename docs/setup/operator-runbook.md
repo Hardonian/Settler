@@ -64,6 +64,20 @@ Reference: [`docs/setup/feature-flag-matrix.md`](./feature-flag-matrix.md).
 - Disable one kernel operation: `SETTLER_DISABLE_OPERATION=proof_bundle_hash`
 - Keep app operational without optional subsystems: leave optional keys unset (Sentry, PostHog, GA4, alert webhooks)
 
+## Settler doctor command (operator baseline)
+
+Use `pnpm run settler:doctor` as the canonical operator diagnostic entrypoint.
+
+- Summary states are machine-visible and deterministic:
+  - `PASS`: all checks passed.
+  - `DEGRADED`: optional capabilities disabled/skipped but no hard blockers.
+  - `FAIL`: required launch blockers found (non-zero exit).
+- Use JSON mode for automation: `pnpm run settler:doctor -- --json`.
+- Include pipeline gates only when needed (lint/typecheck/build can be expensive):
+  `pnpm run settler:doctor -- --include-pipeline`.
+- Kernel checks can be skipped explicitly for air-gapped triage:
+  `pnpm run settler:doctor -- --skip-kernel-health`.
+
 ## Post-incident exit criteria
 
 - Kernel diagnostics show healthy startup and expected operation readiness.

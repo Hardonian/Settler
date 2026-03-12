@@ -1,332 +1,285 @@
 #!/usr/bin/env node
 
-import { spawnSync } from "child_process";
-import fs from "fs";
-import path from "path";
+import { spawnSync } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
+import dotenv from "dotenv";
 
 const rootDir = process.cwd();
-const flags = new Set(process.argv.slice(2));
-const firstRunMode = flags.has("--first-run");
-const groupResults = new Map();
+const args = new Set(process.argv.slice(2));
+const mode = process.env.NODE_ENV === "production" || args.has("--prod") ? "production" : "local";
+const jsonMode = args.has("--json");
+const skipKernelHealth = args.has("--skip-kernel-health");
+const includePipeline = args.has("--include-pipeline");
 
-function runCommand(command, args, options = {}) {
-  const result = spawnSync(command, args, {
+/** @typedef {'PASS'|'DEGRADED'|'FAIL'} CheckStatus */
+
+/** @type {Array<{subsystem:string,status:CheckStatus,message:string,remediation:string}>} */
+const checks = [];
+
+function addCheck(subsystem, status, message, remediation = "None") {
+  checks.push({ subsystem, status, message, remediation });
+}
+
+function loadEnv() {
+  [".env", ".env.local", ".env.production"].forEach((file) => {
+    const filePath = path.join(rootDir, file);
+    if (fs.existsSync(filePath)) {
+      dotenv.config({ path: filePath, override: false });
+    }
+  });
+}
+
+function hasEnv(key) {
+  return Boolean(process.env[key] && process.env[key].trim());
+}
+
+function run(command, commandArgs, options = {}) {
+  return spawnSync(command, commandArgs, {
     cwd: rootDir,
     stdio: "pipe",
-    encoding: "utf-8",
+    encoding: "utf8",
     ...options,
-  });
-
-  return {
-    ok: result.status === 0,
-    stdout: result.stdout?.trim() ?? "",
-    stderr: result.stderr?.trim() ?? "",
-    status: result.status ?? 1,
-  };
-}
-
-function addResult(group, name, ok, detail, hint = "") {
-  if (!groupResults.has(group)) groupResults.set(group, []);
-  groupResults.get(group).push({ name, ok, detail, hint });
-}
-
-function loadEnvFiles() {
-  [".env.local", ".env"].forEach((filename) => {
-    const fullPath = path.join(rootDir, filename);
-    if (fs.existsSync(fullPath)) {
-      const rows = fs.readFileSync(fullPath, "utf-8").split("\n");
-      for (const row of rows) {
-        const line = row.trim();
-        if (!line || line.startsWith("#") || !line.includes("=")) continue;
-        const idx = line.indexOf("=");
-        const key = line.slice(0, idx).trim();
-        const raw = line.slice(idx + 1).trim();
-        const value = raw.replace(/^"|"$/g, "").replace(/^'|'$/g, "");
-        if (!(key in process.env)) process.env[key] = value;
-      }
-    }
   });
 }
 
 function checkToolchain() {
-  const packageJson = JSON.parse(fs.readFileSync(path.join(rootDir, "package.json"), "utf-8"));
-  const pnpmVersion = runCommand("pnpm", ["--version"]);
-  addResult(
-    "toolchain",
-    "Package manager",
-    pnpmVersion.ok,
-    pnpmVersion.ok
-      ? `pnpm ${pnpmVersion.stdout} (expected ${packageJson.packageManager})`
-      : "pnpm is not available in PATH",
-    "Run: corepack enable && corepack prepare pnpm@10.13.1 --activate"
-  );
-
-  const nodeMajor = Number(process.versions.node.split(".")[0]);
-  const minNode = 24;
-  addResult(
-    "toolchain",
-    "Node runtime",
-    firstRunMode ? true : nodeMajor >= minNode,
+  const nodeMajor = Number(process.versions.node.split(".")[0] ?? 0);
+  addCheck(
+    "toolchain.node",
+    nodeMajor >= 22 ? "PASS" : "FAIL",
     `Node ${process.version} detected`,
-    `Use Node ${minNode}.x to match .nvmrc and Vercel`
+    "Use Node 22+ (see package.json engines)."
   );
 
-  const isMonorepo = fs.existsSync(path.join(rootDir, "pnpm-workspace.yaml"));
-  addResult(
-    "toolchain",
-    "Repository mode",
-    true,
-    isMonorepo ? "Monorepo (pnpm workspaces)" : "Single package"
-  );
-}
-
-function checkEnv() {
-  loadEnvFiles();
-
-  const requiredVars = ["DATABASE_URL", "REDIS_URL", "NEXT_PUBLIC_API_URL"];
-  const missingRequired = requiredVars.filter((variable) => !process.env[variable]);
-
-  addResult(
-    "env",
-    "Required environment variables",
-    missingRequired.length === 0,
-    missingRequired.length === 0
-      ? "DATABASE_URL, REDIS_URL, NEXT_PUBLIC_API_URL present"
-      : `missing: ${missingRequired.join(", ")}`,
-    "Populate .env.local from .env.local.example"
-  );
-
-  if (firstRunMode) {
-    const hasLocal =
-      fs.existsSync(path.join(rootDir, ".env.local")) || fs.existsSync(path.join(rootDir, ".env"));
-    addResult(
-      "env",
-      "Env file presence (first-run)",
-      hasLocal,
-      hasLocal ? "found .env.local or .env" : "missing .env.local/.env",
-      "Run: cp .env.local.example .env.local"
-    );
-    return;
-  }
-
-  const scopeResult = runCommand("pnpm", ["run", "verify:env:typed", "--", "--mode=build"]);
-  addResult(
-    "env",
-    "Typed env schema (build)",
-    scopeResult.ok,
-    scopeResult.ok
-      ? "typed env schema loaded for build mode"
-      : scopeResult.stderr.split("\n").slice(-6).join("\n")
-  );
-
-  const modes = ["build", "runtime"];
-  for (const mode of modes) {
-    const result = runCommand("pnpm", ["run", "verify:env:typed", "--", `--mode=${mode}`]);
-    addResult(
-      "env",
-      `Typed env validation (${mode})`,
-      result.ok,
-      result.ok
-        ? "validated without leaking secret values"
-        : result.stderr.split("\n").slice(-6).join("\n")
-    );
-  }
-}
-
-function checkRuntimeDependencies() {
-  const databaseProbe = runCommand("node", [
-    "-e",
-    `import net from 'node:net'; const raw = process.env.DATABASE_URL; if (!raw) process.exit(2); let url; try { url = new URL(raw); } catch { process.exit(1); } const socket = net.createConnection({ host: url.hostname, port: Number(url.port || '5432') }); socket.setTimeout(1500); socket.on('connect', () => { socket.end(); process.exit(0); }); socket.on('timeout', () => { socket.destroy(); process.exit(1); }); socket.on('error', () => process.exit(1));`,
-  ]);
-
-  if (databaseProbe.status === 2) {
-    addResult(
-      "runtime",
-      "Database connection",
-      false,
-      "DATABASE_URL missing",
-      "Set DATABASE_URL to a reachable PostgreSQL endpoint"
-    );
-  } else {
-    addResult(
-      "runtime",
-      "Database connection",
-      databaseProbe.ok,
-      databaseProbe.ok ? "Connected to PostgreSQL" : databaseProbe.stderr || databaseProbe.stdout,
-      "Check DATABASE_URL and network path to PostgreSQL"
-    );
-  }
-
-  const redisProbe = runCommand("node", [
-    "-e",
-    `import net from 'node:net'; const raw = process.env.REDIS_URL; if (!raw) { process.exit(2); } const url = new URL(raw); const socket = net.createConnection({ host: url.hostname, port: Number(url.port || '6379') }); socket.setTimeout(1500); socket.on('connect', () => { socket.end(); process.exit(0); }); socket.on('timeout', () => { socket.destroy(); process.exit(1); }); socket.on('error', () => process.exit(1));`,
-  ]);
-
-  if (redisProbe.status === 2) {
-    addResult(
-      "runtime",
-      "Redis connection",
-      false,
-      "REDIS_URL missing",
-      "Set REDIS_URL to a reachable Redis endpoint"
-    );
-  } else {
-    addResult(
-      "runtime",
-      "Redis connection",
-      redisProbe.ok,
-      redisProbe.ok ? "Connected to Redis socket" : "Unable to open Redis socket",
-      "Check REDIS_URL and network path to Redis"
-    );
-  }
-}
-
-function checkNextVercel() {
-  const nextConfigPath = path.join(rootDir, "packages/web/next.config.js");
-  addResult(
-    "config",
-    "Next config exists",
-    fs.existsSync(nextConfigPath),
-    fs.existsSync(nextConfigPath) ? "packages/web/next.config.js found" : "Missing Next.js config"
-  );
-
-  const vercelPath = path.join(rootDir, "vercel.json");
-  if (fs.existsSync(vercelPath)) {
-    const vercelConfig = JSON.parse(fs.readFileSync(vercelPath, "utf-8"));
-    const parity = vercelConfig.buildCommand === "pnpm --filter @settler/web... build";
-    addResult(
-      "config",
-      "Vercel build parity",
-      parity,
-      `buildCommand=${vercelConfig.buildCommand ?? "undefined"}`,
-      "Expected: pnpm --filter @settler/web... build"
-    );
-  }
-
-  const tsConfigCheck = runCommand("pnpm", ["exec", "tsc", "--showConfig", "-p", "tsconfig.json"]);
-  addResult(
-    "config",
-    "TypeScript config loads",
-    tsConfigCheck.ok,
-    tsConfigCheck.ok ? "tsconfig.json parsed by tsc" : tsConfigCheck.stderr.split("\n")[0],
-    "Fix TypeScript configuration parsing errors before CI"
-  );
-
-  const eslintCheck = runCommand("pnpm", [
-    "exec",
-    "eslint",
-    "--print-config",
-    "packages/web/src/app/page.tsx",
-  ]);
-  addResult(
-    "config",
-    "ESLint config loads",
-    eslintCheck.ok,
-    eslintCheck.ok ? "ESLint config resolved" : eslintCheck.stderr.split("\n")[0],
-    "Fix eslint config/module resolution issues"
+  const pnpm = run("pnpm", ["--version"]);
+  addCheck(
+    "toolchain.pnpm",
+    pnpm.status === 0 ? "PASS" : "FAIL",
+    pnpm.status === 0 ? `pnpm ${pnpm.stdout.trim()} detected` : "pnpm not available in PATH",
+    "Enable corepack and install pnpm 10.13.1+."
   );
 }
 
-function checkAssetsAndSafety() {
-  if (firstRunMode) {
-    addResult(
-      "runtime-safety",
-      "No hard-500 responses in user API routes",
-      true,
-      "skipped in --first-run mode (use pnpm run doctor for strict check)"
-    );
-    return;
-  }
-  const publicPath = path.join(rootDir, "packages/web/public");
-  addResult(
-    "assets",
-    "public assets directory",
-    fs.existsSync(publicPath),
-    fs.existsSync(publicPath) ? "packages/web/public exists" : "Missing packages/web/public"
-  );
-
-  const hard500Scan = runCommand("rg", [
-    "status:\\s*500",
-    "packages/web/src/app/api",
-    "-g",
-    "*.ts",
-    "-g",
-    "!**/admin/**",
-    "-g",
-    "!**/internal/**",
-  ]);
-
-  addResult(
-    "runtime-safety",
-    "No hard-500 responses in user API routes",
-    hard500Scan.status === 1,
-    hard500Scan.status === 1
-      ? "No direct status: 500 matches"
-      : hard500Scan.stdout || hard500Scan.stderr,
-    "Return graceful errors with canonical envelope instead of hard 500"
-  );
-}
-
-function runStagedChecks() {
-  const checks = [
-    ["pipeline", "lint", ["run", "lint"]],
-    ["pipeline", "typecheck", ["run", "typecheck"]],
-    ["pipeline", "build", ["run", "build"]],
+function checkEnvPresence() {
+  const required = [
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "SUPABASE_URL",
+    "SUPABASE_ANON_KEY",
   ];
 
-  const hasTestScript = runCommand("pnpm", ["run", "test", "--help"]).ok;
-  if (hasTestScript) {
-    if (process.env.DOCTOR_INCLUDE_TESTS === "1") {
-      checks.splice(2, 0, ["pipeline", "test", ["run", "test"]]);
-    } else {
-      addResult("pipeline", "test", true, "skipped (set DOCTOR_INCLUDE_TESTS=1 to include tests)");
+  for (const name of required) {
+    addCheck(
+      `env.${name}`,
+      hasEnv(name) ? "PASS" : "FAIL",
+      hasEnv(name) ? `${name} is configured` : `${name} is missing`,
+      `Set ${name} in environment or .env.local.`
+    );
+  }
+
+  const hasDb = hasEnv("DATABASE_URL") || hasEnv("SUPABASE_DATABASE_URL") || hasEnv("DIRECT_URL");
+  addCheck(
+    "env.database",
+    hasDb ? "PASS" : "FAIL",
+    hasDb ? "At least one database DSN is configured" : "No database DSN configured",
+    "Set DATABASE_URL (or SUPABASE_DATABASE_URL / DIRECT_URL)."
+  );
+
+  if (mode === "production") {
+    const prodRequired = ["SUPABASE_SERVICE_ROLE_KEY", "JWT_SECRET", "ENCRYPTION_KEY"];
+    for (const name of prodRequired) {
+      addCheck(
+        `env.${name}`,
+        hasEnv(name) ? "PASS" : "FAIL",
+        hasEnv(name) ? `${name} is configured` : `${name} is missing for production mode`,
+        `Set ${name} before production deploy.`
+      );
     }
   }
 
-  for (const [group, label, args] of checks) {
-    const res = runCommand("pnpm", args, { timeout: 12 * 60 * 1000 });
-    addResult(
-      group,
-      label,
-      res.ok,
-      res.ok ? "passed" : res.stderr.split("\n").slice(-8).join("\n")
+  const stripeKeys = [
+    "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET",
+    "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+  ];
+  const stripeEnabled = stripeKeys.some(hasEnv);
+  addCheck(
+    "env.billing",
+    stripeEnabled ? "PASS" : "DEGRADED",
+    stripeEnabled ? "Billing keys detected" : "Billing disabled (Stripe keys not set)",
+    "Set Stripe keys to enable billing workflows."
+  );
+}
+
+function checkConfigShape() {
+  const urlLike = ["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_URL", "NEXT_PUBLIC_API_URL"];
+  for (const key of urlLike) {
+    if (!hasEnv(key)) {
+      addCheck(`config.${key}`, "DEGRADED", `${key} not set; URL shape skipped`, `Set ${key}.`);
+      continue;
+    }
+
+    let valid = true;
+    try {
+      const value = process.env[key];
+
+      new URL(value);
+    } catch {
+      valid = false;
+    }
+
+    addCheck(
+      `config.${key}`,
+      valid ? "PASS" : "FAIL",
+      valid ? `${key} URL shape is valid` : `${key} is not a valid URL`,
+      `Set ${key} to a valid https:// URL.`
     );
   }
 }
 
-function printSummary() {
-  let hasFailure = false;
-  console.log("🩺 Settler doctor\n");
+function checkWorkspaceIntegrity() {
+  const requiredFiles = [
+    "package.json",
+    "pnpm-workspace.yaml",
+    "packages/web/package.json",
+    "packages/api/package.json",
+    "scripts/kernel-health.ts",
+    "scripts/verify-setup.ts",
+  ];
 
-  for (const [group, items] of groupResults.entries()) {
-    console.log(`## ${group}`);
-    for (const item of items) {
-      const icon = item.ok ? "✅" : "❌";
-      console.log(`${icon} ${item.name}: ${item.detail}`);
-      if (!item.ok && item.hint) {
-        console.log(`   ↳ ${item.hint}`);
-      }
-      hasFailure ||= !item.ok;
-    }
-    console.log("");
+  for (const file of requiredFiles) {
+    const exists = fs.existsSync(path.join(rootDir, file));
+    addCheck(
+      `workspace.${file}`,
+      exists ? "PASS" : "FAIL",
+      exists ? `${file} present` : `${file} missing`,
+      `Restore ${file}; command surface requires it.`
+    );
   }
 
-  if (hasFailure) {
-    console.error("❌ doctor failed with grouped errors above.");
-    process.exit(1);
+  const pkg = JSON.parse(fs.readFileSync(path.join(rootDir, "package.json"), "utf8"));
+  const scripts = pkg.scripts ?? {};
+  const wired =
+    typeof scripts["settler:doctor"] === "string" && scripts["settler:doctor"].length > 0;
+  addCheck(
+    "workspace.command.settler:doctor",
+    wired ? "PASS" : "FAIL",
+    wired ? `settler:doctor -> ${scripts["settler:doctor"]}` : "settler:doctor script missing",
+    "Add a settler:doctor script in root package.json."
+  );
+}
+
+function checkKernel() {
+  const kernelEnabled =
+    ["1", "true", "yes", "on"].includes((process.env.SETTLER_KERNEL_ENABLED ?? "").toLowerCase()) &&
+    !["1", "true", "yes", "on"].includes((process.env.SETTLER_DISABLE_KERNEL ?? "").toLowerCase());
+
+  if (!kernelEnabled) {
+    addCheck(
+      "kernel.mode",
+      "DEGRADED",
+      "Kernel disabled; TypeScript fallback mode active",
+      "Set SETTLER_KERNEL_ENABLED=1 and configure kernel binary to enable kernel path."
+    );
+    return;
   }
 
-  console.log("✅ doctor passed.");
+  const health = run("pnpm", ["run", "--silent", "kernel:health"]);
+  const ok = health.status === 0;
+  addCheck(
+    "kernel.health",
+    ok ? "PASS" : "FAIL",
+    ok ? "kernel:health command succeeded" : "kernel:health command failed",
+    "Run pnpm run kernel:health and resolve reported startup/handshake errors."
+  );
 }
 
-checkToolchain();
-checkEnv();
-checkRuntimeDependencies();
-checkNextVercel();
-checkAssetsAndSafety();
-if (!flags.has("--skip-pipeline")) {
-  runStagedChecks();
-} else {
-  addResult("pipeline", "staged checks", true, "skipped via --skip-pipeline");
+function checkPipelineOptional() {
+  if (!includePipeline) {
+    addCheck(
+      "pipeline",
+      "DEGRADED",
+      "Pipeline checks skipped (use --include-pipeline to execute lint/typecheck/build)",
+      "Run: pnpm run settler:doctor -- --include-pipeline"
+    );
+    return;
+  }
+
+  for (const [label, command] of [
+    ["lint", ["run", "lint"]],
+    ["typecheck", ["run", "typecheck"]],
+    ["build", ["run", "build"]],
+  ]) {
+    const res = run("pnpm", command, { timeout: 12 * 60 * 1000 });
+    addCheck(
+      `pipeline.${label}`,
+      res.status === 0 ? "PASS" : "FAIL",
+      res.status === 0 ? `${label} passed` : `${label} failed`,
+      `Run pnpm ${command.join(" ")} and resolve the failing package.`
+    );
+  }
 }
-printSummary();
+
+function computeSummary() {
+  const hasFail = checks.some((item) => item.status === "FAIL");
+  const hasDegraded = checks.some((item) => item.status === "DEGRADED");
+  if (hasFail) return "FAIL";
+  if (hasDegraded) return "DEGRADED";
+  return "PASS";
+}
+
+function printHuman(summary) {
+  console.log("🩺 Settler Doctor");
+  console.log(`mode=${mode}`);
+  console.log(`summary=${summary}\n`);
+
+  for (const check of checks) {
+    const icon = check.status === "PASS" ? "✅" : check.status === "DEGRADED" ? "⚠️" : "❌";
+    console.log(`${icon} [${check.status}] ${check.subsystem}`);
+    console.log(`   ${check.message}`);
+    console.log(`   remediation: ${check.remediation}`);
+  }
+}
+
+function printJson(summary) {
+  console.log(
+    JSON.stringify(
+      {
+        tool: "settler:doctor",
+        mode,
+        summary,
+        checks,
+      },
+      null,
+      2
+    )
+  );
+}
+
+function main() {
+  loadEnv();
+  checkToolchain();
+  checkEnvPresence();
+  checkConfigShape();
+  checkWorkspaceIntegrity();
+  if (!skipKernelHealth) {
+    checkKernel();
+  } else {
+    addCheck(
+      "kernel.health",
+      "DEGRADED",
+      "Kernel health skipped via --skip-kernel-health",
+      "Run pnpm run kernel:health before launch."
+    );
+  }
+  checkPipelineOptional();
+
+  const summary = computeSummary();
+  if (jsonMode) printJson(summary);
+  else printHuman(summary);
+
+  process.exit(summary === "FAIL" ? 1 : 0);
+}
+
+main();

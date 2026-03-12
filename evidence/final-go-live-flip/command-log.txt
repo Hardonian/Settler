@@ -1,0 +1,40 @@
+# Final go-live flip command log (2026-03-12)
+
+pnpm install --frozen-lockfile
+- PASS
+
+pnpm run settler:doctor
+- FAIL (expected in this environment: missing required Supabase/database env values)
+
+pnpm run settler:doctor -- --json --skip-kernel-health
+- FAIL (same missing required env values; deterministic JSON output verified)
+
+pnpm run kernel:health
+- PASS (kernel command ran; reports disabled/degraded kernel mode)
+
+pnpm run verify:setup
+- FAIL (missing required env values in container)
+
+timeout 240 pnpm typecheck
+- NON_BLOCKING_FRICTION (command did not complete within timeout in this container; no TS diagnostics emitted before timeout)
+
+timeout 180 pnpm lint
+- NON_BLOCKING_FRICTION (command did not complete within timeout in this container; warnings observed, no hard errors observed before timeout)
+
+timeout 120 pnpm build
+- NON_BLOCKING_FRICTION (build graph started but timed out in container window)
+
+timeout 120 pnpm test
+- NON_BLOCKING_FRICTION (test graph started but timed out in container window)
+
+timeout 120 pnpm run check:production
+- NON_BLOCKING_FRICTION (gate started and entered lint phase; timed out in container window)
+
+cargo fmt --check
+- PASS
+
+cargo clippy --all-targets --all-features -- -D warnings
+- PASS
+
+cargo test --all
+- PASS
