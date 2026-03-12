@@ -3,8 +3,10 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 import {
   canonicalizeHashWithFallback,
+  getKernelStartupHealth,
   getKernelTelemetrySnapshot,
   type KernelExecutionMetadata,
+  type KernelStartupHealth,
 } from "./kernel-client";
 
 export type SourceSystem =
@@ -674,8 +676,10 @@ export async function exportReconciliationSuiteWithKernel(
   durations: { kernel?: number; ts: number };
   telemetry: ReturnType<typeof getKernelTelemetrySnapshot>;
   execution: KernelExecutionMetadata;
+  startupHealth: KernelStartupHealth;
 }> {
   const exported = exportReconciliationSuite(suite, outputRoot);
+  const startupHealth = await getKernelStartupHealth();
   const kernel = await canonicalizeHashWithFallback({
     manifest: suite.manifest,
     golden: suite.golden,
@@ -690,6 +694,7 @@ export async function exportReconciliationSuiteWithKernel(
     durations: kernel.durationMs,
     telemetry: getKernelTelemetrySnapshot(),
     execution: kernel.metadata,
+    startupHealth,
   };
 }
 
