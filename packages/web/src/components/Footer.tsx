@@ -7,20 +7,21 @@ const footerSections = [
     heading: "Product",
     links: [
       { href: "/platform", label: "Platform" },
-      { href: "/how-it-works", label: "How It Works" },
+      { href: "/capabilities", label: "Capabilities" },
+      { href: "/use-cases", label: "Use Cases" },
+      { href: "/architecture", label: "Architecture" },
       { href: "/pricing", label: "Pricing" },
       { href: "/security-and-audit", label: "Security" },
-      { href: "/login", label: "Login" },
-      { href: "/signup", label: "Get Started" },
     ],
   },
   {
-    heading: "Features",
+    heading: "Resources",
     links: [
-      { href: "/replay-lab", label: "Replay Lab" },
-      { href: "/proof-explorer", label: "Proof Explorer" },
-      { href: "/docs/quickstart", label: "Quickstart" },
       { href: "/docs", label: "Documentation" },
+      { href: "/docs/quickstart", label: "Quickstart" },
+      { href: "/roadmap", label: "Roadmap" },
+      { href: "/changelog", label: "Changelog" },
+      { href: "/faq", label: "FAQ" },
     ],
   },
   {
@@ -28,6 +29,8 @@ const footerSections = [
     links: [
       { href: "/about", label: "About" },
       { href: "/contact", label: "Contact" },
+      { href: "/open-source", label: "Open Source" },
+      { href: "/enterprise", label: "Enterprise" },
       { href: "https://github.com/Hardonian/Settler", label: "GitHub", external: true },
       { href: "/terms", label: "Terms" },
       { href: "/privacy", label: "Privacy" },

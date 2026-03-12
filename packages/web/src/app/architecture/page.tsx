@@ -1,6 +1,14 @@
 import { Metadata } from "next";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import {
+  CTASection,
+  FeatureCard,
+  FeatureGrid,
+  PageHero,
+  Section,
+  SectionHeader,
+} from "@/components/site/primitives";
 import { RealityEvidencePanel } from "@/components/RealityEvidencePanel";
 import {
   CapabilityMap,
@@ -12,36 +20,74 @@ import {
 export const metadata: Metadata = {
   title: "Architecture - Settler",
   description:
-    "Platform architecture diagrams for Settler covering product surfaces, control plane boundaries, workflows, capability clusters, and packaging boundaries.",
+    "Architecture overview of Settler covering ingestion, deterministic matching, evidence generation, and operator control surfaces.",
 };
+
+const layers = [
+  {
+    title: "Ingestion and adapters",
+    description: "Connect external systems and normalize records into reconciliation inputs.",
+    bullets: ["Provider adapters", "Schema normalization", "Tenant-scoped ingestion"],
+  },
+  {
+    title: "Deterministic reconciliation kernel",
+    description: "Apply rules in a stable execution path to produce matched and unmatched sets.",
+    bullets: ["Rules engine", "Tolerance logic", "Deterministic output contract"],
+  },
+  {
+    title: "Evidence and replay",
+    description:
+      "Generate artifacts that can be replayed and compared for determinism verification.",
+    bullets: ["Evidence manifests", "Replay outputs", "Hash-based provenance"],
+  },
+  {
+    title: "Operator control plane",
+    description: "Surface run state, exception queues, diagnostics, and governance controls.",
+    bullets: ["Run observability", "Exception remediation", "Audit and policy views"],
+  },
+  {
+    title: "APIs, SDK, and CLI",
+    description: "Provide programmable interfaces for integration and automation.",
+    bullets: ["REST APIs", "TypeScript SDK", "CLI workflows"],
+  },
+  {
+    title: "Deployment boundaries",
+    description: "Support OSS self-hosted operation and enterprise packaging options.",
+    bullets: ["Repository deployment", "Environment isolation", "Packaging separation"],
+  },
+];
 
 export default function ArchitecturePage() {
   return (
-    <>
+    <div className="min-h-screen bg-background">
       <Navigation />
-      <main className="min-h-screen bg-slate-50 px-4 pb-16 pt-24 dark:bg-slate-950 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl space-y-8">
-          <section>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">
-              Architecture proof layer
-            </p>
-            <h1 className="mt-3 text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-              How Settler is assembled in production
-            </h1>
-            <p className="mt-4 max-w-3xl text-slate-600 dark:text-slate-400">
-              These visuals are grounded in repository modules, route structure, and shipped product
-              surfaces. They describe current-state architecture and current-state workflows.
-            </p>
-          </section>
-
-          <PlatformOverviewDiagram />
-          <WorkflowJourneyDiagram />
-          <CapabilityMap />
-          <IntegrationAndPackagingMap />
-          <RealityEvidencePanel scope="architecture" />
-        </div>
+      <main id="main-content" className="pt-16">
+        <PageHero
+          eyebrow="Architecture"
+          title="System layers built for deterministic execution and operational trust"
+          description="This architecture view maps implemented concerns across adapter ingestion, deterministic run logic, replay evidence, and operational governance."
+        />
+        <Section>
+          <SectionHeader
+            title="Layered model"
+            description="Each layer has explicit responsibilities to keep reconciliation outcomes reproducible and reviewable."
+          />
+          <FeatureGrid>
+            {layers.map((layer) => (
+              <FeatureCard key={layer.title} {...layer} />
+            ))}
+          </FeatureGrid>
+        </Section>
+        <CTASection
+          title="Cross-check architecture with operations"
+          description="Use the security and use-case pages to map architecture boundaries to governance workflows."
+          primaryHref="/security-and-audit"
+          primaryLabel="View security model"
+          secondaryHref="/use-cases"
+          secondaryLabel="View use cases"
+        />
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
