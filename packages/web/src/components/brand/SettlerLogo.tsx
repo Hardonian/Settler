@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-type SettlerLogoVariant = "horizontal" | "icon" | "wordmark";
+type SettlerLogoVariant = "horizontal" | "icon" | "wordmark" | "stacked";
 
 interface SettlerLogoProps {
   variant?: SettlerLogoVariant;
@@ -29,6 +29,12 @@ const LOGO_CONFIG = {
     dark: "/brand/settler/logo-horizontal.svg",
     width: 520,
     height: 160,
+  },
+  stacked: {
+    light: "/brand/settler/logo-stacked.svg",
+    dark: "/brand/settler/logo-stacked.svg",
+    width: 160,
+    height: 72,
   },
 } as const;
 
