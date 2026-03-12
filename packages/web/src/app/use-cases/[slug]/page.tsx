@@ -4,118 +4,26 @@
  */
 
 import { Metadata } from "next";
-import { Navigation } from "@/components/Navigation";
+import { notFound } from "next/navigation";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Footer } from "@/components/Footer";
+import { Navigation } from "@/components/Navigation";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
+import {
+  CTASection,
+  PageHero,
+  PublicPageShell,
+  Section,
+  SectionHeader,
+} from "@/components/site/primitives";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2, ArrowRight, Zap, Shield, BarChart3 } from "lucide-react";
-import { notFound } from "next/navigation";
-import { TrackedLink } from "@/components/analytics/TrackedLink";
+import { UiLink } from "@/components/ui/link";
+import { getUseCaseBySlug, useCases } from "@/content/useCases";
 
-const useCases: Record<
-  string,
-  {
-    title: string;
-    description: string;
-    hero: string;
-    features: string[];
-    benefits: Array<{
-      title: string;
-      description: string;
-      icon: React.ComponentType<{ className?: string }>;
-    }>;
-    cta: string;
-  }
-> = {
-  "ecommerce-reconciliation": {
-    title: "E-commerce Reconciliation",
-    description:
-      "Automatically match orders, payments, and fulfillment across Shopify, Stripe, and your database",
-    hero: "Stop manually reconciling e-commerce transactions. Settler automatically matches orders with payments, handles refunds, and tracks fulfillment—all in real-time.",
-    features: [
-      "Match Shopify orders with Stripe payments",
-      "Handle refunds and chargebacks automatically",
-      "Track fulfillment status across platforms",
-      "Export reconciliation reports for accounting",
-    ],
-    benefits: [
-      {
-        title: "Save 10+ Hours/Week",
-        description: "Automate manual reconciliation work",
-        icon: Zap,
-      },
-      {
-        title: "High Accuracy",
-        description: "Reduce human error in matching",
-        icon: Shield,
-      },
-      {
-        title: "Real-Time Insights",
-        description: "See discrepancies immediately",
-        icon: BarChart3,
-      },
-    ],
-    cta: "Start setup",
-  },
-  "payment-reconciliation": {
-    title: "Payment Reconciliation",
-    description: "Reconcile payments across Stripe, PayPal, and your accounting system",
-    hero: "Automatically match payments between payment processors and your accounting system. Handle multi-currency transactions, fees, and refunds with confidence.",
-    features: [
-      "Match Stripe/PayPal payments with QuickBooks/Xero",
-      "Handle currency conversion automatically",
-      "Track payment fees and refunds",
-      "Generate audit-ready reports",
-    ],
-    benefits: [
-      {
-        title: "Automated Matching",
-        description: "AI-powered transaction matching",
-        icon: Zap,
-      },
-      {
-        title: "Multi-Currency",
-        description: "Handle FX rates automatically",
-        icon: Shield,
-      },
-      {
-        title: "Audit Trail",
-        description: "Complete transaction history",
-        icon: BarChart3,
-      },
-    ],
-    cta: "Start setup",
-  },
-  "receipt-processing": {
-    title: "Receipt Processing",
-    description: "Extract structured data from receipts and invoices with AI-powered OCR",
-    hero: "Turn PDFs and images into structured JSON. Extract vendors, dates, totals, and line items instantly with Settler's AI-powered receipt parsing.",
-    features: [
-      "Parse receipts from PDFs and images",
-      "Extract vendor, date, total, line items",
-      "Support for 50+ receipt formats",
-      "Export to JSON, CSV, or accounting systems",
-    ],
-    benefits: [
-      {
-        title: "99% Accuracy",
-        description: "AI-powered extraction",
-        icon: Zap,
-      },
-      {
-        title: "Instant Processing",
-        description: "Results in seconds",
-        icon: Shield,
-      },
-      {
-        title: "Structured Data",
-        description: "Ready for integration",
-        icon: BarChart3,
-      },
-    ],
-    cta: "Try receipt parser",
-  },
-};
+export async function generateStaticParams() {
+  return useCases.map((useCase) => ({ slug: useCase.slug }));
+}
 
 export async function generateMetadata({
   params,
@@ -123,7 +31,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const useCase = useCases[slug];
+  const useCase = getUseCaseBySlug(slug);
 
   if (!useCase) {
     return {
@@ -149,130 +57,112 @@ export async function generateMetadata({
 
 export default async function UseCasePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const useCase = useCases[slug];
+  const useCase = getUseCaseBySlug(slug);
 
   if (!useCase) {
     notFound();
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+    <PublicPageShell>
       <Navigation />
+      <main id="main-content" className="pt-16">
+        <PageHero
+          eyebrow="Use case"
+          title={useCase.title}
+          description={useCase.hero}
+          actions={
+            <>
+              <Button asChild size="lg">
+                <TrackedLink
+                  href="/signup"
+                  eventName="onboarding_started"
+                  eventPayload={{
+                    location: "use_case",
+                    ctaLabel: useCase.cta,
+                    destination: "/signup",
+                  }}
+                >
+                  {useCase.cta}
+                </TrackedLink>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <TrackedLink
+                  href="/docs/getting-started"
+                  eventName="docs_cta_clicked"
+                  eventPayload={{
+                    location: "use_case",
+                    ctaLabel: "View Documentation",
+                    destination: "/docs/getting-started",
+                  }}
+                >
+                  View Documentation
+                </TrackedLink>
+              </Button>
+            </>
+          }
+        />
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900 dark:text-white">
-            {useCase.title}
-          </h1>
-          <p className="text-xl text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
-            {useCase.hero}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              asChild
-              size="lg"
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-            >
-              <TrackedLink
-                href="/signup"
-                eventName="onboarding_started"
-                eventPayload={{
-                  location: "use_case",
-                  ctaLabel: useCase.cta,
-                  destination: "/signup",
-                }}
-              >
-                {useCase.cta}
-              </TrackedLink>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <TrackedLink
-                href="/docs/getting-started"
-                eventName="docs_cta_clicked"
-                eventPayload={{
-                  location: "use_case",
-                  ctaLabel: "View Documentation",
-                  destination: "/docs/getting-started",
-                }}
-              >
-                View Documentation
-              </TrackedLink>
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-800/50">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold mb-12 text-center text-slate-900 dark:text-white">
-            What You Get
-          </h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            {useCase.features.map((feature, i) => (
-              <Card key={i} className="border-2">
+        <Section>
+          <SectionHeader
+            title="What you get"
+            description="Capabilities mapped to deterministic reconciliation operations and evidence production."
+          />
+          <div className="grid gap-6 md:grid-cols-2">
+            {useCase.features.map((feature) => (
+              <Card key={feature} className="border-border/70">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 break-words">
-                    <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+                  <CardTitle className="flex items-start gap-2 break-words text-foreground">
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-600" />
                     <span className="break-words">{feature}</span>
                   </CardTitle>
                 </CardHeader>
               </Card>
             ))}
           </div>
-        </div>
-      </section>
+        </Section>
 
-      {/* Benefits Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold mb-12 text-center text-slate-900 dark:text-white">
-            Why Settler?
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {useCase.benefits.map((benefit, i) => {
+        <Section className="border-t border-border/70 bg-muted/20">
+          <SectionHeader title="Why Settler" />
+          <div className="grid gap-6 md:grid-cols-3">
+            {useCase.benefits.map((benefit) => {
               const IconComponent = benefit.icon;
               return (
-                <Card key={i} className="text-center border-2">
+                <Card key={benefit.title} className="h-full border-border/70">
                   <CardHeader>
-                    <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                      <IconComponent className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <IconComponent className="h-6 w-6" />
                     </div>
-                    <CardTitle className="break-words">{benefit.title}</CardTitle>
-                    <CardDescription className="break-words">{benefit.description}</CardDescription>
+                    <CardTitle className="break-words text-foreground">{benefit.title}</CardTitle>
+                    <CardDescription className="break-words text-muted-foreground">
+                      {benefit.description}
+                    </CardDescription>
                   </CardHeader>
                 </Card>
               );
             })}
           </div>
-        </div>
-      </section>
+        </Section>
 
-      {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Get Started?</h2>
-          <p className="text-xl text-blue-100 mb-8">
-            Start with the quick onboarding flow and run your first reconciliation.
-          </p>
-          <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-blue-50">
-            <TrackedLink
-              href="/signup"
-              eventName="onboarding_started"
-              eventPayload={{
-                location: "use_case",
-                ctaLabel: "Start setup",
-                destination: "/signup",
-              }}
-            >
-              Start setup <ArrowRight className="ml-2 h-5 w-5" />
-            </TrackedLink>
-          </Button>
-        </div>
-      </section>
+        <CTASection
+          title="Ready to validate this workflow?"
+          description="Start with onboarding, run the first reconciliation, and verify evidence in replay before production rollout."
+          primaryHref="/signup"
+          primaryLabel="Start setup"
+          secondaryHref="/docs/getting-started"
+          secondaryLabel="View documentation"
+        />
 
+        <Section className="pt-8">
+          <UiLink
+            href="/use-cases"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Back to all use cases <ArrowRight className="h-4 w-4" />
+          </UiLink>
+        </Section>
+      </main>
       <Footer />
-    </div>
+    </PublicPageShell>
   );
 }
