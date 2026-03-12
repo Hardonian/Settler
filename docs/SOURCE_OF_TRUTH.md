@@ -1,5 +1,9 @@
 # Source of Truth Documentation
 
+> **Status:** SUPERSEDED
+> **Replaced by:** [`docs/platform-index.md`](./platform-index.md), [`docs/capabilities.md`](./capabilities.md), [`docs/architecture/platform-architecture.md`](./architecture/platform-architecture.md), and `docs/setup/*`.
+> **Compatibility note:** Retained to avoid broken links from external references.
+
 ## Overview
 
 This document defines the authoritative sources of truth for Settler Enterprise.
@@ -53,16 +57,19 @@ This document defines the authoritative sources of truth for Settler Enterprise.
 ## Code as Source of Truth
 
 ### Database Schema
+
 - **Location**: `supabase/migrations/`
 - **Format**: SQL migration files
 - **Authority**: Migrations define actual schema
 
 ### API Contracts
+
 - **Location**: `packages/web/src/app/api/`
 - **Format**: TypeScript route handlers
 - **Authority**: Code defines actual API behavior
 
 ### Type Definitions
+
 - **Location**: `packages/web/src/types/`
 - **Format**: TypeScript type definitions
 - **Authority**: Types define data structures
@@ -70,16 +77,19 @@ This document defines the authoritative sources of truth for Settler Enterprise.
 ## Documentation Standards
 
 ### Markdown Files
+
 - Use Markdown format
 - Include code examples
 - Keep up to date with code
 
 ### Code Comments
+
 - JSDoc for functions
 - Inline comments for complex logic
 - No commented-out code
 
 ### README Files
+
 - One README per directory
 - Explain purpose and usage
 - Link to related docs
@@ -87,11 +97,13 @@ This document defines the authoritative sources of truth for Settler Enterprise.
 ## Version Control
 
 ### Git Tags
+
 - Tag releases: `v1.0.0`
 - Tag major changes
 - Include release notes
 
 ### Branch Strategy
+
 - `main` - Production-ready code
 - `develop` - Development branch
 - Feature branches for new work
@@ -99,11 +111,13 @@ This document defines the authoritative sources of truth for Settler Enterprise.
 ## Maintenance
 
 ### Regular Updates
+
 - Update docs with code changes
 - Review quarterly
 - Archive outdated docs
 
 ### Documentation Review
+
 - Code review includes docs
 - Update docs before release
 - Verify examples work

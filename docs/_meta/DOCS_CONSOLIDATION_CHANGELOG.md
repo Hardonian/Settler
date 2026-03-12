@@ -13,30 +13,32 @@ _Date: 2026-03-11_
 
 ## 2) Canonical docs created/updated
 
-| Path | Why canonical now | Source inputs |
-|---|---|---|
-| `README.md` | Clean external/repo entrypoint with deterministic quickstart and docs routing. | Prior duplicated README content + launch quickstart cluster. |
-| `CONTRIBUTING.md` | Stable contributor gate + docs governance integration. | Existing contributing flow + docs governance requirements from this pass. |
-| `docs/README.md` | Explicit docs hub and meta-index for discoverability. | Existing docs hub + new governance/meta outputs. |
-| `docs/_meta/DOC_MAP.md` | Canonical map of documentation categories. | Repo structure review from inventory pass. |
-| `docs/_meta/DOCS_GOVERNANCE.md` | Anti-entropy rules for future doc growth. | Consolidation policy from this pass. |
-| `docs/archive/README.md` | Archive rationale and revival/indexing policy. | Existing archive note + governance requirements. |
-| `docs/prompts/README.md` | Prompt asset curation policy and indexing pointer. | Existing `prompts/` directory + prompt handling rules. |
+| Path                            | Why canonical now                                                              | Source inputs                                                             |
+| ------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| `README.md`                     | Clean external/repo entrypoint with deterministic quickstart and docs routing. | Prior duplicated README content + launch quickstart cluster.              |
+| `CONTRIBUTING.md`               | Stable contributor gate + docs governance integration.                         | Existing contributing flow + docs governance requirements from this pass. |
+| `docs/README.md`                | Explicit docs hub and meta-index for discoverability.                          | Existing docs hub + new governance/meta outputs.                          |
+| `docs/_meta/DOC_MAP.md`         | Canonical map of documentation categories.                                     | Repo structure review from inventory pass.                                |
+| `docs/_meta/DOCS_GOVERNANCE.md` | Anti-entropy rules for future doc growth.                                      | Consolidation policy from this pass.                                      |
+| `docs/archive/README.md`        | Archive rationale and revival/indexing policy.                                 | Existing archive note + governance requirements.                          |
+| `docs/prompts/README.md`        | Prompt asset curation policy and indexing pointer.                             | Existing `prompts/` directory + prompt handling rules.                    |
 
 ## 3) Merges performed
 
-| Source | Destination | Retained content summary |
-|---|---|---|
-| Duplicated root README blocks | `README.md` | Consolidated deterministic quickstart, repo structure, and docs map while removing repeated sections. |
-| Root launch/summary cluster (high-level orientation) | `README.md`, `docs/README.md`, governance/meta docs | Preserved durable entrypoint guidance; moved milestone-specific details to archive. |
+| Source                                               | Destination                                         | Retained content summary                                                                              |
+| ---------------------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Duplicated root README blocks                        | `README.md`                                         | Consolidated deterministic quickstart, repo structure, and docs map while removing repeated sections. |
+| Root launch/summary cluster (high-level orientation) | `README.md`, `docs/README.md`, governance/meta docs | Preserved durable entrypoint guidance; moved milestone-specific details to archive.                   |
 
 ## 4) Archives created
 
 See canonical index:
+
 - `docs/_meta/archive-index.md`
 - `docs/_meta/archive-index.json`
 
 This pass archived 13 superseded root docs to:
+
 - `docs/archive/2026-03/root-superseded/`
 
 ## 5) Deletions
@@ -63,6 +65,7 @@ Primary unresolved clusters requiring additional human-domain review:
 - `onboarding-setup`
 
 Supporting artifacts:
+
 - `docs/_meta/doc-clusters.md`
 - `docs/_meta/doc-inventory.json`
 - `docs/_meta/orphan-docs.md`
@@ -159,3 +162,34 @@ Updated references in touched docs to point to canonical active paths, including
 ### Safety notes
 
 - No markdown deletions were executed in this pass because no verified exact content-equivalent duplicate case-collision pairs were found.
+
+---
+
+## 11) Repo packaging + governance cleanup (2026-03-12)
+
+### Scope
+
+- Canonical-index reinforcement and legacy authority deconfliction.
+- Documentation status-model standardization.
+- Compatibility-safe labeling for superseded docs.
+
+### Actions completed
+
+- Added governance artifacts:
+  - `docs/_meta/document-governance-map.md`
+  - `docs/_meta/document-status-matrix.md`
+  - `docs/_meta/path-normalization-notes.md`
+- Updated `docs/platform-index.md` to explicitly classify legacy competing docs and route launch authority to `docs/launch/`.
+- Updated `docs/README.md` governance section to include new status/governance artifacts.
+- Added explicit status headers to legacy docs retained for compatibility:
+  - `docs/INDEX.md` (supporting)
+  - `docs/SOURCE_OF_TRUTH.md` (superseded)
+  - `docs/ARCHITECTURE.md` (superseded)
+  - `docs/ARCHITECTURE_OVERVIEW.md` (superseded)
+- Added `launch/README.md` marking root launch docs as superseded compatibility artifacts and redirecting to canonical `docs/launch/`.
+- Extended `docs/_meta/DOCS_GOVERNANCE.md` with an explicit status model and canonical tie-breaker rule.
+
+### Safety notes
+
+- No destructive deletions were performed in this pass.
+- Legacy files were retained in-place and labeled to avoid breaking inbound links.

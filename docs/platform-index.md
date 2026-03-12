@@ -94,6 +94,14 @@ Additional operational verification:
 
 ## 13) Document Consolidation and Cleanup Decisions
 
-- Legacy `docs/DOCUMENTATION_INDEX.md` is now superseded by this index and retained as a pointer to avoid broken links.
+- Legacy `docs/DOCUMENTATION_INDEX.md` is superseded and retained only as a pointer to this index.
+- Legacy `docs/SOURCE_OF_TRUTH.md`, `docs/ARCHITECTURE.md`, and `docs/ARCHITECTURE_OVERVIEW.md` are compatibility-retained and explicitly superseded.
+- Root-level `launch/` files are treated as historical campaign artifacts; canonical launch/readiness docs live in `docs/launch/`.
 - Canonical setup guidance is consolidated under `docs/setup/`.
 - Canonical architecture guidance is consolidated under `docs/architecture/` with `platform-architecture.md` as the authoritative summary.
+
+## 14) Documentation Governance References
+
+- Governance map: [`docs/_meta/document-governance-map.md`](./_meta/document-governance-map.md)
+- Status matrix: [`docs/_meta/document-status-matrix.md`](./_meta/document-status-matrix.md)
+- Path normalization notes: [`docs/_meta/path-normalization-notes.md`](./_meta/path-normalization-notes.md)

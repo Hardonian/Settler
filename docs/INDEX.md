@@ -1,5 +1,9 @@
 # Documentation Index (Role-Based)
 
+> **Status:** SUPPORTING
+> **Canonical entrypoint:** [`docs/platform-index.md`](./platform-index.md)
+> **Note:** This role-based map is a convenience navigator and does not override canonical documents.
+
 > Legend: **[OSS]** available in open-source runtime, **[Operator]** operator/admin surface, **[Enterprise]** optional enterprise surface.
 
 ## Developer
