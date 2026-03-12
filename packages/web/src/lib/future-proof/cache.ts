@@ -1,6 +1,6 @@
 /**
  * Future-Proof Caching Utilities
- * 
+ *
  * Provides caching layer that can be upgraded to Redis/CDN later.
  * Currently uses in-memory cache with TTL.
  */
@@ -56,28 +56,30 @@ class MemoryCache {
 const memoryCache = new MemoryCache();
 
 // Cleanup every 5 minutes
-if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
-    memoryCache.cleanup();
-  }, 5 * 60 * 1000);
+if (typeof setInterval !== "undefined") {
+  const cleanupTimer = setInterval(
+    () => {
+      memoryCache.cleanup();
+    },
+    5 * 60 * 1000
+  );
+
+  cleanupTimer.unref?.();
 }
 
 /**
  * Cache wrapper that can be upgraded to Redis
  */
-export async function cacheGet<T>(
-  key: string
-): Promise<T | null> {
+export async function cacheGet<T>(key: string): Promise<T | null> {
   // Try Redis first if available
   try {
-    const { getRedisClient, safeRedisOperation } = await import('@/lib/redis/client');
+    const { getRedisClient, safeRedisOperation } = await import("@/lib/redis/client");
     const client = getRedisClient();
     if (client) {
       return await safeRedisOperation(
         async (redis) => {
-           
           const value = await redis.get(key);
-           
+
           return value as T | null;
         },
         () => memoryCache.get<T>(key)
@@ -93,14 +95,10 @@ export async function cacheGet<T>(
 /**
  * Cache set wrapper that can be upgraded to Redis
  */
-export async function cacheSet<T>(
-  key: string,
-  value: T,
-  ttlSeconds = 300
-): Promise<void> {
+export async function cacheSet<T>(key: string, value: T, ttlSeconds = 300): Promise<void> {
   // Try Redis first if available
   try {
-    const { getRedisClient, safeRedisOperation } = await import('@/lib/redis/client');
+    const { getRedisClient, safeRedisOperation } = await import("@/lib/redis/client");
     const client = getRedisClient();
     if (client) {
       await safeRedisOperation(
@@ -125,7 +123,7 @@ export async function cacheSet<T>(
  */
 export async function cacheDelete(key: string): Promise<void> {
   try {
-    const { getRedisClient, safeRedisOperation } = await import('@/lib/redis/client');
+    const { getRedisClient, safeRedisOperation } = await import("@/lib/redis/client");
     const client = getRedisClient();
     if (client) {
       await safeRedisOperation(

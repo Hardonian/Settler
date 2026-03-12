@@ -1,11 +1,11 @@
 /**
  * Rate Limiting Utilities
- * 
+ *
  * Simple in-memory rate limiting for admin endpoints.
  * Can be extended to use Redis in production.
  */
 
-import { createHash } from 'crypto';
+import { createHash } from "crypto";
 
 interface RateLimitEntry {
   count: number;
@@ -101,10 +101,15 @@ class RateLimiter {
 export const rateLimiter = new RateLimiter();
 
 // Cleanup expired entries every 5 minutes
-if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
-    rateLimiter.cleanup();
-  }, 5 * 60 * 1000);
+if (typeof setInterval !== "undefined") {
+  const cleanupTimer = setInterval(
+    () => {
+      rateLimiter.cleanup();
+    },
+    5 * 60 * 1000
+  );
+
+  cleanupTimer.unref?.();
 }
 
 /**
@@ -112,10 +117,10 @@ if (typeof setInterval !== 'undefined') {
  */
 export function getRateLimitKey(request: Request): string {
   // Use IP address + user agent for rate limiting
-  const forwarded = request.headers.get('x-forwarded-for');
-  const ip = forwarded ? forwarded.split(',')[0] : 'unknown';
-  const userAgent = request.headers.get('user-agent') || 'unknown';
-  
+  const forwarded = request.headers.get("x-forwarded-for");
+  const ip = forwarded ? forwarded.split(",")[0] : "unknown";
+  const userAgent = request.headers.get("user-agent") || "unknown";
+
   // Hash for privacy
-  return createHash('sha256').update(`${ip}:${userAgent}`).digest('hex');
+  return createHash("sha256").update(`${ip}:${userAgent}`).digest("hex");
 }

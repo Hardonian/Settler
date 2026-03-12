@@ -293,8 +293,8 @@ async function checkConnectionHealth(): Promise<boolean> {
 }
 
 // Periodic health check (non-blocking)
-if (typeof setInterval !== "undefined" && nodeEnv === "production") {
-  setInterval(async () => {
+if (typeof setInterval !== "undefined" && nodeEnv === "production" && !isBuildPhase) {
+  const healthCheckTimer = setInterval(async () => {
     const now = Date.now();
     if (now - lastHealthCheck > HEALTH_CHECK_INTERVAL) {
       lastHealthCheck = now;
@@ -303,25 +303,13 @@ if (typeof setInterval !== "undefined" && nodeEnv === "production") {
       });
     }
   }, HEALTH_CHECK_INTERVAL);
+
+  healthCheckTimer.unref?.();
 }
 
-// Graceful shutdown handler
-if (typeof process !== "undefined") {
-  const shutdown = async () => {
-    if (nodeEnv !== "test") {
-      // eslint-disable-next-line no-console
-      console.log("[Prisma] Closing database connections...");
-    }
-    await prismaInstance.$disconnect().catch((error) => {
-      console.error("[Prisma] Error disconnecting:", error);
-    });
-  };
-
-  process.on("SIGINT", shutdown);
-  process.on("SIGTERM", shutdown);
-  process.on("beforeExit", shutdown);
-}
-
+// NOTE: Do not attach process-level signal handlers from this shared module.
+// Next.js build/runtime workers manage process lifecycle, and local signal
+// listeners can block worker termination and cause non-deterministic hangs.
 export const prisma = prismaInstance as PrismaClient & PrismaQueryRaw;
 
 if (nodeEnv !== "production") {
