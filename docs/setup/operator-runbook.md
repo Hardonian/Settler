@@ -2,6 +2,10 @@
 
 > Back to platform truth index: [`docs/platform-index.md`](../platform-index.md)
 
+1. Validate env file against `docs/setup/env-matrix.md`.
+2. Run `pnpm run verify:setup` and clear all ❌ findings before deploy.
+3. Verify API env parsing by running `pnpm typecheck` and API startup command.
+4. Verify web can initialize Supabase client (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`).
 This runbook defines the minimum deterministic procedure for operating Settler safely.
 
 ## 1) Initial setup
