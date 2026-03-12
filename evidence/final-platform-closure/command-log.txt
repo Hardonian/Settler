@@ -1,0 +1,1999 @@
+\n$ pnpm install --frozen-lockfile
+Scope: all 19 workspace projects
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+╭ Warning ─────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│   Ignored build scripts: @playwright/browser-chromium, @prisma/engines,      │
+│   @sentry/cli, @sentry/profiling-node, bcrypt, better-sqlite3, esbuild,      │
+│   isolated-vm, msgpackr-extract, msw, prisma, protobufjs, sharp,             │
+│   unix-dgram, unrs-resolver.                                                 │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed     │
+│   to run scripts.                                                            │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+. preinstall$ export SENTRY_SKIP_AUTO_INSTALL=1 || set SENTRY_SKIP_AUTO_INSTALL=1 || true
+. preinstall: Done
+. postinstall$ test -f scripts/vercel-prisma-postinstall.js && node scripts/vercel-prisma-postinstall.js || echo 'Skipping postinstall: script not found (expected in Vercel builds)'
+. postinstall: 🔧 Running Prisma generate...
+. postinstall: npm warn Unknown env config "package-manager". This will stop working in the next major version of npm.
+. postinstall: npm warn Unknown env config "lockfile". This will stop working in the next major version of npm.
+. postinstall: npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+. postinstall: npm warn Unknown env config "prefer-frozen-lockfile". This will stop working in the next major version of npm.
+. postinstall: npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
+. postinstall: npm warn Unknown env config "_types-registry". This will stop working in the next major version of npm.
+. postinstall: npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm.
+. postinstall: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+. postinstall: npm warn config `--include=optional` to include them.
+. postinstall: npm warn config
+. postinstall: npm warn config       Default value does install optional deps unless otherwise omitted.
+. postinstall: npm warn Unknown project config "package-manager". This will stop working in the next major version of npm.
+. postinstall: npm warn Unknown project config "lockfile". This will stop working in the next major version of npm.
+. postinstall: npm warn Unknown project config "prefer-frozen-lockfile". This will stop working in the next major version of npm.
+. postinstall: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+. postinstall: npm warn config `--include=optional` to include them.
+. postinstall: npm warn config
+. postinstall: npm warn config       Default value does install optional deps unless otherwise omitted.
+. postinstall: npm warn Unknown project config "always-auth". This will stop working in the next major version of npm.
+. postinstall: Loaded Prisma config from prisma.config.ts.
+. postinstall: Prisma schema loaded from prisma/schema.prisma.
+. postinstall: ✔ Generated Prisma Client (v7.3.0) to ./node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@18.3.27_better-sqlite3@12.6.2_react-dom@_efc9348d8c027de17c7e00b84b73d1eb/node_modules/@prisma/client in 609ms
+. postinstall: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+. postinstall: ✅ Prisma generate completed successfully
+. postinstall: Done
+. prepare$ husky install 2>/dev/null || true
+. prepare: husky - Git hooks installed
+. prepare: Done
+packages/web postinstall$ export SENTRY_SKIP_AUTO_INSTALL=1 || set SENTRY_SKIP_AUTO_INSTALL=1 || true
+packages/web postinstall: Done
+Done in 9.1s using pnpm v10.13.1
+[exit:0]
+\n$ pnpm lint
+
+> settler-monorepo@1.0.0 lint /workspace/Settler
+> turbo run lint
+
+
+Attention:
+Turborepo now collects completely anonymous telemetry regarding usage.
+This information is used to shape the Turborepo roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://turborepo.dev/docs/telemetry
+
+• turbo 2.8.0
+• Packages in scope: @jobforge/adapter-settler, @jobforge/errors, @jobforge/fetch, @jobforge/sdk-ts, @jobforge/shared, @jobforge/typescript-config, @settler/adapters, @settler/api, @settler/cli, @settler/edge-ai-core, @settler/edge-node, @settler/protocol, @settler/react-settler, @settler/sdk, @settler/sdk-csharp, @settler/sdk-java, @settler/types, @settler/web
+• Running lint in 18 packages
+• Remote caching disabled
+@jobforge/sdk-ts:lint: cache miss, executing 47d36ee24de488e3
+@settler/edge-ai-core:lint: cache miss, executing 7a95eea93bbe039e
+@jobforge/shared:lint: cache miss, executing 19c5f688626d0948
+@settler/adapters:lint: cache miss, executing 8693f9835a5d3d35
+@jobforge/fetch:lint: cache miss, executing 2d331f0b41280540
+@settler/api:lint: cache miss, executing 39df350691d6912c
+@jobforge/errors:lint: cache miss, executing a82a936ecd8bbe79
+@settler/sdk:lint: cache miss, executing 2a2e7b9090ab058a
+@settler/cli:lint: cache miss, executing f5ae0901f89c0c59
+@settler/edge-node:lint: cache miss, executing 123fc492e6215a34
+@settler/edge-ai-core:lint: 
+@settler/edge-ai-core:lint: > @settler/edge-ai-core@1.0.0 lint /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:lint: > eslint src
+@settler/edge-ai-core:lint: 
+@settler/sdk:lint: 
+@settler/sdk:lint: > @settler/sdk@1.0.0 lint /workspace/Settler/packages/sdk
+@settler/sdk:lint: > eslint src
+@settler/sdk:lint: 
+@settler/cli:lint: 
+@settler/cli:lint: > @settler/cli@1.0.0 lint /workspace/Settler/packages/cli
+@settler/cli:lint: > eslint src
+@settler/cli:lint: 
+@jobforge/shared:lint: 
+@jobforge/shared:lint: > @jobforge/shared@0.1.0 lint /workspace/Settler/packages/jobforge-shared
+@jobforge/shared:lint: > eslint src/
+@jobforge/shared:lint: 
+@settler/adapters:lint: 
+@settler/adapters:lint: > @settler/adapters@1.0.0 lint /workspace/Settler/packages/adapters
+@settler/adapters:lint: > eslint src
+@settler/adapters:lint: 
+@settler/api:lint: 
+@settler/api:lint: > @settler/api@1.0.0 lint /workspace/Settler/packages/api
+@settler/api:lint: > eslint src
+@settler/api:lint: 
+@jobforge/sdk-ts:lint: 
+@jobforge/sdk-ts:lint: > @jobforge/sdk-ts@0.1.0 lint /workspace/Settler/packages/jobforge-sdk-ts
+@jobforge/sdk-ts:lint: > eslint src/
+@jobforge/sdk-ts:lint: 
+@settler/edge-node:lint: 
+@settler/edge-node:lint: > @settler/edge-node@1.0.0 lint /workspace/Settler/packages/edge-node
+@settler/edge-node:lint: > eslint src
+@settler/edge-node:lint: 
+@jobforge/errors:lint: 
+@jobforge/errors:lint: > @jobforge/errors@0.1.0 lint /workspace/Settler/packages/jobforge-errors
+@jobforge/errors:lint: > eslint "**/*.ts"
+@jobforge/errors:lint: 
+@jobforge/fetch:lint: 
+@jobforge/fetch:lint: > @jobforge/fetch@0.1.0 lint /workspace/Settler/packages/jobforge-fetch
+@jobforge/fetch:lint: > eslint "**/*.ts"
+@jobforge/fetch:lint: 
+@settler/web:lint: cache miss, executing 8c7fc286adc59f9d
+@settler/web:lint: 
+@settler/web:lint: > @settler/web@1.0.0 lint /workspace/Settler/packages/web
+@settler/web:lint: > eslint src
+@settler/web:lint: 
+@settler/sdk:lint: 
+@settler/sdk:lint: /workspace/Settler/packages/sdk/src/utils/middleware.ts
+@settler/sdk:lint:   72:31  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+@settler/sdk:lint: 
+@settler/sdk:lint: ✖ 1 problem (0 errors, 1 warning)
+@settler/sdk:lint: 
+@settler/cli:lint: 
+@settler/cli:lint: /workspace/Settler/packages/cli/src/lib/execution-ledger.ts
+@settler/cli:lint:   124:11  warning  'execution_hash' is assigned a value but never used  @typescript-eslint/no-unused-vars
+@settler/cli:lint: 
+@settler/cli:lint: ✖ 1 problem (0 errors, 1 warning)
+@settler/cli:lint: 
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/infrastructure/jobs/scheduler-service.ts
+@settler/api:lint:   30:10  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/infrastructure/security/SSRFProtection.ts
+@settler/api:lint:   66:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint:   72:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint:   94:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/jobs/email-scheduler.ts
+@settler/api:lint:   12:10  warning  '_calculateDaysRemaining' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/middleware/api-gateway-cache.ts
+@settler/api:lint:   182:16  warning  '_pattern' is assigned a value but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/routes/export-enhanced.ts
+@settler/api:lint:   71:27  warning  '_includeUnmatched' is assigned a value but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/routes/v1/operator-mode.ts
+@settler/api:lint:   21:3  warning  'checkAlertThresholds' is defined but never used   @typescript-eslint/no-unused-vars
+@settler/api:lint:   23:3  warning  'upsertAlertThreshold' is defined but never used   @typescript-eslint/no-unused-vars
+@settler/api:lint:   27:3  warning  'setTenantUsageCeiling' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint:   28:3  warning  'getAllUsageCeilings' is defined but never used    @typescript-eslint/no-unused-vars
+@settler/api:lint:   29:3  warning  'checkUsageCeiling' is defined but never used      @typescript-eslint/no-unused-vars
+@settler/api:lint:   30:3  warning  'setBackgroundJobLimit' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/services/determinism/execution-orchestrator.ts
+@settler/api:lint:   16:10  warning  'createRunSnapshot' is defined but never used        @typescript-eslint/no-unused-vars
+@settler/api:lint:   16:29  warning  'updateRunSnapshotStatus' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint:   16:54  warning  'RunSnapshot' is defined but never used              @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/services/determinism/idempotent-ingestion.ts
+@settler/api:lint:   96:59  warning  'effective_date' is assigned a value but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/services/determinism/replay-service.ts
+@settler/api:lint:   227:33  warning  'snapshot' is defined but never used. Allowed unused args must match /^_/u       @typescript-eslint/no-unused-vars
+@settler/api:lint:   258:34  warning  'snapshot' is defined but never used. Allowed unused args must match /^_/u       @typescript-eslint/no-unused-vars
+@settler/api:lint:   416:3   warning  'runId' is defined but never used. Allowed unused args must match /^_/u          @typescript-eslint/no-unused-vars
+@settler/api:lint:   417:3   warning  'replayMatches' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+@settler/api:lint:   428:3   warning  'replayRunId' is defined but never used. Allowed unused args must match /^_/u    @typescript-eslint/no-unused-vars
+@settler/api:lint:   465:35  warning  'originalRunId' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/services/determinism/verification-gates.ts
+@settler/api:lint:   11:10  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/services/knowledge/decision-log.ts
+@settler/api:lint:   228:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/services/operator-mode/alerting.ts
+@settler/api:lint:   435:16  warning  'sendSlackAlert' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/services/reconciliation/automated-review.ts
+@settler/api:lint:   453:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: ✖ 27 problems (0 errors, 27 warnings)
+@settler/api:lint: 
+@settler/web:lint: 
+@settler/web:lint: /workspace/Settler/packages/web/src/app/architecture/page.tsx
+@settler/web:lint:   12:10  warning  'RealityEvidencePanel' is defined but never used        @typescript-eslint/no-unused-vars
+@settler/web:lint:   14:3   warning  'CapabilityMap' is defined but never used               @typescript-eslint/no-unused-vars
+@settler/web:lint:   15:3   warning  'IntegrationAndPackagingMap' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/web:lint:   16:3   warning  'PlatformOverviewDiagram' is defined but never used     @typescript-eslint/no-unused-vars
+@settler/web:lint:   17:3   warning  'WorkflowJourneyDiagram' is defined but never used      @typescript-eslint/no-unused-vars
+@settler/web:lint: 
+@settler/web:lint: /workspace/Settler/packages/web/src/app/edge-ai/nodes/page.tsx
+@settler/web:lint:   2:46  warning  'CardHeader' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/web:lint: 
+@settler/web:lint: /workspace/Settler/packages/web/src/app/open-source/page.tsx
+@settler/web:lint:   11:3  warning  'RefreshCw' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/web:lint: 
+@settler/web:lint: ✖ 7 problems (0 errors, 7 warnings)
+@settler/web:lint: 
+
+ Tasks:    11 successful, 11 total
+Cached:    0 cached, 11 total
+  Time:    2m5.238s 
+
+[exit:0]
+\n$ pnpm typecheck
+
+> settler-monorepo@1.0.0 typecheck /workspace/Settler
+> turbo run typecheck
+
+• turbo 2.8.0
+• Packages in scope: @jobforge/adapter-settler, @jobforge/errors, @jobforge/fetch, @jobforge/sdk-ts, @jobforge/shared, @jobforge/typescript-config, @settler/adapters, @settler/api, @settler/cli, @settler/edge-ai-core, @settler/edge-node, @settler/protocol, @settler/react-settler, @settler/sdk, @settler/sdk-csharp, @settler/sdk-java, @settler/types, @settler/web
+• Running typecheck in 18 packages
+• Remote caching disabled
+@jobforge/shared:typecheck: cache miss, executing c4c3fb10e0072c37
+@settler/web:typecheck: cache miss, executing 82209645c755fef4
+@settler/edge-ai-core:typecheck: cache miss, executing 9c38c66a66c82b9b
+@settler/api:typecheck: cache miss, executing 576e13165a6a3e88
+@settler/sdk:typecheck: cache miss, executing 31f72c942ded5029
+@jobforge/fetch:typecheck: cache miss, executing dd0cadec1f508090
+@jobforge/sdk-ts:typecheck: cache miss, executing e71bf8ad135687ea
+@settler/edge-node:typecheck: cache miss, executing db37ce43f49e0113
+@settler/react-settler:typecheck: cache miss, executing b99a675251607f6c
+@settler/protocol:typecheck: cache miss, executing ae7c097d97e058a2
+@settler/web:typecheck: 
+@settler/web:typecheck: > @settler/web@1.0.0 typecheck /workspace/Settler/packages/web
+@settler/web:typecheck: > tsc --noEmit
+@settler/web:typecheck: 
+@settler/edge-ai-core:typecheck: 
+@settler/edge-ai-core:typecheck: > @settler/edge-ai-core@1.0.0 typecheck /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:typecheck: > tsc --noEmit
+@settler/edge-ai-core:typecheck: 
+@settler/edge-node:typecheck: 
+@settler/edge-node:typecheck: > @settler/edge-node@1.0.0 typecheck /workspace/Settler/packages/edge-node
+@settler/edge-node:typecheck: > tsc --noEmit
+@settler/edge-node:typecheck: 
+@jobforge/shared:typecheck: 
+@jobforge/shared:typecheck: > @jobforge/shared@0.1.0 typecheck /workspace/Settler/packages/jobforge-shared
+@jobforge/shared:typecheck: > tsc --noEmit
+@jobforge/shared:typecheck: 
+@settler/api:typecheck: 
+@settler/api:typecheck: > @settler/api@1.0.0 pretypecheck /workspace/Settler/packages/api
+@settler/api:typecheck: > cd ../.. && pnpm run prisma:generate || pnpm exec prisma generate || echo 'Warning: Prisma generate may have failed'
+@settler/api:typecheck: 
+@settler/react-settler:typecheck: 
+@settler/react-settler:typecheck: > @settler/react-settler@0.1.0 typecheck /workspace/Settler/packages/react-settler
+@settler/react-settler:typecheck: > tsc --noEmit
+@settler/react-settler:typecheck: 
+@jobforge/fetch:typecheck: 
+@jobforge/fetch:typecheck: > @jobforge/fetch@0.1.0 typecheck /workspace/Settler/packages/jobforge-fetch
+@jobforge/fetch:typecheck: > tsc --noEmit
+@jobforge/fetch:typecheck: 
+@settler/sdk:typecheck: 
+@settler/sdk:typecheck: > @settler/sdk@1.0.0 typecheck /workspace/Settler/packages/sdk
+@settler/sdk:typecheck: > tsc --noEmit
+@settler/sdk:typecheck: 
+@settler/protocol:typecheck: 
+@settler/protocol:typecheck: > @settler/protocol@0.1.0 typecheck /workspace/Settler/packages/protocol
+@settler/protocol:typecheck: > tsc --noEmit
+@settler/protocol:typecheck: 
+@jobforge/sdk-ts:typecheck: 
+@jobforge/sdk-ts:typecheck: > @jobforge/sdk-ts@0.1.0 typecheck /workspace/Settler/packages/jobforge-sdk-ts
+@jobforge/sdk-ts:typecheck: > tsc --noEmit
+@jobforge/sdk-ts:typecheck: 
+@settler/api:typecheck: 
+@settler/api:typecheck: > settler-monorepo@1.0.0 prisma:generate /workspace/Settler
+@settler/api:typecheck: > cross-env PRISMA_CLIENT_ENGINE_TYPE=wasm PRISMA_ENGINES_MIRROR= prisma generate
+@settler/api:typecheck: 
+@settler/types:typecheck: cache miss, executing a5fe1fa944e423a7
+@settler/api:typecheck: Loaded Prisma config from prisma.config.ts.
+@settler/api:typecheck: 
+@settler/adapters:typecheck: cache miss, executing 0cc5d28b573f9d0f
+@settler/cli:typecheck: cache miss, executing 82169bafd6399a50
+@jobforge/adapter-settler:typecheck: cache miss, executing b50efe0c5dff2ceb
+@settler/api:typecheck: Prisma schema loaded from prisma/schema.prisma.
+@jobforge/errors:typecheck: cache miss, executing e767903e132e8446
+@settler/types:typecheck: 
+@settler/types:typecheck: > @settler/types@1.0.0 typecheck /workspace/Settler/packages/types
+@settler/types:typecheck: > tsc --noEmit
+@settler/types:typecheck: 
+@jobforge/adapter-settler:typecheck: 
+@jobforge/adapter-settler:typecheck: > @jobforge/adapter-settler@0.1.0 typecheck /workspace/Settler/packages/jobforge-adapter-settler
+@jobforge/adapter-settler:typecheck: > tsc --noEmit
+@jobforge/adapter-settler:typecheck: 
+@settler/cli:typecheck: 
+@settler/cli:typecheck: > @settler/cli@1.0.0 typecheck /workspace/Settler/packages/cli
+@settler/cli:typecheck: > tsc --noEmit
+@settler/cli:typecheck: 
+@settler/adapters:typecheck: 
+@settler/adapters:typecheck: > @settler/adapters@1.0.0 typecheck /workspace/Settler/packages/adapters
+@settler/adapters:typecheck: > tsc --noEmit
+@settler/adapters:typecheck: 
+@jobforge/errors:typecheck: 
+@jobforge/errors:typecheck: > @jobforge/errors@0.1.0 typecheck /workspace/Settler/packages/jobforge-errors
+@jobforge/errors:typecheck: > tsc --noEmit
+@jobforge/errors:typecheck: 
+@settler/api:typecheck: 
+@settler/api:typecheck: ✔ Generated Prisma Client (v7.3.0) to ./node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@18.3.27_better-sqlite3@12.6.2_react-dom@_efc9348d8c027de17c7e00b84b73d1eb/node_modules/@prisma/client in 14.28s
+@settler/api:typecheck: 
+@settler/api:typecheck: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+@settler/api:typecheck: 
+@settler/api:typecheck: 
+@settler/api:typecheck: 
+@settler/api:typecheck: > @settler/api@1.0.0 typecheck /workspace/Settler/packages/api
+@settler/api:typecheck: > tsc --noEmit
+@settler/api:typecheck: 
+\n$ pnpm typecheck
+
+> settler-monorepo@1.0.0 typecheck /workspace/Settler
+> turbo run typecheck
+
+• turbo 2.8.0
+• Packages in scope: @jobforge/adapter-settler, @jobforge/errors, @jobforge/fetch, @jobforge/sdk-ts, @jobforge/shared, @jobforge/typescript-config, @settler/adapters, @settler/api, @settler/cli, @settler/edge-ai-core, @settler/edge-node, @settler/protocol, @settler/react-settler, @settler/sdk, @settler/sdk-csharp, @settler/sdk-java, @settler/types, @settler/web
+• Running typecheck in 18 packages
+• Remote caching disabled
+@settler/sdk:typecheck: cache hit, replaying logs 31f72c942ded5029
+@settler/sdk:typecheck: 
+@settler/sdk:typecheck: > @settler/sdk@1.0.0 typecheck /workspace/Settler/packages/sdk
+@settler/sdk:typecheck: > tsc --noEmit
+@settler/sdk:typecheck: 
+@settler/react-settler:typecheck: cache hit, replaying logs b99a675251607f6c
+@settler/react-settler:typecheck: 
+@settler/react-settler:typecheck: > @settler/react-settler@0.1.0 typecheck /workspace/Settler/packages/react-settler
+@settler/react-settler:typecheck: > tsc --noEmit
+@settler/react-settler:typecheck: 
+@settler/adapters:typecheck: cache hit, replaying logs 0cc5d28b573f9d0f
+@settler/adapters:typecheck: 
+@settler/adapters:typecheck: > @settler/adapters@1.0.0 typecheck /workspace/Settler/packages/adapters
+@settler/adapters:typecheck: > tsc --noEmit
+@settler/adapters:typecheck: 
+@jobforge/sdk-ts:typecheck: cache hit, replaying logs e71bf8ad135687ea
+@jobforge/sdk-ts:typecheck: 
+@jobforge/sdk-ts:typecheck: > @jobforge/sdk-ts@0.1.0 typecheck /workspace/Settler/packages/jobforge-sdk-ts
+@jobforge/sdk-ts:typecheck: > tsc --noEmit
+@jobforge/sdk-ts:typecheck: 
+@settler/cli:typecheck: cache hit, replaying logs 82169bafd6399a50
+@settler/cli:typecheck: 
+@settler/cli:typecheck: > @settler/cli@1.0.0 typecheck /workspace/Settler/packages/cli
+@settler/cli:typecheck: > tsc --noEmit
+@settler/cli:typecheck: 
+@settler/types:typecheck: cache hit, replaying logs a5fe1fa944e423a7
+@settler/types:typecheck: 
+@settler/types:typecheck: > @settler/types@1.0.0 typecheck /workspace/Settler/packages/types
+@settler/types:typecheck: > tsc --noEmit
+@settler/types:typecheck: 
+@settler/api:typecheck: cache hit, replaying logs 576e13165a6a3e88
+@settler/api:typecheck: 
+@settler/api:typecheck: > @settler/api@1.0.0 pretypecheck /workspace/Settler/packages/api
+@settler/api:typecheck: > cd ../.. && pnpm run prisma:generate || pnpm exec prisma generate || echo 'Warning: Prisma generate may have failed'
+@settler/api:typecheck: 
+@settler/api:typecheck: 
+@settler/api:typecheck: > settler-monorepo@1.0.0 prisma:generate /workspace/Settler
+@settler/api:typecheck: > cross-env PRISMA_CLIENT_ENGINE_TYPE=wasm PRISMA_ENGINES_MIRROR= prisma generate
+@settler/api:typecheck: 
+@settler/api:typecheck: Loaded Prisma config from prisma.config.ts.
+@settler/api:typecheck: 
+@settler/api:typecheck: Prisma schema loaded from prisma/schema.prisma.
+@settler/api:typecheck: 
+@settler/api:typecheck: ✔ Generated Prisma Client (v7.3.0) to ./node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@18.3.27_better-sqlite3@12.6.2_react-dom@_efc9348d8c027de17c7e00b84b73d1eb/node_modules/@prisma/client in 14.28s
+@settler/api:typecheck: 
+@settler/api:typecheck: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+@settler/api:typecheck: 
+@settler/api:typecheck: 
+@settler/api:typecheck: 
+@settler/api:typecheck: > @settler/api@1.0.0 typecheck /workspace/Settler/packages/api
+@settler/api:typecheck: > tsc --noEmit
+@settler/api:typecheck: 
+@jobforge/errors:typecheck: cache hit, replaying logs e767903e132e8446
+@jobforge/errors:typecheck: 
+@jobforge/errors:typecheck: > @jobforge/errors@0.1.0 typecheck /workspace/Settler/packages/jobforge-errors
+@jobforge/errors:typecheck: > tsc --noEmit
+@jobforge/errors:typecheck: 
+@jobforge/fetch:typecheck: cache hit, replaying logs dd0cadec1f508090
+@jobforge/fetch:typecheck: 
+@jobforge/fetch:typecheck: > @jobforge/fetch@0.1.0 typecheck /workspace/Settler/packages/jobforge-fetch
+@jobforge/fetch:typecheck: > tsc --noEmit
+@jobforge/fetch:typecheck: 
+@settler/edge-ai-core:typecheck: cache hit, replaying logs 9c38c66a66c82b9b
+@settler/edge-ai-core:typecheck: 
+@settler/edge-ai-core:typecheck: > @settler/edge-ai-core@1.0.0 typecheck /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:typecheck: > tsc --noEmit
+@settler/edge-ai-core:typecheck: 
+@settler/protocol:typecheck: cache hit, replaying logs ae7c097d97e058a2
+@settler/protocol:typecheck: 
+@settler/protocol:typecheck: > @settler/protocol@0.1.0 typecheck /workspace/Settler/packages/protocol
+@settler/protocol:typecheck: > tsc --noEmit
+@settler/protocol:typecheck: 
+@jobforge/adapter-settler:typecheck: cache hit, replaying logs b50efe0c5dff2ceb
+@jobforge/adapter-settler:typecheck: 
+@jobforge/adapter-settler:typecheck: > @jobforge/adapter-settler@0.1.0 typecheck /workspace/Settler/packages/jobforge-adapter-settler
+@jobforge/adapter-settler:typecheck: > tsc --noEmit
+@jobforge/adapter-settler:typecheck: 
+@settler/web:typecheck: cache miss, executing 82209645c755fef4
+@settler/edge-node:typecheck: cache hit, replaying logs db37ce43f49e0113
+@settler/edge-node:typecheck: 
+@settler/edge-node:typecheck: > @settler/edge-node@1.0.0 typecheck /workspace/Settler/packages/edge-node
+@settler/edge-node:typecheck: > tsc --noEmit
+@settler/edge-node:typecheck: 
+@jobforge/shared:typecheck: cache hit, replaying logs c4c3fb10e0072c37
+@jobforge/shared:typecheck: 
+@jobforge/shared:typecheck: > @jobforge/shared@0.1.0 typecheck /workspace/Settler/packages/jobforge-shared
+@jobforge/shared:typecheck: > tsc --noEmit
+@jobforge/shared:typecheck: 
+@settler/web:typecheck: 
+@settler/web:typecheck: > @settler/web@1.0.0 typecheck /workspace/Settler/packages/web
+@settler/web:typecheck: > tsc --noEmit
+@settler/web:typecheck: 
+ ELIFECYCLE  Command failed.
+@settler/web:typecheck: Terminated
+ ERROR  run failed: command  exited (1)
+[exit:143]
+\n$ pnpm build
+
+> settler-monorepo@1.0.0 build /workspace/Settler
+> turbo run build --filter @settler/web...
+
+• turbo 2.8.0
+• Packages in scope: @jobforge/sdk-ts, @jobforge/shared, @jobforge/typescript-config, @settler/adapters, @settler/api, @settler/edge-ai-core, @settler/protocol, @settler/react-settler, @settler/sdk, @settler/types, @settler/web
+• Running build in 11 packages
+• Remote caching disabled
+@settler/edge-ai-core:build: cache miss, executing 889a6ab7d8fa5378
+@settler/sdk:build: cache miss, executing 6a5caea113fbc286
+@settler/protocol:build: cache miss, executing e944ce77fbe40050
+@settler/types:build: cache miss, executing 3391060d441b3d26
+@jobforge/shared:build: cache miss, executing f37bc6c827718d1c
+@jobforge/shared:build: 
+@jobforge/shared:build: > @jobforge/shared@0.1.0 build /workspace/Settler/packages/jobforge-shared
+@jobforge/shared:build: > tsc
+@jobforge/shared:build: 
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: > @settler/edge-ai-core@1.0.0 prebuild /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:build: > pnpm run typecheck
+@settler/edge-ai-core:build: 
+@settler/types:build: 
+@settler/types:build: > @settler/types@1.0.0 build /workspace/Settler/packages/types
+@settler/types:build: > tsc
+@settler/types:build: 
+@settler/protocol:build: 
+@settler/protocol:build: > @settler/protocol@0.1.0 build /workspace/Settler/packages/protocol
+@settler/protocol:build: > tsc
+@settler/protocol:build: 
+@settler/sdk:build: 
+@settler/sdk:build: > @settler/sdk@1.0.0 build /workspace/Settler/packages/sdk
+@settler/sdk:build: > tsc
+@settler/sdk:build: 
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: > @settler/edge-ai-core@1.0.0 typecheck /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:build: > tsc --noEmit
+@settler/edge-ai-core:build: 
+@settler/react-settler:build: cache miss, executing a232a487723f0a0a
+@settler/react-settler:build: 
+@settler/react-settler:build: > @settler/react-settler@0.1.0 build /workspace/Settler/packages/react-settler
+@settler/react-settler:build: > tsc
+@settler/react-settler:build: 
+@jobforge/sdk-ts:build: cache miss, executing c9a7bf4f82ea46a2
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: > @settler/edge-ai-core@1.0.0 build /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:build: > tsc
+@settler/edge-ai-core:build: 
+@jobforge/sdk-ts:build: 
+@jobforge/sdk-ts:build: > @jobforge/sdk-ts@0.1.0 build /workspace/Settler/packages/jobforge-sdk-ts
+@jobforge/sdk-ts:build: > tsc
+@jobforge/sdk-ts:build: 
+@settler/adapters:build: cache miss, executing 02b0d8a895af8003
+@settler/adapters:build: 
+@settler/adapters:build: > @settler/adapters@1.0.0 build /workspace/Settler/packages/adapters
+@settler/adapters:build: > tsc
+@settler/adapters:build: 
+@settler/api:build: cache miss, executing e3a94d46ee07eacf
+@settler/api:build: 
+@settler/api:build: > @settler/api@1.0.0 prebuild /workspace/Settler/packages/api
+@settler/api:build: > cd ../.. && pnpm run prisma:generate || pnpm exec prisma generate || echo 'Warning: Prisma generate may have failed'
+@settler/api:build: 
+@settler/api:build: 
+@settler/api:build: > settler-monorepo@1.0.0 prisma:generate /workspace/Settler
+@settler/api:build: > cross-env PRISMA_CLIENT_ENGINE_TYPE=wasm PRISMA_ENGINES_MIRROR= prisma generate
+@settler/api:build: 
+@settler/api:build: Loaded Prisma config from prisma.config.ts.
+@settler/api:build: 
+@settler/api:build: Prisma schema loaded from prisma/schema.prisma.
+@settler/api:build: 
+@settler/api:build: ✔ Generated Prisma Client (v7.3.0) to ./node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@18.3.27_better-sqlite3@12.6.2_react-dom@_efc9348d8c027de17c7e00b84b73d1eb/node_modules/@prisma/client in 1.21s
+@settler/api:build: 
+@settler/api:build: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+@settler/api:build: 
+@settler/api:build: 
+@settler/api:build: 
+@settler/api:build: > @settler/api@1.0.0 build /workspace/Settler/packages/api
+@settler/api:build: > tsc --skipLibCheck --noEmit false
+@settler/api:build: 
+\n$ pnpm typecheck
+
+> settler-monorepo@1.0.0 typecheck /workspace/Settler
+> turbo run typecheck
+
+• turbo 2.8.0
+• Packages in scope: @jobforge/adapter-settler, @jobforge/errors, @jobforge/fetch, @jobforge/sdk-ts, @jobforge/shared, @jobforge/typescript-config, @settler/adapters, @settler/api, @settler/cli, @settler/edge-ai-core, @settler/edge-node, @settler/protocol, @settler/react-settler, @settler/sdk, @settler/sdk-csharp, @settler/sdk-java, @settler/types, @settler/web
+• Running typecheck in 18 packages
+• Remote caching disabled
+@settler/react-settler:typecheck: cache hit, replaying logs b99a675251607f6c
+@settler/react-settler:typecheck: 
+@settler/react-settler:typecheck: > @settler/react-settler@0.1.0 typecheck /workspace/Settler/packages/react-settler
+@settler/react-settler:typecheck: > tsc --noEmit
+@settler/react-settler:typecheck: 
+@jobforge/sdk-ts:typecheck: cache hit, replaying logs e71bf8ad135687ea
+@jobforge/sdk-ts:typecheck: 
+@jobforge/sdk-ts:typecheck: > @jobforge/sdk-ts@0.1.0 typecheck /workspace/Settler/packages/jobforge-sdk-ts
+@jobforge/sdk-ts:typecheck: > tsc --noEmit
+@jobforge/sdk-ts:typecheck: 
+@settler/adapters:typecheck: cache hit, replaying logs 0cc5d28b573f9d0f
+@settler/adapters:typecheck: 
+@settler/adapters:typecheck: > @settler/adapters@1.0.0 typecheck /workspace/Settler/packages/adapters
+@settler/adapters:typecheck: > tsc --noEmit
+@settler/adapters:typecheck: 
+@settler/protocol:typecheck: cache hit, replaying logs ae7c097d97e058a2
+@settler/protocol:typecheck: 
+@settler/protocol:typecheck: > @settler/protocol@0.1.0 typecheck /workspace/Settler/packages/protocol
+@settler/protocol:typecheck: > tsc --noEmit
+@settler/protocol:typecheck: 
+@jobforge/errors:typecheck: cache hit, replaying logs e767903e132e8446
+@jobforge/errors:typecheck: 
+@jobforge/errors:typecheck: > @jobforge/errors@0.1.0 typecheck /workspace/Settler/packages/jobforge-errors
+@jobforge/errors:typecheck: > tsc --noEmit
+@jobforge/errors:typecheck: 
+@settler/sdk:typecheck: cache hit, replaying logs 31f72c942ded5029
+@settler/sdk:typecheck: 
+@settler/sdk:typecheck: > @settler/sdk@1.0.0 typecheck /workspace/Settler/packages/sdk
+@settler/sdk:typecheck: > tsc --noEmit
+@settler/sdk:typecheck: 
+@jobforge/shared:typecheck: cache hit, replaying logs c4c3fb10e0072c37
+@jobforge/shared:typecheck: 
+@jobforge/shared:typecheck: > @jobforge/shared@0.1.0 typecheck /workspace/Settler/packages/jobforge-shared
+@jobforge/shared:typecheck: > tsc --noEmit
+@jobforge/shared:typecheck: 
+@settler/edge-ai-core:typecheck: cache hit, replaying logs 9c38c66a66c82b9b
+@settler/edge-ai-core:typecheck: 
+@settler/edge-ai-core:typecheck: > @settler/edge-ai-core@1.0.0 typecheck /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:typecheck: > tsc --noEmit
+@settler/edge-ai-core:typecheck: 
+@jobforge/fetch:typecheck: cache hit, replaying logs dd0cadec1f508090
+@jobforge/fetch:typecheck: 
+@jobforge/fetch:typecheck: > @jobforge/fetch@0.1.0 typecheck /workspace/Settler/packages/jobforge-fetch
+@jobforge/fetch:typecheck: > tsc --noEmit
+@jobforge/fetch:typecheck: 
+@jobforge/adapter-settler:typecheck: cache hit, replaying logs b50efe0c5dff2ceb
+@jobforge/adapter-settler:typecheck: 
+@jobforge/adapter-settler:typecheck: > @jobforge/adapter-settler@0.1.0 typecheck /workspace/Settler/packages/jobforge-adapter-settler
+@jobforge/adapter-settler:typecheck: > tsc --noEmit
+@jobforge/adapter-settler:typecheck: 
+@settler/edge-node:typecheck: cache hit, replaying logs db37ce43f49e0113
+@settler/edge-node:typecheck: 
+@settler/edge-node:typecheck: > @settler/edge-node@1.0.0 typecheck /workspace/Settler/packages/edge-node
+@settler/edge-node:typecheck: > tsc --noEmit
+@settler/edge-node:typecheck: 
+@settler/web:typecheck: cache miss, executing 82209645c755fef4
+@settler/api:typecheck: cache hit, replaying logs 576e13165a6a3e88
+@settler/api:typecheck: 
+@settler/api:typecheck: > @settler/api@1.0.0 pretypecheck /workspace/Settler/packages/api
+@settler/api:typecheck: > cd ../.. && pnpm run prisma:generate || pnpm exec prisma generate || echo 'Warning: Prisma generate may have failed'
+@settler/api:typecheck: 
+@settler/api:typecheck: 
+@settler/api:typecheck: > settler-monorepo@1.0.0 prisma:generate /workspace/Settler
+@settler/api:typecheck: > cross-env PRISMA_CLIENT_ENGINE_TYPE=wasm PRISMA_ENGINES_MIRROR= prisma generate
+@settler/api:typecheck: 
+@settler/api:typecheck: Loaded Prisma config from prisma.config.ts.
+@settler/api:typecheck: 
+@settler/api:typecheck: Prisma schema loaded from prisma/schema.prisma.
+@settler/api:typecheck: 
+@settler/api:typecheck: ✔ Generated Prisma Client (v7.3.0) to ./node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@18.3.27_better-sqlite3@12.6.2_react-dom@_efc9348d8c027de17c7e00b84b73d1eb/node_modules/@prisma/client in 14.28s
+@settler/api:typecheck: 
+@settler/api:typecheck: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+@settler/api:typecheck: 
+@settler/api:typecheck: 
+@settler/api:typecheck: 
+@settler/api:typecheck: > @settler/api@1.0.0 typecheck /workspace/Settler/packages/api
+@settler/api:typecheck: > tsc --noEmit
+@settler/api:typecheck: 
+@settler/types:typecheck: cache hit, replaying logs a5fe1fa944e423a7
+@settler/types:typecheck: 
+@settler/types:typecheck: > @settler/types@1.0.0 typecheck /workspace/Settler/packages/types
+@settler/types:typecheck: > tsc --noEmit
+@settler/types:typecheck: 
+@settler/cli:typecheck: cache hit, replaying logs 82169bafd6399a50
+@settler/cli:typecheck: 
+@settler/cli:typecheck: > @settler/cli@1.0.0 typecheck /workspace/Settler/packages/cli
+@settler/cli:typecheck: > tsc --noEmit
+@settler/cli:typecheck: 
+@settler/web:typecheck: 
+@settler/web:typecheck: > @settler/web@1.0.0 typecheck /workspace/Settler/packages/web
+@settler/web:typecheck: > tsc --noEmit
+@settler/web:typecheck: 
+@settler/web:build: cache miss, executing 4f50c5e69987c5e8
+@settler/web:build: 
+@settler/web:build: > @settler/web@1.0.0 build /workspace/Settler/packages/web
+@settler/web:build: > next build --webpack
+@settler/web:build: 
+@settler/web:build: Attention: Next.js now collects completely anonymous telemetry regarding usage.
+@settler/web:build: This information is used to shape Next.js' roadmap and prioritize features.
+@settler/web:build: You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+@settler/web:build: https://nextjs.org/telemetry
+@settler/web:build: 
+@settler/web:build: ▲ Next.js 16.1.6 (webpack)
+@settler/web:build: - Experiments (use with caution):
+@settler/web:build:   ✓ optimizeCss
+@settler/web:build:   · optimizePackageImports
+@settler/web:build: 
+@settler/web:build:   Creating an optimized production build ...
+@settler/web:build:   Using tsconfig file: ./tsconfig.json
+ ELIFECYCLE  Command failed.
+@settler/web:typecheck: Terminated
+ ERROR  run failed: command  exited (1)
+[exit:143]
+\n$ pnpm build
+
+> settler-monorepo@1.0.0 build /workspace/Settler
+> turbo run build --filter @settler/web...
+
+• turbo 2.8.0
+• Packages in scope: @jobforge/sdk-ts, @jobforge/shared, @jobforge/typescript-config, @settler/adapters, @settler/api, @settler/edge-ai-core, @settler/protocol, @settler/react-settler, @settler/sdk, @settler/types, @settler/web
+• Running build in 11 packages
+• Remote caching disabled
+@settler/protocol:build: cache hit, replaying logs e944ce77fbe40050
+@settler/protocol:build: 
+@settler/protocol:build: > @settler/protocol@0.1.0 build /workspace/Settler/packages/protocol
+@settler/protocol:build: > tsc
+@settler/protocol:build: 
+@settler/sdk:build: cache hit, replaying logs 6a5caea113fbc286
+@settler/sdk:build: 
+@settler/sdk:build: > @settler/sdk@1.0.0 build /workspace/Settler/packages/sdk
+@settler/sdk:build: > tsc
+@settler/sdk:build: 
+@settler/types:build: cache miss, executing 767c2c2d9928dea1
+@settler/edge-ai-core:build: cache hit, replaying logs 889a6ab7d8fa5378
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: > @settler/edge-ai-core@1.0.0 prebuild /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:build: > pnpm run typecheck
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: > @settler/edge-ai-core@1.0.0 typecheck /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:build: > tsc --noEmit
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: > @settler/edge-ai-core@1.0.0 build /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:build: > tsc
+@settler/edge-ai-core:build: 
+@jobforge/shared:build: cache hit, replaying logs f37bc6c827718d1c
+@jobforge/shared:build: 
+@jobforge/shared:build: > @jobforge/shared@0.1.0 build /workspace/Settler/packages/jobforge-shared
+@jobforge/shared:build: > tsc
+@jobforge/shared:build: 
+@jobforge/sdk-ts:build: cache hit, replaying logs c9a7bf4f82ea46a2
+@jobforge/sdk-ts:build: 
+@jobforge/sdk-ts:build: > @jobforge/sdk-ts@0.1.0 build /workspace/Settler/packages/jobforge-sdk-ts
+@jobforge/sdk-ts:build: > tsc
+@jobforge/sdk-ts:build: 
+@settler/react-settler:build: cache hit, replaying logs a232a487723f0a0a
+@settler/react-settler:build: 
+@settler/react-settler:build: > @settler/react-settler@0.1.0 build /workspace/Settler/packages/react-settler
+@settler/react-settler:build: > tsc
+@settler/react-settler:build: 
+@settler/types:build: 
+@settler/types:build: > @settler/types@1.0.0 build /workspace/Settler/packages/types
+@settler/types:build: > tsc
+@settler/types:build: 
+@settler/adapters:build: cache miss, executing d90df2c3bff69b2d
+@settler/adapters:build: 
+@settler/adapters:build: > @settler/adapters@1.0.0 build /workspace/Settler/packages/adapters
+@settler/adapters:build: > tsc
+@settler/adapters:build: 
+@settler/api:build: cache miss, executing 5ff800f8dc068ba6
+@settler/api:build: 
+@settler/api:build: > @settler/api@1.0.0 prebuild /workspace/Settler/packages/api
+@settler/api:build: > cd ../.. && pnpm run prisma:generate || pnpm exec prisma generate || echo 'Warning: Prisma generate may have failed'
+@settler/api:build: 
+@settler/api:build: 
+@settler/api:build: > settler-monorepo@1.0.0 prisma:generate /workspace/Settler
+@settler/api:build: > cross-env PRISMA_CLIENT_ENGINE_TYPE=wasm PRISMA_ENGINES_MIRROR= prisma generate
+@settler/api:build: 
+@settler/api:build: Loaded Prisma config from prisma.config.ts.
+@settler/api:build: 
+@settler/api:build: Prisma schema loaded from prisma/schema.prisma.
+@settler/api:build: 
+@settler/api:build: ✔ Generated Prisma Client (v7.3.0) to ./node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@18.3.27_better-sqlite3@12.6.2_react-dom@_efc9348d8c027de17c7e00b84b73d1eb/node_modules/@prisma/client in 1.54s
+@settler/api:build: 
+@settler/api:build: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+@settler/api:build: 
+@settler/api:build: 
+@settler/api:build: 
+@settler/api:build: > @settler/api@1.0.0 build /workspace/Settler/packages/api
+@settler/api:build: > tsc --skipLibCheck --noEmit false
+@settler/api:build: 
+ ELIFECYCLE  Command failed.
+@settler/api:build:  ELIFECYCLE  Command failed.
+ ERROR  run failed: command  exited (1)
+ ERROR  run failed: command  exited (1)
+\n$ pnpm test
+
+> settler-monorepo@1.0.0 test /workspace/Settler
+> turbo run test
+
+• turbo 2.8.0
+• Packages in scope: @jobforge/adapter-settler, @jobforge/errors, @jobforge/fetch, @jobforge/sdk-ts, @jobforge/shared, @jobforge/typescript-config, @settler/adapters, @settler/api, @settler/cli, @settler/edge-ai-core, @settler/edge-node, @settler/protocol, @settler/react-settler, @settler/sdk, @settler/sdk-csharp, @settler/sdk-java, @settler/types, @settler/web
+• Running test in 18 packages
+• Remote caching disabled
+@settler/types:build: cache hit, replaying logs 767c2c2d9928dea1
+@settler/types:build: 
+@settler/types:build: > @settler/types@1.0.0 build /workspace/Settler/packages/types
+@settler/types:build: > tsc
+@settler/types:build: 
+@settler/edge-ai-core:build: cache hit, replaying logs 889a6ab7d8fa5378
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: > @settler/edge-ai-core@1.0.0 prebuild /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:build: > pnpm run typecheck
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: > @settler/edge-ai-core@1.0.0 typecheck /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:build: > tsc --noEmit
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: > @settler/edge-ai-core@1.0.0 build /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:build: > tsc
+@settler/edge-ai-core:build: 
+@settler/protocol:build: cache hit, replaying logs e944ce77fbe40050
+@settler/protocol:build: 
+@settler/protocol:build: > @settler/protocol@0.1.0 build /workspace/Settler/packages/protocol
+@settler/protocol:build: > tsc
+@settler/protocol:build: 
+@settler/sdk:build: cache hit, replaying logs 6a5caea113fbc286
+@settler/sdk:build: 
+@settler/sdk:build: > @settler/sdk@1.0.0 build /workspace/Settler/packages/sdk
+@settler/sdk:build: > tsc
+@settler/sdk:build: 
+@settler/edge-node:build: cache miss, executing 2e0ae9b1f7ad853e
+@settler/edge-ai-core:test: cache miss, executing 657618dbfa052a74
+@settler/adapters:build: cache hit, replaying logs d90df2c3bff69b2d
+@settler/adapters:build: 
+@settler/adapters:build: > @settler/adapters@1.0.0 build /workspace/Settler/packages/adapters
+@settler/adapters:build: > tsc
+@settler/adapters:build: 
+@jobforge/shared:build: cache hit, replaying logs f37bc6c827718d1c
+@jobforge/shared:build: 
+@jobforge/shared:build: > @jobforge/shared@0.1.0 build /workspace/Settler/packages/jobforge-shared
+@jobforge/shared:build: > tsc
+@jobforge/shared:build: 
+@jobforge/errors:build: cache miss, executing dcb738332c789862
+@settler/react-settler:build: cache hit, replaying logs a232a487723f0a0a
+@settler/react-settler:build: 
+@settler/react-settler:build: > @settler/react-settler@0.1.0 build /workspace/Settler/packages/react-settler
+@settler/react-settler:build: > tsc
+@settler/react-settler:build: 
+@settler/sdk:test: cache miss, executing 88abb82e60728d48
+@settler/api:build: cache miss, executing 5ff800f8dc068ba6
+@settler/adapters:test: cache miss, executing 84e9517949e6a40f
+@jobforge/sdk-ts:build: cache hit, replaying logs c9a7bf4f82ea46a2
+@jobforge/sdk-ts:build: 
+@jobforge/sdk-ts:build: > @jobforge/sdk-ts@0.1.0 build /workspace/Settler/packages/jobforge-sdk-ts
+@jobforge/sdk-ts:build: > tsc
+@jobforge/sdk-ts:build: 
+@jobforge/sdk-ts:test: cache miss, executing 1a8209631acc69f9
+@settler/cli:build: cache miss, executing cfe8dcd32c6df144
+@jobforge/adapter-settler:build: cache miss, executing 49ee3f7e2359a598
+@settler/api:build: 
+@settler/api:build: > @settler/api@1.0.0 prebuild /workspace/Settler/packages/api
+@settler/api:build: > cd ../.. && pnpm run prisma:generate || pnpm exec prisma generate || echo 'Warning: Prisma generate may have failed'
+@settler/api:build: 
+@jobforge/sdk-ts:test: 
+@jobforge/sdk-ts:test: > @jobforge/sdk-ts@0.1.0 test /workspace/Settler/packages/jobforge-sdk-ts
+@jobforge/sdk-ts:test: > vitest run
+@jobforge/sdk-ts:test: 
+@settler/cli:build: 
+@settler/cli:build: > @settler/cli@1.0.0 build /workspace/Settler/packages/cli
+@settler/cli:build: > tsc
+@settler/cli:build: 
+@jobforge/adapter-settler:build: 
+@jobforge/adapter-settler:build: > @jobforge/adapter-settler@0.1.0 build /workspace/Settler/packages/jobforge-adapter-settler
+@jobforge/adapter-settler:build: > tsc
+@jobforge/adapter-settler:build: 
+@settler/adapters:test: 
+@settler/adapters:test: > @settler/adapters@1.0.0 test /workspace/Settler/packages/adapters
+@settler/adapters:test: > jest --passWithNoTests
+@settler/adapters:test: 
+@settler/edge-node:build: 
+@settler/edge-node:build: > @settler/edge-node@1.0.0 prebuild /workspace/Settler/packages/edge-node
+@settler/edge-node:build: > pnpm run typecheck
+@settler/edge-node:build: 
+@jobforge/errors:build: 
+@jobforge/errors:build: > @jobforge/errors@0.1.0 build /workspace/Settler/packages/jobforge-errors
+@jobforge/errors:build: > tsc --noEmit
+@jobforge/errors:build: 
+@settler/sdk:test: 
+@settler/sdk:test: > @settler/sdk@1.0.0 test /workspace/Settler/packages/sdk
+@settler/sdk:test: > jest
+@settler/sdk:test: 
+@settler/edge-ai-core:test: 
+@settler/edge-ai-core:test: > @settler/edge-ai-core@1.0.0 test /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:test: > jest --passWithNoTests
+@settler/edge-ai-core:test: 
+@jobforge/sdk-ts:test: 
+@jobforge/sdk-ts:test:  RUN  v1.6.1 /workspace/Settler/packages/jobforge-sdk-ts
+@jobforge/sdk-ts:test: 
+@settler/api:build: 
+@settler/api:build: > settler-monorepo@1.0.0 prisma:generate /workspace/Settler
+@settler/api:build: > cross-env PRISMA_CLIENT_ENGINE_TYPE=wasm PRISMA_ENGINES_MIRROR= prisma generate
+@settler/api:build: 
+@settler/edge-node:build: 
+@settler/edge-node:build: > @settler/edge-node@1.0.0 typecheck /workspace/Settler/packages/edge-node
+@settler/edge-node:build: > tsc --noEmit
+@settler/edge-node:build: 
+@settler/adapters:test: No tests found, exiting with code 0
+@settler/edge-ai-core:test: No tests found, exiting with code 0
+@jobforge/sdk-ts:test:  ✓ test/client.test.ts  (2 tests) 68ms
+@jobforge/sdk-ts:test: 
+@jobforge/sdk-ts:test:  Test Files  1 passed (1)
+@jobforge/sdk-ts:test:       Tests  2 passed (2)
+@jobforge/sdk-ts:test:    Start at  04:37:54
+@jobforge/sdk-ts:test:    Duration  7.98s (transform 1.59s, setup 0ms, collect 2.73s, tests 68ms, environment 1ms, prepare 2.40s)
+@jobforge/sdk-ts:test: 
+@jobforge/fetch:build: cache miss, executing 76a03abec5072aa4
+@jobforge/errors:test: cache miss, executing 529efe70383a3742
+@settler/edge-node:build: 
+@settler/edge-node:build: > @settler/edge-node@1.0.0 build /workspace/Settler/packages/edge-node
+@settler/edge-node:build: > tsc
+@settler/edge-node:build: 
+@jobforge/errors:test: 
+@jobforge/errors:test: > @jobforge/errors@0.1.0 test /workspace/Settler/packages/jobforge-errors
+@jobforge/errors:test: > vitest run
+@jobforge/errors:test: 
+@settler/api:build: Loaded Prisma config from prisma.config.ts.
+@settler/api:build: 
+@jobforge/fetch:build: 
+@jobforge/fetch:build: > @jobforge/fetch@0.1.0 build /workspace/Settler/packages/jobforge-fetch
+@jobforge/fetch:build: > tsc --noEmit
+@jobforge/fetch:build: 
+@jobforge/errors:test: [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+@jobforge/errors:test: 
+@jobforge/errors:test:  RUN  v1.6.1 /workspace/Settler/packages/jobforge-errors
+@jobforge/errors:test: 
+@settler/api:build: Prisma schema loaded from prisma/schema.prisma.
+@jobforge/errors:test:  ✓ test/error-envelope.test.ts  (11 tests) 146ms
+@jobforge/fetch:test: cache miss, executing 95030b8ba767af2a
+@jobforge/errors:test:  ✓ test/correlation.test.ts  (9 tests) 100ms
+@settler/api:build: 
+@settler/api:build: ✔ Generated Prisma Client (v7.3.0) to ./node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@18.3.27_better-sqlite3@12.6.2_react-dom@_efc9348d8c027de17c7e00b84b73d1eb/node_modules/@prisma/client in 8.65s
+@settler/api:build: 
+@settler/api:build: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+@settler/api:build: 
+@settler/api:build: 
+@jobforge/errors:test: 
+@jobforge/errors:test:  Test Files  2 passed (2)
+@jobforge/errors:test:       Tests  20 passed (20)
+@jobforge/errors:test:    Start at  04:38:10
+@jobforge/errors:test:    Duration  13.43s (transform 1.91s, setup 0ms, collect 3.29s, tests 246ms, environment 1ms, prepare 4.42s)
+@jobforge/errors:test: 
+@settler/api:build: 
+@settler/api:build: > @settler/api@1.0.0 build /workspace/Settler/packages/api
+@settler/api:build: > tsc --skipLibCheck --noEmit false
+@settler/api:build: 
+@jobforge/fetch:test: 
+@jobforge/fetch:test: > @jobforge/fetch@0.1.0 test /workspace/Settler/packages/jobforge-fetch
+@jobforge/fetch:test: > vitest run
+@jobforge/fetch:test: 
+@jobforge/fetch:test: [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+@settler/edge-node:test: cache miss, executing d99f965bf1a5ce1a
+@jobforge/fetch:test: 
+@jobforge/fetch:test:  RUN  v1.6.1 /workspace/Settler/packages/jobforge-fetch
+@jobforge/fetch:test: 
+@settler/edge-node:test: 
+@settler/edge-node:test: > @settler/edge-node@1.0.0 test /workspace/Settler/packages/edge-node
+@settler/edge-node:test: > jest --passWithNoTests
+@settler/edge-node:test: 
+@jobforge/fetch:test:  ✓ test/retry.test.ts  (8 tests) 39ms
+@jobforge/fetch:test: 
+@jobforge/fetch:test:  Test Files  1 passed (1)
+@jobforge/fetch:test:       Tests  8 passed (8)
+@jobforge/fetch:test:    Start at  04:38:31
+@jobforge/fetch:test:    Duration  5.02s (transform 1.46s, setup 1ms, collect 1.64s, tests 39ms, environment 2ms, prepare 946ms)
+@jobforge/fetch:test: 
+@settler/edge-node:test: No tests found, exiting with code 0
+@settler/cli:test: cache miss, executing 0fd3d85358a0ed61
+@settler/cli:test: 
+@settler/cli:test: > @settler/cli@1.0.0 test /workspace/Settler/packages/cli
+@settler/cli:test: > jest --passWithNoTests
+@settler/cli:test: 
+@settler/sdk:test: PASS src/__tests__/integration.test.ts (62.208 s)
+@settler/sdk:test: PASS src/__tests__/client.test.ts
+@settler/sdk:test: PASS src/__tests__/webhook-signature.test.ts
+@settler/sdk:test: 
+@settler/sdk:test: Test Suites: 3 passed, 3 total
+@settler/sdk:test: Tests:       24 passed, 24 total
+@settler/sdk:test: Snapshots:   0 total
+@settler/sdk:test: Time:        70.198 s
+@settler/sdk:test: Ran all test suites.
+@settler/api:test: cache miss, executing 93f49b031995d3d9
+@settler/web:build: cache miss, executing 366aec35ef8be995
+@settler/api:test: 
+@settler/api:test: > @settler/api@1.0.0 test /workspace/Settler/packages/api
+@settler/api:test: > jest --runInBand --forceExit
+@settler/api:test: 
+@settler/web:build: 
+@settler/web:build: > @settler/web@1.0.0 build /workspace/Settler/packages/web
+@settler/web:build: > next build --webpack
+@settler/web:build: 
+@settler/web:build: ▲ Next.js 16.1.6 (webpack)
+@settler/web:build: - Experiments (use with caution):
+@settler/web:build:   ✓ optimizeCss
+@settler/web:build:   · optimizePackageImports
+@settler/web:build: 
+@settler/web:build:   Creating an optimized production build ...
+@settler/web:build:   Using tsconfig file: ./tsconfig.json
+@settler/cli:test: PASS src/__tests__/kernel-client.test.ts (20.527 s)
+@settler/cli:test: PASS src/__tests__/reconciliation-foundry.test.ts (7.865 s)
+@settler/cli:test: PASS src/__tests__/command-unsafe-ack.test.ts
+@settler/cli:test: PASS src/__tests__/platform-extension.test.ts
+@settler/cli:test: PASS src/__tests__/replay-verification.test.ts (5.042 s)
+@settler/cli:test: PASS src/__tests__/execution-ledger.test.ts
+@settler/cli:test: PASS src/__tests__/foundry.test.ts
+@settler/cli:test: PASS src/__tests__/safety.test.ts
+@settler/cli:test: 
+@settler/cli:test: Test Suites: 8 passed, 8 total
+@settler/cli:test: Tests:       38 passed, 38 total
+@settler/cli:test: Snapshots:   0 total
+@settler/cli:test: Time:        47.046 s
+@settler/cli:test: Ran all test suites.
+@settler/api:test: PASS src/__tests__/multi-tenancy/runtime-isolation.test.ts
+@settler/api:test: PASS src/__tests__/multi-tenancy/tenant-isolation-enforced.test.ts
+@settler/api:test:   ● Console
+@settler/api:test: 
+@settler/api:test:     console.warn
+@settler/api:test:       ⚠️  Supabase not configured. Some features may not work.
+@settler/api:test: 
+@settler/api:test:       36 |     // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
+@settler/api:test:       37 |      
+@settler/api:test:     > 38 |     console.warn('⚠️  Supabase not configured. Some features may not work.');
+@settler/api:test:          |             ^
+@settler/api:test:       39 |     return createClient('https://placeholder.supabase.co', 'placeholder-key', {
+@settler/api:test:       40 |       db: { schema: 'public' },
+@settler/api:test:       41 |       auth: { persistSession: false, autoRefreshToken: false },
+@settler/api:test: 
+@settler/api:test:       at createSupabaseClient (src/infrastructure/supabase/client.ts:38:13)
+@settler/api:test:       at src/infrastructure/supabase/client.ts:69:22
+@settler/api:test:       at Object.<anonymous> (src/infrastructure/supabase/client.ts:72:3)
+@settler/api:test:       at Object.<anonymous> (src/services/matching/enhanced-cross-customer-intelligence.ts:10:1)
+@settler/api:test:       at Object.<anonymous> (src/services/ingestion/reconciliation-matcher.ts:12:1)
+@settler/api:test:       at src/__tests__/multi-tenancy/tenant-isolation-enforced.test.ts:232:34
+@settler/api:test:       at Object.<anonymous> (src/__tests__/multi-tenancy/tenant-isolation-enforced.test.ts:232:34)
+@settler/api:test: 
+@settler/api:test:     console.log
+@settler/api:test:       2026-03-12T04:40:04.235Z [[31merror[39m]: Failed to get audit logs Error: tenantId is required for getAuditLogs {"service":"settler-api","environment":"test","tenantId":"","stack":"Error: tenantId is required for getAuditLogs\n    at getAuditLogs (/workspace/Settler/packages/api/src/services/audit-trail.ts:54:26)\n    at Object.<anonymous> (/workspace/Settler/packages/api/src/__tests__/multi-tenancy/tenant-isolation-enforced.test.ts:245:18)"}
+@settler/api:test: 
+@settler/api:test:       at Console.log (../../node_modules/.pnpm/winston@3.19.0/node_modules/winston/lib/winston/transports/console.js:87:23)
+@settler/api:test: 
+@settler/api:test: PASS src/__tests__/reconciliation/ReconciliationService.test.ts
+@settler/api:test: PASS src/services/ingestion/__tests__/csv-importer.test.ts
+@settler/api:test:   ● Console
+@settler/api:test: 
+@settler/api:test:     console.log
+@settler/api:test:       2026-03-12T04:40:09.494Z [[31merror[39m]: Failed to parse CSV CSVParserError: CSV file is empty {"service":"settler-api","environment":"test","stack":"CSVParserError: CSV file is empty\n    at parseCSV (/workspace/Settler/packages/api/src/services/ingestion/csv-importer.ts:170:13)\n    at /workspace/Settler/packages/api/src/services/ingestion/__tests__/csv-importer.test.ts:39:28\n    at Object.<anonymous> (/workspace/Settler/node_modules/.pnpm/expect@29.7.0/node_modules/expect/build/toThrowMatchers.js:74:11)\n    at Object.throwingMatcher [as toThrow] (/workspace/Settler/node_modules/.pnpm/expect@29.7.0/node_modules/expect/build/index.js:320:21)\n    at Object.<anonymous> (/workspace/Settler/packages/api/src/services/ingestion/__tests__/csv-importer.test.ts:39:34)\n    at Promise.then.completed (/workspace/Settler/node_modules/.pnpm/jest-circus@29.7.0/node_modules/jest-circus/build/utils.js:298:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/Settler/node_modules/.pnpm/jest-circus@29.7.0/node_modules/jest-circus/build/utils.js:231:10)\n    at _callCircusTest (/workspace/Settler/node_modules/.pnpm/jest-circus@29.7.0/node_modules/jest-circus/build/run.js:316:40)\n    at _runTest (/workspace/Settler/node_modules/.pnpm/jest-circus@29.7.0/node_modules/jest-circus/build/run.js:252:3)\n    at _runTestsForDescribeBlock (/workspace/Settler/node_modules/.pnpm/jest-circus@29.7.0/node_modules/jest-circus/build/run.js:126:9)\n    at _runTestsForDescribeBlock (/workspace/Settler/node_modules/.pnpm/jest-circus@29.7.0/node_modules/jest-circus/build/run.js:121:9)\n    at _runTestsForDescribeBlock (/workspace/Settler/node_modules/.pnpm/jest-circus@29.7.0/node_modules/jest-circus/build/run.js:121:9)\n    at run (/workspace/Settler/node_modules/.pnpm/jest-circus@29.7.0/node_modules/jest-circus/build/run.js:71:3)\n    at runAndTransformResultsToJestFormat (/workspace/Settler/node_modules/.pnpm/jest-circus@29.7.0/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\n    at jestAdapter (/workspace/Settler/node_modules/.pnpm/jest-circus@29.7.0/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\n    at runTestInternal (/workspace/Settler/node_modules/.pnpm/jest-runner@29.7.0/node_modules/jest-runner/build/runTest.js:367:16)\n    at runTest (/workspace/Settler/node_modules/.pnpm/jest-runner@29.7.0/node_modules/jest-runner/build/runTest.js:444:34)"}
+@settler/api:test: 
+@settler/api:test:       at Console.log (../../node_modules/.pnpm/winston@3.19.0/node_modules/winston/lib/winston/transports/console.js:87:23)
+@settler/api:test: 
+@settler/api:test: PASS src/__tests__/webhooks/webhook-security.test.ts
+@settler/api:test: PASS src/__tests__/webhooks/webhook-queue.test.ts
+@settler/api:test: PASS src/__tests__/security/encryption.test.ts
+@settler/api:test: PASS src/__tests__/resilience/api-resilience.test.ts
+@settler/api:test: PASS src/routes/v1/__tests__/ingestion-preview.route.test.ts
+@settler/api:test:   ● Console
+@settler/api:test: 
+@settler/api:test:     console.warn
+@settler/api:test:       ⚠️  Supabase not configured. Some features may not work.
+@settler/api:test: 
+@settler/api:test:       36 |     // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
+@settler/api:test:       37 |      
+@settler/api:test:     > 38 |     console.warn('⚠️  Supabase not configured. Some features may not work.');
+@settler/api:test:          |             ^
+@settler/api:test:       39 |     return createClient('https://placeholder.supabase.co', 'placeholder-key', {
+@settler/api:test:       40 |       db: { schema: 'public' },
+@settler/api:test:       41 |       auth: { persistSession: false, autoRefreshToken: false },
+@settler/api:test: 
+@settler/api:test:       at createSupabaseClient (src/infrastructure/supabase/client.ts:38:13)
+@settler/api:test:       at src/infrastructure/supabase/client.ts:69:22
+@settler/api:test:       at Object.<anonymous> (src/infrastructure/supabase/client.ts:72:3)
+@settler/api:test:       at Object.<anonymous> (src/utils/usage-tracking.ts:8:1)
+@settler/api:test:       at Object.<anonymous> (src/routes/v1/ingestion.ts:27:1)
+@settler/api:test:       at Object.<anonymous> (src/routes/v1/__tests__/ingestion-preview.route.test.ts:3:1)
+@settler/api:test: 
+@settler/api:test: PASS src/__tests__/integration/capability-route-degradation.test.ts
+@settler/api:test: PASS src/__tests__/application/job-service-invocation-order.test.ts
+@settler/api:test: PASS src/__tests__/route-inventory.test.ts
+@settler/api:test:   ● Console
+@settler/api:test: 
+@settler/api:test:     console.warn
+@settler/api:test:       ⚠️  Supabase not configured. Some features may not work.
+@settler/api:test: 
+@settler/api:test:       36 |     // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
+@settler/api:test:       37 |      
+@settler/api:test:     > 38 |     console.warn('⚠️  Supabase not configured. Some features may not work.');
+@settler/api:test:          |             ^
+@settler/api:test:       39 |     return createClient('https://placeholder.supabase.co', 'placeholder-key', {
+@settler/api:test:       40 |       db: { schema: 'public' },
+@settler/api:test:       41 |       auth: { persistSession: false, autoRefreshToken: false },
+@settler/api:test: 
+@settler/api:test:       at createSupabaseClient (src/infrastructure/supabase/client.ts:38:13)
+@settler/api:test:       at src/infrastructure/supabase/client.ts:69:22
+@settler/api:test:       at Object.<anonymous> (src/infrastructure/supabase/client.ts:72:3)
+@settler/api:test:       at Object.<anonymous> (src/utils/billing-helpers.ts:7:1)
+@settler/api:test:       at Object.<anonymous> (src/middleware/usage-enforcement.ts:10:1)
+@settler/api:test:       at Object.<anonymous> (src/routes/v1/ingestion.ts:26:1)
+@settler/api:test:       at Object.<anonymous> (src/routes/v1/index.ts:16:1)
+@settler/api:test:       at Object.<anonymous> (src/index.ts:50:1)
+@settler/api:test:       at Object.<anonymous> (src/__tests__/route-inventory.test.ts:8:1)
+@settler/api:test: 
+@settler/api:test:     console.warn
+@settler/api:test:       OTLP_ENDPOINT not set, tracing disabled
+@settler/api:test: 
+@settler/api:test:        99 |         // Note: Can't use logger here as it may depend on tracing - use console for initialization only
+@settler/api:test:       100 |          
+@settler/api:test:     > 101 |         console.warn("OTLP_ENDPOINT not set, tracing disabled");
+@settler/api:test:           |                 ^
+@settler/api:test:       102 |         return;
+@settler/api:test:       103 |       }
+@settler/api:test:       104 |
+@settler/api:test: 
+@settler/api:test:       at src/infrastructure/observability/tracing.ts:101:17
+@settler/api:test: 
+@settler/api:test: PASS src/__tests__/security/auth.test.ts
+@settler/api:test:   ● Console
+@settler/api:test: 
+@settler/api:test:     console.warn
+@settler/api:test:       ⚠️  Supabase not configured. Some features may not work.
+@settler/api:test: 
+@settler/api:test:       36 |     // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
+@settler/api:test:       37 |      
+@settler/api:test:     > 38 |     console.warn('⚠️  Supabase not configured. Some features may not work.');
+@settler/api:test:          |             ^
+@settler/api:test:       39 |     return createClient('https://placeholder.supabase.co', 'placeholder-key', {
+@settler/api:test:       40 |       db: { schema: 'public' },
+@settler/api:test:       41 |       auth: { persistSession: false, autoRefreshToken: false },
+@settler/api:test: 
+@settler/api:test:       at createSupabaseClient (src/infrastructure/supabase/client.ts:38:13)
+@settler/api:test:       at src/infrastructure/supabase/client.ts:69:22
+@settler/api:test:       at Object.<anonymous> (src/infrastructure/supabase/client.ts:72:3)
+@settler/api:test:       at Object.<anonymous> (src/utils/billing-helpers.ts:7:1)
+@settler/api:test:       at Object.<anonymous> (src/middleware/usage-enforcement.ts:10:1)
+@settler/api:test:       at Object.<anonymous> (src/routes/v1/ingestion.ts:26:1)
+@settler/api:test:       at Object.<anonymous> (src/routes/v1/index.ts:16:1)
+@settler/api:test:       at Object.<anonymous> (src/index.ts:50:1)
+@settler/api:test:       at Object.<anonymous> (src/__tests__/security/auth.test.ts:7:1)
+@settler/api:test: 
+@settler/api:test:     console.warn
+@settler/api:test:       OTLP_ENDPOINT not set, tracing disabled
+@settler/api:test: 
+@settler/api:test:        99 |         // Note: Can't use logger here as it may depend on tracing - use console for initialization only
+@settler/api:test:       100 |          
+@settler/api:test:     > 101 |         console.warn("OTLP_ENDPOINT not set, tracing disabled");
+@settler/api:test:           |                 ^
+@settler/api:test:       102 |         return;
+@settler/api:test:       103 |       }
+@settler/api:test:       104 |
+@settler/api:test: 
+@settler/api:test:       at src/infrastructure/observability/tracing.ts:101:17
+@settler/api:test: 
+@settler/api:test: PASS src/__tests__/repositories/job-repository-tenant-contract.test.ts
+@settler/api:test: PASS src/__tests__/integration/route-validation.test.ts
+@settler/api:test:   ● Console
+@settler/api:test: 
+@settler/api:test:     console.warn
+@settler/api:test:       ⚠️  Supabase not configured. Some features may not work.
+@settler/api:test: 
+@settler/api:test:       36 |     // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
+@settler/api:test:       37 |      
+@settler/api:test:     > 38 |     console.warn('⚠️  Supabase not configured. Some features may not work.');
+@settler/api:test:          |             ^
+@settler/api:test:       39 |     return createClient('https://placeholder.supabase.co', 'placeholder-key', {
+@settler/api:test:       40 |       db: { schema: 'public' },
+@settler/api:test:       41 |       auth: { persistSession: false, autoRefreshToken: false },
+@settler/api:test: 
+@settler/api:test:       at createSupabaseClient (src/infrastructure/supabase/client.ts:38:13)
+@settler/api:test:       at src/infrastructure/supabase/client.ts:69:22
+@settler/api:test:       at Object.<anonymous> (src/infrastructure/supabase/client.ts:72:3)
+@settler/api:test:       at Object.<anonymous> (src/utils/billing-helpers.ts:7:1)
+@settler/api:test:       at Object.<anonymous> (src/middleware/usage-enforcement.ts:10:1)
+@settler/api:test:       at Object.<anonymous> (src/routes/v1/ingestion.ts:26:1)
+@settler/api:test:       at Object.<anonymous> (src/routes/v1/index.ts:16:1)
+@settler/api:test:       at Object.<anonymous> (src/index.ts:50:1)
+@settler/api:test:       at Object.<anonymous> (src/__tests__/integration/route-validation.test.ts:7:1)
+@settler/api:test: 
+@settler/api:test:     console.warn
+@settler/api:test:       OTLP_ENDPOINT not set, tracing disabled
+@settler/api:test: 
+@settler/api:test:        99 |         // Note: Can't use logger here as it may depend on tracing - use console for initialization only
+@settler/api:test:       100 |          
+@settler/api:test:     > 101 |         console.warn("OTLP_ENDPOINT not set, tracing disabled");
+@settler/api:test:           |                 ^
+@settler/api:test:       102 |         return;
+@settler/api:test:       103 |       }
+@settler/api:test:       104 |
+@settler/api:test: 
+@settler/api:test:       at src/infrastructure/observability/tracing.ts:101:17
+@settler/api:test: 
+@settler/api:test: PASS src/__tests__/routes/operator-alerts-tenant-scope.test.ts
+@settler/api:test: PASS src/services/events/__tests__/event-bus.contract.test.ts
+@settler/api:test: PASS src/__tests__/application/user-service-invocation-order.test.ts
+@settler/api:test: PASS src/services/ops-intelligence/__tests__/recommendation-engine.test.ts
+@settler/api:test: PASS src/__tests__/integration/distributed-guards.redis.test.ts
+@settler/api:test: PASS src/__tests__/domain/User.test.ts
+@settler/api:test: PASS src/security/__tests__/security.test.ts
+@settler/api:test: PASS src/__tests__/security/input-validation.test.ts
+@settler/api:test:   ● Console
+@settler/api:test: 
+@settler/api:test:     console.warn
+@settler/api:test:       ⚠️  Supabase not configured. Some features may not work.
+@settler/api:test: 
+@settler/api:test:       36 |     // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
+@settler/api:test:       37 |      
+@settler/api:test:     > 38 |     console.warn('⚠️  Supabase not configured. Some features may not work.');
+@settler/api:test:          |             ^
+@settler/api:test:       39 |     return createClient('https://placeholder.supabase.co', 'placeholder-key', {
+@settler/api:test:       40 |       db: { schema: 'public' },
+@settler/api:test:       41 |       auth: { persistSession: false, autoRefreshToken: false },
+@settler/api:test: 
+@settler/api:test:       at createSupabaseClient (src/infrastructure/supabase/client.ts:38:13)
+@settler/api:test:       at src/infrastructure/supabase/client.ts:69:22
+@settler/api:test:       at Object.<anonymous> (src/infrastructure/supabase/client.ts:72:3)
+@settler/api:test:       at Object.<anonymous> (src/utils/billing-helpers.ts:7:1)
+@settler/api:test:       at Object.<anonymous> (src/middleware/usage-enforcement.ts:10:1)
+@settler/api:test:       at Object.<anonymous> (src/routes/v1/ingestion.ts:26:1)
+@settler/api:test:       at Object.<anonymous> (src/routes/v1/index.ts:16:1)
+@settler/api:test:       at Object.<anonymous> (src/index.ts:50:1)
+@settler/api:test:       at Object.<anonymous> (src/__tests__/security/input-validation.test.ts:7:1)
+@settler/api:test: 
+@settler/api:test:     console.warn
+@settler/api:test:       OTLP_ENDPOINT not set, tracing disabled
+@settler/api:test: 
+@settler/api:test:        99 |         // Note: Can't use logger here as it may depend on tracing - use console for initialization only
+@settler/api:test:       100 |          
+@settler/api:test:     > 101 |         console.warn("OTLP_ENDPOINT not set, tracing disabled");
+@settler/api:test:           |                 ^
+@settler/api:test:       102 |         return;
+@settler/api:test:       103 |       }
+@settler/api:test:       104 |
+@settler/api:test: 
+@settler/api:test:       at src/infrastructure/observability/tracing.ts:101:17
+@settler/api:test: 
+@settler/api:test:     console.log
+@settler/api:test:       2026-03-12T04:42:04.339Z [[31merror[39m]: Request error PayloadTooLargeError: request entity too large {"service":"settler-api","environment":"test","method":"POST","path":"/api/v1/jobs","ip":"::ffff:127.0.0.1","traceId":"5fbf3272-1b40-4139-9827-2324115241f8","stack":"PayloadTooLargeError: request entity too large\n    at readStream (/workspace/Settler/node_modules/.pnpm/raw-body@2.5.3/node_modules/raw-body/index.js:163:17)\n    at getRawBody (/workspace/Settler/node_modules/.pnpm/raw-body@2.5.3/node_modules/raw-body/index.js:116:12)\n    at read (/workspace/Settler/node_modules/.pnpm/body-parser@1.20.4/node_modules/body-parser/lib/read.js:79:3)\n    at jsonParser (/workspace/Settler/node_modules/.pnpm/body-parser@1.20.4/node_modules/body-parser/lib/types/json.js:138:5)\n    at Layer.handle [as handle_request] (/workspace/Settler/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/layer.js:95:5)\n    at trim_prefix (/workspace/Settler/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:328:13)\n    at /workspace/Settler/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:286:9\n    at Function.process_params (/workspace/Settler/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:346:12)\n    at next (/workspace/Settler/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:280:10)\n    at /workspace/Settler/node_modules/.pnpm/express-rate-limit@7.5.1_express@4.22.1/node_modules/express-rate-limit/dist/index.cjs:807:7\n    at /workspace/Settler/node_modules/.pnpm/express-rate-limit@7.5.1_express@4.22.1/node_modules/express-rate-limit/dist/index.cjs:691:5"}
+@settler/api:test: 
+@settler/api:test:       at Console.log (../../node_modules/.pnpm/winston@3.19.0/node_modules/winston/lib/winston/transports/console.js:87:23)
+@settler/api:test: 
+@settler/api:test: PASS src/__tests__/services/operator-foundations-contracts.test.ts
+@settler/api:test: PASS src/__tests__/application/webhook-ingestion-invocation-order.test.ts
+@settler/api:test: PASS src/__tests__/reconciliation/ReconciliationLifecycle.test.ts
+ WARNING  no output files found for task @jobforge/adapter-settler#build. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @jobforge/errors#build. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @jobforge/errors#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @jobforge/fetch#build. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @jobforge/fetch#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @jobforge/sdk-ts#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @settler/adapters#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @settler/cli#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @settler/edge-ai-core#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @settler/edge-node#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @settler/sdk#test. Please check your `outputs` key in `turbo.json`
+@settler/web:build:  ELIFECYCLE  Command failed.
+@settler/api:test:  ELIFECYCLE  Test failed. See above for more details.
+ ELIFECYCLE  Test failed. See above for more details.
+ ERROR  run failed: command  exited (1)
+\n$ pnpm run verify:setup
+
+> settler-monorepo@1.0.0 verify:setup /workspace/Settler
+> tsx scripts/verify-setup.ts
+
+🩺 Settler setup verification
+
+[web]
+❌ Missing required env: NEXT_PUBLIC_SUPABASE_URL
+❌ Missing required env: NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+[api/auth]
+❌ Missing required env: SUPABASE_URL
+❌ Missing required env: SUPABASE_ANON_KEY
+
+[database]
+❌ Missing database DSN. Set DATABASE_URL, SUPABASE_DATABASE_URL, or DIRECT_URL.
+
+[billing]
+⚠️ Billing not enabled (Stripe env not set).
+
+[enterprise]
+⚠️ Enterprise integrations not enabled.
+
+[kernel]
+⚠️ Kernel not enabled (running with TS fallback path).
+
+❌ setup verification failed
+ ELIFECYCLE  Command failed with exit code 1.
+[exit:1]
+\n$ pnpm run settler:doctor
+ ERR_PNPM_NO_SCRIPT  Missing script: settler:doctor
+
+Command "settler:doctor" not found. Did you mean "pnpm run suite-doctor"?
+[exit:1]
+\n$ pnpm run kernel:health
+
+> settler-monorepo@1.0.0 kernel:health /workspace/Settler
+> tsx scripts/kernel-health.ts
+
+Kernel health diagnostics
+=========================
+flags.enabled=false
+flags.canonicalize=false
+flags.executionMode=primary
+flags.shadowMode=false
+flags.primaryAllowlist=<empty>
+flags.disabledOperations=<empty>
+runner.mode=cargo-run
+runner.reason=<none>
+
+Startup health
+------------
+{
+  "healthy": false,
+  "runnerMode": "cargo-run",
+  "durationMs": 1527,
+  "reason": "timeout"
+}
+
+Per-operation readiness
+-----------------------
+canonicalize_hash: {"operation":"canonicalize_hash","kernelBinaryAvailable":false,"handshakeSuccess":false,"operationReady":false,"runnerMode":"disabled","reason":"kernel_disabled"}
+proof_bundle_hash: {"operation":"proof_bundle_hash","kernelBinaryAvailable":false,"handshakeSuccess":false,"operationReady":false,"runnerMode":"disabled","reason":"kernel_disabled"}
+artifact_identity_hash: {"operation":"artifact_identity_hash","kernelBinaryAvailable":false,"handshakeSuccess":false,"operationReady":false,"runnerMode":"disabled","reason":"kernel_disabled"}
+
+✅ Kernel health diagnostics completed.
+[exit:0]
+\n$ pnpm run check:production
+
+> settler-monorepo@1.0.0 check:production /workspace/Settler
+> tsx scripts/check-production-readiness.ts
+
+🚀 Running Production Verification Gate
+
+============================================================
+This check validates repo integrity and build/test quality gates
+============================================================
+
+🔍 Repository integrity (workspaces, packages, scripts)...
+🔍 Running repository integrity checks...
+
+✅ All integrity checks passed
+
+✅ Repository integrity (workspaces, packages, scripts) passed
+
+
+🔍 Lint all packages...
+
+> settler-monorepo@1.0.0 lint /workspace/Settler
+> turbo run lint
+
+• turbo 2.8.0
+• Packages in scope: @jobforge/adapter-settler, @jobforge/errors, @jobforge/fetch, @jobforge/sdk-ts, @jobforge/shared, @jobforge/typescript-config, @settler/adapters, @settler/api, @settler/cli, @settler/edge-ai-core, @settler/edge-node, @settler/protocol, @settler/react-settler, @settler/sdk, @settler/sdk-csharp, @settler/sdk-java, @settler/types, @settler/web
+• Running lint in 18 packages
+• Remote caching disabled
+@jobforge/shared:lint: cache hit, replaying logs 19c5f688626d0948
+@jobforge/shared:lint: 
+@jobforge/shared:lint: > @jobforge/shared@0.1.0 lint /workspace/Settler/packages/jobforge-shared
+@jobforge/shared:lint: > eslint src/
+@jobforge/shared:lint: 
+@settler/web:lint: cache hit, replaying logs 8c7fc286adc59f9d
+@settler/web:lint: 
+@settler/web:lint: > @settler/web@1.0.0 lint /workspace/Settler/packages/web
+@settler/web:lint: > eslint src
+@settler/web:lint: 
+@settler/web:lint: 
+@settler/web:lint: /workspace/Settler/packages/web/src/app/architecture/page.tsx
+@settler/web:lint:   12:10  warning  'RealityEvidencePanel' is defined but never used        @typescript-eslint/no-unused-vars
+@settler/web:lint:   14:3   warning  'CapabilityMap' is defined but never used               @typescript-eslint/no-unused-vars
+@settler/web:lint:   15:3   warning  'IntegrationAndPackagingMap' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/web:lint:   16:3   warning  'PlatformOverviewDiagram' is defined but never used     @typescript-eslint/no-unused-vars
+@settler/web:lint:   17:3   warning  'WorkflowJourneyDiagram' is defined but never used      @typescript-eslint/no-unused-vars
+@settler/web:lint: 
+@settler/web:lint: /workspace/Settler/packages/web/src/app/edge-ai/nodes/page.tsx
+@settler/web:lint:   2:46  warning  'CardHeader' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/web:lint: 
+@settler/web:lint: /workspace/Settler/packages/web/src/app/open-source/page.tsx
+@settler/web:lint:   11:3  warning  'RefreshCw' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/web:lint: 
+@settler/web:lint: ✖ 7 problems (0 errors, 7 warnings)
+@settler/web:lint: 
+@settler/cli:lint: cache miss, executing 1c1a24ffdbbb96d6
+@settler/adapters:lint: cache miss, executing 28851f4a580c29b7
+@jobforge/sdk-ts:lint: cache hit, replaying logs 47d36ee24de488e3
+@jobforge/sdk-ts:lint: 
+@jobforge/sdk-ts:lint: > @jobforge/sdk-ts@0.1.0 lint /workspace/Settler/packages/jobforge-sdk-ts
+@jobforge/sdk-ts:lint: > eslint src/
+@jobforge/sdk-ts:lint: 
+@settler/api:lint: cache miss, executing 390b07b838b796e0
+@jobforge/fetch:lint: cache hit, replaying logs 2d331f0b41280540
+@jobforge/fetch:lint: 
+@jobforge/fetch:lint: > @jobforge/fetch@0.1.0 lint /workspace/Settler/packages/jobforge-fetch
+@jobforge/fetch:lint: > eslint "**/*.ts"
+@jobforge/fetch:lint: 
+@settler/edge-node:lint: cache hit, replaying logs 123fc492e6215a34
+@settler/edge-node:lint: 
+@settler/edge-node:lint: > @settler/edge-node@1.0.0 lint /workspace/Settler/packages/edge-node
+@settler/edge-node:lint: > eslint src
+@settler/edge-node:lint: 
+@settler/edge-ai-core:lint: cache hit, replaying logs 7a95eea93bbe039e
+@settler/edge-ai-core:lint: 
+@settler/edge-ai-core:lint: > @settler/edge-ai-core@1.0.0 lint /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:lint: > eslint src
+@settler/edge-ai-core:lint: 
+@jobforge/errors:lint: cache hit, replaying logs a82a936ecd8bbe79
+@jobforge/errors:lint: 
+@jobforge/errors:lint: > @jobforge/errors@0.1.0 lint /workspace/Settler/packages/jobforge-errors
+@jobforge/errors:lint: > eslint "**/*.ts"
+@jobforge/errors:lint: 
+@settler/sdk:lint: cache hit, replaying logs 2a2e7b9090ab058a
+@settler/sdk:lint: 
+@settler/sdk:lint: > @settler/sdk@1.0.0 lint /workspace/Settler/packages/sdk
+@settler/sdk:lint: > eslint src
+@settler/sdk:lint: 
+@settler/sdk:lint: 
+@settler/sdk:lint: /workspace/Settler/packages/sdk/src/utils/middleware.ts
+@settler/sdk:lint:   72:31  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+@settler/sdk:lint: 
+@settler/sdk:lint: ✖ 1 problem (0 errors, 1 warning)
+@settler/sdk:lint: 
+@settler/adapters:lint: 
+@settler/adapters:lint: > @settler/adapters@1.0.0 lint /workspace/Settler/packages/adapters
+@settler/adapters:lint: > eslint src
+@settler/adapters:lint: 
+@settler/cli:lint: 
+@settler/cli:lint: > @settler/cli@1.0.0 lint /workspace/Settler/packages/cli
+@settler/cli:lint: > eslint src
+@settler/cli:lint: 
+@settler/api:lint: 
+@settler/api:lint: > @settler/api@1.0.0 lint /workspace/Settler/packages/api
+@settler/api:lint: > eslint src
+@settler/api:lint: 
+@settler/cli:lint: 
+@settler/cli:lint: /workspace/Settler/packages/cli/src/lib/execution-ledger.ts
+@settler/cli:lint:   124:11  warning  'execution_hash' is assigned a value but never used  @typescript-eslint/no-unused-vars
+@settler/cli:lint: 
+@settler/cli:lint: ✖ 1 problem (0 errors, 1 warning)
+@settler/cli:lint: 
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/infrastructure/jobs/scheduler-service.ts
+@settler/api:lint:   30:10  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/infrastructure/security/SSRFProtection.ts
+@settler/api:lint:   66:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint:   72:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint:   94:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/jobs/email-scheduler.ts
+@settler/api:lint:   12:10  warning  '_calculateDaysRemaining' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/middleware/api-gateway-cache.ts
+@settler/api:lint:   182:16  warning  '_pattern' is assigned a value but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/routes/export-enhanced.ts
+@settler/api:lint:   71:27  warning  '_includeUnmatched' is assigned a value but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/routes/v1/operator-mode.ts
+@settler/api:lint:   21:3  warning  'checkAlertThresholds' is defined but never used   @typescript-eslint/no-unused-vars
+@settler/api:lint:   23:3  warning  'upsertAlertThreshold' is defined but never used   @typescript-eslint/no-unused-vars
+@settler/api:lint:   27:3  warning  'setTenantUsageCeiling' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint:   28:3  warning  'getAllUsageCeilings' is defined but never used    @typescript-eslint/no-unused-vars
+@settler/api:lint:   29:3  warning  'checkUsageCeiling' is defined but never used      @typescript-eslint/no-unused-vars
+@settler/api:lint:   30:3  warning  'setBackgroundJobLimit' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/services/determinism/execution-orchestrator.ts
+@settler/api:lint:   16:10  warning  'createRunSnapshot' is defined but never used        @typescript-eslint/no-unused-vars
+@settler/api:lint:   16:29  warning  'updateRunSnapshotStatus' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint:   16:54  warning  'RunSnapshot' is defined but never used              @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/services/determinism/idempotent-ingestion.ts
+@settler/api:lint:   96:59  warning  'effective_date' is assigned a value but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/services/determinism/replay-service.ts
+@settler/api:lint:   227:33  warning  'snapshot' is defined but never used. Allowed unused args must match /^_/u       @typescript-eslint/no-unused-vars
+@settler/api:lint:   258:34  warning  'snapshot' is defined but never used. Allowed unused args must match /^_/u       @typescript-eslint/no-unused-vars
+@settler/api:lint:   416:3   warning  'runId' is defined but never used. Allowed unused args must match /^_/u          @typescript-eslint/no-unused-vars
+@settler/api:lint:   417:3   warning  'replayMatches' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+@settler/api:lint:   428:3   warning  'replayRunId' is defined but never used. Allowed unused args must match /^_/u    @typescript-eslint/no-unused-vars
+@settler/api:lint:   465:35  warning  'originalRunId' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/services/determinism/verification-gates.ts
+@settler/api:lint:   11:10  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/services/knowledge/decision-log.ts
+@settler/api:lint:   228:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/services/operator-mode/alerting.ts
+@settler/api:lint:   435:16  warning  'sendSlackAlert' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: /workspace/Settler/packages/api/src/services/reconciliation/automated-review.ts
+@settler/api:lint:   453:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+@settler/api:lint: 
+@settler/api:lint: ✖ 27 problems (0 errors, 27 warnings)
+@settler/api:lint: 
+
+ Tasks:    11 successful, 11 total
+Cached:    8 cached, 11 total
+  Time:    25.996s 
+
+✅ Lint all packages passed
+
+
+🔍 Type check all packages...
+
+> settler-monorepo@1.0.0 typecheck /workspace/Settler
+> turbo run typecheck
+
+• turbo 2.8.0
+• Packages in scope: @jobforge/adapter-settler, @jobforge/errors, @jobforge/fetch, @jobforge/sdk-ts, @jobforge/shared, @jobforge/typescript-config, @settler/adapters, @settler/api, @settler/cli, @settler/edge-ai-core, @settler/edge-node, @settler/protocol, @settler/react-settler, @settler/sdk, @settler/sdk-csharp, @settler/sdk-java, @settler/types, @settler/web
+• Running typecheck in 18 packages
+• Remote caching disabled
+@jobforge/adapter-settler:typecheck: cache hit, replaying logs b50efe0c5dff2ceb
+@jobforge/adapter-settler:typecheck: 
+@jobforge/adapter-settler:typecheck: > @jobforge/adapter-settler@0.1.0 typecheck /workspace/Settler/packages/jobforge-adapter-settler
+@jobforge/adapter-settler:typecheck: > tsc --noEmit
+@jobforge/adapter-settler:typecheck: 
+@settler/protocol:typecheck: cache hit, replaying logs ae7c097d97e058a2
+@settler/protocol:typecheck: 
+@settler/protocol:typecheck: > @settler/protocol@0.1.0 typecheck /workspace/Settler/packages/protocol
+@settler/protocol:typecheck: > tsc --noEmit
+@settler/protocol:typecheck: 
+@settler/edge-node:typecheck: cache hit, replaying logs db37ce43f49e0113
+@settler/edge-node:typecheck: 
+@settler/edge-node:typecheck: > @settler/edge-node@1.0.0 typecheck /workspace/Settler/packages/edge-node
+@settler/edge-node:typecheck: > tsc --noEmit
+@settler/edge-node:typecheck: 
+@settler/cli:typecheck: cache hit, replaying logs 82169bafd6399a50
+@settler/cli:typecheck: 
+@settler/cli:typecheck: > @settler/cli@1.0.0 typecheck /workspace/Settler/packages/cli
+@settler/cli:typecheck: > tsc --noEmit
+@settler/cli:typecheck: 
+@settler/api:typecheck: cache hit, replaying logs 576e13165a6a3e88
+@settler/api:typecheck: 
+@settler/api:typecheck: > @settler/api@1.0.0 pretypecheck /workspace/Settler/packages/api
+@settler/api:typecheck: > cd ../.. && pnpm run prisma:generate || pnpm exec prisma generate || echo 'Warning: Prisma generate may have failed'
+@settler/api:typecheck: 
+@settler/api:typecheck: 
+@settler/api:typecheck: > settler-monorepo@1.0.0 prisma:generate /workspace/Settler
+@settler/api:typecheck: > cross-env PRISMA_CLIENT_ENGINE_TYPE=wasm PRISMA_ENGINES_MIRROR= prisma generate
+@settler/api:typecheck: 
+@settler/api:typecheck: Loaded Prisma config from prisma.config.ts.
+@settler/api:typecheck: 
+@settler/api:typecheck: Prisma schema loaded from prisma/schema.prisma.
+@settler/api:typecheck: 
+@settler/api:typecheck: ✔ Generated Prisma Client (v7.3.0) to ./node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@18.3.27_better-sqlite3@12.6.2_react-dom@_efc9348d8c027de17c7e00b84b73d1eb/node_modules/@prisma/client in 14.28s
+@settler/api:typecheck: 
+@settler/api:typecheck: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+@settler/api:typecheck: 
+@settler/api:typecheck: 
+@settler/api:typecheck: 
+@settler/api:typecheck: > @settler/api@1.0.0 typecheck /workspace/Settler/packages/api
+@settler/api:typecheck: > tsc --noEmit
+@settler/api:typecheck: 
+@settler/web:typecheck: cache miss, executing 82209645c755fef4
+@jobforge/shared:typecheck: cache hit, replaying logs c4c3fb10e0072c37
+@jobforge/shared:typecheck: 
+@jobforge/shared:typecheck: > @jobforge/shared@0.1.0 typecheck /workspace/Settler/packages/jobforge-shared
+@jobforge/shared:typecheck: > tsc --noEmit
+@jobforge/shared:typecheck: 
+@jobforge/fetch:typecheck: cache hit, replaying logs dd0cadec1f508090
+@jobforge/fetch:typecheck: 
+@jobforge/fetch:typecheck: > @jobforge/fetch@0.1.0 typecheck /workspace/Settler/packages/jobforge-fetch
+@jobforge/fetch:typecheck: > tsc --noEmit
+@jobforge/fetch:typecheck: 
+@jobforge/sdk-ts:typecheck: cache hit, replaying logs e71bf8ad135687ea
+@jobforge/sdk-ts:typecheck: 
+@jobforge/sdk-ts:typecheck: > @jobforge/sdk-ts@0.1.0 typecheck /workspace/Settler/packages/jobforge-sdk-ts
+@jobforge/sdk-ts:typecheck: > tsc --noEmit
+@jobforge/sdk-ts:typecheck: 
+@settler/adapters:typecheck: cache hit, replaying logs 0cc5d28b573f9d0f
+@settler/adapters:typecheck: 
+@settler/adapters:typecheck: > @settler/adapters@1.0.0 typecheck /workspace/Settler/packages/adapters
+@settler/adapters:typecheck: > tsc --noEmit
+@settler/adapters:typecheck: 
+@jobforge/errors:typecheck: cache hit, replaying logs e767903e132e8446
+@jobforge/errors:typecheck: 
+@jobforge/errors:typecheck: > @jobforge/errors@0.1.0 typecheck /workspace/Settler/packages/jobforge-errors
+@jobforge/errors:typecheck: > tsc --noEmit
+@jobforge/errors:typecheck: 
+@settler/types:typecheck: cache hit, replaying logs a5fe1fa944e423a7
+@settler/types:typecheck: 
+@settler/types:typecheck: > @settler/types@1.0.0 typecheck /workspace/Settler/packages/types
+@settler/types:typecheck: > tsc --noEmit
+@settler/types:typecheck: 
+@settler/react-settler:typecheck: cache hit, replaying logs b99a675251607f6c
+@settler/react-settler:typecheck: 
+@settler/react-settler:typecheck: > @settler/react-settler@0.1.0 typecheck /workspace/Settler/packages/react-settler
+@settler/react-settler:typecheck: > tsc --noEmit
+@settler/react-settler:typecheck: 
+@settler/edge-ai-core:typecheck: cache hit, replaying logs 9c38c66a66c82b9b
+@settler/edge-ai-core:typecheck: 
+@settler/edge-ai-core:typecheck: > @settler/edge-ai-core@1.0.0 typecheck /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:typecheck: > tsc --noEmit
+@settler/edge-ai-core:typecheck: 
+@settler/sdk:typecheck: cache hit, replaying logs 31f72c942ded5029
+@settler/sdk:typecheck: 
+@settler/sdk:typecheck: > @settler/sdk@1.0.0 typecheck /workspace/Settler/packages/sdk
+@settler/sdk:typecheck: > tsc --noEmit
+@settler/sdk:typecheck: 
+@settler/web:typecheck: 
+@settler/web:typecheck: > @settler/web@1.0.0 typecheck /workspace/Settler/packages/web
+@settler/web:typecheck: > tsc --noEmit
+@settler/web:typecheck: 
+@settler/web:typecheck: Terminated
+@settler/web:typecheck:  ELIFECYCLE  Command failed with exit code 143.
+@settler/web:typecheck: ERROR: command finished with error: command (/workspace/Settler/packages/web) /root/.nvm/versions/node/v22.21.1/bin/pnpm run typecheck exited (143)
+@settler/web#typecheck: command (/workspace/Settler/packages/web) /root/.nvm/versions/node/v22.21.1/bin/pnpm run typecheck exited (143)
+
+ Tasks:    14 successful, 15 total
+Cached:    14 cached, 15 total
+  Time:    1m2.463s 
+Failed:    @settler/web#typecheck
+
+ ERROR  run failed: command  exited (143)
+ ELIFECYCLE  Command failed with exit code 143.
+
+❌ Type check all packages failed
+
+❌ Required check "typecheck" failed
+   Production check cannot proceed
+
+ ELIFECYCLE  Command failed with exit code 1.
+[exit:1]
+\n$ cargo fmt --check
+[exit:0]
+\n$ cargo clippy --all-targets --all-features -- -D warnings
+   Compiling proc-macro2 v1.0.106
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.45
+    Checking typenum v1.19.0
+   Compiling serde_core v1.0.228
+   Compiling syn v2.0.117
+    Checking generic-array v0.14.7
+   Compiling zmij v1.0.21
+    Checking block-buffer v0.10.4
+    Checking crypto-common v0.1.7
+   Compiling serde v1.0.228
+   Compiling serde_json v1.0.149
+    Checking cfg-if v1.0.4
+    Checking digest v0.10.7
+    Checking memchr v2.8.0
+    Checking itoa v1.0.17
+    Checking cpufeatures v0.2.17
+    Checking sha2 v0.10.9
+    Checking hex v0.4.3
+   Compiling wasm-bindgen-shared v0.2.114
+    Checking serde_bytes v0.11.19
+   Compiling rustversion v1.0.22
+    Checking utf8parse v0.2.2
+    Checking anstyle-parse v0.2.7
+   Compiling serde_derive v1.0.228
+   Compiling bumpalo v3.20.2
+    Checking is_terminal_polyfill v1.70.2
+    Checking colorchoice v1.0.4
+    Checking anstyle v1.0.13
+    Checking anstyle-query v1.1.5
+    Checking anstream v0.6.21
+   Compiling wasm-bindgen-macro-support v0.2.114
+    Checking settler-kernel v0.1.0 (/workspace/Settler/crates/settler-kernel)
+   Compiling wasm-bindgen v0.2.114
+   Compiling heck v0.5.0
+    Checking clap_lex v1.0.0
+    Checking strsim v0.11.1
+    Checking clap_builder v4.5.60
+   Compiling wasm-bindgen-macro v0.2.114
+   Compiling clap_derive v4.5.55
+    Checking diff v0.1.13
+    Checking once_cell v1.21.3
+    Checking yansi v1.0.1
+    Checking clap v4.5.60
+    Checking pretty_assertions v1.4.1
+    Checking settler-verify v0.1.0 (/workspace/Settler/crates/settler-verify-cli)
+    Checking settler-verify-wasm v0.1.0 (/workspace/Settler/crates/settler-verify-wasm)
+    Checking settler-kernel-cli v0.1.0 (/workspace/Settler/crates/settler-kernel-cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 31.97s
+[exit:0]
+\n$ cargo test --all
+   Compiling unicode-ident v1.0.24
+   Compiling typenum v1.19.0
+   Compiling proc-macro2 v1.0.106
+   Compiling quote v1.0.45
+   Compiling generic-array v0.14.7
+   Compiling syn v2.0.117
+   Compiling serde_core v1.0.228
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling cfg-if v1.0.4
+   Compiling digest v0.10.7
+   Compiling zmij v1.0.21
+   Compiling cpufeatures v0.2.17
+   Compiling memchr v2.8.0
+   Compiling itoa v1.0.17
+   Compiling serde_json v1.0.149
+   Compiling sha2 v0.10.9
+   Compiling serde_derive v1.0.228
+   Compiling hex v0.4.3
+   Compiling serde_bytes v0.11.19
+   Compiling wasm-bindgen-shared v0.2.114
+   Compiling wasm-bindgen-macro-support v0.2.114
+   Compiling serde v1.0.228
+   Compiling settler-kernel v0.1.0 (/workspace/Settler/crates/settler-kernel)
+   Compiling utf8parse v0.2.2
+   Compiling anstyle-parse v0.2.7
+   Compiling wasm-bindgen-macro v0.2.114
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling colorchoice v1.0.4
+   Compiling diff v0.1.13
+   Compiling once_cell v1.21.3
+   Compiling yansi v1.0.1
+   Compiling anstyle v1.0.13
+   Compiling anstyle-query v1.1.5
+   Compiling pretty_assertions v1.4.1
+   Compiling anstream v0.6.21
+   Compiling wasm-bindgen v0.2.114
+   Compiling clap_lex v1.0.0
+   Compiling strsim v0.11.1
+   Compiling clap_derive v4.5.55
+   Compiling clap_builder v4.5.60
+   Compiling settler-verify-wasm v0.1.0 (/workspace/Settler/crates/settler-verify-wasm)
+   Compiling clap v4.5.60
+   Compiling settler-kernel-cli v0.1.0 (/workspace/Settler/crates/settler-kernel-cli)
+   Compiling settler-verify v0.1.0 (/workspace/Settler/crates/settler-verify-cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 15s
+     Running unittests src/lib.rs (target/debug/deps/settler_kernel-5726cefef66b3f31)
+
+running 2 tests
+test tests::determinism_for_variance_report ... ok
+test tests::manifest_hashes_are_stable ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/golden_determinism.rs (target/debug/deps/golden_determinism-a43a4cf70f347228)
+
+running 1 test
+test outputs_are_deterministic ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/settler_kernel_cli-8cf3071a1b19e9dc)
+
+running 5 tests
+test tests::artifact_identity_hash_uses_distinct_rule_hash ... ok
+test tests::canonicalize_hash_is_deterministic ... ok
+test tests::handshake_returns_protocol_and_version ... ok
+test tests::proof_bundle_hash_uses_distinct_rule_hash ... ok
+test tests::unknown_operation_returns_typed_error ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/settler_verify-98c4475ebd0ed131)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/settler_verify_wasm-b381d72c324eb978)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests settler_kernel
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests settler_verify_wasm
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+[exit:0]
+\n$ pnpm build
+
+> settler-monorepo@1.0.0 build /workspace/Settler
+> turbo run build --filter @settler/web...
+
+• turbo 2.8.0
+• Packages in scope: @jobforge/sdk-ts, @jobforge/shared, @jobforge/typescript-config, @settler/adapters, @settler/api, @settler/edge-ai-core, @settler/protocol, @settler/react-settler, @settler/sdk, @settler/types, @settler/web
+• Running build in 11 packages
+• Remote caching disabled
+@settler/protocol:build: cache hit, replaying logs e944ce77fbe40050
+@settler/protocol:build: 
+@settler/protocol:build: > @settler/protocol@0.1.0 build /workspace/Settler/packages/protocol
+@settler/protocol:build: > tsc
+@settler/protocol:build: 
+@settler/edge-ai-core:build: cache hit, replaying logs 889a6ab7d8fa5378
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: > @settler/edge-ai-core@1.0.0 prebuild /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:build: > pnpm run typecheck
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: > @settler/edge-ai-core@1.0.0 typecheck /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:build: > tsc --noEmit
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: > @settler/edge-ai-core@1.0.0 build /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:build: > tsc
+@settler/edge-ai-core:build: 
+@settler/types:build: cache hit, replaying logs 767c2c2d9928dea1
+@settler/types:build: 
+@settler/types:build: > @settler/types@1.0.0 build /workspace/Settler/packages/types
+@settler/types:build: > tsc
+@settler/types:build: 
+@jobforge/shared:build: cache hit, replaying logs f37bc6c827718d1c
+@jobforge/shared:build: 
+@jobforge/shared:build: > @jobforge/shared@0.1.0 build /workspace/Settler/packages/jobforge-shared
+@jobforge/shared:build: > tsc
+@jobforge/shared:build: 
+@settler/sdk:build: cache hit, replaying logs 6a5caea113fbc286
+@settler/sdk:build: 
+@settler/sdk:build: > @settler/sdk@1.0.0 build /workspace/Settler/packages/sdk
+@settler/sdk:build: > tsc
+@settler/sdk:build: 
+@settler/react-settler:build: cache hit, replaying logs a232a487723f0a0a
+@settler/react-settler:build: 
+@settler/react-settler:build: > @settler/react-settler@0.1.0 build /workspace/Settler/packages/react-settler
+@settler/react-settler:build: > tsc
+@settler/react-settler:build: 
+@jobforge/sdk-ts:build: cache hit, replaying logs c9a7bf4f82ea46a2
+@jobforge/sdk-ts:build: 
+@jobforge/sdk-ts:build: > @jobforge/sdk-ts@0.1.0 build /workspace/Settler/packages/jobforge-sdk-ts
+@jobforge/sdk-ts:build: > tsc
+@jobforge/sdk-ts:build: 
+@settler/adapters:build: cache hit, replaying logs d90df2c3bff69b2d
+@settler/adapters:build: 
+@settler/adapters:build: > @settler/adapters@1.0.0 build /workspace/Settler/packages/adapters
+@settler/adapters:build: > tsc
+@settler/adapters:build: 
+@settler/api:build: cache hit, replaying logs 5ff800f8dc068ba6
+@settler/api:build: 
+@settler/api:build: > @settler/api@1.0.0 prebuild /workspace/Settler/packages/api
+@settler/api:build: > cd ../.. && pnpm run prisma:generate || pnpm exec prisma generate || echo 'Warning: Prisma generate may have failed'
+@settler/api:build: 
+@settler/api:build: 
+@settler/api:build: > settler-monorepo@1.0.0 prisma:generate /workspace/Settler
+@settler/api:build: > cross-env PRISMA_CLIENT_ENGINE_TYPE=wasm PRISMA_ENGINES_MIRROR= prisma generate
+@settler/api:build: 
+@settler/api:build: Loaded Prisma config from prisma.config.ts.
+@settler/api:build: 
+@settler/api:build: Prisma schema loaded from prisma/schema.prisma.
+@settler/api:build: 
+@settler/api:build: ✔ Generated Prisma Client (v7.3.0) to ./node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@18.3.27_better-sqlite3@12.6.2_react-dom@_efc9348d8c027de17c7e00b84b73d1eb/node_modules/@prisma/client in 8.65s
+@settler/api:build: 
+@settler/api:build: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+@settler/api:build: 
+@settler/api:build: 
+@settler/api:build: 
+@settler/api:build: > @settler/api@1.0.0 build /workspace/Settler/packages/api
+@settler/api:build: > tsc --skipLibCheck --noEmit false
+@settler/api:build: 
+@settler/web:build: cache miss, executing 366aec35ef8be995
+@settler/web:build: 
+@settler/web:build: > @settler/web@1.0.0 build /workspace/Settler/packages/web
+@settler/web:build: > next build --webpack
+@settler/web:build: 
+@settler/web:build: ▲ Next.js 16.1.6 (webpack)
+@settler/web:build: - Experiments (use with caution):
+@settler/web:build:   ✓ optimizeCss
+@settler/web:build:   · optimizePackageImports
+@settler/web:build: 
+@settler/web:build:   Creating an optimized production build ...
+@settler/web:build:   Using tsconfig file: ./tsconfig.json
+ ELIFECYCLE  Command failed.
+ ERROR  run failed: command  exited (1)
+[exit:124]
+\n$ pnpm test
+
+> settler-monorepo@1.0.0 test /workspace/Settler
+> turbo run test
+
+• turbo 2.8.0
+• Packages in scope: @jobforge/adapter-settler, @jobforge/errors, @jobforge/fetch, @jobforge/sdk-ts, @jobforge/shared, @jobforge/typescript-config, @settler/adapters, @settler/api, @settler/cli, @settler/edge-ai-core, @settler/edge-node, @settler/protocol, @settler/react-settler, @settler/sdk, @settler/sdk-csharp, @settler/sdk-java, @settler/types, @settler/web
+• Running test in 18 packages
+• Remote caching disabled
+@settler/protocol:build: cache hit, replaying logs e944ce77fbe40050
+@settler/protocol:build: 
+@settler/protocol:build: > @settler/protocol@0.1.0 build /workspace/Settler/packages/protocol
+@settler/protocol:build: > tsc
+@settler/protocol:build: 
+@settler/edge-ai-core:build: cache hit, replaying logs 889a6ab7d8fa5378
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: > @settler/edge-ai-core@1.0.0 prebuild /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:build: > pnpm run typecheck
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: > @settler/edge-ai-core@1.0.0 typecheck /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:build: > tsc --noEmit
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: 
+@settler/edge-ai-core:build: > @settler/edge-ai-core@1.0.0 build /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:build: > tsc
+@settler/edge-ai-core:build: 
+@settler/types:build: cache hit, replaying logs 767c2c2d9928dea1
+@settler/types:build: 
+@settler/types:build: > @settler/types@1.0.0 build /workspace/Settler/packages/types
+@settler/types:build: > tsc
+@settler/types:build: 
+@jobforge/errors:build: cache hit, replaying logs dcb738332c789862
+@jobforge/errors:build: 
+@jobforge/errors:build: > @jobforge/errors@0.1.0 build /workspace/Settler/packages/jobforge-errors
+@jobforge/errors:build: > tsc --noEmit
+@jobforge/errors:build: 
+@jobforge/shared:build: cache hit, replaying logs f37bc6c827718d1c
+@jobforge/shared:build: 
+@jobforge/shared:build: > @jobforge/shared@0.1.0 build /workspace/Settler/packages/jobforge-shared
+@jobforge/shared:build: > tsc
+@jobforge/shared:build: 
+@settler/sdk:build: cache hit, replaying logs 6a5caea113fbc286
+@settler/sdk:build: 
+@settler/sdk:build: > @settler/sdk@1.0.0 build /workspace/Settler/packages/sdk
+@settler/sdk:build: > tsc
+@settler/sdk:build: 
+@settler/edge-ai-core:test: cache hit, replaying logs 657618dbfa052a74
+@settler/edge-ai-core:test: 
+@settler/edge-ai-core:test: > @settler/edge-ai-core@1.0.0 test /workspace/Settler/packages/edge-ai-core
+@settler/edge-ai-core:test: > jest --passWithNoTests
+@settler/edge-ai-core:test: 
+@settler/edge-ai-core:test: No tests found, exiting with code 0
+@settler/react-settler:build: cache hit, replaying logs a232a487723f0a0a
+@settler/react-settler:build: 
+@settler/react-settler:build: > @settler/react-settler@0.1.0 build /workspace/Settler/packages/react-settler
+@settler/react-settler:build: > tsc
+@settler/react-settler:build: 
+@settler/edge-node:build: cache hit, replaying logs 2e0ae9b1f7ad853e
+@settler/edge-node:build: 
+@settler/edge-node:build: > @settler/edge-node@1.0.0 prebuild /workspace/Settler/packages/edge-node
+@settler/edge-node:build: > pnpm run typecheck
+@settler/edge-node:build: 
+@settler/edge-node:build: 
+@settler/edge-node:build: > @settler/edge-node@1.0.0 typecheck /workspace/Settler/packages/edge-node
+@settler/edge-node:build: > tsc --noEmit
+@settler/edge-node:build: 
+@settler/edge-node:build: 
+@settler/edge-node:build: > @settler/edge-node@1.0.0 build /workspace/Settler/packages/edge-node
+@settler/edge-node:build: > tsc
+@settler/edge-node:build: 
+@jobforge/errors:test: cache hit, replaying logs 529efe70383a3742
+@jobforge/errors:test: 
+@jobforge/errors:test: > @jobforge/errors@0.1.0 test /workspace/Settler/packages/jobforge-errors
+@jobforge/errors:test: > vitest run
+@jobforge/errors:test: 
+@jobforge/errors:test: [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+@jobforge/errors:test: 
+@jobforge/errors:test:  RUN  v1.6.1 /workspace/Settler/packages/jobforge-errors
+@jobforge/errors:test: 
+@jobforge/errors:test:  ✓ test/error-envelope.test.ts  (11 tests) 146ms
+@jobforge/errors:test:  ✓ test/correlation.test.ts  (9 tests) 100ms
+@jobforge/errors:test: 
+@jobforge/errors:test:  Test Files  2 passed (2)
+@jobforge/errors:test:       Tests  20 passed (20)
+@jobforge/errors:test:    Start at  04:38:10
+@jobforge/errors:test:    Duration  13.43s (transform 1.91s, setup 0ms, collect 3.29s, tests 246ms, environment 1ms, prepare 4.42s)
+@jobforge/errors:test: 
+@jobforge/fetch:build: cache hit, replaying logs 76a03abec5072aa4
+@jobforge/fetch:build: 
+@jobforge/fetch:build: > @jobforge/fetch@0.1.0 build /workspace/Settler/packages/jobforge-fetch
+@jobforge/fetch:build: > tsc --noEmit
+@jobforge/fetch:build: 
+@jobforge/sdk-ts:build: cache hit, replaying logs c9a7bf4f82ea46a2
+@jobforge/sdk-ts:build: 
+@jobforge/sdk-ts:build: > @jobforge/sdk-ts@0.1.0 build /workspace/Settler/packages/jobforge-sdk-ts
+@jobforge/sdk-ts:build: > tsc
+@jobforge/sdk-ts:build: 
+@settler/sdk:test: cache hit, replaying logs 88abb82e60728d48
+@settler/sdk:test: 
+@settler/sdk:test: > @settler/sdk@1.0.0 test /workspace/Settler/packages/sdk
+@settler/sdk:test: > jest
+@settler/sdk:test: 
+@settler/sdk:test: PASS src/__tests__/integration.test.ts (62.208 s)
+@settler/sdk:test: PASS src/__tests__/client.test.ts
+@settler/sdk:test: PASS src/__tests__/webhook-signature.test.ts
+@settler/sdk:test: 
+@settler/sdk:test: Test Suites: 3 passed, 3 total
+@settler/sdk:test: Tests:       24 passed, 24 total
+@settler/sdk:test: Snapshots:   0 total
+@settler/sdk:test: Time:        70.198 s
+@settler/sdk:test: Ran all test suites.
+@settler/adapters:build: cache hit, replaying logs d90df2c3bff69b2d
+@settler/adapters:build: 
+@settler/adapters:build: > @settler/adapters@1.0.0 build /workspace/Settler/packages/adapters
+@settler/adapters:build: > tsc
+@settler/adapters:build: 
+@settler/edge-node:test: cache hit, replaying logs d99f965bf1a5ce1a
+@settler/edge-node:test: 
+@settler/edge-node:test: > @settler/edge-node@1.0.0 test /workspace/Settler/packages/edge-node
+@settler/edge-node:test: > jest --passWithNoTests
+@settler/edge-node:test: 
+@settler/edge-node:test: No tests found, exiting with code 0
+@jobforge/fetch:test: cache hit, replaying logs 95030b8ba767af2a
+@jobforge/fetch:test: 
+@jobforge/fetch:test: > @jobforge/fetch@0.1.0 test /workspace/Settler/packages/jobforge-fetch
+@jobforge/fetch:test: > vitest run
+@jobforge/fetch:test: 
+@jobforge/fetch:test: [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+@jobforge/fetch:test: 
+@jobforge/fetch:test:  RUN  v1.6.1 /workspace/Settler/packages/jobforge-fetch
+@jobforge/fetch:test: 
+@jobforge/fetch:test:  ✓ test/retry.test.ts  (8 tests) 39ms
+@jobforge/fetch:test: 
+@jobforge/fetch:test:  Test Files  1 passed (1)
+@jobforge/fetch:test:       Tests  8 passed (8)
+@jobforge/fetch:test:    Start at  04:38:31
+@jobforge/fetch:test:    Duration  5.02s (transform 1.46s, setup 1ms, collect 1.64s, tests 39ms, environment 2ms, prepare 946ms)
+@jobforge/fetch:test: 
+@jobforge/sdk-ts:test: cache hit, replaying logs 1a8209631acc69f9
+@jobforge/sdk-ts:test: 
+@jobforge/sdk-ts:test: > @jobforge/sdk-ts@0.1.0 test /workspace/Settler/packages/jobforge-sdk-ts
+@jobforge/sdk-ts:test: > vitest run
+@jobforge/sdk-ts:test: 
+@jobforge/sdk-ts:test: 
+@jobforge/sdk-ts:test:  RUN  v1.6.1 /workspace/Settler/packages/jobforge-sdk-ts
+@jobforge/sdk-ts:test: 
+@jobforge/sdk-ts:test:  ✓ test/client.test.ts  (2 tests) 68ms
+@jobforge/sdk-ts:test: 
+@jobforge/sdk-ts:test:  Test Files  1 passed (1)
+@jobforge/sdk-ts:test:       Tests  2 passed (2)
+@jobforge/sdk-ts:test:    Start at  04:37:54
+@jobforge/sdk-ts:test:    Duration  7.98s (transform 1.59s, setup 0ms, collect 2.73s, tests 68ms, environment 1ms, prepare 2.40s)
+@jobforge/sdk-ts:test: 
+@jobforge/adapter-settler:build: cache hit, replaying logs 49ee3f7e2359a598
+@jobforge/adapter-settler:build: 
+@jobforge/adapter-settler:build: > @jobforge/adapter-settler@0.1.0 build /workspace/Settler/packages/jobforge-adapter-settler
+@jobforge/adapter-settler:build: > tsc
+@jobforge/adapter-settler:build: 
+@settler/cli:build: cache miss, executing 8dc58eb85519b2a3
+@settler/adapters:test: cache hit, replaying logs 84e9517949e6a40f
+@settler/adapters:test: 
+@settler/adapters:test: > @settler/adapters@1.0.0 test /workspace/Settler/packages/adapters
+@settler/adapters:test: > jest --passWithNoTests
+@settler/adapters:test: 
+@settler/adapters:test: No tests found, exiting with code 0
+@settler/api:build: cache hit, replaying logs 5ff800f8dc068ba6
+@settler/api:build: 
+@settler/api:build: > @settler/api@1.0.0 prebuild /workspace/Settler/packages/api
+@settler/api:build: > cd ../.. && pnpm run prisma:generate || pnpm exec prisma generate || echo 'Warning: Prisma generate may have failed'
+@settler/api:build: 
+@settler/api:build: 
+@settler/api:build: > settler-monorepo@1.0.0 prisma:generate /workspace/Settler
+@settler/api:build: > cross-env PRISMA_CLIENT_ENGINE_TYPE=wasm PRISMA_ENGINES_MIRROR= prisma generate
+@settler/api:build: 
+@settler/api:build: Loaded Prisma config from prisma.config.ts.
+@settler/api:build: 
+@settler/api:build: Prisma schema loaded from prisma/schema.prisma.
+@settler/api:build: 
+@settler/api:build: ✔ Generated Prisma Client (v7.3.0) to ./node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@18.3.27_better-sqlite3@12.6.2_react-dom@_efc9348d8c027de17c7e00b84b73d1eb/node_modules/@prisma/client in 8.65s
+@settler/api:build: 
+@settler/api:build: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+@settler/api:build: 
+@settler/api:build: 
+@settler/api:build: 
+@settler/api:build: > @settler/api@1.0.0 build /workspace/Settler/packages/api
+@settler/api:build: > tsc --skipLibCheck --noEmit false
+@settler/api:build: 
+@settler/web:build: cache miss, executing 366aec35ef8be995
+@settler/api:test: cache miss, executing 93f49b031995d3d9
+@settler/cli:build: 
+@settler/cli:build: > @settler/cli@1.0.0 build /workspace/Settler/packages/cli
+@settler/cli:build: > tsc
+@settler/cli:build: 
+@settler/web:build: 
+@settler/web:build: > @settler/web@1.0.0 build /workspace/Settler/packages/web
+@settler/web:build: > next build --webpack
+@settler/web:build: 
+@settler/api:test: 
+@settler/api:test: > @settler/api@1.0.0 test /workspace/Settler/packages/api
+@settler/api:test: > jest --runInBand --forceExit
+@settler/api:test: 
+@settler/web:build: ⨯ Unable to acquire lock at /workspace/Settler/packages/web/.next/lock, is another instance of next build running?
+@settler/web:build:   Suggestion: If you intended to restart next build, terminate the other process, and then try again.
+@settler/web:build:  ELIFECYCLE  Command failed with exit code 1.
+@settler/web:build: ERROR: command finished with error: command (/workspace/Settler/packages/web) /root/.nvm/versions/node/v22.21.1/bin/pnpm run build exited (1)
+@settler/web#build: command (/workspace/Settler/packages/web) /root/.nvm/versions/node/v22.21.1/bin/pnpm run build exited (1)
+
+ Tasks:    20 successful, 23 total
+Cached:    20 cached, 23 total
+  Time:    8.609s 
+Failed:    @settler/web#build
+
+ ERROR  run failed: command  exited (1)
+ ELIFECYCLE  Test failed. See above for more details.
+[exit:1]

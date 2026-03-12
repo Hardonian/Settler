@@ -3,7 +3,7 @@
 ## First 5 minutes (degraded production)
 
 1. Freeze blast radius: set `SETTLER_DISABLE_KERNEL=1` if hash/canonicalization path is suspect.
-2. Validate process config and typed env: `pnpm run doctor -- --first-run`.
+2. Validate process config and typed env: `pnpm run doctor -- --first-run` (or alias `pnpm run settler:doctor -- --first-run`).
 3. Inspect kernel status and operation readiness: `pnpm run kernel:health`.
 4. Classify outage source: env/config failure vs kernel runner failure vs upstream integration failure.
 
@@ -11,7 +11,7 @@
 
 1. Validate env file against `docs/setup/env-matrix.md`.
 2. Verify API/web baseline via `pnpm lint && pnpm typecheck && pnpm build`.
-3. Run setup checks: `pnpm run doctor -- --first-run`.
+3. Run setup checks: `pnpm run doctor -- --first-run` (or `pnpm run settler:doctor -- --first-run`).
 4. Run kernel diagnostics: `pnpm run kernel:health`.
 
 ## 1) Initial setup

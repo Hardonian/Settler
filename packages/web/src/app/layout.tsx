@@ -46,16 +46,6 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      // WebP version for modern browsers (better performance)
-      ...(SETTLER_IMAGES.favicon.webpPath
-        ? [
-            {
-              url: SETTLER_IMAGES.favicon.webpPath,
-              type: "image/webp",
-              sizes: `${SETTLER_IMAGES.favicon.width}x${SETTLER_IMAGES.favicon.height}`,
-            },
-          ]
-        : []),
       {
         url: SETTLER_IMAGES.favicon.path,
         type: SETTLER_IMAGES.favicon.mimeType,
@@ -80,11 +70,7 @@ export const metadata: Metadata = {
       { url: "/brand/settler/logo-icon.svg", type: "image/svg+xml" },
     ],
     apple: [
-      {
-        url: SETTLER_IMAGES.favicon192.path,
-        type: SETTLER_IMAGES.favicon192.mimeType,
-        sizes: "192x192",
-      },
+      { url: SETTLER_IMAGES.favicon.path, type: SETTLER_IMAGES.favicon.mimeType, sizes: "180x180" },
     ],
   },
   openGraph: {

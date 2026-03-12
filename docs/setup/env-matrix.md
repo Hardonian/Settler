@@ -79,3 +79,12 @@ This matrix is the single source of truth for runtime environment variables and 
 | `SUPABASE_DB_PASSWORD`  | Supabase migrations           | Deployment           | Database password used by migration workflows | Required for migration automation           | secret         |
 | `PRODUCTION_URL`        | Post-deploy verification      | Deployment           | Target URL for smoke checks                   | Optional unless post-deploy checks enabled  | internal       |
 | `GITHUB_TOKEN`          | Release automation            | CI automation        | GitHub token for release automation tasks     | Required in GitHub Actions contexts         | secret         |
+
+## Operator verification commands
+
+Use these commands after populating required env keys:
+
+- `pnpm run verify:setup`
+- `pnpm run doctor -- --first-run`
+- `pnpm run settler:doctor -- --first-run` (alias of `doctor`)
+- `pnpm run kernel:health`

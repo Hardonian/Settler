@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SettlerLogo } from "@/components/brand/SettlerLogo";
 import { cn } from "@/lib/utils";
 import { Menu, ChevronDown } from "lucide-react";
+import { SettlerLogo } from "@/components/brand/SettlerLogo";
 
 // Primary navigation items (always visible on desktop)
 const siteMode = process.env.NEXT_PUBLIC_SITE_MODE || "oss";

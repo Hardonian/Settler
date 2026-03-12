@@ -31,6 +31,8 @@
     "validate:failure-injection": "tsx scripts/validate-failure-injection.ts",
     "validate:all": "pnpm run validate:eslint-config && pnpm run validate:build-safety && pnpm run validate:nextjs && pnpm run validate:lint-config && pnpm run validate:comprehensive",
     "doctor": "node scripts/doctor.mjs",
+    "settler:doctor": "pnpm run doctor",
+    "verify:setup": "tsx scripts/verify-setup.ts",
     "suite-doctor": "node scripts/suite-doctor.mjs",
     "suite-doctor:fast": "node scripts/suite-doctor.mjs --fast",
     "suite-doctor:json": "node scripts/suite-doctor.mjs --json",
@@ -38,6 +40,7 @@
     "benchmark:full": "tsx scripts/benchmark-harness.ts --output docs/performance/benchmark-report.md",
     "doctor:old": "tsx scripts/doctor.ts",
     "diagnose:console": "tsx scripts/diagnose-console-backend.ts",
+    "verify:setup": "tsx scripts/verify-setup.ts",
     "verify:schema": "tsx scripts/verify-schema.ts",
     "verify:contracts": "tsx scripts/check-contract-compatibility.ts",
     "verify:production-parity": "tsx scripts/verify-production-parity.ts",
@@ -279,7 +282,9 @@
     "simulate:settler": "node scripts/surface-command-runner.mjs simulate:settler",
     "tenant:create": "node scripts/surface-command-runner.mjs tenant:create",
     "chaos:test": "node scripts/surface-command-runner.mjs chaos:test",
-    "kernel:health": "tsx scripts/kernel-health.ts"
+    "kernel:health": "tsx scripts/kernel-health.ts",
+    "verify:setup": "tsx scripts/verify-setup.ts",
+    "settler:doctor": "pnpm run doctor"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
