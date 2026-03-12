@@ -155,8 +155,8 @@ export function Navigation() {
             >
               <div className="relative overflow-hidden rounded">
                 <SettlerLogo
-                  variant="horizontal"
-                  className="h-8 w-auto relative z-10 transition-all duration-300 group-hover:brightness-110 group-hover:drop-shadow-lg"
+                  variant="stacked"
+                  className="h-10 w-auto relative z-10 transition-all duration-300 group-hover:brightness-110 group-hover:drop-shadow-lg"
                   priority
                 />
                 {/* Shine effect overlay */}

@@ -225,18 +225,17 @@ test.describe("Landing page reality pass", () => {
   test("logo renders in dark mode", async ({ page }) => {
     await page.goto("/");
 
+    // Logo should render in light mode
+    const logo = page.locator('img[src="/brand/settler/logo-stacked.svg"]').first();
+    await expect(logo).toBeVisible();
+
     // Switch to dark mode
     const toggle = page.getByRole("button", { name: "Toggle dark mode" });
     await toggle.click();
     await expect(page.locator("html")).toHaveClass(/dark/);
 
-    // Dark logo should be visible (light logo hidden)
-    const darkLogo = page.locator('img[src="/brand/settler/logo-horizontal-dark.svg"]').first();
-    await expect(darkLogo).toBeVisible();
-
-    // Light logo should be hidden in dark mode
-    const lightLogo = page.locator('img[src="/brand/settler/logo-horizontal.svg"]').first();
-    await expect(lightLogo).toBeHidden();
+    // Stacked logo should remain visible in dark mode
+    await expect(logo).toBeVisible();
 
     // Reset to light
     await toggle.click();
