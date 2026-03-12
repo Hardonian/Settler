@@ -27,9 +27,9 @@ export const visualProofRegistry: Record<string, VisualProofEntry[]> = {
       detail:
         "Adapter, SDK, and protocol packages back deterministic execution and integration boundaries.",
       refs: [
-        { label: "packages/adapters", href: "packages/adapters", type: "package" },
-        { label: "packages/sdk", href: "packages/sdk", type: "package" },
-        { label: "packages/protocol", href: "packages/protocol", type: "package" },
+        { label: "Adapter docs", href: "/docs/integrations", type: "route" },
+        { label: "SDK docs", href: "/docs/sdk", type: "route" },
+        { label: "API protocol docs", href: "/docs/api", type: "route" },
       ],
     },
   ],

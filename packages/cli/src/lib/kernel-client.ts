@@ -699,6 +699,7 @@ export async function canonicalizeHashWithFallback(value: unknown): Promise<{
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: "operation_disabled_env",
+        health: "degraded",
       },
     };
   }
@@ -853,6 +854,7 @@ export async function proofBundleHashWithFallback(value: unknown): Promise<{
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: "operation_disabled_env",
+        health: "degraded",
       },
     };
   }
@@ -955,6 +957,7 @@ export async function artifactIdentityHashWithFallback(value: unknown): Promise<
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: "operation_disabled_env",
+        health: "degraded",
       },
     };
   }
