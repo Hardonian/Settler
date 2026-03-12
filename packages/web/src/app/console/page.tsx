@@ -9,7 +9,16 @@ import { Suspense } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Activity, Key, Receipt, ArrowRight } from "lucide-react";
+import {
+  Activity,
+  Key,
+  Receipt,
+  ArrowRight,
+  ShieldCheck,
+  ScanSearch,
+  ClipboardCheck,
+  Bot,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getUsageSummary } from "@/domain/console/usage";
 import { listApiKeys } from "@/domain/console/apiKeys";
@@ -557,6 +566,47 @@ async function ConsoleOverviewContent() {
             </Button>
           </div>
         </div>
+
+        <Card className="border-electric-cyan/30 bg-gradient-to-r from-electric-cyan/5 to-transparent">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ShieldCheck className="h-5 w-5 text-electric-cyan" />
+              Enterprise Capability Surfaces
+            </CardTitle>
+            <CardDescription>
+              Deterministic traceability, governance controls, and operator intelligence available
+              in the console.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <Button asChild variant="outline" className="justify-start">
+                <Link href="/console/replay">
+                  <ScanSearch className="w-4 h-4 mr-2" />
+                  Replay Lab
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="justify-start">
+                <Link href="/console/audit-trail">
+                  <ShieldCheck className="w-4 h-4 mr-2" />
+                  Audit Trail
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="justify-start">
+                <Link href="/console/bulk-operations">
+                  <ClipboardCheck className="w-4 h-4 mr-2" />
+                  Bulk Operations
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="justify-start">
+                <Link href="/console/operator">
+                  <Bot className="w-4 h-4 mr-2" />
+                  Operator Console
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Quick Stats - Only show if data exists */}
         <RBACGate requiredTier="unsubscribed" feature="Dashboard Stats">
