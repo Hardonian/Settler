@@ -1,5 +1,7 @@
 # Architecture Overview
 
+> Canonical platform index: [`docs/platform-index.md`](../platform-index.md)
+
 ## Capability
 
 Settler provides deterministic execution with replayable verification and auditable run lineage.
@@ -36,9 +38,9 @@ Settler provides deterministic execution with replayable verification and audita
 4. Compare hash/result equivalence.
 5. Investigate divergence via failure records and audit trail.
 
-
 ## Canonical entrypoints
 
+- [Platform architecture (canonical summary)](./platform-architecture.md)
 - [System architecture](./system-architecture.md)
 - [Reconciliation pipeline](./reconciliation-pipeline.md)
 - [Data model entrypoint](./data-model.md)

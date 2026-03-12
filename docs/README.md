@@ -4,6 +4,7 @@ This directory is the canonical documentation surface for Settler.
 
 ## Start here
 
+- Platform truth index (canonical): `docs/platform-index.md`
 - Canonical quickstart: `docs/getting-started/quickstart.md`
 - Environment files: `docs/getting-started/env-files.md`
 - Getting started: `docs/getting-started/`
