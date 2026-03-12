@@ -60,6 +60,8 @@ const consoleNavItems = [
   { href: "/console/activity", label: "Activity Feed", icon: Activity },
   { href: "/console/workflows", label: "Workflows", icon: Zap },
   { href: "/console/control-plane", label: "Control Plane", icon: Shield },
+  { href: "/console/diagnostics", label: "Diagnostics", icon: Activity },
+  { href: "/console/setup-check", label: "Setup Check", icon: ClipboardCheck },
   { href: "/console/inspector", label: "Inspector", icon: Search },
   { href: "/console/usage", label: "Usage & Metrics", icon: BarChart3 },
   { href: "/console/performance", label: "Performance", icon: Activity },

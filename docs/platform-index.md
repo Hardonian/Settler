@@ -82,6 +82,9 @@ Primary quality gates:
 
 Additional operational verification:
 
+- `pnpm run verify:setup`
+- `pnpm run settler:doctor`
+- `pnpm run kernel:health`
 - `pnpm verify`
 - `pnpm verify:security:fast`
 - `pnpm verify:capability-registry`
