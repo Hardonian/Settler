@@ -231,11 +231,11 @@ test.describe("Landing page reality pass", () => {
     await expect(page.locator("html")).toHaveClass(/dark/);
 
     // Dark logo should be visible (light logo hidden)
-    const darkLogo = page.locator('img[src="/logo-dark.svg"]').first();
+    const darkLogo = page.locator('img[src="/brand/settler/logo-horizontal-dark.svg"]').first();
     await expect(darkLogo).toBeVisible();
 
     // Light logo should be hidden in dark mode
-    const lightLogo = page.locator('img[src="/logo.svg"]').first();
+    const lightLogo = page.locator('img[src="/brand/settler/logo-horizontal.svg"]').first();
     await expect(lightLogo).toBeHidden();
 
     // Reset to light

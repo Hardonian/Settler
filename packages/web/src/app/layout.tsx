@@ -77,7 +77,7 @@ export const metadata: Metadata = {
         type: SETTLER_IMAGES.favicon512.mimeType,
         sizes: "512x512",
       },
-      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/brand/settler/logo-icon.svg", type: "image/svg+xml" },
     ],
     apple: [
       {
