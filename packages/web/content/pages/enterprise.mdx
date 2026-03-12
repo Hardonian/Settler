@@ -1,23 +1,50 @@
 ---
 title: Enterprise
-description: Optional hosted infrastructure and scale for organizations that want managed deployment.
+description: Optional hosted infrastructure for teams that need managed operations, governance controls, and higher-confidence rollout workflows.
 ---
 
-## Hosted infrastructure, optional by design
+## Enterprise Cloud is optional infrastructure, not a different engine
 
-Enterprise Cloud is an optional hosted deployment of the same reconciliation engine. It does **not** change core logic or rules behavior; it only changes how infrastructure is operated.
+Settler Enterprise Cloud runs the same reconciliation kernel and rule semantics as OSS/self-hosted deployments. The premium difference is operational support, control-plane surfaces, and managed reliability workflows.
 
-## What it provides
+If your team prefers full ownership, self-hosted remains first-class.
 
-- Managed deployment and upgrades
-- Scale controls for high-volume workloads
-- Private networking options
-- Dedicated support channels
+## What enterprise teams can do in the console
 
-## What it does not change
+Enterprise-focused workflows are surfaced in operator/admin routes so teams can manage risk and rollout safely:
 
-- Deterministic reconciliation logic
-- Rule definitions
-- Evidence and variance outputs
+- **Replay and traceability** (`/console/replay`, `/console/replay-lab`, `/console/proof-explorer`) for run-to-run diffing and evidence review.
+- **Governance and approvals** (`/console/approvals`, `/console/audit-trail`, `/console/policies`) for controlled changes.
+- **Bulk and operator workflows** (`/console/bulk-operations`, `/console/operator`, `/console/control-plane`) for incident and high-volume handling.
+- **Organization and admin boundaries** (`/console/organizations`, `/console/admin/tenants`) for tenant-level operational management.
 
-If you prefer self-hosting, the OSS engine remains the primary path.
+## What managed deployment removes from your team
+
+Enterprise Cloud primarily reduces operational burden:
+
+- Managed deployment and upgrade coordination
+- Managed runbook support for incidents and rollout gates
+- Capacity planning support for high-volume reconciliation windows
+- Dedicated support channels for operator and admin workflows
+
+## Shared responsibility model (plain language)
+
+### Settler manages (Enterprise Cloud)
+
+- Service deployment operations
+- Managed upgrades and rollback coordination
+- Core reliability runbooks and incident escalation paths
+
+### You manage
+
+- Rule quality and approval policy
+- Data classification, retention policy decisions, and tenant governance
+- Final exception decisions and downstream accounting controls
+
+## What enterprise does **not** change
+
+- Deterministic reconciliation behavior
+- Rule definitions and replay semantics
+- Evidence artifact formats and non-guarantees
+
+Enterprise Cloud improves operating posture; it does not convert reconciliation output into accounting certification or audit conclusions.
