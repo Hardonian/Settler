@@ -3,8 +3,9 @@
 ## Startup checks
 
 1. Validate env file against `docs/setup/env-matrix.md`.
-2. Verify API env parsing by running `pnpm typecheck` and API startup command.
-3. Verify web can initialize Supabase client (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`).
+2. Run `pnpm run verify:setup` and clear all ❌ findings before deploy.
+3. Verify API env parsing by running `pnpm typecheck` and API startup command.
+4. Verify web can initialize Supabase client (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`).
 
 ## Health checklist
 

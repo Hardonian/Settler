@@ -18,6 +18,7 @@ This document defines the minimum verifiable path to deploy Settler without hidd
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 3. Install and verify baseline:
    - `pnpm install --frozen-lockfile`
+   - `pnpm run verify:setup`
    - `pnpm lint && pnpm typecheck && pnpm build`
 4. Start stack:
    - `pnpm dev:stack`
@@ -54,6 +55,9 @@ Ensure GitHub secrets are populated for workflows you intend to run:
 - Disable specific kernel operations: `SETTLER_DISABLE_OPERATION=<comma-separated-ops>`.
 
 ## 6) Misconfiguration behavior to expect
+
+- `pnpm run verify:setup` fails non-zero on critical missing setup keys and prints grouped remediations.
+- `pnpm run check:production` now includes `verify:setup` as a required stage so production checks fail early on config drift.
 
 - API env validation throws on critical prod key violations (`JWT_SECRET`, `ENCRYPTION_KEY`, `DB_PASSWORD` placeholder state).
 - Web Supabase client bootstrap throws when public Supabase env is absent.
