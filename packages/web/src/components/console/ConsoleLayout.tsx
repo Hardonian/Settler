@@ -27,6 +27,7 @@ import {
   Zap,
   Shield,
   Search,
+  ScanSearch,
   Database,
   FileText,
   Building2,
@@ -35,6 +36,8 @@ import {
   ClipboardCheck,
   Scale,
   Settings,
+  Gavel,
+  Bot,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -116,7 +119,7 @@ export function ConsoleLayout({ children }: ConsoleLayoutProps) {
           Console
         </h3>
       </div>
-      {coreNavItems.map((item) => {
+      {consoleNavItems.map((item) => {
         const Icon = item.icon;
         const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
 

@@ -1,0 +1,33 @@
+# Route + Flow Matrix (Reality Pass)
+
+Date: 2026-03-12
+
+## Method
+
+- Built route inventory from `qa/route-registry.json` (`pnpm qa:routes`).
+- Verified compile-time route viability with `pnpm build` (Next.js route manifest).
+- Verified navigational integrity with `pnpm qa:links`.
+- Spot-checked dynamic and enterprise-relevant surfaces via source contracts and test coverage.
+
+## Matrix
+
+| Route / Flow                              | Purpose                            | Static / Dynamic                | Data dependency                                 | Enterprise relevance | Nav reachable | Render verified         | Data verified                                         | Action path verified                  | Degraded behavior known               |
+| ----------------------------------------- | ---------------------------------- | ------------------------------- | ----------------------------------------------- | -------------------- | ------------- | ----------------------- | ----------------------------------------------------- | ------------------------------------- | ------------------------------------- |
+| `/`                                       | Marketing entry                    | Static                          | Structured marketing content                    | Medium               | Yes           | Yes (build)             | N/A                                                   | CTA links verified by dead-link check | N/A                                   |
+| `/pricing`                                | Plan/commercial surface            | Static                          | Pricing config/content                          | High                 | Yes           | Yes (build)             | Content-level only                                    | Links verified                        | N/A                                   |
+| `/enterprise`                             | Enterprise narrative + positioning | Static (site-mode gated)        | `SITE_MODE` gating                              | High                 | Yes           | Yes (build)             | Gate logic verified in code                           | CTA links verified                    | Yes (explicit unavailable panel)      |
+| `/docs`                                   | Documentation entry                | Static                          | Docs cards/content                              | High                 | Yes           | Yes (build)             | Content-level only                                    | Internal doc links verified           | N/A                                   |
+| `/console`                                | Operator dashboard                 | Dynamic (`force-dynamic`)       | Supabase auth + usage/api keys/receipts domains | High                 | Yes           | Yes (build + typecheck) | Contract-level via tests                              | Sign-in and safe-mode paths present   | Yes (auth/env fallback panels)        |
+| `/console/replay` + `/replay-lab`         | Replay/traceability                | Dynamic + static docs/marketing | Replay domain + evidence routes                 | High                 | Yes           | Yes (build)             | Replay tests pass                                     | Reachable from console + public route | Partial (depends on backend health)   |
+| `/console/audits` + `/app/audit`          | Audit trails                       | Dynamic                         | Audit APIs + tenant scope                       | High                 | Yes           | Yes (build)             | Tenant-isolation tests pass                           | Navigation verified                   | Yes (API error handling under tests)  |
+| `/console/bulk-operations`                | Bulk action workflows              | Dynamic surface                 | Batch operation APIs                            | High                 | Yes           | Yes (build)             | Route present; end-to-end data not proven in this env | Nav reachability verified             | Unknown (requires full env)           |
+| `/console/policies` + `/app/policies`     | Governance/policy controls         | Dynamic                         | Policy APIs                                     | High                 | Yes           | Yes (build)             | API contract compile + tests                          | Nav path verified                     | Partial                               |
+| `/console/usage` + `/api/console/usage/*` | Reporting/export/usage governance  | Dynamic                         | Usage telemetry + export APIs                   | High                 | Yes           | Yes (build)             | Middleware + API tests pass                           | Export endpoints present              | Yes (degraded behavior test coverage) |
+| `/trust`, `/status`, `/transparency`      | Trust/security disclosures         | Static                          | Content + status API hooks                      | High                 | Yes           | Yes (build)             | Content-level only                                    | Linked from proof registry and nav    | N/A                                   |
+| `/support` + `/support/contact`           | Managed service touchpoints        | Static + dynamic article pages  | Support content + ticket APIs                   | High                 | Yes           | Yes (build)             | API routes present; runtime backend not proven        | Contact path reachable                | Partial                               |
+
+## Key Truth Split
+
+- **Renders confirmed:** major site, docs, console, and enterprise surfaces compile and appear in Next route manifest.
+- **Works confirmed (data/contracts):** API/data behavior mostly proven at contract/unit level (`api`, `web`, `cli` tests), including tenant isolation and degraded behavior tests.
+- **Not fully proven in this environment:** full browser E2E reality run due missing required startup env (`DATABASE_URL` / `NEXT_PUBLIC_SUPABASE_URL`).
