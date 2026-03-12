@@ -15,22 +15,27 @@ const siteMode = process.env.NEXT_PUBLIC_SITE_MODE || "oss";
 
 const primaryNavigationItems = [
   { href: "/platform", label: "Platform" },
+  { href: "/capabilities", label: "Capabilities" },
+  { href: "/use-cases", label: "Use Cases" },
   ...(siteMode === "enterprise" ? [{ href: "/enterprise", label: "Enterprise" }] : []),
   { href: "/pricing", label: "Pricing" },
-  { href: "/security-and-audit", label: "Security" },
   { href: "/docs", label: "Docs" },
 ];
 
 // Feature pages exposed in a dropdown
 const featureNavigationItems = [
   { href: "/how-it-works", label: "How It Works" },
-  { href: "/replay-lab", label: "Replay Lab" },
-  { href: "/proof-explorer", label: "Proof Explorer" },
+  { href: "/architecture", label: "Architecture" },
+  { href: "/security-and-audit", label: "Security & Audit" },
+  { href: "/open-source", label: "Open Source" },
+  { href: "/roadmap", label: "Roadmap" },
 ];
 
 // Secondary navigation items (in "More" dropdown on desktop, accordion on mobile)
 const secondaryNavigationItems = [
+  { href: "/faq", label: "FAQ" },
   { href: "/contact", label: "Contact" },
+  { href: "/changelog", label: "Changelog" },
   { href: "/privacy", label: "Privacy" },
   { href: "/terms", label: "Terms" },
 ];
