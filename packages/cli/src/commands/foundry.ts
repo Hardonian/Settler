@@ -270,6 +270,11 @@ foundryCommand
         profile: options.profile,
       });
       return exportReconciliationSuiteWithKernel(suite, options.output).then((result) => {
+        const promotionReady =
+          result.execution.executionMode === "primary" &&
+          result.execution.usedPrimary &&
+          result.execution.health === "healthy";
+
         logJson({
           output: result.path,
           hash: result.hash,
@@ -278,6 +283,14 @@ foundryCommand
           kernel_divergence: result.divergence ?? null,
           kernel_duration_ms: result.durations.kernel ?? null,
           ts_duration_ms: result.durations.ts,
+          kernel_startup_health: result.startupHealth,
+          kernel_promotion_gate: {
+            ready: promotionReady,
+            reason: promotionReady
+              ? "primary_healthy"
+              : (result.execution.fallbackReason ??
+                (result.execution.usedPrimary ? "health_degraded" : "kernel_not_primary")),
+          },
           kernel_telemetry: result.telemetry,
           kernel_execution: result.execution,
           profile: suite.manifest.profile,

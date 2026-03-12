@@ -11,6 +11,7 @@ import {
   canonicalizeHashWithFallback,
   getKernelTelemetrySnapshot,
   proofBundleHashWithFallback,
+  getKernelStartupHealth,
   readKernelFlags,
   resetKernelTelemetry,
   resolveKernelRunner,
@@ -34,6 +35,38 @@ describe("kernel client", () => {
     expect(flags.primaryAllowlist.has("canonicalize_hash")).toBe(true);
   });
 
+  test("execution mode falls back to shadow via legacy flag", () => {
+    const flags = readKernelFlags({
+      SETTLER_KERNEL_ENABLED: "1",
+      SETTLER_KERNEL_CANONICALIZE: "1",
+      SETTLER_KERNEL_SHADOW_MODE: "1",
+    } as NodeJS.ProcessEnv);
+
+    expect(flags.executionMode).toBe("shadow");
+  });
+
+  test("explicit execution mode takes precedence over legacy shadow flag", () => {
+    const flags = readKernelFlags({
+      SETTLER_KERNEL_ENABLED: "1",
+      SETTLER_KERNEL_CANONICALIZE: "1",
+      SETTLER_KERNEL_SHADOW_MODE: "1",
+      SETTLER_KERNEL_EXECUTION_MODE: "primary",
+    } as NodeJS.ProcessEnv);
+
+    expect(flags.executionMode).toBe("primary");
+  });
+
+  test("startup health reports degraded when binary is missing", async () => {
+    process.env.SETTLER_KERNEL_BIN = "/missing/kernel-bin";
+    process.env.SETTLER_KERNEL_ALLOW_CARGO = "0";
+    process.env.NODE_ENV = "production";
+    process.env.CI = "true";
+
+    const health = await getKernelStartupHealth();
+    expect(health.healthy).toBe(false);
+    expect(health.runnerMode).toBe("fallback-ts");
+    expect(health.reason).toBe("binary_missing");
+  });
   test("resolves binary runner when executable path is provided", () => {
     const resolved = resolveKernelRunner({
       SETTLER_KERNEL_BIN: process.execPath,
@@ -87,6 +120,7 @@ describe("kernel client", () => {
     expect(result.mode).toBe("ts");
     expect(result.runnerMode).toBe("disabled");
     expect(result.metadata.fallbackReason).toBe("kernel_disabled");
+    expect(result.metadata.health).toBe("degraded");
     expect(result.result.normalizedHash).toMatch(/^[a-f0-9]{64}$/);
   });
 
@@ -105,6 +139,7 @@ describe("kernel client", () => {
     expect(result.mode).toBe("ts");
     expect(result.runnerMode).toBe("fallback-ts");
     expect(result.metadata.fallbackReason).toBe("primary_not_allowed");
+    expect(result.metadata.health).toBe("degraded");
     const expected = createHash("sha256").update("proof_bundle_hash@v1").digest("hex");
     expect(result.result.ruleHash).toBe(expected);
     expect(result.result.ruleHash).not.toBe(tsCanonicalizeHash({ a: 1 }).ruleHash);
@@ -127,5 +162,101 @@ describe("kernel client", () => {
     const b = await artifactIdentityHashWithFallback({ a: 1, b: 2 });
     expect(a.result.normalizedHash).toBe(b.result.normalizedHash);
     expect(a.metadata.fallbackReason).toBe("binary_unavailable");
+    expect(a.metadata.health).toBe("degraded");
+  });
+
+  test("falls back with protocol_mismatch when handshake protocol is incompatible", async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "kernel-test-"));
+    const bin = path.join(dir, "kernel-protocol-mismatch.sh");
+    fs.writeFileSync(
+      bin,
+      `#!/bin/sh
+cat >/dev/null
+echo '{"ok":true,"operation":"handshake","protocol_version":"v9","kernel_version":"9.9.9","result":{"operation":"handshake","protocol_version":"v9","kernel_version":"9.9.9","supported_operations":["canonicalize_hash"]}}'
+`,
+      { mode: 0o755 }
+    );
+
+    process.env.SETTLER_KERNEL_ENABLED = "1";
+    process.env.SETTLER_KERNEL_CANONICALIZE = "1";
+    process.env.SETTLER_KERNEL_EXECUTION_MODE = "primary";
+    process.env.SETTLER_KERNEL_PRIMARY_ALLOWLIST = "canonicalize_hash";
+    process.env.SETTLER_KERNEL_BIN = bin;
+    process.env.SETTLER_KERNEL_ALLOW_CARGO = "0";
+    process.env.NODE_ENV = "production";
+    process.env.CI = "true";
+    resetKernelTelemetry();
+
+    const result = await canonicalizeHashWithFallback({ a: 1 });
+    expect(result.mode).toBe("ts");
+    expect(result.metadata.fallbackReason).toBe("protocol_mismatch");
+    expect(result.metadata.health).toBe("degraded");
+  });
+
+  test("falls back on malformed kernel output", async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "kernel-test-"));
+    const bin = path.join(dir, "kernel-malformed.sh");
+    fs.writeFileSync(
+      bin,
+      `#!/bin/sh
+REQUEST=$(cat)
+if echo "$REQUEST" | grep -q '"operation":"handshake"'; then
+  echo '{"ok":true,"operation":"handshake","protocol_version":"v1","kernel_version":"0.1.0","result":{"operation":"handshake","protocol_version":"v1","kernel_version":"0.1.0","supported_operations":["canonicalize_hash"]}}'
+else
+  echo 'not-json'
+fi
+`,
+      { mode: 0o755 }
+    );
+
+    process.env.SETTLER_KERNEL_ENABLED = "1";
+    process.env.SETTLER_KERNEL_CANONICALIZE = "1";
+    process.env.SETTLER_KERNEL_EXECUTION_MODE = "primary";
+    process.env.SETTLER_KERNEL_PRIMARY_ALLOWLIST = "canonicalize_hash";
+    process.env.SETTLER_KERNEL_BIN = bin;
+    process.env.SETTLER_KERNEL_ALLOW_CARGO = "0";
+    process.env.NODE_ENV = "production";
+    process.env.CI = "true";
+    resetKernelTelemetry();
+
+    const result = await canonicalizeHashWithFallback({ a: 1 });
+    expect(result.mode).toBe("ts");
+    expect(result.metadata.fallbackReason).toBe("primary_kernel_failed");
+    const telemetry = getKernelTelemetrySnapshot();
+    expect(telemetry.malformedOutput).toBeGreaterThan(0);
+  });
+
+  test("falls back with timeout reason when kernel invocation exceeds timeout", async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "kernel-test-"));
+    const bin = path.join(dir, "kernel-timeout.sh");
+    fs.writeFileSync(
+      bin,
+      `#!/bin/sh
+REQUEST=$(cat)
+if echo "$REQUEST" | grep -q '"operation":"handshake"'; then
+  echo '{"ok":true,"operation":"handshake","protocol_version":"v1","kernel_version":"0.1.0","result":{"operation":"handshake","protocol_version":"v1","kernel_version":"0.1.0","supported_operations":["canonicalize_hash"]}}'
+else
+  sleep 6
+  echo '{"ok":true,"operation":"canonicalize_hash","protocol_version":"v1","kernel_version":"0.1.0","result":{"schema_version":"v1","canonical_json":"{}","input_hash":"a","normalized_hash":"b","rule_hash":"c"}}'
+fi
+`,
+      { mode: 0o755 }
+    );
+
+    process.env.SETTLER_KERNEL_ENABLED = "1";
+    process.env.SETTLER_KERNEL_CANONICALIZE = "1";
+    process.env.SETTLER_KERNEL_EXECUTION_MODE = "primary";
+    process.env.SETTLER_KERNEL_PRIMARY_ALLOWLIST = "canonicalize_hash";
+    process.env.SETTLER_KERNEL_BIN = bin;
+    process.env.SETTLER_KERNEL_ALLOW_CARGO = "0";
+    process.env.NODE_ENV = "production";
+    process.env.CI = "true";
+    resetKernelTelemetry();
+
+    const result = await canonicalizeHashWithFallback({ a: 1 });
+    expect(result.mode).toBe("ts");
+    expect(result.metadata.fallbackReason).toBe("timeout");
+    const telemetry = getKernelTelemetrySnapshot();
+    expect(telemetry.timeout).toBeGreaterThan(0);
   });
 });

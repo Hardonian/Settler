@@ -59,6 +59,8 @@ Before kernel work, the TS wrapper performs handshake validation:
 
 On mismatch, TS fallback is selected and telemetry counters are incremented with machine-visible fallback reason.
 
+At startup, call `getKernelStartupHealth()` to preflight handshake health and runner readiness (`healthy`, `runnerMode`, `reason`, protocol/version, supported operations).
+
 ## Telemetry signal
 
 Foundry export logs include:
@@ -71,6 +73,7 @@ Foundry export logs include:
   - attempts/success/primary/shadow-compare/compare-only
   - fallback totals and fallback-by-reason
   - timeout, malformed output, version mismatch, binary unavailable
+  - startup health checks and startup health check failures
   - divergence totals and divergence-by-operation
 
 ## CI binary packaging

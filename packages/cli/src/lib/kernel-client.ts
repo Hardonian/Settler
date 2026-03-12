@@ -86,6 +86,8 @@ interface KernelTelemetrySnapshot {
   divergence: number;
   divergenceByOperation: Record<string, number>;
   hashMismatch: number;
+  healthChecks: number;
+  healthCheckFailures: number;
 }
 
 export interface KernelExecutionMetadata {
@@ -94,6 +96,17 @@ export interface KernelExecutionMetadata {
   usedPrimary: boolean;
   shadowCompared: boolean;
   fallbackReason?: string;
+  health: "healthy" | "degraded";
+}
+
+export interface KernelStartupHealth {
+  healthy: boolean;
+  runnerMode: KernelRunnerMode;
+  durationMs: number;
+  reason?: string;
+  protocolVersion?: string;
+  kernelVersion?: string;
+  supportedOperations?: string[];
 }
 
 class KernelInvocationError extends Error {
@@ -120,6 +133,8 @@ const telemetry: KernelTelemetrySnapshot = {
   divergence: 0,
   divergenceByOperation: {},
   hashMismatch: 0,
+  healthChecks: 0,
+  healthCheckFailures: 0,
 };
 
 const handshakeCache = new Map<string, KernelHandshakeResult>();
@@ -419,6 +434,43 @@ async function ensureHandshake(runner: ResolvedKernelRunner, timeoutMs: number):
   handshakeCache.set(cacheKey, result);
 }
 
+export async function getKernelStartupHealth(timeoutMs = 1500): Promise<KernelStartupHealth> {
+  const startedAt = Date.now();
+  telemetry.healthChecks += 1;
+
+  const resolved = resolveKernelRunner();
+  if (!resolved.runner) {
+    telemetry.healthCheckFailures += 1;
+    return {
+      healthy: false,
+      runnerMode: resolved.mode,
+      reason: resolved.reason ?? "no_runner_available",
+      durationMs: Date.now() - startedAt,
+    };
+  }
+
+  try {
+    await ensureHandshake(resolved.runner, timeoutMs);
+    const handshake = handshakeCache.get(runnerCacheKey(resolved.runner));
+    return {
+      healthy: Boolean(handshake),
+      runnerMode: resolved.runner.mode,
+      durationMs: Date.now() - startedAt,
+      protocolVersion: handshake?.protocol_version,
+      kernelVersion: handshake?.kernel_version,
+      supportedOperations: handshake?.supported_operations,
+    };
+  } catch (error) {
+    telemetry.healthCheckFailures += 1;
+    return {
+      healthy: false,
+      runnerMode: resolved.runner.mode,
+      durationMs: Date.now() - startedAt,
+      reason: classifyErrorReason(error, "handshake_failed"),
+    };
+  }
+}
+
 function ensureOperationSupport(runner: ResolvedKernelRunner, operation: KernelOperation): void {
   const handshake = handshakeCache.get(runnerCacheKey(runner));
   if (!handshake) {
@@ -528,6 +580,7 @@ export async function canonicalizeHashWithFallback(value: unknown): Promise<{
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: "kernel_disabled",
+        health: "degraded",
       },
     };
   }
@@ -560,6 +613,7 @@ export async function canonicalizeHashWithFallback(value: unknown): Promise<{
           executionMode: flags.executionMode,
           usedPrimary: false,
           shadowCompared: true,
+          health: "healthy",
         },
       };
     } catch (error) {
@@ -578,6 +632,7 @@ export async function canonicalizeHashWithFallback(value: unknown): Promise<{
           usedPrimary: false,
           shadowCompared: true,
           fallbackReason: reason,
+          health: "degraded",
         },
       };
     }
@@ -596,6 +651,7 @@ export async function canonicalizeHashWithFallback(value: unknown): Promise<{
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: "primary_not_allowed",
+        health: "degraded",
       },
     };
   }
@@ -614,6 +670,7 @@ export async function canonicalizeHashWithFallback(value: unknown): Promise<{
         executionMode: flags.executionMode,
         usedPrimary: true,
         shadowCompared: false,
+        health: "healthy",
       },
     };
   } catch (error) {
@@ -630,6 +687,7 @@ export async function canonicalizeHashWithFallback(value: unknown): Promise<{
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: reason,
+        health: "degraded",
       },
     };
   }
@@ -659,6 +717,7 @@ export async function proofBundleHashWithFallback(value: unknown): Promise<{
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: "kernel_disabled",
+        health: "degraded",
       },
     };
   }
@@ -676,6 +735,7 @@ export async function proofBundleHashWithFallback(value: unknown): Promise<{
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: "primary_not_allowed",
+        health: "degraded",
       },
     };
   }
@@ -695,6 +755,7 @@ export async function proofBundleHashWithFallback(value: unknown): Promise<{
         executionMode: flags.executionMode,
         usedPrimary: true,
         shadowCompared: false,
+        health: "healthy",
       },
     };
   } catch (error) {
@@ -711,6 +772,7 @@ export async function proofBundleHashWithFallback(value: unknown): Promise<{
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: reason,
+        health: "degraded",
       },
     };
   }
@@ -740,6 +802,7 @@ export async function artifactIdentityHashWithFallback(value: unknown): Promise<
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: "kernel_disabled",
+        health: "degraded",
       },
     };
   }
@@ -757,6 +820,7 @@ export async function artifactIdentityHashWithFallback(value: unknown): Promise<
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: "primary_not_allowed",
+        health: "degraded",
       },
     };
   }
@@ -776,6 +840,7 @@ export async function artifactIdentityHashWithFallback(value: unknown): Promise<
         executionMode: flags.executionMode,
         usedPrimary: true,
         shadowCompared: false,
+        health: "healthy",
       },
     };
   } catch (error) {
@@ -792,6 +857,7 @@ export async function artifactIdentityHashWithFallback(value: unknown): Promise<
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: reason,
+        health: "degraded",
       },
     };
   }
@@ -816,5 +882,7 @@ export function resetKernelTelemetry(): void {
   telemetry.divergence = 0;
   telemetry.divergenceByOperation = {};
   telemetry.hashMismatch = 0;
+  telemetry.healthChecks = 0;
+  telemetry.healthCheckFailures = 0;
   handshakeCache.clear();
 }
