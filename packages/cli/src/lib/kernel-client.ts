@@ -100,6 +100,19 @@ export interface KernelExecutionMetadata {
   health: "healthy" | "degraded";
 }
 
+function buildKernelExecutionMetadata(input: {
+  operation: KernelOperation;
+  executionMode: KernelExecutionMode;
+  usedPrimary: boolean;
+  shadowCompared: boolean;
+  fallbackReason?: string;
+}): KernelExecutionMetadata {
+  return {
+    ...input,
+    health: input.fallbackReason ? "degraded" : "healthy",
+  };
+}
+
 export interface KernelStartupHealth {
   healthy: boolean;
   runnerMode: KernelRunnerMode;
@@ -675,14 +688,13 @@ export async function canonicalizeHashWithFallback(value: unknown): Promise<{
       mode: "ts",
       runnerMode: "disabled",
       durationMs: { ts: tsDuration },
-      metadata: {
+      metadata: buildKernelExecutionMetadata({
         operation: "canonicalize_hash",
         executionMode: "disabled",
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: "kernel_disabled",
-        health: "degraded",
-      },
+      }),
     };
   }
 
@@ -693,14 +705,13 @@ export async function canonicalizeHashWithFallback(value: unknown): Promise<{
       mode: "ts",
       runnerMode: "disabled",
       durationMs: { ts: tsDuration },
-      metadata: {
+      metadata: buildKernelExecutionMetadata({
         operation: "canonicalize_hash",
         executionMode: flags.executionMode,
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: "operation_disabled_env",
-        health: "degraded",
-      },
+      }),
     };
   }
 
@@ -727,13 +738,12 @@ export async function canonicalizeHashWithFallback(value: unknown): Promise<{
         runnerMode: rust.runnerMode,
         divergence: { normalizedHashMatch: match },
         durationMs: { kernel: rust.durationMs, ts: tsDuration },
-        metadata: {
+        metadata: buildKernelExecutionMetadata({
           operation: "canonicalize_hash",
           executionMode: flags.executionMode,
           usedPrimary: false,
           shadowCompared: true,
-          health: "healthy",
-        },
+        }),
       };
     } catch (error) {
       const reason = classifyErrorReason(error, "shadow_kernel_failed");
@@ -745,14 +755,13 @@ export async function canonicalizeHashWithFallback(value: unknown): Promise<{
         runnerMode: "fallback-ts",
         divergence: { normalizedHashMatch: false },
         durationMs: { ts: tsDuration },
-        metadata: {
+        metadata: buildKernelExecutionMetadata({
           operation: "canonicalize_hash",
           executionMode: flags.executionMode,
           usedPrimary: false,
           shadowCompared: true,
           fallbackReason: reason,
-          health: "degraded",
-        },
+        }),
       };
     }
   }
@@ -764,14 +773,13 @@ export async function canonicalizeHashWithFallback(value: unknown): Promise<{
       mode: "ts",
       runnerMode: "fallback-ts",
       durationMs: { ts: tsDuration },
-      metadata: {
+      metadata: buildKernelExecutionMetadata({
         operation: "canonicalize_hash",
         executionMode: flags.executionMode,
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: "primary_not_allowed",
-        health: "degraded",
-      },
+      }),
     };
   }
 
@@ -784,13 +792,12 @@ export async function canonicalizeHashWithFallback(value: unknown): Promise<{
       mode: "rust_primary",
       runnerMode: rust.runnerMode,
       durationMs: { kernel: rust.durationMs, ts: tsDuration },
-      metadata: {
+      metadata: buildKernelExecutionMetadata({
         operation: "canonicalize_hash",
         executionMode: flags.executionMode,
         usedPrimary: true,
         shadowCompared: false,
-        health: "healthy",
-      },
+      }),
     };
   } catch (error) {
     const reason = classifyErrorReason(error, "primary_kernel_failed");
@@ -800,14 +807,13 @@ export async function canonicalizeHashWithFallback(value: unknown): Promise<{
       mode: "ts",
       runnerMode: "fallback-ts",
       durationMs: { ts: tsDuration },
-      metadata: {
+      metadata: buildKernelExecutionMetadata({
         operation: "canonicalize_hash",
         executionMode: flags.executionMode,
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: reason,
-        health: "degraded",
-      },
+      }),
     };
   }
 }
@@ -830,14 +836,13 @@ export async function proofBundleHashWithFallback(value: unknown): Promise<{
       mode: "ts",
       runnerMode: "disabled",
       durationMs: { ts: tsDuration },
-      metadata: {
+      metadata: buildKernelExecutionMetadata({
         operation: "proof_bundle_hash",
         executionMode: "disabled",
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: "kernel_disabled",
-        health: "degraded",
-      },
+      }),
     };
   }
 
@@ -848,14 +853,13 @@ export async function proofBundleHashWithFallback(value: unknown): Promise<{
       mode: "ts",
       runnerMode: "disabled",
       durationMs: { ts: tsDuration },
-      metadata: {
+      metadata: buildKernelExecutionMetadata({
         operation: "proof_bundle_hash",
         executionMode: flags.executionMode,
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: "operation_disabled_env",
-        health: "degraded",
-      },
+      }),
     };
   }
 
@@ -866,14 +870,13 @@ export async function proofBundleHashWithFallback(value: unknown): Promise<{
       mode: "ts",
       runnerMode: "fallback-ts",
       durationMs: { ts: tsDuration },
-      metadata: {
+      metadata: buildKernelExecutionMetadata({
         operation: "proof_bundle_hash",
         executionMode: flags.executionMode,
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: "primary_not_allowed",
-        health: "degraded",
-      },
+      }),
     };
   }
 
@@ -887,13 +890,12 @@ export async function proofBundleHashWithFallback(value: unknown): Promise<{
       mode: "rust_primary",
       runnerMode: rust.runnerMode,
       durationMs: { kernel: rust.durationMs, ts: tsDuration },
-      metadata: {
+      metadata: buildKernelExecutionMetadata({
         operation: "proof_bundle_hash",
         executionMode: flags.executionMode,
         usedPrimary: true,
         shadowCompared: false,
-        health: "healthy",
-      },
+      }),
     };
   } catch (error) {
     const reason = classifyErrorReason(error, "primary_kernel_failed");
@@ -903,14 +905,13 @@ export async function proofBundleHashWithFallback(value: unknown): Promise<{
       mode: "ts",
       runnerMode: "fallback-ts",
       durationMs: { ts: tsDuration },
-      metadata: {
+      metadata: buildKernelExecutionMetadata({
         operation: "proof_bundle_hash",
         executionMode: flags.executionMode,
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: reason,
-        health: "degraded",
-      },
+      }),
     };
   }
 }
@@ -933,14 +934,13 @@ export async function artifactIdentityHashWithFallback(value: unknown): Promise<
       mode: "ts",
       runnerMode: "disabled",
       durationMs: { ts: tsDuration },
-      metadata: {
+      metadata: buildKernelExecutionMetadata({
         operation: "artifact_identity_hash",
         executionMode: "disabled",
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: "kernel_disabled",
-        health: "degraded",
-      },
+      }),
     };
   }
 
@@ -951,14 +951,13 @@ export async function artifactIdentityHashWithFallback(value: unknown): Promise<
       mode: "ts",
       runnerMode: "disabled",
       durationMs: { ts: tsDuration },
-      metadata: {
+      metadata: buildKernelExecutionMetadata({
         operation: "artifact_identity_hash",
         executionMode: flags.executionMode,
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: "operation_disabled_env",
-        health: "degraded",
-      },
+      }),
     };
   }
 
@@ -969,14 +968,13 @@ export async function artifactIdentityHashWithFallback(value: unknown): Promise<
       mode: "ts",
       runnerMode: "fallback-ts",
       durationMs: { ts: tsDuration },
-      metadata: {
+      metadata: buildKernelExecutionMetadata({
         operation: "artifact_identity_hash",
         executionMode: flags.executionMode,
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: "primary_not_allowed",
-        health: "degraded",
-      },
+      }),
     };
   }
 
@@ -990,13 +988,12 @@ export async function artifactIdentityHashWithFallback(value: unknown): Promise<
       mode: "rust_primary",
       runnerMode: rust.runnerMode,
       durationMs: { kernel: rust.durationMs, ts: tsDuration },
-      metadata: {
+      metadata: buildKernelExecutionMetadata({
         operation: "artifact_identity_hash",
         executionMode: flags.executionMode,
         usedPrimary: true,
         shadowCompared: false,
-        health: "healthy",
-      },
+      }),
     };
   } catch (error) {
     const reason = classifyErrorReason(error, "primary_kernel_failed");
@@ -1006,14 +1003,13 @@ export async function artifactIdentityHashWithFallback(value: unknown): Promise<
       mode: "ts",
       runnerMode: "fallback-ts",
       durationMs: { ts: tsDuration },
-      metadata: {
+      metadata: buildKernelExecutionMetadata({
         operation: "artifact_identity_hash",
         executionMode: flags.executionMode,
         usedPrimary: false,
         shadowCompared: false,
         fallbackReason: reason,
-        health: "degraded",
-      },
+      }),
     };
   }
 }
