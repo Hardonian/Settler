@@ -9,6 +9,13 @@ import {
   Section,
   SectionHeader,
 } from "@/components/site/primitives";
+import { RealityEvidencePanel } from "@/components/RealityEvidencePanel";
+import {
+  CapabilityMap,
+  IntegrationAndPackagingMap,
+  PlatformOverviewDiagram,
+  WorkflowJourneyDiagram,
+} from "@/components/public-visual-proof";
 
 export const metadata: Metadata = {
   title: "Architecture - Settler",

@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/accordion";
 import Image from "next/image";
 import { AnimatedCodeBlock } from "@/components/AnimatedCodeBlock";
+import { PlatformOverviewDiagram } from "@/components/public-visual-proof";
 
 export default function HomePage() {
   const repoUrl = process.env.NEXT_PUBLIC_REPO_URL || "https://github.com/Hardonian/Settler";
@@ -530,6 +531,27 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                 );
               })}
             </div>
+          </div>
+        </section>
+
+        <section
+          className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900"
+          aria-label="Platform architecture preview"
+        >
+          <div className="max-w-6xl mx-auto space-y-4">
+            <div className="max-w-3xl">
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500 mb-3">
+                Visual proof
+              </p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
+                See the actual system shape, not just feature claims
+              </h2>
+              <p className="mt-3 text-slate-600 dark:text-slate-400">
+                This architecture preview maps shipped surfaces, control-plane modules, and runtime
+                boundaries. Continue to the dedicated architecture page for deeper detail.
+              </p>
+            </div>
+            <PlatformOverviewDiagram />
           </div>
         </section>
 

@@ -6,6 +6,7 @@ import { Section } from "@/components/marketing/Section";
 import { Button } from "@/components/ui/button";
 import { UiLink } from "@/components/ui/link";
 import { Badge } from "@/components/ui/badge";
+import { RealityEvidencePanel } from "@/components/RealityEvidencePanel";
 import {
   ArrowRight,
   Code2,
@@ -94,14 +95,21 @@ export default function PlatformPage() {
       <Navigation />
 
       {/* Hero */}
-      <Section className="pt-24 pb-16" containerClassName="max-w-6xl" aria-labelledby="platform-heading">
+      <Section
+        className="pt-24 pb-16"
+        containerClassName="max-w-6xl"
+        aria-labelledby="platform-heading"
+      >
         <div className="flex items-center gap-3 mb-5">
           <Badge variant="outline">
             <Cpu className="w-3 h-3 mr-1.5" />
             Platform
           </Badge>
         </div>
-        <h1 id="platform-heading" className="text-fluid-4xl font-bold text-foreground max-w-4xl mb-6">
+        <h1
+          id="platform-heading"
+          className="text-fluid-4xl font-bold text-foreground max-w-4xl mb-6"
+        >
           Deterministic Reconciliation. AI-Assisted Review.
         </h1>
         <p className="mt-4 max-w-3xl text-xl text-muted-foreground leading-relaxed">
@@ -146,10 +154,7 @@ export default function PlatformPage() {
           {platformLayers.map((layer) => {
             const Icon = layer.icon;
             return (
-              <div
-                key={layer.title}
-                className="rounded-2xl border border-border bg-card p-6"
-              >
+              <div key={layer.title} className="rounded-2xl border border-border bg-card p-6">
                 <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
                   <Icon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 </div>
@@ -171,13 +176,15 @@ export default function PlatformPage() {
         </div>
       </Section>
 
+      <Section className="py-12" containerClassName="max-w-6xl">
+        <RealityEvidencePanel scope="architecture" title="Platform implementation references" />
+      </Section>
+
       {/* Integrations */}
       <Section className="py-12 border-t border-border" containerClassName="max-w-6xl">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-foreground mb-1">
-              Integrations &amp; Adapters
-            </h2>
+            <h2 className="text-2xl font-bold text-foreground mb-1">Integrations &amp; Adapters</h2>
             <p className="text-muted-foreground">
               Connect the systems you already use. Adapters handle schema normalization so your
               rules stay clean.
@@ -209,9 +216,7 @@ export default function PlatformPage() {
             <Badge variant="outline" className="border-slate-600 text-slate-400 mb-4">
               Apache 2.0
             </Badge>
-            <h2 className="text-2xl font-bold text-white mb-3">
-              Self-Host or Managed
-            </h2>
+            <h2 className="text-2xl font-bold text-white mb-3">Self-Host or Managed</h2>
             <p className="text-slate-400 leading-relaxed">
               Deploy Settler inside your own infrastructure. Your financial data never transits a
               Settler-managed network unless you choose the managed cloud deployment.
