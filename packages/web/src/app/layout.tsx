@@ -46,45 +46,14 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      // WebP version for modern browsers (better performance)
-      ...(SETTLER_IMAGES.favicon.webpPath
-        ? [
-            {
-              url: SETTLER_IMAGES.favicon.webpPath,
-              type: "image/webp",
-              sizes: `${SETTLER_IMAGES.favicon.width}x${SETTLER_IMAGES.favicon.height}`,
-            },
-          ]
-        : []),
       {
         url: SETTLER_IMAGES.favicon.path,
         type: SETTLER_IMAGES.favicon.mimeType,
         sizes: `${SETTLER_IMAGES.favicon.width}x${SETTLER_IMAGES.favicon.height}`,
       },
-      ...(SETTLER_IMAGES.favicon192.webpPath
-        ? [{ url: SETTLER_IMAGES.favicon192.webpPath, type: "image/webp", sizes: "192x192" }]
-        : []),
-      {
-        url: SETTLER_IMAGES.favicon192.path,
-        type: SETTLER_IMAGES.favicon192.mimeType,
-        sizes: "192x192",
-      },
-      ...(SETTLER_IMAGES.favicon512.webpPath
-        ? [{ url: SETTLER_IMAGES.favicon512.webpPath, type: "image/webp", sizes: "512x512" }]
-        : []),
-      {
-        url: SETTLER_IMAGES.favicon512.path,
-        type: SETTLER_IMAGES.favicon512.mimeType,
-        sizes: "512x512",
-      },
-      { url: "/favicon.svg", type: "image/svg+xml" },
     ],
     apple: [
-      {
-        url: SETTLER_IMAGES.favicon192.path,
-        type: SETTLER_IMAGES.favicon192.mimeType,
-        sizes: "192x192",
-      },
+      { url: SETTLER_IMAGES.favicon.path, type: SETTLER_IMAGES.favicon.mimeType, sizes: "180x180" },
     ],
   },
   openGraph: {

@@ -45,12 +45,8 @@ export function SEOHead({
       {canonical && <link rel="canonical" href={canonical} />}
 
       {/* Favicon */}
-      {SETTLER_IMAGES.favicon.webpPath && (
-        <link rel="icon" type="image/webp" href={SETTLER_IMAGES.favicon.webpPath} />
-      )}
       <link rel="icon" type={SETTLER_IMAGES.favicon.mimeType} href={SETTLER_IMAGES.favicon.path} />
-      <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-      <link rel="apple-touch-icon" href={SETTLER_IMAGES.favicon192.path} />
+      <link rel="apple-touch-icon" href={SETTLER_IMAGES.favicon.path} />
 
       {/* Structured Data */}
       <script

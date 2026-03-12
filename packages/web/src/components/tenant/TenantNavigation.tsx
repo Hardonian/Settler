@@ -1,15 +1,14 @@
 /**
  * Tenant-Aware Navigation Component
- * 
+ *
  * Replaces hard-coded Navigation.tsx with tenant-aware version.
  * Reads from TenantNavigation.navItems and .footerItems.
  * Falls back to default if not configured.
  */
 
-'use client';
+"use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useState } from "react";
 import type { CSSProperties } from "react";
 import { Button } from "@/components/ui/button";
@@ -17,44 +16,39 @@ import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import { useTenantTheme } from "./TenantThemeProvider";
+import { SettlerLogo } from "@/components/brand/SettlerLogo";
 import { TenantNavigationItem } from "@/shared/tenant/types";
 
 // Default navigation items (fallback)
 const defaultNavigationItems: TenantNavigationItem[] = [
-  { href: '/docs', label: 'Docs', type: 'internal' },
-  { href: '/cookbooks', label: 'Cookbooks', type: 'internal' },
-  { href: '/receipts', label: 'Receipts API', type: 'internal' },
-  { href: '/feature-flags', label: 'Feature Flags', type: 'internal' },
-  { href: '/console', label: 'Console', type: 'internal' },
-  { href: '/pricing', label: 'Pricing', type: 'internal' },
-  { href: '/enterprise', label: 'Enterprise', type: 'internal' },
-  { href: '/community', label: 'Community', type: 'internal' },
-  { href: '/support', label: 'Support', type: 'internal' },
-  { href: '/playground', label: 'Playground', type: 'internal' },
+  { href: "/docs", label: "Docs", type: "internal" },
+  { href: "/cookbooks", label: "Cookbooks", type: "internal" },
+  { href: "/receipts", label: "Receipts API", type: "internal" },
+  { href: "/feature-flags", label: "Feature Flags", type: "internal" },
+  { href: "/console", label: "Console", type: "internal" },
+  { href: "/pricing", label: "Pricing", type: "internal" },
+  { href: "/enterprise", label: "Enterprise", type: "internal" },
+  { href: "/community", label: "Community", type: "internal" },
+  { href: "/support", label: "Support", type: "internal" },
+  { href: "/playground", label: "Playground", type: "internal" },
 ];
 
 interface TenantNavigationProps {
   navItems?: TenantNavigationItem[];
-  logoUrl?: string;
-  tenantName?: string;
 }
 
-export function TenantNavigation({
-  navItems = defaultNavigationItems,
-  logoUrl,
-  tenantName = 'Settler',
-}: TenantNavigationProps) {
+export function TenantNavigation({ navItems = defaultNavigationItems }: TenantNavigationProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme } = useTenantTheme();
 
-  const primaryColor = theme?.colors.primary || '#2563eb';
+  const primaryColor = theme?.colors.primary || "#2563eb";
 
   return (
     <nav
       className={cn(
-        'fixed top-0 w-full z-50',
-        'bg-background/80 backdrop-blur-lg',
-        'border-b border-border'
+        "fixed top-0 w-full z-50",
+        "bg-background/80 backdrop-blur-lg",
+        "border-b border-border"
       )}
       role="navigation"
       aria-label="Main navigation"
@@ -64,49 +58,14 @@ export function TenantNavigation({
           <Link
             href="/"
             className={cn(
-              'flex items-center space-x-2',
-              'transition-transform hover:scale-105',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-              'rounded'
+              "flex items-center",
+              "transition-transform hover:scale-105",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+              "rounded"
             )}
-            aria-label={`${tenantName} homepage`}
+            aria-label="Settler homepage"
           >
-            {logoUrl ? (
-              <Image
-                src={logoUrl}
-                alt={`${tenantName} logo`}
-                width={128}
-                height={32}
-                className="h-8 w-auto"
-                priority
-              />
-            ) : (
-              <div
-                className={cn(
-                  'w-8 h-8 rounded-lg flex items-center justify-center',
-                  'bg-gradient-to-br'
-                )}
-                style={{
-                  background: `linear-gradient(to bottom right, ${primaryColor}, ${theme?.colors.secondary || '#7c3aed'})`,
-                }}
-                aria-hidden="true"
-              >
-                <span className="text-white font-bold text-lg">
-                  {tenantName.charAt(0).toUpperCase()}
-                </span>
-              </div>
-            )}
-            <span
-              className={cn('text-xl font-bold')}
-              style={{
-                background: `linear-gradient(to right, ${primaryColor}, ${theme?.colors.secondary || '#7c3aed'})`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
-              {tenantName}
-            </span>
+            <SettlerLogo variant="horizontal" className="h-8 w-auto" priority />
           </Link>
 
           {/* Desktop Navigation */}
@@ -116,12 +75,12 @@ export function TenantNavigation({
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400',
-                  'transition-colors duration-200 ease-out',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                  'focus-visible:ring-offset-background',
-                  'rounded px-2 py-1',
-                  'motion-reduce:transition-none'
+                  "text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400",
+                  "transition-colors duration-200 ease-out",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                  "focus-visible:ring-offset-background",
+                  "rounded px-2 py-1",
+                  "motion-reduce:transition-none"
                 )}
                 style={{ ["--hover-color" as any]: primaryColor } as CSSProperties}
               >
@@ -137,7 +96,7 @@ export function TenantNavigation({
                 backgroundColor: primaryColor,
               }}
             >
-              <Link href="/console/playground" aria-label={`Get started with ${tenantName}`}>
+              <Link href="/console/playground" aria-label="Get started with Settler">
                 Get Started
               </Link>
             </Button>
@@ -149,14 +108,14 @@ export function TenantNavigation({
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className={cn(
-                'p-2 rounded-md',
-                'text-muted-foreground hover:bg-muted',
-                'transition-colors duration-200 ease-out',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                'focus-visible:ring-offset-background',
-                'motion-reduce:transition-none'
+                "p-2 rounded-md",
+                "text-muted-foreground hover:bg-muted",
+                "transition-colors duration-200 ease-out",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                "focus-visible:ring-offset-background",
+                "motion-reduce:transition-none"
               )}
-              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-menu"
               type="button"
@@ -175,9 +134,9 @@ export function TenantNavigation({
           <div
             id="mobile-menu"
             className={cn(
-              'md:hidden py-4 border-t border-border',
-              'motion-safe:animate-in motion-safe:slide-in-from-top-2 motion-safe:fade-in-0',
-              'motion-reduce:animate-none'
+              "md:hidden py-4 border-t border-border",
+              "motion-safe:animate-in motion-safe:slide-in-from-top-2 motion-safe:fade-in-0",
+              "motion-reduce:animate-none"
             )}
             role="menu"
             aria-label="Mobile navigation menu"
@@ -188,12 +147,12 @@ export function TenantNavigation({
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    'text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400',
-                    'transition-colors duration-200 ease-out',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                    'focus-visible:ring-offset-background',
-                    'rounded px-2 py-1',
-                    'motion-reduce:transition-none'
+                    "text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400",
+                    "transition-colors duration-200 ease-out",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                    "focus-visible:ring-offset-background",
+                    "rounded px-2 py-1",
+                    "motion-reduce:transition-none"
                   )}
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -209,7 +168,7 @@ export function TenantNavigation({
                   backgroundColor: primaryColor,
                 }}
               >
-                <Link href="/console/playground" aria-label={`Get started with ${tenantName}`}>
+                <Link href="/console/playground" aria-label="Get started with Settler">
                   Get Started
                 </Link>
               </Button>

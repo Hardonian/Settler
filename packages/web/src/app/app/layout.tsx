@@ -1,9 +1,8 @@
 import Link from "next/link";
-import Image from "next/image";
 import { EnvErrorPanel } from "@/components/env/EnvErrorPanel";
 import { getAppEnvStatus } from "@/lib/env/runtime-access";
 import { createClient } from "@/lib/supabase/server";
-import { SETTLER_IMAGES } from "@/lib/images/image-config";
+import { SettlerLogo } from "@/components/brand/SettlerLogo";
 
 function SignedOutScreen() {
   return (
@@ -77,14 +76,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="flex h-screen bg-background-light">
       <aside className="w-72 border-r border-slate-200 bg-white">
         <Link href="/" className="flex border-b border-slate-200 p-4">
-          <Image
-            src={SETTLER_IMAGES.logoMain.webpPath || SETTLER_IMAGES.logoMain.path}
-            alt={SETTLER_IMAGES.logoMain.alt}
-            width={130}
-            height={34}
-            className="h-8 w-auto"
-            priority
-          />
+          <SettlerLogo variant="horizontal" className="h-8 w-auto" priority />
         </Link>
         <nav className="space-y-4 p-3">
           {navSections.map((section) => (

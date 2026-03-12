@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { StatusIndicator } from "@/components/monitoring/StatusIndicator";
 import { UiLink } from "@/components/ui/link";
+import { SettlerLogo } from "@/components/brand/SettlerLogo";
 
 const footerSections = [
   {
@@ -48,24 +48,7 @@ export function Footer() {
         <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-4">
           <div>
             <UiLink href="/" aria-label="Settler homepage" className="mb-4 inline-flex">
-              {/* Light mode logo */}
-              <Image
-                src="/logo.svg"
-                alt="Settler Logo"
-                width={130}
-                height={34}
-                className="h-10 w-auto dark:hidden"
-                priority
-              />
-              {/* Dark mode logo */}
-              <Image
-                src="/logo-dark.svg"
-                alt="Settler Logo"
-                width={130}
-                height={34}
-                className="h-10 w-auto hidden dark:block"
-                priority
-              />
+              <SettlerLogo variant="horizontal" className="h-10 w-auto" priority />
             </UiLink>
             <p className="text-sm text-muted-foreground">
               Open-source reconciliation engine for deterministic, inspectable financial data
