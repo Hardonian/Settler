@@ -22,6 +22,8 @@ import { RBACGate } from "@/lib/rbac-gate";
 import { appLogger } from "@/lib/utils/logger";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { PageLoadingSkeleton, CardLoadingSkeleton } from "@/components/shared/loading-state";
+import { ConsoleSurfaceMap } from "@/components/feature-visual-proof";
+import { RealityEvidencePanel } from "@/components/RealityEvidencePanel";
 
 // OPTIMIZATION: Code-split heavy dashboard components
 // These are not needed for initial paint and add ~15KB to the bundle
@@ -335,6 +337,9 @@ async function ConsoleOverviewContent() {
               </div>
             </CardContent>
           </Card>
+
+          <ConsoleSurfaceMap />
+          <RealityEvidencePanel scope="console" title="Console evidence references" />
         </div>
       );
     }

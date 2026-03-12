@@ -1,15 +1,16 @@
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
-import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { Shield, Clock, Database, GitBranch, CheckCircle, AlertCircle } from 'lucide-react';
-import { Metadata } from 'next';
-import { Badge } from '@/components/ui/badge';
-import { getPublicRealityData } from '@/lib/public/reality-data';
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { Shield, Clock, Database, GitBranch, CheckCircle, AlertCircle } from "lucide-react";
+import { Metadata } from "next";
+import { Badge } from "@/components/ui/badge";
+import { getPublicRealityData } from "@/lib/public/reality-data";
+import { RealityEvidencePanel } from "@/components/RealityEvidencePanel";
 
 export const metadata: Metadata = {
-  title: 'Trust & Reliability',
-  description: 'Settler Trust - Uptime, backups, change management, and operational reliability.',
+  title: "Trust & Reliability",
+  description: "Settler Trust - Uptime, backups, change management, and operational reliability.",
   robots: {
     index: true,
     follow: true,
@@ -21,11 +22,11 @@ export default async function TrustPage() {
   return (
     <AnimatedPageWrapper aria-label="Trust page">
       <Navigation />
-      
+
       {/* Breadcrumbs */}
       <section className="px-4 sm:px-6 lg:px-8 pt-24">
         <div className="max-w-7xl mx-auto">
-          <Breadcrumbs items={[{ label: 'Trust' }]} />
+          <Breadcrumbs items={[{ label: "Trust" }]} />
         </div>
       </section>
 
@@ -50,30 +51,38 @@ export default async function TrustPage() {
             </div>
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Uptime Policy</h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
             <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">
-              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Service Level Objectives</h3>
+              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">
+                Service Level Objectives
+              </h3>
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-slate-600 dark:text-slate-300">API Availability</span>
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-slate-900 dark:text-white">
-                        {realityData?.uptime_proxy ? `${realityData.uptime_proxy.toFixed(1)}%` : '99.9%'}
+                        {realityData?.uptime_proxy
+                          ? `${realityData.uptime_proxy.toFixed(1)}%`
+                          : "99.9%"}
                       </span>
-                      {realityData?.status === 'assumed' && (
-                        <Badge variant="outline" className="text-xs">ASSUMED</Badge>
+                      {realityData?.status === "assumed" && (
+                        <Badge variant="outline" className="text-xs">
+                          ASSUMED
+                        </Badge>
                       )}
-                      {realityData?.status === 'proven' && (
+                      {realityData?.status === "proven" && (
                         <Badge className="bg-green-500 text-xs">PROVEN</Badge>
                       )}
                     </div>
                   </div>
                   <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                    <div 
-                      className="bg-green-600 h-2 rounded-full" 
-                      style={{ width: realityData?.uptime_proxy ? `${realityData.uptime_proxy}%` : '99.9%' }}
+                    <div
+                      className="bg-green-600 h-2 rounded-full"
+                      style={{
+                        width: realityData?.uptime_proxy ? `${realityData.uptime_proxy}%` : "99.9%",
+                      }}
                     ></div>
                   </div>
                 </div>
@@ -83,7 +92,7 @@ export default async function TrustPage() {
                     <span className="font-semibold text-slate-900 dark:text-white">99.5%</span>
                   </div>
                   <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                    <div className="bg-green-600 h-2 rounded-full" style={{ width: '99.5%' }}></div>
+                    <div className="bg-green-600 h-2 rounded-full" style={{ width: "99.5%" }}></div>
                   </div>
                 </div>
                 <div>
@@ -92,7 +101,10 @@ export default async function TrustPage() {
                     <span className="font-semibold text-slate-900 dark:text-white">99.95%</span>
                   </div>
                   <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                    <div className="bg-green-600 h-2 rounded-full" style={{ width: '99.95%' }}></div>
+                    <div
+                      className="bg-green-600 h-2 rounded-full"
+                      style={{ width: "99.95%" }}
+                    ></div>
                   </div>
                 </div>
                 {realityData?.hard_500_count !== undefined && (
@@ -106,7 +118,9 @@ export default async function TrustPage() {
                         {realityData.hard_500_count === 0 ? (
                           <Badge className="bg-green-500 text-xs">ZERO</Badge>
                         ) : (
-                          <Badge variant="destructive" className="text-xs">VIOLATION</Badge>
+                          <Badge variant="destructive" className="text-xs">
+                            VIOLATION
+                          </Badge>
                         )}
                       </div>
                     </div>
@@ -114,9 +128,11 @@ export default async function TrustPage() {
                 )}
               </div>
             </div>
-            
+
             <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">
-              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Monitoring & Status</h3>
+              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">
+                Monitoring & Status
+              </h3>
               <ul className="space-y-3 text-slate-600 dark:text-slate-300">
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
@@ -124,7 +140,12 @@ export default async function TrustPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>Real-time status page: <a href="/status" className="text-blue-600 dark:text-blue-400 hover:underline">settler.dev/status</a></span>
+                  <span>
+                    Real-time status page:{" "}
+                    <a href="/status" className="text-blue-600 dark:text-blue-400 hover:underline">
+                      settler.dev/status
+                    </a>
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
@@ -146,19 +167,25 @@ export default async function TrustPage() {
             <div className="flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
               <div>
-                <h4 className="font-semibold mb-2 text-blue-900 dark:text-blue-100">Uptime Calculation</h4>
+                <h4 className="font-semibold mb-2 text-blue-900 dark:text-blue-100">
+                  Uptime Calculation
+                </h4>
                 <p className="text-sm text-blue-800 dark:text-blue-200">
-                  Uptime is calculated monthly, excluding scheduled maintenance windows (announced 48 hours in advance) 
-                  and force majeure events. Planned maintenance typically occurs during low-traffic hours and is kept under 4 hours per month.
+                  Uptime is calculated monthly, excluding scheduled maintenance windows (announced
+                  48 hours in advance) and force majeure events. Planned maintenance typically
+                  occurs during low-traffic hours and is kept under 4 hours per month.
                 </p>
                 {realityData?.last_incident && (
                   <p className="text-sm text-blue-800 dark:text-blue-200 mt-2">
-                    <strong>Last Incident:</strong> {new Date(realityData.last_incident.timestamp).toLocaleDateString()} - {realityData.last_incident.event}
+                    <strong>Last Incident:</strong>{" "}
+                    {new Date(realityData.last_incident.timestamp).toLocaleDateString()} -{" "}
+                    {realityData.last_incident.event}
                   </p>
                 )}
-                {realityData?.status === 'assumed' && (
+                {realityData?.status === "assumed" && (
                   <p className="text-sm text-yellow-800 dark:text-yellow-200 mt-2">
-                    <strong>Note:</strong> Some metrics are currently ASSUMED and will be updated as we collect more data.
+                    <strong>Note:</strong> Some metrics are currently ASSUMED and will be updated as
+                    we collect more data.
                   </p>
                 )}
               </div>
@@ -174,12 +201,16 @@ export default async function TrustPage() {
             <div className="w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
               <Database className="w-6 h-6 text-blue-600" />
             </div>
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Backups & Recovery</h2>
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">
+              Backups & Recovery
+            </h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">
-              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Backup Strategy</h3>
+              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">
+                Backup Strategy
+              </h3>
               <ul className="space-y-3 text-slate-600 dark:text-slate-300">
                 <li>• Automated daily full backups</li>
                 <li>• Continuous point-in-time recovery (PITR)</li>
@@ -188,20 +219,28 @@ export default async function TrustPage() {
                 <li>• 30-day retention (extendable for enterprise)</li>
               </ul>
             </div>
-            
+
             <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">
-              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Recovery Objectives</h3>
+              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">
+                Recovery Objectives
+              </h3>
               <ul className="space-y-3 text-slate-600 dark:text-slate-300">
-                <li><strong>RPO:</strong> 5 minutes (Recovery Point Objective)</li>
-                <li><strong>RTO:</strong> 1 hour (Recovery Time Objective)</li>
+                <li>
+                  <strong>RPO:</strong> 5 minutes (Recovery Point Objective)
+                </li>
+                <li>
+                  <strong>RTO:</strong> 1 hour (Recovery Time Objective)
+                </li>
                 <li>• Tested quarterly with documented results</li>
                 <li>• Automated backup verification</li>
                 <li>• Cross-region disaster recovery plan</li>
               </ul>
             </div>
-            
+
             <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">
-              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Data Durability</h3>
+              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">
+                Data Durability
+              </h3>
               <ul className="space-y-3 text-slate-600 dark:text-slate-300">
                 <li>• 99.999999999% (11 nines) durability</li>
                 <li>• Immutable backup storage</li>
@@ -223,10 +262,12 @@ export default async function TrustPage() {
             </div>
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Change Management</h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">
-              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Deployment Process</h3>
+              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">
+                Deployment Process
+              </h3>
               <ol className="space-y-3 text-slate-600 dark:text-slate-300 list-decimal list-inside">
                 <li>All changes go through code review and automated testing</li>
                 <li>Staged deployments: dev → staging → production</li>
@@ -236,11 +277,18 @@ export default async function TrustPage() {
                 <li>Post-deployment monitoring and validation</li>
               </ol>
             </div>
-            
+
             <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">
-              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Change Communication</h3>
+              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">
+                Change Communication
+              </h3>
               <ul className="space-y-3 text-slate-600 dark:text-slate-300">
-                <li>• Changelog published at <a href="/changelog" className="text-blue-600 dark:text-blue-400 hover:underline">settler.dev/changelog</a></li>
+                <li>
+                  • Changelog published at{" "}
+                  <a href="/changelog" className="text-blue-600 dark:text-blue-400 hover:underline">
+                    settler.dev/changelog
+                  </a>
+                </li>
                 <li>• Breaking changes announced 30 days in advance</li>
                 <li>• Email notifications for critical changes</li>
                 <li>• API versioning maintains backward compatibility</li>
@@ -251,24 +299,35 @@ export default async function TrustPage() {
           </div>
 
           <div className="mt-8 bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">
-            <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Change Types & Windows</h3>
+            <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">
+              Change Types & Windows
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <h4 className="font-semibold mb-2 text-slate-900 dark:text-white">Routine Updates</h4>
+                <h4 className="font-semibold mb-2 text-slate-900 dark:text-white">
+                  Routine Updates
+                </h4>
                 <p className="text-sm text-slate-600 dark:text-slate-300">
-                  Non-breaking changes deployed during business hours with automated testing. No customer notification required.
+                  Non-breaking changes deployed during business hours with automated testing. No
+                  customer notification required.
                 </p>
               </div>
               <div>
-                <h4 className="font-semibold mb-2 text-slate-900 dark:text-white">Scheduled Maintenance</h4>
+                <h4 className="font-semibold mb-2 text-slate-900 dark:text-white">
+                  Scheduled Maintenance
+                </h4>
                 <p className="text-sm text-slate-600 dark:text-slate-300">
-                  Infrastructure updates announced 48 hours in advance. Typically scheduled during low-traffic windows.
+                  Infrastructure updates announced 48 hours in advance. Typically scheduled during
+                  low-traffic windows.
                 </p>
               </div>
               <div>
-                <h4 className="font-semibold mb-2 text-slate-900 dark:text-white">Emergency Changes</h4>
+                <h4 className="font-semibold mb-2 text-slate-900 dark:text-white">
+                  Emergency Changes
+                </h4>
                 <p className="text-sm text-slate-600 dark:text-slate-300">
-                  Security patches and critical fixes deployed immediately with post-deployment notification and documentation.
+                  Security patches and critical fixes deployed immediately with post-deployment
+                  notification and documentation.
                 </p>
               </div>
             </div>
@@ -283,12 +342,15 @@ export default async function TrustPage() {
             <div className="w-12 h-12 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
               <Shield className="w-6 h-6 text-indigo-600" />
             </div>
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Operational Transparency</h2>
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">
+              Operational Transparency
+            </h2>
           </div>
-          
+
           <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">
             <p className="text-slate-600 dark:text-slate-300 mb-6">
-              We believe in transparency about how we operate Settler. Enterprise customers can request:
+              We believe in transparency about how we operate Settler. Enterprise customers can
+              request:
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <ul className="space-y-2 text-slate-600 dark:text-slate-300">
@@ -322,13 +384,22 @@ export default async function TrustPage() {
             </div>
             <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
               <p className="text-sm text-slate-500">
-                To request operational reports or discuss custom SLA requirements, contact{' '}
-                <a href="mailto:enterprise@settler.dev" className="text-blue-600 dark:text-blue-400 hover:underline">
+                To request operational reports or discuss custom SLA requirements, contact{" "}
+                <a
+                  href="mailto:enterprise@settler.dev"
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
                   enterprise@settler.dev
                 </a>
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto">
+          <RealityEvidencePanel scope="trust" title="Trust evidence references" />
         </div>
       </section>
 

@@ -5,6 +5,7 @@ import { Section } from "@/components/marketing/Section";
 import { FeatureList } from "@/components/marketing/FeatureList";
 import { Button } from "@/components/ui/button";
 import { UiLink } from "@/components/ui/link";
+import { RealityEvidencePanel } from "@/components/RealityEvidencePanel";
 import {
   ShieldCheck,
   Lock,
@@ -221,6 +222,10 @@ export default function SecurityAndAuditPage() {
             </UiLink>
           </Button>
         </div>
+      </Section>
+
+      <Section className="py-8" containerClassName="max-w-6xl">
+        <RealityEvidencePanel scope="security" title="Security evidence references" />
       </Section>
 
       <Footer />
