@@ -27,10 +27,8 @@ export function isBuildTime(): boolean {
  * but Prisma will handle missing DATABASE_URL gracefully during build if engineType is "binary"
  */
 export const BUILD_TIME_REQUIRED = [
-  "SUPABASE_URL",
-  "SUPABASE_ANON_KEY",
-  // DATABASE_URL is optional during build - Prisma can generate client without it
-  // but it's required at runtime for database operations
+  ["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_URL"],
+  ["NEXT_PUBLIC_SUPABASE_ANON_KEY", "SUPABASE_ANON_KEY"],
 ] as const;
 
 /**
@@ -96,9 +94,10 @@ export function validateBuildEnv(): { valid: boolean; errors: string[]; warnings
   const warnings: string[] = [];
 
   // Check build-time required variables
-  for (const name of BUILD_TIME_REQUIRED) {
-    if (!process.env[name]) {
-      errors.push(`Missing build-time required variable: ${name}`);
+  for (const keyGroup of BUILD_TIME_REQUIRED) {
+    const hasAny = keyGroup.some((key) => Boolean(process.env[key]));
+    if (!hasAny) {
+      errors.push(`Missing build-time required variable: ${keyGroup.join(" or ")}`);
     }
   }
 

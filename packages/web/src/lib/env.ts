@@ -103,12 +103,15 @@ export function validateEnv(): { valid: boolean; errors: string[] } {
 
   // During build, only validate build-time required vars
   if (isBuild) {
-    const buildRequired = ["SUPABASE_URL", "SUPABASE_ANON_KEY"];
+    const buildRequired = [
+      ["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_URL"],
+      ["NEXT_PUBLIC_SUPABASE_ANON_KEY", "SUPABASE_ANON_KEY"],
+    ] as const;
     const errors: string[] = [];
 
-    for (const name of buildRequired) {
-      if (!process.env[name]) {
-        errors.push(`Missing build-time required variable: ${name}`);
+    for (const keys of buildRequired) {
+      if (!keys.some((name) => process.env[name])) {
+        errors.push(`Missing build-time required variable: ${keys.join(" or ")}`);
       }
     }
 
