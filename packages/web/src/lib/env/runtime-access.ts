@@ -1,13 +1,12 @@
+import { SUPABASE_ANON_KEY_KEYS, SUPABASE_URL_KEYS } from "./keys";
+
 export const MARKETING_OPTIONAL_ENV_KEYS = [
-  ['NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_URL'],
-  ['NEXT_PUBLIC_SUPABASE_ANON_KEY', 'SUPABASE_ANON_KEY'],
-  ['NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'],
+  SUPABASE_URL_KEYS,
+  SUPABASE_ANON_KEY_KEYS,
+  ["NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"],
 ] as const;
 
-export const APP_REQUIRED_ENV_KEYS = [
-  ['NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_URL'],
-  ['NEXT_PUBLIC_SUPABASE_ANON_KEY', 'SUPABASE_ANON_KEY'],
-] as const;
+export const APP_REQUIRED_ENV_KEYS = [SUPABASE_URL_KEYS, SUPABASE_ANON_KEY_KEYS] as const;
 
 type EnvKeyGroup = readonly string[];
 
@@ -19,9 +18,7 @@ function isConfigured(keys: EnvKeyGroup): boolean {
 }
 
 function findMissing(keyGroups: readonly EnvKeyGroup[]): string[] {
-  return keyGroups
-    .filter((keys) => !isConfigured(keys))
-    .map((keys) => keys.join(' or '));
+  return keyGroups.filter((keys) => !isConfigured(keys)).map((keys) => keys.join(" or "));
 }
 
 export function getMarketingEnvStatus(): { ok: boolean; missing: string[] } {

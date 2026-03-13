@@ -4,6 +4,11 @@
 
 This matrix is the single source of truth for runtime environment variables and secrets used by core platform operation.
 
+## Operator note (env truth + build gate)
+
+- **Canonical env truth** lives in this file (`docs/setup/env-matrix.md`) and is enforced in code via `packages/web/scripts/assert-build-env.mjs` (build-time gate) and `packages/web/src/lib/env/keys.ts` (shared env key groups).
+- **Canonical production build path** is `pnpm --filter @settler/web run build` (invokes `assert-build-env.mjs` before `next build`).
+
 ## Security level legend
 
 - `public`: safe for browser/client exposure.

@@ -8,6 +8,8 @@
  * and makes configuration auditing trivial.
  */
 
+import { SUPABASE_ANON_KEY_KEYS, SUPABASE_URL_KEYS, hasConfiguredValue } from "./keys";
+
 export interface EnvValidationResult {
   isValid: boolean;
   missing: string[];
@@ -23,7 +25,7 @@ export interface EnvValidationResult {
  */
 export interface AppEnv {
   // Node environment
-  nodeEnv: 'development' | 'production' | 'test';
+  nodeEnv: "development" | "production" | "test";
 
   // Supabase
   supabase: {
@@ -45,7 +47,7 @@ export interface AppEnv {
   };
 
   // Runtime
-  runtime?: 'nodejs' | 'edge';
+  runtime?: "nodejs" | "edge";
 
   // Vercel (optional)
   vercel?: boolean;
@@ -62,7 +64,7 @@ export function validateEnv(requiredVars: string[]): EnvValidationResult {
   for (const key of requiredVars) {
     const value = process.env[key];
 
-    if (!value || value.trim() === '') {
+    if (!value || value.trim() === "") {
       missing.push(key);
       errors.push({
         key,
@@ -82,10 +84,19 @@ export function validateEnv(requiredVars: string[]): EnvValidationResult {
  * Validate Supabase environment variables
  */
 export function validateSupabaseEnv(): EnvValidationResult {
-  return validateEnv([
-    'NEXT_PUBLIC_SUPABASE_URL',
-    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-  ]);
+  const requiredGroups = [SUPABASE_URL_KEYS, SUPABASE_ANON_KEY_KEYS];
+  const missing = requiredGroups
+    .filter((group) => !group.some((key) => hasConfiguredValue(key)))
+    .map((group) => group.join(" or "));
+
+  return {
+    isValid: missing.length === 0,
+    missing,
+    errors: missing.map((key) => ({
+      key,
+      message: `Environment variable ${key} is required but not set`,
+    })),
+  };
 }
 
 /**
@@ -98,17 +109,14 @@ export function getSupabaseEnv(): {
   serviceRoleKey?: string;
 } {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-  const anonKey =
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
 
   if (!url || !anonKey) {
     const missing: string[] = [];
-    if (!url) missing.push('NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL');
-    if (!anonKey) missing.push('NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY');
+    if (!url) missing.push("NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL");
+    if (!anonKey) missing.push("NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY");
 
-    throw new Error(
-      `Missing required Supabase environment variables: ${missing.join(', ')}`
-    );
+    throw new Error(`Missing required Supabase environment variables: ${missing.join(", ")}`);
   }
 
   return {
@@ -124,13 +132,11 @@ export function getSupabaseEnv(): {
  */
 export function getDatabaseUrl(): string {
   const url =
-    process.env.DATABASE_URL ||
-    process.env.SUPABASE_DATABASE_URL ||
-    process.env.DIRECT_URL;
+    process.env.DATABASE_URL || process.env.SUPABASE_DATABASE_URL || process.env.DIRECT_URL;
 
   if (!url) {
     throw new Error(
-      'Missing database URL. Set one of: DATABASE_URL, SUPABASE_DATABASE_URL, or DIRECT_URL'
+      "Missing database URL. Set one of: DATABASE_URL, SUPABASE_DATABASE_URL, or DIRECT_URL"
     );
   }
 
@@ -145,17 +151,17 @@ export function getEnv(): AppEnv {
   const supabase = getSupabaseEnv();
 
   return {
-    nodeEnv: (process.env.NODE_ENV as 'development' | 'production' | 'test') || 'development',
+    nodeEnv: (process.env.NODE_ENV as "development" | "production" | "test") || "development",
     supabase,
     database: {
       url: getDatabaseUrl(),
       directUrl: process.env.DIRECT_URL,
     },
     public: {
-      appUrl: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-      aiasStudioUrl: process.env.NEXT_PUBLIC_AIAS_STUDIO_URL || 'https://aias.studio',
+      appUrl: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+      aiasStudioUrl: process.env.NEXT_PUBLIC_AIAS_STUDIO_URL || "https://aias.studio",
     },
-    runtime: process.env.NEXT_RUNTIME as 'nodejs' | 'edge' | undefined,
+    runtime: process.env.NEXT_RUNTIME as "nodejs" | "edge" | undefined,
     vercel: !!process.env.VERCEL,
   };
 }
@@ -164,10 +170,7 @@ export function getEnv(): AppEnv {
  * Get environment variable with typed fallback
  * Use for optional vars that should have a default
  */
-export function getEnvVar<T extends string>(
-  key: string,
-  fallback: T
-): string {
+export function getEnvVar<T extends string>(key: string, fallback: T): string {
   return process.env[key] || fallback;
 }
 
@@ -177,7 +180,7 @@ export function getEnvVar<T extends string>(
  */
 export function requireEnvVar(key: string): string {
   const value = process.env[key];
-  if (!value || value.trim() === '') {
+  if (!value || value.trim() === "") {
     throw new Error(`Required environment variable ${key} is not set`);
   }
   return value;
@@ -187,6 +190,7 @@ export function requireEnvVar(key: string): string {
  * Check if we're in a build context (where env vars might not be available)
  */
 export function isBuildContext(): boolean {
-  return process.env.NODE_ENV === 'production' &&
-         (typeof window === 'undefined' && !process.env.VERCEL);
+  return (
+    process.env.NODE_ENV === "production" && typeof window === "undefined" && !process.env.VERCEL
+  );
 }
