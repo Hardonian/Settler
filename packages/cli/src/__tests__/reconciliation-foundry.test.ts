@@ -85,7 +85,49 @@ describe("reconciliation synthetic foundry", () => {
     const outB = fs.mkdtempSync(path.join(os.tmpdir(), "recon-suite-b-"));
 
     const resultA = exportReconciliationSuite(suite, outA);
-    const resultB = exportReconciliationSuite(reorderedSuite, outB);
+    const resultB = exportReconciliationSuite(reorderedSuite as any, outB);
+
+    expect(resultA.hash).toBe(resultB.hash);
+  });
+
+
+  test("stable export hash handles deep nested key reordering", () => {
+    const suite = generateReconciliationSuite({ seed: 33, profile: "smoke" });
+    suite.golden.runtime_matches[0]!.manual_review_rationale_codes = ["AMBIGUOUS_REFERENCE"];
+    (suite.sources.PAYMENT_PROCESSOR[0] as any).metadata = {
+      nested: {
+        z: 1,
+        a: 2,
+      },
+      alpha: true,
+    };
+
+    const reorderedSuite = {
+      ...suite,
+      sources: {
+        ...suite.sources,
+        PAYMENT_PROCESSOR: suite.sources.PAYMENT_PROCESSOR.map((row, idx) =>
+          idx === 0
+            ? {
+                ...row,
+                metadata: {
+                  alpha: true,
+                  nested: {
+                    a: 2,
+                    z: 1,
+                  },
+                },
+              }
+            : row
+        ),
+      },
+    };
+
+    const outA = fs.mkdtempSync(path.join(os.tmpdir(), "recon-suite-nested-a-"));
+    const outB = fs.mkdtempSync(path.join(os.tmpdir(), "recon-suite-nested-b-"));
+
+    const resultA = exportReconciliationSuite(suite, outA);
+    const resultB = exportReconciliationSuite(reorderedSuite as any, outB);
 
     expect(resultA.hash).toBe(resultB.hash);
   });

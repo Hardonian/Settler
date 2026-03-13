@@ -59,25 +59,24 @@ class ConnectorRuntime {
             try {
                 decrypted = await (0, credential_encryption_1.decryptCredentials)(JSON.stringify(creds.encrypted_credentials), this.config.supabaseUrl, this.config.supabaseServiceKey);
             }
-            catch {
-                // Fallback: use as-is if decryption fails (backwards compatibility)
-                decrypted = creds.encrypted_credentials;
+            catch (error) {
+                throw new connector_driver_1.ConnectorError(`Failed to decrypt connector credentials: ${error instanceof Error ? error.message : String(error)}`, "CREDENTIAL_DECRYPTION_FAILED", connectorId);
             }
         }
         if (creds.access_token_encrypted) {
             try {
                 decrypted.access_token = await (0, credential_encryption_1.decryptToken)(creds.access_token_encrypted, this.config.supabaseUrl, this.config.supabaseServiceKey);
             }
-            catch {
-                decrypted.access_token = creds.access_token_encrypted;
+            catch (error) {
+                throw new connector_driver_1.ConnectorError(`Failed to decrypt connector access token: ${error instanceof Error ? error.message : String(error)}`, "CREDENTIAL_DECRYPTION_FAILED", connectorId);
             }
         }
         if (creds.refresh_token_encrypted) {
             try {
                 decrypted.refresh_token = await (0, credential_encryption_1.decryptToken)(creds.refresh_token_encrypted, this.config.supabaseUrl, this.config.supabaseServiceKey);
             }
-            catch {
-                decrypted.refresh_token = creds.refresh_token_encrypted;
+            catch (error) {
+                throw new connector_driver_1.ConnectorError(`Failed to decrypt connector refresh token: ${error instanceof Error ? error.message : String(error)}`, "CREDENTIAL_DECRYPTION_FAILED", connectorId);
             }
         }
         return decrypted;
@@ -328,7 +327,9 @@ class ConnectorRuntime {
     }
     async getAccountMap(connectorDbId, data) {
         const accountMap = new Map();
-        if (!(data.transactions?.some((t) => t.accountId) || data.balances?.length || data.accounts?.length)) {
+        if (!(data.transactions?.some((t) => t.accountId) ||
+            data.balances?.length ||
+            data.accounts?.length)) {
             return accountMap;
         }
         const { data: accounts, error } = await this.supabase
@@ -366,9 +367,12 @@ class ConnectorRuntime {
     }
     async persistInputSnapshot(tenantId, syncRunId, connectorDbId, data) {
         const snapshot = {
-            schema_version: 1,
+            schema_version: 2,
+            snapshot_type: "connector_sync_input",
             captured_at: new Date().toISOString(),
             sync_run_id: syncRunId,
+            connector_id: connectorDbId,
+            tenant_id: tenantId,
             counts: {
                 accounts: data.accounts?.length ?? 0,
                 transactions: data.transactions?.length ?? 0,
@@ -386,7 +390,7 @@ class ConnectorRuntime {
                 connector_id: connectorDbId,
                 tenant_id: tenantId,
                 event_type: "sync_input_snapshot",
-                event_id: `${syncRunId}-input-snapshot-v1`,
+                event_id: `${syncRunId}-input-snapshot-v2`,
                 payload: snapshot,
                 processed: true,
                 processed_at: new Date().toISOString(),

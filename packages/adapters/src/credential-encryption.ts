@@ -6,8 +6,27 @@
 
 import { createClient } from "@supabase/supabase-js";
 
-const ENCRYPTION_KEY =
-  process.env.CREDENTIAL_ENCRYPTION_KEY || process.env.SUPABASE_VAULT_KEY || "";
+class CredentialEncryptionError extends Error {
+  constructor(message: string, readonly code: string) {
+    super(message);
+    this.name = "CredentialEncryptionError";
+  }
+}
+
+function getEncryptionKey(): string {
+  return process.env.CREDENTIAL_ENCRYPTION_KEY || process.env.SUPABASE_VAULT_KEY || "";
+}
+
+function decodeEncryptionKeyOrThrow(encryptionKey: string): Buffer {
+  if (!/^[0-9a-fA-F]{64}$/.test(encryptionKey)) {
+    throw new CredentialEncryptionError(
+      "CREDENTIAL_ENCRYPTION_KEY must be a 64-character hex string (32 bytes)",
+      "INVALID_ENCRYPTION_KEY"
+    );
+  }
+
+  return Buffer.from(encryptionKey, "hex");
+}
 
 /**
  * Encrypt credentials using pgcrypto or application-level encryption
@@ -34,27 +53,26 @@ export async function encryptCredentials(
   }
 
   // Option 2: Application-level encryption using AES-256-GCM
-  if (ENCRYPTION_KEY) {
-    const crypto = await import("crypto");
-    const algorithm = "aes-256-gcm";
-    const key = Buffer.from(ENCRYPTION_KEY, "hex").slice(0, 32);
-    const iv = crypto.randomBytes(16);
-
-    const cipher = crypto.createCipheriv(algorithm, key, iv);
-    const encrypted = Buffer.concat([
-      cipher.update(JSON.stringify(credentials), "utf8"),
-      cipher.final(),
-    ]);
-
-    const authTag = cipher.getAuthTag();
-
-    // Return base64 encoded: iv:authTag:encrypted
-    return Buffer.concat([iv, authTag, encrypted]).toString("base64");
+  const encryptionKey = getEncryptionKey();
+  if (!encryptionKey) {
+    throw new CredentialEncryptionError(
+      "Credential encryption unavailable: configure Supabase Vault or CREDENTIAL_ENCRYPTION_KEY",
+      "ENCRYPTION_UNAVAILABLE"
+    );
   }
 
-  throw new Error(
-    "Credential encryption unavailable: configure Supabase Vault or CREDENTIAL_ENCRYPTION_KEY"
-  );
+  const crypto = await import("crypto");
+  const algorithm = "aes-256-gcm";
+  const key = decodeEncryptionKeyOrThrow(encryptionKey);
+  const iv = crypto.randomBytes(16);
+
+  const cipher = crypto.createCipheriv(algorithm, key, iv);
+  const encrypted = Buffer.concat([cipher.update(JSON.stringify(credentials), "utf8"), cipher.final()]);
+
+  const authTag = cipher.getAuthTag();
+
+  // Return base64 encoded: iv:authTag:encrypted
+  return Buffer.concat([iv, authTag, encrypted]).toString("base64");
 }
 
 /**
@@ -80,11 +98,12 @@ export async function decryptCredentials(
   }
 
   // Option 2: Application-level decryption
-  if (ENCRYPTION_KEY) {
+  const encryptionKey = getEncryptionKey();
+  if (encryptionKey) {
     try {
       const crypto = await import("crypto");
       const algorithm = "aes-256-gcm";
-      const key = Buffer.from(ENCRYPTION_KEY, "hex").slice(0, 32);
+      const key = decodeEncryptionKeyOrThrow(encryptionKey);
       const buffer = Buffer.from(encryptedCredentials, "base64");
 
       const iv = buffer.slice(0, 16);
@@ -97,25 +116,29 @@ export async function decryptCredentials(
       const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
 
       return JSON.parse(decrypted.toString("utf8")) as Record<string, unknown>;
-    } catch (error) {
-      console.error("Decryption failed:", error);
-      throw new Error("Failed to decrypt credentials");
+    } catch {
+      throw new CredentialEncryptionError("Failed to decrypt credentials", "DECRYPTION_FAILED");
     }
   }
 
   if (process.env.ALLOW_INSECURE_CREDENTIAL_FALLBACK === "true") {
+    console.warn("ALLOW_INSECURE_CREDENTIAL_FALLBACK=true enabled; accepting legacy base64 credentials");
     try {
       return JSON.parse(Buffer.from(encryptedCredentials, "base64").toString("utf8")) as Record<
         string,
         unknown
       >;
     } catch {
-      throw new Error("Failed to decode credentials via insecure fallback");
+      throw new CredentialEncryptionError(
+        "Failed to decode credentials via insecure fallback",
+        "INSECURE_FALLBACK_DECODE_FAILED"
+      );
     }
   }
 
-  throw new Error(
-    "Credential decryption unavailable: configure Supabase Vault or CREDENTIAL_ENCRYPTION_KEY"
+  throw new CredentialEncryptionError(
+    "Credential decryption unavailable: configure Supabase Vault or CREDENTIAL_ENCRYPTION_KEY",
+    "DECRYPTION_UNAVAILABLE"
   );
 }
 
