@@ -79,7 +79,13 @@ function main() {
     console.log(JSON.stringify(payload, null, 2));
   }
 
-  if (blocked.length || clutter.length || unexpected.length) {
+  // Clutter entries are local/generated files (e.g. .env.local, target/) that are
+  // gitignored and should not block CI or push — warn only.
+  if (clutter.length) {
+    console.warn(formatList("⚠️  Local clutter detected (gitignored, non-blocking):", clutter));
+  }
+
+  if (blocked.length || unexpected.length) {
     console.error("\n❌ Root cleanliness policy check failed.");
     console.error(`Policy source: ${payload.policyPath}`);
     console.error(`Policy docs: ${payload.policyDoc}`);
@@ -87,12 +93,6 @@ function main() {
     if (blocked.length) {
       console.error(
         formatList("Blocked artifact extensions at repo root (must be removed):", blocked)
-      );
-    }
-
-    if (clutter.length) {
-      console.error(
-        formatList("Detected local/generated clutter (clean before committing):", clutter)
       );
     }
 
