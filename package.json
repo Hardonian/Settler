@@ -52,6 +52,7 @@
     "monitor:errors": "tsx scripts/monitor-api-errors.ts",
     "check:production": "tsx scripts/check-production-readiness.ts",
     "repo-integrity": "tsx scripts/repo-integrity.ts",
+    "vercel:preflight": "node scripts/verify-vercel-preflight.mjs",
     "vercel:parity": "tsx scripts/vercel-parity.ts",
     "check:workspace": "tsx scripts/check-workspace-integrity.ts",
     "test:visual": "playwright test --project=visual-desktop-light --project=visual-desktop-dark --project=visual-mobile-light --project=visual-tablet",
@@ -323,7 +324,7 @@
     "typescript": "^5.3.3"
   },
   "engines": {
-    "node": ">=22.0.0",
+    "node": ">=22.0.0 <25.0.0",
     "npm": ">=10.0.0",
     "pnpm": ">=10.13.1"
   },
