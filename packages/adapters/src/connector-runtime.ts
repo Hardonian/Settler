@@ -137,6 +137,31 @@ interface SaveNormalizedDataPayload {
   rawPayloads?: Array<{ type: string; payload: unknown }>;
 }
 
+type PersistenceStatus = "durable_atomic" | "durable_non_atomic" | "failed_partial";
+
+interface PersistenceStageResult {
+  stage:
+    | "sync_input_snapshot"
+    | "accounts"
+    | "transactions"
+    | "balances"
+    | "payouts"
+    | "invoices"
+    | "subscriptions"
+    | "taxEstimates"
+    | "rawPayloads";
+  attempted: boolean;
+  completed: boolean;
+}
+
+interface PersistenceOutcome {
+  status: PersistenceStatus;
+  recoveryRequired: boolean;
+  fallbackUsed: boolean;
+  reason?: string;
+  stages: PersistenceStageResult[];
+}
+
 /**
  * Connector Runtime
  */
@@ -297,6 +322,8 @@ export class ConnectorRuntime {
     syncRunId: string,
     updates: {
       status?: "pending" | "running" | "completed" | "failed" | "cancelled";
+      persistenceStatus?: PersistenceStatus;
+      recoveryRequired?: boolean;
       finishedAt?: Date;
       accountsSynced?: number;
       transactionsSynced?: number;
@@ -313,6 +340,9 @@ export class ConnectorRuntime {
   ): Promise<void> {
     const updateData: Record<string, unknown> = {};
     if (updates.status) updateData.status = updates.status;
+    if (updates.persistenceStatus) updateData.persistence_status = updates.persistenceStatus;
+    if (updates.recoveryRequired !== undefined)
+      updateData.recovery_required = updates.recoveryRequired;
     if (updates.finishedAt) updateData.finished_at = updates.finishedAt.toISOString();
     if (updates.accountsSynced !== undefined) updateData.accounts_synced = updates.accountsSynced;
     if (updates.transactionsSynced !== undefined)
@@ -350,9 +380,19 @@ export class ConnectorRuntime {
     connectorId: string,
     syncRunId: string,
     data: SaveNormalizedDataPayload
-  ): Promise<void> {
+  ): Promise<PersistenceOutcome> {
     const connector = await this.getConnectorRecord(tenantId, connectorId);
+    const stageResults: PersistenceStageResult[] = [];
+    const markStage = (
+      stage: PersistenceStageResult["stage"],
+      attempted: boolean,
+      completed: boolean
+    ) => {
+      stageResults.push({ stage, attempted, completed });
+    };
+
     await this.persistInputSnapshot(tenantId, syncRunId, connector.id, data);
+    markStage("sync_input_snapshot", true, true);
 
     const atomicError = await this.tryAtomicNormalizedWrite(
       tenantId,
@@ -361,7 +401,17 @@ export class ConnectorRuntime {
       data
     );
     if (!atomicError) {
-      return;
+      const outcome: PersistenceOutcome = {
+        status: "durable_atomic",
+        recoveryRequired: false,
+        fallbackUsed: false,
+        stages: stageResults,
+      };
+      await this.updateSyncRun(syncRunId, {
+        persistenceStatus: outcome.status,
+        recoveryRequired: outcome.recoveryRequired,
+      });
+      return outcome;
     }
 
     await this.assertUpsert(
@@ -384,202 +434,281 @@ export class ConnectorRuntime {
 
     const accountMap = await this.getAccountMap(connector.id, data);
 
-    if (data.accounts && data.accounts.length > 0) {
-      await this.assertUpsert(
-        "connector_accounts",
-        data.accounts.map((acc) => ({
-          connector_id: connector.id,
-          tenant_id: tenantId,
-          provider_account_id: acc.providerAccountId,
-          account_name: acc.accountName,
-          account_type: acc.accountType,
-          currency: acc.currency,
-          institution_name: acc.institutionName,
-          institution_id: acc.institutionId,
-          metadata: acc.metadata || {},
-        })),
-        { onConflict: "connector_id,provider_account_id", ignoreDuplicates: false },
-        connectorId,
-        "accounts"
-      );
-    }
+    try {
+      if (data.accounts && data.accounts.length > 0) {
+        await this.assertUpsert(
+          "connector_accounts",
+          data.accounts.map((acc) => ({
+            connector_id: connector.id,
+            tenant_id: tenantId,
+            provider_account_id: acc.providerAccountId,
+            account_name: acc.accountName,
+            account_type: acc.accountType,
+            currency: acc.currency,
+            institution_name: acc.institutionName,
+            institution_id: acc.institutionId,
+            metadata: acc.metadata || {},
+          })),
+          { onConflict: "connector_id,provider_account_id", ignoreDuplicates: false },
+          connectorId,
+          "accounts"
+        );
+        markStage("accounts", true, true);
+      } else {
+        markStage("accounts", false, false);
+      }
 
-    const resolvedAccountMap =
-      data.accounts && data.accounts.length > 0
-        ? await this.getAccountMap(connector.id, data)
-        : accountMap;
+      const resolvedAccountMap =
+        data.accounts && data.accounts.length > 0
+          ? await this.getAccountMap(connector.id, data)
+          : accountMap;
 
-    if (data.transactions && data.transactions.length > 0) {
-      await this.assertUpsert(
-        "financial_transactions",
-        data.transactions.map((tx) => ({
-          connector_id: connector.id,
-          tenant_id: tenantId,
-          account_id: tx.accountId ? resolvedAccountMap.get(tx.accountId) || null : null,
-          external_id: tx.externalId,
-          transaction_type: tx.transactionType,
-          amount_cents: tx.amountCents,
-          currency: tx.currency,
-          occurred_at: tx.occurredAt.toISOString(),
-          description: tx.description,
-          reference_id: tx.referenceId,
-          reference_type: tx.referenceType,
-          provider_metadata: tx.providerMetadata || {},
-          raw_payload: tx.rawPayload ? (tx.rawPayload as Record<string, unknown>) : null,
-          idempotency_key: tx.idempotencyKey || `${tx.externalId}-${tx.occurredAt.toISOString()}`,
-        })),
-        { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false },
-        connectorId,
-        "transactions"
-      );
-    }
+      if (data.transactions && data.transactions.length > 0) {
+        await this.assertUpsert(
+          "financial_transactions",
+          data.transactions.map((tx) => ({
+            connector_id: connector.id,
+            tenant_id: tenantId,
+            account_id: tx.accountId ? resolvedAccountMap.get(tx.accountId) || null : null,
+            external_id: tx.externalId,
+            transaction_type: tx.transactionType,
+            amount_cents: tx.amountCents,
+            currency: tx.currency,
+            occurred_at: tx.occurredAt.toISOString(),
+            description: tx.description,
+            reference_id: tx.referenceId,
+            reference_type: tx.referenceType,
+            provider_metadata: tx.providerMetadata || {},
+            raw_payload: tx.rawPayload ? (tx.rawPayload as Record<string, unknown>) : null,
+            idempotency_key: tx.idempotencyKey || `${tx.externalId}-${tx.occurredAt.toISOString()}`,
+          })),
+          { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false },
+          connectorId,
+          "transactions"
+        );
+        markStage("transactions", true, true);
+      } else {
+        markStage("transactions", false, false);
+      }
 
-    if (data.balances && data.balances.length > 0) {
-      await this.assertUpsert(
-        "financial_balances",
-        data.balances.map((bal) => ({
-          connector_id: connector.id,
-          tenant_id: tenantId,
-          account_id: resolvedAccountMap.get(bal.accountId) || null,
-          balance_cents: bal.balanceCents,
-          available_balance_cents: bal.availableBalanceCents,
-          currency: bal.currency,
-          snapshot_at: bal.snapshotAt.toISOString(),
-          provider_metadata: bal.providerMetadata || {},
-          raw_payload: bal.rawPayload ? (bal.rawPayload as Record<string, unknown>) : null,
-        })),
-        { onConflict: "account_id,snapshot_at", ignoreDuplicates: false },
-        connectorId,
-        "balances"
-      );
-    }
+      if (data.balances && data.balances.length > 0) {
+        await this.assertUpsert(
+          "financial_balances",
+          data.balances.map((bal) => ({
+            connector_id: connector.id,
+            tenant_id: tenantId,
+            account_id: resolvedAccountMap.get(bal.accountId) || null,
+            balance_cents: bal.balanceCents,
+            available_balance_cents: bal.availableBalanceCents,
+            currency: bal.currency,
+            snapshot_at: bal.snapshotAt.toISOString(),
+            provider_metadata: bal.providerMetadata || {},
+            raw_payload: bal.rawPayload ? (bal.rawPayload as Record<string, unknown>) : null,
+          })),
+          { onConflict: "account_id,snapshot_at", ignoreDuplicates: false },
+          connectorId,
+          "balances"
+        );
+        markStage("balances", true, true);
+      } else {
+        markStage("balances", false, false);
+      }
 
-    if (data.payouts && data.payouts.length > 0) {
-      await this.assertUpsert(
-        "financial_payouts",
-        data.payouts.map((payout) => ({
-          connector_id: connector.id,
-          tenant_id: tenantId,
-          account_id: null,
-          external_id: payout.externalId,
-          amount_cents: payout.amountCents,
-          currency: payout.currency,
-          status: payout.status,
-          initiated_at: payout.initiatedAt.toISOString(),
-          completed_at: payout.completedAt?.toISOString(),
-          fee_cents: payout.feeCents,
-          net_amount_cents: payout.netAmountCents,
-          destination_type: payout.destinationType,
-          destination_id: payout.destinationId,
-          description: payout.description,
-          provider_metadata: payout.providerMetadata || {},
-          raw_payload: payout.rawPayload ? (payout.rawPayload as Record<string, unknown>) : null,
-          idempotency_key: payout.idempotencyKey,
-        })),
-        { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false },
-        connectorId,
-        "payouts"
-      );
-    }
+      if (data.payouts && data.payouts.length > 0) {
+        await this.assertUpsert(
+          "financial_payouts",
+          data.payouts.map((payout) => ({
+            connector_id: connector.id,
+            tenant_id: tenantId,
+            account_id: null,
+            external_id: payout.externalId,
+            amount_cents: payout.amountCents,
+            currency: payout.currency,
+            status: payout.status,
+            initiated_at: payout.initiatedAt.toISOString(),
+            completed_at: payout.completedAt?.toISOString(),
+            fee_cents: payout.feeCents,
+            net_amount_cents: payout.netAmountCents,
+            destination_type: payout.destinationType,
+            destination_id: payout.destinationId,
+            description: payout.description,
+            provider_metadata: payout.providerMetadata || {},
+            raw_payload: payout.rawPayload ? (payout.rawPayload as Record<string, unknown>) : null,
+            idempotency_key: payout.idempotencyKey,
+          })),
+          { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false },
+          connectorId,
+          "payouts"
+        );
+        markStage("payouts", true, true);
+      } else {
+        markStage("payouts", false, false);
+      }
 
-    if (data.invoices && data.invoices.length > 0) {
-      await this.assertUpsert(
-        "financial_invoices",
-        data.invoices.map((inv) => ({
-          connector_id: connector.id,
-          tenant_id: tenantId,
-          external_id: inv.externalId,
-          invoice_number: inv.invoiceNumber,
-          customer_id: inv.customerId,
-          customer_name: inv.customerName,
-          amount_cents: inv.amountCents,
-          currency: inv.currency,
-          status: inv.status,
-          issue_date: inv.issueDate?.toISOString().split("T")[0],
-          due_date: inv.dueDate?.toISOString().split("T")[0],
-          paid_at: inv.paidAt?.toISOString(),
-          line_items: inv.lineItems || [],
-          provider_metadata: inv.providerMetadata || {},
-          raw_payload: inv.rawPayload ? (inv.rawPayload as Record<string, unknown>) : null,
-          idempotency_key: inv.idempotencyKey,
-        })),
-        { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false },
-        connectorId,
-        "invoices"
-      );
-    }
+      if (data.invoices && data.invoices.length > 0) {
+        await this.assertUpsert(
+          "financial_invoices",
+          data.invoices.map((inv) => ({
+            connector_id: connector.id,
+            tenant_id: tenantId,
+            external_id: inv.externalId,
+            invoice_number: inv.invoiceNumber,
+            customer_id: inv.customerId,
+            customer_name: inv.customerName,
+            amount_cents: inv.amountCents,
+            currency: inv.currency,
+            status: inv.status,
+            issue_date: inv.issueDate?.toISOString().split("T")[0],
+            due_date: inv.dueDate?.toISOString().split("T")[0],
+            paid_at: inv.paidAt?.toISOString(),
+            line_items: inv.lineItems || [],
+            provider_metadata: inv.providerMetadata || {},
+            raw_payload: inv.rawPayload ? (inv.rawPayload as Record<string, unknown>) : null,
+            idempotency_key: inv.idempotencyKey,
+          })),
+          { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false },
+          connectorId,
+          "invoices"
+        );
+        markStage("invoices", true, true);
+      } else {
+        markStage("invoices", false, false);
+      }
 
-    if (data.subscriptions && data.subscriptions.length > 0) {
-      await this.assertUpsert(
-        "financial_subscriptions",
-        data.subscriptions.map((sub) => ({
-          connector_id: connector.id,
-          tenant_id: tenantId,
-          external_id: sub.externalId,
-          customer_id: sub.customerId,
-          customer_name: sub.customerName,
-          plan_id: sub.planId,
-          plan_name: sub.planName,
-          status: sub.status,
-          billing_cycle: sub.billingCycle,
-          amount_cents: sub.amountCents,
-          currency: sub.currency,
-          current_period_start: sub.currentPeriodStart?.toISOString(),
-          current_period_end: sub.currentPeriodEnd?.toISOString(),
-          cancel_at_period_end: sub.cancelAtPeriodEnd,
-          cancelled_at: sub.cancelledAt?.toISOString(),
-          provider_metadata: sub.providerMetadata || {},
-          raw_payload: sub.rawPayload ? (sub.rawPayload as Record<string, unknown>) : null,
-          idempotency_key: sub.idempotencyKey,
-        })),
-        { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false },
-        connectorId,
-        "subscriptions"
-      );
-    }
+      if (data.subscriptions && data.subscriptions.length > 0) {
+        await this.assertUpsert(
+          "financial_subscriptions",
+          data.subscriptions.map((sub) => ({
+            connector_id: connector.id,
+            tenant_id: tenantId,
+            external_id: sub.externalId,
+            customer_id: sub.customerId,
+            customer_name: sub.customerName,
+            plan_id: sub.planId,
+            plan_name: sub.planName,
+            status: sub.status,
+            billing_cycle: sub.billingCycle,
+            amount_cents: sub.amountCents,
+            currency: sub.currency,
+            current_period_start: sub.currentPeriodStart?.toISOString(),
+            current_period_end: sub.currentPeriodEnd?.toISOString(),
+            cancel_at_period_end: sub.cancelAtPeriodEnd,
+            cancelled_at: sub.cancelledAt?.toISOString(),
+            provider_metadata: sub.providerMetadata || {},
+            raw_payload: sub.rawPayload ? (sub.rawPayload as Record<string, unknown>) : null,
+            idempotency_key: sub.idempotencyKey,
+          })),
+          { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false },
+          connectorId,
+          "subscriptions"
+        );
+        markStage("subscriptions", true, true);
+      } else {
+        markStage("subscriptions", false, false);
+      }
 
-    if (data.taxEstimates && data.taxEstimates.length > 0) {
-      await this.assertUpsert(
-        "financial_tax_estimates",
-        data.taxEstimates.map((tax) => ({
-          connector_id: connector.id,
-          tenant_id: tenantId,
-          external_id: tax.externalId,
-          transaction_id: tax.transactionId,
-          transaction_type: tax.transactionType,
-          amount_cents: tax.amountCents,
-          currency: tax.currency,
-          tax_amount_cents: tax.taxAmountCents,
-          tax_rate: tax.taxRate,
-          jurisdiction: tax.jurisdiction,
-          tax_type: tax.taxType,
-          occurred_at: tax.occurredAt.toISOString(),
-          provider_metadata: tax.providerMetadata || {},
-          raw_payload: tax.rawPayload ? (tax.rawPayload as Record<string, unknown>) : null,
-          idempotency_key: tax.idempotencyKey,
-        })),
-        { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false },
-        connectorId,
-        "taxEstimates"
-      );
-    }
+      if (data.taxEstimates && data.taxEstimates.length > 0) {
+        await this.assertUpsert(
+          "financial_tax_estimates",
+          data.taxEstimates.map((tax) => ({
+            connector_id: connector.id,
+            tenant_id: tenantId,
+            external_id: tax.externalId,
+            transaction_id: tax.transactionId,
+            transaction_type: tax.transactionType,
+            amount_cents: tax.amountCents,
+            currency: tax.currency,
+            tax_amount_cents: tax.taxAmountCents,
+            tax_rate: tax.taxRate,
+            jurisdiction: tax.jurisdiction,
+            tax_type: tax.taxType,
+            occurred_at: tax.occurredAt.toISOString(),
+            provider_metadata: tax.providerMetadata || {},
+            raw_payload: tax.rawPayload ? (tax.rawPayload as Record<string, unknown>) : null,
+            idempotency_key: tax.idempotencyKey,
+          })),
+          { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false },
+          connectorId,
+          "taxEstimates"
+        );
+        markStage("taxEstimates", true, true);
+      } else {
+        markStage("taxEstimates", false, false);
+      }
 
-    if (data.rawPayloads && data.rawPayloads.length > 0) {
+      if (data.rawPayloads && data.rawPayloads.length > 0) {
+        await this.assertUpsert(
+          "raw_events",
+          data.rawPayloads.map((raw, idx) => ({
+            connector_id: connector.id,
+            tenant_id: tenantId,
+            event_type: "sync",
+            event_id: `${syncRunId}-${idx}`,
+            payload: raw.payload as Record<string, unknown>,
+            processed: true,
+            processed_at: new Date().toISOString(),
+          })),
+          { onConflict: "connector_id,event_id", ignoreDuplicates: false },
+          connectorId,
+          "rawPayloads"
+        );
+        markStage("rawPayloads", true, true);
+      } else {
+        markStage("rawPayloads", false, false);
+      }
+
+      const outcome: PersistenceOutcome = {
+        status: "durable_non_atomic",
+        recoveryRequired: false,
+        fallbackUsed: true,
+        reason: atomicError,
+        stages: stageResults,
+      };
+      await this.updateSyncRun(syncRunId, {
+        persistenceStatus: outcome.status,
+        recoveryRequired: outcome.recoveryRequired,
+      });
+      return outcome;
+    } catch (error) {
+      const failureMessage = error instanceof Error ? error.message : String(error);
+
       await this.assertUpsert(
         "raw_events",
-        data.rawPayloads.map((raw, idx) => ({
-          connector_id: connector.id,
-          tenant_id: tenantId,
-          event_type: "sync",
-          event_id: `${syncRunId}-${idx}`,
-          payload: raw.payload as Record<string, unknown>,
-          processed: true,
-          processed_at: new Date().toISOString(),
-        })),
+        [
+          {
+            connector_id: connector.id,
+            tenant_id: tenantId,
+            event_type: "sync_recovery_required",
+            event_id: `${syncRunId}-recovery-required`,
+            payload: {
+              status: "failed_partial",
+              reason: atomicError,
+              failure: failureMessage,
+              stages: stageResults,
+            },
+            processed: true,
+            processed_at: new Date().toISOString(),
+          },
+        ],
         { onConflict: "connector_id,event_id", ignoreDuplicates: false },
         connectorId,
-        "rawPayloads"
+        "sync_recovery_required"
       );
+
+      await this.updateSyncRun(syncRunId, {
+        persistenceStatus: "failed_partial",
+        recoveryRequired: true,
+        errorDetails: {
+          persistence: {
+            status: "failed_partial",
+            reason: atomicError,
+            failure: failureMessage,
+            stages: stageResults,
+          },
+        },
+      });
+
+      throw error;
     }
   }
 

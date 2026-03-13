@@ -124,6 +124,19 @@ interface SaveNormalizedDataPayload {
         payload: unknown;
     }>;
 }
+type PersistenceStatus = "durable_atomic" | "durable_non_atomic" | "failed_partial";
+interface PersistenceStageResult {
+    stage: "sync_input_snapshot" | "accounts" | "transactions" | "balances" | "payouts" | "invoices" | "subscriptions" | "taxEstimates" | "rawPayloads";
+    attempted: boolean;
+    completed: boolean;
+}
+interface PersistenceOutcome {
+    status: PersistenceStatus;
+    recoveryRequired: boolean;
+    fallbackUsed: boolean;
+    reason?: string;
+    stages: PersistenceStageResult[];
+}
 /**
  * Connector Runtime
  */
@@ -146,6 +159,8 @@ export declare class ConnectorRuntime {
      */
     updateSyncRun(syncRunId: string, updates: {
         status?: "pending" | "running" | "completed" | "failed" | "cancelled";
+        persistenceStatus?: PersistenceStatus;
+        recoveryRequired?: boolean;
         finishedAt?: Date;
         accountsSynced?: number;
         transactionsSynced?: number;
@@ -162,7 +177,7 @@ export declare class ConnectorRuntime {
     /**
      * Save normalized data to database
      */
-    saveNormalizedData(tenantId: string, connectorId: string, syncRunId: string, data: SaveNormalizedDataPayload): Promise<void>;
+    saveNormalizedData(tenantId: string, connectorId: string, syncRunId: string, data: SaveNormalizedDataPayload): Promise<PersistenceOutcome>;
     private getConnectorRecord;
     private getAccountMap;
     private assertUpsert;

@@ -5,23 +5,28 @@ Settler's integration framework supports connecting to 20+ platforms across mult
 ## Categories
 
 ### Bank Feeds
+
 - **Plaid** - North America bank aggregation
 - **TrueLayer** - EU/UK bank aggregation (PSD2)
 
 ### Accounting Systems
+
 - **FreshBooks** - Small business accounting
 - **Wave** - Free accounting software
 
 ### Subscription Billing
+
 - **Chargebee** - Subscription management platform
 - **Recurly** - Recurring billing platform
 
 ### Payment Processors
+
 - **Stripe** - Payment processing
 - **PayPal** - Payment processing
 - **Square** - Payment processing
 
 ### E-commerce Platforms
+
 - **Shopify** - E-commerce platform
 - **WooCommerce** - WordPress e-commerce
 - **BigCommerce** - E-commerce platform
@@ -69,7 +74,7 @@ interface ConnectorDriver {
 - `financial_invoices` - Invoices
 - `financial_subscriptions` - Subscriptions
 - `financial_tax_estimates` - Tax estimates
-- `raw_events` - Raw payloads and sync persistence evidence for audit/replay (`sync_input_snapshot`, `sync_atomic_fallback`)
+- `raw_events` - Raw payloads and sync persistence evidence for audit/replay (`sync_input_snapshot`, `sync_atomic_fallback`, `sync_recovery_required`)
 - `webhook_events` - Webhook events
 
 ## Security
@@ -88,7 +93,7 @@ interface ConnectorDriver {
 5. Attempts atomic persistence via `connector_save_normalized_data_atomic` RPC when available
 6. Falls back to strict per-table writes if RPC is unavailable and emits `sync_atomic_fallback` evidence in `raw_events`
 7. Persists `sync_input_snapshot` evidence for replay/debug of the exact connector input payload
-8. Sync run updated with metrics
+8. Sync run updated with metrics and durability truth (`persistence_status`, `recovery_required`)
 
 ## Error Handling
 
@@ -97,9 +102,11 @@ interface ConnectorDriver {
 - **Auto-disable**: Connectors auto-disabled after 10 consecutive failures
 - **Error Logging**: All errors logged to `sync_runs` table
 
-
 ## Replayability and Persistence Guarantees
 
+- `sync_runs.persistence_status` expresses durability truth: `durable_atomic`, `durable_non_atomic`, or `failed_partial`.
+- `sync_runs.recovery_required=true` marks partial-write incidents that require operator or automated repair before trustable completion.
+- Fallback failures emit `sync_recovery_required` evidence in `raw_events` with stage-by-stage completion details.
 - `sync_input_snapshot` stores the connector sync input payload with `schema_version` metadata and row counts.
 - When atomic RPC persistence is unavailable, runtime emits `sync_atomic_fallback` so degraded durability is machine-visible.
 - Critical normalized writes are fail-fast: sync status is marked failed if persistence fails.
