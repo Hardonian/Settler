@@ -5,6 +5,8 @@
 ```bash
 pnpm install
 cp .env.local.example .env.local
+doppler run -- pnpm run verify:setup
+doppler run -- pnpm run verify:launch:readiness
 pnpm demo:settler
 ```
 
