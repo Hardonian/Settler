@@ -5,6 +5,12 @@
  * without causing build failures for runtime-only variables.
  */
 
+import {
+  BUILD_REQUIRED_ENV_GROUPS,
+  RUNTIME_REQUIRED_SERVER_KEYS,
+  hasConfiguredValue,
+} from "./env/keys";
+
 /**
  * Check if we're currently in a build context
  */
@@ -22,14 +28,8 @@ export function isBuildTime(): boolean {
 /**
  * Build-time required environment variables
  * These are needed during the build process
- *
- * Note: DATABASE_URL is needed for Prisma client generation and build-time queries,
- * but Prisma will handle missing DATABASE_URL gracefully during build if engineType is "binary"
  */
-export const BUILD_TIME_REQUIRED = [
-  ["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_URL"],
-  ["NEXT_PUBLIC_SUPABASE_ANON_KEY", "SUPABASE_ANON_KEY"],
-] as const;
+export const BUILD_TIME_REQUIRED = BUILD_REQUIRED_ENV_GROUPS.map((group) => group.keys);
 
 /**
  * Runtime-only environment variables
@@ -37,12 +37,10 @@ export const BUILD_TIME_REQUIRED = [
  */
 export const RUNTIME_ONLY = [
   "DB_PASSWORD",
-  "ENCRYPTION_KEY",
-  "JWT_SECRET",
   "JWT_REFRESH_SECRET",
   "JOBFORGE_INTEGRATION_ENABLED",
   "JOBFORGE_BUNDLE_EXECUTION_ENABLED",
-  "SUPABASE_SERVICE_ROLE_KEY",
+  ...RUNTIME_REQUIRED_SERVER_KEYS,
   "STRIPE_SECRET_KEY",
   "STRIPE_WEBHOOK_SECRET",
 ] as const;
@@ -95,7 +93,7 @@ export function validateBuildEnv(): { valid: boolean; errors: string[]; warnings
 
   // Check build-time required variables
   for (const keyGroup of BUILD_TIME_REQUIRED) {
-    const hasAny = keyGroup.some((key) => Boolean(process.env[key]));
+    const hasAny = keyGroup.some((key) => hasConfiguredValue(key));
     if (!hasAny) {
       errors.push(`Missing build-time required variable: ${keyGroup.join(" or ")}`);
     }
@@ -103,7 +101,7 @@ export function validateBuildEnv(): { valid: boolean; errors: string[]; warnings
 
   // Warn about runtime-only variables (non-blocking)
   for (const name of RUNTIME_ONLY) {
-    if (!process.env[name]) {
+    if (!hasConfiguredValue(name)) {
       warnings.push(`Missing runtime-only variable (will be required at runtime): ${name}`);
     }
   }

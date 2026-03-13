@@ -9,6 +9,11 @@
  * Uses build-time detection to skip validation for runtime-only variables during build.
  */
 import { isBuildTime, RUNTIME_ONLY } from "./env-build-helper";
+import {
+  BUILD_REQUIRED_ENV_GROUPS,
+  RUNTIME_REQUIRED_SERVER_KEYS,
+  hasConfiguredValue,
+} from "./env/keys";
 
 /**
  * Safe environment variable getter that never throws during render
@@ -103,14 +108,11 @@ export function validateEnv(): { valid: boolean; errors: string[] } {
 
   // During build, only validate build-time required vars
   if (isBuild) {
-    const buildRequired = [
-      ["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_URL"],
-      ["NEXT_PUBLIC_SUPABASE_ANON_KEY", "SUPABASE_ANON_KEY"],
-    ] as const;
+    const buildRequired = BUILD_REQUIRED_ENV_GROUPS.map((group) => group.keys);
     const errors: string[] = [];
 
     for (const keys of buildRequired) {
-      if (!keys.some((name) => process.env[name])) {
+      if (!keys.some((name) => hasConfiguredValue(name))) {
         errors.push(`Missing build-time required variable: ${keys.join(" or ")}`);
       }
     }
@@ -123,10 +125,14 @@ export function validateEnv(): { valid: boolean; errors: string[] } {
 
   const errors: string[] = [];
 
-  const required = ["SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY"];
+  for (const group of BUILD_REQUIRED_ENV_GROUPS.slice(0, 2)) {
+    if (!group.keys.some((name) => hasConfiguredValue(name))) {
+      errors.push(`Missing required environment variable: ${group.keys.join(" or ")}`);
+    }
+  }
 
-  for (const name of required) {
-    if (!process.env[name]) {
+  for (const name of RUNTIME_REQUIRED_SERVER_KEYS) {
+    if (!hasConfiguredValue(name)) {
       errors.push(`Missing required environment variable: ${name}`);
     }
   }
