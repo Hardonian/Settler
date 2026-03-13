@@ -23,12 +23,29 @@ function addCheck(subsystem, status, message, remediation = "None") {
 }
 
 function loadEnv() {
-  [".env", ".env.local", ".env.production"].forEach((file) => {
+  const loaded = [];
+  [
+    ".env",
+    ".env.local",
+    ".env.production",
+    path.join("packages", "web", ".env.local"),
+    path.join("packages", "api", ".env.local"),
+  ].forEach((file) => {
     const filePath = path.join(rootDir, file);
     if (fs.existsSync(filePath)) {
       dotenv.config({ path: filePath, override: false });
+      loaded.push(file);
     }
   });
+
+  addCheck(
+    "env.sources",
+    loaded.length > 0 ? "PASS" : "DEGRADED",
+    loaded.length > 0
+      ? `Loaded env files: ${loaded.join(", ")}`
+      : "No local env files found; only shell-exported variables are available",
+    "Create .env.local from .env.local.example or run commands with doppler run -- <command>."
+  );
 }
 
 function hasEnv(key) {
@@ -73,7 +90,7 @@ function checkLocalEnvBootstrap() {
       "env.bootstrap",
       "DEGRADED",
       ".env.local not found; first-run env bootstrap has not been completed",
-      "Run: cp .env.local.example .env.local, then update Supabase + database values."
+      "Run: cp .env.local.example .env.local (root) or use doppler run -- <command> to inject secrets."
     );
   }
 }
@@ -91,7 +108,7 @@ function checkEnvPresence() {
       `env.${name}`,
       hasEnv(name) ? "PASS" : "FAIL",
       hasEnv(name) ? `${name} is configured` : `${name} is missing`,
-      `Set ${name} in environment or .env.local (tip: cp .env.local.example .env.local).`
+      `Set ${name} in shell/.env.local (root or package) or run via doppler run -- <command>.`
     );
   }
 
