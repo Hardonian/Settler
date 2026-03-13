@@ -8,7 +8,6 @@
  */
 
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { randomBytes } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { addSecurityHeaders } from "./src/middleware/security-headers";
 import { generateTraceId } from "./src/lib/observability/trace";
@@ -20,7 +19,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   // CRITICAL: Wrap entire middleware in try-catch to prevent any 500 errors
   try {
     const pathname = request.nextUrl.pathname;
-    const nonce = randomBytes(16).toString("base64");
+    const nonce = createCspNonce();
     // Generate or get trace_id
     let traceId = request.headers.get("x-trace-id") || request.cookies.get("trace-id")?.value;
     if (!traceId) {
@@ -225,6 +224,44 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     fallbackResponse.headers.set("x-csp-nonce", traceId);
     return addSecurityHeaders(fallbackResponse, { nonce: traceId });
   }
+}
+
+function createCspNonce(): string {
+  const bytes = new Uint8Array(16);
+
+  if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+    crypto.getRandomValues(bytes);
+  } else {
+    for (let index = 0; index < bytes.length; index += 1) {
+      bytes[index] = Math.floor(Math.random() * 256);
+    }
+  }
+
+  let binary = "";
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+
+  if (typeof btoa === "function") {
+    return btoa(binary);
+  }
+
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  let result = "";
+
+  for (let i = 0; i < bytes.length; i += 3) {
+    const a = bytes[i] ?? 0;
+    const b = bytes[i + 1] ?? 0;
+    const c = bytes[i + 2] ?? 0;
+
+    const chunk = (a << 16) | (b << 8) | c;
+    result += alphabet[(chunk >> 18) & 63];
+    result += alphabet[(chunk >> 12) & 63];
+    result += i + 1 < bytes.length ? alphabet[(chunk >> 6) & 63] : "=";
+    result += i + 2 < bytes.length ? alphabet[chunk & 63] : "=";
+  }
+
+  return result;
 }
 
 export const config = {

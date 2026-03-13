@@ -73,21 +73,23 @@ Canonical capability map (subsystem, kernel op, CLI path, console surface, enter
 
 ## 11) Verification and Health Checks
 
-Primary quality gates:
+Primary launch-readiness spine:
 
+- `pnpm run verify:setup` (required env + integration flag coherence)
+- `pnpm run settler:doctor -- --first-run` (operator-facing startup diagnostics)
+- `pnpm run repo-integrity` (workspace/script/package contract integrity)
 - `pnpm lint`
 - `pnpm typecheck`
 - `pnpm build`
 - `pnpm test`
 
-Additional operational verification:
+Extended verification (context-dependent):
 
-- `pnpm run verify:setup`
-- `pnpm run settler:doctor`
 - `pnpm run kernel:health`
 - `pnpm verify`
 - `pnpm verify:security:fast`
 - `pnpm verify:capability-registry`
+- `pnpm run check:production` (aggregates repo quality gates + setup verification)
 
 ## 12) Launch Readiness Status
 

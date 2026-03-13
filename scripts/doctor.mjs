@@ -11,6 +11,7 @@ const mode = process.env.NODE_ENV === "production" || args.has("--prod") ? "prod
 const jsonMode = args.has("--json");
 const skipKernelHealth = args.has("--skip-kernel-health");
 const includePipeline = args.has("--include-pipeline");
+const firstRun = args.has("--first-run");
 
 /** @typedef {'PASS'|'DEGRADED'|'FAIL'} CheckStatus */
 
@@ -61,6 +62,22 @@ function checkToolchain() {
   );
 }
 
+function checkLocalEnvBootstrap() {
+  if (mode !== "local") return;
+
+  const envLocalPath = path.join(rootDir, ".env.local");
+  const envTemplatePath = path.join(rootDir, ".env.local.example");
+
+  if (!fs.existsSync(envLocalPath) && fs.existsSync(envTemplatePath)) {
+    addCheck(
+      "env.bootstrap",
+      "DEGRADED",
+      ".env.local not found; first-run env bootstrap has not been completed",
+      "Run: cp .env.local.example .env.local, then update Supabase + database values."
+    );
+  }
+}
+
 function checkEnvPresence() {
   const required = [
     "NEXT_PUBLIC_SUPABASE_URL",
@@ -74,7 +91,7 @@ function checkEnvPresence() {
       `env.${name}`,
       hasEnv(name) ? "PASS" : "FAIL",
       hasEnv(name) ? `${name} is configured` : `${name} is missing`,
-      `Set ${name} in environment or .env.local.`
+      `Set ${name} in environment or .env.local (tip: cp .env.local.example .env.local).`
     );
   }
 
@@ -83,7 +100,7 @@ function checkEnvPresence() {
     "env.database",
     hasDb ? "PASS" : "FAIL",
     hasDb ? "At least one database DSN is configured" : "No database DSN configured",
-    "Set DATABASE_URL (or SUPABASE_DATABASE_URL / DIRECT_URL)."
+    "Set DATABASE_URL (or SUPABASE_DATABASE_URL / DIRECT_URL) in .env.local before API/web smoke checks."
   );
 
   if (mode === "production") {
@@ -232,7 +249,11 @@ function computeSummary() {
 function printHuman(summary) {
   console.log("🩺 Settler Doctor");
   console.log(`mode=${mode}`);
-  console.log(`summary=${summary}\n`);
+  console.log(`summary=${summary}`);
+  if (firstRun) {
+    console.log("first_run=true (strict env/setup diagnostics enabled)");
+  }
+  console.log("");
 
   for (const check of checks) {
     const icon = check.status === "PASS" ? "✅" : check.status === "DEGRADED" ? "⚠️" : "❌";
@@ -260,6 +281,7 @@ function printJson(summary) {
 function main() {
   loadEnv();
   checkToolchain();
+  checkLocalEnvBootstrap();
   checkEnvPresence();
   checkConfigShape();
   checkWorkspaceIntegrity();
