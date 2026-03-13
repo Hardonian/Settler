@@ -55,8 +55,18 @@ function validateCore(findings: Finding[]): void {
   const mode = (process.env.NODE_ENV ?? "development").toLowerCase();
   const prodLike = mode === "production" || process.env.DEPLOYMENT_ENV === "production";
 
-  addRequired(findings, ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY"], "web");
-  addRequired(findings, ["SUPABASE_URL", "SUPABASE_ANON_KEY"], "api/auth");
+  addRequired(
+    findings,
+    ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY"],
+    "web",
+    "Bootstrap local env with cp .env.local.example .env.local, then set Supabase browser keys."
+  );
+  addRequired(
+    findings,
+    ["SUPABASE_URL", "SUPABASE_ANON_KEY"],
+    "api/auth",
+    "Set Supabase server keys in .env.local before running API or production checks."
+  );
 
   const hasAnyDb =
     hasValue("DATABASE_URL") || hasValue("SUPABASE_DATABASE_URL") || hasValue("DIRECT_URL");
@@ -65,6 +75,8 @@ function validateCore(findings: Finding[]): void {
       severity: "error",
       area: "database",
       message: "Missing database DSN. Set DATABASE_URL, SUPABASE_DATABASE_URL, or DIRECT_URL.",
+      action:
+        "Use .env.local.example as baseline and configure DATABASE_URL before smoke/build verification.",
     });
   }
 
@@ -309,6 +321,9 @@ function printFindings(findings: Finding[]): void {
   }
 
   console.log("🩺 Settler setup verification");
+  console.log(
+    "Tip: for first-run local bootstrap, copy .env.local.example to .env.local and replace placeholder values."
+  );
   for (const [area, items] of grouped.entries()) {
     console.log(`\n[${area}]`);
     for (const item of items) {

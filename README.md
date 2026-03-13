@@ -14,11 +14,14 @@ Settler is a deterministic reconciliation and operations platform for teams that
 
 ```bash
 pnpm install
+cp .env.local.example .env.local
+pnpm run verify:setup
 pnpm demo:settler
 pnpm dev:stack
 ```
 
 For first-time setup and troubleshooting, start with `docs/getting-started/README.md`.
+Run `pnpm run settler:doctor -- --first-run` after filling env values to confirm actionable startup readiness.
 
 ## Core verification commands
 

@@ -10,6 +10,8 @@ pnpm demo:settler
 
 This path is optimized for first-time contributors and operators.
 
+After setting real env values, run `pnpm run settler:doctor -- --first-run` to verify startup readiness before smoke/build workflows.
+
 ## Environment setup essentials
 
 Use these minimum variables before running migrations or API/server workflows:
@@ -17,6 +19,8 @@ Use these minimum variables before running migrations or API/server workflows:
 - `DATABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY` (server-only)
 
 Recommended local placement:
