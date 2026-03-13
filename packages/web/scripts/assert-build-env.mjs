@@ -1,5 +1,18 @@
 #!/usr/bin/env node
 
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { existsSync } from "node:fs";
+import { config } from "dotenv";
+
+// Load .env.local from repo root (same source Next.js uses during build)
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const repoRoot = resolve(__dirname, "..", "..", "..");
+const envLocal = resolve(repoRoot, ".env.local");
+if (existsSync(envLocal)) {
+  config({ path: envLocal });
+}
+
 const REQUIRED_GROUPS = [
   {
     label: "Supabase URL (public)",
