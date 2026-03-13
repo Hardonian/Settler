@@ -30,6 +30,113 @@ export interface SyncRunContext {
   userId?: string;
 }
 
+interface SaveNormalizedDataPayload {
+  accounts?: Array<{
+    providerAccountId: string;
+    accountName: string;
+    accountType?: string;
+    currency: string;
+    institutionName?: string;
+    institutionId?: string;
+    metadata?: Record<string, unknown>;
+  }>;
+  transactions?: Array<{
+    externalId: string;
+    accountId?: string;
+    transactionType: string;
+    amountCents: number;
+    currency: string;
+    occurredAt: Date;
+    description?: string;
+    referenceId?: string;
+    referenceType?: string;
+    providerMetadata?: Record<string, unknown>;
+    rawPayload?: unknown;
+    idempotencyKey: string;
+  }>;
+  balances?: Array<{
+    accountId: string;
+    balanceCents: number;
+    availableBalanceCents?: number;
+    currency: string;
+    snapshotAt: Date;
+    providerMetadata?: Record<string, unknown>;
+    rawPayload?: unknown;
+  }>;
+  payouts?: Array<{
+    externalId: string;
+    accountId?: string;
+    amountCents: number;
+    currency: string;
+    status: string;
+    initiatedAt: Date;
+    completedAt?: Date;
+    feeCents?: number;
+    netAmountCents?: number;
+    destinationType?: string;
+    destinationId?: string;
+    description?: string;
+    providerMetadata?: Record<string, unknown>;
+    rawPayload?: unknown;
+    idempotencyKey: string;
+  }>;
+  invoices?: Array<{
+    externalId: string;
+    invoiceNumber?: string;
+    customerId?: string;
+    customerName?: string;
+    amountCents: number;
+    currency: string;
+    status: string;
+    issueDate?: Date;
+    dueDate?: Date;
+    paidAt?: Date;
+    lineItems?: Array<{
+      description: string;
+      quantity: number;
+      unitPriceCents: number;
+      totalCents: number;
+    }>;
+    providerMetadata?: Record<string, unknown>;
+    rawPayload?: unknown;
+    idempotencyKey: string;
+  }>;
+  subscriptions?: Array<{
+    externalId: string;
+    customerId: string;
+    customerName?: string;
+    planId?: string;
+    planName?: string;
+    status: string;
+    billingCycle?: string;
+    amountCents: number;
+    currency: string;
+    currentPeriodStart?: Date;
+    currentPeriodEnd?: Date;
+    cancelAtPeriodEnd?: boolean;
+    cancelledAt?: Date;
+    providerMetadata?: Record<string, unknown>;
+    rawPayload?: unknown;
+    idempotencyKey: string;
+  }>;
+  taxEstimates?: Array<{
+    externalId: string;
+    transactionId?: string;
+    transactionType?: string;
+    amountCents: number;
+    currency: string;
+    taxAmountCents: number;
+    taxRate?: number;
+    jurisdiction?: string;
+    taxType?: string;
+    occurredAt: Date;
+    providerMetadata?: Record<string, unknown>;
+    rawPayload?: unknown;
+    idempotencyKey: string;
+  }>;
+  rawPayloads?: Array<{ type: string; payload: unknown }>;
+}
+
 /**
  * Connector Runtime
  */
@@ -231,114 +338,241 @@ export class ConnectorRuntime {
     tenantId: string,
     connectorId: string,
     syncRunId: string,
-    data: {
-      accounts?: Array<{
-        providerAccountId: string;
-        accountName: string;
-        accountType?: string;
-        currency: string;
-        institutionName?: string;
-        institutionId?: string;
-        metadata?: Record<string, unknown>;
-      }>;
-      transactions?: Array<{
-        externalId: string;
-        accountId?: string;
-        transactionType: string;
-        amountCents: number;
-        currency: string;
-        occurredAt: Date;
-        description?: string;
-        referenceId?: string;
-        referenceType?: string;
-        providerMetadata?: Record<string, unknown>;
-        rawPayload?: unknown;
-        idempotencyKey: string;
-      }>;
-      balances?: Array<{
-        accountId: string;
-        balanceCents: number;
-        availableBalanceCents?: number;
-        currency: string;
-        snapshotAt: Date;
-        providerMetadata?: Record<string, unknown>;
-        rawPayload?: unknown;
-      }>;
-      payouts?: Array<{
-        externalId: string;
-        accountId?: string;
-        amountCents: number;
-        currency: string;
-        status: string;
-        initiatedAt: Date;
-        completedAt?: Date;
-        feeCents?: number;
-        netAmountCents?: number;
-        destinationType?: string;
-        destinationId?: string;
-        description?: string;
-        providerMetadata?: Record<string, unknown>;
-        rawPayload?: unknown;
-        idempotencyKey: string;
-      }>;
-      invoices?: Array<{
-        externalId: string;
-        invoiceNumber?: string;
-        customerId?: string;
-        customerName?: string;
-        amountCents: number;
-        currency: string;
-        status: string;
-        issueDate?: Date;
-        dueDate?: Date;
-        paidAt?: Date;
-        lineItems?: Array<{
-          description: string;
-          quantity: number;
-          unitPriceCents: number;
-          totalCents: number;
-        }>;
-        providerMetadata?: Record<string, unknown>;
-        rawPayload?: unknown;
-        idempotencyKey: string;
-      }>;
-      subscriptions?: Array<{
-        externalId: string;
-        customerId: string;
-        customerName?: string;
-        planId?: string;
-        planName?: string;
-        status: string;
-        billingCycle?: string;
-        amountCents: number;
-        currency: string;
-        currentPeriodStart?: Date;
-        currentPeriodEnd?: Date;
-        cancelAtPeriodEnd?: boolean;
-        cancelledAt?: Date;
-        providerMetadata?: Record<string, unknown>;
-        rawPayload?: unknown;
-        idempotencyKey: string;
-      }>;
-      taxEstimates?: Array<{
-        externalId: string;
-        transactionId?: string;
-        transactionType?: string;
-        amountCents: number;
-        currency: string;
-        taxAmountCents: number;
-        taxRate?: number;
-        jurisdiction?: string;
-        taxType?: string;
-        occurredAt: Date;
-        providerMetadata?: Record<string, unknown>;
-        rawPayload?: unknown;
-        idempotencyKey: string;
-      }>;
-      rawPayloads?: Array<{ type: string; payload: unknown }>;
-    }
+    data: SaveNormalizedDataPayload
   ): Promise<void> {
-    // Get connector record
+    const connector = await this.getConnectorRecord(tenantId, connectorId);
+    await this.persistInputSnapshot(tenantId, syncRunId, connector.id, data);
+
+    const atomicError = await this.tryAtomicNormalizedWrite(
+      tenantId,
+      connector.id,
+      syncRunId,
+      data
+    );
+    if (!atomicError) {
+      return;
+    }
+
+    await this.assertUpsert(
+      "raw_events",
+      [
+        {
+          connector_id: connector.id,
+          tenant_id: tenantId,
+          event_type: "sync_atomic_fallback",
+          event_id: `${syncRunId}-atomic-fallback`,
+          payload: { reason: atomicError },
+          processed: true,
+          processed_at: new Date().toISOString(),
+        },
+      ],
+      { onConflict: "connector_id,event_id", ignoreDuplicates: false },
+      connectorId,
+      "sync_atomic_fallback"
+    );
+
+    const accountMap = await this.getAccountMap(connector.id, data);
+
+    if (data.accounts && data.accounts.length > 0) {
+      await this.assertUpsert(
+        "connector_accounts",
+        data.accounts.map((acc) => ({
+          connector_id: connector.id,
+          tenant_id: tenantId,
+          provider_account_id: acc.providerAccountId,
+          account_name: acc.accountName,
+          account_type: acc.accountType,
+          currency: acc.currency,
+          institution_name: acc.institutionName,
+          institution_id: acc.institutionId,
+          metadata: acc.metadata || {},
+        })),
+        { onConflict: "connector_id,provider_account_id", ignoreDuplicates: false },
+        connectorId,
+        "accounts"
+      );
+    }
+
+    const resolvedAccountMap =
+      data.accounts && data.accounts.length > 0
+        ? await this.getAccountMap(connector.id, data)
+        : accountMap;
+
+    if (data.transactions && data.transactions.length > 0) {
+      await this.assertUpsert(
+        "financial_transactions",
+        data.transactions.map((tx) => ({
+          connector_id: connector.id,
+          tenant_id: tenantId,
+          account_id: tx.accountId ? resolvedAccountMap.get(tx.accountId) || null : null,
+          external_id: tx.externalId,
+          transaction_type: tx.transactionType,
+          amount_cents: tx.amountCents,
+          currency: tx.currency,
+          occurred_at: tx.occurredAt.toISOString(),
+          description: tx.description,
+          reference_id: tx.referenceId,
+          reference_type: tx.referenceType,
+          provider_metadata: tx.providerMetadata || {},
+          raw_payload: tx.rawPayload ? (tx.rawPayload as Record<string, unknown>) : null,
+          idempotency_key: tx.idempotencyKey || `${tx.externalId}-${tx.occurredAt.toISOString()}`,
+        })),
+        { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false },
+        connectorId,
+        "transactions"
+      );
+    }
+
+    if (data.balances && data.balances.length > 0) {
+      await this.assertUpsert(
+        "financial_balances",
+        data.balances.map((bal) => ({
+          connector_id: connector.id,
+          tenant_id: tenantId,
+          account_id: resolvedAccountMap.get(bal.accountId) || null,
+          balance_cents: bal.balanceCents,
+          available_balance_cents: bal.availableBalanceCents,
+          currency: bal.currency,
+          snapshot_at: bal.snapshotAt.toISOString(),
+          provider_metadata: bal.providerMetadata || {},
+          raw_payload: bal.rawPayload ? (bal.rawPayload as Record<string, unknown>) : null,
+        })),
+        { onConflict: "account_id,snapshot_at", ignoreDuplicates: false },
+        connectorId,
+        "balances"
+      );
+    }
+
+    if (data.payouts && data.payouts.length > 0) {
+      await this.assertUpsert(
+        "financial_payouts",
+        data.payouts.map((payout) => ({
+          connector_id: connector.id,
+          tenant_id: tenantId,
+          account_id: null,
+          external_id: payout.externalId,
+          amount_cents: payout.amountCents,
+          currency: payout.currency,
+          status: payout.status,
+          initiated_at: payout.initiatedAt.toISOString(),
+          completed_at: payout.completedAt?.toISOString(),
+          fee_cents: payout.feeCents,
+          net_amount_cents: payout.netAmountCents,
+          destination_type: payout.destinationType,
+          destination_id: payout.destinationId,
+          description: payout.description,
+          provider_metadata: payout.providerMetadata || {},
+          raw_payload: payout.rawPayload ? (payout.rawPayload as Record<string, unknown>) : null,
+          idempotency_key: payout.idempotencyKey,
+        })),
+        { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false },
+        connectorId,
+        "payouts"
+      );
+    }
+
+    if (data.invoices && data.invoices.length > 0) {
+      await this.assertUpsert(
+        "financial_invoices",
+        data.invoices.map((inv) => ({
+          connector_id: connector.id,
+          tenant_id: tenantId,
+          external_id: inv.externalId,
+          invoice_number: inv.invoiceNumber,
+          customer_id: inv.customerId,
+          customer_name: inv.customerName,
+          amount_cents: inv.amountCents,
+          currency: inv.currency,
+          status: inv.status,
+          issue_date: inv.issueDate?.toISOString().split("T")[0],
+          due_date: inv.dueDate?.toISOString().split("T")[0],
+          paid_at: inv.paidAt?.toISOString(),
+          line_items: inv.lineItems || [],
+          provider_metadata: inv.providerMetadata || {},
+          raw_payload: inv.rawPayload ? (inv.rawPayload as Record<string, unknown>) : null,
+          idempotency_key: inv.idempotencyKey,
+        })),
+        { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false },
+        connectorId,
+        "invoices"
+      );
+    }
+
+    if (data.subscriptions && data.subscriptions.length > 0) {
+      await this.assertUpsert(
+        "financial_subscriptions",
+        data.subscriptions.map((sub) => ({
+          connector_id: connector.id,
+          tenant_id: tenantId,
+          external_id: sub.externalId,
+          customer_id: sub.customerId,
+          customer_name: sub.customerName,
+          plan_id: sub.planId,
+          plan_name: sub.planName,
+          status: sub.status,
+          billing_cycle: sub.billingCycle,
+          amount_cents: sub.amountCents,
+          currency: sub.currency,
+          current_period_start: sub.currentPeriodStart?.toISOString(),
+          current_period_end: sub.currentPeriodEnd?.toISOString(),
+          cancel_at_period_end: sub.cancelAtPeriodEnd,
+          cancelled_at: sub.cancelledAt?.toISOString(),
+          provider_metadata: sub.providerMetadata || {},
+          raw_payload: sub.rawPayload ? (sub.rawPayload as Record<string, unknown>) : null,
+          idempotency_key: sub.idempotencyKey,
+        })),
+        { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false },
+        connectorId,
+        "subscriptions"
+      );
+    }
+
+    if (data.taxEstimates && data.taxEstimates.length > 0) {
+      await this.assertUpsert(
+        "financial_tax_estimates",
+        data.taxEstimates.map((tax) => ({
+          connector_id: connector.id,
+          tenant_id: tenantId,
+          external_id: tax.externalId,
+          transaction_id: tax.transactionId,
+          transaction_type: tax.transactionType,
+          amount_cents: tax.amountCents,
+          currency: tax.currency,
+          tax_amount_cents: tax.taxAmountCents,
+          tax_rate: tax.taxRate,
+          jurisdiction: tax.jurisdiction,
+          tax_type: tax.taxType,
+          occurred_at: tax.occurredAt.toISOString(),
+          provider_metadata: tax.providerMetadata || {},
+          raw_payload: tax.rawPayload ? (tax.rawPayload as Record<string, unknown>) : null,
+          idempotency_key: tax.idempotencyKey,
+        })),
+        { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false },
+        connectorId,
+        "taxEstimates"
+      );
+    }
+
+    if (data.rawPayloads && data.rawPayloads.length > 0) {
+      await this.assertUpsert(
+        "raw_events",
+        data.rawPayloads.map((raw, idx) => ({
+          connector_id: connector.id,
+          tenant_id: tenantId,
+          event_type: "sync",
+          event_id: `${syncRunId}-${idx}`,
+          payload: raw.payload as Record<string, unknown>,
+          processed: true,
+          processed_at: new Date().toISOString(),
+        })),
+        { onConflict: "connector_id,event_id", ignoreDuplicates: false },
+        connectorId,
+        "rawPayloads"
+      );
+    }
+  }
+
+  private async getConnectorRecord(tenantId: string, connectorId: string): Promise<{ id: string }> {
     const { data: connector, error: connectorError } = await this.supabase
       .from("connectors")
       .select("id")
@@ -354,274 +588,133 @@ export class ConnectorRuntime {
       );
     }
 
-    // Save accounts
-    if (data.accounts && data.accounts.length > 0) {
-      const accountsToInsert = data.accounts.map((acc) => ({
-        connector_id: (connector as { id: string }).id,
-        tenant_id: tenantId,
-        provider_account_id: acc.providerAccountId,
-        account_name: acc.accountName,
-        account_type: acc.accountType,
-        currency: acc.currency,
-        institution_name: acc.institutionName,
-        institution_id: acc.institutionId,
-        metadata: acc.metadata || {},
-      }));
+    return connector as { id: string };
+  }
 
-      const { error: accountsError } = await this.supabase
-        .from("connector_accounts")
-        .upsert(accountsToInsert as never, {
-          onConflict: "connector_id,provider_account_id",
-          ignoreDuplicates: false,
-        });
-
-      if (accountsError) {
-        console.error("Failed to save accounts:", accountsError);
-        // Don't throw, continue with other data
-      }
+  private async getAccountMap(
+    connectorDbId: string,
+    data: SaveNormalizedDataPayload
+  ): Promise<Map<string, string>> {
+    const accountMap = new Map<string, string>();
+    if (
+      !(
+        data.transactions?.some((t) => t.accountId) ||
+        data.balances?.length ||
+        data.accounts?.length
+      )
+    ) {
+      return accountMap;
     }
 
-    // Save transactions
-    if (data.transactions && data.transactions.length > 0) {
-      // First, get account IDs for transactions
-      const accountMap = new Map<string, string>();
-      if (data.transactions.some((t) => t.accountId)) {
-        const { data: accounts } = await this.supabase
-          .from("connector_accounts")
-          .select("id, provider_account_id")
-          .eq("connector_id", (connector as { id: string }).id);
+    const { data: accounts, error } = await this.supabase
+      .from("connector_accounts")
+      .select("id, provider_account_id")
+      .eq("connector_id", connectorDbId);
 
-        if (accounts) {
-          (accounts as Array<{ id: string; provider_account_id: string }>).forEach((acc) => {
-            accountMap.set(acc.provider_account_id, acc.id);
-          });
-        }
-      }
-
-      const transactionsToInsert = data.transactions.map((tx) => ({
-        connector_id: (connector as { id: string }).id,
-        tenant_id: tenantId,
-        account_id: tx.accountId ? accountMap.get(tx.accountId) || null : null,
-        external_id: tx.externalId,
-        transaction_type: tx.transactionType,
-        amount_cents: tx.amountCents,
-        currency: tx.currency,
-        occurred_at: tx.occurredAt.toISOString(),
-        description: tx.description,
-        reference_id: tx.referenceId,
-        reference_type: tx.referenceType,
-        provider_metadata: tx.providerMetadata || {},
-        raw_payload: tx.rawPayload ? (tx.rawPayload as Record<string, unknown>) : null,
-        idempotency_key: tx.idempotencyKey || `${tx.externalId}-${tx.occurredAt.toISOString()}`,
-      }));
-
-      const { error: transactionsError } = await this.supabase
-        .from("financial_transactions")
-        .upsert(transactionsToInsert as never, {
-          onConflict: "tenant_id,connector_id,idempotency_key",
-          ignoreDuplicates: false,
-        });
-
-      if (transactionsError) {
-        console.error("Failed to save transactions:", transactionsError);
-      }
+    if (error) {
+      throw new ConnectorError(
+        `Failed to resolve connector accounts: ${error.message}`,
+        "SYNC_NORMALIZED_DATA_ACCOUNT_LOOKUP_FAILED",
+        connectorDbId
+      );
     }
 
-    // Save balances
-    if (data.balances && data.balances.length > 0) {
-      const accountMap = new Map<string, string>();
-      const { data: accounts } = await this.supabase
-        .from("connector_accounts")
-        .select("id, provider_account_id")
-        .eq("connector_id", (connector as { id: string }).id);
+    (accounts as Array<{ id: string; provider_account_id: string }> | null)?.forEach((acc) => {
+      accountMap.set(acc.provider_account_id, acc.id);
+    });
+    return accountMap;
+  }
 
-      if (accounts) {
-        (accounts as Array<{ id: string; provider_account_id: string }>).forEach((acc) => {
-          accountMap.set(acc.provider_account_id, acc.id);
-        });
-      }
+  private async assertUpsert(
+    table: string,
+    records: Record<string, unknown>[],
+    options: { onConflict: string; ignoreDuplicates: boolean },
+    connectorId: string,
+    dataType: string
+  ): Promise<void> {
+    const { error } = await this.supabase.from(table).upsert(records as never, options);
+    if (error) {
+      throw new ConnectorError(
+        `Failed to persist ${dataType}: ${error.message}`,
+        "SYNC_NORMALIZED_DATA_WRITE_FAILED",
+        connectorId
+      );
+    }
+  }
 
-      const balancesToInsert = data.balances.map((bal) => ({
-        connector_id: (connector as { id: string }).id,
-        tenant_id: tenantId,
-        account_id: accountMap.get(bal.accountId) || null,
-        balance_cents: bal.balanceCents,
-        available_balance_cents: bal.availableBalanceCents,
-        currency: bal.currency,
-        snapshot_at: bal.snapshotAt.toISOString(),
-        provider_metadata: bal.providerMetadata || {},
-        raw_payload: bal.rawPayload ? (bal.rawPayload as Record<string, unknown>) : null,
-      }));
+  private async tryAtomicNormalizedWrite(
+    tenantId: string,
+    connectorDbId: string,
+    syncRunId: string,
+    data: SaveNormalizedDataPayload
+  ): Promise<string | null> {
+    const { error } = await (
+      this.supabase.rpc as unknown as (
+        fn: string,
+        args: Record<string, unknown>
+      ) => Promise<{ error: { code?: string; message: string } | null }>
+    )("connector_save_normalized_data_atomic", {
+      p_tenant_id: tenantId,
+      p_connector_id: connectorDbId,
+      p_sync_run_id: syncRunId,
+      p_payload: data,
+    });
 
-      const { error: balancesError } = await this.supabase
-        .from("financial_balances")
-        .upsert(balancesToInsert as never, {
-          onConflict: "account_id,snapshot_at",
-          ignoreDuplicates: false,
-        });
-
-      if (balancesError) {
-        console.error("Failed to save balances:", balancesError);
-      }
+    if (!error) {
+      return null;
     }
 
-    // Save payouts
-    if (data.payouts && data.payouts.length > 0) {
-      const payoutsToInsert = data.payouts.map((payout) => ({
-        connector_id: (connector as { id: string }).id,
-        tenant_id: tenantId,
-        account_id: null, // TODO: Map account ID if needed
-        external_id: payout.externalId,
-        amount_cents: payout.amountCents,
-        currency: payout.currency,
-        status: payout.status,
-        initiated_at: payout.initiatedAt.toISOString(),
-        completed_at: payout.completedAt?.toISOString(),
-        fee_cents: payout.feeCents,
-        net_amount_cents: payout.netAmountCents,
-        destination_type: payout.destinationType,
-        destination_id: payout.destinationId,
-        description: payout.description,
-        provider_metadata: payout.providerMetadata || {},
-        raw_payload: payout.rawPayload ? (payout.rawPayload as Record<string, unknown>) : null,
-        idempotency_key: payout.idempotencyKey,
-      }));
-
-      const { error: payoutsError } = await this.supabase
-        .from("financial_payouts")
-        .upsert(payoutsToInsert as never, {
-          onConflict: "tenant_id,connector_id,idempotency_key",
-          ignoreDuplicates: false,
-        });
-
-      if (payoutsError) {
-        console.error("Failed to save payouts:", payoutsError);
-      }
+    if (error.code === "PGRST202" || error.code === "42883") {
+      return `missing_rpc:${error.message}`;
     }
 
-    // Save invoices
-    if (data.invoices && data.invoices.length > 0) {
-      const invoicesToInsert = data.invoices.map((inv) => ({
-        connector_id: (connector as { id: string }).id,
-        tenant_id: tenantId,
-        external_id: inv.externalId,
-        invoice_number: inv.invoiceNumber,
-        customer_id: inv.customerId,
-        customer_name: inv.customerName,
-        amount_cents: inv.amountCents,
-        currency: inv.currency,
-        status: inv.status,
-        issue_date: inv.issueDate?.toISOString().split("T")[0],
-        due_date: inv.dueDate?.toISOString().split("T")[0],
-        paid_at: inv.paidAt?.toISOString(),
-        line_items: inv.lineItems || [],
-        provider_metadata: inv.providerMetadata || {},
-        raw_payload: inv.rawPayload ? (inv.rawPayload as Record<string, unknown>) : null,
-        idempotency_key: inv.idempotencyKey,
-      }));
+    throw new ConnectorError(
+      `Atomic normalized write failed: ${error.message}`,
+      "SYNC_NORMALIZED_DATA_ATOMIC_WRITE_FAILED",
+      connectorDbId
+    );
+  }
 
-      const { error: invoicesError } = await this.supabase
-        .from("financial_invoices")
-        .upsert(invoicesToInsert as never, {
-          onConflict: "tenant_id,connector_id,idempotency_key",
-          ignoreDuplicates: false,
-        });
+  private async persistInputSnapshot(
+    tenantId: string,
+    syncRunId: string,
+    connectorDbId: string,
+    data: SaveNormalizedDataPayload
+  ): Promise<void> {
+    const snapshot = {
+      schema_version: 1,
+      captured_at: new Date().toISOString(),
+      sync_run_id: syncRunId,
+      counts: {
+        accounts: data.accounts?.length ?? 0,
+        transactions: data.transactions?.length ?? 0,
+        balances: data.balances?.length ?? 0,
+        payouts: data.payouts?.length ?? 0,
+        invoices: data.invoices?.length ?? 0,
+        subscriptions: data.subscriptions?.length ?? 0,
+        taxEstimates: data.taxEstimates?.length ?? 0,
+        rawPayloads: data.rawPayloads?.length ?? 0,
+      },
+      input: data,
+    };
 
-      if (invoicesError) {
-        console.error("Failed to save invoices:", invoicesError);
-      }
-    }
-
-    // Save subscriptions
-    if (data.subscriptions && data.subscriptions.length > 0) {
-      const subscriptionsToInsert = data.subscriptions.map((sub) => ({
-        connector_id: (connector as { id: string }).id,
-        tenant_id: tenantId,
-        external_id: sub.externalId,
-        customer_id: sub.customerId,
-        customer_name: sub.customerName,
-        plan_id: sub.planId,
-        plan_name: sub.planName,
-        status: sub.status,
-        billing_cycle: sub.billingCycle,
-        amount_cents: sub.amountCents,
-        currency: sub.currency,
-        current_period_start: sub.currentPeriodStart?.toISOString(),
-        current_period_end: sub.currentPeriodEnd?.toISOString(),
-        cancel_at_period_end: sub.cancelAtPeriodEnd,
-        cancelled_at: sub.cancelledAt?.toISOString(),
-        provider_metadata: sub.providerMetadata || {},
-        raw_payload: sub.rawPayload ? (sub.rawPayload as Record<string, unknown>) : null,
-        idempotency_key: sub.idempotencyKey,
-      }));
-
-      const { error: subscriptionsError } = await this.supabase
-        .from("financial_subscriptions")
-        .upsert(subscriptionsToInsert as never, {
-          onConflict: "tenant_id,connector_id,idempotency_key",
-          ignoreDuplicates: false,
-        });
-
-      if (subscriptionsError) {
-        console.error("Failed to save subscriptions:", subscriptionsError);
-      }
-    }
-
-    // Save tax estimates
-    if (data.taxEstimates && data.taxEstimates.length > 0) {
-      const taxEstimatesToInsert = data.taxEstimates.map((tax) => ({
-        connector_id: (connector as { id: string }).id,
-        tenant_id: tenantId,
-        external_id: tax.externalId,
-        transaction_id: tax.transactionId,
-        transaction_type: tax.transactionType,
-        amount_cents: tax.amountCents,
-        currency: tax.currency,
-        tax_amount_cents: tax.taxAmountCents,
-        tax_rate: tax.taxRate,
-        jurisdiction: tax.jurisdiction,
-        tax_type: tax.taxType,
-        occurred_at: tax.occurredAt.toISOString(),
-        provider_metadata: tax.providerMetadata || {},
-        raw_payload: tax.rawPayload ? (tax.rawPayload as Record<string, unknown>) : null,
-        idempotency_key: tax.idempotencyKey,
-      }));
-
-      const { error: taxError } = await this.supabase
-        .from("financial_tax_estimates")
-        .upsert(taxEstimatesToInsert as never, {
-          onConflict: "tenant_id,connector_id,idempotency_key",
-          ignoreDuplicates: false,
-        });
-
-      if (taxError) {
-        console.error("Failed to save tax estimates:", taxError);
-      }
-    }
-
-    // Save raw payloads for audit
-    if (data.rawPayloads && data.rawPayloads.length > 0) {
-      const rawEventsToInsert = data.rawPayloads.map((raw, idx) => ({
-        connector_id: (connector as { id: string }).id,
-        tenant_id: tenantId,
-        event_type: "sync",
-        event_id: `${syncRunId}-${idx}`,
-        payload: raw.payload as Record<string, unknown>,
-        processed: true,
-        processed_at: new Date().toISOString(),
-      }));
-
-      const { error: rawError } = await this.supabase
-        .from("raw_events")
-        .upsert(rawEventsToInsert as never, {
-          onConflict: "connector_id,event_id",
-          ignoreDuplicates: false,
-        });
-
-      if (rawError) {
-        console.error("Failed to save raw events:", rawError);
-      }
-    }
+    await this.assertUpsert(
+      "raw_events",
+      [
+        {
+          connector_id: connectorDbId,
+          tenant_id: tenantId,
+          event_type: "sync_input_snapshot",
+          event_id: `${syncRunId}-input-snapshot-v1`,
+          payload: snapshot,
+          processed: true,
+          processed_at: new Date().toISOString(),
+        },
+      ],
+      { onConflict: "connector_id,event_id", ignoreDuplicates: false },
+      connectorDbId,
+      "sync_input_snapshot"
+    );
   }
 
   /**

@@ -61,6 +61,35 @@ describe("reconciliation synthetic foundry", () => {
     expect(grouped.some((m) => (m.group_member_transaction_ids?.length ?? 0) > 1)).toBe(true);
   });
 
+  test("produces stable export hash across object key insertion order", () => {
+    const suite = generateReconciliationSuite({ seed: 23, profile: "smoke" });
+    const reorderedSuite = {
+      ...suite,
+      manifest: {
+        scenario_mix: suite.manifest.scenario_mix,
+        workspace_id: suite.manifest.workspace_id,
+        generated_at: suite.manifest.generated_at,
+        complexity: suite.manifest.complexity,
+        profile: suite.manifest.profile,
+        seed: suite.manifest.seed,
+      },
+      golden: {
+        expected_summary: suite.golden.expected_summary,
+        runtime_matches: suite.golden.runtime_matches,
+        expected_results: suite.golden.expected_results,
+        per_transaction: suite.golden.per_transaction,
+      },
+    };
+
+    const outA = fs.mkdtempSync(path.join(os.tmpdir(), "recon-suite-a-"));
+    const outB = fs.mkdtempSync(path.join(os.tmpdir(), "recon-suite-b-"));
+
+    const resultA = exportReconciliationSuite(suite, outA);
+    const resultB = exportReconciliationSuite(reorderedSuite, outB);
+
+    expect(resultA.hash).toBe(resultB.hash);
+  });
+
   test("exports JSON, CSV, expectation matrix, malformed input", () => {
     const suite = generateReconciliationSuite({ seed: 9, profile: "smoke" });
     const out = fs.mkdtempSync(path.join(os.tmpdir(), "recon-suite-"));

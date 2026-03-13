@@ -33,11 +33,6 @@ function amountsMatch(amount1: number, amount2: number, tolerance = 0.01): boole
   return Math.abs(amount1 - amount2) <= tolerance;
 }
 
-function datesMatch(date1: Date, date2: Date, windowDays = 3): boolean {
-  const diffMs = Math.abs(date1.getTime() - date2.getTime());
-  return diffMs / (1000 * 60 * 60 * 24) <= windowDays;
-}
-
 function calculateConfidence(
   amountMatch: boolean,
   dateMatch: boolean,
@@ -69,11 +64,26 @@ export function matchTransactions(
   }>,
   rules: MatchingRule = DEFAULT_RULES
 ): MatchResult[] {
-  const { amountTolerance = 0.01, dateWindowDays = 3, requireExactMerchant = true } = rules;
+  const { amountTolerance = 0.01, requireExactMerchant = true } = rules;
   const usedTargetIds = new Set<string>();
   const sortedSource = [...sourceTransactions].sort((a, b) => a.date.getTime() - b.date.getTime());
-  const sortedTarget = [...targetTransactions].sort((a, b) => a.date.getTime() - b.date.getTime());
   const matches: MatchResult[] = [];
+
+  const targetsByCurrency = new Map<string, typeof targetTransactions>();
+  const targetsByCurrencyAndMerchant = new Map<string, Map<string, typeof targetTransactions>>();
+
+  for (const target of targetTransactions) {
+    const byCurrency = targetsByCurrency.get(target.currency) ?? [];
+    byCurrency.push(target);
+    targetsByCurrency.set(target.currency, byCurrency);
+
+    const merchant = normalizeMerchant(target.description);
+    const merchantMap = targetsByCurrencyAndMerchant.get(target.currency) ?? new Map();
+    const byMerchant = merchantMap.get(merchant) ?? [];
+    byMerchant.push(target);
+    merchantMap.set(merchant, byMerchant);
+    targetsByCurrencyAndMerchant.set(target.currency, merchantMap);
+  }
 
   for (const source of sortedSource) {
     let best: {
@@ -81,23 +91,27 @@ export function matchTransactions(
       confidence: number;
       amountDiff: number;
       dateDiff: number;
-      merchantMatch: boolean;
     } | null = null;
 
-    for (const target of sortedTarget) {
+    const sourceMerchant = normalizeMerchant(source.description);
+    const merchantCandidates =
+      targetsByCurrencyAndMerchant.get(source.currency)?.get(sourceMerchant) ?? [];
+    const fallbackCandidates = targetsByCurrency.get(source.currency) ?? [];
+    const candidates = requireExactMerchant ? merchantCandidates : fallbackCandidates;
+
+    for (const target of candidates) {
       if (usedTargetIds.has(target.id)) continue;
-      if (source.currency !== target.currency) continue;
 
       const amountDiff = Math.abs(source.amount - target.amount);
       const amountMatch = amountsMatch(source.amount, target.amount, amountTolerance);
       const dateDiff =
         Math.abs(source.date.getTime() - target.date.getTime()) / (1000 * 60 * 60 * 24);
-      const dateMatch = datesMatch(source.date, target.date, dateWindowDays);
+      const dateMatch = dateDiff <= (rules.dateWindowDays ?? 3);
       const merchantMatch =
-        normalizeMerchant(source.description) === normalizeMerchant(target.description) &&
-        normalizeMerchant(source.description).length > 0;
+        sourceMerchant === normalizeMerchant(target.description) && sourceMerchant.length > 0;
 
       if (requireExactMerchant && !merchantMatch) continue;
+
       const confidence = calculateConfidence(
         amountMatch,
         dateMatch,
@@ -107,7 +121,7 @@ export function matchTransactions(
       );
       if (confidence < 0.5) continue;
       if (!best || confidence > best.confidence) {
-        best = { target, confidence, amountDiff, dateDiff, merchantMatch };
+        best = { target, confidence, amountDiff, dateDiff };
       }
     }
 

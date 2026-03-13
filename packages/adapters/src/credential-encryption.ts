@@ -52,9 +52,9 @@ export async function encryptCredentials(
     return Buffer.concat([iv, authTag, encrypted]).toString("base64");
   }
 
-  // Fallback: Base64 encoding (not secure, but better than plaintext)
-  console.warn("No encryption key configured, using base64 encoding");
-  return Buffer.from(JSON.stringify(credentials)).toString("base64");
+  throw new Error(
+    "Credential encryption unavailable: configure Supabase Vault or CREDENTIAL_ENCRYPTION_KEY"
+  );
 }
 
 /**
@@ -103,15 +103,20 @@ export async function decryptCredentials(
     }
   }
 
-  // Fallback: Base64 decoding
-  try {
-    return JSON.parse(Buffer.from(encryptedCredentials, "base64").toString("utf8")) as Record<
-      string,
-      unknown
-    >;
-  } catch {
-    throw new Error("Failed to decode credentials");
+  if (process.env.ALLOW_INSECURE_CREDENTIAL_FALLBACK === "true") {
+    try {
+      return JSON.parse(Buffer.from(encryptedCredentials, "base64").toString("utf8")) as Record<
+        string,
+        unknown
+      >;
+    } catch {
+      throw new Error("Failed to decode credentials via insecure fallback");
+    }
   }
+
+  throw new Error(
+    "Credential decryption unavailable: configure Supabase Vault or CREDENTIAL_ENCRYPTION_KEY"
+  );
 }
 
 /**

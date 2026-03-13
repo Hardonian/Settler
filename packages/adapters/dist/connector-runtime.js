@@ -16,6 +16,7 @@ const prometheus_1 = require("./metrics/prometheus");
 const alert_manager_1 = require("./alerting/alert-manager");
 const retry_queue_1 = require("./retry-queue/retry-queue");
 const data_validator_1 = require("./validation/data-validator");
+const connector_sandbox_1 = require("./connector-sandbox");
 /**
  * Connector Runtime
  */
@@ -154,19 +155,26 @@ class ConnectorRuntime {
      * Save normalized data to database
      */
     async saveNormalizedData(tenantId, connectorId, syncRunId, data) {
-        // Get connector record
-        const { data: connector, error: connectorError } = await this.supabase
-            .from("connectors")
-            .select("id")
-            .eq("tenant_id", tenantId)
-            .eq("provider_id", connectorId)
-            .single();
-        if (connectorError || !connector) {
-            throw new connector_driver_1.ConnectorError(`Connector not found: ${connectorId}`, "CONNECTOR_NOT_FOUND", connectorId);
+        const connector = await this.getConnectorRecord(tenantId, connectorId);
+        await this.persistInputSnapshot(tenantId, syncRunId, connector.id, data);
+        const atomicError = await this.tryAtomicNormalizedWrite(tenantId, connector.id, syncRunId, data);
+        if (!atomicError) {
+            return;
         }
-        // Save accounts
+        await this.assertUpsert("raw_events", [
+            {
+                connector_id: connector.id,
+                tenant_id: tenantId,
+                event_type: "sync_atomic_fallback",
+                event_id: `${syncRunId}-atomic-fallback`,
+                payload: { reason: atomicError },
+                processed: true,
+                processed_at: new Date().toISOString(),
+            },
+        ], { onConflict: "connector_id,event_id", ignoreDuplicates: false }, connectorId, "sync_atomic_fallback");
+        const accountMap = await this.getAccountMap(connector.id, data);
         if (data.accounts && data.accounts.length > 0) {
-            const accountsToInsert = data.accounts.map((acc) => ({
+            await this.assertUpsert("connector_accounts", data.accounts.map((acc) => ({
                 connector_id: connector.id,
                 tenant_id: tenantId,
                 provider_account_id: acc.providerAccountId,
@@ -176,37 +184,16 @@ class ConnectorRuntime {
                 institution_name: acc.institutionName,
                 institution_id: acc.institutionId,
                 metadata: acc.metadata || {},
-            }));
-            const { error: accountsError } = await this.supabase
-                .from("connector_accounts")
-                .upsert(accountsToInsert, {
-                onConflict: "connector_id,provider_account_id",
-                ignoreDuplicates: false,
-            });
-            if (accountsError) {
-                console.error("Failed to save accounts:", accountsError);
-                // Don't throw, continue with other data
-            }
+            })), { onConflict: "connector_id,provider_account_id", ignoreDuplicates: false }, connectorId, "accounts");
         }
-        // Save transactions
+        const resolvedAccountMap = data.accounts && data.accounts.length > 0
+            ? await this.getAccountMap(connector.id, data)
+            : accountMap;
         if (data.transactions && data.transactions.length > 0) {
-            // First, get account IDs for transactions
-            const accountMap = new Map();
-            if (data.transactions.some((t) => t.accountId)) {
-                const { data: accounts } = await this.supabase
-                    .from("connector_accounts")
-                    .select("id, provider_account_id")
-                    .eq("connector_id", connector.id);
-                if (accounts) {
-                    accounts.forEach((acc) => {
-                        accountMap.set(acc.provider_account_id, acc.id);
-                    });
-                }
-            }
-            const transactionsToInsert = data.transactions.map((tx) => ({
+            await this.assertUpsert("financial_transactions", data.transactions.map((tx) => ({
                 connector_id: connector.id,
                 tenant_id: tenantId,
-                account_id: tx.accountId ? accountMap.get(tx.accountId) || null : null,
+                account_id: tx.accountId ? resolvedAccountMap.get(tx.accountId) || null : null,
                 external_id: tx.externalId,
                 transaction_type: tx.transactionType,
                 amount_cents: tx.amountCents,
@@ -218,56 +205,26 @@ class ConnectorRuntime {
                 provider_metadata: tx.providerMetadata || {},
                 raw_payload: tx.rawPayload ? tx.rawPayload : null,
                 idempotency_key: tx.idempotencyKey || `${tx.externalId}-${tx.occurredAt.toISOString()}`,
-            }));
-            const { error: transactionsError } = await this.supabase
-                .from("financial_transactions")
-                .upsert(transactionsToInsert, {
-                onConflict: "tenant_id,connector_id,idempotency_key",
-                ignoreDuplicates: false,
-            });
-            if (transactionsError) {
-                console.error("Failed to save transactions:", transactionsError);
-            }
+            })), { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false }, connectorId, "transactions");
         }
-        // Save balances
         if (data.balances && data.balances.length > 0) {
-            const accountMap = new Map();
-            const { data: accounts } = await this.supabase
-                .from("connector_accounts")
-                .select("id, provider_account_id")
-                .eq("connector_id", connector.id);
-            if (accounts) {
-                accounts.forEach((acc) => {
-                    accountMap.set(acc.provider_account_id, acc.id);
-                });
-            }
-            const balancesToInsert = data.balances.map((bal) => ({
+            await this.assertUpsert("financial_balances", data.balances.map((bal) => ({
                 connector_id: connector.id,
                 tenant_id: tenantId,
-                account_id: accountMap.get(bal.accountId) || null,
+                account_id: resolvedAccountMap.get(bal.accountId) || null,
                 balance_cents: bal.balanceCents,
                 available_balance_cents: bal.availableBalanceCents,
                 currency: bal.currency,
                 snapshot_at: bal.snapshotAt.toISOString(),
                 provider_metadata: bal.providerMetadata || {},
                 raw_payload: bal.rawPayload ? bal.rawPayload : null,
-            }));
-            const { error: balancesError } = await this.supabase
-                .from("financial_balances")
-                .upsert(balancesToInsert, {
-                onConflict: "account_id,snapshot_at",
-                ignoreDuplicates: false,
-            });
-            if (balancesError) {
-                console.error("Failed to save balances:", balancesError);
-            }
+            })), { onConflict: "account_id,snapshot_at", ignoreDuplicates: false }, connectorId, "balances");
         }
-        // Save payouts
         if (data.payouts && data.payouts.length > 0) {
-            const payoutsToInsert = data.payouts.map((payout) => ({
+            await this.assertUpsert("financial_payouts", data.payouts.map((payout) => ({
                 connector_id: connector.id,
                 tenant_id: tenantId,
-                account_id: null, // TODO: Map account ID if needed
+                account_id: null,
                 external_id: payout.externalId,
                 amount_cents: payout.amountCents,
                 currency: payout.currency,
@@ -282,20 +239,10 @@ class ConnectorRuntime {
                 provider_metadata: payout.providerMetadata || {},
                 raw_payload: payout.rawPayload ? payout.rawPayload : null,
                 idempotency_key: payout.idempotencyKey,
-            }));
-            const { error: payoutsError } = await this.supabase
-                .from("financial_payouts")
-                .upsert(payoutsToInsert, {
-                onConflict: "tenant_id,connector_id,idempotency_key",
-                ignoreDuplicates: false,
-            });
-            if (payoutsError) {
-                console.error("Failed to save payouts:", payoutsError);
-            }
+            })), { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false }, connectorId, "payouts");
         }
-        // Save invoices
         if (data.invoices && data.invoices.length > 0) {
-            const invoicesToInsert = data.invoices.map((inv) => ({
+            await this.assertUpsert("financial_invoices", data.invoices.map((inv) => ({
                 connector_id: connector.id,
                 tenant_id: tenantId,
                 external_id: inv.externalId,
@@ -312,20 +259,10 @@ class ConnectorRuntime {
                 provider_metadata: inv.providerMetadata || {},
                 raw_payload: inv.rawPayload ? inv.rawPayload : null,
                 idempotency_key: inv.idempotencyKey,
-            }));
-            const { error: invoicesError } = await this.supabase
-                .from("financial_invoices")
-                .upsert(invoicesToInsert, {
-                onConflict: "tenant_id,connector_id,idempotency_key",
-                ignoreDuplicates: false,
-            });
-            if (invoicesError) {
-                console.error("Failed to save invoices:", invoicesError);
-            }
+            })), { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false }, connectorId, "invoices");
         }
-        // Save subscriptions
         if (data.subscriptions && data.subscriptions.length > 0) {
-            const subscriptionsToInsert = data.subscriptions.map((sub) => ({
+            await this.assertUpsert("financial_subscriptions", data.subscriptions.map((sub) => ({
                 connector_id: connector.id,
                 tenant_id: tenantId,
                 external_id: sub.externalId,
@@ -344,20 +281,10 @@ class ConnectorRuntime {
                 provider_metadata: sub.providerMetadata || {},
                 raw_payload: sub.rawPayload ? sub.rawPayload : null,
                 idempotency_key: sub.idempotencyKey,
-            }));
-            const { error: subscriptionsError } = await this.supabase
-                .from("financial_subscriptions")
-                .upsert(subscriptionsToInsert, {
-                onConflict: "tenant_id,connector_id,idempotency_key",
-                ignoreDuplicates: false,
-            });
-            if (subscriptionsError) {
-                console.error("Failed to save subscriptions:", subscriptionsError);
-            }
+            })), { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false }, connectorId, "subscriptions");
         }
-        // Save tax estimates
         if (data.taxEstimates && data.taxEstimates.length > 0) {
-            const taxEstimatesToInsert = data.taxEstimates.map((tax) => ({
+            await this.assertUpsert("financial_tax_estimates", data.taxEstimates.map((tax) => ({
                 connector_id: connector.id,
                 tenant_id: tenantId,
                 external_id: tax.externalId,
@@ -373,20 +300,10 @@ class ConnectorRuntime {
                 provider_metadata: tax.providerMetadata || {},
                 raw_payload: tax.rawPayload ? tax.rawPayload : null,
                 idempotency_key: tax.idempotencyKey,
-            }));
-            const { error: taxError } = await this.supabase
-                .from("financial_tax_estimates")
-                .upsert(taxEstimatesToInsert, {
-                onConflict: "tenant_id,connector_id,idempotency_key",
-                ignoreDuplicates: false,
-            });
-            if (taxError) {
-                console.error("Failed to save tax estimates:", taxError);
-            }
+            })), { onConflict: "tenant_id,connector_id,idempotency_key", ignoreDuplicates: false }, connectorId, "taxEstimates");
         }
-        // Save raw payloads for audit
         if (data.rawPayloads && data.rawPayloads.length > 0) {
-            const rawEventsToInsert = data.rawPayloads.map((raw, idx) => ({
+            await this.assertUpsert("raw_events", data.rawPayloads.map((raw, idx) => ({
                 connector_id: connector.id,
                 tenant_id: tenantId,
                 event_type: "sync",
@@ -394,17 +311,87 @@ class ConnectorRuntime {
                 payload: raw.payload,
                 processed: true,
                 processed_at: new Date().toISOString(),
-            }));
-            const { error: rawError } = await this.supabase
-                .from("raw_events")
-                .upsert(rawEventsToInsert, {
-                onConflict: "connector_id,event_id",
-                ignoreDuplicates: false,
-            });
-            if (rawError) {
-                console.error("Failed to save raw events:", rawError);
-            }
+            })), { onConflict: "connector_id,event_id", ignoreDuplicates: false }, connectorId, "rawPayloads");
         }
+    }
+    async getConnectorRecord(tenantId, connectorId) {
+        const { data: connector, error: connectorError } = await this.supabase
+            .from("connectors")
+            .select("id")
+            .eq("tenant_id", tenantId)
+            .eq("provider_id", connectorId)
+            .single();
+        if (connectorError || !connector) {
+            throw new connector_driver_1.ConnectorError(`Connector not found: ${connectorId}`, "CONNECTOR_NOT_FOUND", connectorId);
+        }
+        return connector;
+    }
+    async getAccountMap(connectorDbId, data) {
+        const accountMap = new Map();
+        if (!(data.transactions?.some((t) => t.accountId) || data.balances?.length || data.accounts?.length)) {
+            return accountMap;
+        }
+        const { data: accounts, error } = await this.supabase
+            .from("connector_accounts")
+            .select("id, provider_account_id")
+            .eq("connector_id", connectorDbId);
+        if (error) {
+            throw new connector_driver_1.ConnectorError(`Failed to resolve connector accounts: ${error.message}`, "SYNC_NORMALIZED_DATA_ACCOUNT_LOOKUP_FAILED", connectorDbId);
+        }
+        accounts?.forEach((acc) => {
+            accountMap.set(acc.provider_account_id, acc.id);
+        });
+        return accountMap;
+    }
+    async assertUpsert(table, records, options, connectorId, dataType) {
+        const { error } = await this.supabase.from(table).upsert(records, options);
+        if (error) {
+            throw new connector_driver_1.ConnectorError(`Failed to persist ${dataType}: ${error.message}`, "SYNC_NORMALIZED_DATA_WRITE_FAILED", connectorId);
+        }
+    }
+    async tryAtomicNormalizedWrite(tenantId, connectorDbId, syncRunId, data) {
+        const { error } = await this.supabase.rpc("connector_save_normalized_data_atomic", {
+            p_tenant_id: tenantId,
+            p_connector_id: connectorDbId,
+            p_sync_run_id: syncRunId,
+            p_payload: data,
+        });
+        if (!error) {
+            return null;
+        }
+        if (error.code === "PGRST202" || error.code === "42883") {
+            return `missing_rpc:${error.message}`;
+        }
+        throw new connector_driver_1.ConnectorError(`Atomic normalized write failed: ${error.message}`, "SYNC_NORMALIZED_DATA_ATOMIC_WRITE_FAILED", connectorDbId);
+    }
+    async persistInputSnapshot(tenantId, syncRunId, connectorDbId, data) {
+        const snapshot = {
+            schema_version: 1,
+            captured_at: new Date().toISOString(),
+            sync_run_id: syncRunId,
+            counts: {
+                accounts: data.accounts?.length ?? 0,
+                transactions: data.transactions?.length ?? 0,
+                balances: data.balances?.length ?? 0,
+                payouts: data.payouts?.length ?? 0,
+                invoices: data.invoices?.length ?? 0,
+                subscriptions: data.subscriptions?.length ?? 0,
+                taxEstimates: data.taxEstimates?.length ?? 0,
+                rawPayloads: data.rawPayloads?.length ?? 0,
+            },
+            input: data,
+        };
+        await this.assertUpsert("raw_events", [
+            {
+                connector_id: connectorDbId,
+                tenant_id: tenantId,
+                event_type: "sync_input_snapshot",
+                event_id: `${syncRunId}-input-snapshot-v1`,
+                payload: snapshot,
+                processed: true,
+                processed_at: new Date().toISOString(),
+            },
+        ], { onConflict: "connector_id,event_id", ignoreDuplicates: false }, connectorDbId, "sync_input_snapshot");
     }
     /**
      * Save normalized data in batches (for large datasets)
@@ -528,7 +515,15 @@ class ConnectorRuntime {
             const syncRunId = await this.createSyncRun(tenantId, connectorId, syncOptions);
             try {
                 // Execute sync
-                const result = await driver.sync(credentials, syncOptions);
+                const result = await (0, connector_sandbox_1.executeConnectorSandboxed)({
+                    driver,
+                    credentials,
+                    options: syncOptions,
+                    sandbox: {
+                        timeoutMs: Number(process.env.CONNECTOR_TIMEOUT_MS || 30000),
+                        allowWallClockTime: process.env.CONNECTOR_ALLOW_WALL_CLOCK_TIME === "1",
+                    },
+                });
                 // Validate data before saving
                 const validation = data_validator_1.validator.validateAll({
                     transactions: result.transactions,
