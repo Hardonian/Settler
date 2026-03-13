@@ -57,7 +57,13 @@
         "REDIS_HOST",
         "REDIS_PORT",
         "REDIS_PASSWORD",
-        "REDIS_TLS"
+        "REDIS_TLS",
+        "DIRECT_URL",
+        "SUPABASE_DB_URL",
+        "VERCEL_ENV",
+        "VERCEL_URL",
+        "VERCEL_GIT_COMMIT_SHA",
+        "DOPPLER_TOKEN"
       ]
     },
     "dev": {
@@ -114,7 +120,13 @@
         "REDIS_HOST",
         "REDIS_PORT",
         "REDIS_PASSWORD",
-        "REDIS_TLS"
+        "REDIS_TLS",
+        "DIRECT_URL",
+        "SUPABASE_DB_URL",
+        "VERCEL_ENV",
+        "VERCEL_URL",
+        "VERCEL_GIT_COMMIT_SHA",
+        "DOPPLER_TOKEN"
       ]
     },
     "test": {
@@ -171,7 +183,13 @@
         "REDIS_HOST",
         "REDIS_PORT",
         "REDIS_PASSWORD",
-        "REDIS_TLS"
+        "REDIS_TLS",
+        "DIRECT_URL",
+        "SUPABASE_DB_URL",
+        "VERCEL_ENV",
+        "VERCEL_URL",
+        "VERCEL_GIT_COMMIT_SHA",
+        "DOPPLER_TOKEN"
       ]
     },
     "lint": {
@@ -240,7 +258,13 @@
         "REDIS_HOST",
         "REDIS_PORT",
         "REDIS_PASSWORD",
-        "REDIS_TLS"
+        "REDIS_TLS",
+        "DIRECT_URL",
+        "SUPABASE_DB_URL",
+        "VERCEL_ENV",
+        "VERCEL_URL",
+        "VERCEL_GIT_COMMIT_SHA",
+        "DOPPLER_TOKEN"
       ]
     },
     "clean": {
