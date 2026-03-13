@@ -5,6 +5,7 @@ const logger_1 = require("../utils/logger");
 const config_1 = require("../config");
 const sentry_1 = require("./sentry");
 const typed_errors_1 = require("../utils/typed-errors");
+const problem_json_1 = require("../utils/problem-json");
 const errorHandler = (err, req, res, _next) => {
     const authReq = req;
     const apiError = (0, typed_errors_1.toApiError)(err);
@@ -13,7 +14,7 @@ const errorHandler = (err, req, res, _next) => {
         (0, sentry_1.setSentryUser)(authReq);
     }
     // Log error with context
-    (0, logger_1.logError)('Request error', err, {
+    (0, logger_1.logError)("Request error", err, {
         method: req.method,
         path: req.path,
         ip: req.ip,
@@ -37,24 +38,20 @@ const errorHandler = (err, req, res, _next) => {
             },
         });
     }
-    // Build error response
-    const response = {
-        error: apiError.name,
-        errorCode: apiError.errorCode,
-        message: apiError.message,
-    };
-    if (authReq.traceId !== undefined) {
-        response.traceId = authReq.traceId;
-    }
-    // Include details if present
+    const extra = {};
     if (apiError.details) {
-        response.details = apiError.details;
+        extra.details = apiError.details;
     }
-    // Only include stack in development
     if (config_1.config.nodeEnv === "development" && err instanceof Error && err.stack !== undefined) {
-        response.stack = err.stack;
+        extra.stack = err.stack;
     }
-    res.status(statusCode).json(response);
+    (0, problem_json_1.sendProblemJson)(authReq, res, {
+        status: statusCode,
+        title: apiError.name,
+        detail: apiError.message,
+        code: apiError.errorCode,
+        extra,
+    });
 };
 exports.errorHandler = errorHandler;
 //# sourceMappingURL=error.js.map

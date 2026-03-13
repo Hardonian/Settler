@@ -12,11 +12,14 @@ const authorization_1 = require("../middleware/authorization");
 const Permissions_1 = require("../infrastructure/security/Permissions");
 const error_handler_1 = require("../utils/error-handler");
 const db_1 = require("../db");
+const deterministic_ai_sandbox_1 = require("../services/ai-assistant/deterministic-ai-sandbox");
 const router = (0, express_1.Router)();
 exports.aiAssistantRouter = router;
 const aiQuerySchema = zod_1.z.object({
     body: zod_1.z.object({
         query: zod_1.z.string().min(1).max(1000),
+        modelProvider: zod_1.z.enum(["openai", "anthropic", "local", "mcp"]).optional(),
+        model: zod_1.z.string().min(1).max(255).optional(),
         context: zod_1.z
             .object({
             jobId: zod_1.z.string().uuid().optional(),
@@ -31,15 +34,39 @@ router.post("/ai/assistant", (0, authorization_1.requirePermission)(Permissions_
     try {
         const { query: userQuery, context } = req.body;
         const userId = req.userId;
-        // AI-powered response generation
-        const response = await generateAIResponse(userQuery, context, userId);
+        const tenantId = req.tenantId;
+        const response = deterministic_ai_sandbox_1.deterministicAISandbox.execute({
+            prompt: userQuery,
+            context,
+            preferredProvider: req.body.modelProvider,
+            preferredModel: req.body.model,
+        });
+        await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, tenant_id, ip, user_agent, path, metadata)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`, [
+            "ai_assistant_response_generated",
+            userId,
+            tenantId || null,
+            req.ip || null,
+            req.get("user-agent") || null,
+            req.originalUrl,
+            JSON.stringify({
+                prompt: userQuery,
+                provider: response.provider,
+                model: response.model,
+                responseHash: response.responseHash,
+            }),
+        ]);
         res.json({
             data: {
                 query: userQuery,
                 response: response.answer,
-                suggestions: response.suggestions,
-                codeExamples: response.codeExamples,
-                docLinks: response.docLinks,
+                model: response.model,
+                provider: response.provider,
+                responseHash: response.responseHash,
+                suggestions: response.workflowSuggestions.map((item) => item.title),
+                workflowSuggestions: response.workflowSuggestions,
+                policyRecommendations: response.policyRecommendations,
+                anomalies: response.anomalies,
             },
         });
     }
@@ -97,94 +124,6 @@ router.get("/jobs/:jobId/ai-optimize", (0, authorization_1.requirePermission)(Pe
         });
     }
 });
-// Helper functions
-async function generateAIResponse(query, _context, _userId) {
-    const lowerQuery = query.toLowerCase();
-    // Pattern matching for common queries (in production, would use LLM API)
-    if (lowerQuery.includes("how to") ||
-        lowerQuery.includes("setup") ||
-        lowerQuery.includes("configure")) {
-        return {
-            answer: "To set up reconciliation, create a job with source and target adapters, then configure matching rules. Here's a quick example:",
-            suggestions: [
-                "Use exact matching for transaction IDs",
-                "Add tolerance for amount matching (e.g., $0.01)",
-                "Use date ranges for timing differences",
-            ],
-            codeExamples: [
-                `const job = await settler.jobs.create({
-  name: "My Reconciliation",
-  source: { adapter: "stripe", config: { apiKey: "sk_test_..." } },
-  target: { adapter: "shopify", config: { apiKey: "shpat_...", shopDomain: "..." } },
-  rules: {
-    matching: [
-      { field: "transaction_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 }
-    ]
-  }
-});`,
-            ],
-            docLinks: ["https://docs.settler.io/getting-started", "https://docs.settler.io/api/jobs"],
-        };
-    }
-    if (lowerQuery.includes("error") ||
-        lowerQuery.includes("problem") ||
-        lowerQuery.includes("issue")) {
-        return {
-            answer: "Let me help troubleshoot. Common issues include invalid API keys, adapter configuration errors, or matching rule problems.",
-            suggestions: [
-                "Check your API keys are valid and have correct permissions",
-                "Verify adapter configuration matches the schema",
-                "Review matching rules - they may be too strict or too loose",
-                "Check exception queue for unmatched transactions",
-            ],
-            codeExamples: [
-                `// Test adapter connection
-const result = await settler.adapters.test("stripe", {
-  apiKey: "sk_test_..."
-});
-
-// Check exceptions
-const exceptions = await settler.exceptions.list({
-  jobId: "job_abc123"
-});`,
-            ],
-            docLinks: ["https://docs.settler.io/troubleshooting", "https://docs.settler.io/api/errors"],
-        };
-    }
-    if (lowerQuery.includes("optimize") ||
-        lowerQuery.includes("improve") ||
-        lowerQuery.includes("accuracy")) {
-        return {
-            answer: "To optimize reconciliation accuracy, consider:",
-            suggestions: [
-                "Add more exact match rules for higher confidence",
-                "Adjust tolerance values based on your data patterns",
-                "Use fuzzy matching for fields with variations",
-                "Review exception patterns to identify rule improvements",
-            ],
-            codeExamples: [
-                `// Get accuracy metrics
-const accuracy = await settler.jobs.accuracy("job_abc123");
-
-// Get AI optimization suggestions
-const optimizations = await settler.jobs.aiOptimize("job_abc123");`,
-            ],
-            docLinks: ["https://docs.settler.io/optimization", "https://docs.settler.io/matching-rules"],
-        };
-    }
-    // Default response
-    return {
-        answer: "I can help with reconciliation setup, troubleshooting, optimization, and best practices. What would you like to know?",
-        suggestions: [
-            "How to set up a reconciliation job",
-            "How to troubleshoot errors",
-            "How to optimize matching rules",
-            "How to handle exceptions",
-        ],
-        docLinks: ["https://docs.settler.io"],
-    };
-}
 function generateOptimizationSuggestions(job, metrics) {
     const suggestions = [];
     // Low accuracy suggestions

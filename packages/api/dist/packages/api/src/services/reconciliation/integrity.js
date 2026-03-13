@@ -8,6 +8,7 @@ exports.appendRunIntegrityEntry = appendRunIntegrityEntry;
 exports.verifyTenantIntegrityChain = verifyTenantIntegrityChain;
 const node_crypto_1 = require("node:crypto");
 const db_1 = require("../../db");
+const TenantEnforcement_1 = require("../../infrastructure/tenancy/TenantEnforcement");
 const logger_1 = require("../../utils/logger");
 function canonicalize(value) {
     if (Array.isArray(value)) {
@@ -56,6 +57,7 @@ function verifyIntegrityChain(entries) {
     return { valid: true, brokenAt: null };
 }
 async function loadRun(runId, tenantId) {
+    (0, TenantEnforcement_1.validateTenantId)(tenantId, "loadRun");
     const rows = await (0, db_1.query)(`SELECT id, tenant_id, ingestion_id, status, source_count, target_count,
             matched_count, unmatched_source_count, unmatched_target_count,
             confidence_avg, started_at, completed_at
@@ -69,6 +71,7 @@ async function loadRun(runId, tenantId) {
     if (!row) {
         return null;
     }
+    (0, TenantEnforcement_1.assertTenantOwnership)(row, tenantId, "reconciliation_runs");
     return {
         id: String(row.id),
         tenantId: String(row.tenant_id),
@@ -85,10 +88,12 @@ async function loadRun(runId, tenantId) {
     };
 }
 async function loadMatches(runId, tenantId) {
-    const rows = await (0, db_1.query)(`SELECT id, source_transaction_id, target_transaction_id,
+    (0, TenantEnforcement_1.validateTenantId)(tenantId, "loadMatches");
+    const rows = await (0, db_1.query)(`SELECT id, tenant_id, source_transaction_id, target_transaction_id,
             match_type, confidence, amount_diff, date_diff
      FROM reconciliation_matches
      WHERE run_id = $1 AND tenant_id = $2`, [runId, tenantId]);
+    (0, TenantEnforcement_1.assertTenantOwnership)(rows, tenantId, "reconciliation_matches");
     return rows.map((row) => ({
         id: String(row.id),
         sourceTransactionId: String(row.source_transaction_id),
@@ -100,6 +105,7 @@ async function loadMatches(runId, tenantId) {
     }));
 }
 async function appendRunIntegrityEntry(runId, tenantId) {
+    (0, TenantEnforcement_1.validateTenantId)(tenantId, "appendRunIntegrityEntry");
     const run = await loadRun(runId, tenantId);
     if (!run) {
         return null;
@@ -136,6 +142,7 @@ async function appendRunIntegrityEntry(runId, tenantId) {
     return integrity;
 }
 async function verifyTenantIntegrityChain(tenantId) {
+    (0, TenantEnforcement_1.validateTenantId)(tenantId, "verifyTenantIntegrityChain");
     const rows = await (0, db_1.query)(`SELECT id, metadata
      FROM reconciliation_runs
      WHERE tenant_id = $1

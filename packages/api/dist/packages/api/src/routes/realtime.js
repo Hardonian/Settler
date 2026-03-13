@@ -9,22 +9,70 @@ exports.broadcastJobUpdate = broadcastJobUpdate;
 const express_1 = require("express");
 const db_1 = require("../db");
 const logger_1 = require("../utils/logger");
+const redaction_1 = require("../utils/redaction");
 const router = (0, express_1.Router)();
 exports.realtimeRouter = router;
-// Store active SSE connections
 const sseConnections = new Map();
-/**
- * GET /api/v1/realtime/reconciliations/:jobId
- * Server-Sent Events (SSE) endpoint for reconciliation status updates
- */
+const reconnectAttempts = new Map();
+const MAX_CONNECTIONS_PER_TENANT = 20;
+const MAX_CONNECTIONS_PER_JOB = 5;
+const RECONNECT_WINDOW_MS = 60_000;
+const MAX_RECONNECTS_PER_WINDOW = 12;
+function sanitizeExecutionEvent(execution) {
+    const redactedSummary = (0, redaction_1.redact)(execution.summary ?? {});
+    const redactedError = execution.error ? execution.error.slice(0, 256) : null;
+    return {
+        type: "execution_update",
+        executionId: execution.id,
+        status: execution.status,
+        startedAt: execution.started_at,
+        completedAt: execution.completed_at,
+        error: redactedError,
+        summary: redactedSummary,
+    };
+}
+function recordReconnectAttempt(key, now) {
+    const attempts = reconnectAttempts.get(key) ?? [];
+    const recentAttempts = attempts.filter((value) => now - value <= RECONNECT_WINDOW_MS);
+    recentAttempts.push(now);
+    reconnectAttempts.set(key, recentAttempts);
+    return recentAttempts.length <= MAX_RECONNECTS_PER_WINDOW;
+}
 router.get("/reconciliations/:jobId", async (req, res) => {
     const { jobId } = req.params;
-    const tenantId = req.tenantId || req.userId;
-    if (!jobId || !tenantId) {
-        res.status(400).json({ error: "Job ID and Tenant ID are required" });
+    const tenantId = req.tenantId;
+    const userId = req.userId;
+    if (!userId || !tenantId || !jobId) {
+        res.status(401).json({ error: "Authentication, tenant context, and Job ID are required" });
         return;
     }
-    // Verify job ownership
+    const reconnectKey = `${tenantId}:${req.ip ?? "unknown"}:${jobId}`;
+    const now = Date.now();
+    if (!recordReconnectAttempt(reconnectKey, now)) {
+        (0, logger_1.logWarn)("SSE reconnect rate limited", { tenantId, jobId, ip: req.ip });
+        res.status(429).json({
+            error: "REALTIME_RATE_LIMITED",
+            message: "Too many realtime reconnect attempts",
+            retryAfterSeconds: Math.floor(RECONNECT_WINDOW_MS / 1000),
+        });
+        return;
+    }
+    const tenantConnections = [...sseConnections.values()].filter((c) => c.tenantId === tenantId).length;
+    if (tenantConnections >= MAX_CONNECTIONS_PER_TENANT) {
+        res.status(429).json({
+            error: "REALTIME_CONNECTION_LIMIT",
+            message: "Tenant realtime connection limit reached",
+        });
+        return;
+    }
+    const jobConnections = [...sseConnections.values()].filter((c) => c.tenantId === tenantId && c.jobId === jobId).length;
+    if (jobConnections >= MAX_CONNECTIONS_PER_JOB) {
+        res.status(429).json({
+            error: "REALTIME_JOB_CONNECTION_LIMIT",
+            message: "Job realtime connection limit reached",
+        });
+        return;
+    }
     const jobs = await (0, db_1.query)(`SELECT id FROM jobs WHERE id = $1 AND tenant_id = $2`, [
         jobId,
         tenantId,
@@ -33,29 +81,29 @@ router.get("/reconciliations/:jobId", async (req, res) => {
         res.status(404).json({ error: "Job not found" });
         return;
     }
-    // Set SSE headers
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
-    res.setHeader("X-Accel-Buffering", "no"); // Disable nginx buffering
-    // Store connection
-    const connectionId = `${tenantId}-${jobId}-${Date.now()}`;
-    sseConnections.set(connectionId, res);
+    res.setHeader("X-Accel-Buffering", "no");
+    const connectionId = `${tenantId}-${jobId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    sseConnections.set(connectionId, {
+        id: connectionId,
+        tenantId,
+        jobId,
+        response: res,
+        createdAt: now,
+    });
     (0, logger_1.logInfo)("SSE connection established", { connectionId, jobId, tenantId });
-    // Send initial connection message
     res.write(`data: ${JSON.stringify({ type: "connected", jobId })}\n\n`);
-    // Poll for updates every 2 seconds
     const pollInterval = setInterval(async () => {
         try {
-            // Check if connection is still alive
             if (res.destroyed || res.closed) {
                 clearInterval(pollInterval);
                 sseConnections.delete(connectionId);
                 return;
             }
-            // Fetch latest execution status
             const executions = await (0, db_1.query)(`
-            SELECT 
+            SELECT
               id,
               status,
               started_at,
@@ -68,32 +116,20 @@ router.get("/reconciliations/:jobId", async (req, res) => {
             LIMIT 1
           `, [jobId, tenantId]);
             if (executions.length > 0 && executions[0]) {
-                const execution = executions[0];
-                const update = {
-                    type: "execution_update",
-                    executionId: execution.id,
-                    status: execution.status,
-                    startedAt: execution.started_at,
-                    completedAt: execution.completed_at,
-                    error: execution.error,
-                    summary: execution.summary,
-                };
+                const update = sanitizeExecutionEvent(executions[0]);
                 res.write(`data: ${JSON.stringify(update)}\n\n`);
             }
         }
         catch (error) {
-            (0, logger_1.logError)("SSE polling error", error, { connectionId, jobId });
-            const message = error instanceof Error ? error.message : "Polling failed";
-            res.write(`event: error\ndata: ${JSON.stringify({ error: message })}\n\n`);
+            (0, logger_1.logError)("SSE polling error", error, { connectionId, jobId, tenantId });
+            res.write(`event: error\ndata: ${JSON.stringify({ error: "Polling failed" })}\n\n`);
         }
     }, 2000);
-    // Handle client disconnect
     req.on("close", () => {
         clearInterval(pollInterval);
         sseConnections.delete(connectionId);
-        (0, logger_1.logInfo)("SSE connection closed", { connectionId, jobId });
+        (0, logger_1.logInfo)("SSE connection closed", { connectionId, jobId, tenantId });
     });
-    // Keep connection alive with heartbeat
     const heartbeatInterval = setInterval(() => {
         if (!res.destroyed && !res.closed) {
             res.write(": heartbeat\n\n");
@@ -101,28 +137,30 @@ router.get("/reconciliations/:jobId", async (req, res) => {
         else {
             clearInterval(heartbeatInterval);
         }
-    }, 30000); // Every 30 seconds
+    }, 30000);
     req.on("close", () => {
         clearInterval(heartbeatInterval);
     });
 });
-/**
- * Broadcast update to all connections for a job
- */
 function broadcastJobUpdate(jobId, tenantId, update) {
-    const connections = Array.from(sseConnections.entries()).filter(([id]) => id.includes(jobId) && id.includes(tenantId));
-    connections.forEach(([connectionId, res]) => {
+    const redactedUpdate = (0, redaction_1.redact)(update);
+    const connections = Array.from(sseConnections.values()).filter((connection) => connection.jobId === jobId && connection.tenantId === tenantId);
+    connections.forEach((connection) => {
         try {
-            if (!res.destroyed && !res.closed) {
-                res.write(`data: ${JSON.stringify(update)}\n\n`);
+            if (!connection.response.destroyed && !connection.response.closed) {
+                connection.response.write(`data: ${JSON.stringify(redactedUpdate)}\n\n`);
             }
             else {
-                sseConnections.delete(connectionId);
+                sseConnections.delete(connection.id);
             }
         }
         catch (error) {
-            (0, logger_1.logError)("Failed to broadcast update", error, { connectionId });
-            sseConnections.delete(connectionId);
+            (0, logger_1.logError)("Failed to broadcast update", error, {
+                connectionId: connection.id,
+                jobId,
+                tenantId,
+            });
+            sseConnections.delete(connection.id);
         }
     });
 }

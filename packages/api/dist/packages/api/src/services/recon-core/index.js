@@ -2,7 +2,7 @@
 /**
  * Recon Core Engine
  *
- * Unified reconciliation engine - the core of Settler.dev's Data Operations OS
+ * Unified reconciliation engine - the core of Settler.dev's reconciliation engine
  */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;

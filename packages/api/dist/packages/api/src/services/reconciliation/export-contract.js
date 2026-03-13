@@ -3,9 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EXPORT_SCHEMA_VERSION = void 0;
 exports.buildReconciliationExport = buildReconciliationExport;
 const db_1 = require("../../db");
+const TenantEnforcement_1 = require("../../infrastructure/tenancy/TenantEnforcement");
 const integrity_1 = require("./integrity");
 exports.EXPORT_SCHEMA_VERSION = "1.0.0";
 async function buildReconciliationExport(tenantId, runId) {
+    (0, TenantEnforcement_1.validateTenantId)(tenantId, "buildReconciliationExport");
     const runRows = await (0, db_1.query)(`SELECT id, tenant_id, ingestion_id, status, source_count, target_count,
             matched_count, unmatched_source_count, unmatched_target_count,
             confidence_avg, started_at, completed_at
@@ -19,6 +21,7 @@ async function buildReconciliationExport(tenantId, runId) {
     if (!runRow) {
         return null;
     }
+    (0, TenantEnforcement_1.assertTenantOwnership)(runRow, tenantId, "reconciliation_runs");
     const run = {
         id: String(runRow.id),
         tenantId: String(runRow.tenant_id),
@@ -33,10 +36,11 @@ async function buildReconciliationExport(tenantId, runId) {
         startedAt: new Date(String(runRow.started_at)).toISOString(),
         completedAt: runRow.completed_at ? new Date(String(runRow.completed_at)).toISOString() : null,
     };
-    const matchRows = await (0, db_1.query)(`SELECT id, source_transaction_id, target_transaction_id, match_type, confidence, amount_diff, date_diff
+    const matchRows = await (0, db_1.query)(`SELECT id, tenant_id, source_transaction_id, target_transaction_id, match_type, confidence, amount_diff, date_diff
      FROM reconciliation_matches
      WHERE run_id = $1 AND tenant_id = $2
      ORDER BY id ASC`, [runId, tenantId]);
+    (0, TenantEnforcement_1.assertTenantOwnership)(matchRows, tenantId, "reconciliation_matches");
     const matches = matchRows.map((row) => ({
         id: String(row.id),
         sourceTransactionId: String(row.source_transaction_id),

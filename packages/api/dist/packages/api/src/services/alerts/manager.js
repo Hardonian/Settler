@@ -11,6 +11,8 @@ exports.getUnresolvedAlerts = getUnresolvedAlerts;
 exports.checkSystemHealth = checkSystemHealth;
 const logger_1 = require("../../utils/logger");
 const db_1 = require("../../db");
+const event_bus_1 = require("../events/event-bus");
+const AlertLifecycle_1 = require("./AlertLifecycle");
 var AlertSeverity;
 (function (AlertSeverity) {
     AlertSeverity["LOW"] = "low";
@@ -52,6 +54,25 @@ async function createAlert(type, severity, message, details) {
         // if (severity === AlertSeverity.CRITICAL) {
         //   await sendPagerDutyAlert(alertId, type, message, details);
         // }
+        const tenantId = typeof details?.tenantId === "string" && details.tenantId.length > 0
+            ? details.tenantId
+            : "system";
+        await event_bus_1.eventBus.emitEvent("alert.created", tenantId, {
+            alertId,
+            type,
+            severity,
+            message,
+            details: details ?? {},
+        }, {
+            correlationId: `alert:${tenantId}:${alertId}:created`,
+            executionId: alertId,
+            source: "api.alert-manager",
+            severity: severity === AlertSeverity.CRITICAL
+                ? "critical"
+                : severity === AlertSeverity.HIGH
+                    ? "error"
+                    : "warning",
+        });
         return alertId;
     }
     catch (error) {
@@ -64,13 +85,29 @@ async function createAlert(type, severity, message, details) {
  */
 async function resolveAlert(alertId) {
     try {
+        const current = await (0, db_1.query)(`SELECT resolved FROM alerts WHERE id = $1`, [alertId]);
+        const row = current[0];
+        if (!row) {
+            throw new Error(`Alert ${alertId} not found`);
+        }
+        (0, AlertLifecycle_1.assertCanResolveAlert)(row.resolved ? "resolved" : "open");
         await (0, db_1.query)(`UPDATE alerts
        SET resolved = TRUE, resolved_at = NOW()
        WHERE id = $1`, [alertId]);
+        await event_bus_1.eventBus.emitEvent("alert.status.changed", "system", {
+            alertId,
+            status: "resolved",
+        }, {
+            correlationId: `alert:system:${alertId}:resolved`,
+            executionId: alertId,
+            source: "api.alert-manager",
+            severity: "info",
+        });
         (0, logger_1.logInfo)("Alert resolved", { alertId });
     }
     catch (error) {
         (0, logger_1.logError)("Failed to resolve alert", error, { alertId });
+        throw error;
     }
 }
 /**

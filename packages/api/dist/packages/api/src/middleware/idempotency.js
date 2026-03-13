@@ -1,69 +1,80 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.idempotencyMiddleware = idempotencyMiddleware;
+const crypto_1 = require("crypto");
 const db_1 = require("../db");
-const uuid_1 = require("uuid");
 const logger_1 = require("../utils/logger");
+const api_response_1 = require("../utils/api-response");
+const IDEMPOTENCY_TTL_HOURS = 24;
+const MAX_KEY_LENGTH = 128;
+function getRequestHash(req) {
+    const body = req.body === undefined ? "" : JSON.stringify(req.body);
+    return (0, crypto_1.createHash)("sha256")
+        .update(`${req.method}:${req.path}:${body}`)
+        .digest("hex");
+}
 function idempotencyMiddleware() {
     const middleware = async function idempotencyHandler(req, res, next) {
-        // Only apply to state-changing methods
-        if (!["POST", "PUT", "PATCH", "DELETE"].includes(req.method)) {
+        if (!req.userId || !["POST", "PUT", "PATCH", "DELETE"].includes(req.method)) {
             return next();
         }
-        if (!req.userId) {
+        const idempotencyKey = req.headers["idempotency-key"];
+        if (!idempotencyKey) {
             return next();
         }
-        // Get idempotency key from header or generate one
-        const idempotencyKey = req.headers["idempotency-key"] || (0, uuid_1.v4)();
-        // Check if we've seen this request
-        const cached = await (0, db_1.query)(`SELECT response, created_at
-       FROM idempotency_keys
-       WHERE user_id = $1 AND key = $2 AND expires_at > NOW()`, [req.userId, idempotencyKey]);
-        if (cached.length > 0 && cached[0]) {
-            // Return cached response
-            const cachedResponse = cached[0].response;
-            res.status(cachedResponse.statusCode || 200).json(cachedResponse.data);
+        if (idempotencyKey.length > MAX_KEY_LENGTH) {
+            (0, api_response_1.sendError)(res, 400, "INVALID_IDEMPOTENCY_KEY", `Idempotency key exceeds ${MAX_KEY_LENGTH} chars`);
             return;
         }
-        // Store original json method
+        const requestHash = getRequestHash(req);
+        try {
+            const cached = await (0, db_1.query)(`SELECT response
+         FROM idempotency_keys
+         WHERE user_id = $1 AND key = $2 AND expires_at > NOW()`, [req.userId, idempotencyKey]);
+            if (cached[0]?.response) {
+                const existing = cached[0].response;
+                if (existing.requestHash && existing.requestHash !== requestHash) {
+                    (0, api_response_1.sendError)(res, 409, "IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD", "Idempotency key was already used with a different request payload");
+                    return;
+                }
+                res.setHeader("X-Idempotent-Replay", "true");
+                res.status(existing.statusCode || 200).json(existing.data);
+                return;
+            }
+        }
+        catch (error) {
+            (0, logger_1.logError)("Idempotency pre-check failed", error);
+            return next();
+        }
         const originalJson = res.json.bind(res);
         const originalStatus = res.status.bind(res);
         let statusCode = 200;
         let responseData;
-        // Override json to capture response
-        res.json = function (data) {
-            responseData = data;
-            return originalJson(data);
-        };
-        res.status = function (code) {
+        res.status = function patchedStatus(code) {
             statusCode = code;
             return originalStatus(code);
         };
-        // Call next middleware
-        await new Promise((resolve) => {
-            const originalEnd = res.end.bind(res);
-            res.end = function (chunk, encoding, cb) {
-                // Cache successful responses (2xx)
-                if (statusCode >= 200 && statusCode < 300) {
-                    (0, db_1.query)(`INSERT INTO idempotency_keys (user_id, key, response, expires_at)
-             VALUES ($1, $2, $3, NOW() + INTERVAL '24 hours')
-             ON CONFLICT (user_id, key) DO NOTHING`, [req.userId || null, idempotencyKey, JSON.stringify({ statusCode, data: responseData })]).catch((err) => {
-                        (0, logger_1.logError)("Failed to cache idempotency key", err);
-                    });
-                }
-                if (encoding !== undefined && typeof encoding === "string") {
-                    originalEnd(chunk, encoding, cb);
-                }
-                else if (cb !== undefined) {
-                    originalEnd(chunk, cb);
-                }
-                else {
-                    originalEnd(chunk);
-                }
-                resolve();
+        res.json = function patchedJson(data) {
+            responseData = data;
+            return originalJson(data);
+        };
+        res.once("finish", () => {
+            if (statusCode < 200 || statusCode >= 300) {
+                return;
+            }
+            const payload = {
+                statusCode,
+                data: responseData,
+                requestHash,
             };
-            next();
+            void (0, db_1.query)(`INSERT INTO idempotency_keys (user_id, key, response, expires_at)
+         VALUES ($1, $2, $3::jsonb, NOW() + ($4 || ' hours')::interval)
+         ON CONFLICT (user_id, key)
+         DO UPDATE SET response = EXCLUDED.response, expires_at = EXCLUDED.expires_at`, [req.userId, idempotencyKey, JSON.stringify(payload), IDEMPOTENCY_TTL_HOURS]).catch((error) => {
+                (0, logger_1.logError)("Failed to persist idempotency response", error);
+            });
         });
+        next();
     };
     return middleware;
 }

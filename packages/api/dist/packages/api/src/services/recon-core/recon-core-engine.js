@@ -3,7 +3,7 @@
  * Recon Core Engine
  *
  * Unified, deterministic reconciliation engine serving as the philosophical
- * and architectural core of Settler.dev's Data Operations OS.
+ * and architectural core of Settler.dev's reconciliation engine.
  *
  * This engine orchestrates:
  * - Ingestion → Transform → Validate → Recon → Map → Audit → Report
@@ -195,7 +195,7 @@ class ReconCoreEngine {
             // Step 9.5: Record value events (reconciliation completed, anomalies detected)
             if (billingAccount) {
                 try {
-                    await event_bus_1.eventBus.emitEvent("value.reconciliation_completed", tenantId, {
+                    await event_bus_1.eventBus.emitEvent("reconciliation.value.realized", tenantId, {
                         billingAccountId: billingAccount.id,
                         tenantId,
                         userId: reconJob.userId,
@@ -206,10 +206,17 @@ class ReconCoreEngine {
                             : undefined,
                         jobId: reconJobId,
                         runId: updatedResult.id,
+                    }, {
+                        correlationId: `recon:${tenantId}:${reconJobId}:${updatedResult.id}:value-realized`,
+                        runId: updatedResult.id,
+                        executionId: updatedResult.id,
+                        actorId: reconJob.userId ?? undefined,
+                        source: "api.recon-core",
+                        severity: "info",
                     });
                     const totalUnmatched = results.unmatchedSourceCount + results.unmatchedTargetCount;
                     if (totalUnmatched > 0) {
-                        await event_bus_1.eventBus.emitEvent("value.errors_prevented", tenantId, {
+                        await event_bus_1.eventBus.emitEvent("reconciliation.errors.prevented", tenantId, {
                             billingAccountId: billingAccount.id,
                             tenantId,
                             userId: reconJob.userId,
@@ -221,6 +228,13 @@ class ReconCoreEngine {
                                 jobId: reconJobId,
                                 matchedCount: results.matchedCount,
                             },
+                        }, {
+                            correlationId: `recon:${tenantId}:${reconJobId}:${updatedResult.id}:errors-prevented`,
+                            runId: updatedResult.id,
+                            executionId: updatedResult.id,
+                            actorId: reconJob.userId ?? undefined,
+                            source: "api.recon-core",
+                            severity: "warning",
                         });
                     }
                 }
@@ -236,10 +250,17 @@ class ReconCoreEngine {
                 summary: results.summary,
             });
             // Step 11: Emit event
-            await event_bus_1.eventBus.emitEvent("recon.completed", tenantId, {
+            await event_bus_1.eventBus.emitEvent("reconciliation.completed", tenantId, {
                 reconJobId,
                 reconResultId: updatedResult.id,
                 summary: results.summary,
+            }, {
+                correlationId: `recon:${tenantId}:${reconJobId}:${updatedResult.id}:completed`,
+                runId: updatedResult.id,
+                executionId: updatedResult.id,
+                actorId: reconJob.userId ?? undefined,
+                source: "api.recon-core",
+                severity: "info",
             });
             // Step 12: Send completion notification if there are exceptions
             if (results.unmatchedSourceCount > 0 || results.unmatchedTargetCount > 0) {
@@ -314,10 +335,18 @@ class ReconCoreEngine {
                 error: errorMessage,
             });
             // Emit event
-            await event_bus_1.eventBus.emitEvent("recon.failed", tenantId, {
+            await event_bus_1.eventBus.emitEvent("reconciliation.failed", tenantId, {
                 reconJobId,
                 reconResultId: failedResult.id,
                 error: errorMessage,
+            }, {
+                correlationId: `recon:${tenantId}:${reconJobId}:${failedResult.id}:failed`,
+                runId: failedResult.id,
+                executionId: failedResult.id,
+                actorId: reconJob.userId ?? undefined,
+                source: "api.recon-core",
+                severity: "error",
+                metadata: { failure_stage: "execute" },
             });
             (0, logger_1.logError)("Recon job execution failed", { error, reconJobId, tenantId });
             throw error;

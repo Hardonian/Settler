@@ -31,13 +31,13 @@ class ReconciliationProjectionHandlers {
         updated_at = EXCLUDED.updated_at
     `;
         // Extract from event metadata
-        const tenantId = event.tenantId || 'unknown';
+        const tenantId = event.tenantId || "unknown";
         const reconciliationId = event.reconciliationId;
         const jobId = event.jobId;
         await this.db.query(query, [
             reconciliationId,
             jobId,
-            'running',
+            "running",
             tenantId,
             new Date(),
             new Date(),
@@ -104,8 +104,36 @@ class ReconciliationProjectionHandlers {
         updated_at = NOW()
       WHERE reconciliation_id = $1
     `;
-        const unmatchedType = data.source_id ? 'source' : 'target';
+        const unmatchedType = data.source_id ? "source" : "target";
         await this.db.query(query, [data.reconciliation_id, unmatchedType]);
+    }
+    /**
+     * Handle ReconciliationPaused event
+     */
+    async handleReconciliationPaused(eventEnvelope) {
+        const data = eventEnvelope.data;
+        const query = `
+      UPDATE reconciliation_summary
+      SET
+        status = 'paused',
+        updated_at = NOW()
+      WHERE reconciliation_id = $1
+    `;
+        await this.db.query(query, [data.reconciliation_id]);
+    }
+    /**
+     * Handle ReconciliationResumed event
+     */
+    async handleReconciliationResumed(eventEnvelope) {
+        const data = eventEnvelope.data;
+        const query = `
+      UPDATE reconciliation_summary
+      SET
+        status = 'running',
+        updated_at = NOW()
+      WHERE reconciliation_id = $1
+    `;
+        await this.db.query(query, [data.reconciliation_id]);
     }
     /**
      * Handle ReconciliationCompleted event
@@ -179,11 +207,7 @@ class ReconciliationProjectionHandlers {
         success_count = tenant_usage_view.success_count + 1
     `;
         const data = eventEnvelope.data;
-        await this.db.query(query, [
-            tenantId,
-            today,
-            data.summary?.duration_ms || 0,
-        ]);
+        await this.db.query(query, [tenantId, today, data.summary?.duration_ms || 0]);
     }
     /**
      * Update error hotspots view
@@ -208,9 +232,9 @@ class ReconciliationProjectionHandlers {
     `;
         await this.db.query(query, [
             data.reconciliation_id,
-            (data).job_id || 'unknown',
+            data.job_id || "unknown",
             data.error.type,
-            data.step || 'unknown',
+            data.step || "unknown",
             new Date(data.failed_at),
             tenantId,
         ]);

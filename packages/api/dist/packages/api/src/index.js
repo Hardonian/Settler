@@ -35,6 +35,7 @@ const tenant_data_1 = require("./routes/tenant-data");
 const webhook_management_1 = require("./routes/webhook-management");
 const notifications_1 = require("./routes/notifications");
 const usage_1 = require("./routes/usage");
+const platform_control_plane_1 = require("./routes/platform-control-plane");
 const batch_1 = require("./routes/batch");
 const exports_1 = require("./routes/exports");
 const test_mode_2 = require("./middleware/test-mode");
@@ -48,6 +49,8 @@ const uuid_1 = require("uuid");
 const data_retention_1 = require("./jobs/data-retention");
 const materialized_view_refresh_1 = require("./jobs/materialized-view-refresh");
 const webhook_queue_1 = require("./utils/webhook-queue");
+const distributed_guards_1 = require("./services/distributed-guards");
+const distributed_guards_maintenance_1 = require("./jobs/distributed-guards-maintenance");
 const versioning_1 = require("./middleware/versioning");
 const v1_1 = require("./routes/v1");
 const v2_1 = require("./routes/v2");
@@ -68,6 +71,7 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const websocket_1 = require("./infrastructure/websocket");
 const http_1 = require("http");
 const json_depth_1 = require("./utils/json-depth");
+const runtime_events_1 = require("./services/ops-intelligence/runtime-events");
 const app = (0, express_1.default)();
 const PORT = config_1.config.port;
 // Initialize Sentry before other middleware
@@ -118,9 +122,47 @@ if (config_1.config.features.enableRequestTimeout) {
 }
 // Trace ID middleware
 app.use((req, res, next) => {
+    const authReq = req;
     const traceId = req.headers["x-trace-id"] || (0, uuid_1.v4)();
-    req.traceId = traceId;
+    const executionId = req.headers["x-execution-id"] || (0, uuid_1.v4)();
+    authReq.traceId = traceId;
+    authReq.executionId = executionId;
+    authReq.tenantId = authReq.tenantId || req.headers["x-tenant-id"];
     res.setHeader("X-Trace-Id", traceId);
+    res.setHeader("X-Execution-Id", executionId);
+    if (authReq.tenantId) {
+        res.setHeader("X-Tenant-Id", authReq.tenantId);
+    }
+    next();
+});
+// Runtime operator event stream (best-effort, non-blocking)
+app.use((req, res, next) => {
+    const startedAt = Date.now();
+    res.on("finish", () => {
+        const tenantId = req.tenantId || req.headers["x-tenant-id"];
+        if (!tenantId || !req.path.startsWith("/api/"))
+            return;
+        void (0, runtime_events_1.emitOperatorRuntimeEvent)({
+            eventType: "api_request",
+            tenantId,
+            recordsProcessed: 1,
+            durationMs: Date.now() - startedAt,
+            errorId: res.statusCode >= 500 ? req.traceId || null : null,
+            metadata: {
+                method: req.method,
+                path: req.path,
+                statusCode: res.statusCode,
+            },
+        });
+        if (res.statusCode >= 500) {
+            void (0, runtime_events_1.emitOperatorRuntimeEvent)({
+                eventType: "error_thrown",
+                tenantId,
+                errorId: req.traceId || null,
+                metadata: { method: req.method, path: req.path, statusCode: res.statusCode },
+            });
+        }
+    });
     next();
 });
 // Global IP-based rate limiting (backup)
@@ -262,6 +304,9 @@ v2ProtectedRouter.use("/batch", batch_1.batchRouter);
 // Export routes (requires auth)
 v1ProtectedRouter.use("/exports", exports_1.exportsRouter);
 v2ProtectedRouter.use("/exports", exports_1.exportsRouter);
+// Platform control plane routes (requires auth + tenant context)
+v1ProtectedRouter.use("/tenant", tenant_1.tenantMiddleware, platform_control_plane_1.platformControlPlaneRouter);
+v2ProtectedRouter.use("/tenant", tenant_1.tenantMiddleware, platform_control_plane_1.platformControlPlaneRouter);
 // Versioned API routes
 v1ProtectedRouter.use(v1_1.v1Router);
 v2ProtectedRouter.use(v2_1.v2Router);
@@ -300,9 +345,11 @@ async function startServer() {
         }
         await (0, db_1.initDatabase)();
         (0, logger_1.logInfo)("Database initialized");
+        await (0, distributed_guards_1.logDistributedGuardStartupSummary)();
         // Start background jobs
         (0, data_retention_1.startDataRetentionJob)();
         (0, materialized_view_refresh_1.startMaterializedViewRefreshJob)();
+        const distributedGuardsMaintenanceTimer = (0, distributed_guards_maintenance_1.startDistributedGuardsMaintenanceJob)();
         // Process pending webhooks every minute
         const webhookInterval = setInterval(() => {
             (0, webhook_queue_1.processPendingWebhooks)().catch((error) => {
@@ -312,6 +359,7 @@ async function startServer() {
         // Register webhook interval cleanup
         (0, graceful_shutdown_1.registerShutdownHandler)(async () => {
             clearInterval(webhookInterval);
+            clearInterval(distributedGuardsMaintenanceTimer);
             (0, logger_1.logInfo)("Webhook processing stopped");
         });
         const httpServer = (0, http_1.createServer)(app);

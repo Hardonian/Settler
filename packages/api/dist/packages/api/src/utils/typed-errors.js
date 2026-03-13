@@ -30,7 +30,7 @@ class ApiError extends Error {
 exports.ApiError = ApiError;
 class ValidationError extends ApiError {
     statusCode = 400;
-    errorCode = 'VALIDATION_ERROR';
+    errorCode = "VALIDATION_ERROR";
     field;
     constructor(message, field, details) {
         super(message, details);
@@ -46,17 +46,17 @@ class ValidationError extends ApiError {
 exports.ValidationError = ValidationError;
 class AuthenticationError extends ApiError {
     statusCode = 401;
-    errorCode = 'AUTHENTICATION_ERROR';
+    errorCode = "AUTHENTICATION_ERROR";
 }
 exports.AuthenticationError = AuthenticationError;
 class AuthorizationError extends ApiError {
     statusCode = 403;
-    errorCode = 'AUTHORIZATION_ERROR';
+    errorCode = "AUTHORIZATION_ERROR";
 }
 exports.AuthorizationError = AuthorizationError;
 class NotFoundError extends ApiError {
     statusCode = 404;
-    errorCode = 'NOT_FOUND';
+    errorCode = "NOT_FOUND";
     resourceType;
     resourceId;
     constructor(message, resourceType, resourceId, details) {
@@ -72,12 +72,12 @@ class NotFoundError extends ApiError {
 exports.NotFoundError = NotFoundError;
 class ConflictError extends ApiError {
     statusCode = 409;
-    errorCode = 'CONFLICT';
+    errorCode = "CONFLICT";
 }
 exports.ConflictError = ConflictError;
 class RateLimitError extends ApiError {
     statusCode = 429;
-    errorCode = 'RATE_LIMIT_EXCEEDED';
+    errorCode = "RATE_LIMIT_EXCEEDED";
     retryAfter;
     limit;
     remaining;
@@ -97,12 +97,12 @@ class RateLimitError extends ApiError {
 exports.RateLimitError = RateLimitError;
 class InternalServerError extends ApiError {
     statusCode = 500;
-    errorCode = 'INTERNAL_SERVER_ERROR';
+    errorCode = "INTERNAL_SERVER_ERROR";
 }
 exports.InternalServerError = InternalServerError;
 class ServiceUnavailableError extends ApiError {
     statusCode = 503;
-    errorCode = 'SERVICE_UNAVAILABLE';
+    errorCode = "SERVICE_UNAVAILABLE";
     retryAfter;
     constructor(message, retryAfter, details) {
         super(message, details);
@@ -114,7 +114,7 @@ class ServiceUnavailableError extends ApiError {
 exports.ServiceUnavailableError = ServiceUnavailableError;
 class PayloadTooLargeError extends ApiError {
     statusCode = 413;
-    errorCode = 'PAYLOAD_TOO_LARGE';
+    errorCode = "PAYLOAD_TOO_LARGE";
 }
 exports.PayloadTooLargeError = PayloadTooLargeError;
 /**
@@ -133,13 +133,21 @@ function toApiError(error) {
     if (error instanceof Error) {
         const errorWithStatus = error;
         const status = errorWithStatus.status ?? errorWithStatus.statusCode;
-        if (status === 413 || errorWithStatus.type === 'entity.too.large') {
-            return new PayloadTooLargeError('Request entity too large', {
+        if (status === 413 || errorWithStatus.type === "entity.too.large") {
+            return new PayloadTooLargeError("Request entity too large", {
                 originalError: error.name,
+            });
+        }
+        const transitionLikeError = error;
+        if (transitionLikeError.code === "INVALID_RECONCILIATION_TRANSITION") {
+            return new ConflictError(error.message, {
+                code: transitionLikeError.code,
+                currentState: transitionLikeError.currentState,
+                attemptedAction: transitionLikeError.attemptedAction,
             });
         }
         return new InternalServerError(error.message, { originalError: error.name });
     }
-    return new InternalServerError('An unexpected error occurred', { error });
+    return new InternalServerError("An unexpected error occurred", { error });
 }
 //# sourceMappingURL=typed-errors.js.map
