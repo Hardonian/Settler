@@ -284,7 +284,12 @@
     "chaos:test": "node scripts/surface-command-runner.mjs chaos:test",
     "kernel:health": "tsx scripts/kernel-health.ts",
     "db:reality:audit": "tsx scripts/supabase-schema-reality-audit.ts",
-    "db:reconcile:preview": "bash scripts/run-preview-reconciliation.sh dry-run"
+    "db:reconcile:preview": "bash scripts/run-preview-reconciliation.sh dry-run",
+    "verify:env:required": "node scripts/verify-env-contract.mjs required",
+    "verify:env:parity": "node scripts/verify-env-contract.mjs parity",
+    "verify:env:trace": "node scripts/verify-env-contract.mjs trace",
+    "audit:env:resolution": "node scripts/generate-env-resolution-audit.mjs",
+    "audit:migrations": "node scripts/generate-migration-audit.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
