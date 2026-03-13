@@ -36,6 +36,7 @@ var connector_driver_1 = require("./connector-driver");
 Object.defineProperty(exports, "DriverConnectorError", { enumerable: true, get: function () { return connector_driver_1.ConnectorError; } });
 Object.defineProperty(exports, "DriverValidationError", { enumerable: true, get: function () { return connector_driver_1.ValidationError; } });
 __exportStar(require("./connector-runtime"), exports);
+__exportStar(require("./connector-sandbox"), exports);
 __exportStar(require("./drivers"), exports);
 __exportStar(require("./credential-encryption"), exports);
 __exportStar(require("./webhook-verification"), exports);

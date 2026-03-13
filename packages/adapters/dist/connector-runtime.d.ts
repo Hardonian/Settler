@@ -15,6 +15,115 @@ export interface SyncRunContext {
     syncRunId: string;
     userId?: string;
 }
+interface SaveNormalizedDataPayload {
+    accounts?: Array<{
+        providerAccountId: string;
+        accountName: string;
+        accountType?: string;
+        currency: string;
+        institutionName?: string;
+        institutionId?: string;
+        metadata?: Record<string, unknown>;
+    }>;
+    transactions?: Array<{
+        externalId: string;
+        accountId?: string;
+        transactionType: string;
+        amountCents: number;
+        currency: string;
+        occurredAt: Date;
+        description?: string;
+        referenceId?: string;
+        referenceType?: string;
+        providerMetadata?: Record<string, unknown>;
+        rawPayload?: unknown;
+        idempotencyKey: string;
+    }>;
+    balances?: Array<{
+        accountId: string;
+        balanceCents: number;
+        availableBalanceCents?: number;
+        currency: string;
+        snapshotAt: Date;
+        providerMetadata?: Record<string, unknown>;
+        rawPayload?: unknown;
+    }>;
+    payouts?: Array<{
+        externalId: string;
+        accountId?: string;
+        amountCents: number;
+        currency: string;
+        status: string;
+        initiatedAt: Date;
+        completedAt?: Date;
+        feeCents?: number;
+        netAmountCents?: number;
+        destinationType?: string;
+        destinationId?: string;
+        description?: string;
+        providerMetadata?: Record<string, unknown>;
+        rawPayload?: unknown;
+        idempotencyKey: string;
+    }>;
+    invoices?: Array<{
+        externalId: string;
+        invoiceNumber?: string;
+        customerId?: string;
+        customerName?: string;
+        amountCents: number;
+        currency: string;
+        status: string;
+        issueDate?: Date;
+        dueDate?: Date;
+        paidAt?: Date;
+        lineItems?: Array<{
+            description: string;
+            quantity: number;
+            unitPriceCents: number;
+            totalCents: number;
+        }>;
+        providerMetadata?: Record<string, unknown>;
+        rawPayload?: unknown;
+        idempotencyKey: string;
+    }>;
+    subscriptions?: Array<{
+        externalId: string;
+        customerId: string;
+        customerName?: string;
+        planId?: string;
+        planName?: string;
+        status: string;
+        billingCycle?: string;
+        amountCents: number;
+        currency: string;
+        currentPeriodStart?: Date;
+        currentPeriodEnd?: Date;
+        cancelAtPeriodEnd?: boolean;
+        cancelledAt?: Date;
+        providerMetadata?: Record<string, unknown>;
+        rawPayload?: unknown;
+        idempotencyKey: string;
+    }>;
+    taxEstimates?: Array<{
+        externalId: string;
+        transactionId?: string;
+        transactionType?: string;
+        amountCents: number;
+        currency: string;
+        taxAmountCents: number;
+        taxRate?: number;
+        jurisdiction?: string;
+        taxType?: string;
+        occurredAt: Date;
+        providerMetadata?: Record<string, unknown>;
+        rawPayload?: unknown;
+        idempotencyKey: string;
+    }>;
+    rawPayloads?: Array<{
+        type: string;
+        payload: unknown;
+    }>;
+}
 /**
  * Connector Runtime
  */
@@ -53,115 +162,12 @@ export declare class ConnectorRuntime {
     /**
      * Save normalized data to database
      */
-    saveNormalizedData(tenantId: string, connectorId: string, syncRunId: string, data: {
-        accounts?: Array<{
-            providerAccountId: string;
-            accountName: string;
-            accountType?: string;
-            currency: string;
-            institutionName?: string;
-            institutionId?: string;
-            metadata?: Record<string, unknown>;
-        }>;
-        transactions?: Array<{
-            externalId: string;
-            accountId?: string;
-            transactionType: string;
-            amountCents: number;
-            currency: string;
-            occurredAt: Date;
-            description?: string;
-            referenceId?: string;
-            referenceType?: string;
-            providerMetadata?: Record<string, unknown>;
-            rawPayload?: unknown;
-            idempotencyKey: string;
-        }>;
-        balances?: Array<{
-            accountId: string;
-            balanceCents: number;
-            availableBalanceCents?: number;
-            currency: string;
-            snapshotAt: Date;
-            providerMetadata?: Record<string, unknown>;
-            rawPayload?: unknown;
-        }>;
-        payouts?: Array<{
-            externalId: string;
-            accountId?: string;
-            amountCents: number;
-            currency: string;
-            status: string;
-            initiatedAt: Date;
-            completedAt?: Date;
-            feeCents?: number;
-            netAmountCents?: number;
-            destinationType?: string;
-            destinationId?: string;
-            description?: string;
-            providerMetadata?: Record<string, unknown>;
-            rawPayload?: unknown;
-            idempotencyKey: string;
-        }>;
-        invoices?: Array<{
-            externalId: string;
-            invoiceNumber?: string;
-            customerId?: string;
-            customerName?: string;
-            amountCents: number;
-            currency: string;
-            status: string;
-            issueDate?: Date;
-            dueDate?: Date;
-            paidAt?: Date;
-            lineItems?: Array<{
-                description: string;
-                quantity: number;
-                unitPriceCents: number;
-                totalCents: number;
-            }>;
-            providerMetadata?: Record<string, unknown>;
-            rawPayload?: unknown;
-            idempotencyKey: string;
-        }>;
-        subscriptions?: Array<{
-            externalId: string;
-            customerId: string;
-            customerName?: string;
-            planId?: string;
-            planName?: string;
-            status: string;
-            billingCycle?: string;
-            amountCents: number;
-            currency: string;
-            currentPeriodStart?: Date;
-            currentPeriodEnd?: Date;
-            cancelAtPeriodEnd?: boolean;
-            cancelledAt?: Date;
-            providerMetadata?: Record<string, unknown>;
-            rawPayload?: unknown;
-            idempotencyKey: string;
-        }>;
-        taxEstimates?: Array<{
-            externalId: string;
-            transactionId?: string;
-            transactionType?: string;
-            amountCents: number;
-            currency: string;
-            taxAmountCents: number;
-            taxRate?: number;
-            jurisdiction?: string;
-            taxType?: string;
-            occurredAt: Date;
-            providerMetadata?: Record<string, unknown>;
-            rawPayload?: unknown;
-            idempotencyKey: string;
-        }>;
-        rawPayloads?: Array<{
-            type: string;
-            payload: unknown;
-        }>;
-    }): Promise<void>;
+    saveNormalizedData(tenantId: string, connectorId: string, syncRunId: string, data: SaveNormalizedDataPayload): Promise<void>;
+    private getConnectorRecord;
+    private getAccountMap;
+    private assertUpsert;
+    private tryAtomicNormalizedWrite;
+    private persistInputSnapshot;
     /**
      * Save normalized data in batches (for large datasets)
      */
@@ -179,4 +185,5 @@ export declare class ConnectorRuntime {
      */
     executeSync(driver: ConnectorDriver, tenantId: string, connectorId: string, options: SyncOptions): Promise<SyncResult>;
 }
+export {};
 //# sourceMappingURL=connector-runtime.d.ts.map

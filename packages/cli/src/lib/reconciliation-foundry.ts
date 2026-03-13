@@ -177,8 +177,27 @@ function pick<T>(random: () => number, values: T[]): T {
   return values[Math.floor(random() * values.length)] as T;
 }
 
+function canonicalizeForHash(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map((item) => canonicalizeForHash(item));
+  }
+
+  if (value && typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    const sortedKeys = Object.keys(record).sort();
+    return sortedKeys.reduce<Record<string, unknown>>((acc, key) => {
+      acc[key] = canonicalizeForHash(record[key]);
+      return acc;
+    }, {});
+  }
+
+  return value;
+}
+
 function stableHash(value: unknown): string {
-  return createHash("sha256").update(JSON.stringify(value)).digest("hex");
+  return createHash("sha256")
+    .update(JSON.stringify(canonicalizeForHash(value)))
+    .digest("hex");
 }
 
 function id(prefix: string, index: number): string {
