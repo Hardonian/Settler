@@ -1,0 +1,70 @@
+name: Preview DB Reconciliation
+
+on:
+  push:
+    branches-ignore:
+      - main
+    paths:
+      - 'supabase/migrations/**'
+      - 'scripts/supabase-schema-reality-audit.ts'
+      - 'scripts/run-preview-reconciliation.sh'
+      - '.github/workflows/preview-db-reconciliation.yml'
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: 'Apply reconciliation SQL (false = dry-run only)'
+        required: false
+        default: 'false'
+
+jobs:
+  audit-and-reconcile:
+    runs-on: ubuntu-latest
+    environment: preview
+    env:
+      DATABASE_URL: ${{ secrets.PREVIEW_DATABASE_URL }}
+      DIRECT_URL: ${{ secrets.PREVIEW_DIRECT_URL }}
+      SUPABASE_DB_URL: ${{ secrets.PREVIEW_SUPABASE_DB_URL }}
+      ALLOW_PRODUCTION_RECONCILIATION: 'false'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Install psql
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Precheck target connection
+        run: psql "${DATABASE_URL:-${DIRECT_URL:-$SUPABASE_DB_URL}}" -v ON_ERROR_STOP=1 -c "select current_database(), current_user, inet_server_addr(), inet_server_port();"
+
+      - name: Reality audit (expected vs live)
+        run: npx tsx scripts/supabase-schema-reality-audit.ts
+
+      - name: Reconciliation SQL dry-run
+        run: bash scripts/run-preview-reconciliation.sh dry-run
+
+      - name: Apply reconciliation SQL
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
+        run: bash scripts/run-preview-reconciliation.sh apply
+
+      - name: Re-audit after apply
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
+        run: npx tsx scripts/supabase-schema-reality-audit.ts
+
+      - name: Upload audit artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-db-reconciliation-audit
+          path: |
+            reports/supabase-schema-reality-report.json
+            reports/supabase-schema-reality-report.md
