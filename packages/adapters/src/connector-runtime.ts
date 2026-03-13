@@ -199,9 +199,12 @@ export class ConnectorRuntime {
           this.config.supabaseUrl,
           this.config.supabaseServiceKey
         );
-      } catch {
-        // Fallback: use as-is if decryption fails (backwards compatibility)
-        decrypted = creds.encrypted_credentials as Record<string, unknown>;
+      } catch (error) {
+        throw new ConnectorError(
+          `Failed to decrypt connector credentials: ${error instanceof Error ? error.message : String(error)}`,
+          "CREDENTIAL_DECRYPTION_FAILED",
+          connectorId
+        );
       }
     }
 
@@ -212,8 +215,12 @@ export class ConnectorRuntime {
           this.config.supabaseUrl,
           this.config.supabaseServiceKey
         );
-      } catch {
-        decrypted.access_token = creds.access_token_encrypted;
+      } catch (error) {
+        throw new ConnectorError(
+          `Failed to decrypt connector access token: ${error instanceof Error ? error.message : String(error)}`,
+          "CREDENTIAL_DECRYPTION_FAILED",
+          connectorId
+        );
       }
     }
 
@@ -224,8 +231,12 @@ export class ConnectorRuntime {
           this.config.supabaseUrl,
           this.config.supabaseServiceKey
         );
-      } catch {
-        decrypted.refresh_token = creds.refresh_token_encrypted;
+      } catch (error) {
+        throw new ConnectorError(
+          `Failed to decrypt connector refresh token: ${error instanceof Error ? error.message : String(error)}`,
+          "CREDENTIAL_DECRYPTION_FAILED",
+          connectorId
+        );
       }
     }
 
@@ -682,9 +693,12 @@ export class ConnectorRuntime {
     data: SaveNormalizedDataPayload
   ): Promise<void> {
     const snapshot = {
-      schema_version: 1,
+      schema_version: 2,
+      snapshot_type: "connector_sync_input",
       captured_at: new Date().toISOString(),
       sync_run_id: syncRunId,
+      connector_id: connectorDbId,
+      tenant_id: tenantId,
       counts: {
         accounts: data.accounts?.length ?? 0,
         transactions: data.transactions?.length ?? 0,
@@ -705,7 +719,7 @@ export class ConnectorRuntime {
           connector_id: connectorDbId,
           tenant_id: tenantId,
           event_type: "sync_input_snapshot",
-          event_id: `${syncRunId}-input-snapshot-v1`,
+          event_id: `${syncRunId}-input-snapshot-v2`,
           payload: snapshot,
           processed: true,
           processed_at: new Date().toISOString(),

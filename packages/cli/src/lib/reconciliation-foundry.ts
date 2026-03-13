@@ -177,18 +177,60 @@ function pick<T>(random: () => number, values: T[]): T {
   return values[Math.floor(random() * values.length)] as T;
 }
 
-function canonicalizeForHash(value: unknown): unknown {
+function canonicalizeForHash(value: unknown, seen: WeakSet<object> = new WeakSet()): unknown {
+  if (value === null) {
+    return null;
+  }
+
+  if (typeof value === "bigint") {
+    return { __type: "bigint", value: value.toString() };
+  }
+
+  if (value instanceof Date) {
+    return { __type: "date", value: value.toISOString() };
+  }
+
   if (Array.isArray(value)) {
-    return value.map((item) => canonicalizeForHash(item));
+    return value.map((item) => canonicalizeForHash(item, seen));
+  }
+
+  if (value instanceof Set) {
+    return {
+      __type: "set",
+      values: [...value].map((entry) => canonicalizeForHash(entry, seen)),
+    };
+  }
+
+  if (value instanceof Map) {
+    const entries = [...value.entries()].map(([mapKey, mapValue]) => ({
+      key: canonicalizeForHash(mapKey, seen),
+      value: canonicalizeForHash(mapValue, seen),
+    }));
+    entries.sort((a, b) => JSON.stringify(a.key).localeCompare(JSON.stringify(b.key)));
+    return { __type: "map", entries };
   }
 
   if (value && typeof value === "object") {
+    if (seen.has(value as object)) {
+      throw new TypeError("stableHash cannot serialize cyclic structures");
+    }
+
+    seen.add(value as object);
     const record = value as Record<string, unknown>;
     const sortedKeys = Object.keys(record).sort();
-    return sortedKeys.reduce<Record<string, unknown>>((acc, key) => {
-      acc[key] = canonicalizeForHash(record[key]);
+    const canonical = sortedKeys.reduce<Record<string, unknown>>((acc, key) => {
+      const next = record[key];
+      if (next !== undefined) {
+        acc[key] = canonicalizeForHash(next, seen);
+      }
       return acc;
     }, {});
+    seen.delete(value as object);
+    return canonical;
+  }
+
+  if (typeof value === "number" && !Number.isFinite(value)) {
+    return null;
   }
 
   return value;

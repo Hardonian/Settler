@@ -47,6 +47,35 @@ function calculateConfidence(
   return Math.min(1, confidence);
 }
 
+function amountBucket(amount: number, tolerance: number): number {
+  const divisor = tolerance > 0 ? tolerance : 0.01;
+  return Math.round(amount / divisor);
+}
+
+type TransactionCandidate = {
+  id: string;
+  amount: number;
+  date: Date;
+  description: string | null;
+  currency: string;
+};
+
+function collectAmountBucketCandidates(
+  index: Map<number, TransactionCandidate[]>,
+  amount: number,
+  tolerance: number
+): TransactionCandidate[] {
+  const center = amountBucket(amount, tolerance);
+  const out: TransactionCandidate[] = [];
+  for (const bucket of [center - 1, center, center + 1]) {
+    const entries = index.get(bucket);
+    if (entries) {
+      out.push(...entries);
+    }
+  }
+  return out;
+}
+
 export function matchTransactions(
   sourceTransactions: Array<{
     id: string;
@@ -69,20 +98,28 @@ export function matchTransactions(
   const sortedSource = [...sourceTransactions].sort((a, b) => a.date.getTime() - b.date.getTime());
   const matches: MatchResult[] = [];
 
-  const targetsByCurrency = new Map<string, typeof targetTransactions>();
-  const targetsByCurrencyAndMerchant = new Map<string, Map<string, typeof targetTransactions>>();
+  const targetsByCurrencyAndAmount = new Map<string, Map<number, typeof targetTransactions>>();
+  const targetsByCurrencyMerchantAndAmount = new Map<
+    string,
+    Map<string, Map<number, typeof targetTransactions>>
+  >();
 
   for (const target of targetTransactions) {
-    const byCurrency = targetsByCurrency.get(target.currency) ?? [];
-    byCurrency.push(target);
-    targetsByCurrency.set(target.currency, byCurrency);
+    const currencyIndex = targetsByCurrencyAndAmount.get(target.currency) ?? new Map();
+    const bucket = amountBucket(target.amount, amountTolerance);
+    const currencyBucket = currencyIndex.get(bucket) ?? [];
+    currencyBucket.push(target);
+    currencyIndex.set(bucket, currencyBucket);
+    targetsByCurrencyAndAmount.set(target.currency, currencyIndex);
 
     const merchant = normalizeMerchant(target.description);
-    const merchantMap = targetsByCurrencyAndMerchant.get(target.currency) ?? new Map();
-    const byMerchant = merchantMap.get(merchant) ?? [];
-    byMerchant.push(target);
-    merchantMap.set(merchant, byMerchant);
-    targetsByCurrencyAndMerchant.set(target.currency, merchantMap);
+    const merchantMap = targetsByCurrencyMerchantAndAmount.get(target.currency) ?? new Map();
+    const amountIndex = merchantMap.get(merchant) ?? new Map();
+    const merchantBucket = amountIndex.get(bucket) ?? [];
+    merchantBucket.push(target);
+    amountIndex.set(bucket, merchantBucket);
+    merchantMap.set(merchant, amountIndex);
+    targetsByCurrencyMerchantAndAmount.set(target.currency, merchantMap);
   }
 
   for (const source of sortedSource) {
@@ -94,10 +131,13 @@ export function matchTransactions(
     } | null = null;
 
     const sourceMerchant = normalizeMerchant(source.description);
-    const merchantCandidates =
-      targetsByCurrencyAndMerchant.get(source.currency)?.get(sourceMerchant) ?? [];
-    const fallbackCandidates = targetsByCurrency.get(source.currency) ?? [];
-    const candidates = requireExactMerchant ? merchantCandidates : fallbackCandidates;
+    const merchantAmountIndex =
+      targetsByCurrencyMerchantAndAmount.get(source.currency)?.get(sourceMerchant) ?? new Map();
+    const currencyAmountIndex = targetsByCurrencyAndAmount.get(source.currency) ?? new Map();
+
+    const candidates = requireExactMerchant
+      ? collectAmountBucketCandidates(merchantAmountIndex, source.amount, amountTolerance)
+      : collectAmountBucketCandidates(currencyAmountIndex, source.amount, amountTolerance);
 
     for (const target of candidates) {
       if (usedTargetIds.has(target.id)) continue;
@@ -120,7 +160,11 @@ export function matchTransactions(
         dateDiff
       );
       if (confidence < 0.5) continue;
-      if (!best || confidence > best.confidence) {
+      if (
+        !best ||
+        confidence > best.confidence ||
+        (confidence === best.confidence && target.id.localeCompare(best.target.id) < 0)
+      ) {
         best = { target, confidence, amountDiff, dateDiff };
       }
     }

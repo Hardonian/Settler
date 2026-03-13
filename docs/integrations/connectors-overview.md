@@ -69,7 +69,7 @@ interface ConnectorDriver {
 - `financial_invoices` - Invoices
 - `financial_subscriptions` - Subscriptions
 - `financial_tax_estimates` - Tax estimates
-- `raw_events` - Raw payloads for audit
+- `raw_events` - Raw payloads and sync persistence evidence for audit/replay (`sync_input_snapshot`, `sync_atomic_fallback`)
 - `webhook_events` - Webhook events
 
 ## Security
@@ -85,8 +85,10 @@ interface ConnectorDriver {
 2. Runtime fetches credentials (decrypted)
 3. Driver executes sync with provider API
 4. Data normalized to canonical format
-5. Saved to database with idempotency keys
-6. Sync run updated with metrics
+5. Attempts atomic persistence via `connector_save_normalized_data_atomic` RPC when available
+6. Falls back to strict per-table writes if RPC is unavailable and emits `sync_atomic_fallback` evidence in `raw_events`
+7. Persists `sync_input_snapshot` evidence for replay/debug of the exact connector input payload
+8. Sync run updated with metrics
 
 ## Error Handling
 
@@ -94,3 +96,11 @@ interface ConnectorDriver {
 - **Concurrency Protection**: One sync per connector at a time
 - **Auto-disable**: Connectors auto-disabled after 10 consecutive failures
 - **Error Logging**: All errors logged to `sync_runs` table
+
+
+## Replayability and Persistence Guarantees
+
+- `sync_input_snapshot` stores the connector sync input payload with `schema_version` metadata and row counts.
+- When atomic RPC persistence is unavailable, runtime emits `sync_atomic_fallback` so degraded durability is machine-visible.
+- Critical normalized writes are fail-fast: sync status is marked failed if persistence fails.
+- Cursor persistence remains best-effort and non-critical; data durability does not depend on cursor update success.
