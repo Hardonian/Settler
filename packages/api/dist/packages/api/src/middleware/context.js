@@ -31,6 +31,8 @@ function contextMiddleware(req, _res, next) {
         requestId: req.requestId,
         tenantId: req.tenantId, // Set by auth middleware
         userId: req.userId, // Set by auth middleware
+        traceId: req.traceId,
+        executionId: req.executionId,
     };
     // Run the rest of the request handling in this context
     logger_1.requestContext.run(context, () => {

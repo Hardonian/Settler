@@ -46,6 +46,7 @@ const logger_1 = require("../../utils/logger");
 const ml_matching_engine_1 = require("../matching/ml-matching-engine");
 const enhanced_cross_customer_intelligence_1 = require("../matching/enhanced-cross-customer-intelligence");
 const integrity_1 = require("../reconciliation/integrity");
+const runtime_events_1 = require("../ops-intelligence/runtime-events");
 const DEFAULT_CONFIG = {
     dateWindowDays: 7,
     amountTolerance: 0.01,
@@ -312,6 +313,12 @@ async function runReconciliation(ingestionId, tenantId, userId, config = {}) {
         id, ingestion_id, tenant_id, user_id, status, started_at,
         trace_id, metadata, created_at, updated_at
       ) VALUES ($1, $2, $3, $4, $5, NOW(), $6, $7, NOW(), NOW())`, [runId, ingestionId, tenantId, userId, "running", traceId, JSON.stringify(config)]);
+        await (0, runtime_events_1.emitOperatorRuntimeEvent)({
+            eventType: "reconciliation_run_started",
+            tenantId,
+            runId,
+            metadata: { ingestionId, traceId },
+        });
         // Get source transactions (from this ingestion)
         const sourceTransactions = await (0, db_1.query)(`SELECT id FROM normalized_transactions
       WHERE ingestion_id = $1 AND tenant_id = $2
@@ -392,6 +399,16 @@ async function runReconciliation(ingestionId, tenantId, userId, config = {}) {
             runId,
         ]);
         await (0, integrity_1.appendRunIntegrityEntry)(runId, tenantId);
+        await (0, runtime_events_1.emitOperatorRuntimeEvent)({
+            eventType: "reconciliation_run_completed",
+            tenantId,
+            runId,
+            recordsProcessed: sourceIds.length,
+            durationMs: undefined,
+            classificationCounts: { matched: matchedCount, unmatched: unmatchedCount },
+            manualReviewCount: unmatchedCount,
+            metadata: { traceId, avgConfidence },
+        });
         (0, logger_1.logInfo)("Reconciliation completed", {
             runId,
             matchedCount,
@@ -463,6 +480,13 @@ async function runReconciliation(ingestionId, tenantId, userId, config = {}) {
         error_message = $1,
         updated_at = NOW()
       WHERE id = $2`, [error instanceof Error ? error.message : String(error), runId]);
+        await (0, runtime_events_1.emitOperatorRuntimeEvent)({
+            eventType: "reconciliation_run_failed",
+            tenantId,
+            runId,
+            errorId: traceId,
+            metadata: { message: error instanceof Error ? error.message : String(error), traceId },
+        });
         await (0, integrity_1.appendRunIntegrityEntry)(runId, tenantId);
         throw error;
     }

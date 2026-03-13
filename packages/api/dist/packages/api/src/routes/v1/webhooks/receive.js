@@ -42,55 +42,80 @@ const express_1 = require("express");
 const WebhookIngestionService_1 = require("../../../application/webhooks/WebhookIngestionService");
 const api_response_1 = require("../../../utils/api-response");
 const error_handler_1 = require("../../../utils/error-handler");
+const distributed_guards_1 = require("../../../services/distributed-guards");
 const router = (0, express_1.Router)();
 const webhookService = new WebhookIngestionService_1.WebhookIngestionService();
+const MAX_TIMESTAMP_SKEW_MS = 5 * 60 * 1000;
+function parseWebhookTimestamp(req) {
+    const header = req.headers["x-webhook-timestamp"] || req.headers["x-timestamp"];
+    if (!header) {
+        return null;
+    }
+    const value = Array.isArray(header) ? header[0] : header;
+    const asNumber = Number(value);
+    if (!Number.isFinite(asNumber)) {
+        return null;
+    }
+    return asNumber > 9999999999 ? asNumber : asNumber * 1000;
+}
 /**
  * POST /api/v1/webhooks/receive/:adapter
  * Receive webhook from payment provider
  */
-router.post('/:adapter', async (req, res) => {
+router.post("/:adapter", async (req, res) => {
     try {
         const { adapter } = req.params;
-        const tenantId = req.headers['x-tenant-id'] || req.body.tenant_id;
+        const tenantId = req.headers["x-tenant-id"] || req.body.tenant_id;
         if (!tenantId) {
-            return (0, api_response_1.sendError)(res, 400, 'BAD_REQUEST', 'Tenant ID required');
+            return (0, api_response_1.sendError)(res, 400, "BAD_REQUEST", "Tenant ID required");
         }
-        // Get signature from headers (provider-specific)
-        const signature = req.headers['x-signature'] ||
-            req.headers['stripe-signature'] ||
-            req.headers['paypal-transmission-sig'] ||
-            req.headers['x-square-signature'] ||
-            req.headers['x-square-hmacsha256-signature'] ||
-            '';
-        if (!adapter || !tenantId) {
-            return (0, api_response_1.sendError)(res, 400, 'BAD_REQUEST', 'Adapter and Tenant ID are required');
+        const signature = req.headers["x-signature"] ||
+            req.headers["stripe-signature"] ||
+            req.headers["paypal-transmission-sig"] ||
+            req.headers["x-square-signature"] ||
+            req.headers["x-square-hmacsha256-signature"] ||
+            "";
+        if (!adapter || !signature) {
+            return (0, api_response_1.sendError)(res, 400, "BAD_REQUEST", "Adapter and webhook signature are required");
         }
-        // Get webhook secret from config or database
+        const webhookTimestamp = parseWebhookTimestamp(req);
+        if (webhookTimestamp && Math.abs(Date.now() - webhookTimestamp) > MAX_TIMESTAMP_SKEW_MS) {
+            return (0, api_response_1.sendError)(res, 400, "WEBHOOK_TIMESTAMP_EXPIRED", "Webhook timestamp outside accepted window");
+        }
+        const replay = await (0, distributed_guards_1.consumeWebhookReplayKey)({
+            adapter,
+            tenantId,
+            payload: req.body,
+            signature: String(signature),
+        });
+        res.setHeader("X-Webhook-Replay-Guarantee", replay.guarantee);
+        if (replay.duplicate) {
+            (0, distributed_guards_1.logWebhookReplayRejected)(replay.guarantee, adapter);
+            return (0, api_response_1.sendSuccess)(res, { processed: true, deduplicated: true, events: 0, guarantee: replay.guarantee }, "Duplicate webhook ignored");
+        }
         const secret = await getWebhookSecret(adapter, tenantId);
         if (!secret) {
-            return (0, api_response_1.sendError)(res, 401, 'UNAUTHORIZED', 'Webhook secret not configured');
+            return (0, api_response_1.sendError)(res, 401, "UNAUTHORIZED", "Webhook secret not configured");
         }
-        // Process webhook
         const result = await webhookService.processWebhook(adapter, req.body, signature, secret, tenantId);
         if (!result.success) {
-            return (0, api_response_1.sendError)(res, 400, 'PROCESSING_FAILED', result.errors?.join(', ') || 'Failed to process webhook');
+            return (0, api_response_1.sendError)(res, 400, "PROCESSING_FAILED", result.errors?.join(", ") || "Failed to process webhook");
         }
         (0, api_response_1.sendSuccess)(res, {
             processed: true,
-            events: result.events.length
+            deduplicated: false,
+            events: result.events.length,
+            guarantee: replay.guarantee,
         });
         return;
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, 'Failed to process webhook', 500);
+        (0, error_handler_1.handleRouteError)(res, error, "Failed to process webhook", 500);
         return;
     }
 });
-/**
- * Get webhook secret from database
- */
 async function getWebhookSecret(adapter, _tenantId) {
-    const { query } = await Promise.resolve().then(() => __importStar(require('../../../db')));
+    const { query } = await Promise.resolve().then(() => __importStar(require("../../../db")));
     const result = await query(`SELECT secret FROM webhook_configs WHERE adapter = $1 LIMIT 1`, [adapter]);
     return result.length > 0 && result[0] ? result[0].secret : null;
 }

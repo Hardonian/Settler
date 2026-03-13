@@ -37,12 +37,11 @@ tests/
 # CI/CD (not needed in deployment)
 .github/
 
-# Scripts (not needed in deployment)
-scripts/
-# But include build-time scripts
-!scripts/vercel-prisma-postinstall.js
-!scripts/vercel-build-optimizer.js
-!scripts/vercel-install.sh
+# Root scripts directory (not needed in deployment)
+# IMPORTANT: Use /scripts/ (anchored) not scripts/ (unanchored)
+# Unanchored scripts/ matches ALL directories named "scripts" at any depth,
+# including packages/web/scripts/ which contains build-time assert-build-env.mjs
+/scripts/
 
 # Other
 .DS_Store

@@ -8,6 +8,7 @@ const express_1 = require("express");
 const logger_1 = require("../../utils/logger");
 const reconciliation_matcher_1 = require("../../services/ingestion/reconciliation-matcher");
 const db_1 = require("../../db");
+const reconciliation_trust_contract_1 = require("./reconciliation-trust-contract");
 const router = (0, express_1.Router)();
 /**
  * POST /api/v1/reconciliation/run
@@ -87,9 +88,7 @@ router.get("/runs/:runId", async (req, res) => {
             confidenceAvg: run.confidence_avg,
             errorMessage: run.error_message,
             traceId: run.trace_id,
-            metadata: typeof run.metadata === "string"
-                ? JSON.parse(run.metadata)
-                : run.metadata,
+            metadata: typeof run.metadata === "string" ? JSON.parse(run.metadata) : run.metadata,
         });
     }
     catch (error) {
@@ -191,6 +190,150 @@ router.get("/runs/:runId/matches", async (req, res) => {
         });
     }
 });
+router.get("/runs/:runId/workbench", async (req, res) => {
+    try {
+        const { runId } = req.params;
+        const tenantId = req.tenantId;
+        const limit = parseInt(req.query.limit) || 100;
+        const offset = parseInt(req.query.offset) || 0;
+        const queue = req.query.queue;
+        const runs = await (0, db_1.query)(`SELECT metadata FROM reconciliation_runs WHERE id = $1 AND tenant_id = $2 LIMIT 1`, [runId || "", tenantId]);
+        if (runs.length === 0) {
+            return res.status(404).json({
+                error: "Not Found",
+                message: "Reconciliation run not found",
+                traceId: req.traceId,
+            });
+        }
+        const runMetadataRaw = runs[0].metadata;
+        const runMetadata = typeof runMetadataRaw === "string"
+            ? JSON.parse(runMetadataRaw)
+            : (runMetadataRaw ?? {});
+        const rows = await (0, db_1.query)(`SELECT
+        rm.id, rm.run_id, rm.match_type, rm.confidence, rm.match_reason,
+        rm.amount_diff, rm.date_diff, rm.reviewed, rm.reviewed_at, rm.reviewed_by, rm.metadata,
+        st.id as source_id, st.amount as source_amount, st.currency as source_currency,
+        st.date as source_date, st.description as source_description, st.external_id as source_external_id,
+        tt.id as target_id, tt.amount as target_amount, tt.currency as target_currency,
+        tt.date as target_date, tt.description as target_description, tt.external_id as target_external_id
+      FROM reconciliation_matches rm
+      JOIN normalized_transactions st ON st.id = rm.source_transaction_id
+      LEFT JOIN normalized_transactions tt ON tt.id = rm.target_transaction_id
+      WHERE rm.run_id = $1 AND rm.tenant_id = $2
+      ORDER BY rm.confidence ASC, st.date DESC
+      LIMIT $3 OFFSET $4`, [runId || "", tenantId, limit.toString(), offset.toString()]);
+        const items = rows
+            .map((row) => (0, reconciliation_trust_contract_1.buildWorkbenchItem)(row, runMetadata))
+            .filter((item) => (queue ? item.queue === queue : true));
+        const queueCounts = items.reduce((acc, item) => {
+            acc[item.queue] = (acc[item.queue] || 0) + 1;
+            return acc;
+        }, {});
+        return res.json({
+            runId,
+            queue: queue ?? null,
+            summary: {
+                totalItems: items.length,
+                queueCounts,
+            },
+            items,
+            pagination: { limit, offset, total: items.length },
+        });
+    }
+    catch (error) {
+        (0, logger_1.logError)("Failed to load reconciliation workbench", error, { traceId: req.traceId });
+        return res.status(500).json({
+            error: "Internal Server Error",
+            message: "Failed to load reconciliation workbench",
+            traceId: req.traceId,
+        });
+    }
+});
+router.get("/runs/:runId/compare/:otherRunId", async (req, res) => {
+    try {
+        const { runId, otherRunId } = req.params;
+        const tenantId = req.tenantId;
+        const fetchRunItems = async (targetRunId) => {
+            const runRows = await (0, db_1.query)(`SELECT metadata FROM reconciliation_runs WHERE id = $1 AND tenant_id = $2 LIMIT 1`, [targetRunId, tenantId]);
+            if (runRows.length === 0) {
+                throw new Error(`Run not found: ${targetRunId}`);
+            }
+            const runMetadataRaw = runRows[0].metadata;
+            const runMetadata = typeof runMetadataRaw === "string"
+                ? JSON.parse(runMetadataRaw)
+                : (runMetadataRaw ?? {});
+            const rows = await (0, db_1.query)(`SELECT
+          rm.id, rm.run_id, rm.match_type, rm.confidence, rm.match_reason,
+          rm.amount_diff, rm.date_diff, rm.reviewed, rm.reviewed_at, rm.reviewed_by, rm.metadata,
+          st.id as source_id, st.amount as source_amount, st.currency as source_currency,
+          st.date as source_date, st.description as source_description, st.external_id as source_external_id,
+          tt.id as target_id, tt.amount as target_amount, tt.currency as target_currency,
+          tt.date as target_date, tt.description as target_description, tt.external_id as target_external_id
+        FROM reconciliation_matches rm
+        JOIN normalized_transactions st ON st.id = rm.source_transaction_id
+        LEFT JOIN normalized_transactions tt ON tt.id = rm.target_transaction_id
+        WHERE rm.run_id = $1 AND rm.tenant_id = $2`, [targetRunId, tenantId]);
+            return rows.map((row) => (0, reconciliation_trust_contract_1.buildWorkbenchItem)(row, runMetadata));
+        };
+        const fromItems = await fetchRunItems(runId || "");
+        const toItems = await fetchRunItems(otherRunId || "");
+        const comparison = (0, reconciliation_trust_contract_1.compareWorkbenchRuns)(fromItems, toItems, runId || "", otherRunId || "");
+        return res.json(comparison);
+    }
+    catch (error) {
+        (0, logger_1.logError)("Failed to compare reconciliation runs", error, { traceId: req.traceId });
+        return res.status(500).json({
+            error: "Internal Server Error",
+            message: "Failed to compare reconciliation runs",
+            traceId: req.traceId,
+        });
+    }
+});
+router.get("/runs/:runId/workbench/export", async (req, res) => {
+    try {
+        const { runId } = req.params;
+        const tenantId = req.tenantId;
+        const runRows = await (0, db_1.query)(`SELECT metadata FROM reconciliation_runs WHERE id = $1 AND tenant_id = $2 LIMIT 1`, [runId || "", tenantId]);
+        if (runRows.length === 0) {
+            return res.status(404).json({
+                error: "Not Found",
+                message: "Reconciliation run not found",
+                traceId: req.traceId,
+            });
+        }
+        const runMetadataRaw = runRows[0].metadata;
+        const runMetadata = typeof runMetadataRaw === "string"
+            ? JSON.parse(runMetadataRaw)
+            : (runMetadataRaw ?? {});
+        const rows = await (0, db_1.query)(`SELECT
+        rm.id, rm.run_id, rm.match_type, rm.confidence, rm.match_reason,
+        rm.amount_diff, rm.date_diff, rm.reviewed, rm.reviewed_at, rm.reviewed_by, rm.metadata,
+        st.id as source_id, st.amount as source_amount, st.currency as source_currency,
+        st.date as source_date, st.description as source_description, st.external_id as source_external_id,
+        tt.id as target_id, tt.amount as target_amount, tt.currency as target_currency,
+        tt.date as target_date, tt.description as target_description, tt.external_id as target_external_id
+      FROM reconciliation_matches rm
+      JOIN normalized_transactions st ON st.id = rm.source_transaction_id
+      LEFT JOIN normalized_transactions tt ON tt.id = rm.target_transaction_id
+      WHERE rm.run_id = $1 AND rm.tenant_id = $2
+      ORDER BY st.date DESC`, [runId || "", tenantId]);
+        const items = rows.map((row) => (0, reconciliation_trust_contract_1.buildWorkbenchItem)(row, runMetadata));
+        return res.json({
+            runId,
+            exportedAt: new Date().toISOString(),
+            schemaVersion: "reconciliation-workbench.v1",
+            items,
+        });
+    }
+    catch (error) {
+        (0, logger_1.logError)("Failed to export reconciliation workbench", error, { traceId: req.traceId });
+        return res.status(500).json({
+            error: "Internal Server Error",
+            message: "Failed to export reconciliation workbench",
+            traceId: req.traceId,
+        });
+    }
+});
 /**
  * PATCH /api/v1/reconciliation/matches/:matchId
  * Update match (e.g., mark as reviewed)
@@ -198,18 +341,28 @@ router.get("/runs/:runId/matches", async (req, res) => {
 router.patch("/matches/:matchId", async (req, res) => {
     try {
         const { matchId } = req.params;
-        const { reviewed } = req.body;
+        const { reviewed, reviewState } = req.body;
         const tenantId = req.tenantId;
         const userId = req.userId;
+        const normalizedReviewState = reviewState === "reviewed" ||
+            reviewState === "approved" ||
+            reviewState === "dismissed" ||
+            reviewState === "escalated"
+            ? reviewState
+            : reviewed === true
+                ? "reviewed"
+                : "pending_review";
         await (0, db_1.query)(`UPDATE reconciliation_matches SET
         reviewed = $1,
         reviewed_by = $2,
         reviewed_at = NOW(),
+        metadata = jsonb_set(COALESCE(metadata, '{}'::jsonb), '{review_state}', to_jsonb($3::text), true),
         updated_at = NOW()
-      WHERE id = $3 AND tenant_id = $4`, [reviewed === true, userId || "", matchId || "", tenantId]);
+      WHERE id = $4 AND tenant_id = $5`, [reviewed === true, userId || "", normalizedReviewState, matchId || "", tenantId]);
         return res.json({
             id: matchId,
             reviewed: reviewed === true,
+            reviewState: normalizedReviewState,
             reviewedAt: new Date().toISOString(),
         });
     }

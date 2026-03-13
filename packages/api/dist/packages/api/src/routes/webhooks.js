@@ -18,18 +18,25 @@ const error_handler_1 = require("../utils/error-handler");
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const event_registry_1 = require("../services/webhooks/event-registry");
 const raw_body_1 = require("../middleware/raw-body");
+const client_1 = require("../infrastructure/redis/client");
+const security_1 = require("../services/webhooks/security");
 const router = (0, express_1.Router)();
 exports.webhooksRouter = router;
+const localReplayCache = new Map();
+const WEBHOOK_REPLAY_WINDOW_SECONDS = 600;
 // Rate limiting for webhook receive endpoint
 const webhookReceiveLimiter = (0, express_rate_limit_1.default)({
-    windowMs: 60 * 1000, // 1 minute
-    max: 100, // Per adapter per IP
+    windowMs: 60 * 1000,
+    max: 60,
     keyGenerator: (req) => `webhook:${req.params.adapter}:${req.ip}`,
-    message: "Too many webhook requests",
+    message: {
+        error: "RATE_LIMITED",
+        message: "Webhook ingest rate limit exceeded",
+        retryAfterSeconds: 60,
+    },
     standardHeaders: true,
     legacyHeaders: false,
 });
-// Validation schemas
 const createWebhookSchema = zod_1.z.object({
     body: zod_1.z.object({
         url: zod_1.z.string().url(),
@@ -42,12 +49,32 @@ const getWebhookSchema = zod_1.z.object({
         id: zod_1.z.string().uuid(),
     }),
 });
-// Create webhook endpoint with SSRF protection
+async function hasSeenWebhookReplayKey(replayKey) {
+    if ((0, client_1.isRedisAvailable)()) {
+        const exists = await client_1.cache.exists(replayKey);
+        if (exists) {
+            return "distributed";
+        }
+        await client_1.cache.set(replayKey, { seen: true }, WEBHOOK_REPLAY_WINDOW_SECONDS);
+        return null;
+    }
+    const now = Date.now();
+    for (const [key, expiresAt] of localReplayCache.entries()) {
+        if (expiresAt <= now) {
+            localReplayCache.delete(key);
+        }
+    }
+    const existingExpiry = localReplayCache.get(replayKey);
+    if (existingExpiry && existingExpiry > now) {
+        return "local";
+    }
+    localReplayCache.set(replayKey, now + WEBHOOK_REPLAY_WINDOW_SECONDS * 1000);
+    return null;
+}
 router.post("/", (0, authorization_1.requirePermission)(Permissions_1.Permission.WEBHOOKS_WRITE), (0, validation_1.validateRequest)(createWebhookSchema), async (req, res) => {
     try {
         const { url, events, secret } = req.body;
         const userId = req.userId;
-        // Validate webhook URL (SSRF protection)
         const isValidUrl = await (0, SSRFProtection_1.validateExternalUrl)(url);
         if (!isValidUrl) {
             return res.status(400).json({
@@ -55,7 +82,6 @@ router.post("/", (0, authorization_1.requirePermission)(Permissions_1.Permission
                 message: "URL must be HTTPS and cannot point to internal/private IP addresses",
             });
         }
-        // Validate all events are valid and public
         for (const event of events) {
             if (!(0, event_registry_1.isValidEventType)(event)) {
                 return res.status(400).json({
@@ -71,7 +97,6 @@ router.post("/", (0, authorization_1.requirePermission)(Permissions_1.Permission
                 });
             }
         }
-        // Generate secret if not provided
         const webhookSecret = secret || `whsec_${(0, crypto_1.randomBytes)(32).toString("base64url")}`;
         const result = await (0, db_1.query)(`INSERT INTO webhooks (user_id, url, events, secret, status)
          VALUES ($1, $2, $3, $4, 'active')
@@ -80,13 +105,8 @@ router.post("/", (0, authorization_1.requirePermission)(Permissions_1.Permission
             throw new Error("Failed to create webhook");
         }
         const webhookId = result[0].id;
-        // Log audit event
         await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, metadata)
-         VALUES ($1, $2, $3)`, [
-            "webhook_created",
-            userId,
-            JSON.stringify({ webhookId, url: url.substring(0, 50) }), // Don't log full URL
-        ]);
+         VALUES ($1, $2, $3)`, ["webhook_created", userId, JSON.stringify({ webhookId, url: url.substring(0, 50) })]);
         (0, logger_1.logInfo)("Webhook created", { webhookId, userId });
         res.status(201).json({
             data: {
@@ -106,7 +126,6 @@ router.post("/", (0, authorization_1.requirePermission)(Permissions_1.Permission
         return;
     }
 });
-// List webhooks with pagination
 router.get("/", (0, authorization_1.requirePermission)(Permissions_1.Permission.WEBHOOKS_READ), async (req, res) => {
     try {
         const userId = req.userId;
@@ -149,34 +168,52 @@ router.get("/", (0, authorization_1.requirePermission)(Permissions_1.Permission.
         return;
     }
 });
-// Webhook endpoint for receiving external webhooks with signature verification
 router.post("/receive/:adapter", webhookReceiveLimiter, (0, raw_body_1.createRawBodyMiddleware)(), async (req, res) => {
     try {
-        const { adapter } = req.params;
+        const adapter = (req.params.adapter || "").toLowerCase();
         const signature = req.headers["x-webhook-signature"];
-        const timestamp = req.headers["x-webhook-timestamp"];
-        // Get raw body for signature verification
-        const rawBody = req.rawBodyString || JSON.stringify(req.body);
-        // Verify timestamp (prevent replay attacks)
-        if (timestamp) {
-            const requestTime = parseInt(timestamp);
-            const currentTime = Math.floor(Date.now() / 1000);
-            const timeDiff = Math.abs(currentTime - requestTime);
-            if (timeDiff > 300) {
-                // 5 minutes
-                (0, logger_1.logWarn)("Webhook timestamp too old", { adapter, timeDiff });
-                return res.status(401).json({ error: "Request timestamp too old" });
-            }
+        const timestampHeader = req.headers["x-webhook-timestamp"];
+        if (!adapter || !(0, security_1.isAllowedWebhookAdapter)(adapter)) {
+            return res.status(400).json({
+                error: "UNSUPPORTED_ADAPTER",
+                message: "Webhook adapter is not allowed",
+            });
         }
-        // Verify webhook signature
+        const timestampValidation = (0, security_1.validateWebhookTimestamp)(timestampHeader);
+        if (!timestampValidation.valid) {
+            return res.status(401).json({
+                error: "INVALID_WEBHOOK_TIMESTAMP",
+                message: timestampValidation.reason === "missing"
+                    ? "Missing webhook timestamp"
+                    : timestampValidation.reason === "invalid"
+                        ? "Invalid webhook timestamp"
+                        : "Webhook timestamp is outside allowed tolerance",
+            });
+        }
         if (!signature) {
             (0, logger_1.logWarn)("Missing webhook signature", { adapter, ip: req.ip });
             return res.status(401).json({ error: "Missing webhook signature" });
         }
+        const rawBody = req.rawBodyString;
+        if (!rawBody) {
+            return res.status(400).json({
+                error: "RAW_BODY_REQUIRED",
+                message: "Raw body is required for webhook signature verification",
+            });
+        }
+        const replayKey = (0, security_1.buildWebhookReplayKey)(adapter, signature, timestampHeader);
+        const replayHit = await hasSeenWebhookReplayKey(replayKey);
+        if (replayHit) {
+            (0, logger_1.logWarn)("Rejected replayed webhook", { adapter, mode: replayHit });
+            return res.status(409).json({
+                error: "WEBHOOK_REPLAY_DETECTED",
+                mode: replayHit,
+                message: replayHit === "distributed"
+                    ? "Webhook already processed in distributed replay window"
+                    : "Webhook already processed in local replay window",
+            });
+        }
         try {
-            if (!adapter) {
-                return res.status(400).json({ error: "Adapter is required" });
-            }
             const isValid = await (0, webhook_signature_1.verifyWebhookSignature)(adapter, rawBody, signature);
             if (!isValid) {
                 (0, logger_1.logWarn)("Invalid webhook signature", { adapter, ip: req.ip });
@@ -188,14 +225,15 @@ router.post("/receive/:adapter", webhookReceiveLimiter, (0, raw_body_1.createRaw
             (0, logger_1.logError)("Webhook signature verification failed", error, { adapter });
             return res.status(400).json({ error: message });
         }
-        // Store webhook payload for async processing
         await (0, db_1.query)(`INSERT INTO webhook_payloads (adapter, payload, signature, received_at)
-           VALUES ($1, $2, $3, NOW())`, [adapter || "", JSON.stringify(req.body), signature || ""]);
-        // Queue for async processing (in production, use Bull/Redis queue)
-        // For now, acknowledge immediately
-        (0, logger_1.logInfo)("Webhook received", { adapter, ip: req.ip });
+           VALUES ($1, $2, $3, NOW())`, [adapter, JSON.stringify(req.body), signature]);
+        (0, logger_1.logInfo)("Webhook received", {
+            adapter,
+            replayProtection: (0, client_1.isRedisAvailable)() ? "distributed" : "local_only",
+        });
         res.status(202).json({
             received: true,
+            mode: (0, client_1.isRedisAvailable)() ? "distributed" : "local_only",
             message: "Webhook received and queued for processing",
         });
         return;
@@ -207,12 +245,10 @@ router.post("/receive/:adapter", webhookReceiveLimiter, (0, raw_body_1.createRaw
         return;
     }
 });
-// Delete webhook
 router.delete("/:id", (0, authorization_1.requirePermission)(Permissions_1.Permission.WEBHOOKS_DELETE), (0, validation_1.validateRequest)(getWebhookSchema), async (req, res) => {
     try {
         const { id } = req.params;
         const userId = req.userId;
-        // Check ownership
         await new Promise((resolve, reject) => {
             (0, authorization_1.requireResourceOwnership)(req, res, (err) => {
                 if (err)
@@ -227,7 +263,6 @@ router.delete("/:id", (0, authorization_1.requirePermission)(Permissions_1.Permi
             userId,
             tenantId,
         ]);
-        // Log audit event
         await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`, ["webhook_deleted", userId, JSON.stringify({ webhookId: id })]);
         (0, logger_1.logInfo)("Webhook deleted", { webhookId: id, userId });

@@ -6,6 +6,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventProjectionService = void 0;
 const ReconciliationProjections_1 = require("../cqrs/projections/ReconciliationProjections");
+const ReconciliationLifecycle_1 = require("../../domain/eventsourcing/reconciliation/ReconciliationLifecycle");
 class EventProjectionService {
     eventBus;
     eventStore;
@@ -17,42 +18,50 @@ class EventProjectionService {
         this.setupEventHandlers();
     }
     setupEventHandlers() {
-        // Subscribe to domain events from event bus
-        this.eventBus.subscribe('reconciliation.started', async (event) => {
-            // Fetch full event from event store
-            const events = await this.eventStore.getEvents(event.reconciliationId, 'reconciliation');
-            const startedEvent = events.find((e) => e.event_type === 'ReconciliationStarted');
+        this.eventBus.subscribe("reconciliation.started", async (event) => {
+            const events = await this.eventStore.getEvents(event.reconciliationId, "reconciliation");
+            const startedEvent = events.find((e) => e.event_type === "ReconciliationStarted");
             if (startedEvent) {
                 await this.projectionHandlers.handleReconciliationStarted(event);
             }
         });
-        // Subscribe to event store events (for direct event envelope handling)
-        // In production, you might use a separate event stream processor
     }
     /**
      * Process event envelope and update projections
      */
     async processEvent(eventEnvelope) {
+        if (eventEnvelope.aggregate_type === "reconciliation") {
+            const history = await this.eventStore.getEvents(eventEnvelope.aggregate_id, "reconciliation");
+            (0, ReconciliationLifecycle_1.assertTenantInvariant)(history, eventEnvelope.metadata.tenant_id);
+            (0, ReconciliationLifecycle_1.assertCompletionDataInvariant)(eventEnvelope);
+            (0, ReconciliationLifecycle_1.assertProjectionMutationInvariant)(history, eventEnvelope);
+        }
         switch (eventEnvelope.event_type) {
-            case 'ReconciliationStarted':
+            case "ReconciliationStarted":
                 await this.projectionHandlers.handleReconciliationStarted(eventEnvelope);
                 break;
-            case 'OrdersFetched':
+            case "ReconciliationPaused":
+                await this.projectionHandlers.handleReconciliationPaused(eventEnvelope);
+                break;
+            case "ReconciliationResumed":
+                await this.projectionHandlers.handleReconciliationResumed(eventEnvelope);
+                break;
+            case "OrdersFetched":
                 await this.projectionHandlers.handleOrdersFetched(eventEnvelope);
                 break;
-            case 'PaymentsFetched':
+            case "PaymentsFetched":
                 await this.projectionHandlers.handlePaymentsFetched(eventEnvelope);
                 break;
-            case 'RecordMatched':
+            case "RecordMatched":
                 await this.projectionHandlers.handleRecordMatched(eventEnvelope);
                 break;
-            case 'RecordUnmatched':
+            case "RecordUnmatched":
                 await this.projectionHandlers.handleRecordUnmatched(eventEnvelope);
                 break;
-            case 'ReconciliationCompleted':
+            case "ReconciliationCompleted":
                 await this.projectionHandlers.handleReconciliationCompleted(eventEnvelope);
                 break;
-            case 'ReconciliationFailed':
+            case "ReconciliationFailed":
                 await this.projectionHandlers.handleReconciliationFailed(eventEnvelope);
                 break;
         }

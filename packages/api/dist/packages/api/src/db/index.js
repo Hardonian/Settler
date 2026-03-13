@@ -109,6 +109,8 @@ async function queryWithTenant(tenantId, text, params) {
         !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(tenantId)) {
         throw new Error(`[TENANT ISOLATION VIOLATION] Invalid or missing tenantId: ${tenantId}`);
     }
+    // Runtime assertion to prevent unscoped tenant-table access.
+    assertTenantScoped(text);
     const client = await exports.pool.connect();
     try {
         // Set tenant context for RLS
@@ -146,6 +148,7 @@ const TENANT_SCOPED_TABLES = new Set([
     "audit_exports",
     "alert_rules",
     "alert_history",
+    "operator_runtime_events",
 ]);
 /**
  * Asserts that a SQL query touching tenant-scoped tables includes a tenant_id filter.

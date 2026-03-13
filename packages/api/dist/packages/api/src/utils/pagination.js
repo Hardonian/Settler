@@ -4,12 +4,15 @@
  * Cursor-based pagination for better performance at scale
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.MAX_PAGE_LIMIT = exports.DEFAULT_PAGE_LIMIT = void 0;
 exports.decodeCursor = decodeCursor;
 exports.encodeCursor = encodeCursor;
 exports.buildCursorWhereClause = buildCursorWhereClause;
 exports.buildCursorOrderBy = buildCursorOrderBy;
 exports.createCursorPaginationResponse = createCursorPaginationResponse;
 exports.parseCursorPaginationParams = parseCursorPaginationParams;
+exports.DEFAULT_PAGE_LIMIT = 100;
+exports.MAX_PAGE_LIMIT = 250;
 /**
  * Decodes a base64-encoded cursor string into pagination parameters.
  *
@@ -57,7 +60,7 @@ function encodeCursor(created_at, id) {
 function buildCursorWhereClause(params, tableAlias = '') {
     const prefix = tableAlias ? `${tableAlias}.` : '';
     // Limit is reserved for future query building
-    const _limit = Math.min(params.limit || 100, 1000);
+    const _limit = Math.min(params.limit || exports.DEFAULT_PAGE_LIMIT, exports.MAX_PAGE_LIMIT);
     void _limit;
     const direction = params.direction || 'next';
     let paramIndex = 1;
@@ -150,10 +153,12 @@ function parseCursorPaginationParams(req) {
     if (req.query.cursor) {
         result.cursor = req.query.cursor;
     }
-    if (req.query.limit) {
-        result.limit = parseInt(req.query.limit, 10);
+    const rawLimit = req.query.limit ? Number.parseInt(req.query.limit, 10) : exports.DEFAULT_PAGE_LIMIT;
+    result.limit = Number.isFinite(rawLimit) ? Math.min(Math.max(rawLimit, 1), exports.MAX_PAGE_LIMIT) : exports.DEFAULT_PAGE_LIMIT;
+    if (req.query.cursor && !decodeCursor(req.query.cursor)) {
+        throw new Error('INVALID_CURSOR');
     }
-    result.direction = req.query.direction || 'next';
+    result.direction = req.query.direction === 'prev' ? 'prev' : 'next';
     return result;
 }
 //# sourceMappingURL=pagination.js.map

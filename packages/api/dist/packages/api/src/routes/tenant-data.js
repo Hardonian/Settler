@@ -50,6 +50,8 @@ const db_1 = require("../db");
 const logger_1 = require("../utils/logger");
 const error_handler_1 = require("../utils/error-handler");
 const User_1 = require("../domain/entities/User");
+const TenantEnforcement_1 = require("../infrastructure/tenancy/TenantEnforcement");
+const integrity_1 = require("../services/reconciliation/integrity");
 const router = (0, express_1.Router)();
 exports.tenantDataRouter = router;
 const exportTenantDataSchema = zod_1.z.object({
@@ -181,6 +183,85 @@ router.get("/data-export", (0, authorization_1.requirePermission)(Permissions_1.
             userId: req.userId
         });
         return;
+    }
+});
+async function tableExists(tableName) {
+    const rows = await (0, db_1.query)(`SELECT to_regclass($1) as exists`, [`public.${tableName}`]);
+    return Boolean(rows[0]?.exists);
+}
+async function countIfTableExists(tableName, sql, params) {
+    if (!(await tableExists(tableName))) {
+        return 0;
+    }
+    const rows = await (0, db_1.query)(sql, params);
+    return Number(rows[0]?.count ?? 0);
+}
+router.get("/integrity-check", (0, authorization_1.requirePermission)(Permissions_1.Permission.TENANT_READ), async (req, res) => {
+    try {
+        const tenantId = req.tenantId;
+        (0, TenantEnforcement_1.validateTenantId)(tenantId, "tenant-data integrity-check");
+        const rlsRows = await (0, db_1.query)(`SELECT c.relname as table_name,
+                c.relrowsecurity,
+                COUNT(p.polname)::text as policy_count
+         FROM pg_class c
+         JOIN pg_namespace n ON n.oid = c.relnamespace
+         LEFT JOIN pg_policy p ON p.polrelid = c.oid
+         WHERE n.nspname = 'public'
+           AND c.relname IN ('users', 'jobs', 'reconciliation_runs', 'reconciliation_matches', 'audit_logs')
+         GROUP BY c.relname, c.relrowsecurity`);
+        const allTablesProtected = rlsRows.length >= 5 &&
+            rlsRows.every((row) => row.relrowsecurity && Number(row.policy_count) > 0);
+        const orphanJobs = await countIfTableExists("jobs", `SELECT COUNT(*)::text as count
+         FROM jobs j
+         LEFT JOIN users u ON j.user_id = u.id
+         WHERE j.tenant_id = $1
+           AND (u.id IS NULL OR u.tenant_id <> j.tenant_id)`, [tenantId]);
+        const orphanMatches = await countIfTableExists("reconciliation_matches", `SELECT COUNT(*)::text as count
+         FROM reconciliation_matches m
+         LEFT JOIN reconciliation_runs r ON m.run_id = r.id
+         WHERE m.tenant_id = $1
+           AND (r.id IS NULL OR r.tenant_id <> m.tenant_id)`, [tenantId]);
+        const crossTenantJobRefs = await countIfTableExists("jobs", `SELECT COUNT(*)::text as count
+         FROM jobs j
+         JOIN users u ON j.user_id = u.id
+         WHERE j.tenant_id = $1
+           AND u.tenant_id <> j.tenant_id`, [tenantId]);
+        const crossTenantMatchRefs = await countIfTableExists("reconciliation_matches", `SELECT COUNT(*)::text as count
+         FROM reconciliation_matches m
+         JOIN reconciliation_runs r ON m.run_id = r.id
+         WHERE m.tenant_id = $1
+           AND r.tenant_id <> m.tenant_id`, [tenantId]);
+        const chainIntegrity = await (0, integrity_1.verifyTenantIntegrityChain)(tenantId);
+        return res.status(200).json({
+            tenantId,
+            checkedAt: new Date().toISOString(),
+            isolationRulesActive: allTablesProtected,
+            noOrphanRecords: orphanJobs + orphanMatches === 0,
+            noCrossTenantReferences: crossTenantJobRefs + crossTenantMatchRefs === 0,
+            details: {
+                rlsTables: rlsRows.map((row) => ({
+                    tableName: row.table_name,
+                    rowLevelSecurity: row.relrowsecurity,
+                    policyCount: Number(row.policy_count),
+                })),
+                orphanRecords: {
+                    jobs: orphanJobs,
+                    reconciliationMatches: orphanMatches,
+                },
+                crossTenantReferences: {
+                    jobsToUsers: crossTenantJobRefs,
+                    matchesToRuns: crossTenantMatchRefs,
+                },
+                reconciliationIntegrity: chainIntegrity,
+            },
+        });
+    }
+    catch (error) {
+        (0, logger_1.logError)('Failed to run tenant integrity check', error, { tenantId: req.tenantId, userId: req.userId });
+        return (0, error_handler_1.handleRouteError)(res, error, 'Failed to run tenant integrity check', 500, {
+            tenantId: req.tenantId,
+            userId: req.userId,
+        });
     }
 });
 /**

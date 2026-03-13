@@ -13,6 +13,7 @@ exports.trackPlaygroundRun = trackPlaygroundRun;
 const db_1 = require("../../db");
 const logger_1 = require("../../utils/logger");
 const events_1 = require("../analytics/events");
+const metering_1 = require("./metering");
 /**
  * Track usage for a metric
  */
@@ -29,6 +30,12 @@ async function trackUsage(userId, tenantId, metricType, increment = 1) {
          updated_at = NOW()`, [userId, tenantId, metricType, increment, periodStart, periodEnd]);
         // Also track as analytics event
         await (0, events_1.trackUsageEvent)(userId, metricType, increment, { tenantId });
+        await (0, metering_1.meterFromLegacyUsageMetric)({
+            tenantId,
+            metricType,
+            quantity: increment,
+            metadata: { user_id: userId },
+        });
         (0, logger_1.logInfo)("Usage tracked", { userId, tenantId, metricType, increment });
     }
     catch (error) {

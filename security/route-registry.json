@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-03-08T15:22:14.996Z",
-  "totalRoutes": 228,
+  "generatedAt": "2026-03-13T21:04:01.502Z",
+  "totalRoutes": 235,
   "routes": [
     {
       "route": "/api/admin/audit",
@@ -279,6 +279,18 @@
       "methods": ["GET"]
     },
     {
+      "route": "/api/console/operator/control-plane",
+      "kind": "next-app-router",
+      "file": "packages/web/src/app/api/console/operator/control-plane/route.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/console/operator/runs",
+      "kind": "next-app-router",
+      "file": "packages/web/src/app/api/console/operator/runs/route.ts",
+      "methods": ["GET"]
+    },
+    {
       "route": "/api/console/performance",
       "kind": "next-app-router",
       "file": "packages/web/src/app/api/console/performance/route.ts",
@@ -462,7 +474,7 @@
       "route": "/api/control-plane/failures",
       "kind": "next-app-router",
       "file": "packages/web/src/app/api/control-plane/failures/route.ts",
-      "methods": ["POST"]
+      "methods": ["GET", "POST"]
     },
     {
       "route": "/api/control-plane/keys",
@@ -559,6 +571,18 @@
       "kind": "next-app-router",
       "file": "packages/web/src/app/api/enterprise/ip-allowlist/[id]/route.ts",
       "methods": ["DELETE"]
+    },
+    {
+      "route": "/api/explorer/execution/[id]",
+      "kind": "next-app-router",
+      "file": "packages/web/src/app/api/explorer/execution/[id]/route.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/explorer/history",
+      "kind": "next-app-router",
+      "file": "packages/web/src/app/api/explorer/history/route.ts",
+      "methods": ["GET"]
     },
     {
       "route": "/api/exports",
@@ -783,6 +807,12 @@
       "methods": ["POST"]
     },
     {
+      "route": "/api/operator/incidents",
+      "kind": "next-app-router",
+      "file": "packages/web/src/app/api/operator/incidents/route.ts",
+      "methods": ["GET", "PATCH"]
+    },
+    {
       "route": "/api/ops/activation-funnel",
       "kind": "next-app-router",
       "file": "packages/web/src/app/api/ops/activation-funnel/route.ts",
@@ -795,9 +825,21 @@
       "methods": ["GET"]
     },
     {
+      "route": "/api/ops/dashboard",
+      "kind": "next-app-router",
+      "file": "packages/web/src/app/api/ops/dashboard/route.ts",
+      "methods": ["GET"]
+    },
+    {
       "route": "/api/ops/edge-functions",
       "kind": "next-app-router",
       "file": "packages/web/src/app/api/ops/edge-functions/route.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/ops/integration-status",
+      "kind": "next-app-router",
+      "file": "packages/web/src/app/api/ops/integration-status/route.ts",
       "methods": ["GET"]
     },
     {

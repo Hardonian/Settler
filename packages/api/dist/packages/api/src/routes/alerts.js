@@ -20,7 +20,7 @@ const createAlertRuleSchema = zod_1.z.object({
         metric: zod_1.z.string(), // e.g., "reconciliation.accuracy", "reconciliation.error_rate"
         threshold: zod_1.z.number(),
         operator: zod_1.z.enum(["gt", "gte", "lt", "lte", "eq", "neq"]),
-        channels: zod_1.z.array(zod_1.z.enum(["email", "slack", "pagerduty"])),
+        channels: zod_1.z.array(zod_1.z.enum(["email", "slack", "teams", "telegram", "pagerduty", "webhook"])),
         enabled: zod_1.z.boolean().default(true),
     }),
 });
