@@ -95,7 +95,7 @@ describe("Deterministic Matcher", () => {
 
       const matches = matchTransactions(sourceTransactions, targetTransactions);
 
-      expect(matches[0].matchType).toBe("fuzzy");
+      expect(matches[0].matchType).toBe("unmatched");
     });
   });
 
