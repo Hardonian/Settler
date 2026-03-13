@@ -85,6 +85,13 @@ This matrix is the single source of truth for runtime environment variables and 
 | `PRODUCTION_URL`        | Post-deploy verification      | Deployment           | Target URL for smoke checks                   | Optional unless post-deploy checks enabled  | internal       |
 | `GITHUB_TOKEN`          | Release automation            | CI automation        | GitHub token for release automation tasks     | Required in GitHub Actions contexts         | secret         |
 
+## Local vs CI vs Vercel env resolution
+
+- **Local root scripts** (`verify:setup`, `doctor`, `dev:stack`) read process env plus local files (`.env`, `.env.local`, `.env.production`, `packages/web/.env.local`, `packages/api/.env.local`).
+- **Doppler** values are only visible when commands are executed through Doppler (`doppler run -- <command>`) or exported into `.env.local`.
+- **Vercel dashboard env** is available only to Vercel build/runtime processes, not your local shell.
+- **GitHub Actions** receives env only through workflow `env:` entries and `secrets.*` mappings.
+
 ## Operator verification commands
 
 Use these commands after populating required env keys:
@@ -93,3 +100,8 @@ Use these commands after populating required env keys:
 - `pnpm run doctor -- --first-run`
 - `pnpm run settler:doctor -- --first-run` (alias of `doctor`)
 - `pnpm run kernel:health`
+
+For Doppler-managed local runs:
+
+- `doppler run -- pnpm run verify:setup`
+- `doppler run -- pnpm run doctor -- --first-run`

@@ -25,8 +25,17 @@ Use these minimum variables before running migrations or API/server workflows:
 
 Recommended local placement:
 
-- `packages/web/.env.local` for local development secrets (gitignored)
-- root `.env` only when a shared workspace script explicitly requires it
+- root `.env.local` for canonical values used by root verification and stack scripts
+- `packages/web/.env.local` and `packages/api/.env.local` only for package-specific overrides
+
+For Doppler-managed local development, launch commands through Doppler so secrets are injected into the process:
+
+```bash
+doppler run -- pnpm run verify:setup
+doppler run -- pnpm run doctor -- --skip-pipeline --first-run
+```
+
+Vercel dashboard env does not populate local shell processes.
 
 ## Environment entrypoint
 

@@ -14,13 +14,25 @@ type Finding = {
   action?: string;
 };
 
-function loadEnvFiles(): void {
-  for (const file of [".env", ".env.local", ".env.production"]) {
+function loadEnvFiles(): string[] {
+  const loaded: string[] = [];
+  const candidates = [
+    ".env",
+    ".env.local",
+    ".env.production",
+    path.join("packages", "web", ".env.local"),
+    path.join("packages", "api", ".env.local"),
+  ];
+
+  for (const file of candidates) {
     const full = path.join(process.cwd(), file);
     if (fs.existsSync(full)) {
       dotenv.config({ path: full, override: false });
+      loaded.push(file);
     }
   }
+
+  return loaded;
 }
 
 function isEnabled(value: string | undefined): boolean {
@@ -313,7 +325,7 @@ function validateEnterprise(findings: Finding[]): void {
   }
 }
 
-function printFindings(findings: Finding[]): void {
+function printFindings(findings: Finding[], loadedEnvFiles: string[]): void {
   const grouped = new Map<string, Finding[]>();
   for (const finding of findings) {
     if (!grouped.has(finding.area)) grouped.set(finding.area, []);
@@ -321,8 +333,10 @@ function printFindings(findings: Finding[]): void {
   }
 
   console.log("🩺 Settler setup verification");
+  const loadedSummary = loadedEnvFiles.length > 0 ? loadedEnvFiles.join(", ") : "none";
+  console.log(`Loaded env files: ${loadedSummary}`);
   console.log(
-    "Tip: for first-run local bootstrap, copy .env.local.example to .env.local and replace placeholder values."
+    "Tip: local runs only see env exported in this shell, loaded from local .env files, or injected by doppler run."
   );
   for (const [area, items] of grouped.entries()) {
     console.log(`\n[${area}]`);
@@ -337,14 +351,14 @@ function printFindings(findings: Finding[]): void {
 }
 
 async function main(): Promise<void> {
-  loadEnvFiles();
+  const loadedEnvFiles = loadEnvFiles();
 
   const findings: Finding[] = [];
   validateCore(findings);
   validateBilling(findings);
   validateEnterprise(findings);
   await validateKernel(findings);
-  printFindings(findings);
+  printFindings(findings, loadedEnvFiles);
 
   const hasErrors = findings.some((finding) => finding.severity === "error");
   if (hasErrors) {
