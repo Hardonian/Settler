@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, ArrowLeft, RefreshCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { asExtendedClient } from "@/lib/supabase/types";
+import { getSyncDurabilityPresentation } from "@/lib/integrations/sync-run-persistence";
 
 interface SyncRun {
   id: string;
@@ -18,6 +19,8 @@ interface SyncRun {
   errors_count: number;
   warnings_count: number;
   error_message: string | null;
+  persistence_status: string | null;
+  recovery_required: boolean;
 }
 
 export default function IntegrationLogsPage() {
@@ -36,16 +39,18 @@ export default function IntegrationLogsPage() {
     try {
       setIsLoading(true);
       const supabase = createClient();
-      
-      const { data: { user } } = await supabase.auth.getUser();
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const typedSupabase = asExtendedClient(supabase);
       const { data: memberships } = await typedSupabase
-        .from('app_private.memberships')
-        .select('tenant_id')
-        .eq('user_id', user.id)
-        .eq('status', 'active')
+        .from("app_private.memberships")
+        .select("tenant_id")
+        .eq("user_id", user.id)
+        .eq("status", "active")
         .limit(1);
 
       const tenantId = memberships?.[0]?.tenant_id;
@@ -53,49 +58,74 @@ export default function IntegrationLogsPage() {
 
       // Get connector
       const { data: connector } = await typedSupabase
-        .from('connectors')
-        .select('id')
-        .eq('tenant_id', tenantId)
-        .eq('provider_id', integrationId)
+        .from("connectors")
+        .select("id")
+        .eq("tenant_id", tenantId)
+        .eq("provider_id", integrationId)
         .single();
 
       if (!connector) return;
 
-      // Get sync runs - using regular supabase client for sync_runs table
-      // (not in our typed client yet, but this table may not exist)
-      const { data: runs } = await (supabase as unknown as {
-        from(table: 'sync_runs'): {
-          select(columns: string): {
-            eq(column: string, value: unknown): {
-              order(column: string, options: { ascending: boolean }): {
-                limit(count: number): Promise<{ data: SyncRun[] | null; error: unknown }>;
+      const { data: runs } = await (
+        supabase as unknown as {
+          from(table: "sync_runs"): {
+            select(columns: string): {
+              eq(
+                column: string,
+                value: unknown
+              ): {
+                order(
+                  column: string,
+                  options: { ascending: boolean }
+                ): {
+                  limit(count: number): Promise<{ data: SyncRun[] | null; error: unknown }>;
+                };
               };
             };
           };
-        };
-      }).from('sync_runs')
-        .select('*')
-        .eq('connector_id', connector.id)
-        .order('started_at', { ascending: false })
+        }
+      )
+        .from("sync_runs")
+        .select("*")
+        .eq("connector_id", connector.id)
+        .order("started_at", { ascending: false })
         .limit(50);
 
       setSyncRuns((runs || []) as SyncRun[]);
     } catch (error) {
-      console.error('Failed to fetch sync runs:', error);
+      console.error("Failed to fetch sync runs:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const getDurabilityBadge = (run: SyncRun) => {
+    const durability = getSyncDurabilityPresentation(run.persistence_status, run.recovery_required);
+
+    if (durability.tone === "success") {
+      return <Badge className="bg-emerald-600">{durability.label}</Badge>;
+    }
+
+    if (durability.tone === "warning") {
+      return <Badge className="bg-amber-500 text-black">{durability.label}</Badge>;
+    }
+
+    if (durability.tone === "danger") {
+      return <Badge variant="destructive">{durability.label}</Badge>;
+    }
+
+    return <Badge variant="outline">{durability.label}</Badge>;
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'completed':
+      case "completed":
         return <Badge className="bg-green-500">Completed</Badge>;
-      case 'failed':
+      case "failed":
         return <Badge variant="destructive">Failed</Badge>;
-      case 'running':
+      case "running":
         return <Badge className="bg-blue-500">Running</Badge>;
-      case 'pending':
+      case "pending":
         return <Badge variant="outline">Pending</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
@@ -121,9 +151,7 @@ export default function IntegrationLogsPage() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
             Sync Logs - {integrationId}
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            View sync history and errors
-          </p>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">View sync history and errors</p>
         </div>
         <Button onClick={fetchSyncRuns} variant="outline" className="ml-auto">
           <RefreshCw className="mr-2 h-4 w-4" />
@@ -144,39 +172,47 @@ export default function IntegrationLogsPage() {
               </p>
             ) : (
               syncRuns.map((run) => (
-                <div
-                  key={run.id}
-                  className="border rounded-lg p-4 space-y-2"
-                >
+                <div key={run.id} className="border rounded-lg p-4 space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       {getStatusBadge(run.status)}
+                      {getDurabilityBadge(run)}
                       <span className="text-sm text-gray-600 dark:text-gray-400">
                         {new Date(run.started_at).toLocaleString()}
                       </span>
                     </div>
                     {run.finished_at && (
                       <span className="text-xs text-gray-500">
-                        Duration: {Math.round(
-                          (new Date(run.finished_at).getTime() - new Date(run.started_at).getTime()) / 1000
-                        )}s
+                        Duration:{" "}
+                        {Math.round(
+                          (new Date(run.finished_at).getTime() -
+                            new Date(run.started_at).getTime()) /
+                            1000
+                        )}
+                        s
                       </span>
                     )}
                   </div>
                   <div className="grid grid-cols-3 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-600 dark:text-gray-400">Transactions:</span>{' '}
+                      <span className="text-gray-600 dark:text-gray-400">Transactions:</span>{" "}
                       <span className="font-medium">{run.transactions_synced || 0}</span>
                     </div>
                     <div>
-                      <span className="text-gray-600 dark:text-gray-400">Errors:</span>{' '}
+                      <span className="text-gray-600 dark:text-gray-400">Errors:</span>{" "}
                       <span className="font-medium text-red-600">{run.errors_count || 0}</span>
                     </div>
                     <div>
-                      <span className="text-gray-600 dark:text-gray-400">Warnings:</span>{' '}
+                      <span className="text-gray-600 dark:text-gray-400">Warnings:</span>{" "}
                       <span className="font-medium text-yellow-600">{run.warnings_count || 0}</span>
                     </div>
                   </div>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                    {
+                      getSyncDurabilityPresentation(run.persistence_status, run.recovery_required)
+                        .description
+                    }
+                  </p>
                   {run.error_message && (
                     <div className="mt-2 p-2 bg-red-50 dark:bg-red-900/20 rounded text-sm text-red-800 dark:text-red-200">
                       {run.error_message}
