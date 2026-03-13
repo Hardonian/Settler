@@ -106,6 +106,7 @@ interface ConnectorDriver {
 
 - `sync_runs.persistence_status` expresses durability truth: `durable_atomic`, `durable_non_atomic`, or `failed_partial`.
 - `sync_runs.recovery_required=true` marks partial-write incidents that require operator or automated repair before trustable completion.
+- Dashboard integration logs surface this durability state directly so operators can distinguish atomic success, degraded fallback success, and recovery-required incidents at a glance.
 - Fallback failures emit `sync_recovery_required` evidence in `raw_events` with stage-by-stage completion details.
 - `sync_input_snapshot` stores the connector sync input payload with `schema_version` metadata and row counts.
 - When atomic RPC persistence is unavailable, runtime emits `sync_atomic_fallback` so degraded durability is machine-visible.
