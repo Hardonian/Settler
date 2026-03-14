@@ -216,7 +216,7 @@ export default async function DiagnosticsPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">System Diagnostics</h1>
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className="text-slate-600 dark:text-slate-400">
           Real-time system health and diagnostic information
         </p>
       </div>
@@ -235,7 +235,7 @@ export default async function DiagnosticsPage() {
               <div className="flex items-center justify-between">
                 {getStatusBadge(item.status)}
                 {item.value && (
-                  <span className="text-sm text-gray-500 font-mono">{item.value}</span>
+                  <span className="text-sm text-slate-500 font-mono">{item.value}</span>
                 )}
               </div>
             </CardContent>
@@ -251,15 +251,15 @@ export default async function DiagnosticsPage() {
         <CardContent>
           <div className="space-y-2 font-mono text-sm">
             <div>
-              <span className="text-gray-500">Node Version:</span>{" "}
+              <span className="text-slate-500">Node Version:</span>{" "}
               <span>{process.env.NODE_VERSION || "Unknown"}</span>
             </div>
             <div>
-              <span className="text-gray-500">Environment:</span>{" "}
+              <span className="text-slate-500">Environment:</span>{" "}
               <span>{process.env.NODE_ENV || "development"}</span>
             </div>
             <div>
-              <span className="text-gray-500">Timestamp:</span>{" "}
+              <span className="text-slate-500">Timestamp:</span>{" "}
               <span>{new Date().toISOString()}</span>
             </div>
           </div>

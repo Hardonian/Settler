@@ -19,7 +19,7 @@ export default async function FoundryDatasetPage({
   return (
     <main className="p-8 space-y-6">
       <h1 className="text-2xl font-semibold">{dataset.name}</h1>
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-slate-500">
         {dataset.dataset_type} · {dataset.items_count} items
       </p>
       <table className="w-full text-sm border-collapse">

@@ -29,18 +29,20 @@ export default function IntegrationConfigurationPage() {
 
   const fetchIntegrationConfig = useCallback(async () => {
     if (!integrationId) return;
-    
+
     try {
       setIsLoading(true);
       // Fetch from API
       const response = await fetch(`/api/integrations/${integrationId}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch integration config');
+        throw new Error("Failed to fetch integration config");
       }
       const data = await response.json();
       const integrationConfig: IntegrationConfig = {
         id: data.id || integrationId,
-        name: data.name || integrationId.charAt(0).toUpperCase() + integrationId.slice(1).replace(/-/g, " "),
+        name:
+          data.name ||
+          integrationId.charAt(0).toUpperCase() + integrationId.slice(1).replace(/-/g, " "),
         description: data.description || `Configure ${integrationId} integration settings`,
         is_connected: data.is_connected || false,
         config: data.config || {},
@@ -57,7 +59,7 @@ export default function IntegrationConfigurationPage() {
 
   useEffect(() => {
     if (!integrationId) {
-      router.push('/dashboard/integrations');
+      router.push("/dashboard/integrations");
       return;
     }
     void fetchIntegrationConfig();
@@ -102,7 +104,7 @@ export default function IntegrationConfigurationPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
       </div>
     );
   }
@@ -119,8 +121,8 @@ export default function IntegrationConfigurationPage() {
           Back
         </Button>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{config.name}</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">{config.description}</p>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">{config.name}</h1>
+          <p className="text-slate-600 dark:text-slate-400 mt-1">{config.description}</p>
         </div>
       </div>
 

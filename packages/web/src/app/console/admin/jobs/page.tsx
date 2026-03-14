@@ -26,8 +26,8 @@ const statusIcons: Record<JobStatus, React.ReactNode> = {
   running: <Loader2 className="w-4 h-4 text-yellow-500 animate-spin" />,
   succeeded: <CheckCircle2 className="w-4 h-4 text-green-500" />,
   failed: <XCircle className="w-4 h-4 text-red-500" />,
-  dead: <AlertCircle className="w-4 h-4 text-gray-500" />,
-  canceled: <XCircle className="w-4 h-4 text-gray-400" />,
+  dead: <AlertCircle className="w-4 h-4 text-slate-500" />,
+  canceled: <XCircle className="w-4 h-4 text-slate-400" />,
 };
 
 // Status color mapping
@@ -36,8 +36,8 @@ const statusColors: Record<JobStatus, string> = {
   running: "bg-yellow-50 text-yellow-700 border-yellow-200",
   succeeded: "bg-green-50 text-green-700 border-green-200",
   failed: "bg-red-50 text-red-700 border-red-200",
-  dead: "bg-gray-50 text-gray-700 border-gray-200",
-  canceled: "bg-gray-50 text-gray-600 border-gray-200",
+  dead: "bg-slate-50 text-slate-700 border-slate-200",
+  canceled: "bg-slate-50 text-slate-600 border-slate-200",
 };
 
 interface JobsAdminPageProps {

@@ -1,21 +1,26 @@
-
-import IntegrationList from '@/components/stitch-import/IntegrationList';
+import IntegrationList from "@/components/stitch-import/IntegrationList";
+import Link from "next/link";
 
 export default function IntegrationsPage() {
   return (
-    <div className="bg-background-light text-text-main min-h-screen flex flex-col font-display selection:bg-primary/20">
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
-        <div className="px-5 pt-12 pb-4 flex justify-between items-end">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900">Integrations</h1>
-            <p className="text-sm text-slate-500 mt-1">Manage your active connectors</p>
-          </div>
-          <button className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 hover:bg-primary/20 text-primary transition-colors">
-            <span className="material-symbols-outlined">add</span>
-          </button>
+    <div className="space-y-6">
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold">Integrations</h1>
+          <p className="text-sm text-slate-600 mt-1">
+            Manage your active connectors and data source integrations.
+          </p>
         </div>
-      </header>
-      <IntegrationList />
+        <Link
+          href="/app/connections"
+          className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+        >
+          Add Integration
+        </Link>
+      </div>
+      <div className="rounded-xl border border-slate-200 bg-white p-4">
+        <IntegrationList />
+      </div>
     </div>
   );
 }

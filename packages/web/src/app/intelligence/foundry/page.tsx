@@ -37,7 +37,7 @@ export default function FoundryPage(): JSX.Element {
           })}
           {datasets.length === 0 && (
             <tr>
-              <td colSpan={4} className="p-2 text-gray-500">
+              <td colSpan={4} className="p-2 text-slate-500">
                 No datasets yet. Run `settler foundry bootstrap`.
               </td>
             </tr>

@@ -60,7 +60,7 @@ export default function AddOnsMarketplacePage() {
       } catch (error) {
         console.error("Failed to fetch addons from API:", error);
       }
-      
+
       // API failed — show empty state (no fake add-ons)
       setAddOns([]);
       setFilteredAddOns([]);
@@ -121,7 +121,7 @@ export default function AddOnsMarketplacePage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
       </div>
     );
   }
@@ -129,15 +129,17 @@ export default function AddOnsMarketplacePage() {
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Add-Ons Marketplace</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+          Add-Ons Marketplace
+        </h1>
+        <p className="text-slate-600 dark:text-slate-400 mt-1">
           Enhance your Settler experience with premium integrations
         </p>
       </div>
 
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
             placeholder="Search add-ons..."
             value={searchQuery}
@@ -174,11 +176,11 @@ export default function AddOnsMarketplacePage() {
 
       {filteredAddOns.length === 0 && !isLoading && (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <Package className="w-12 h-12 text-gray-400 mb-4" />
-          <p className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <Package className="w-12 h-12 text-slate-400 mb-4" />
+          <p className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-1">
             {searchQuery ? "No add-ons match your search" : "No add-ons available yet"}
           </p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm">
+          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm">
             {searchQuery
               ? "Try a different search term."
               : "Add-ons will appear here once the marketplace is configured."}

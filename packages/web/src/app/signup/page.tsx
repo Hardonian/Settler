@@ -1,38 +1,38 @@
 /**
  * User Sign-up Page
- * 
+ *
  * Handles user registration and account creation.
  */
 
-import { signUpUser } from '@/app/actions/auth';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
-import { UserPlus, AlertCircle } from 'lucide-react';
-import { redirect } from 'next/navigation';
-import Link from 'next/link';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { signUpUser } from "@/app/actions/auth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { UserPlus, AlertCircle } from "lucide-react";
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 function SignUpForm() {
   async function handleSubmit(formData: FormData) {
-    'use server';
-    
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-    const name = formData.get('name') as string;
-    const acceptTerms = formData.get('acceptTerms') === 'on';
+    "use server";
+
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const name = formData.get("name") as string;
+    const acceptTerms = formData.get("acceptTerms") === "on";
 
     if (!email || !password) {
       return;
     }
 
     const result = await signUpUser(email, password, name, acceptTerms);
-    
+
     if (result.success) {
       // Redirect to console with welcome flag
-      redirect('/console?welcome=true');
+      redirect("/console?welcome=true");
     }
   }
 
@@ -42,13 +42,7 @@ function SignUpForm() {
         <Label htmlFor="name" className="mb-2 block">
           Name (Optional)
         </Label>
-        <Input
-          id="name"
-          name="name"
-          type="text"
-          placeholder="Your name"
-          className="w-full"
-        />
+        <Input id="name" name="name" type="text" placeholder="Your name" className="w-full" />
       </div>
 
       <div>
@@ -89,15 +83,23 @@ function SignUpForm() {
           id="accept-terms"
           name="acceptTerms"
           required
-          className="mt-1 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+          className="mt-1 w-4 h-4 text-blue-600 bg-slate-100 border-slate-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-slate-800 focus:ring-2 dark:bg-slate-700 dark:border-slate-600"
         />
         <Label htmlFor="accept-terms" className="text-sm text-slate-600 dark:text-slate-400">
-          I agree to the{' '}
-          <Link href="/legal/terms" className="text-blue-600 dark:text-electric-cyan hover:underline" target="_blank">
+          I agree to the{" "}
+          <Link
+            href="/legal/terms"
+            className="text-blue-600 dark:text-electric-cyan hover:underline"
+            target="_blank"
+          >
             Terms of Service
-          </Link>
-          {' '}and{' '}
-          <Link href="/legal/privacy" className="text-blue-600 dark:text-electric-cyan hover:underline" target="_blank">
+          </Link>{" "}
+          and{" "}
+          <Link
+            href="/legal/privacy"
+            className="text-blue-600 dark:text-electric-cyan hover:underline"
+            target="_blank"
+          >
             Privacy Policy
           </Link>
           *
@@ -125,8 +127,8 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
 
   const errorMessages: Record<string, { title: string; description: string }> = {
     auth_required: {
-      title: 'Authentication Required',
-      description: 'Please sign up or sign in to access the console.',
+      title: "Authentication Required",
+      description: "Please sign up or sign in to access the console.",
     },
   };
 
@@ -135,7 +137,7 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
       <Navigation />
-      
+
       <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-8 border border-slate-200 dark:border-slate-700">
           <div className="text-center mb-8">
@@ -143,17 +145,30 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
               Start Your Free Trial
             </h1>
             <p className="text-slate-600 dark:text-slate-400 mb-4">
-              Create your account and get instant access to a 14-day free trial—no credit card required. Full access to all features, perfect for testing Settler with your data.
+              Create your account and get instant access to a 14-day free trial—no credit card
+              required. Full access to all features, perfect for testing Settler with your data.
             </p>
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-5 text-left mt-4">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 dark:bg-blue-500 flex items-center justify-center mt-0.5">
-                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  <svg
+                    className="w-4 h-4 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-semibold text-blue-900 dark:text-blue-200 mb-2">Get started in minutes:</p>
+                  <p className="text-sm font-semibold text-blue-900 dark:text-blue-200 mb-2">
+                    Get started in minutes:
+                  </p>
                   <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-2">
                     <li className="flex items-start gap-2">
                       <span className="text-blue-600 dark:text-blue-400 mt-0.5">✓</span>
@@ -165,7 +180,9 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-blue-600 dark:text-blue-400 mt-0.5">✓</span>
-                      <span>Connect your first integration (Stripe, Shopify, QuickBooks, and more)</span>
+                      <span>
+                        Connect your first integration (Stripe, Shopify, QuickBooks, and more)
+                      </span>
                     </li>
                   </ul>
                 </div>
@@ -189,7 +206,7 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
 
           <div className="mt-6 text-center">
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              Already have an account?{' '}
+              Already have an account?{" "}
               <Link
                 href="/login"
                 className="text-blue-600 dark:text-electric-cyan hover:underline font-medium"
@@ -199,7 +216,6 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
             </p>
           </div>
         </div>
-
       </div>
 
       <Footer />

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import { SubscriptionGate } from '@/components/console/SubscriptionGate';
+import { useEffect, useState } from "react";
+import { useParams, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { SubscriptionGate } from "@/components/console/SubscriptionGate";
 
 interface TableRecord {
   id: string;
@@ -12,10 +12,10 @@ interface TableRecord {
 
 /**
  * Generic Table Viewer/Editor Component
- * 
+ *
  * Works for any table in the database
  * Route: /console/tables/[table]
- * 
+ *
  * Features:
  * - View all records with pagination
  * - View single record details
@@ -27,10 +27,10 @@ interface TableRecord {
 export default function TablePage() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const table = (params?.table as string) || '';
-  const schema = searchParams.get('schema') || 'public';
-  const recordId = searchParams.get('id');
-  
+  const table = (params?.table as string) || "";
+  const schema = searchParams.get("schema") || "public";
+  const recordId = searchParams.get("id");
+
   const [data, setData] = useState<TableRecord[]>([]);
   const [selectedRecord, setSelectedRecord] = useState<TableRecord | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,11 +41,11 @@ export default function TablePage() {
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState<Record<string, any>>({});
   const [subscription, setSubscription] = useState<any>(null);
-  
+
   useEffect(() => {
     loadSubscription();
   }, []);
-  
+
   useEffect(() => {
     if (table) {
       loadData();
@@ -54,23 +54,23 @@ export default function TablePage() {
       }
     }
   }, [table, recordId, offset]);
-  
+
   async function loadData() {
     try {
       setLoading(true);
-      
+
       // Use API route instead of direct Supabase query
       const params = new URLSearchParams({
         schema,
         limit: limit.toString(),
         offset: offset.toString(),
       });
-      
+
       const response = await fetch(`/api/console/tables/${table}?${params}`);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${await response.text()}`);
       }
-      
+
       const result = await response.json();
       setData(result.data || []);
       setCount(result.count || 0);
@@ -80,23 +80,23 @@ export default function TablePage() {
       setLoading(false);
     }
   }
-  
+
   async function loadSubscription() {
     try {
-      const response = await fetch('/api/console/subscription-status');
+      const response = await fetch("/api/console/subscription-status");
       const data = await response.json();
       setSubscription(data);
     } catch (err) {
-      console.error('Failed to load subscription:', err);
+      console.error("Failed to load subscription:", err);
     }
   }
-  
+
   async function loadRecord(id: string) {
     try {
       const params = new URLSearchParams({ schema, id });
       const response = await fetch(`/api/console/tables/${table}?${params}`);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      
+
       const result = await response.json();
       setSelectedRecord(result.data);
       setEditForm(result.data);
@@ -104,21 +104,21 @@ export default function TablePage() {
       setError(err.message);
     }
   }
-  
+
   async function handleCreate() {
     try {
       const params = new URLSearchParams({ schema });
       const response = await fetch(`/api/console/tables/${table}?${params}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editForm),
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to create');
+        throw new Error(error.error || "Failed to create");
       }
-      
+
       const result = await response.json();
       setData([result.data, ...data]);
       setEditForm({});
@@ -128,47 +128,47 @@ export default function TablePage() {
       setError(err.message);
     }
   }
-  
+
   async function handleUpdate() {
     if (!selectedRecord) return;
-    
+
     try {
       const params = new URLSearchParams({ schema, id: selectedRecord.id });
       const response = await fetch(`/api/console/tables/${table}?${params}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editForm),
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to update');
+        throw new Error(error.error || "Failed to update");
       }
-      
+
       const result = await response.json();
       setSelectedRecord(result.data);
-      setData(data.map(r => r.id === result.data.id ? result.data : r));
+      setData(data.map((r) => (r.id === result.data.id ? result.data : r)));
       setEditing(false);
     } catch (err: any) {
       setError(err.message);
     }
   }
-  
+
   async function handleDelete(id: string) {
-    if (!confirm('Are you sure you want to delete this record?')) return;
-    
+    if (!confirm("Are you sure you want to delete this record?")) return;
+
     try {
       const params = new URLSearchParams({ schema, id });
       const response = await fetch(`/api/console/tables/${table}?${params}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to delete');
+        throw new Error(error.error || "Failed to delete");
       }
-      
-      setData(data.filter(r => r.id !== id));
+
+      setData(data.filter((r) => r.id !== id));
       if (selectedRecord?.id === id) {
         setSelectedRecord(null);
       }
@@ -176,7 +176,7 @@ export default function TablePage() {
       setError(err.message);
     }
   }
-  
+
   if (loading && !data.length) {
     return (
       <div className="container mx-auto p-6">
@@ -184,7 +184,7 @@ export default function TablePage() {
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <div className="container mx-auto p-6">
@@ -194,162 +194,175 @@ export default function TablePage() {
       </div>
     );
   }
-  
-  const displayName = table.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+  const displayName = table
+    .split("_")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
   const columns = data.length > 0 && data[0] ? Object.keys(data[0]) : [];
-  const currentTier = subscription?.tier ?? 'unsubscribed';
-  const canEdit = currentTier === 'subscribed_paid' || currentTier === 'enterprise';
+  const currentTier = subscription?.tier ?? "unsubscribed";
+  const canEdit = currentTier === "subscribed_paid" || currentTier === "enterprise";
   const readOnlyMessage =
-    currentTier === 'subscribed_unpaid'
-      ? 'Update your billing method to enable edits and deletions.'
-      : 'Upgrade to a paid plan to edit and delete records.';
-  
+    currentTier === "subscribed_unpaid"
+      ? "Update your billing method to enable edits and deletions."
+      : "Upgrade to a paid plan to edit and delete records.";
+
   return (
     <SubscriptionGate requiredTier="subscribed_unpaid" feature="Table Viewing">
       <div className="container mx-auto p-6">
-      <div className="mb-4">
-        <Link href="/console/tables" className="text-blue-600 hover:text-blue-800 mb-4 inline-block">
-          ← Back to API Service Tables
-        </Link>
-      </div>
-      {!canEdit && (
-        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
-          <strong>Read-only mode:</strong> {readOnlyMessage}
-        </div>
-      )}
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">{displayName}</h1>
-          <p className="text-sm text-gray-500">{schema}.{table}</p>
-          <p className="text-sm text-gray-500 mt-1">{count} total records</p>
-          <p className="text-xs text-gray-400 mt-2">
-            Use this to test API calls, webhooks, and SDK operations for this service.
-          </p>
-        </div>
-        {canEdit && (
-          <button
-            onClick={() => {
-              setEditing(true);
-              setEditForm({});
-              setSelectedRecord(null);
-            }}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        <div className="mb-4">
+          <Link
+            href="/console/tables"
+            className="text-blue-600 hover:text-blue-800 mb-4 inline-block"
           >
-            + Create New
-          </button>
-        )}
-      </div>
-      
-      {editing && (
-        <div className="mb-6 p-4 bg-gray-50 rounded">
-          <h2 className="text-lg font-semibold mb-4">
-            {selectedRecord ? 'Edit Record' : 'Create New Record'}
-          </h2>
-          <div className="grid grid-cols-2 gap-4">
-            {columns.map(col => (
-              <div key={col}>
-                <label className="block text-sm font-medium mb-1">{col}</label>
-                <input
-                  type="text"
-                  value={editForm[col] || ''}
-                  onChange={(e) => setEditForm({ ...editForm, [col]: e.target.value })}
-                  className="w-full px-3 py-2 border rounded"
-                  disabled={col === 'id' || col === 'created_at'}
-                />
-              </div>
-            ))}
+            ← Back to API Service Tables
+          </Link>
+        </div>
+        {!canEdit && (
+          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
+            <strong>Read-only mode:</strong> {readOnlyMessage}
           </div>
-          <div className="mt-4 flex gap-2">
-            <button
-              onClick={selectedRecord ? handleUpdate : handleCreate}
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-            >
-              {selectedRecord ? 'Update' : 'Create'}
-            </button>
+        )}
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-2xl font-bold">{displayName}</h1>
+            <p className="text-sm text-slate-500">
+              {schema}.{table}
+            </p>
+            <p className="text-sm text-slate-500 mt-1">{count} total records</p>
+            <p className="text-xs text-slate-400 mt-2">
+              Use this to test API calls, webhooks, and SDK operations for this service.
+            </p>
+          </div>
+          {canEdit && (
             <button
               onClick={() => {
-                setEditing(false);
+                setEditing(true);
                 setEditForm({});
+                setSelectedRecord(null);
               }}
-              className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
             >
-              Cancel
+              + Create New
             </button>
-          </div>
+          )}
         </div>
-      )}
-      
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              {columns.map(key => (
-                <th key={key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  {key}
-                </th>
+
+        {editing && (
+          <div className="mb-6 p-4 bg-slate-50 rounded">
+            <h2 className="text-lg font-semibold mb-4">
+              {selectedRecord ? "Edit Record" : "Create New Record"}
+            </h2>
+            <div className="grid grid-cols-2 gap-4">
+              {columns.map((col) => (
+                <div key={col}>
+                  <label className="block text-sm font-medium mb-1">{col}</label>
+                  <input
+                    type="text"
+                    value={editForm[col] || ""}
+                    onChange={(e) => setEditForm({ ...editForm, [col]: e.target.value })}
+                    className="w-full px-3 py-2 border rounded"
+                    disabled={col === "id" || col === "created_at"}
+                  />
+                </div>
               ))}
-              {canEdit && (
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-              )}
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {data.map((record) => (
-              <tr key={record.id} className="hover:bg-gray-50">
-                {columns.map(key => (
-                  <td key={key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {typeof record[key] === 'object' 
-                      ? JSON.stringify(record[key]).substring(0, 50) + '...'
-                      : String(record[key] || '').substring(0, 100)}
-                  </td>
+            </div>
+            <div className="mt-4 flex gap-2">
+              <button
+                onClick={selectedRecord ? handleUpdate : handleCreate}
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              >
+                {selectedRecord ? "Update" : "Create"}
+              </button>
+              <button
+                onClick={() => {
+                  setEditing(false);
+                  setEditForm({});
+                }}
+                className="px-4 py-2 bg-slate-300 rounded hover:bg-slate-400"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-slate-200">
+            <thead className="bg-slate-50">
+              <tr>
+                {columns.map((key) => (
+                  <th
+                    key={key}
+                    className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase"
+                  >
+                    {key}
+                  </th>
                 ))}
                 {canEdit && (
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <button
-                      onClick={() => {
-                        setSelectedRecord(record);
-                        setEditForm(record);
-                        setEditing(true);
-                      }}
-                      className="text-blue-600 hover:text-blue-800 mr-3"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(record.id)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      Delete
-                    </button>
-                  </td>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                    Actions
+                  </th>
                 )}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      
-      {count > limit && (
-        <div className="mt-4 flex justify-between">
-          <button
-            onClick={() => setOffset(Math.max(0, offset - limit))}
-            disabled={offset === 0}
-            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <span className="text-sm text-gray-600">
-            Showing {offset + 1}-{Math.min(offset + limit, count)} of {count}
-          </span>
-          <button
-            onClick={() => setOffset(offset + limit)}
-            disabled={offset + limit >= count}
-            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-          >
-            Next
-          </button>
+            </thead>
+            <tbody className="bg-white divide-y divide-slate-200">
+              {data.map((record) => (
+                <tr key={record.id} className="hover:bg-slate-50">
+                  {columns.map((key) => (
+                    <td key={key} className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
+                      {typeof record[key] === "object"
+                        ? JSON.stringify(record[key]).substring(0, 50) + "..."
+                        : String(record[key] || "").substring(0, 100)}
+                    </td>
+                  ))}
+                  {canEdit && (
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <button
+                        onClick={() => {
+                          setSelectedRecord(record);
+                          setEditForm(record);
+                          setEditing(true);
+                        }}
+                        className="text-blue-600 hover:text-blue-800 mr-3"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(record.id)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      )}
+
+        {count > limit && (
+          <div className="mt-4 flex justify-between">
+            <button
+              onClick={() => setOffset(Math.max(0, offset - limit))}
+              disabled={offset === 0}
+              className="px-4 py-2 bg-slate-200 rounded disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="text-sm text-slate-600">
+              Showing {offset + 1}-{Math.min(offset + limit, count)} of {count}
+            </span>
+            <button
+              onClick={() => setOffset(offset + limit)}
+              disabled={offset + limit >= count}
+              className="px-4 py-2 bg-slate-200 rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </SubscriptionGate>
   );

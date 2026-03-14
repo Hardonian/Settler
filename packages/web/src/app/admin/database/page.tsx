@@ -66,7 +66,8 @@ export default function AdminDatabasePage() {
     }
   }
 
-  const filteredTables = tables.filter((t: any) => t.table_name.toLowerCase().includes(search.toLowerCase())
+  const filteredTables = tables.filter((t: any) =>
+    t.table_name.toLowerCase().includes(search.toLowerCase())
   );
 
   if (loading) {
@@ -113,7 +114,7 @@ export default function AdminDatabasePage() {
     <div className="container mx-auto p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Database Tables (Admin)</h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-slate-600 mt-2">
           Full Supabase database browser. All tables accessible for admin operations.
         </p>
       </div>
@@ -133,16 +134,16 @@ export default function AdminDatabasePage() {
           <Link
             key={`${table.table_schema}.${table.table_name}`}
             href={`/admin/database/${table.table_name}?schema=${table.table_schema}`}
-            className="p-4 border rounded hover:bg-gray-50 hover:shadow transition"
+            className="p-4 border rounded hover:bg-slate-50 hover:shadow transition"
           >
             <div className="font-semibold">{table.table_name}</div>
-            <div className="text-sm text-gray-500">{table.table_schema}</div>
+            <div className="text-sm text-slate-500">{table.table_schema}</div>
           </Link>
         ))}
       </div>
 
       {filteredTables.length === 0 && (
-        <div className="text-center py-8 text-gray-500">No tables found matching "{search}"</div>
+        <div className="text-center py-8 text-slate-500">No tables found matching "{search}"</div>
       )}
     </div>
   );

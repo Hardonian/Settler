@@ -8,14 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import {
-  Loader2,
-  ArrowLeft,
-  CheckCircle2,
-  Filter,
-  Search,
-  RefreshCw,
-} from "lucide-react";
+import { Loader2, ArrowLeft, CheckCircle2, Filter, Search, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { logger } from "@/lib/logging/logger";
 
@@ -71,7 +64,7 @@ interface ExceptionsResponse {
 export default function ExceptionsPage() {
   const params = useParams();
   const jobId = params?.jobId as string | undefined;
-  
+
   const [exceptions, setExceptions] = useState<Exception[]>([]);
   const [summary, setSummary] = useState<ExceptionsResponse["summary"] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -91,7 +84,7 @@ export default function ExceptionsPage() {
 
     try {
       setIsLoading(true);
-      
+
       const params = new URLSearchParams();
       params.append("matchType", matchTypeFilter);
       params.append("reviewed", reviewedFilter);
@@ -99,7 +92,7 @@ export default function ExceptionsPage() {
       params.append("offset", "0");
 
       const response = await fetch(`/api/jobs/${jobId}/exceptions?${params.toString()}`);
-      
+
       if (!response.ok) {
         throw new Error(`Failed to fetch exceptions: ${response.statusText}`);
       }
@@ -108,14 +101,21 @@ export default function ExceptionsPage() {
       setExceptions(data.exceptions);
       setSummary(data.summary);
     } catch (error) {
-      logger.error("Failed to fetch exceptions", error instanceof Error ? error : new Error(String(error)), { jobId });
+      logger.error(
+        "Failed to fetch exceptions",
+        error instanceof Error ? error : new Error(String(error)),
+        { jobId }
+      );
       setExceptions([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleReviewException = async (exceptionId: string, action: "review" | "match" | "mark_expected") => {
+  const handleReviewException = async (
+    exceptionId: string,
+    action: "review" | "match" | "mark_expected"
+  ) => {
     try {
       const response = await fetch(`/api/jobs/${jobId}/exceptions/${exceptionId}`, {
         method: "PATCH",
@@ -135,7 +135,11 @@ export default function ExceptionsPage() {
       // Refresh exceptions
       await fetchExceptions();
     } catch (error) {
-      logger.error("Failed to review exception", error instanceof Error ? error : new Error(String(error)), { exceptionId });
+      logger.error(
+        "Failed to review exception",
+        error instanceof Error ? error : new Error(String(error)),
+        { exceptionId }
+      );
       alert("Failed to update exception. Please try again.");
     }
   };
@@ -159,7 +163,10 @@ export default function ExceptionsPage() {
       setSelectedExceptions(new Set());
       await fetchExceptions();
     } catch (error) {
-      logger.error("Failed to bulk review exceptions", error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        "Failed to bulk review exceptions",
+        error instanceof Error ? error : new Error(String(error))
+      );
       alert("Failed to update exceptions. Please try again.");
     }
   };
@@ -224,11 +231,7 @@ export default function ExceptionsPage() {
           <div className="flex gap-2">
             {selectedExceptions.size > 0 && (
               <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleBulkReview("review")}
-                >
+                <Button variant="outline" size="sm" onClick={() => handleBulkReview("review")}>
                   Mark Selected as Reviewed
                 </Button>
                 <Button
@@ -322,7 +325,7 @@ export default function ExceptionsPage() {
         {/* Exceptions List */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
           </div>
         ) : filteredExceptions.length === 0 ? (
           <Card>

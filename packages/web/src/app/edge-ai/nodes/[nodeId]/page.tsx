@@ -62,7 +62,11 @@ export default function NodeDetailPage() {
       };
       setNode(mockNode);
     } catch (error) {
-      logger.error("Failed to fetch node", error instanceof Error ? error : new Error(String(error)), { nodeId });
+      logger.error(
+        "Failed to fetch node",
+        error instanceof Error ? error : new Error(String(error)),
+        { nodeId }
+      );
     } finally {
       setIsLoading(false);
     }
@@ -71,7 +75,7 @@ export default function NodeDetailPage() {
   const getStatusBadge = (status: NodeDetail["status"]) => {
     const variants = {
       active: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-      inactive: "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400",
+      inactive: "bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400",
       error: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
     };
     return variants[status];
@@ -103,7 +107,7 @@ export default function NodeDetailPage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
         <Navigation />
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
         </div>
         <Footer />
       </div>
