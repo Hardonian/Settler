@@ -490,6 +490,8 @@ importers:
         specifier: ^5.3.3
         version: 5.9.3
 
+  packages/hash: {}
+
   packages/jobforge-adapter-settler:
     dependencies:
       '@jobforge/sdk-ts':
@@ -597,6 +599,8 @@ importers:
         version: 5.9.3
 
   packages/jobforge-typescript-config: {}
+
+  packages/proofs: {}
 
   packages/protocol:
     dependencies:
