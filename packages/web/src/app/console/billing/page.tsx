@@ -108,7 +108,7 @@ export default function BillingPage() {
     return (
       <ConsoleLayout>
         <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
         </div>
       </ConsoleLayout>
     );
@@ -170,7 +170,7 @@ export default function BillingPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Billing & Plan</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-slate-600 dark:text-slate-400 mt-1">
               Manage your subscription and view usage
             </p>
           </div>
@@ -202,8 +202,8 @@ export default function BillingPage() {
                     Billing not configured
                   </p>
                   <p className="text-sm text-amber-700 dark:text-amber-300 mt-0.5">
-                    Payment processing requires Stripe to be configured by the operator.
-                    Paid plan upgrades are unavailable until this is resolved.
+                    Payment processing requires Stripe to be configured by the operator. Paid plan
+                    upgrades are unavailable until this is resolved.
                   </p>
                 </div>
               </div>
@@ -232,11 +232,11 @@ export default function BillingPage() {
             {data.subscription && (
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Plan:</span>
+                  <span className="text-slate-600 dark:text-slate-400">Plan:</span>
                   <span className="font-medium">{data.subscription.planName}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Period:</span>
+                  <span className="text-slate-600 dark:text-slate-400">Period:</span>
                   <span className="font-medium">
                     {new Date(data.subscription.currentPeriodStart).toLocaleDateString()} -{" "}
                     {new Date(data.subscription.currentPeriodEnd).toLocaleDateString()}
@@ -264,11 +264,11 @@ export default function BillingPage() {
               <div key={bar.service} className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="font-medium">{bar.service}</span>
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-slate-600 dark:text-slate-400">
                     {bar.current.toLocaleString()} / {bar.limit.toLocaleString()} {bar.unit}
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                   <div
                     className={`h-2 rounded-full transition-all ${
                       bar.percentage >= 90
@@ -322,7 +322,7 @@ export default function BillingPage() {
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">$0/month</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">$0/month</p>
                 <ul className="text-sm space-y-1 mb-4">
                   <li>• 10,000 reconciliations/month</li>
                   <li>• 1% exception rate included</li>
@@ -355,7 +355,7 @@ export default function BillingPage() {
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">$900/month</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">$900/month</p>
                 <ul className="text-sm space-y-1 mb-4">
                   <li>• 100,000 reconciliations/month</li>
                   <li>• 1% exception rate included</li>
@@ -363,8 +363,8 @@ export default function BillingPage() {
                   <li>• Overage: $0.01/reconciliation</li>
                   <li>• Exception review: $0.10/exception</li>
                 </ul>
-                {!isGrowth && (
-                  data.stripeConfigured === false ? (
+                {!isGrowth &&
+                  (data.stripeConfigured === false ? (
                     <p className="text-xs text-amber-600 dark:text-amber-400">
                       Billing not configured
                     </p>
@@ -384,8 +384,7 @@ export default function BillingPage() {
                         "Upgrade to Growth"
                       )}
                     </Button>
-                  )
-                )}
+                  ))}
               </div>
 
               {/* Scale Plan */}
@@ -403,7 +402,7 @@ export default function BillingPage() {
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">$9,900/month</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">$9,900/month</p>
                 <ul className="text-sm space-y-1 mb-4">
                   <li>• 1,000,000 reconciliations/month</li>
                   <li>• 1% exception rate included</li>
@@ -411,29 +410,28 @@ export default function BillingPage() {
                   <li>• Overage: $0.01/reconciliation</li>
                   <li>• Exception review: $0.10/exception</li>
                 </ul>
-                {!isScale && (
-                  data.stripeConfigured === false ? (
+                {!isScale &&
+                  (data.stripeConfigured === false ? (
                     <p className="text-xs text-amber-600 dark:text-amber-400">
                       Billing not configured
                     </p>
                   ) : (
-                  <Button
-                    size="sm"
-                    className="w-full"
-                    onClick={() => handleUpgrade("scale")}
-                    disabled={isCreatingCheckout === "scale"}
-                  >
-                    {isCreatingCheckout === "scale" ? (
-                      <>
-                        <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                        Processing...
-                      </>
-                    ) : (
-                      "Upgrade to Scale"
-                    )}
-                  </Button>
-                  )
-                )}
+                    <Button
+                      size="sm"
+                      className="w-full"
+                      onClick={() => handleUpgrade("scale")}
+                      disabled={isCreatingCheckout === "scale"}
+                    >
+                      {isCreatingCheckout === "scale" ? (
+                        <>
+                          <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        "Upgrade to Scale"
+                      )}
+                    </Button>
+                  ))}
               </div>
 
               {/* Enterprise Plan */}
@@ -451,7 +449,7 @@ export default function BillingPage() {
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Custom</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">Custom</p>
                 <ul className="text-sm space-y-1 mb-4">
                   <li>• Custom volume</li>
                   <li>• Custom exception thresholds</li>

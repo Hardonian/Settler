@@ -135,17 +135,57 @@ export default function OperatorControlPlanePage() {
     [payload]
   );
 
-  if (loading) return <div className="p-6">Loading operator control plane…</div>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-4" />
+          <p className="text-slate-600 dark:text-slate-400">Loading operator control plane...</p>
+        </div>
+      </div>
+    );
   if (!payload?.data)
     return (
-      <div className="p-6">Operator control plane unavailable: {payload?.error ?? "unknown"}</div>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="max-w-md text-center">
+          <div className="rounded-full bg-amber-100 dark:bg-amber-900/30 p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            <span className="text-2xl">!</span>
+          </div>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+            Operator Control Plane Unavailable
+          </h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+            {payload?.error ??
+              "Unable to connect to the control plane. Please verify your environment configuration and try again."}
+          </p>
+          <button
+            onClick={() => loadControlPlane()}
+            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
     );
 
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Operator Control Plane</h1>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+          Operator Control Plane
+        </h1>
+        <p className="text-slate-600 dark:text-slate-400">
+          Real-time system health, run performance, and operational intelligence. Auto-refreshes
+          every 15 seconds.
+        </p>
+      </div>
       {payload.degraded ? (
-        <p className="text-sm text-amber-600">Degraded mode: partial data available.</p>
+        <div className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-700 px-4 py-3">
+          <p className="text-sm text-amber-800 dark:text-amber-200">
+            <strong>Degraded mode:</strong> Some data sources are temporarily unavailable. Partial
+            data is shown.
+          </p>
+        </div>
       ) : null}
 
       <section className="grid grid-cols-2 md:grid-cols-7 gap-3">

@@ -135,7 +135,7 @@ export default function IntegrationLogsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
       </div>
     );
   }
@@ -148,10 +148,10 @@ export default function IntegrationLogsPage() {
           Back
         </Button>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
             Sync Logs - {integrationId}
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">View sync history and errors</p>
+          <p className="text-slate-600 dark:text-slate-400 mt-1">View sync history and errors</p>
         </div>
         <Button onClick={fetchSyncRuns} variant="outline" className="ml-auto">
           <RefreshCw className="mr-2 h-4 w-4" />
@@ -167,7 +167,7 @@ export default function IntegrationLogsPage() {
         <CardContent>
           <div className="space-y-4">
             {syncRuns.length === 0 ? (
-              <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+              <p className="text-slate-500 dark:text-slate-400 text-center py-8">
                 No sync runs found
               </p>
             ) : (
@@ -177,12 +177,12 @@ export default function IntegrationLogsPage() {
                     <div className="flex items-center gap-2">
                       {getStatusBadge(run.status)}
                       {getDurabilityBadge(run)}
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                      <span className="text-sm text-slate-600 dark:text-slate-400">
                         {new Date(run.started_at).toLocaleString()}
                       </span>
                     </div>
                     {run.finished_at && (
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-slate-500 dark:text-slate-400">
                         Duration:{" "}
                         {Math.round(
                           (new Date(run.finished_at).getTime() -
@@ -195,19 +195,19 @@ export default function IntegrationLogsPage() {
                   </div>
                   <div className="grid grid-cols-3 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-600 dark:text-gray-400">Transactions:</span>{" "}
+                      <span className="text-slate-600 dark:text-slate-400">Transactions:</span>{" "}
                       <span className="font-medium">{run.transactions_synced || 0}</span>
                     </div>
                     <div>
-                      <span className="text-gray-600 dark:text-gray-400">Errors:</span>{" "}
+                      <span className="text-slate-600 dark:text-slate-400">Errors:</span>{" "}
                       <span className="font-medium text-red-600">{run.errors_count || 0}</span>
                     </div>
                     <div>
-                      <span className="text-gray-600 dark:text-gray-400">Warnings:</span>{" "}
+                      <span className="text-slate-600 dark:text-slate-400">Warnings:</span>{" "}
                       <span className="font-medium text-yellow-600">{run.warnings_count || 0}</span>
                     </div>
                   </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                  <p className="text-xs text-slate-600 dark:text-slate-400">
                     {
                       getSyncDurabilityPresentation(run.persistence_status, run.recovery_required)
                         .description

@@ -94,7 +94,7 @@ export default function BillingDashboardPage() {
         });
         return;
       }
-      
+
       // Fallback: Empty state if API fails
       setData({
         billingAccount: {
@@ -134,7 +134,7 @@ export default function BillingDashboardPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
       </div>
     );
   }
@@ -176,10 +176,10 @@ export default function BillingDashboardPage() {
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-6 md:space-y-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">
             Billing
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1.5 text-sm md:text-base">
+          <p className="text-slate-600 dark:text-slate-400 mt-1.5 text-sm md:text-base">
             Manage your subscription and view usage
           </p>
         </div>

@@ -50,7 +50,10 @@ function startWebServer() {
         "127.0.0.1",
       ];
 
-  const server = spawn("pnpm", args, { stdio: "pipe", env: process.env });
+  const server = spawn("pnpm", args, {
+    stdio: "pipe",
+    env: { ...process.env, SETTLER_VERIFY_MODE: "1" },
+  });
   server.stdout.on("data", (d) => process.stdout.write(d));
   server.stderr.on("data", (d) => process.stderr.write(d));
   return server;

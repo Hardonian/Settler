@@ -59,7 +59,7 @@ export default function JobsPage() {
   const fetchJobs = async () => {
     try {
       setIsLoading(true);
-      
+
       // Build query string with filters
       const params = new URLSearchParams();
       if (statusFilter !== "all") {
@@ -70,7 +70,7 @@ export default function JobsPage() {
 
       // Fetch from real API
       const response = await fetch(`/api/v1/recon/jobs?${params.toString()}`);
-      
+
       if (!response.ok) {
         throw new Error(`Failed to fetch jobs: ${response.statusText}`);
       }
@@ -79,47 +79,57 @@ export default function JobsPage() {
       const jobsData = apiData.data || [];
 
       // Transform API response to Job format
-      const jobsList: Job[] = jobsData.map((jobData: {
-        id: string;
-        name: string;
-        status: string;
-        sourceAdapter: string;
-        targetAdapter: string;
-        createdAt: string;
-        latestResult?: {
+      const jobsList: Job[] = jobsData.map(
+        (jobData: {
+          id: string;
+          name: string;
           status: string;
-          sourceCount: number;
-          targetCount: number;
-          matchedCount: number;
-          unmatchedSourceCount: number;
-          unmatchedTargetCount: number;
-          completedAt?: string;
-        };
-      }) => {
-        const latestResult = jobData.latestResult;
-        const totalTransactions = (latestResult?.sourceCount || 0) + (latestResult?.targetCount || 0);
-        const accuracy = totalTransactions > 0 && latestResult?.matchedCount
-          ? (latestResult.matchedCount / totalTransactions) * 100
-          : 0;
+          sourceAdapter: string;
+          targetAdapter: string;
+          createdAt: string;
+          latestResult?: {
+            status: string;
+            sourceCount: number;
+            targetCount: number;
+            matchedCount: number;
+            unmatchedSourceCount: number;
+            unmatchedTargetCount: number;
+            completedAt?: string;
+          };
+        }) => {
+          const latestResult = jobData.latestResult;
+          const totalTransactions =
+            (latestResult?.sourceCount || 0) + (latestResult?.targetCount || 0);
+          const accuracy =
+            totalTransactions > 0 && latestResult?.matchedCount
+              ? (latestResult.matchedCount / totalTransactions) * 100
+              : 0;
 
-        return {
-          id: jobData.id,
-          name: jobData.name,
-          status: latestResult?.status || jobData.status || "pending",
-          source: jobData.sourceAdapter,
-          target: jobData.targetAdapter,
-          matchedCount: latestResult?.matchedCount || 0,
-          unmatchedCount: (latestResult?.unmatchedSourceCount || 0) + (latestResult?.unmatchedTargetCount || 0),
-          accuracy: Math.round(accuracy * 10) / 10,
-          createdAt: new Date(jobData.createdAt).toISOString(),
-          completedAt: latestResult?.completedAt ? new Date(latestResult.completedAt).toISOString() : undefined,
-        };
-      });
+          return {
+            id: jobData.id,
+            name: jobData.name,
+            status: latestResult?.status || jobData.status || "pending",
+            source: jobData.sourceAdapter,
+            target: jobData.targetAdapter,
+            matchedCount: latestResult?.matchedCount || 0,
+            unmatchedCount:
+              (latestResult?.unmatchedSourceCount || 0) + (latestResult?.unmatchedTargetCount || 0),
+            accuracy: Math.round(accuracy * 10) / 10,
+            createdAt: new Date(jobData.createdAt).toISOString(),
+            completedAt: latestResult?.completedAt
+              ? new Date(latestResult.completedAt).toISOString()
+              : undefined,
+          };
+        }
+      );
 
       setJobs(jobsList);
       setFilteredJobs(jobsList);
     } catch (error) {
-      logger.error("Failed to fetch jobs", error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        "Failed to fetch jobs",
+        error instanceof Error ? error : new Error(String(error))
+      );
       setJobs([]);
       setFilteredJobs([]);
     } finally {
@@ -142,7 +152,7 @@ export default function JobsPage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
         <Navigation />
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
         </div>
         <Footer />
       </div>

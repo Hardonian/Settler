@@ -19,7 +19,10 @@ import {
 import Link from "next/link";
 import { logger } from "@/lib/logging/logger";
 import { JobCompletionBanner } from "@/components/jobs/JobCompletionBanner";
-import { ConfidenceIndicator, calculateConfidenceLevel } from "@/components/reconciliation/ConfidenceIndicator";
+import {
+  ConfidenceIndicator,
+  calculateConfidenceLevel,
+} from "@/components/reconciliation/ConfidenceIndicator";
 
 interface JobDetail {
   id: string;
@@ -64,10 +67,10 @@ export default function JobDetailPage() {
   const fetchJobDetail = async (id: string) => {
     try {
       setIsLoading(true);
-      
+
       // Fetch from real API
       const response = await fetch(`/api/jobs/${id}`);
-      
+
       if (!response.ok) {
         if (response.status === 404) {
           setJob(null);
@@ -97,24 +100,34 @@ export default function JobDetailPage() {
         conflictsCount: latestResult?.conflictCount || 0,
         accuracy: latestResult
           ? latestResult.matchedCount > 0
-            ? (latestResult.matchedCount / (latestResult.sourceCount + latestResult.targetCount)) * 100
+            ? (latestResult.matchedCount / (latestResult.sourceCount + latestResult.targetCount)) *
+              100
             : 0
           : 0,
         createdAt: new Date(data.createdAt).toISOString(),
-        startedAt: latestResult?.startedAt ? new Date(latestResult.startedAt).toISOString() : undefined,
-        completedAt: latestResult?.completedAt ? new Date(latestResult.completedAt).toISOString() : undefined,
+        startedAt: latestResult?.startedAt
+          ? new Date(latestResult.startedAt).toISOString()
+          : undefined,
+        completedAt: latestResult?.completedAt
+          ? new Date(latestResult.completedAt).toISOString()
+          : undefined,
         error: latestResult?.errorMessage || undefined,
         summary: {
           total: (latestResult?.sourceCount || 0) + (latestResult?.targetCount || 0),
           matched: latestResult?.matchedCount || 0,
-          unmatched: (latestResult?.unmatchedSourceCount || 0) + (latestResult?.unmatchedTargetCount || 0),
+          unmatched:
+            (latestResult?.unmatchedSourceCount || 0) + (latestResult?.unmatchedTargetCount || 0),
           conflicts: latestResult?.conflictCount || 0,
         },
       };
 
       setJob(jobDetail);
     } catch (error) {
-      logger.error("Failed to fetch job", error instanceof Error ? error : new Error(String(error)), { jobId: id });
+      logger.error(
+        "Failed to fetch job",
+        error instanceof Error ? error : new Error(String(error)),
+        { jobId: id }
+      );
       setJob(null);
     } finally {
       setIsLoading(false);
@@ -157,7 +170,7 @@ export default function JobDetailPage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
         <Navigation />
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
         </div>
         <Footer />
       </div>
