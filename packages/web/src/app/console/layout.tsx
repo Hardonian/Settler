@@ -17,9 +17,19 @@ import { validateSupabaseEnv } from "@/lib/env/validator";
 import { EnvErrorPanel } from "@/components/env/EnvErrorPanel";
 import { appLogger } from "@/lib/utils/logger";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
+import type { Metadata } from "next";
+import { RouteStateCard } from "@/components/shared/route-state";
+import { TriangleAlert } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs"; // Ensure Node.js runtime for Prisma binary engine
+export const metadata: Metadata = {
+  title: "Developer Console",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function ConsoleRootLayout({ children }: { children: React.ReactNode }) {
   const startTime = Date.now();
@@ -90,30 +100,16 @@ export default async function ConsoleRootLayout({ children }: { children: React.
       <>
         <Navigation />
         <ConsoleLayout>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div className="text-center">
-              <h1 className="text-fluid-2xl font-bold text-foreground mb-4">
-                Console Temporarily Unavailable
-              </h1>
-              <p className="text-lg text-muted-foreground mb-6">
-                We&apos;re experiencing technical difficulties. Please try again in a moment.
-              </p>
-              <div className="flex gap-4 justify-center">
-                <a
-                  href="/signup"
-                  className="px-4 py-2 bg-primary text-primary-foreground rounded-[var(--ui-radius-md)] hover:bg-primary-hover transition-colors"
-                >
-                  Sign In
-                </a>
-                <a
-                  href="/"
-                  className="px-4 py-2 border border-border rounded-[var(--ui-radius-md)] text-foreground hover:bg-muted/30 transition-colors"
-                >
-                  Go Home
-                </a>
-              </div>
-            </div>
-          </div>
+          <RouteStateCard
+            icon={TriangleAlert}
+            title="Console temporarily unavailable"
+            description="We hit an unexpected error while loading the console shell."
+            detail="Please retry in a moment. If the issue persists, sign in again to refresh your session context."
+            actions={[
+              { label: "Sign In", href: "/signup" },
+              { label: "Go Home", href: "/", variant: "outline" },
+            ]}
+          />
         </ConsoleLayout>
         <Footer />
       </>

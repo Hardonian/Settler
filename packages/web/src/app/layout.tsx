@@ -167,10 +167,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <RuntimeUiConfigProvider>
               <QueryProvider>
                 {/* Skip to main content link for accessibility */}
-                <a href="#main-content" className="skip-to-main">
+                <a href="#site-main" className="skip-to-main">
                   Skip to main content
                 </a>
-                <SmoothScroll>{children}</SmoothScroll>
+                <main id="site-main">
+                  <SmoothScroll>{children}</SmoothScroll>
+                </main>
                 <GlobalClientShell />
               </QueryProvider>
             </RuntimeUiConfigProvider>
