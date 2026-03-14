@@ -30,8 +30,8 @@ export const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
           'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
           checked
-            ? 'bg-electric-cyan dark:bg-electric-cyan'
-            : 'bg-slate-200 dark:bg-slate-700',
+            ? 'bg-primary'
+            : 'bg-muted/60',
           disabled && 'opacity-50 cursor-not-allowed',
           className
         )}

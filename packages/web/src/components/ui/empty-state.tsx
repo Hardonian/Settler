@@ -36,16 +36,16 @@ export function EmptyState({
   className = '',
 }: EmptyStateProps) {
   return (
-    <div className={`flex flex-col items-center justify-center p-12 text-center ${className}`}>
-      <div className="mb-4 rounded-full bg-slate-100 dark:bg-slate-800 p-4">
-        <Icon className="h-8 w-8 text-slate-600 dark:text-slate-400" />
+    <div className={`flex flex-col items-center justify-center p-12 text-center ${className}`} role="status">
+      <div className="mb-4 rounded-full bg-muted/30 p-4">
+        <Icon className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
       </div>
-      
-      <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+
+      <h3 className="text-lg font-semibold text-foreground mb-2">
         {title}
       </h3>
-      
-      <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 max-w-md">
+
+      <p className="text-sm text-muted-foreground mb-6 max-w-md leading-relaxed">
         {description}
       </p>
 

@@ -92,22 +92,22 @@ export default async function ConsoleRootLayout({ children }: { children: React.
         <ConsoleLayout>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="text-center">
-              <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
+              <h1 className="text-fluid-2xl font-bold text-foreground mb-4">
                 Console Temporarily Unavailable
               </h1>
-              <p className="text-lg text-slate-600 dark:text-slate-400 mb-6">
-                We're experiencing technical difficulties. Please try again in a moment.
+              <p className="text-lg text-muted-foreground mb-6">
+                We&apos;re experiencing technical difficulties. Please try again in a moment.
               </p>
               <div className="flex gap-4 justify-center">
                 <a
                   href="/signup"
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded-[var(--ui-radius-md)] hover:bg-primary-hover transition-colors"
                 >
                   Sign In
                 </a>
                 <a
                   href="/"
-                  className="px-4 py-2 border border-slate-300 rounded hover:bg-slate-50 dark:hover:bg-slate-800"
+                  className="px-4 py-2 border border-border rounded-[var(--ui-radius-md)] text-foreground hover:bg-muted/30 transition-colors"
                 >
                   Go Home
                 </a>

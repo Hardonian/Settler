@@ -32,7 +32,7 @@ export default function AnalyticsError({
       <Card className="max-w-md w-full">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-blue-600" />
+            <BarChart3 className="h-5 w-5 text-blue-600" aria-hidden="true" />
             <CardTitle>Analytics Unavailable</CardTitle>
           </div>
           <CardDescription>
@@ -40,7 +40,7 @@ export default function AnalyticsError({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-muted-foreground">
             Your data is safe. This is a temporary display issue that doesn't affect your account or data processing.
           </p>
 
@@ -54,7 +54,7 @@ export default function AnalyticsError({
           </div>
 
           {process.env.NODE_ENV === 'development' && error.message && (
-            <div className="mt-4 bg-slate-100 dark:bg-slate-900 border rounded-lg p-3">
+            <div className="mt-4 bg-muted/30 border rounded-lg p-3">
               <p className="text-xs font-mono text-slate-700 dark:text-slate-300 break-words">
                 {error.message}
               </p>

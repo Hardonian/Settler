@@ -73,50 +73,44 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (!user) return <SignedOutScreen />;
 
   return (
-    <div className="flex h-screen bg-background-light">
-      <aside className="w-72 border-r border-slate-200 bg-white">
-        <Link href="/" className="flex border-b border-slate-200 p-4">
+    <div className="flex h-screen bg-background-light dark:bg-background">
+      <aside className="hidden md:flex w-72 flex-col border-r border-border bg-card dark:bg-card">
+        <Link href="/" className="flex border-b border-border p-4">
           <SettlerLogo variant="horizontal" className="h-8 w-auto" priority />
         </Link>
-        <nav className="space-y-4 p-3">
+        <nav className="flex-1 space-y-4 overflow-y-auto p-3" aria-label="App navigation">
           {navSections.map((section) => (
             <div key={section.label}>
-              <p className="mb-1 px-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <p className="mb-1 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {section.label}
               </p>
-              {section.items.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="mb-1 block rounded px-3 py-2 text-sm hover:bg-slate-100"
-                >
-                  {item.name}
-                </Link>
-              ))}
+              <div className="space-y-0.5">
+                {section.items.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="block rounded-[var(--sidebar-item-radius)] px-3 py-2 text-sm text-muted-foreground hover:bg-accent/50 hover:text-foreground transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
             </div>
           ))}
         </nav>
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4">
-          <div className="text-sm text-slate-600">
+        <header className="flex h-14 items-center justify-between border-b border-border bg-card dark:bg-card px-4">
+          <div className="text-sm text-muted-foreground">
             Tenant: {user.user_metadata?.tenant_id ?? "default"}
           </div>
           <div className="flex items-center gap-3 text-xs">
-            <span className="rounded bg-slate-100 px-2 py-1">
-              ENV: {process.env.NODE_ENV ?? "dev"}
+            <span className="rounded-[var(--ui-radius-sm)] bg-muted/30 px-2 py-1 text-muted-foreground font-mono">
+              {process.env.NODE_ENV ?? "dev"}
             </span>
-            <details>
-              <summary className="cursor-pointer rounded bg-slate-100 px-2 py-1">
-                request-id debug
-              </summary>
-              <div className="mt-1 rounded border border-slate-200 bg-white p-2 text-slate-600">
-                request-id is returned in x-request-id response header.
-              </div>
-            </details>
           </div>
         </header>
-        <main className="min-h-0 flex-1 overflow-auto p-4">{children}</main>
+        <main className="min-h-0 flex-1 overflow-auto p-4 md:p-6" id="main-content">{children}</main>
       </div>
     </div>
   );

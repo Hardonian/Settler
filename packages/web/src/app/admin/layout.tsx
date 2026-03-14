@@ -31,6 +31,64 @@ import { SkipLinks } from "@/components/admin/accessibility-skip-links";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+const adminNavSections = [
+  {
+    label: "Operations",
+    items: [
+      { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/admin/ops", label: "Ops Console", icon: Activity },
+      { href: "/admin/exceptions", label: "Exceptions", icon: AlertTriangle },
+      { href: "/admin/runs", label: "Runs", icon: PlayCircle },
+      { href: "/admin/jobforge", label: "JobForge", icon: Workflow },
+      { href: "/admin/audit", label: "Audit Trail", icon: FileSearch },
+    ],
+  },
+  {
+    label: "Configuration",
+    items: [
+      { href: "/admin/settings", label: "Settings", icon: Settings },
+      { href: "/admin/branding", label: "Branding", icon: Palette },
+      { href: "/admin/flags", label: "Feature Flags", icon: Flag },
+      { href: "/admin/pages", label: "Pages", icon: FileText },
+      { href: "/admin/experiments", label: "Experiments", icon: FlaskConical },
+      { href: "/admin/webhooks", label: "Webhooks", icon: FlaskConical },
+    ],
+  },
+  {
+    label: "Monitoring",
+    items: [
+      { href: "/admin/monitoring", label: "Monitoring", icon: Activity },
+      { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+    ],
+  },
+];
+
+function AdminNavContent() {
+  return (
+    <>
+      {adminNavSections.map((section, idx) => (
+        <div key={section.label} className={idx > 0 ? "mt-4 pt-4 border-t border-border" : ""}>
+          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">
+            {section.label}
+          </div>
+          {section.items.map((item) => (
+            <Link key={item.href} href={item.href}>
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
+                aria-label={item.label}
+              >
+                <item.icon size={16} aria-hidden="true" />
+                {item.label}
+              </Button>
+            </Link>
+          ))}
+        </div>
+      ))}
+    </>
+  );
+}
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   // CRITICAL: Server-side super admin gate with error handling
   try {
@@ -50,207 +108,38 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <AdminErrorBoundary>
       <SkipLinks />
-      <div className="flex h-screen bg-slate-50 dark:bg-slate-900">
+      <div className="flex h-screen bg-background-light dark:bg-background">
         {/* Mobile Menu */}
         <MobileMenu>
-          {/* Mobile navigation content - same as desktop sidebar */}
-          <nav className="space-y-1" aria-label="Admin navigation">
-            <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 px-2">
-              Operations
-            </div>
-            <Link href="/admin" onClick={() => {}}>
-              <Button variant="ghost" className="w-full justify-start gap-2">
-                <LayoutDashboard size={18} /> Dashboard
-              </Button>
-            </Link>
-            <Link href="/admin/ops">
-              <Button variant="ghost" className="w-full justify-start gap-2">
-                <Activity size={18} /> Ops Console
-              </Button>
-            </Link>
-            <Link href="/admin/exceptions">
-              <Button variant="ghost" className="w-full justify-start gap-2">
-                <AlertTriangle size={18} /> Exceptions
-              </Button>
-            </Link>
-            <Link href="/admin/runs">
-              <Button variant="ghost" className="w-full justify-start gap-2">
-                <PlayCircle size={18} /> Runs
-              </Button>
-            </Link>
-            <Link href="/admin/jobforge">
-              <Button variant="ghost" className="w-full justify-start gap-2">
-                <Workflow size={18} /> JobForge
-              </Button>
-            </Link>
-            <Link href="/admin/audit">
-              <Button variant="ghost" className="w-full justify-start gap-2">
-                <FileSearch size={18} /> Audit Trail
-              </Button>
-            </Link>
-          </nav>
+          <AdminNavContent />
         </MobileMenu>
 
         {/* Sidebar - Desktop Only */}
-        <aside className="hidden lg:flex w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 flex-col fixed h-full z-10">
-          <div className="p-6 border-b border-slate-200 dark:border-slate-800">
-            <div className="flex items-center gap-2 font-bold text-xl text-slate-900 dark:text-white">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+        <aside className="hidden lg:flex w-64 border-r border-border bg-card dark:bg-card flex-col fixed h-full z-10">
+          <div className="p-5 border-b border-border">
+            <Link href="/admin" className="flex items-center gap-2.5 font-bold text-lg text-foreground">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground text-sm font-bold">
                 S
               </div>
               Settler Admin
-            </div>
+            </Link>
           </div>
 
           <nav
             id="admin-navigation"
-            className="flex-1 p-4 space-y-1 overflow-y-auto"
+            className="flex-1 p-3 space-y-1 overflow-y-auto"
             aria-label="Admin navigation"
           >
-            <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 px-2">
-              Operations
-            </div>
-            <Link href="/admin">
-              <Button
-                variant="ghost"
-                className="w-full justify-start gap-2"
-                aria-label="Dashboard overview"
-              >
-                <LayoutDashboard size={18} aria-hidden="true" /> Dashboard
-              </Button>
-            </Link>
-            <Link href="/admin/ops">
-              <Button
-                variant="ghost"
-                className="w-full justify-start gap-2"
-                aria-label="Operations console"
-              >
-                <Activity size={18} aria-hidden="true" /> Ops Console
-              </Button>
-            </Link>
-            <Link href="/admin/exceptions">
-              <Button
-                variant="ghost"
-                className="w-full justify-start gap-2"
-                aria-label="Exception queue"
-              >
-                <AlertTriangle size={18} aria-hidden="true" /> Exceptions
-              </Button>
-            </Link>
-            <Link href="/admin/runs">
-              <Button
-                variant="ghost"
-                className="w-full justify-start gap-2"
-                aria-label="Reconciliation runs"
-              >
-                <PlayCircle size={18} aria-hidden="true" /> Runs
-              </Button>
-            </Link>
-            <Link href="/admin/jobforge">
-              <Button
-                variant="ghost"
-                className="w-full justify-start gap-2"
-                aria-label="JobForge operations"
-              >
-                <Workflow size={18} aria-hidden="true" /> JobForge
-              </Button>
-            </Link>
-            <Link href="/admin/audit">
-              <Button
-                variant="ghost"
-                className="w-full justify-start gap-2"
-                aria-label="Audit trail"
-              >
-                <FileSearch size={18} aria-hidden="true" /> Audit Trail
-              </Button>
-            </Link>
-
-            <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800">
-              <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 px-2">
-                Configuration
-              </div>
-              <Link href="/admin/pages">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2"
-                  aria-label="Pages management"
-                >
-                  <FileText size={18} aria-hidden="true" /> Pages
-                </Button>
-              </Link>
-              <Link href="/admin/experiments">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2"
-                  aria-label="Experiments"
-                >
-                  <FlaskConical size={18} aria-hidden="true" /> Experiments
-                </Button>
-              </Link>
-              <Link href="/admin/branding">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2"
-                  aria-label="Branding"
-                >
-                  <Palette size={18} aria-hidden="true" /> Branding
-                </Button>
-              </Link>
-              <Link href="/admin/flags">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2"
-                  aria-label="Feature flags"
-                >
-                  <Flag size={18} aria-hidden="true" /> Feature Flags
-                </Button>
-              </Link>
-              <Link href="/admin/webhooks">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2"
-                  aria-label="Webhooks"
-                >
-                  <FlaskConical size={18} aria-hidden="true" /> Webhooks
-                </Button>
-              </Link>
-              <Link href="/admin/monitoring">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2"
-                  aria-label="Monitoring"
-                >
-                  <Activity size={18} aria-hidden="true" /> Monitoring
-                </Button>
-              </Link>
-              <Link href="/admin/analytics">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2"
-                  aria-label="Analytics"
-                >
-                  <BarChart3 size={18} aria-hidden="true" /> Analytics
-                </Button>
-              </Link>
-              <Link href="/admin/settings">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2"
-                  aria-label="Settings"
-                >
-                  <Settings size={18} aria-hidden="true" /> Settings
-                </Button>
-              </Link>
-            </div>
+            <AdminNavContent />
           </nav>
 
-          <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
-            <div className="text-xs text-slate-500 font-medium">Tenant: default</div>
+          <div className="p-4 border-t border-border">
+            <div className="text-xs text-muted-foreground font-medium">Tenant: default</div>
           </div>
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 lg:ml-64 overflow-auto" role="main">
+        <main className="flex-1 lg:ml-64 overflow-auto" role="main" id="main-content">
           {children}
         </main>
       </div>
