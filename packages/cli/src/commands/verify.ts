@@ -4,6 +4,7 @@ import { stableHash } from "@settler/protocol";
 import chalk from "chalk";
 import { MAX_VERIFICATION_JSON_BYTES, readLimitedJsonSync } from "../lib/safety";
 import { verifyLedgerEntry } from "../lib/execution-ledger";
+import { verifyProofpack, type Proofpack } from "../lib/proof-engine";
 
 export const verifyCommand = new Command("verify")
   .description("Verify a Reconciliation Proof Capsule (RPC) against source data")
@@ -44,6 +45,17 @@ export const verifyCommand = new Command("verify")
         "capsule",
         MAX_VERIFICATION_JSON_BYTES
       ) as Record<string, unknown>;
+
+      if (capsule.schemaVersion === "2026-03-13" && typeof capsule.execution_id === "string") {
+        const result = verifyProofpack(capsule as unknown as Proofpack);
+        if (!result.valid) {
+          console.error(chalk.red(`INVALID\nreason=${result.reason}`));
+          process.exit(1);
+        }
+        console.log(chalk.green("VALID"));
+        console.log(`execution_id=${capsule.execution_id}`);
+        return;
+      }
 
       const requiredFields = [
         "capsuleVersion",

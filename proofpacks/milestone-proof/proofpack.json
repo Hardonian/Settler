@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "2026-03-13",
+  "execution_id": "milestone-proof",
+  "input_hash": "c69cf148ef48b5c7cd86913f65e7baaea7d0494cb8da466bf703b4cb735d7531",
+  "policy_hash": "e5ef6500d1a3b83e26e11127759ec19571bf02c504c0e49eef29d612517ecc09",
+  "workflow_hash": "12c1b5aa7012f98ca59c0e6b50ab86834f7e7c1cdcb38c4c06dc8fbeaedcab50",
+  "tool_call_hashes": [
+    "c299c8b960dd6ed7ae362408633e87102432768366fbc0e7e2a17a45262ee966",
+    "470853367acf7d10b0dab775287882e1dc1e20122b91d656f944efa3a8f04789",
+    "03dec6fd239aaf914647ee5371e18e0d5fd0a5a8d66b3c19bb39cebf4492f7d1",
+    "b47e62ea2d66f5f533061dad84a5f2244bf38d9a2093d78ac3f63e63446b79a9",
+    "99b944aaf2949e6cef2a81dfce06c302fb63ec254f350cdf5b97d808249217a1"
+  ],
+  "state_hash": "652cc76e459028a0ff122e1cb1a236aef7a680cdaeb1dde80d13289c4fcfd12a",
+  "CAS_references": [
+    "cas://08ca84dacb81151c55fa2517f3d5d9b1036644a51b59279690ae705fb221e006",
+    "cas://f1a44c7f03adb223f18dfb12b43b76fca0afc66933ae149e33f1d876ed74dd19",
+    "cas://a343a3b1234066a8058b48fd8b91ab8bafcf7faac78faf55a468b09231b62309",
+    "cas://df6727afbdfdff757d564d181e06933b9537aa79d689d292ae81de4cd3eed64a",
+    "cas://652cc76e459028a0ff122e1cb1a236aef7a680cdaeb1dde80d13289c4fcfd12a"
+  ],
+  "timestamp": "2026-03-13T23:44:41.600Z",
+  "deterministic_score": 1,
+  "replay_equivalence": true,
+  "trace": [
+    {
+      "stepId": "milestone-proof-ingest",
+      "transition": "ingest",
+      "toolOutput": {
+        "transition": "ingest",
+        "echoedSeed": "milestone-proof"
+      },
+      "stateHash": "08ca84dacb81151c55fa2517f3d5d9b1036644a51b59279690ae705fb221e006"
+    },
+    {
+      "stepId": "milestone-proof-policy_eval",
+      "transition": "policy_eval",
+      "toolOutput": {
+        "transition": "policy_eval",
+        "echoedSeed": "milestone-proof"
+      },
+      "stateHash": "f1a44c7f03adb223f18dfb12b43b76fca0afc66933ae149e33f1d876ed74dd19"
+    },
+    {
+      "stepId": "milestone-proof-tool_exec",
+      "transition": "tool_exec",
+      "toolOutput": {
+        "transition": "tool_exec",
+        "echoedSeed": "milestone-proof"
+      },
+      "stateHash": "a343a3b1234066a8058b48fd8b91ab8bafcf7faac78faf55a468b09231b62309"
+    },
+    {
+      "stepId": "milestone-proof-settle",
+      "transition": "settle",
+      "toolOutput": {
+        "transition": "settle",
+        "echoedSeed": "milestone-proof"
+      },
+      "stateHash": "df6727afbdfdff757d564d181e06933b9537aa79d689d292ae81de4cd3eed64a"
+    },
+    {
+      "stepId": "milestone-proof-finalize",
+      "transition": "finalize",
+      "toolOutput": {
+        "transition": "finalize",
+        "echoedSeed": "milestone-proof"
+      },
+      "stateHash": "652cc76e459028a0ff122e1cb1a236aef7a680cdaeb1dde80d13289c4fcfd12a"
+    }
+  ],
+  "signature": "eb37f8b280999a9d0958a9dc4a182d674ded1111223ac49f9f64ef1039384424"
+}

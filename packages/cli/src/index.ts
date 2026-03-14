@@ -214,8 +214,15 @@ const commandRegistry: Record<
   replay: {
     description: "Deterministic execution replay lab",
     load: async () => {
-      const { replayCommand } = await import("./commands/replay");
-      return { command: replayCommand };
+      const { replayExecutionCommand } = await import("./commands/prove");
+      return { command: replayExecutionCommand };
+    },
+  },
+  prove: {
+    description: "Generate trust-layer proof artifacts",
+    load: async () => {
+      const { proveCommand } = await import("./commands/prove");
+      return { command: proveCommand };
     },
   },
 
