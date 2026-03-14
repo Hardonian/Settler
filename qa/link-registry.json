@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-03-14T11:10:15.937Z",
-  "totalLinks": 614,
-  "uniquePaths": 177,
+  "generatedAt": "2026-03-14T22:49:37.654Z",
+  "totalLinks": 573,
+  "uniquePaths": 170,
   "links": [
     {
       "href": "/offline",
@@ -11,11 +11,11 @@
       "normalizedHref": "/offline"
     },
     {
-      "href": "/how-it-works",
+      "href": "/architecture",
       "source": "/home/user/Settler/packages/web/src/app/(marketing)/home/page.tsx",
       "line": 580,
       "type": "config",
-      "normalizedHref": "/how-it-works"
+      "normalizedHref": "/architecture"
     },
     {
       "href": "/replay-lab",
@@ -104,142 +104,107 @@
     {
       "href": "/admin",
       "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 61,
-      "type": "link",
+      "line": 38,
+      "type": "config",
       "normalizedHref": "/admin"
     },
     {
       "href": "/admin/ops",
       "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 66,
-      "type": "link",
+      "line": 39,
+      "type": "config",
       "normalizedHref": "/admin/ops"
     },
     {
       "href": "/admin/exceptions",
       "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 71,
-      "type": "link",
+      "line": 40,
+      "type": "config",
       "normalizedHref": "/admin/exceptions"
     },
     {
       "href": "/admin/runs",
       "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 76,
-      "type": "link",
+      "line": 41,
+      "type": "config",
       "normalizedHref": "/admin/runs"
     },
     {
       "href": "/admin/jobforge",
       "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 81,
-      "type": "link",
+      "line": 42,
+      "type": "config",
       "normalizedHref": "/admin/jobforge"
     },
     {
       "href": "/admin/audit",
       "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 86,
-      "type": "link",
+      "line": 43,
+      "type": "config",
       "normalizedHref": "/admin/audit"
     },
     {
-      "href": "/admin",
+      "href": "/admin/settings",
       "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 113,
-      "type": "link",
-      "normalizedHref": "/admin"
-    },
-    {
-      "href": "/admin/ops",
-      "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 122,
-      "type": "link",
-      "normalizedHref": "/admin/ops"
-    },
-    {
-      "href": "/admin/exceptions",
-      "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 131,
-      "type": "link",
-      "normalizedHref": "/admin/exceptions"
-    },
-    {
-      "href": "/admin/runs",
-      "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 140,
-      "type": "link",
-      "normalizedHref": "/admin/runs"
-    },
-    {
-      "href": "/admin/jobforge",
-      "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 149,
-      "type": "link",
-      "normalizedHref": "/admin/jobforge"
-    },
-    {
-      "href": "/admin/audit",
-      "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 158,
-      "type": "link",
-      "normalizedHref": "/admin/audit"
-    },
-    {
-      "href": "/admin/pages",
-      "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 172,
-      "type": "link",
-      "normalizedHref": "/admin/pages"
-    },
-    {
-      "href": "/admin/experiments",
-      "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 181,
-      "type": "link",
-      "normalizedHref": "/admin/experiments"
+      "line": 49,
+      "type": "config",
+      "normalizedHref": "/admin/settings"
     },
     {
       "href": "/admin/branding",
       "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 190,
-      "type": "link",
+      "line": 50,
+      "type": "config",
       "normalizedHref": "/admin/branding"
     },
     {
       "href": "/admin/flags",
       "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 199,
-      "type": "link",
+      "line": 51,
+      "type": "config",
       "normalizedHref": "/admin/flags"
+    },
+    {
+      "href": "/admin/pages",
+      "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
+      "line": 52,
+      "type": "config",
+      "normalizedHref": "/admin/pages"
+    },
+    {
+      "href": "/admin/experiments",
+      "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
+      "line": 53,
+      "type": "config",
+      "normalizedHref": "/admin/experiments"
     },
     {
       "href": "/admin/webhooks",
       "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 208,
-      "type": "link",
+      "line": 54,
+      "type": "config",
       "normalizedHref": "/admin/webhooks"
     },
     {
       "href": "/admin/monitoring",
       "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 217,
-      "type": "link",
+      "line": 60,
+      "type": "config",
       "normalizedHref": "/admin/monitoring"
     },
     {
       "href": "/admin/analytics",
       "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 226,
-      "type": "link",
+      "line": 61,
+      "type": "config",
       "normalizedHref": "/admin/analytics"
     },
     {
-      "href": "/admin/settings",
+      "href": "/admin",
       "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-      "line": 235,
+      "line": 120,
       "type": "link",
-      "normalizedHref": "/admin/settings"
+      "normalizedHref": "/admin"
     },
     {
       "href": "/admin",
@@ -443,6 +408,13 @@
       "line": 78,
       "type": "link",
       "normalizedHref": "/"
+    },
+    {
+      "href": "/app",
+      "source": "/home/user/Settler/packages/web/src/app/app/not-found.tsx",
+      "line": 18,
+      "type": "link",
+      "normalizedHref": "/app"
     },
     {
       "href": "/app/evidence",
@@ -699,105 +671,119 @@
     {
       "href": "/docs/sdk",
       "source": "/home/user/Settler/packages/web/src/app/console/docs/page.tsx",
-      "line": 439,
+      "line": 451,
       "type": "link",
       "normalizedHref": "/docs/sdk"
     },
     {
       "href": "/docs/cli",
       "source": "/home/user/Settler/packages/web/src/app/console/docs/page.tsx",
-      "line": 510,
+      "line": 542,
       "type": "link",
       "normalizedHref": "/docs/cli"
     },
     {
       "href": "/console/api-keys",
       "source": "/home/user/Settler/packages/web/src/app/console/docs/page.tsx",
-      "line": 533,
+      "line": 566,
       "type": "link",
       "normalizedHref": "/console/api-keys"
     },
     {
       "href": "/docs",
       "source": "/home/user/Settler/packages/web/src/app/console/docs/page.tsx",
-      "line": 727,
+      "line": 765,
       "type": "link",
       "normalizedHref": "/docs"
     },
     {
       "href": "/console/playground",
       "source": "/home/user/Settler/packages/web/src/app/console/docs/page.tsx",
-      "line": 734,
+      "line": 772,
       "type": "link",
       "normalizedHref": "/console/playground"
     },
     {
-      "href": "/cookbooks",
+      "href": "/cookbook",
       "source": "/home/user/Settler/packages/web/src/app/console/docs/page.tsx",
-      "line": 741,
+      "line": 779,
       "type": "link",
-      "normalizedHref": "/cookbooks"
+      "normalizedHref": "/cookbook"
     },
     {
       "href": "/",
       "source": "/home/user/Settler/packages/web/src/app/console/error.tsx",
-      "line": 86,
-      "type": "link",
+      "line": 63,
+      "type": "config",
       "normalizedHref": "/"
     },
     {
       "href": "/console",
       "source": "/home/user/Settler/packages/web/src/app/console/error.tsx",
-      "line": 95,
-      "type": "link",
+      "line": 67,
+      "type": "config",
       "normalizedHref": "/console"
     },
     {
       "href": "/",
       "source": "/home/user/Settler/packages/web/src/app/console/error.tsx",
-      "line": 98,
-      "type": "link",
+      "line": 68,
+      "type": "config",
+      "normalizedHref": "/"
+    },
+    {
+      "href": "/signup",
+      "source": "/home/user/Settler/packages/web/src/app/console/layout.tsx",
+      "line": 109,
+      "type": "config",
+      "normalizedHref": "/signup"
+    },
+    {
+      "href": "/",
+      "source": "/home/user/Settler/packages/web/src/app/console/layout.tsx",
+      "line": 110,
+      "type": "config",
       "normalizedHref": "/"
     },
     {
       "href": "/console",
       "source": "/home/user/Settler/packages/web/src/app/console/not-found.tsx",
-      "line": 31,
-      "type": "link",
+      "line": 18,
+      "type": "config",
       "normalizedHref": "/console"
     },
     {
       "href": "/",
       "source": "/home/user/Settler/packages/web/src/app/console/not-found.tsx",
-      "line": 34,
-      "type": "link",
+      "line": 19,
+      "type": "config",
       "normalizedHref": "/"
     },
     {
       "href": "/console",
       "source": "/home/user/Settler/packages/web/src/app/console/onboarding/page.tsx",
-      "line": 81,
+      "line": 71,
       "type": "router",
       "normalizedHref": "/console"
     },
     {
       "href": "/console/playground",
       "source": "/home/user/Settler/packages/web/src/app/console/onboarding/page.tsx",
-      "line": 318,
+      "line": 303,
       "type": "router",
       "normalizedHref": "/console/playground"
     },
     {
       "href": "/console/playground/receipts",
       "source": "/home/user/Settler/packages/web/src/app/console/onboarding/page.tsx",
-      "line": 330,
+      "line": 313,
       "type": "router",
       "normalizedHref": "/console/playground/receipts"
     },
     {
       "href": "/console/playground/reconcile",
       "source": "/home/user/Settler/packages/web/src/app/console/onboarding/page.tsx",
-      "line": 365,
+      "line": 348,
       "type": "router",
       "normalizedHref": "/console/playground/reconcile"
     },
@@ -825,142 +811,156 @@
     {
       "href": "/signup",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 182,
+      "line": 181,
       "type": "link",
       "normalizedHref": "/signup"
     },
     {
       "href": "/",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 185,
+      "line": 184,
       "type": "link",
       "normalizedHref": "/"
     },
     {
       "href": "/signup",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 218,
+      "line": 211,
       "type": "link",
       "normalizedHref": "/signup"
     },
     {
       "href": "/login",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 226,
+      "line": 214,
       "type": "link",
       "normalizedHref": "/login"
     },
     {
       "href": "/status",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 253,
+      "line": 236,
       "type": "link",
       "normalizedHref": "/status"
     },
     {
       "href": "/console/playground",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 273,
+      "line": 250,
       "type": "link",
       "normalizedHref": "/console/playground"
     },
     {
       "href": "/docs",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 291,
+      "line": 264,
       "type": "link",
       "normalizedHref": "/docs"
     },
     {
       "href": "/cookbook",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 297,
+      "line": 270,
       "type": "link",
       "normalizedHref": "/cookbook"
     },
     {
       "href": "/signup",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 337,
+      "line": 305,
       "type": "link",
       "normalizedHref": "/signup"
     },
     {
       "href": "/pricing",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 344,
+      "line": 308,
       "type": "link",
       "normalizedHref": "/pricing"
     },
     {
       "href": "/docs",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 558,
+      "line": 515,
       "type": "link",
       "normalizedHref": "/docs"
     },
     {
       "href": "/playground",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 565,
+      "line": 518,
       "type": "link",
       "normalizedHref": "/playground"
     },
     {
       "href": "/console/replay",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 584,
+      "line": 537,
       "type": "link",
       "normalizedHref": "/console/replay"
     },
     {
       "href": "/console/audit-trail",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 590,
+      "line": 543,
       "type": "link",
       "normalizedHref": "/console/audit-trail"
     },
     {
       "href": "/console/bulk-operations",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 596,
+      "line": 549,
       "type": "link",
       "normalizedHref": "/console/bulk-operations"
     },
     {
       "href": "/console/operator",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 602,
+      "line": 555,
       "type": "link",
       "normalizedHref": "/console/operator"
     },
     {
       "href": "/console/usage",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 638,
+      "line": 582,
       "type": "link",
       "normalizedHref": "/console/usage"
     },
     {
       "href": "/console/api-keys",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 662,
+      "line": 597,
       "type": "link",
       "normalizedHref": "/console/api-keys"
     },
     {
       "href": "/console/receipts",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 686,
+      "line": 612,
       "type": "link",
       "normalizedHref": "/console/receipts"
     },
     {
       "href": "/console/feature-flags",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 710,
+      "line": 627,
       "type": "link",
       "normalizedHref": "/console/feature-flags"
+    },
+    {
+      "href": "/console/api-keys",
+      "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
+      "line": 648,
+      "type": "link",
+      "normalizedHref": "/console/api-keys"
+    },
+    {
+      "href": "/console/playground",
+      "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
+      "line": 653,
+      "type": "link",
+      "normalizedHref": "/console/playground"
     },
     {
       "href": "/console/api-keys",
@@ -972,35 +972,21 @@
     {
       "href": "/console/playground",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 736,
-      "type": "link",
-      "normalizedHref": "/console/playground"
-    },
-    {
-      "href": "/console/api-keys",
-      "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 820,
-      "type": "link",
-      "normalizedHref": "/console/api-keys"
-    },
-    {
-      "href": "/console/playground",
-      "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 834,
+      "line": 745,
       "type": "link",
       "normalizedHref": "/console/playground"
     },
     {
       "href": "/console/setup-check",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 917,
+      "line": 826,
       "type": "link",
       "normalizedHref": "/console/setup-check"
     },
     {
       "href": "/",
       "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-      "line": 920,
+      "line": 829,
       "type": "link",
       "normalizedHref": "/"
     },
@@ -1089,11 +1075,11 @@
       "normalizedHref": "/console/feature-flags-policy"
     },
     {
-      "href": "/proof",
+      "href": "/proof-explorer",
       "source": "/home/user/Settler/packages/web/src/app/console/proof-explorer/page.tsx",
       "line": 25,
       "type": "link",
-      "normalizedHref": "/proof"
+      "normalizedHref": "/proof-explorer"
     },
     {
       "href": "/console/receipts-hash",
@@ -1273,7 +1259,7 @@
     {
       "href": "/console/workflows",
       "source": "/home/user/Settler/packages/web/src/app/console/workflows/[id]/page.tsx",
-      "line": 110,
+      "line": 116,
       "type": "link",
       "normalizedHref": "/console/workflows"
     },
@@ -1287,7 +1273,7 @@
     {
       "href": "/console/workflows/new",
       "source": "/home/user/Settler/packages/web/src/app/console/workflows/page.tsx",
-      "line": 113,
+      "line": 116,
       "type": "link",
       "normalizedHref": "/console/workflows/new"
     },
@@ -1318,34 +1304,6 @@
       "line": 665,
       "type": "link",
       "normalizedHref": "/playground"
-    },
-    {
-      "href": "/console/playground",
-      "source": "/home/user/Settler/packages/web/src/app/cookbooks/page.tsx",
-      "line": 627,
-      "type": "link",
-      "normalizedHref": "/console/playground"
-    },
-    {
-      "href": "/docs",
-      "source": "/home/user/Settler/packages/web/src/app/cookbooks/page.tsx",
-      "line": 634,
-      "type": "link",
-      "normalizedHref": "/docs"
-    },
-    {
-      "href": "/console/playground",
-      "source": "/home/user/Settler/packages/web/src/app/cookbooks/page.tsx",
-      "line": 657,
-      "type": "link",
-      "normalizedHref": "/console/playground"
-    },
-    {
-      "href": "/console/playground",
-      "source": "/home/user/Settler/packages/web/src/app/cookbooks/page.tsx",
-      "line": 665,
-      "type": "link",
-      "normalizedHref": "/console/playground"
     },
     {
       "href": "/dashboard/billing",
@@ -1446,44 +1404,51 @@
       "normalizedHref": "/console/playground"
     },
     {
+      "href": "/dashboard",
+      "source": "/home/user/Settler/packages/web/src/app/dashboard/not-found.tsx",
+      "line": 11,
+      "type": "config",
+      "normalizedHref": "/dashboard"
+    },
+    {
       "href": "/dashboard/jobs",
       "source": "/home/user/Settler/packages/web/src/app/dashboard/user/page.tsx",
-      "line": 172,
+      "line": 166,
       "type": "link",
       "normalizedHref": "/dashboard/jobs"
     },
     {
       "href": "/console/playground",
       "source": "/home/user/Settler/packages/web/src/app/dashboard/user/page.tsx",
-      "line": 189,
+      "line": 183,
       "type": "link",
       "normalizedHref": "/console/playground"
     },
     {
       "href": "/docs",
       "source": "/home/user/Settler/packages/web/src/app/dashboard/user/page.tsx",
-      "line": 192,
+      "line": 186,
       "type": "link",
       "normalizedHref": "/docs"
     },
     {
       "href": "/console/playground",
       "source": "/home/user/Settler/packages/web/src/app/dashboard/user/page.tsx",
-      "line": 266,
+      "line": 260,
       "type": "link",
       "normalizedHref": "/console/playground"
     },
     {
-      "href": "/cookbooks",
+      "href": "/cookbook",
       "source": "/home/user/Settler/packages/web/src/app/dashboard/user/page.tsx",
-      "line": 279,
+      "line": 273,
       "type": "link",
-      "normalizedHref": "/cookbooks"
+      "normalizedHref": "/cookbook"
     },
     {
       "href": "/docs",
       "source": "/home/user/Settler/packages/web/src/app/dashboard/user/page.tsx",
-      "line": 292,
+      "line": 286,
       "type": "link",
       "normalizedHref": "/docs"
     },
@@ -1686,98 +1651,91 @@
     {
       "href": "/docs/integrations/stripe",
       "source": "/home/user/Settler/packages/web/src/app/docs/integrations/page.tsx",
-      "line": 14,
+      "line": 12,
       "type": "config",
       "normalizedHref": "/docs/integrations/stripe"
     },
     {
       "href": "/docs/integrations/shopify",
       "source": "/home/user/Settler/packages/web/src/app/docs/integrations/page.tsx",
-      "line": 15,
+      "line": 13,
       "type": "config",
       "normalizedHref": "/docs/integrations/shopify"
     },
     {
       "href": "/docs/integrations/quickbooks",
       "source": "/home/user/Settler/packages/web/src/app/docs/integrations/page.tsx",
-      "line": 16,
+      "line": 14,
       "type": "config",
       "normalizedHref": "/docs/integrations/quickbooks"
     },
     {
       "href": "/docs/integrations/paypal",
       "source": "/home/user/Settler/packages/web/src/app/docs/integrations/page.tsx",
-      "line": 17,
+      "line": 15,
       "type": "config",
       "normalizedHref": "/docs/integrations/paypal"
     },
     {
+      "href": "/docs",
+      "source": "/home/user/Settler/packages/web/src/app/docs/not-found.tsx",
+      "line": 18,
+      "type": "link",
+      "normalizedHref": "/docs"
+    },
+    {
       "href": "/proof-explorer",
       "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-      "line": 52,
+      "line": 55,
       "type": "config",
       "normalizedHref": "/proof-explorer"
     },
     {
       "href": "/docs/api",
       "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-      "line": 61,
+      "line": 65,
       "type": "config",
       "normalizedHref": "/docs/api"
     },
     {
       "href": "/docs/sdk",
       "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-      "line": 70,
+      "line": 74,
       "type": "config",
       "normalizedHref": "/docs/sdk"
     },
     {
       "href": "/docs/integrations",
       "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-      "line": 100,
+      "line": 105,
       "type": "config",
       "normalizedHref": "/docs/integrations"
     },
     {
       "href": "/docs/api",
       "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-      "line": 112,
+      "line": 118,
       "type": "config",
       "normalizedHref": "/docs/api"
     },
     {
-      "href": "/how-it-works",
+      "href": "/architecture",
       "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-      "line": 197,
+      "line": 218,
       "type": "link",
-      "normalizedHref": "/how-it-works"
+      "normalizedHref": "/architecture"
     },
     {
       "href": "/docs/api",
       "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-      "line": 198,
+      "line": 224,
       "type": "link",
       "normalizedHref": "/docs/api"
-    },
-    {
-      "href": "/docs/integrations",
-      "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-      "line": 199,
-      "type": "link",
-      "normalizedHref": "/docs/integrations"
-    },
-    {
-      "href": "/proof-explorer",
-      "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-      "line": 200,
-      "type": "link",
-      "normalizedHref": "/proof-explorer"
     },
     {
       "href": "/docs/auth",
       "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-      "line": 201,
+      "line": 248,
       "type": "link",
       "normalizedHref": "/docs/auth"
     },
@@ -2113,7 +2071,7 @@
     {
       "href": "/",
       "source": "/home/user/Settler/packages/web/src/app/error.tsx",
-      "line": 64,
+      "line": 60,
       "type": "link",
       "normalizedHref": "/"
     },
@@ -2153,20 +2111,6 @@
       "normalizedHref": "/support"
     },
     {
-      "href": "/architecture",
-      "source": "/home/user/Settler/packages/web/src/app/how-it-works/page.tsx",
-      "line": 91,
-      "type": "link",
-      "normalizedHref": "/architecture"
-    },
-    {
-      "href": "/docs/quickstart",
-      "source": "/home/user/Settler/packages/web/src/app/how-it-works/page.tsx",
-      "line": 94,
-      "type": "link",
-      "normalizedHref": "/docs/quickstart"
-    },
-    {
       "href": "/docs",
       "source": "/home/user/Settler/packages/web/src/app/integrations/request/page.tsx",
       "line": 62,
@@ -2174,11 +2118,11 @@
       "normalizedHref": "/docs"
     },
     {
-      "href": "/dashboard/integrations",
+      "href": "/console",
       "source": "/home/user/Settler/packages/web/src/app/integrations/request/page.tsx",
       "line": 65,
       "type": "link",
-      "normalizedHref": "/dashboard/integrations"
+      "normalizedHref": "/console"
     },
     {
       "href": "/support/contact",
@@ -2309,9 +2253,16 @@
     {
       "href": "/",
       "source": "/home/user/Settler/packages/web/src/app/not-found.tsx",
-      "line": 14,
+      "line": 22,
       "type": "link",
       "normalizedHref": "/"
+    },
+    {
+      "href": "/docs",
+      "source": "/home/user/Settler/packages/web/src/app/not-found.tsx",
+      "line": 28,
+      "type": "link",
+      "normalizedHref": "/docs"
     },
     {
       "href": "/offline",
@@ -2330,21 +2281,21 @@
     {
       "href": "/docs/quickstart",
       "source": "/home/user/Settler/packages/web/src/app/open-source/page.tsx",
-      "line": 143,
+      "line": 142,
       "type": "link",
       "normalizedHref": "/docs/quickstart"
     },
     {
       "href": "/architecture",
       "source": "/home/user/Settler/packages/web/src/app/open-source/page.tsx",
-      "line": 263,
+      "line": 261,
       "type": "link",
       "normalizedHref": "/architecture"
     },
     {
       "href": "/security-and-audit",
       "source": "/home/user/Settler/packages/web/src/app/open-source/page.tsx",
-      "line": 331,
+      "line": 329,
       "type": "link",
       "normalizedHref": "/security-and-audit"
     },
@@ -2356,11 +2307,11 @@
       "normalizedHref": "/capabilities"
     },
     {
-      "href": "/use-cases",
+      "href": "/product",
       "source": "/home/user/Settler/packages/web/src/app/page.tsx",
       "line": 101,
       "type": "config",
-      "normalizedHref": "/use-cases"
+      "normalizedHref": "/product"
     },
     {
       "href": "/architecture",
@@ -2410,34 +2361,6 @@
       "line": 51,
       "type": "link",
       "normalizedHref": "/"
-    },
-    {
-      "href": "/proof-explorer",
-      "source": "/home/user/Settler/packages/web/src/app/proof/page.tsx",
-      "line": 113,
-      "type": "link",
-      "normalizedHref": "/proof-explorer"
-    },
-    {
-      "href": "/docs/quickstart",
-      "source": "/home/user/Settler/packages/web/src/app/proof/page.tsx",
-      "line": 119,
-      "type": "link",
-      "normalizedHref": "/docs/quickstart"
-    },
-    {
-      "href": "/proof-explorer",
-      "source": "/home/user/Settler/packages/web/src/app/proof/page.tsx",
-      "line": 224,
-      "type": "link",
-      "normalizedHref": "/proof-explorer"
-    },
-    {
-      "href": "/security-and-audit",
-      "source": "/home/user/Settler/packages/web/src/app/proof/page.tsx",
-      "line": 234,
-      "type": "link",
-      "normalizedHref": "/security-and-audit"
     },
     {
       "href": "/docs/api",
@@ -2575,28 +2498,28 @@
     {
       "href": "/console",
       "source": "/home/user/Settler/packages/web/src/app/schematics/page.tsx",
-      "line": 237,
+      "line": 241,
       "type": "link",
       "normalizedHref": "/console"
     },
     {
-      "href": "/cookbooks",
+      "href": "/cookbook",
       "source": "/home/user/Settler/packages/web/src/app/schematics/page.tsx",
-      "line": 244,
+      "line": 248,
       "type": "link",
-      "normalizedHref": "/cookbooks"
+      "normalizedHref": "/cookbook"
     },
     {
       "href": "/cookbook",
       "source": "/home/user/Settler/packages/web/src/app/schematics/page.tsx",
-      "line": 267,
+      "line": 271,
       "type": "link",
       "normalizedHref": "/cookbook"
     },
     {
       "href": "/docs",
       "source": "/home/user/Settler/packages/web/src/app/schematics/page.tsx",
-      "line": 275,
+      "line": 279,
       "type": "link",
       "normalizedHref": "/docs"
     },
@@ -2699,11 +2622,11 @@
       "normalizedHref": "/support"
     },
     {
-      "href": "/dashboard",
+      "href": "/console",
       "source": "/home/user/Settler/packages/web/src/app/support/contact/page.tsx",
       "line": 69,
       "type": "link",
-      "normalizedHref": "/dashboard"
+      "normalizedHref": "/console"
     },
     {
       "href": "/support",
@@ -2727,104 +2650,6 @@
       "normalizedHref": "/docs"
     },
     {
-      "href": "/",
-      "source": "/home/user/Settler/packages/web/src/app/trust/error.tsx",
-      "line": 51,
-      "type": "link",
-      "normalizedHref": "/"
-    },
-    {
-      "href": "/docs",
-      "source": "/home/user/Settler/packages/web/src/components/CommunityHub.tsx",
-      "line": 65,
-      "type": "config",
-      "normalizedHref": "/docs"
-    },
-    {
-      "href": "/community/contributors",
-      "source": "/home/user/Settler/packages/web/src/components/CommunityHub.tsx",
-      "line": 72,
-      "type": "config",
-      "normalizedHref": "/community/contributors"
-    },
-    {
-      "href": "/docs/api",
-      "source": "/home/user/Settler/packages/web/src/components/DeveloperResources.tsx",
-      "line": 60,
-      "type": "config",
-      "normalizedHref": "/docs/api"
-    },
-    {
-      "href": "/docs/quickstart",
-      "source": "/home/user/Settler/packages/web/src/components/DeveloperResources.tsx",
-      "line": 67,
-      "type": "config",
-      "normalizedHref": "/docs/quickstart"
-    },
-    {
-      "href": "/docs/sdk",
-      "source": "/home/user/Settler/packages/web/src/components/DeveloperResources.tsx",
-      "line": 75,
-      "type": "config",
-      "normalizedHref": "/docs/sdk"
-    },
-    {
-      "href": "/playground",
-      "source": "/home/user/Settler/packages/web/src/components/DeveloperResources.tsx",
-      "line": 82,
-      "type": "config",
-      "normalizedHref": "/playground"
-    },
-    {
-      "href": "/docs/cli",
-      "source": "/home/user/Settler/packages/web/src/components/DeveloperResources.tsx",
-      "line": 89,
-      "type": "config",
-      "normalizedHref": "/docs/cli"
-    },
-    {
-      "href": "/docs/examples",
-      "source": "/home/user/Settler/packages/web/src/components/DeveloperResources.tsx",
-      "line": 96,
-      "type": "config",
-      "normalizedHref": "/docs/examples"
-    },
-    {
-      "href": "/edge-ai",
-      "source": "/home/user/Settler/packages/web/src/components/EdgeAIMarketingSection.tsx",
-      "line": 80,
-      "type": "link",
-      "normalizedHref": "/edge-ai"
-    },
-    {
-      "href": "/edge-ai/nodes",
-      "source": "/home/user/Settler/packages/web/src/components/EdgeAIMarketingSection.tsx",
-      "line": 83,
-      "type": "link",
-      "normalizedHref": "/edge-ai/nodes"
-    },
-    {
-      "href": "/edge-ai/nodes",
-      "source": "/home/user/Settler/packages/web/src/components/EdgeAIMarketingSection.tsx",
-      "line": 220,
-      "type": "link",
-      "normalizedHref": "/edge-ai/nodes"
-    },
-    {
-      "href": "/edge-ai",
-      "source": "/home/user/Settler/packages/web/src/components/EdgeAIMarketingSection.tsx",
-      "line": 226,
-      "type": "link",
-      "normalizedHref": "/edge-ai"
-    },
-    {
-      "href": "/pricing",
-      "source": "/home/user/Settler/packages/web/src/components/FeatureLockModal.tsx",
-      "line": 81,
-      "type": "link",
-      "normalizedHref": "/pricing"
-    },
-    {
       "href": "/platform",
       "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
       "line": 9,
@@ -2839,11 +2664,11 @@
       "normalizedHref": "/capabilities"
     },
     {
-      "href": "/use-cases",
+      "href": "/product",
       "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
       "line": 11,
       "type": "config",
-      "normalizedHref": "/use-cases"
+      "normalizedHref": "/product"
     },
     {
       "href": "/architecture",
@@ -2881,74 +2706,60 @@
       "normalizedHref": "/docs/quickstart"
     },
     {
-      "href": "/roadmap",
-      "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
-      "line": 22,
-      "type": "config",
-      "normalizedHref": "/roadmap"
-    },
-    {
       "href": "/changelog",
       "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
-      "line": 23,
+      "line": 22,
       "type": "config",
       "normalizedHref": "/changelog"
     },
     {
       "href": "/faq",
       "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
-      "line": 24,
+      "line": 23,
       "type": "config",
       "normalizedHref": "/faq"
     },
     {
       "href": "/about",
       "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
-      "line": 30,
+      "line": 29,
       "type": "config",
       "normalizedHref": "/about"
     },
     {
       "href": "/contact",
       "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
-      "line": 31,
+      "line": 30,
       "type": "config",
       "normalizedHref": "/contact"
     },
     {
       "href": "/open-source",
       "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
-      "line": 32,
+      "line": 31,
       "type": "config",
       "normalizedHref": "/open-source"
     },
     {
       "href": "/enterprise",
       "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
-      "line": 33,
+      "line": 32,
       "type": "config",
       "normalizedHref": "/enterprise"
     },
     {
       "href": "/terms",
       "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
-      "line": 35,
+      "line": 34,
       "type": "config",
       "normalizedHref": "/terms"
     },
     {
       "href": "/privacy",
       "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
-      "line": 36,
+      "line": 35,
       "type": "config",
       "normalizedHref": "/privacy"
-    },
-    {
-      "href": "/console/playground",
-      "source": "/home/user/Settler/packages/web/src/components/MobileMenu.tsx",
-      "line": 57,
-      "type": "link",
-      "normalizedHref": "/console/playground"
     },
     {
       "href": "/platform",
@@ -2965,11 +2776,11 @@
       "normalizedHref": "/capabilities"
     },
     {
-      "href": "/use-cases",
+      "href": "/product",
       "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
       "line": 19,
       "type": "config",
-      "normalizedHref": "/use-cases"
+      "normalizedHref": "/product"
     },
     {
       "href": "/enterprise",
@@ -2993,109 +2804,88 @@
       "normalizedHref": "/docs"
     },
     {
-      "href": "/how-it-works",
-      "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 27,
-      "type": "config",
-      "normalizedHref": "/how-it-works"
-    },
-    {
       "href": "/architecture",
       "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 28,
+      "line": 27,
       "type": "config",
       "normalizedHref": "/architecture"
     },
     {
       "href": "/security-and-audit",
       "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 29,
+      "line": 28,
       "type": "config",
       "normalizedHref": "/security-and-audit"
     },
     {
       "href": "/open-source",
       "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 30,
+      "line": 29,
       "type": "config",
       "normalizedHref": "/open-source"
     },
     {
-      "href": "/roadmap",
+      "href": "/changelog",
       "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 31,
+      "line": 30,
       "type": "config",
-      "normalizedHref": "/roadmap"
+      "normalizedHref": "/changelog"
     },
     {
       "href": "/faq",
       "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 36,
+      "line": 35,
       "type": "config",
       "normalizedHref": "/faq"
     },
     {
       "href": "/contact",
       "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 37,
+      "line": 36,
       "type": "config",
       "normalizedHref": "/contact"
     },
     {
       "href": "/changelog",
       "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 38,
+      "line": 37,
       "type": "config",
       "normalizedHref": "/changelog"
     },
     {
       "href": "/privacy",
       "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 39,
+      "line": 38,
       "type": "config",
       "normalizedHref": "/privacy"
     },
     {
       "href": "/terms",
       "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 40,
+      "line": 39,
       "type": "config",
       "normalizedHref": "/terms"
     },
     {
       "href": "/signup",
       "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 332,
+      "line": 331,
       "type": "link",
       "normalizedHref": "/signup"
     },
     {
       "href": "/signup",
       "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 372,
+      "line": 371,
       "type": "link",
       "normalizedHref": "/signup"
     },
     {
       "href": "/signup",
       "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-      "line": 516,
+      "line": 515,
       "type": "link",
       "normalizedHref": "/signup"
-    },
-    {
-      "href": "/pricing",
-      "source": "/home/user/Settler/packages/web/src/components/PlanFeatureGate.tsx",
-      "line": 91,
-      "type": "link",
-      "normalizedHref": "/pricing"
-    },
-    {
-      "href": "/pricing",
-      "source": "/home/user/Settler/packages/web/src/components/SuccessCelebration.tsx",
-      "line": 139,
-      "type": "link",
-      "normalizedHref": "/pricing"
     },
     {
       "href": "/pricing",
@@ -3108,13 +2898,6 @@
       "href": "/pricing",
       "source": "/home/user/Settler/packages/web/src/components/TrialCountdownBanner.tsx",
       "line": 74,
-      "type": "link",
-      "normalizedHref": "/pricing"
-    },
-    {
-      "href": "/pricing",
-      "source": "/home/user/Settler/packages/web/src/components/UpgradeButton.tsx",
-      "line": 29,
       "type": "link",
       "normalizedHref": "/pricing"
     },
@@ -3142,7 +2925,7 @@
     {
       "href": "/pricing",
       "source": "/home/user/Settler/packages/web/src/components/WelcomeDashboard.tsx",
-      "line": 192,
+      "line": 151,
       "type": "link",
       "normalizedHref": "/pricing"
     },
@@ -3173,13 +2956,6 @@
       "line": 217,
       "type": "link",
       "normalizedHref": "/support"
-    },
-    {
-      "href": "/legal/cookies",
-      "source": "/home/user/Settler/packages/web/src/components/consent/CookieConsent.tsx",
-      "line": 253,
-      "type": "link",
-      "normalizedHref": "/legal/cookies"
     },
     {
       "href": "/console/insights",
@@ -3219,252 +2995,245 @@
     {
       "href": "/console",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 47,
+      "line": 49,
       "type": "config",
       "normalizedHref": "/console"
     },
     {
       "href": "/console/reconciliations",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 48,
+      "line": 50,
       "type": "config",
       "normalizedHref": "/console/reconciliations"
     },
     {
       "href": "/console/audits",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 49,
+      "line": 51,
       "type": "config",
       "normalizedHref": "/console/audits"
     },
     {
       "href": "/console/proof-explorer",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 50,
+      "line": 52,
       "type": "config",
       "normalizedHref": "/console/proof-explorer"
     },
     {
-      "href": "/console/replay-lab",
-      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 51,
-      "type": "config",
-      "normalizedHref": "/console/replay-lab"
-    },
-    {
       "href": "/console/policies",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 52,
+      "line": 53,
       "type": "config",
       "normalizedHref": "/console/policies"
     },
     {
-      "href": "/console/organizations",
-      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 53,
-      "type": "config",
-      "normalizedHref": "/console/organizations"
-    },
-    {
-      "href": "/console/api-keys",
-      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 54,
-      "type": "config",
-      "normalizedHref": "/console/api-keys"
-    },
-    {
-      "href": "/console/settings",
-      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 55,
-      "type": "config",
-      "normalizedHref": "/console/settings"
-    },
-    {
-      "href": "/console/api-test",
-      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 56,
-      "type": "config",
-      "normalizedHref": "/console/api-test"
-    },
-    {
-      "href": "/console/api-playground",
-      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 57,
-      "type": "config",
-      "normalizedHref": "/console/api-playground"
-    },
-    {
-      "href": "/console/tables",
-      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 58,
-      "type": "config",
-      "normalizedHref": "/console/tables"
-    },
-    {
-      "href": "/console/api-logs",
-      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 59,
-      "type": "config",
-      "normalizedHref": "/console/api-logs"
-    },
-    {
-      "href": "/console/activity",
-      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 60,
-      "type": "config",
-      "normalizedHref": "/console/activity"
-    },
-    {
-      "href": "/console/workflows",
-      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 61,
-      "type": "config",
-      "normalizedHref": "/console/workflows"
-    },
-    {
       "href": "/console/control-plane",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 62,
+      "line": 54,
       "type": "config",
       "normalizedHref": "/console/control-plane"
     },
     {
-      "href": "/console/diagnostics",
+      "href": "/console/analytics",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 63,
+      "line": 60,
       "type": "config",
-      "normalizedHref": "/console/diagnostics"
+      "normalizedHref": "/console/analytics"
     },
     {
-      "href": "/console/setup-check",
+      "href": "/console/insights",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 64,
+      "line": 61,
       "type": "config",
-      "normalizedHref": "/console/setup-check"
+      "normalizedHref": "/console/insights"
     },
     {
-      "href": "/console/inspector",
+      "href": "/console/activity",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 65,
+      "line": 62,
       "type": "config",
-      "normalizedHref": "/console/inspector"
+      "normalizedHref": "/console/activity"
     },
     {
       "href": "/console/usage",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 66,
+      "line": 63,
       "type": "config",
       "normalizedHref": "/console/usage"
     },
     {
       "href": "/console/performance",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 67,
+      "line": 64,
       "type": "config",
       "normalizedHref": "/console/performance"
     },
     {
-      "href": "/console/insights",
+      "href": "/console/diagnostics",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 68,
+      "line": 65,
       "type": "config",
-      "normalizedHref": "/console/insights"
+      "normalizedHref": "/console/diagnostics"
     },
     {
-      "href": "/console/analytics",
+      "href": "/console/api-keys",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 69,
+      "line": 71,
       "type": "config",
-      "normalizedHref": "/console/analytics"
+      "normalizedHref": "/console/api-keys"
+    },
+    {
+      "href": "/console/api-playground",
+      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 72,
+      "type": "config",
+      "normalizedHref": "/console/api-playground"
+    },
+    {
+      "href": "/console/api-test",
+      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 73,
+      "type": "config",
+      "normalizedHref": "/console/api-test"
+    },
+    {
+      "href": "/console/api-logs",
+      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 74,
+      "type": "config",
+      "normalizedHref": "/console/api-logs"
+    },
+    {
+      "href": "/console/tables",
+      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 75,
+      "type": "config",
+      "normalizedHref": "/console/tables"
     },
     {
       "href": "/console/webhooks",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 70,
+      "line": 76,
       "type": "config",
       "normalizedHref": "/console/webhooks"
     },
     {
+      "href": "/console/workflows",
+      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 77,
+      "type": "config",
+      "normalizedHref": "/console/workflows"
+    },
+    {
+      "href": "/console/docs",
+      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 78,
+      "type": "config",
+      "normalizedHref": "/console/docs"
+    },
+    {
+      "href": "/console/organizations",
+      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 84,
+      "type": "config",
+      "normalizedHref": "/console/organizations"
+    },
+    {
       "href": "/console/billing",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 71,
+      "line": 85,
       "type": "config",
       "normalizedHref": "/console/billing"
     },
     {
       "href": "/console/receipts",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 72,
+      "line": 86,
       "type": "config",
       "normalizedHref": "/console/receipts"
     },
     {
       "href": "/console/feature-flags",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 73,
+      "line": 87,
       "type": "config",
       "normalizedHref": "/console/feature-flags"
     },
     {
+      "href": "/console/settings",
+      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 88,
+      "type": "config",
+      "normalizedHref": "/console/settings"
+    },
+    {
+      "href": "/console/inspector",
+      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 89,
+      "type": "config",
+      "normalizedHref": "/console/inspector"
+    },
+    {
+      "href": "/console/setup-check",
+      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 90,
+      "type": "config",
+      "normalizedHref": "/console/setup-check"
+    },
+    {
       "href": "/console/site",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 74,
+      "line": 91,
       "type": "config",
       "normalizedHref": "/console/site"
     },
     {
-      "href": "/console/docs",
-      "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 75,
-      "type": "config",
-      "normalizedHref": "/console/docs"
-    },
-    {
       "href": "/console/replay",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 79,
+      "line": 97,
       "type": "config",
       "normalizedHref": "/console/replay"
     },
     {
       "href": "/console/audit-trail",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 80,
+      "line": 98,
       "type": "config",
       "normalizedHref": "/console/audit-trail"
     },
     {
       "href": "/console/bulk-operations",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 81,
+      "line": 99,
       "type": "config",
       "normalizedHref": "/console/bulk-operations"
     },
     {
       "href": "/console/approvals",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 82,
+      "line": 100,
       "type": "config",
       "normalizedHref": "/console/approvals"
     },
     {
       "href": "/console/rules-engine",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 83,
+      "line": 101,
       "type": "config",
       "normalizedHref": "/console/rules-engine"
     },
     {
       "href": "/console/operator",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 84,
+      "line": 102,
       "type": "config",
       "normalizedHref": "/console/operator"
     },
     {
       "href": "/console/admin/tenants",
       "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 89,
+      "line": 107,
       "type": "config",
       "normalizedHref": "/console/admin/tenants"
     },
@@ -3665,34 +3434,6 @@
       "normalizedHref": "/console"
     },
     {
-      "href": "/enterprise",
-      "source": "/home/user/Settler/packages/web/src/components/marketing/InvestorPitch.tsx",
-      "line": 114,
-      "type": "link",
-      "normalizedHref": "/enterprise"
-    },
-    {
-      "href": "/pricing",
-      "source": "/home/user/Settler/packages/web/src/components/marketing/UrgencyBanner.tsx",
-      "line": 100,
-      "type": "link",
-      "normalizedHref": "/pricing"
-    },
-    {
-      "href": "/signup",
-      "source": "/home/user/Settler/packages/web/src/components/marketing/UrgencyBanner.tsx",
-      "line": 133,
-      "type": "link",
-      "normalizedHref": "/signup"
-    },
-    {
-      "href": "/signup",
-      "source": "/home/user/Settler/packages/web/src/components/marketing/ValueProposition.tsx",
-      "line": 116,
-      "type": "link",
-      "normalizedHref": "/signup"
-    },
-    {
       "href": "/dashboard/user",
       "source": "/home/user/Settler/packages/web/src/components/onboarding/ActivationChecklist.tsx",
       "line": 32,
@@ -3721,11 +3462,11 @@
       "normalizedHref": "/dashboard"
     },
     {
-      "href": "/cookbooks",
+      "href": "/cookbook",
       "source": "/home/user/Settler/packages/web/src/components/onboarding/ActivationChecklist.tsx",
       "line": 60,
       "type": "config",
-      "normalizedHref": "/cookbooks"
+      "normalizedHref": "/cookbook"
     },
     {
       "href": "/console/api-keys",
@@ -3784,32 +3525,18 @@
       "normalizedHref": "/architecture"
     },
     {
-      "href": "/how-it-works",
+      "href": "/product",
       "source": "/home/user/Settler/packages/web/src/components/public-visual-proof.tsx",
       "line": 367,
       "type": "link",
-      "normalizedHref": "/how-it-works"
+      "normalizedHref": "/product"
     },
     {
-      "href": "/roadmap",
+      "href": "/changelog",
       "source": "/home/user/Settler/packages/web/src/components/public-visual-proof.tsx",
       "line": 371,
       "type": "link",
-      "normalizedHref": "/roadmap"
-    },
-    {
-      "href": "/enterprise#demo-form",
-      "source": "/home/user/Settler/packages/web/src/components/sales/DemoBookingWidget.tsx",
-      "line": 45,
-      "type": "link",
-      "normalizedHref": "/enterprise"
-    },
-    {
-      "href": "/enterprise#demo-form",
-      "source": "/home/user/Settler/packages/web/src/components/sales/DemoBookingWidget.tsx",
-      "line": 106,
-      "type": "link",
-      "normalizedHref": "/enterprise"
+      "normalizedHref": "/changelog"
     },
     {
       "href": "/",
@@ -3847,11 +3574,11 @@
       "normalizedHref": "/support"
     },
     {
-      "href": "/cookbooks",
+      "href": "/cookbook",
       "source": "/home/user/Settler/packages/web/src/components/support/FloatingHelpButton.tsx",
       "line": 34,
       "type": "config",
-      "normalizedHref": "/cookbooks"
+      "normalizedHref": "/cookbook"
     },
     {
       "href": "/enterprise",
@@ -3868,11 +3595,11 @@
       "normalizedHref": "/docs"
     },
     {
-      "href": "/cookbooks",
+      "href": "/cookbook",
       "source": "/home/user/Settler/packages/web/src/components/tenant/TenantNavigation.tsx",
       "line": 25,
       "type": "config",
-      "normalizedHref": "/cookbooks"
+      "normalizedHref": "/cookbook"
     },
     {
       "href": "/receipts",
@@ -3943,20 +3670,6 @@
       "line": 171,
       "type": "link",
       "normalizedHref": "/console/playground"
-    },
-    {
-      "href": "/pricing",
-      "source": "/home/user/Settler/packages/web/src/components/upgrade/SoftPaywall.tsx",
-      "line": 79,
-      "type": "link",
-      "normalizedHref": "/pricing"
-    },
-    {
-      "href": "/pricing",
-      "source": "/home/user/Settler/packages/web/src/components/upgrade/SoftPaywall.tsx",
-      "line": 187,
-      "type": "link",
-      "normalizedHref": "/pricing"
     },
     {
       "href": "/signup",
@@ -4197,11 +3910,11 @@
       "normalizedHref": "/app/audit"
     },
     {
-      "href": "/roadmap",
+      "href": "/changelog",
       "source": "/home/user/Settler/packages/web/src/lib/public/visual-proof-registry.ts",
       "line": 112,
       "type": "config",
-      "normalizedHref": "/roadmap"
+      "normalizedHref": "/changelog"
     },
     {
       "href": "/changelog",
@@ -4225,11 +3938,11 @@
       "normalizedHref": "/docs"
     },
     {
-      "href": "/cookbooks",
+      "href": "/cookbook",
       "source": "/home/user/Settler/packages/web/src/lib/tenant/setup.ts",
       "line": 52,
       "type": "config",
-      "normalizedHref": "/cookbooks"
+      "normalizedHref": "/cookbook"
     },
     {
       "href": "/receipts",
@@ -4290,14 +4003,14 @@
     {
       "href": "/signup",
       "source": "/home/user/Settler/packages/web/src/lib/tenant/setup.ts",
-      "line": 105,
+      "line": 107,
       "type": "config",
       "normalizedHref": "/signup"
     },
     {
       "href": "/docs",
       "source": "/home/user/Settler/packages/web/src/lib/tenant/setup.ts",
-      "line": 110,
+      "line": 112,
       "type": "config",
       "normalizedHref": "/docs"
     }
@@ -4340,7 +4053,6 @@
     "/capabilities",
     "/changelog",
     "/community",
-    "/community/contributors",
     "/console",
     "/console/activity",
     "/console/admin/activation",
@@ -4380,7 +4092,6 @@
     "/console/reconciliation-view",
     "/console/reconciliations",
     "/console/replay",
-    "/console/replay-lab",
     "/console/rules-engine",
     "/console/settings",
     "/console/setup-check",
@@ -4396,7 +4107,6 @@
     "/console/workflows/new",
     "/contact",
     "/cookbook",
-    "/cookbooks",
     "/dashboard",
     "/dashboard/addons",
     "/dashboard/billing",
@@ -4440,10 +4150,8 @@
     "/exports",
     "/faq",
     "/feature-flags",
-    "/how-it-works",
     "/integrations/request",
     "/legal",
-    "/legal/cookies",
     "/legal/dpa",
     "/legal/license",
     "/legal/privacy",
@@ -4456,11 +4164,10 @@
     "/playground",
     "/pricing",
     "/privacy",
-    "/proof",
+    "/product",
     "/proof-explorer",
     "/receipts",
     "/replay-lab",
-    "/roadmap",
     "/security-and-audit",
     "/signup",
     "/status",
@@ -4478,7 +4185,6 @@
     "/terms",
     "/transparency",
     "/trust",
-    "/use-cases",
     "/verify"
   ],
   "linksByPath": {
@@ -4498,34 +4204,62 @@
         "normalizedHref": "/offline"
       }
     ],
-    "/how-it-works": [
+    "/architecture": [
       {
-        "href": "/how-it-works",
+        "href": "/architecture",
         "source": "/home/user/Settler/packages/web/src/app/(marketing)/home/page.tsx",
         "line": 580,
         "type": "config",
-        "normalizedHref": "/how-it-works"
+        "normalizedHref": "/architecture"
       },
       {
-        "href": "/how-it-works",
+        "href": "/architecture",
         "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-        "line": 197,
+        "line": 218,
         "type": "link",
-        "normalizedHref": "/how-it-works"
+        "normalizedHref": "/architecture"
       },
       {
-        "href": "/how-it-works",
+        "href": "/architecture",
+        "source": "/home/user/Settler/packages/web/src/app/open-source/page.tsx",
+        "line": 261,
+        "type": "link",
+        "normalizedHref": "/architecture"
+      },
+      {
+        "href": "/architecture",
+        "source": "/home/user/Settler/packages/web/src/app/page.tsx",
+        "line": 106,
+        "type": "config",
+        "normalizedHref": "/architecture"
+      },
+      {
+        "href": "/architecture",
+        "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
+        "line": 12,
+        "type": "config",
+        "normalizedHref": "/architecture"
+      },
+      {
+        "href": "/architecture",
         "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
         "line": 27,
         "type": "config",
-        "normalizedHref": "/how-it-works"
+        "normalizedHref": "/architecture"
       },
       {
-        "href": "/how-it-works",
+        "href": "/architecture",
         "source": "/home/user/Settler/packages/web/src/components/public-visual-proof.tsx",
-        "line": 367,
+        "line": 363,
         "type": "link",
-        "normalizedHref": "/how-it-works"
+        "normalizedHref": "/architecture"
+      },
+      {
+        "href": "/architecture",
+        "source": "/home/user/Settler/packages/web/src/lib/public/visual-proof-registry.ts",
+        "line": 20,
+        "type": "config",
+        "normalizedHref": "/architecture"
       }
     ],
     "/replay-lab": [
@@ -4568,30 +4302,16 @@
       },
       {
         "href": "/proof-explorer",
+        "source": "/home/user/Settler/packages/web/src/app/console/proof-explorer/page.tsx",
+        "line": 25,
+        "type": "link",
+        "normalizedHref": "/proof-explorer"
+      },
+      {
+        "href": "/proof-explorer",
         "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-        "line": 52,
+        "line": 55,
         "type": "config",
-        "normalizedHref": "/proof-explorer"
-      },
-      {
-        "href": "/proof-explorer",
-        "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-        "line": 200,
-        "type": "link",
-        "normalizedHref": "/proof-explorer"
-      },
-      {
-        "href": "/proof-explorer",
-        "source": "/home/user/Settler/packages/web/src/app/proof/page.tsx",
-        "line": 113,
-        "type": "link",
-        "normalizedHref": "/proof-explorer"
-      },
-      {
-        "href": "/proof-explorer",
-        "source": "/home/user/Settler/packages/web/src/app/proof/page.tsx",
-        "line": 224,
-        "type": "link",
         "normalizedHref": "/proof-explorer"
       },
       {
@@ -4619,22 +4339,29 @@
       },
       {
         "href": "/signup",
+        "source": "/home/user/Settler/packages/web/src/app/console/layout.tsx",
+        "line": 109,
+        "type": "config",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 182,
+        "line": 181,
         "type": "link",
         "normalizedHref": "/signup"
       },
       {
         "href": "/signup",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 218,
+        "line": 211,
         "type": "link",
         "normalizedHref": "/signup"
       },
       {
         "href": "/signup",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 337,
+        "line": 305,
         "type": "link",
         "normalizedHref": "/signup"
       },
@@ -4676,21 +4403,21 @@
       {
         "href": "/signup",
         "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 332,
+        "line": 331,
         "type": "link",
         "normalizedHref": "/signup"
       },
       {
         "href": "/signup",
         "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 372,
+        "line": 371,
         "type": "link",
         "normalizedHref": "/signup"
       },
       {
         "href": "/signup",
         "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 516,
+        "line": 515,
         "type": "link",
         "normalizedHref": "/signup"
       },
@@ -4705,20 +4432,6 @@
         "href": "/signup",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsolePublicOverview.tsx",
         "line": 143,
-        "type": "link",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup",
-        "source": "/home/user/Settler/packages/web/src/components/marketing/UrgencyBanner.tsx",
-        "line": 133,
-        "type": "link",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup",
-        "source": "/home/user/Settler/packages/web/src/components/marketing/ValueProposition.tsx",
-        "line": 116,
         "type": "link",
         "normalizedHref": "/signup"
       },
@@ -4781,7 +4494,7 @@
       {
         "href": "/signup",
         "source": "/home/user/Settler/packages/web/src/lib/tenant/setup.ts",
-        "line": 105,
+        "line": 107,
         "type": "config",
         "normalizedHref": "/signup"
       }
@@ -4818,35 +4531,42 @@
       {
         "href": "/",
         "source": "/home/user/Settler/packages/web/src/app/console/error.tsx",
-        "line": 86,
-        "type": "link",
+        "line": 63,
+        "type": "config",
         "normalizedHref": "/"
       },
       {
         "href": "/",
         "source": "/home/user/Settler/packages/web/src/app/console/error.tsx",
-        "line": 98,
-        "type": "link",
+        "line": 68,
+        "type": "config",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/home/user/Settler/packages/web/src/app/console/layout.tsx",
+        "line": 110,
+        "type": "config",
         "normalizedHref": "/"
       },
       {
         "href": "/",
         "source": "/home/user/Settler/packages/web/src/app/console/not-found.tsx",
-        "line": 34,
+        "line": 19,
+        "type": "config",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
+        "line": 184,
         "type": "link",
         "normalizedHref": "/"
       },
       {
         "href": "/",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 185,
-        "type": "link",
-        "normalizedHref": "/"
-      },
-      {
-        "href": "/",
-        "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 920,
+        "line": 829,
         "type": "link",
         "normalizedHref": "/"
       },
@@ -4881,7 +4601,7 @@
       {
         "href": "/",
         "source": "/home/user/Settler/packages/web/src/app/error.tsx",
-        "line": 64,
+        "line": 60,
         "type": "link",
         "normalizedHref": "/"
       },
@@ -4895,7 +4615,7 @@
       {
         "href": "/",
         "source": "/home/user/Settler/packages/web/src/app/not-found.tsx",
-        "line": 14,
+        "line": 22,
         "type": "link",
         "normalizedHref": "/"
       },
@@ -4943,13 +4663,6 @@
       },
       {
         "href": "/",
-        "source": "/home/user/Settler/packages/web/src/app/trust/error.tsx",
-        "line": 51,
-        "type": "link",
-        "normalizedHref": "/"
-      },
-      {
-        "href": "/",
         "source": "/home/user/Settler/packages/web/src/components/env/EnvErrorPanel.tsx",
         "line": 62,
         "type": "link",
@@ -4974,14 +4687,14 @@
       {
         "href": "/admin",
         "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 61,
-        "type": "link",
+        "line": 38,
+        "type": "config",
         "normalizedHref": "/admin"
       },
       {
         "href": "/admin",
         "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 113,
+        "line": 120,
         "type": "link",
         "normalizedHref": "/admin"
       },
@@ -5018,15 +4731,8 @@
       {
         "href": "/admin/exceptions",
         "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 71,
-        "type": "link",
-        "normalizedHref": "/admin/exceptions"
-      },
-      {
-        "href": "/admin/exceptions",
-        "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 131,
-        "type": "link",
+        "line": 40,
+        "type": "config",
         "normalizedHref": "/admin/exceptions"
       }
     ],
@@ -5055,8 +4761,8 @@
       {
         "href": "/admin/experiments",
         "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 181,
-        "type": "link",
+        "line": 53,
+        "type": "config",
         "normalizedHref": "/admin/experiments"
       }
     ],
@@ -5073,15 +4779,8 @@
       {
         "href": "/admin/ops",
         "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 66,
-        "type": "link",
-        "normalizedHref": "/admin/ops"
-      },
-      {
-        "href": "/admin/ops",
-        "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 122,
-        "type": "link",
+        "line": 39,
+        "type": "config",
         "normalizedHref": "/admin/ops"
       },
       {
@@ -5096,15 +4795,8 @@
       {
         "href": "/admin/runs",
         "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 76,
-        "type": "link",
-        "normalizedHref": "/admin/runs"
-      },
-      {
-        "href": "/admin/runs",
-        "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 140,
-        "type": "link",
+        "line": 41,
+        "type": "config",
         "normalizedHref": "/admin/runs"
       },
       {
@@ -5140,15 +4832,8 @@
       {
         "href": "/admin/jobforge",
         "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 81,
-        "type": "link",
-        "normalizedHref": "/admin/jobforge"
-      },
-      {
-        "href": "/admin/jobforge",
-        "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 149,
-        "type": "link",
+        "line": 42,
+        "type": "config",
         "normalizedHref": "/admin/jobforge"
       }
     ],
@@ -5156,15 +4841,8 @@
       {
         "href": "/admin/audit",
         "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 86,
-        "type": "link",
-        "normalizedHref": "/admin/audit"
-      },
-      {
-        "href": "/admin/audit",
-        "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 158,
-        "type": "link",
+        "line": 43,
+        "type": "config",
         "normalizedHref": "/admin/audit"
       },
       {
@@ -5175,12 +4853,39 @@
         "normalizedHref": "/admin/audit"
       }
     ],
+    "/admin/settings": [
+      {
+        "href": "/admin/settings",
+        "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
+        "line": 49,
+        "type": "config",
+        "normalizedHref": "/admin/settings"
+      }
+    ],
+    "/admin/branding": [
+      {
+        "href": "/admin/branding",
+        "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
+        "line": 50,
+        "type": "config",
+        "normalizedHref": "/admin/branding"
+      }
+    ],
+    "/admin/flags": [
+      {
+        "href": "/admin/flags",
+        "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
+        "line": 51,
+        "type": "config",
+        "normalizedHref": "/admin/flags"
+      }
+    ],
     "/admin/pages": [
       {
         "href": "/admin/pages",
         "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 172,
-        "type": "link",
+        "line": 52,
+        "type": "config",
         "normalizedHref": "/admin/pages"
       },
       {
@@ -5205,30 +4910,12 @@
         "normalizedHref": "/admin/pages"
       }
     ],
-    "/admin/branding": [
-      {
-        "href": "/admin/branding",
-        "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 190,
-        "type": "link",
-        "normalizedHref": "/admin/branding"
-      }
-    ],
-    "/admin/flags": [
-      {
-        "href": "/admin/flags",
-        "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 199,
-        "type": "link",
-        "normalizedHref": "/admin/flags"
-      }
-    ],
     "/admin/webhooks": [
       {
         "href": "/admin/webhooks",
         "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 208,
-        "type": "link",
+        "line": 54,
+        "type": "config",
         "normalizedHref": "/admin/webhooks"
       }
     ],
@@ -5236,8 +4923,8 @@
       {
         "href": "/admin/monitoring",
         "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 217,
-        "type": "link",
+        "line": 60,
+        "type": "config",
         "normalizedHref": "/admin/monitoring"
       }
     ],
@@ -5245,18 +4932,9 @@
       {
         "href": "/admin/analytics",
         "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 226,
-        "type": "link",
+        "line": 61,
+        "type": "config",
         "normalizedHref": "/admin/analytics"
-      }
-    ],
-    "/admin/settings": [
-      {
-        "href": "/admin/settings",
-        "source": "/home/user/Settler/packages/web/src/app/admin/layout.tsx",
-        "line": 235,
-        "type": "link",
-        "normalizedHref": "/admin/settings"
       }
     ],
     "/admin/pages/new": [
@@ -5281,6 +4959,13 @@
         "source": "/home/user/Settler/packages/web/src/app/app/layout.tsx",
         "line": 38,
         "type": "config",
+        "normalizedHref": "/app"
+      },
+      {
+        "href": "/app",
+        "source": "/home/user/Settler/packages/web/src/app/app/not-found.tsx",
+        "line": 18,
+        "type": "link",
         "normalizedHref": "/app"
       }
     ],
@@ -5406,21 +5091,21 @@
       {
         "href": "/docs/api",
         "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-        "line": 61,
+        "line": 65,
         "type": "config",
         "normalizedHref": "/docs/api"
       },
       {
         "href": "/docs/api",
         "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-        "line": 112,
+        "line": 118,
         "type": "config",
         "normalizedHref": "/docs/api"
       },
       {
         "href": "/docs/api",
         "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-        "line": 198,
+        "line": 224,
         "type": "link",
         "normalizedHref": "/docs/api"
       },
@@ -5443,13 +5128,6 @@
         "source": "/home/user/Settler/packages/web/src/app/receipts/page.tsx",
         "line": 33,
         "type": "link",
-        "normalizedHref": "/docs/api"
-      },
-      {
-        "href": "/docs/api",
-        "source": "/home/user/Settler/packages/web/src/components/DeveloperResources.tsx",
-        "line": 60,
-        "type": "config",
         "normalizedHref": "/docs/api"
       },
       {
@@ -5680,7 +5358,7 @@
       {
         "href": "/pricing",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 344,
+        "line": 308,
         "type": "link",
         "normalizedHref": "/pricing"
       },
@@ -5721,13 +5399,6 @@
       },
       {
         "href": "/pricing",
-        "source": "/home/user/Settler/packages/web/src/components/FeatureLockModal.tsx",
-        "line": 81,
-        "type": "link",
-        "normalizedHref": "/pricing"
-      },
-      {
-        "href": "/pricing",
         "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
         "line": 13,
         "type": "config",
@@ -5742,20 +5413,6 @@
       },
       {
         "href": "/pricing",
-        "source": "/home/user/Settler/packages/web/src/components/PlanFeatureGate.tsx",
-        "line": 91,
-        "type": "link",
-        "normalizedHref": "/pricing"
-      },
-      {
-        "href": "/pricing",
-        "source": "/home/user/Settler/packages/web/src/components/SuccessCelebration.tsx",
-        "line": 139,
-        "type": "link",
-        "normalizedHref": "/pricing"
-      },
-      {
-        "href": "/pricing",
         "source": "/home/user/Settler/packages/web/src/components/TrialCountdownBanner.tsx",
         "line": 50,
         "type": "link",
@@ -5765,13 +5422,6 @@
         "href": "/pricing",
         "source": "/home/user/Settler/packages/web/src/components/TrialCountdownBanner.tsx",
         "line": 74,
-        "type": "link",
-        "normalizedHref": "/pricing"
-      },
-      {
-        "href": "/pricing",
-        "source": "/home/user/Settler/packages/web/src/components/UpgradeButton.tsx",
-        "line": 29,
         "type": "link",
         "normalizedHref": "/pricing"
       },
@@ -5799,7 +5449,7 @@
       {
         "href": "/pricing",
         "source": "/home/user/Settler/packages/web/src/components/WelcomeDashboard.tsx",
-        "line": 192,
+        "line": 151,
         "type": "link",
         "normalizedHref": "/pricing"
       },
@@ -5840,13 +5490,6 @@
       },
       {
         "href": "/pricing",
-        "source": "/home/user/Settler/packages/web/src/components/marketing/UrgencyBanner.tsx",
-        "line": 100,
-        "type": "link",
-        "normalizedHref": "/pricing"
-      },
-      {
-        "href": "/pricing",
         "source": "/home/user/Settler/packages/web/src/components/shared/urgency-banner.tsx",
         "line": 46,
         "type": "link",
@@ -5857,20 +5500,6 @@
         "source": "/home/user/Settler/packages/web/src/components/tenant/TenantNavigation.tsx",
         "line": 29,
         "type": "config",
-        "normalizedHref": "/pricing"
-      },
-      {
-        "href": "/pricing",
-        "source": "/home/user/Settler/packages/web/src/components/upgrade/SoftPaywall.tsx",
-        "line": 79,
-        "type": "link",
-        "normalizedHref": "/pricing"
-      },
-      {
-        "href": "/pricing",
-        "source": "/home/user/Settler/packages/web/src/components/upgrade/SoftPaywall.tsx",
-        "line": 187,
-        "type": "link",
         "normalizedHref": "/pricing"
       },
       {
@@ -5983,7 +5612,7 @@
       {
         "href": "/console/billing",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 71,
+        "line": 85,
         "type": "config",
         "normalizedHref": "/console/billing"
       },
@@ -6034,21 +5663,21 @@
       {
         "href": "/console",
         "source": "/home/user/Settler/packages/web/src/app/console/error.tsx",
-        "line": 95,
-        "type": "link",
+        "line": 67,
+        "type": "config",
         "normalizedHref": "/console"
       },
       {
         "href": "/console",
         "source": "/home/user/Settler/packages/web/src/app/console/not-found.tsx",
-        "line": 31,
-        "type": "link",
+        "line": 18,
+        "type": "config",
         "normalizedHref": "/console"
       },
       {
         "href": "/console",
         "source": "/home/user/Settler/packages/web/src/app/console/onboarding/page.tsx",
-        "line": 81,
+        "line": 71,
         "type": "router",
         "normalizedHref": "/console"
       },
@@ -6056,6 +5685,13 @@
         "href": "/console",
         "source": "/home/user/Settler/packages/web/src/app/console/setup-check/page.tsx",
         "line": 250,
+        "type": "link",
+        "normalizedHref": "/console"
+      },
+      {
+        "href": "/console",
+        "source": "/home/user/Settler/packages/web/src/app/integrations/request/page.tsx",
+        "line": 65,
         "type": "link",
         "normalizedHref": "/console"
       },
@@ -6090,14 +5726,21 @@
       {
         "href": "/console",
         "source": "/home/user/Settler/packages/web/src/app/schematics/page.tsx",
-        "line": 237,
+        "line": 241,
+        "type": "link",
+        "normalizedHref": "/console"
+      },
+      {
+        "href": "/console",
+        "source": "/home/user/Settler/packages/web/src/app/support/contact/page.tsx",
+        "line": 69,
         "type": "link",
         "normalizedHref": "/console"
       },
       {
         "href": "/console",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 47,
+        "line": 49,
         "type": "config",
         "normalizedHref": "/console"
       },
@@ -6148,14 +5791,35 @@
       {
         "href": "/changelog",
         "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
-        "line": 23,
+        "line": 22,
         "type": "config",
         "normalizedHref": "/changelog"
       },
       {
         "href": "/changelog",
         "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 38,
+        "line": 30,
+        "type": "config",
+        "normalizedHref": "/changelog"
+      },
+      {
+        "href": "/changelog",
+        "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
+        "line": 37,
+        "type": "config",
+        "normalizedHref": "/changelog"
+      },
+      {
+        "href": "/changelog",
+        "source": "/home/user/Settler/packages/web/src/components/public-visual-proof.tsx",
+        "line": 371,
+        "type": "link",
+        "normalizedHref": "/changelog"
+      },
+      {
+        "href": "/changelog",
+        "source": "/home/user/Settler/packages/web/src/lib/public/visual-proof-registry.ts",
+        "line": 112,
         "type": "config",
         "normalizedHref": "/changelog"
       },
@@ -6185,15 +5849,8 @@
       {
         "href": "/docs/integrations",
         "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-        "line": 100,
+        "line": 105,
         "type": "config",
-        "normalizedHref": "/docs/integrations"
-      },
-      {
-        "href": "/docs/integrations",
-        "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-        "line": 199,
-        "type": "link",
         "normalizedHref": "/docs/integrations"
       },
       {
@@ -6243,21 +5900,21 @@
       {
         "href": "/docs",
         "source": "/home/user/Settler/packages/web/src/app/console/docs/page.tsx",
-        "line": 727,
+        "line": 765,
         "type": "link",
         "normalizedHref": "/docs"
       },
       {
         "href": "/docs",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 291,
+        "line": 264,
         "type": "link",
         "normalizedHref": "/docs"
       },
       {
         "href": "/docs",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 558,
+        "line": 515,
         "type": "link",
         "normalizedHref": "/docs"
       },
@@ -6270,22 +5927,15 @@
       },
       {
         "href": "/docs",
-        "source": "/home/user/Settler/packages/web/src/app/cookbooks/page.tsx",
-        "line": 634,
+        "source": "/home/user/Settler/packages/web/src/app/dashboard/user/page.tsx",
+        "line": 186,
         "type": "link",
         "normalizedHref": "/docs"
       },
       {
         "href": "/docs",
         "source": "/home/user/Settler/packages/web/src/app/dashboard/user/page.tsx",
-        "line": 192,
-        "type": "link",
-        "normalizedHref": "/docs"
-      },
-      {
-        "href": "/docs",
-        "source": "/home/user/Settler/packages/web/src/app/dashboard/user/page.tsx",
-        "line": 292,
+        "line": 286,
         "type": "link",
         "normalizedHref": "/docs"
       },
@@ -6328,6 +5978,13 @@
         "href": "/docs",
         "source": "/home/user/Settler/packages/web/src/app/docs/integrations/[integrationId]/page.tsx",
         "line": 248,
+        "type": "link",
+        "normalizedHref": "/docs"
+      },
+      {
+        "href": "/docs",
+        "source": "/home/user/Settler/packages/web/src/app/docs/not-found.tsx",
+        "line": 18,
         "type": "link",
         "normalizedHref": "/docs"
       },
@@ -6382,6 +6039,13 @@
       },
       {
         "href": "/docs",
+        "source": "/home/user/Settler/packages/web/src/app/not-found.tsx",
+        "line": 28,
+        "type": "link",
+        "normalizedHref": "/docs"
+      },
+      {
+        "href": "/docs",
         "source": "/home/user/Settler/packages/web/src/app/runbooks/page.tsx",
         "line": 264,
         "type": "link",
@@ -6390,7 +6054,7 @@
       {
         "href": "/docs",
         "source": "/home/user/Settler/packages/web/src/app/schematics/page.tsx",
-        "line": 275,
+        "line": 279,
         "type": "link",
         "normalizedHref": "/docs"
       },
@@ -6399,13 +6063,6 @@
         "source": "/home/user/Settler/packages/web/src/app/support/contact/page.tsx",
         "line": 249,
         "type": "link",
-        "normalizedHref": "/docs"
-      },
-      {
-        "href": "/docs",
-        "source": "/home/user/Settler/packages/web/src/components/CommunityHub.tsx",
-        "line": 65,
-        "type": "config",
         "normalizedHref": "/docs"
       },
       {
@@ -6467,7 +6124,7 @@
       {
         "href": "/docs",
         "source": "/home/user/Settler/packages/web/src/lib/tenant/setup.ts",
-        "line": 110,
+        "line": 112,
         "type": "config",
         "normalizedHref": "/docs"
       }
@@ -6538,14 +6195,14 @@
       {
         "href": "/console/receipts",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 686,
+        "line": 612,
         "type": "link",
         "normalizedHref": "/console/receipts"
       },
       {
         "href": "/console/receipts",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 72,
+        "line": 86,
         "type": "config",
         "normalizedHref": "/console/receipts"
       }
@@ -6568,7 +6225,7 @@
       {
         "href": "/enterprise",
         "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
-        "line": 33,
+        "line": 32,
         "type": "config",
         "normalizedHref": "/enterprise"
       },
@@ -6581,30 +6238,9 @@
       },
       {
         "href": "/enterprise",
-        "source": "/home/user/Settler/packages/web/src/components/marketing/InvestorPitch.tsx",
-        "line": 114,
-        "type": "link",
-        "normalizedHref": "/enterprise"
-      },
-      {
-        "href": "/enterprise",
         "source": "/home/user/Settler/packages/web/src/components/pricing/PricingWithFeatures.tsx",
         "line": 115,
         "type": "router",
-        "normalizedHref": "/enterprise"
-      },
-      {
-        "href": "/enterprise#demo-form",
-        "source": "/home/user/Settler/packages/web/src/components/sales/DemoBookingWidget.tsx",
-        "line": 45,
-        "type": "link",
-        "normalizedHref": "/enterprise"
-      },
-      {
-        "href": "/enterprise#demo-form",
-        "source": "/home/user/Settler/packages/web/src/components/sales/DemoBookingWidget.tsx",
-        "line": 106,
-        "type": "link",
         "normalizedHref": "/enterprise"
       },
       {
@@ -6640,7 +6276,7 @@
       {
         "href": "/docs/sdk",
         "source": "/home/user/Settler/packages/web/src/app/console/docs/page.tsx",
-        "line": 439,
+        "line": 451,
         "type": "link",
         "normalizedHref": "/docs/sdk"
       },
@@ -6661,7 +6297,7 @@
       {
         "href": "/docs/sdk",
         "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-        "line": 70,
+        "line": 74,
         "type": "config",
         "normalizedHref": "/docs/sdk"
       },
@@ -6695,13 +6331,6 @@
       },
       {
         "href": "/docs/sdk",
-        "source": "/home/user/Settler/packages/web/src/components/DeveloperResources.tsx",
-        "line": 75,
-        "type": "config",
-        "normalizedHref": "/docs/sdk"
-      },
-      {
-        "href": "/docs/sdk",
         "source": "/home/user/Settler/packages/web/src/components/docs/DocsSidebar.tsx",
         "line": 43,
         "type": "config",
@@ -6719,7 +6348,7 @@
       {
         "href": "/docs/cli",
         "source": "/home/user/Settler/packages/web/src/app/console/docs/page.tsx",
-        "line": 510,
+        "line": 542,
         "type": "link",
         "normalizedHref": "/docs/cli"
       },
@@ -6729,27 +6358,27 @@
         "line": 129,
         "type": "link",
         "normalizedHref": "/docs/cli"
-      },
-      {
-        "href": "/docs/cli",
-        "source": "/home/user/Settler/packages/web/src/components/DeveloperResources.tsx",
-        "line": 89,
-        "type": "config",
-        "normalizedHref": "/docs/cli"
       }
     ],
     "/console/api-keys": [
       {
         "href": "/console/api-keys",
         "source": "/home/user/Settler/packages/web/src/app/console/docs/page.tsx",
-        "line": 533,
+        "line": 566,
         "type": "link",
         "normalizedHref": "/console/api-keys"
       },
       {
         "href": "/console/api-keys",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 662,
+        "line": 597,
+        "type": "link",
+        "normalizedHref": "/console/api-keys"
+      },
+      {
+        "href": "/console/api-keys",
+        "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
+        "line": 648,
         "type": "link",
         "normalizedHref": "/console/api-keys"
       },
@@ -6757,13 +6386,6 @@
         "href": "/console/api-keys",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
         "line": 731,
-        "type": "link",
-        "normalizedHref": "/console/api-keys"
-      },
-      {
-        "href": "/console/api-keys",
-        "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 820,
         "type": "link",
         "normalizedHref": "/console/api-keys"
       },
@@ -6784,7 +6406,7 @@
       {
         "href": "/console/api-keys",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 54,
+        "line": 71,
         "type": "config",
         "normalizedHref": "/console/api-keys"
       },
@@ -6800,56 +6422,35 @@
       {
         "href": "/console/playground",
         "source": "/home/user/Settler/packages/web/src/app/console/docs/page.tsx",
-        "line": 734,
+        "line": 772,
         "type": "link",
         "normalizedHref": "/console/playground"
       },
       {
         "href": "/console/playground",
         "source": "/home/user/Settler/packages/web/src/app/console/onboarding/page.tsx",
-        "line": 318,
+        "line": 303,
         "type": "router",
         "normalizedHref": "/console/playground"
       },
       {
         "href": "/console/playground",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 273,
+        "line": 250,
         "type": "link",
         "normalizedHref": "/console/playground"
       },
       {
         "href": "/console/playground",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 736,
+        "line": 653,
         "type": "link",
         "normalizedHref": "/console/playground"
       },
       {
         "href": "/console/playground",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 834,
-        "type": "link",
-        "normalizedHref": "/console/playground"
-      },
-      {
-        "href": "/console/playground",
-        "source": "/home/user/Settler/packages/web/src/app/cookbooks/page.tsx",
-        "line": 627,
-        "type": "link",
-        "normalizedHref": "/console/playground"
-      },
-      {
-        "href": "/console/playground",
-        "source": "/home/user/Settler/packages/web/src/app/cookbooks/page.tsx",
-        "line": 657,
-        "type": "link",
-        "normalizedHref": "/console/playground"
-      },
-      {
-        "href": "/console/playground",
-        "source": "/home/user/Settler/packages/web/src/app/cookbooks/page.tsx",
-        "line": 665,
+        "line": 745,
         "type": "link",
         "normalizedHref": "/console/playground"
       },
@@ -6870,14 +6471,14 @@
       {
         "href": "/console/playground",
         "source": "/home/user/Settler/packages/web/src/app/dashboard/user/page.tsx",
-        "line": 189,
+        "line": 183,
         "type": "link",
         "normalizedHref": "/console/playground"
       },
       {
         "href": "/console/playground",
         "source": "/home/user/Settler/packages/web/src/app/dashboard/user/page.tsx",
-        "line": 266,
+        "line": 260,
         "type": "link",
         "normalizedHref": "/console/playground"
       },
@@ -6932,13 +6533,6 @@
       },
       {
         "href": "/console/playground",
-        "source": "/home/user/Settler/packages/web/src/components/MobileMenu.tsx",
-        "line": 57,
-        "type": "link",
-        "normalizedHref": "/console/playground"
-      },
-      {
-        "href": "/console/playground",
         "source": "/home/user/Settler/packages/web/src/components/onboarding/WelcomeBanner.tsx",
         "line": 86,
         "type": "link",
@@ -6959,62 +6553,76 @@
         "normalizedHref": "/console/playground"
       }
     ],
-    "/cookbooks": [
+    "/cookbook": [
       {
-        "href": "/cookbooks",
+        "href": "/cookbook",
         "source": "/home/user/Settler/packages/web/src/app/console/docs/page.tsx",
-        "line": 741,
+        "line": 779,
         "type": "link",
-        "normalizedHref": "/cookbooks"
+        "normalizedHref": "/cookbook"
       },
       {
-        "href": "/cookbooks",
+        "href": "/cookbook",
+        "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
+        "line": 270,
+        "type": "link",
+        "normalizedHref": "/cookbook"
+      },
+      {
+        "href": "/cookbook",
         "source": "/home/user/Settler/packages/web/src/app/dashboard/user/page.tsx",
-        "line": 279,
+        "line": 273,
         "type": "link",
-        "normalizedHref": "/cookbooks"
+        "normalizedHref": "/cookbook"
       },
       {
-        "href": "/cookbooks",
+        "href": "/cookbook",
         "source": "/home/user/Settler/packages/web/src/app/schematics/page.tsx",
-        "line": 244,
+        "line": 248,
         "type": "link",
-        "normalizedHref": "/cookbooks"
+        "normalizedHref": "/cookbook"
       },
       {
-        "href": "/cookbooks",
+        "href": "/cookbook",
+        "source": "/home/user/Settler/packages/web/src/app/schematics/page.tsx",
+        "line": 271,
+        "type": "link",
+        "normalizedHref": "/cookbook"
+      },
+      {
+        "href": "/cookbook",
         "source": "/home/user/Settler/packages/web/src/components/onboarding/ActivationChecklist.tsx",
         "line": 60,
         "type": "config",
-        "normalizedHref": "/cookbooks"
+        "normalizedHref": "/cookbook"
       },
       {
-        "href": "/cookbooks",
+        "href": "/cookbook",
         "source": "/home/user/Settler/packages/web/src/components/support/FloatingHelpButton.tsx",
         "line": 34,
         "type": "config",
-        "normalizedHref": "/cookbooks"
+        "normalizedHref": "/cookbook"
       },
       {
-        "href": "/cookbooks",
+        "href": "/cookbook",
         "source": "/home/user/Settler/packages/web/src/components/tenant/TenantNavigation.tsx",
         "line": 25,
         "type": "config",
-        "normalizedHref": "/cookbooks"
+        "normalizedHref": "/cookbook"
       },
       {
-        "href": "/cookbooks",
+        "href": "/cookbook",
         "source": "/home/user/Settler/packages/web/src/lib/tenant/setup.ts",
         "line": 52,
         "type": "config",
-        "normalizedHref": "/cookbooks"
+        "normalizedHref": "/cookbook"
       }
     ],
     "/console/playground/receipts": [
       {
         "href": "/console/playground/receipts",
         "source": "/home/user/Settler/packages/web/src/app/console/onboarding/page.tsx",
-        "line": 330,
+        "line": 313,
         "type": "router",
         "normalizedHref": "/console/playground/receipts"
       },
@@ -7044,7 +6652,7 @@
       {
         "href": "/console/playground/reconcile",
         "source": "/home/user/Settler/packages/web/src/app/console/onboarding/page.tsx",
-        "line": 365,
+        "line": 348,
         "type": "router",
         "normalizedHref": "/console/playground/reconcile"
       },
@@ -7067,7 +6675,7 @@
       {
         "href": "/console/admin/tenants",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 89,
+        "line": 107,
         "type": "config",
         "normalizedHref": "/console/admin/tenants"
       }
@@ -7083,7 +6691,7 @@
       {
         "href": "/console/approvals",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 82,
+        "line": 100,
         "type": "config",
         "normalizedHref": "/console/approvals"
       }
@@ -7099,14 +6707,14 @@
       {
         "href": "/console/audit-trail",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 590,
+        "line": 543,
         "type": "link",
         "normalizedHref": "/console/audit-trail"
       },
       {
         "href": "/console/audit-trail",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 80,
+        "line": 98,
         "type": "config",
         "normalizedHref": "/console/audit-trail"
       }
@@ -7115,7 +6723,7 @@
       {
         "href": "/login",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 226,
+        "line": 214,
         "type": "link",
         "normalizedHref": "/login"
       }
@@ -7124,7 +6732,7 @@
       {
         "href": "/status",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 253,
+        "line": 236,
         "type": "link",
         "normalizedHref": "/status"
       },
@@ -7136,27 +6744,11 @@
         "normalizedHref": "/status"
       }
     ],
-    "/cookbook": [
-      {
-        "href": "/cookbook",
-        "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 297,
-        "type": "link",
-        "normalizedHref": "/cookbook"
-      },
-      {
-        "href": "/cookbook",
-        "source": "/home/user/Settler/packages/web/src/app/schematics/page.tsx",
-        "line": 267,
-        "type": "link",
-        "normalizedHref": "/cookbook"
-      }
-    ],
     "/playground": [
       {
         "href": "/playground",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 565,
+        "line": 518,
         "type": "link",
         "normalizedHref": "/playground"
       },
@@ -7192,13 +6784,6 @@
         "href": "/playground",
         "source": "/home/user/Settler/packages/web/src/app/review/polish/page.tsx",
         "line": 81,
-        "type": "config",
-        "normalizedHref": "/playground"
-      },
-      {
-        "href": "/playground",
-        "source": "/home/user/Settler/packages/web/src/components/DeveloperResources.tsx",
-        "line": 82,
         "type": "config",
         "normalizedHref": "/playground"
       },
@@ -7242,7 +6827,7 @@
       {
         "href": "/console/replay",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 584,
+        "line": 537,
         "type": "link",
         "normalizedHref": "/console/replay"
       },
@@ -7256,7 +6841,7 @@
       {
         "href": "/console/replay",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 79,
+        "line": 97,
         "type": "config",
         "normalizedHref": "/console/replay"
       }
@@ -7265,14 +6850,14 @@
       {
         "href": "/console/bulk-operations",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 596,
+        "line": 549,
         "type": "link",
         "normalizedHref": "/console/bulk-operations"
       },
       {
         "href": "/console/bulk-operations",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 81,
+        "line": 99,
         "type": "config",
         "normalizedHref": "/console/bulk-operations"
       }
@@ -7281,14 +6866,14 @@
       {
         "href": "/console/operator",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 602,
+        "line": 555,
         "type": "link",
         "normalizedHref": "/console/operator"
       },
       {
         "href": "/console/operator",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 84,
+        "line": 102,
         "type": "config",
         "normalizedHref": "/console/operator"
       },
@@ -7304,14 +6889,14 @@
       {
         "href": "/console/usage",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 638,
+        "line": 582,
         "type": "link",
         "normalizedHref": "/console/usage"
       },
       {
         "href": "/console/usage",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 66,
+        "line": 63,
         "type": "config",
         "normalizedHref": "/console/usage"
       },
@@ -7327,14 +6912,14 @@
       {
         "href": "/console/feature-flags",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 710,
+        "line": 627,
         "type": "link",
         "normalizedHref": "/console/feature-flags"
       },
       {
         "href": "/console/feature-flags",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 73,
+        "line": 87,
         "type": "config",
         "normalizedHref": "/console/feature-flags"
       }
@@ -7343,14 +6928,14 @@
       {
         "href": "/console/setup-check",
         "source": "/home/user/Settler/packages/web/src/app/console/page.tsx",
-        "line": 917,
+        "line": 826,
         "type": "link",
         "normalizedHref": "/console/setup-check"
       },
       {
         "href": "/console/setup-check",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 64,
+        "line": 90,
         "type": "config",
         "normalizedHref": "/console/setup-check"
       },
@@ -7421,7 +7006,7 @@
       {
         "href": "/console/control-plane",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 62,
+        "line": 54,
         "type": "config",
         "normalizedHref": "/console/control-plane"
       }
@@ -7433,15 +7018,6 @@
         "line": 39,
         "type": "link",
         "normalizedHref": "/console/feature-flags-policy"
-      }
-    ],
-    "/proof": [
-      {
-        "href": "/proof",
-        "source": "/home/user/Settler/packages/web/src/app/console/proof-explorer/page.tsx",
-        "line": 25,
-        "type": "link",
-        "normalizedHref": "/proof"
       }
     ],
     "/console/receipts-hash": [
@@ -7500,7 +7076,7 @@
       {
         "href": "/console/workflows",
         "source": "/home/user/Settler/packages/web/src/app/console/workflows/[id]/page.tsx",
-        "line": 110,
+        "line": 116,
         "type": "link",
         "normalizedHref": "/console/workflows"
       },
@@ -7514,7 +7090,7 @@
       {
         "href": "/console/workflows",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 61,
+        "line": 77,
         "type": "config",
         "normalizedHref": "/console/workflows"
       }
@@ -7546,7 +7122,7 @@
       {
         "href": "/console/webhooks",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 70,
+        "line": 76,
         "type": "config",
         "normalizedHref": "/console/webhooks"
       }
@@ -7562,7 +7138,7 @@
       {
         "href": "/console/policies",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 52,
+        "line": 53,
         "type": "config",
         "normalizedHref": "/console/policies"
       }
@@ -7615,7 +7191,7 @@
       {
         "href": "/console/site",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 74,
+        "line": 91,
         "type": "config",
         "normalizedHref": "/console/site"
       }
@@ -7672,7 +7248,7 @@
       {
         "href": "/console/workflows/new",
         "source": "/home/user/Settler/packages/web/src/app/console/workflows/page.tsx",
-        "line": 113,
+        "line": 116,
         "type": "link",
         "normalizedHref": "/console/workflows/new"
       }
@@ -7717,13 +7293,6 @@
         "source": "/home/user/Settler/packages/web/src/app/dashboard/integrations/[integrationId]/page.tsx",
         "line": 62,
         "type": "router",
-        "normalizedHref": "/dashboard/integrations"
-      },
-      {
-        "href": "/dashboard/integrations",
-        "source": "/home/user/Settler/packages/web/src/app/integrations/request/page.tsx",
-        "line": 65,
-        "type": "link",
         "normalizedHref": "/dashboard/integrations"
       },
       {
@@ -7782,9 +7351,32 @@
       {
         "href": "/dashboard/jobs",
         "source": "/home/user/Settler/packages/web/src/app/dashboard/user/page.tsx",
-        "line": 172,
+        "line": 166,
         "type": "link",
         "normalizedHref": "/dashboard/jobs"
+      }
+    ],
+    "/dashboard": [
+      {
+        "href": "/dashboard",
+        "source": "/home/user/Settler/packages/web/src/app/dashboard/not-found.tsx",
+        "line": 11,
+        "type": "config",
+        "normalizedHref": "/dashboard"
+      },
+      {
+        "href": "/dashboard",
+        "source": "/home/user/Settler/packages/web/src/components/onboarding/ActivationChecklist.tsx",
+        "line": 53,
+        "type": "config",
+        "normalizedHref": "/dashboard"
+      },
+      {
+        "href": "/dashboard",
+        "source": "/home/user/Settler/packages/web/src/lib/personalization.ts",
+        "line": 72,
+        "type": "config",
+        "normalizedHref": "/dashboard"
       }
     ],
     "/demo": [
@@ -7883,13 +7475,6 @@
         "line": 145,
         "type": "link",
         "normalizedHref": "/docs/examples"
-      },
-      {
-        "href": "/docs/examples",
-        "source": "/home/user/Settler/packages/web/src/components/DeveloperResources.tsx",
-        "line": 96,
-        "type": "config",
-        "normalizedHref": "/docs/examples"
       }
     ],
     "/docs/quickstart": [
@@ -7909,30 +7494,9 @@
       },
       {
         "href": "/docs/quickstart",
-        "source": "/home/user/Settler/packages/web/src/app/how-it-works/page.tsx",
-        "line": 94,
-        "type": "link",
-        "normalizedHref": "/docs/quickstart"
-      },
-      {
-        "href": "/docs/quickstart",
         "source": "/home/user/Settler/packages/web/src/app/open-source/page.tsx",
-        "line": 143,
+        "line": 142,
         "type": "link",
-        "normalizedHref": "/docs/quickstart"
-      },
-      {
-        "href": "/docs/quickstart",
-        "source": "/home/user/Settler/packages/web/src/app/proof/page.tsx",
-        "line": 119,
-        "type": "link",
-        "normalizedHref": "/docs/quickstart"
-      },
-      {
-        "href": "/docs/quickstart",
-        "source": "/home/user/Settler/packages/web/src/components/DeveloperResources.tsx",
-        "line": 67,
-        "type": "config",
         "normalizedHref": "/docs/quickstart"
       },
       {
@@ -8063,7 +7627,7 @@
       {
         "href": "/docs/integrations/stripe",
         "source": "/home/user/Settler/packages/web/src/app/docs/integrations/page.tsx",
-        "line": 14,
+        "line": 12,
         "type": "config",
         "normalizedHref": "/docs/integrations/stripe"
       }
@@ -8072,7 +7636,7 @@
       {
         "href": "/docs/integrations/shopify",
         "source": "/home/user/Settler/packages/web/src/app/docs/integrations/page.tsx",
-        "line": 15,
+        "line": 13,
         "type": "config",
         "normalizedHref": "/docs/integrations/shopify"
       }
@@ -8081,7 +7645,7 @@
       {
         "href": "/docs/integrations/quickbooks",
         "source": "/home/user/Settler/packages/web/src/app/docs/integrations/page.tsx",
-        "line": 16,
+        "line": 14,
         "type": "config",
         "normalizedHref": "/docs/integrations/quickbooks"
       }
@@ -8090,7 +7654,7 @@
       {
         "href": "/docs/integrations/paypal",
         "source": "/home/user/Settler/packages/web/src/app/docs/integrations/page.tsx",
-        "line": 17,
+        "line": 15,
         "type": "config",
         "normalizedHref": "/docs/integrations/paypal"
       }
@@ -8099,7 +7663,7 @@
       {
         "href": "/docs/auth",
         "source": "/home/user/Settler/packages/web/src/app/docs/quickstart/page.tsx",
-        "line": 201,
+        "line": 248,
         "type": "link",
         "normalizedHref": "/docs/auth"
       },
@@ -8252,20 +7816,6 @@
         "line": 223,
         "type": "link",
         "normalizedHref": "/edge-ai/nodes"
-      },
-      {
-        "href": "/edge-ai/nodes",
-        "source": "/home/user/Settler/packages/web/src/components/EdgeAIMarketingSection.tsx",
-        "line": 83,
-        "type": "link",
-        "normalizedHref": "/edge-ai/nodes"
-      },
-      {
-        "href": "/edge-ai/nodes",
-        "source": "/home/user/Settler/packages/web/src/components/EdgeAIMarketingSection.tsx",
-        "line": 220,
-        "type": "link",
-        "normalizedHref": "/edge-ai/nodes"
       }
     ],
     "/edge-ai/nodes/new": [
@@ -8296,20 +7846,6 @@
         "href": "/edge-ai",
         "source": "/home/user/Settler/packages/web/src/app/edge-ai/page.tsx",
         "line": 267,
-        "type": "link",
-        "normalizedHref": "/edge-ai"
-      },
-      {
-        "href": "/edge-ai",
-        "source": "/home/user/Settler/packages/web/src/components/EdgeAIMarketingSection.tsx",
-        "line": 80,
-        "type": "link",
-        "normalizedHref": "/edge-ai"
-      },
-      {
-        "href": "/edge-ai",
-        "source": "/home/user/Settler/packages/web/src/components/EdgeAIMarketingSection.tsx",
-        "line": 226,
         "type": "link",
         "normalizedHref": "/edge-ai"
       }
@@ -8357,67 +7893,16 @@
       {
         "href": "/contact",
         "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
-        "line": 31,
+        "line": 30,
         "type": "config",
         "normalizedHref": "/contact"
       },
       {
         "href": "/contact",
         "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 37,
+        "line": 36,
         "type": "config",
         "normalizedHref": "/contact"
-      }
-    ],
-    "/architecture": [
-      {
-        "href": "/architecture",
-        "source": "/home/user/Settler/packages/web/src/app/how-it-works/page.tsx",
-        "line": 91,
-        "type": "link",
-        "normalizedHref": "/architecture"
-      },
-      {
-        "href": "/architecture",
-        "source": "/home/user/Settler/packages/web/src/app/open-source/page.tsx",
-        "line": 263,
-        "type": "link",
-        "normalizedHref": "/architecture"
-      },
-      {
-        "href": "/architecture",
-        "source": "/home/user/Settler/packages/web/src/app/page.tsx",
-        "line": 106,
-        "type": "config",
-        "normalizedHref": "/architecture"
-      },
-      {
-        "href": "/architecture",
-        "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
-        "line": 12,
-        "type": "config",
-        "normalizedHref": "/architecture"
-      },
-      {
-        "href": "/architecture",
-        "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 28,
-        "type": "config",
-        "normalizedHref": "/architecture"
-      },
-      {
-        "href": "/architecture",
-        "source": "/home/user/Settler/packages/web/src/components/public-visual-proof.tsx",
-        "line": 363,
-        "type": "link",
-        "normalizedHref": "/architecture"
-      },
-      {
-        "href": "/architecture",
-        "source": "/home/user/Settler/packages/web/src/lib/public/visual-proof-registry.ts",
-        "line": 20,
-        "type": "config",
-        "normalizedHref": "/architecture"
       }
     ],
     "/support/contact": [
@@ -8529,14 +8014,7 @@
       {
         "href": "/security-and-audit",
         "source": "/home/user/Settler/packages/web/src/app/open-source/page.tsx",
-        "line": 331,
-        "type": "link",
-        "normalizedHref": "/security-and-audit"
-      },
-      {
-        "href": "/security-and-audit",
-        "source": "/home/user/Settler/packages/web/src/app/proof/page.tsx",
-        "line": 234,
+        "line": 329,
         "type": "link",
         "normalizedHref": "/security-and-audit"
       },
@@ -8550,7 +8028,7 @@
       {
         "href": "/security-and-audit",
         "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 29,
+        "line": 28,
         "type": "config",
         "normalizedHref": "/security-and-audit"
       },
@@ -8585,27 +8063,34 @@
         "normalizedHref": "/capabilities"
       }
     ],
-    "/use-cases": [
+    "/product": [
       {
-        "href": "/use-cases",
+        "href": "/product",
         "source": "/home/user/Settler/packages/web/src/app/page.tsx",
         "line": 101,
         "type": "config",
-        "normalizedHref": "/use-cases"
+        "normalizedHref": "/product"
       },
       {
-        "href": "/use-cases",
+        "href": "/product",
         "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
         "line": 11,
         "type": "config",
-        "normalizedHref": "/use-cases"
+        "normalizedHref": "/product"
       },
       {
-        "href": "/use-cases",
+        "href": "/product",
         "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
         "line": 19,
         "type": "config",
-        "normalizedHref": "/use-cases"
+        "normalizedHref": "/product"
+      },
+      {
+        "href": "/product",
+        "source": "/home/user/Settler/packages/web/src/components/public-visual-proof.tsx",
+        "line": 367,
+        "type": "link",
+        "normalizedHref": "/product"
       }
     ],
     "/docs/replay-lab": [
@@ -8705,38 +8190,6 @@
         "normalizedHref": "/support/articles/payment-issues"
       }
     ],
-    "/dashboard": [
-      {
-        "href": "/dashboard",
-        "source": "/home/user/Settler/packages/web/src/app/support/contact/page.tsx",
-        "line": 69,
-        "type": "link",
-        "normalizedHref": "/dashboard"
-      },
-      {
-        "href": "/dashboard",
-        "source": "/home/user/Settler/packages/web/src/components/onboarding/ActivationChecklist.tsx",
-        "line": 53,
-        "type": "config",
-        "normalizedHref": "/dashboard"
-      },
-      {
-        "href": "/dashboard",
-        "source": "/home/user/Settler/packages/web/src/lib/personalization.ts",
-        "line": 72,
-        "type": "config",
-        "normalizedHref": "/dashboard"
-      }
-    ],
-    "/community/contributors": [
-      {
-        "href": "/community/contributors",
-        "source": "/home/user/Settler/packages/web/src/components/CommunityHub.tsx",
-        "line": 72,
-        "type": "config",
-        "normalizedHref": "/community/contributors"
-      }
-    ],
     "/platform": [
       {
         "href": "/platform",
@@ -8753,48 +8206,18 @@
         "normalizedHref": "/platform"
       }
     ],
-    "/roadmap": [
-      {
-        "href": "/roadmap",
-        "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
-        "line": 22,
-        "type": "config",
-        "normalizedHref": "/roadmap"
-      },
-      {
-        "href": "/roadmap",
-        "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 31,
-        "type": "config",
-        "normalizedHref": "/roadmap"
-      },
-      {
-        "href": "/roadmap",
-        "source": "/home/user/Settler/packages/web/src/components/public-visual-proof.tsx",
-        "line": 371,
-        "type": "link",
-        "normalizedHref": "/roadmap"
-      },
-      {
-        "href": "/roadmap",
-        "source": "/home/user/Settler/packages/web/src/lib/public/visual-proof-registry.ts",
-        "line": 112,
-        "type": "config",
-        "normalizedHref": "/roadmap"
-      }
-    ],
     "/faq": [
       {
         "href": "/faq",
         "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
-        "line": 24,
+        "line": 23,
         "type": "config",
         "normalizedHref": "/faq"
       },
       {
         "href": "/faq",
         "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 36,
+        "line": 35,
         "type": "config",
         "normalizedHref": "/faq"
       }
@@ -8803,7 +8226,7 @@
       {
         "href": "/about",
         "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
-        "line": 30,
+        "line": 29,
         "type": "config",
         "normalizedHref": "/about"
       }
@@ -8812,14 +8235,14 @@
       {
         "href": "/open-source",
         "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
-        "line": 32,
+        "line": 31,
         "type": "config",
         "normalizedHref": "/open-source"
       },
       {
         "href": "/open-source",
         "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 30,
+        "line": 29,
         "type": "config",
         "normalizedHref": "/open-source"
       },
@@ -8835,14 +8258,14 @@
       {
         "href": "/terms",
         "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
-        "line": 35,
+        "line": 34,
         "type": "config",
         "normalizedHref": "/terms"
       },
       {
         "href": "/terms",
         "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 40,
+        "line": 39,
         "type": "config",
         "normalizedHref": "/terms"
       }
@@ -8851,25 +8274,16 @@
       {
         "href": "/privacy",
         "source": "/home/user/Settler/packages/web/src/components/Footer.tsx",
-        "line": 36,
+        "line": 35,
         "type": "config",
         "normalizedHref": "/privacy"
       },
       {
         "href": "/privacy",
         "source": "/home/user/Settler/packages/web/src/components/Navigation.tsx",
-        "line": 39,
+        "line": 38,
         "type": "config",
         "normalizedHref": "/privacy"
-      }
-    ],
-    "/legal/cookies": [
-      {
-        "href": "/legal/cookies",
-        "source": "/home/user/Settler/packages/web/src/components/consent/CookieConsent.tsx",
-        "line": 253,
-        "type": "link",
-        "normalizedHref": "/legal/cookies"
       }
     ],
     "/console/insights": [
@@ -8883,7 +8297,7 @@
       {
         "href": "/console/insights",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 68,
+        "line": 61,
         "type": "config",
         "normalizedHref": "/console/insights"
       }
@@ -8892,7 +8306,7 @@
       {
         "href": "/console/reconciliations",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 48,
+        "line": 50,
         "type": "config",
         "normalizedHref": "/console/reconciliations"
       }
@@ -8901,7 +8315,7 @@
       {
         "href": "/console/audits",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 49,
+        "line": 51,
         "type": "config",
         "normalizedHref": "/console/audits"
       }
@@ -8910,25 +8324,97 @@
       {
         "href": "/console/proof-explorer",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 50,
+        "line": 52,
         "type": "config",
         "normalizedHref": "/console/proof-explorer"
       }
     ],
-    "/console/replay-lab": [
+    "/console/analytics": [
       {
-        "href": "/console/replay-lab",
+        "href": "/console/analytics",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 51,
+        "line": 60,
         "type": "config",
-        "normalizedHref": "/console/replay-lab"
+        "normalizedHref": "/console/analytics"
+      }
+    ],
+    "/console/activity": [
+      {
+        "href": "/console/activity",
+        "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
+        "line": 62,
+        "type": "config",
+        "normalizedHref": "/console/activity"
+      }
+    ],
+    "/console/performance": [
+      {
+        "href": "/console/performance",
+        "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
+        "line": 64,
+        "type": "config",
+        "normalizedHref": "/console/performance"
+      }
+    ],
+    "/console/diagnostics": [
+      {
+        "href": "/console/diagnostics",
+        "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
+        "line": 65,
+        "type": "config",
+        "normalizedHref": "/console/diagnostics"
+      }
+    ],
+    "/console/api-playground": [
+      {
+        "href": "/console/api-playground",
+        "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
+        "line": 72,
+        "type": "config",
+        "normalizedHref": "/console/api-playground"
+      }
+    ],
+    "/console/api-test": [
+      {
+        "href": "/console/api-test",
+        "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
+        "line": 73,
+        "type": "config",
+        "normalizedHref": "/console/api-test"
+      }
+    ],
+    "/console/api-logs": [
+      {
+        "href": "/console/api-logs",
+        "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
+        "line": 74,
+        "type": "config",
+        "normalizedHref": "/console/api-logs"
+      }
+    ],
+    "/console/tables": [
+      {
+        "href": "/console/tables",
+        "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
+        "line": 75,
+        "type": "config",
+        "normalizedHref": "/console/tables"
+      }
+    ],
+    "/console/docs": [
+      {
+        "href": "/console/docs",
+        "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
+        "line": 78,
+        "type": "config",
+        "normalizedHref": "/console/docs"
       }
     ],
     "/console/organizations": [
       {
         "href": "/console/organizations",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 53,
+        "line": 84,
         "type": "config",
         "normalizedHref": "/console/organizations"
       }
@@ -8937,106 +8423,25 @@
       {
         "href": "/console/settings",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 55,
+        "line": 88,
         "type": "config",
         "normalizedHref": "/console/settings"
-      }
-    ],
-    "/console/api-test": [
-      {
-        "href": "/console/api-test",
-        "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 56,
-        "type": "config",
-        "normalizedHref": "/console/api-test"
-      }
-    ],
-    "/console/api-playground": [
-      {
-        "href": "/console/api-playground",
-        "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 57,
-        "type": "config",
-        "normalizedHref": "/console/api-playground"
-      }
-    ],
-    "/console/tables": [
-      {
-        "href": "/console/tables",
-        "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 58,
-        "type": "config",
-        "normalizedHref": "/console/tables"
-      }
-    ],
-    "/console/api-logs": [
-      {
-        "href": "/console/api-logs",
-        "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 59,
-        "type": "config",
-        "normalizedHref": "/console/api-logs"
-      }
-    ],
-    "/console/activity": [
-      {
-        "href": "/console/activity",
-        "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 60,
-        "type": "config",
-        "normalizedHref": "/console/activity"
-      }
-    ],
-    "/console/diagnostics": [
-      {
-        "href": "/console/diagnostics",
-        "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 63,
-        "type": "config",
-        "normalizedHref": "/console/diagnostics"
       }
     ],
     "/console/inspector": [
       {
         "href": "/console/inspector",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 65,
+        "line": 89,
         "type": "config",
         "normalizedHref": "/console/inspector"
-      }
-    ],
-    "/console/performance": [
-      {
-        "href": "/console/performance",
-        "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 67,
-        "type": "config",
-        "normalizedHref": "/console/performance"
-      }
-    ],
-    "/console/analytics": [
-      {
-        "href": "/console/analytics",
-        "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 69,
-        "type": "config",
-        "normalizedHref": "/console/analytics"
-      }
-    ],
-    "/console/docs": [
-      {
-        "href": "/console/docs",
-        "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 75,
-        "type": "config",
-        "normalizedHref": "/console/docs"
       }
     ],
     "/console/rules-engine": [
       {
         "href": "/console/rules-engine",
         "source": "/home/user/Settler/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 83,
+        "line": 101,
         "type": "config",
         "normalizedHref": "/console/rules-engine"
       }
