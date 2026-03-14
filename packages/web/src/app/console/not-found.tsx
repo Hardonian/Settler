@@ -1,41 +1,23 @@
 /**
  * Console Not Found Page
- * 
+ *
  * Shows when a console route is not found.
  */
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { AlertCircle } from 'lucide-react';
+import { SearchX } from "lucide-react";
+import { RouteStateCard } from "@/components/shared/route-state";
 
 export default function ConsoleNotFound() {
   return (
-    <div className="flex items-center justify-center min-h-[60vh]">
-      <Card className="max-w-md">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
-            <CardTitle>Page Not Found</CardTitle>
-          </div>
-          <CardDescription>
-            The console page you're looking for doesn't exist.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            The page you requested could not be found in the Developer Console.
-          </p>
-          <div className="flex gap-2">
-            <Button asChild variant="default">
-              <Link href="/console">Go to Console</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="/">Go Home</Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <RouteStateCard
+      icon={SearchX}
+      title="Console page not found"
+      description="The route you requested does not exist in the Developer Console."
+      detail="Check the URL or return to the console overview to continue operations."
+      actions={[
+        { label: "Go to console", href: "/console" },
+        { label: "Go home", href: "/", variant: "outline" },
+      ]}
+    />
   );
 }

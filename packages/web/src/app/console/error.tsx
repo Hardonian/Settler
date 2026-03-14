@@ -1,14 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { AlertCircle } from 'lucide-react';
-import Link from 'next/link';
+import { useEffect } from "react";
+import { Lock, TriangleAlert } from "lucide-react";
+import { RouteStateCard } from "@/components/shared/route-state";
 
 /**
  * Console Error Boundary
- * 
+ *
  * Catches errors in console routes and displays a friendly error message.
  * Never shows stack traces or sensitive information to users.
  */
@@ -26,82 +24,50 @@ export default function ConsoleError({
       message: error.message,
       digest: error.digest,
       // Only include stack in development
-      ...(process.env.NODE_ENV === 'development' && error.stack ? { stack: error.stack } : {}),
+      ...(process.env.NODE_ENV === "development" && error.stack ? { stack: error.stack } : {}),
     };
-    
-    console.error('[Console Error Boundary]', errorInfo);
-    
+
+    console.error("[Console Error Boundary]", errorInfo);
+
     // In production, send to error tracking service
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === "production") {
       // Error tracking integrated via monitoring/alerts system
       // See: lib/monitoring/alerts.ts for alert handling
     }
   }, [error]);
 
   // Determine if this is an auth error
-  const isAuthError = error.message?.includes('auth') || 
-                      error.message?.includes('unauthorized') ||
-                      error.message?.includes('authentication');
+  const isAuthError =
+    error.message?.includes("auth") ||
+    error.message?.includes("unauthorized") ||
+    error.message?.includes("authentication");
 
   return (
-    <div className="flex items-center justify-center min-h-[60vh] px-4">
-      <Card className="max-w-md w-full">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-destructive" aria-hidden="true" />
-            <CardTitle>
-              {isAuthError ? 'Authentication Required' : 'Something went wrong'}
-            </CardTitle>
-          </div>
-          <CardDescription>
-            {isAuthError 
-              ? 'Please sign in to access the Developer Console.'
-              : 'We encountered an error loading the Developer Console.'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {process.env.NODE_ENV === 'development' && error.message && (
-            <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-3">
-              <p className="text-xs font-mono text-destructive break-all">
-                {error.message}
-              </p>
-            </div>
-          )}
-
-          {!isAuthError && (
-            <p className="text-sm text-muted-foreground">
-              This might be a temporary issue. Please try again, or contact support if the problem persists.
-            </p>
-          )}
-          
-          <div className="flex gap-2 flex-wrap">
-            {isAuthError ? (
-              <>
-                <Button asChild variant="default">
-                  <Link href={`/signup?next=${encodeURIComponent('/console')}`}>
-                    Sign In
-                  </Link>
-                </Button>
-                <Button asChild variant="outline">
-                  <Link href="/">Go Home</Link>
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button onClick={reset} variant="default">
-                  Try Again
-                </Button>
-                <Button asChild variant="outline">
-                  <Link href="/console">Back to Console</Link>
-                </Button>
-                <Button asChild variant="outline">
-                  <Link href="/">Go Home</Link>
-                </Button>
-              </>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <RouteStateCard
+      icon={isAuthError ? Lock : TriangleAlert}
+      title={isAuthError ? "Authentication Required" : "Console temporarily unavailable"}
+      description={
+        isAuthError
+          ? "Please sign in to access the Developer Console."
+          : "We encountered an error while loading this console surface."
+      }
+      detail={
+        process.env.NODE_ENV === "development" && error.message
+          ? `Debug detail: ${error.message}`
+          : "Try again, or return to the console overview while we recover the session."
+      }
+      actions={
+        isAuthError
+          ? [
+              { label: "Sign In", href: `/signup?next=${encodeURIComponent("/console")}` },
+              { label: "Go Home", href: "/", variant: "outline" },
+            ]
+          : [
+              { label: "Try Again", onClick: reset },
+              { label: "Back to Console", href: "/console", variant: "outline" },
+              { label: "Go Home", href: "/", variant: "outline" },
+            ]
+      }
+    />
   );
 }
