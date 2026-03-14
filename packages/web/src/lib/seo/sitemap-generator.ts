@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import { getSiteHost, getSiteMode } from "@/lib/site-mode";
 
-const OSS_ONLY_ROUTES = ["/open-source", "/oss", "/oss/stats"] as const;
+const OSS_ONLY_ROUTES = ["/open-source"] as const;
 const ENTERPRISE_ONLY_ROUTES = ["/enterprise"] as const;
 
 interface SitemapEntry {
@@ -29,20 +29,14 @@ function getStaticPaths(): Array<{
     { path: "/support", priority: 0.6, changeFrequency: "weekly" },
     { path: "/legal/privacy", priority: 0.5, changeFrequency: "yearly" },
     { path: "/legal/terms", priority: 0.5, changeFrequency: "yearly" },
-    { path: "/roadmap", priority: 0.6, changeFrequency: "monthly" },
     { path: "/blog", priority: 0.7, changeFrequency: "weekly" },
     { path: "/changelog", priority: 0.7, changeFrequency: "weekly" },
-    { path: "/comparison", priority: 0.7, changeFrequency: "monthly" },
     { path: "/benchmarks", priority: 0.6, changeFrequency: "monthly" },
-    { path: "/how-it-works", priority: 0.7, changeFrequency: "monthly" },
-    { path: "/demo", priority: 0.7, changeFrequency: "monthly" },
-    { path: "/proof", priority: 0.7, changeFrequency: "monthly" },
+    { path: "/product", priority: 0.8, changeFrequency: "monthly" },
     { path: "/proof-explorer", priority: 0.6, changeFrequency: "monthly" },
     { path: "/replay-lab", priority: 0.6, changeFrequency: "monthly" },
     { path: "/engine", priority: 0.7, changeFrequency: "monthly" },
-    { path: "/why-settler", priority: 0.7, changeFrequency: "monthly" },
     { path: "/enterprise", priority: 0.7, changeFrequency: "monthly" },
-    { path: "/trust", priority: 0.6, changeFrequency: "monthly" },
     { path: "/status", priority: 0.5, changeFrequency: "hourly" },
     { path: "/contact", priority: 0.6, changeFrequency: "monthly" },
   ];

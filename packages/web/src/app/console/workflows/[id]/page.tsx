@@ -1,18 +1,24 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { safeFetch } from '@/lib/safe-fetch';
-import { ArrowLeft, Save, Trash2 } from 'lucide-react';
-import Link from 'next/link';
-import { ErrorState } from '@/components/ErrorState';
-import { Skeleton } from '@/components/Skeleton';
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { safeFetch } from "@/lib/safe-fetch";
+import { ArrowLeft, Save, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { ErrorState } from "@/components/ErrorState";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Workflow {
   id: string;
@@ -43,43 +49,43 @@ export default function WorkflowDetailPage() {
   const loadWorkflow = async () => {
     setLoading(true);
     const result = await safeFetch<Workflow>(`/api/workflows/${workflowId}`);
-    
+
     if (result.success && result.data) {
       setWorkflow(result.data);
     } else {
-      setError(result.error?.message || 'Failed to load workflow');
+      setError(result.error?.message || "Failed to load workflow");
     }
     setLoading(false);
   };
 
   const handleSave = async () => {
     if (!workflow) return;
-    
+
     setSaving(true);
     const result = await safeFetch(`/api/workflows/${workflowId}`, {
-      method: 'PATCH',
+      method: "PATCH",
       body: JSON.stringify(workflow),
     });
 
     if (result.success) {
-      alert('Workflow saved');
+      alert("Workflow saved");
     } else {
-      alert(result.error?.message || 'Failed to save workflow');
+      alert(result.error?.message || "Failed to save workflow");
     }
     setSaving(false);
   };
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this workflow?')) return;
+    if (!confirm("Are you sure you want to delete this workflow?")) return;
 
     const result = await safeFetch(`/api/workflows/${workflowId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
 
     if (result.success) {
-      window.location.href = '/console/workflows';
+      window.location.href = "/console/workflows";
     } else {
-      alert(result.error?.message || 'Failed to delete workflow');
+      alert(result.error?.message || "Failed to delete workflow");
     }
   };
 
@@ -96,7 +102,7 @@ export default function WorkflowDetailPage() {
       <div className="p-6">
         <ErrorState
           title="Failed to load workflow"
-          message={error || 'Workflow not found'}
+          message={error || "Workflow not found"}
           onRetry={loadWorkflow}
         />
       </div>
@@ -113,9 +119,7 @@ export default function WorkflowDetailPage() {
         </Button>
         <div className="flex-1">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{workflow.name}</h1>
-          <p className="text-slate-600 dark:text-slate-400 mt-1">
-            Edit workflow configuration
-          </p>
+          <p className="text-slate-600 dark:text-slate-400 mt-1">Edit workflow configuration</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleDelete}>
@@ -124,7 +128,7 @@ export default function WorkflowDetailPage() {
           </Button>
           <Button onClick={handleSave} disabled={saving}>
             <Save className="w-4 h-4 mr-2" />
-            {saving ? 'Saving...' : 'Save'}
+            {saving ? "Saving..." : "Save"}
           </Button>
         </div>
       </div>
@@ -159,9 +163,11 @@ export default function WorkflowDetailPage() {
 
           <div>
             <Label>Trigger</Label>
-            <Select 
-              value={workflow.trigger.type} 
-              onValueChange={(type) => setWorkflow({ ...workflow, trigger: { ...workflow.trigger, type } })}
+            <Select
+              value={workflow.trigger.type}
+              onValueChange={(type) =>
+                setWorkflow({ ...workflow, trigger: { ...workflow.trigger, type } })
+              }
             >
               <SelectTrigger className="mt-1">
                 <SelectValue />

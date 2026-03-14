@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { EmptyState } from '@/components/EmptyState';
-import { ErrorState } from '@/components/ErrorState';
-import { Skeleton } from '@/components/Skeleton';
-import { safeFetch } from '@/lib/safe-fetch';
-import { RefreshCw, Play, CheckCircle2, XCircle, Clock, AlertCircle } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/EmptyState";
+import { ErrorState } from "@/components/ErrorState";
+import { Skeleton } from "@/components/ui/skeleton";
+import { safeFetch } from "@/lib/safe-fetch";
+import { RefreshCw, Play, CheckCircle2, XCircle, Clock, AlertCircle } from "lucide-react";
 
 interface RunStage {
   id: string;
   name: string;
-  status: 'pending' | 'running' | 'completed' | 'failed';
+  status: "pending" | "running" | "completed" | "failed";
   startedAt?: Date;
   completedAt?: Date;
   error?: string;
@@ -23,7 +23,7 @@ interface RunStage {
 interface Run {
   id: string;
   name: string;
-  status: 'pending' | 'running' | 'completed' | 'failed';
+  status: "pending" | "running" | "completed" | "failed";
   stages: RunStage[];
   progress: number;
   startedAt: Date;
@@ -47,8 +47,8 @@ export default function RunPage() {
 
   useEffect(() => {
     loadRun();
-    
-    if (autoRefresh && run?.status === 'running') {
+
+    if (autoRefresh && run?.status === "running") {
       const interval = setInterval(loadRun, 2000); // Poll every 2 seconds for running jobs
       return () => clearInterval(interval);
     }
@@ -58,12 +58,12 @@ export default function RunPage() {
   const loadRun = async () => {
     setLoading(true);
     const result = await safeFetch<Run>(`/api/runs/${runId}`);
-    
+
     if (result.success && result.data) {
       setRun(result.data);
       setError(null);
     } else {
-      setError(result.error?.message || 'Failed to load run');
+      setError(result.error?.message || "Failed to load run");
       setRun(null);
     }
     setLoading(false);
@@ -71,39 +71,39 @@ export default function RunPage() {
 
   const handleRetry = async () => {
     const result = await safeFetch(`/api/runs/${runId}/retry`, {
-      method: 'POST',
+      method: "POST",
     });
-    
+
     if (result.success) {
       loadRun();
     } else {
-      alert(result.error?.message || 'Failed to retry');
+      alert(result.error?.message || "Failed to retry");
     }
   };
 
-  const getStatusIcon = (status: Run['status']) => {
+  const getStatusIcon = (status: Run["status"]) => {
     switch (status) {
-      case 'completed':
+      case "completed":
         return CheckCircle2;
-      case 'failed':
+      case "failed":
         return XCircle;
-      case 'running':
+      case "running":
         return RefreshCw;
       default:
         return Clock;
     }
   };
 
-  const getStatusColor = (status: Run['status']) => {
+  const getStatusColor = (status: Run["status"]) => {
     switch (status) {
-      case 'completed':
-        return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
-      case 'failed':
-        return 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
-      case 'running':
-        return 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300';
+      case "completed":
+        return "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300";
+      case "failed":
+        return "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300";
+      case "running":
+        return "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300";
       default:
-        return 'bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300';
+        return "bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300";
     }
   };
 
@@ -119,11 +119,7 @@ export default function RunPage() {
   if (error && !run) {
     return (
       <div className="p-6">
-        <ErrorState
-          title="Failed to load run"
-          message={error}
-          onRetry={loadRun}
-        />
+        <ErrorState title="Failed to load run" message={error} onRetry={loadRun} />
       </div>
     );
   }
@@ -135,8 +131,8 @@ export default function RunPage() {
           title="Run not found"
           description="The run you're looking for doesn't exist or you don't have access"
           action={{
-            label: 'Go to Console',
-            onClick: () => window.location.href = '/console',
+            label: "Go to Console",
+            onClick: () => (window.location.href = "/console"),
           }}
         />
       </div>
@@ -151,7 +147,8 @@ export default function RunPage() {
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{run.name}</h1>
           <p className="text-slate-600 dark:text-slate-400 mt-1">
-            Run ID: <code className="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">{run.id}</code>
+            Run ID:{" "}
+            <code className="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">{run.id}</code>
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -165,10 +162,10 @@ export default function RunPage() {
             Auto-refresh
           </label>
           <Button variant="outline" size="sm" onClick={loadRun}>
-            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </Button>
-          {run.status === 'failed' && (
+          {run.status === "failed" && (
             <Button variant="outline" size="sm" onClick={handleRetry}>
               <Play className="w-4 h-4 mr-2" />
               Retry
@@ -241,25 +238,33 @@ export default function RunPage() {
                   key={stage.id}
                   className="flex items-start gap-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg"
                 >
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    stage.status === 'completed' ? 'bg-green-100 dark:bg-green-900/30' :
-                    stage.status === 'running' ? 'bg-blue-100 dark:bg-blue-900/30 animate-pulse' :
-                    stage.status === 'failed' ? 'bg-red-100 dark:bg-red-900/30' :
-                    'bg-slate-100 dark:bg-slate-700'
-                  }`}>
-                    <StageIcon className={`w-5 h-5 ${
-                      stage.status === 'completed' ? 'text-green-600 dark:text-green-400' :
-                      stage.status === 'running' ? 'text-blue-600 dark:text-blue-400' :
-                      stage.status === 'failed' ? 'text-red-600 dark:text-red-400' :
-                      'text-slate-400'
-                    } ${stage.status === 'running' ? 'animate-spin' : ''}`} />
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      stage.status === "completed"
+                        ? "bg-green-100 dark:bg-green-900/30"
+                        : stage.status === "running"
+                          ? "bg-blue-100 dark:bg-blue-900/30 animate-pulse"
+                          : stage.status === "failed"
+                            ? "bg-red-100 dark:bg-red-900/30"
+                            : "bg-slate-100 dark:bg-slate-700"
+                    }`}
+                  >
+                    <StageIcon
+                      className={`w-5 h-5 ${
+                        stage.status === "completed"
+                          ? "text-green-600 dark:text-green-400"
+                          : stage.status === "running"
+                            ? "text-blue-600 dark:text-blue-400"
+                            : stage.status === "failed"
+                              ? "text-red-600 dark:text-red-400"
+                              : "text-slate-400"
+                      } ${stage.status === "running" ? "animate-spin" : ""}`}
+                    />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="font-medium text-slate-900 dark:text-white">{stage.name}</h3>
-                      <Badge className={getStatusColor(stage.status)}>
-                        {stage.status}
-                      </Badge>
+                      <Badge className={getStatusColor(stage.status)}>{stage.status}</Badge>
                     </div>
                     {stage.error && (
                       <div className="mt-2 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-sm text-red-800 dark:text-red-200">

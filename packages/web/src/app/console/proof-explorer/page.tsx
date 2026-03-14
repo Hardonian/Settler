@@ -22,7 +22,7 @@ export default function ProofExplorerPage() {
           </CardHeader>
           <CardContent>
             <Button asChild variant="outline" className="w-full">
-              <Link href="/proof">Open Proof Browser</Link>
+              <Link href="/proof-explorer">Open Proof Browser</Link>
             </Button>
           </CardContent>
         </Card>

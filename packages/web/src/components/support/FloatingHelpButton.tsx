@@ -31,7 +31,7 @@ export function FloatingHelpButton() {
     {
       icon: FileText,
       label: "Cookbooks",
-      href: "/cookbooks",
+      href: "/cookbook",
       description: "Ready-to-use examples",
     },
     {

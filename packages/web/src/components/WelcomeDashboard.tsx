@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sparkles, CheckCircle2, ArrowRight, Zap } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
-import { PreTestQuestionnaire, PreTestAnswers } from "./PreTestQuestionnaire";
 
 interface WelcomeDashboardProps {
   userName?: string;
@@ -14,34 +12,12 @@ interface WelcomeDashboardProps {
 }
 
 export function WelcomeDashboard({ userName, trialEndDate, onComplete }: WelcomeDashboardProps) {
-  const [showPreTest, setShowPreTest] = useState(false);
-
-  const handlePreTestComplete = async (answers: PreTestAnswers) => {
-    try {
-      const response = await fetch("/api/user/pre-test", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(answers),
-      });
-
-      if (response.ok) {
-        setShowPreTest(false);
-        // Personalize experience based on answers
-      } else {
-        console.error("Failed to save pre-test answers");
-      }
-    } catch (error) {
-      console.error("Error saving pre-test answers:", error);
-    }
-  };
-
   const quickStartSteps = [
     {
       title: "Complete your profile",
       description: "Help us personalize your experience",
       time: "2 min",
-      link: "/dashboard?setup=profile",
-      action: () => setShowPreTest(true),
+      link: "/console",
     },
     {
       title: "Connect your first platform",
@@ -56,17 +32,6 @@ export function WelcomeDashboard({ userName, trialEndDate, onComplete }: Welcome
       link: "/playground?demo=true",
     },
   ];
-
-  if (showPreTest) {
-    return (
-      <div className="max-w-4xl mx-auto p-6">
-        <PreTestQuestionnaire
-          onComplete={handlePreTestComplete}
-          onSkip={() => setShowPreTest(false)}
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
@@ -106,13 +71,7 @@ export function WelcomeDashboard({ userName, trialEndDate, onComplete }: Welcome
                   <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
                     {step.description}
                   </p>
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                    onClick={step.action}
-                  >
+                  <Button asChild variant="outline" size="sm" className="w-full">
                     <Link href={step.link}>
                       Get Started <ArrowRight className="w-4 h-4 ml-2" />
                     </Link>

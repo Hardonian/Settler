@@ -1,46 +1,46 @@
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
-import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
-import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Scale, Shield, FileText, Lock, Globe } from 'lucide-react';
-import Link from 'next/link';
-import { Metadata } from 'next';
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Scale, Shield, FileText, Lock, Globe } from "lucide-react";
+import Link from "next/link";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Legal Center',
-  description: 'Settler Legal Center - Terms, Privacy, DPA, and Compliance information.',
+  title: "Legal Center",
+  description: "Settler Legal Center - Terms, Privacy, DPA, and Compliance information.",
 };
 
 export default function LegalIndexPage() {
   const legalDocs = [
     {
-      title: 'Terms of Service',
-      description: 'The agreement between you and Settler regarding your use of our services.',
-      href: '/legal/terms',
+      title: "Terms of Service",
+      description: "The agreement between you and Settler regarding your use of our services.",
+      href: "/legal/terms",
       icon: Scale,
     },
     {
-      title: 'Privacy Policy',
-      description: 'How we collect, use, and protect your personal data.',
-      href: '/legal/privacy',
+      title: "Privacy Policy",
+      description: "How we collect, use, and protect your personal data.",
+      href: "/legal/privacy",
       icon: Lock,
     },
     {
-      title: 'Data Processing Agreement',
-      description: 'Terms for processing personal data, including GDPR compliance.',
-      href: '/legal/dpa',
+      title: "Data Processing Agreement",
+      description: "Terms for processing personal data, including GDPR compliance.",
+      href: "/legal/dpa",
       icon: FileText,
     },
     {
-      title: 'Subprocessors',
-      description: 'List of third-party service providers who process data on our behalf.',
-      href: '/legal/subprocessors',
+      title: "Subprocessors",
+      description: "List of third-party service providers who process data on our behalf.",
+      href: "/legal/subprocessors",
       icon: Globe,
     },
     {
-      title: 'Open Source License',
-      description: 'MIT License details for our open-source core components.',
-      href: '/legal/license',
+      title: "Open Source License",
+      description: "MIT License details for our open-source core components.",
+      href: "/legal/license",
       icon: Shield,
     },
   ];
@@ -48,14 +48,13 @@ export default function LegalIndexPage() {
   return (
     <AnimatedPageWrapper aria-label="Legal Center">
       <Navigation />
-      
+
       <section className="px-4 sm:px-6 lg:px-8 pt-32 pb-12">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl font-bold mb-6 text-slate-900 dark:text-white">
-            Legal Center
-          </h1>
+          <h1 className="text-4xl font-bold mb-6 text-slate-900 dark:text-white">Legal Center</h1>
           <p className="text-xl text-slate-600 dark:text-slate-300">
-            Transparency is core to our infrastructure. Here you'll find all our legal documents and compliance information.
+            Transparency is core to our infrastructure. Here you'll find all our legal documents and
+            compliance information.
           </p>
         </div>
       </section>
@@ -75,9 +74,7 @@ export default function LegalIndexPage() {
                       <CardTitle className="group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {doc.title}
                       </CardTitle>
-                      <CardDescription className="text-base">
-                        {doc.description}
-                      </CardDescription>
+                      <CardDescription className="text-base">{doc.description}</CardDescription>
                     </CardHeader>
                   </Card>
                 </Link>
@@ -90,16 +87,17 @@ export default function LegalIndexPage() {
               Have security or compliance questions?
             </h3>
             <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-2xl mx-auto">
-              Our security team is available to answer questions about our compliance posture, SOC 2 reports, and security practices.
+              Our security team is available to answer questions about our compliance posture, SOC 2
+              reports, and security practices.
             </p>
             <div className="flex gap-4 justify-center">
-              <Link 
-                href="/security"
+              <Link
+                href="/security-and-audit"
                 className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
               >
                 View Security Center
               </Link>
-              <a 
+              <a
                 href="mailto:security@settler.dev"
                 className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
               >

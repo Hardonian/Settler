@@ -1,3 +1,5 @@
-import WhySettlerPage from "../why-settler/page";
+import { redirect } from "next/navigation";
 
-export default WhySettlerPage;
+export default function WhyPage() {
+  redirect("/product");
+}

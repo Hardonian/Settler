@@ -1,29 +1,38 @@
 /**
  * Console Docs & Examples Page
- * 
+ *
  * Provides API documentation, SDK installation, CLI commands, and code examples for all services.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CopyButton } from '@/components/ui/CopyButton';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Code, Terminal, Package, CheckCircle2, ExternalLink, FileText, RefreshCw, Flag } from 'lucide-react';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CopyButton } from "@/components/ui/CopyButton";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Code,
+  Terminal,
+  Package,
+  CheckCircle2,
+  ExternalLink,
+  FileText,
+  RefreshCw,
+  Flag,
+} from "lucide-react";
+import Link from "next/link";
 
 const serviceDocs = {
   reconcile: {
-    name: 'Reconcile API',
-    description: 'Financial data reconciliation across platforms',
+    name: "Reconcile API",
+    description: "Financial data reconciliation across platforms",
     endpoints: [
       {
-        method: 'POST',
-        path: '/api/v1/recon/jobs',
-        description: 'Create a reconciliation job',
+        method: "POST",
+        path: "/api/v1/recon/jobs",
+        description: "Create a reconciliation job",
         example: {
           curl: `curl -X POST https://settler.dev/api/v1/recon/jobs \\
   -H "X-API-Key: rk_your_api_key" \\
@@ -64,13 +73,13 @@ response = requests.post(
     ],
   },
   receipts: {
-    name: 'Receipts API',
-    description: 'Parse receipt images and PDFs into structured JSON',
+    name: "Receipts API",
+    description: "Parse receipt images and PDFs into structured JSON",
     endpoints: [
       {
-        method: 'POST',
-        path: '/api/v1/receipts',
-        description: 'Parse a receipt from an image or PDF',
+        method: "POST",
+        path: "/api/v1/receipts",
+        description: "Parse a receipt from an image or PDF",
         example: {
           curl: `curl -X POST https://settler.dev/api/v1/receipts \\
   -H "X-API-Key: rk_your_api_key" \\
@@ -110,9 +119,9 @@ receipt = response.json()`,
         },
       },
       {
-        method: 'GET',
-        path: '/api/v1/receipts/:id',
-        description: 'Get a stored receipt',
+        method: "GET",
+        path: "/api/v1/receipts/:id",
+        description: "Get a stored receipt",
         example: {
           curl: `curl https://settler.dev/api/v1/receipts/rec_abc123 \\
   -H "X-API-Key: rk_your_api_key"`,
@@ -135,14 +144,14 @@ receipt = response.json()`,
       },
     ],
   },
-  'feature-flags': {
-    name: 'Feature Flags API',
-    description: 'Manage feature flags for your applications',
+  "feature-flags": {
+    name: "Feature Flags API",
+    description: "Manage feature flags for your applications",
     endpoints: [
       {
-        method: 'POST',
-        path: '/api/v1/feature-flags',
-        description: 'Create a new feature flag',
+        method: "POST",
+        path: "/api/v1/feature-flags",
+        description: "Create a new feature flag",
         example: {
           curl: `curl -X POST https://settler.dev/api/v1/feature-flags \\
   -H "X-API-Key: rk_your_api_key" \\
@@ -184,9 +193,9 @@ response = requests.post(
         },
       },
       {
-        method: 'POST',
-        path: '/api/v1/feature-flags/evaluate',
-        description: 'Evaluate a feature flag value',
+        method: "POST",
+        path: "/api/v1/feature-flags/evaluate",
+        description: "Evaluate a feature flag value",
         example: {
           curl: `curl -X POST https://settler.dev/api/v1/feature-flags/evaluate \\
   -H "X-API-Key: rk_your_api_key" \\
@@ -234,8 +243,8 @@ result = response.json()`,
 
 const sdkInstallation = {
   node: {
-    name: 'Node.js / TypeScript',
-    install: 'npm install @settler/sdk',
+    name: "Node.js / TypeScript",
+    install: "npm install @settler/sdk",
     import: `import { Settler } from '@settler/sdk';
 
 const settler = new Settler({
@@ -256,8 +265,8 @@ const receipt = await settler.receipts.parse({
 console.log(receipt.merchant, receipt.total);`,
   },
   python: {
-    name: 'Python',
-    install: 'pip install settler-sdk',
+    name: "Python",
+    install: "pip install settler-sdk",
     import: `from settler import Settler
 
 settler = Settler(api_key=os.getenv('SETTLER_API_KEY'))`,
@@ -276,8 +285,8 @@ receipt = settler.receipts.parse(
 print(receipt.merchant, receipt.total)`,
   },
   go: {
-    name: 'Go',
-    install: 'go get github.com/settler/settler-go',
+    name: "Go",
+    install: "go get github.com/settler/settler-go",
     import: `import (
     "github.com/settler/settler-go"
 )
@@ -299,8 +308,8 @@ if err != nil {
 fmt.Println(receipt.Merchant, receipt.Total)`,
   },
   ruby: {
-    name: 'Ruby',
-    install: 'gem install settler-sdk',
+    name: "Ruby",
+    install: "gem install settler-sdk",
     import: `require 'settler'
 
 settler = Settler::Client.new(api_key: ENV['SETTLER_API_KEY'])`,
@@ -321,8 +330,8 @@ puts receipt.merchant, receipt.total`,
 
 const cliCommands = {
   installation: {
-    npm: 'npm install -g @settler/cli',
-    brew: 'brew install settler/tap/settler',
+    npm: "npm install -g @settler/cli",
+    brew: "brew install settler/tap/settler",
     curl: `curl -fsSL https://settler.dev/install.sh | sh`,
   },
   auth: {
@@ -348,18 +357,20 @@ const cliCommands = {
 };
 
 export default function DocsPage() {
-  const [selectedService, setSelectedService] = useState<keyof typeof serviceDocs>('receipts');
-  const [selectedLanguage, setSelectedLanguage] = useState<'curl' | 'node' | 'python'>('curl');
-  const [selectedSDK, setSelectedSDK] = useState<keyof typeof sdkInstallation>('node');
-  const [apiKey, setApiKey] = useState<string>('');
+  const [selectedService, setSelectedService] = useState<keyof typeof serviceDocs>("receipts");
+  const [selectedLanguage, setSelectedLanguage] = useState<"curl" | "node" | "python">("curl");
+  const [selectedSDK, setSelectedSDK] = useState<keyof typeof sdkInstallation>("node");
+  const [apiKey, setApiKey] = useState<string>("");
 
   useEffect(() => {
     // Try to get API key from localStorage or fetch from API
     const fetchApiKey = async () => {
       try {
-        const res = await fetch('/api/console/api-keys');
+        const res = await fetch("/api/console/api-keys");
         if (res.ok) {
-          const data = await res.json() as { keys?: Array<{ keyPrefix: string; revokedAt?: string | null }> };
+          const data = (await res.json()) as {
+            keys?: Array<{ keyPrefix: string; revokedAt?: string | null }>;
+          };
           const activeKey = data.keys?.find((k) => !k.revokedAt);
           if (activeKey) {
             setApiKey(`rk_${activeKey.keyPrefix}...`);
@@ -391,12 +402,13 @@ export default function DocsPage() {
               <Package className="w-5 h-5 text-blue-600" />
               <CardTitle>SDK Quick Start</CardTitle>
             </div>
-            <CardDescription>
-              Install the SDK and make your first API call
-            </CardDescription>
+            <CardDescription>Install the SDK and make your first API call</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Tabs value={selectedSDK} onValueChange={(v) => setSelectedSDK(v as keyof typeof sdkInstallation)}>
+            <Tabs
+              value={selectedSDK}
+              onValueChange={(v) => setSelectedSDK(v as keyof typeof sdkInstallation)}
+            >
               <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="node">Node</TabsTrigger>
                 <TabsTrigger value="python">Python</TabsTrigger>
@@ -467,7 +479,11 @@ export default function DocsPage() {
                     <pre className="p-3 bg-slate-900 text-slate-100 rounded text-sm overflow-x-auto">
                       <code>{cliCommands.installation.npm}</code>
                     </pre>
-                    <CopyButton text={cliCommands.installation.npm} className="absolute top-1 right-1" size="sm" />
+                    <CopyButton
+                      text={cliCommands.installation.npm}
+                      className="absolute top-1 right-1"
+                      size="sm"
+                    />
                   </div>
                 </TabsContent>
                 <TabsContent value="brew" className="mt-2">
@@ -475,7 +491,11 @@ export default function DocsPage() {
                     <pre className="p-3 bg-slate-900 text-slate-100 rounded text-sm overflow-x-auto">
                       <code>{cliCommands.installation.brew}</code>
                     </pre>
-                    <CopyButton text={cliCommands.installation.brew} className="absolute top-1 right-1" size="sm" />
+                    <CopyButton
+                      text={cliCommands.installation.brew}
+                      className="absolute top-1 right-1"
+                      size="sm"
+                    />
                   </div>
                 </TabsContent>
                 <TabsContent value="curl" className="mt-2">
@@ -483,7 +503,11 @@ export default function DocsPage() {
                     <pre className="p-3 bg-slate-900 text-slate-100 rounded text-sm overflow-x-auto">
                       <code>{cliCommands.installation.curl}</code>
                     </pre>
-                    <CopyButton text={cliCommands.installation.curl} className="absolute top-1 right-1" size="sm" />
+                    <CopyButton
+                      text={cliCommands.installation.curl}
+                      className="absolute top-1 right-1"
+                      size="sm"
+                    />
                   </div>
                 </TabsContent>
               </Tabs>
@@ -494,7 +518,11 @@ export default function DocsPage() {
                 <pre className="p-3 bg-slate-900 text-slate-100 rounded text-sm overflow-x-auto">
                   <code>{cliCommands.auth.login}</code>
                 </pre>
-                <CopyButton text={cliCommands.auth.login} className="absolute top-1 right-1" size="sm" />
+                <CopyButton
+                  text={cliCommands.auth.login}
+                  className="absolute top-1 right-1"
+                  size="sm"
+                />
               </div>
             </div>
             <div>
@@ -503,7 +531,11 @@ export default function DocsPage() {
                 <pre className="p-3 bg-slate-900 text-slate-100 rounded text-sm overflow-x-auto">
                   <code>{cliCommands.receipts.parse}</code>
                 </pre>
-                <CopyButton text={cliCommands.receipts.parse} className="absolute top-1 right-1" size="sm" />
+                <CopyButton
+                  text={cliCommands.receipts.parse}
+                  className="absolute top-1 right-1"
+                  size="sm"
+                />
               </div>
             </div>
             <Button asChild variant="outline" className="w-full">
@@ -526,7 +558,8 @@ export default function DocsPage() {
                   API Key Detected
                 </p>
                 <p className="text-xs text-green-700 dark:text-green-400">
-                  Replace <code className="font-mono">rk_your_api_key</code> in examples with your key: <code className="font-mono">{apiKey}</code>
+                  Replace <code className="font-mono">rk_your_api_key</code> in examples with your
+                  key: <code className="font-mono">{apiKey}</code>
                 </p>
               </div>
               <Button asChild variant="outline" size="sm">
@@ -539,15 +572,16 @@ export default function DocsPage() {
 
       {/* API Reference Section */}
       <div>
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
-          API Reference
-        </h2>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">API Reference</h2>
         <p className="text-slate-600 dark:text-slate-400 mb-6">
           Complete API endpoint documentation with examples in multiple languages.
         </p>
       </div>
 
-      <Tabs value={selectedService} onValueChange={(v) => setSelectedService(v as keyof typeof serviceDocs)}>
+      <Tabs
+        value={selectedService}
+        onValueChange={(v) => setSelectedService(v as keyof typeof serviceDocs)}
+      >
         <TabsList className="grid w-full grid-cols-3">
           {Object.entries(serviceDocs).map(([key, doc]) => (
             <TabsTrigger key={key} value={key}>
@@ -578,7 +612,10 @@ export default function DocsPage() {
                       </p>
                     </div>
 
-                    <Tabs value={selectedLanguage} onValueChange={(v) => setSelectedLanguage(v as 'curl' | 'node' | 'python')}>
+                    <Tabs
+                      value={selectedLanguage}
+                      onValueChange={(v) => setSelectedLanguage(v as "curl" | "node" | "python")}
+                    >
                       <TabsList className="grid w-full grid-cols-3">
                         <TabsTrigger value="curl">
                           <Terminal className="w-4 h-4 mr-1" />
@@ -599,7 +636,10 @@ export default function DocsPage() {
                             <code>{endpoint.example[selectedLanguage]}</code>
                           </pre>
                           <CopyButton
-                            text={endpoint.example[selectedLanguage].replace('rk_your_api_key', apiKey || 'rk_your_api_key')}
+                            text={endpoint.example[selectedLanguage].replace(
+                              "rk_your_api_key",
+                              apiKey || "rk_your_api_key"
+                            )}
                             className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
                           />
                         </div>
@@ -717,9 +757,7 @@ export default function DocsPage() {
       <Card className="mt-8 border-slate-200 dark:border-slate-800">
         <CardHeader>
           <CardTitle>Additional Resources</CardTitle>
-          <CardDescription>
-            Explore more documentation and examples
-          </CardDescription>
+          <CardDescription>Explore more documentation and examples</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-3 gap-4">
@@ -738,7 +776,7 @@ export default function DocsPage() {
               </Link>
             </Button>
             <Button asChild variant="outline" className="h-auto flex-col items-start py-4">
-              <Link href="/cookbooks">
+              <Link href="/cookbook">
                 <FileText className="w-5 h-5 mb-2" />
                 <span className="font-semibold">Cookbooks</span>
                 <span className="text-xs text-slate-500 mt-1">Code examples & patterns</span>

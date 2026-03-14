@@ -1,6 +1,6 @@
 /**
  * Onboarding Wizard Page
- * 
+ *
  * Multi-step wizard for new user onboarding using XState.
  * 1. Create workspace
  * 2. Add teammates (optional)
@@ -9,33 +9,25 @@
  * 5. View results dashboard
  */
 
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AnimatedButton } from '@/components/motion/AnimatedButton';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import React, { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AnimatedButton } from "@/components/motion/AnimatedButton";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   ProgressIndicator,
   SuccessToast,
   ErrorFeedback,
   AchievementBadge,
-} from '@/components/feedback';
-import {
-  CheckCircle2,
-  Circle,
-  Loader2,
-  ArrowRight,
-  Database,
-  Play,
-  Eye,
-} from 'lucide-react';
-import { useMachineState } from '@/lib/xstate/hooks';
-import { onboardingMachine } from '@/lib/xstate/onboarding-machine';
-import { stepTransition } from '@/lib/motion/variants';
+} from "@/components/feedback";
+import { CheckCircle2, Circle, Loader2, ArrowRight, Database, Play, Eye } from "lucide-react";
+import { useMachineState } from "@/lib/xstate/hooks";
+import { onboardingMachine } from "@/lib/xstate/onboarding-machine";
+import { stepTransition } from "@/lib/motion/variants";
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -48,19 +40,17 @@ export default function OnboardingPage() {
   // Initialize: Load progress if workspace ID exists
   useEffect(() => {
     const wsId =
-      searchParams.get('workspaceId') ||
-      (typeof window !== 'undefined'
-        ? localStorage.getItem('current_workspace_id')
-        : null);
+      searchParams.get("workspaceId") ||
+      (typeof window !== "undefined" ? localStorage.getItem("current_workspace_id") : null);
 
-    if (wsId && state.value === 'initializing') {
-      send({ type: 'LOAD_PROGRESS', workspaceId: wsId });
+    if (wsId && state.value === "initializing") {
+      send({ type: "LOAD_PROGRESS", workspaceId: wsId });
     }
   }, [searchParams, send, state.value]);
 
   // Handle step completion success
   useEffect(() => {
-    if (state.value === 'idle' && context.progress > 0) {
+    if (state.value === "idle" && context.progress > 0) {
       setShowSuccessToast(true);
     }
   }, [state.value, context.progress]);
@@ -74,11 +64,11 @@ export default function OnboardingPage() {
 
   // Handle completion
   useEffect(() => {
-    if (state.value === 'complete') {
+    if (state.value === "complete") {
       setShowAchievement(true);
       // Small delay for celebration animation
       setTimeout(() => {
-        router.push('/console');
+        router.push("/console");
       }, 3000);
     }
   }, [state.value, router]);
@@ -89,15 +79,14 @@ export default function OnboardingPage() {
 
   // Check if we're in create workspace state
   const isCreatingWorkspace =
-    typeof state.value === 'object' &&
-    'createWorkspace' in state.value &&
-    (state.context.workspaceId === null ||
-      state.context.currentStepId === 'create_workspace');
+    typeof state.value === "object" &&
+    "createWorkspace" in state.value &&
+    (state.context.workspaceId === null || state.context.currentStepId === "create_workspace");
 
   // Loading state
   if (
-    state.value === 'initializing' ||
-    state.value === 'loadingProgress' ||
+    state.value === "initializing" ||
+    state.value === "loadingProgress" ||
     (isCreatingWorkspace && state.context.workspaceId === null)
   ) {
     return (
@@ -138,8 +127,8 @@ export default function OnboardingPage() {
                 steps={context.steps.map((step) => ({
                   id: step.id,
                   label: step.title,
-                  completed: step.status === 'completed',
-                  current: step.status === 'current',
+                  completed: step.status === "completed",
+                  current: step.status === "current",
                 }))}
               />
             </CardContent>
@@ -151,7 +140,7 @@ export default function OnboardingPage() {
           <div className="mb-6">
             <ErrorFeedback
               error={context.error}
-              onRetry={() => send({ type: 'RETRY' })}
+              onRetry={() => send({ type: "RETRY" })}
               guidance="Please check your connection and try again."
             />
           </div>
@@ -160,15 +149,13 @@ export default function OnboardingPage() {
         {/* Step Content */}
         <Card>
           <CardHeader>
-            <CardTitle>
-              {currentStepData?.title || 'Get Started'}
-            </CardTitle>
+            <CardTitle>{currentStepData?.title || "Get Started"}</CardTitle>
             <CardDescription>{currentStepData?.description}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <AnimatePresence mode="wait">
               {/* Step 1: Create Workspace */}
-              {(currentStepId === 'create_workspace' || isCreatingWorkspace) && (
+              {(currentStepId === "create_workspace" || isCreatingWorkspace) && (
                 <motion.div
                   key="create_workspace"
                   variants={stepTransition}
@@ -183,7 +170,7 @@ export default function OnboardingPage() {
                       id="workspace-name"
                       value={context.workspaceName}
                       onChange={(e) =>
-                        send({ type: 'UPDATE_WORKSPACE_NAME', name: e.target.value })
+                        send({ type: "UPDATE_WORKSPACE_NAME", name: e.target.value })
                       }
                       placeholder="My Company"
                       className="mt-1"
@@ -198,7 +185,7 @@ export default function OnboardingPage() {
                         id="workspace-slug"
                         value={context.workspaceSlug}
                         onChange={(e) =>
-                          send({ type: 'UPDATE_WORKSPACE_SLUG', slug: e.target.value })
+                          send({ type: "UPDATE_WORKSPACE_SLUG", slug: e.target.value })
                         }
                         placeholder="my-company"
                         className="flex-1"
@@ -207,7 +194,7 @@ export default function OnboardingPage() {
                     </div>
                   </div>
                   <AnimatedButton
-                    onClick={() => send({ type: 'CREATE_WORKSPACE' })}
+                    onClick={() => send({ type: "CREATE_WORKSPACE" })}
                     disabled={
                       isPending ||
                       !context.workspaceName ||
@@ -232,7 +219,7 @@ export default function OnboardingPage() {
               )}
 
               {/* Step 2: Add Teammates */}
-              {currentStepId === 'add_teammates' && (
+              {currentStepId === "add_teammates" && (
                 <motion.div
                   key="add_teammates"
                   variants={stepTransition}
@@ -242,16 +229,14 @@ export default function OnboardingPage() {
                   className="space-y-4"
                 >
                   <p className="text-sm text-slate-600 dark:text-slate-400">
-                    Invite your team members to collaborate. You can skip this step and add
-                    them later.
+                    Invite your team members to collaborate. You can skip this step and add them
+                    later.
                   </p>
                   <div className="flex gap-2">
                     <Input
                       type="email"
                       value={context.inviteEmail}
-                      onChange={(e) =>
-                        send({ type: 'UPDATE_INVITE_EMAIL', email: e.target.value })
-                      }
+                      onChange={(e) => send({ type: "UPDATE_INVITE_EMAIL", email: e.target.value })}
                       placeholder="teammate@example.com"
                       className="flex-1"
                       disabled={isPending}
@@ -260,8 +245,8 @@ export default function OnboardingPage() {
                       value={context.inviteRole}
                       onChange={(e) =>
                         send({
-                          type: 'UPDATE_INVITE_ROLE',
-                          role: e.target.value as 'admin' | 'member' | 'viewer',
+                          type: "UPDATE_INVITE_ROLE",
+                          role: e.target.value as "admin" | "member" | "viewer",
                         })
                       }
                       className="px-3 py-2 border rounded-md"
@@ -272,9 +257,9 @@ export default function OnboardingPage() {
                       <option value="viewer">Viewer</option>
                     </select>
                     <AnimatedButton
-                      onClick={() => send({ type: 'SEND_INVITE' })}
+                      onClick={() => send({ type: "SEND_INVITE" })}
                       disabled={isPending || !context.inviteEmail}
-                      loading={isPending && state.value === 'sendingInvite'}
+                      loading={isPending && state.value === "sendingInvite"}
                     >
                       Send Invite
                     </AnimatedButton>
@@ -282,14 +267,14 @@ export default function OnboardingPage() {
                   <div className="flex gap-2">
                     <AnimatedButton
                       variant="outline"
-                      onClick={() => send({ type: 'SKIP_TEAMMATES' })}
+                      onClick={() => send({ type: "SKIP_TEAMMATES" })}
                       disabled={isPending}
                       className="flex-1"
                     >
                       Skip for Now
                     </AnimatedButton>
                     <AnimatedButton
-                      onClick={() => send({ type: 'COMPLETE_STEP', stepId: 'add_teammates' })}
+                      onClick={() => send({ type: "COMPLETE_STEP", stepId: "add_teammates" })}
                       disabled={isPending}
                       className="flex-1"
                     >
@@ -300,7 +285,7 @@ export default function OnboardingPage() {
               )}
 
               {/* Step 3: Connect Data Source */}
-              {currentStepId === 'connect_data_source' && (
+              {currentStepId === "connect_data_source" && (
                 <motion.div
                   key="connect_data_source"
                   variants={stepTransition}
@@ -315,19 +300,17 @@ export default function OnboardingPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <AnimatedButton
                       variant="outline"
-                      onClick={() => router.push('/console/playground')}
+                      onClick={() => router.push("/console/playground")}
                       className="h-auto py-6 flex-col"
                       disabled={isPending}
                     >
                       <Database className="w-8 h-8 mb-2" />
                       <span className="font-semibold">Connect Data Source</span>
-                      <span className="text-xs text-slate-500 mt-1">
-                        Stripe, Shopify, etc.
-                      </span>
+                      <span className="text-xs text-slate-500 mt-1">Stripe, Shopify, etc.</span>
                     </AnimatedButton>
                     <AnimatedButton
                       variant="outline"
-                      onClick={() => router.push('/console/playground/receipts')}
+                      onClick={() => router.push("/console/playground/receipts")}
                       className="h-auto py-6 flex-col"
                       disabled={isPending}
                     >
@@ -338,7 +321,7 @@ export default function OnboardingPage() {
                   </div>
                   <AnimatedButton
                     variant="outline"
-                    onClick={() => send({ type: 'SKIP_DATA_SOURCE' })}
+                    onClick={() => send({ type: "SKIP_DATA_SOURCE" })}
                     disabled={isPending}
                     className="w-full"
                   >
@@ -348,7 +331,7 @@ export default function OnboardingPage() {
               )}
 
               {/* Step 4: Run First Reconciliation */}
-              {currentStepId === 'run_first_reconciliation' && (
+              {currentStepId === "run_first_reconciliation" && (
                 <motion.div
                   key="run_first_reconciliation"
                   variants={stepTransition}
@@ -362,8 +345,8 @@ export default function OnboardingPage() {
                   </p>
                   <AnimatedButton
                     onClick={() => {
-                      router.push('/console/playground/reconcile');
-                      send({ type: 'COMPLETE_STEP', stepId: 'run_first_reconciliation' });
+                      router.push("/console/playground/reconcile");
+                      send({ type: "COMPLETE_STEP", stepId: "run_first_reconciliation" });
                     }}
                     className="w-full"
                     disabled={isPending}
@@ -373,7 +356,7 @@ export default function OnboardingPage() {
                   </AnimatedButton>
                   <AnimatedButton
                     variant="outline"
-                    onClick={() => send({ type: 'SKIP_RECONCILIATION' })}
+                    onClick={() => send({ type: "SKIP_RECONCILIATION" })}
                     disabled={isPending}
                     className="w-full"
                   >
@@ -383,7 +366,7 @@ export default function OnboardingPage() {
               )}
 
               {/* Step 5: View Results */}
-              {currentStepId === 'view_results' && (
+              {currentStepId === "view_results" && (
                 <motion.div
                   key="view_results"
                   variants={stepTransition}
@@ -397,13 +380,13 @@ export default function OnboardingPage() {
                   </p>
                   <AnimatedButton
                     onClick={() => {
-                      send({ type: 'COMPLETE_STEP', stepId: 'view_results' });
+                      send({ type: "COMPLETE_STEP", stepId: "view_results" });
                     }}
                     className="w-full"
                     disabled={isPending}
                   >
                     <Eye className="w-4 h-4 mr-2" />
-                    Go to Dashboard
+                    Go to Console
                   </AnimatedButton>
                 </motion.div>
               )}
@@ -418,23 +401,21 @@ export default function OnboardingPage() {
                     <div
                       key={step.id}
                       className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                        step.status === 'current'
-                          ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800'
-                          : 'bg-slate-50 dark:bg-slate-800/50'
+                        step.status === "current"
+                          ? "bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800"
+                          : "bg-slate-50 dark:bg-slate-800/50"
                       }`}
                     >
-                      {step.status === 'completed' ? (
+                      {step.status === "completed" ? (
                         <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
-                      ) : step.status === 'current' ? (
+                      ) : step.status === "current" ? (
                         <Circle className="w-5 h-5 text-blue-600 dark:text-blue-400 fill-current" />
                       ) : (
                         <Circle className="w-5 h-5 text-slate-400" />
                       )}
                       <div className="flex-1">
                         <div className="font-medium text-sm">{step.title}</div>
-                        {step.optional && (
-                          <span className="text-xs text-slate-500">Optional</span>
-                        )}
+                        {step.optional && <span className="text-xs text-slate-500">Optional</span>}
                       </div>
                     </div>
                   ))}

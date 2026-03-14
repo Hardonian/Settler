@@ -78,7 +78,7 @@ export default function HomePage() {
         <Section>
           <SectionHeader
             title="What you can do today"
-            description="The public site now maps core capabilities, architecture, operational workflows, and packaging without collapsing everything into a single landing section."
+            description="Core capabilities spanning deterministic matching, evidence generation, operator workflows, and integration adapters."
           />
           <FeatureGrid>
             {capabilityClusters.map((capability) => (
@@ -98,7 +98,7 @@ export default function HomePage() {
               },
               {
                 role: "Operator",
-                href: "/use-cases",
+                href: "/product",
                 desc: "Exception handling, controls, and run operations.",
               },
               {
@@ -126,11 +126,11 @@ export default function HomePage() {
 
         <CTASection
           title="Start with product truth"
-          description="Use the platform, capability, architecture, and roadmap pages to evaluate what exists now, what is packaged, and what is planned next."
+          description="Explore the platform, capabilities, and architecture to evaluate what exists now and what is planned next."
           primaryHref="/platform"
           primaryLabel="View platform overview"
-          secondaryHref="/roadmap"
-          secondaryLabel="Read roadmap"
+          secondaryHref="/changelog"
+          secondaryLabel="View changelog"
         />
       </main>
       <Footer />

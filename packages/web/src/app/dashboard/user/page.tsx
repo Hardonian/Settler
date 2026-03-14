@@ -17,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import { Activity, TrendingUp, Clock, CheckCircle2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { UsageUpgradeBanner } from "@/components/UsageUpgradeBanner";
-import { OnboardingProgressClient } from "@/components/OnboardingProgressClient";
 import { SkeletonCard } from "@/components/ui/skeleton";
 
 // Force dynamic rendering
@@ -75,11 +74,6 @@ function UserDashboardContent() {
             userPlan={data.user.planType}
           />
         )}
-
-        {/* Onboarding Progress */}
-        <div className="mb-8">
-          <OnboardingProgressClient />
-        </div>
 
         {/* Usage Limits */}
         <div className="grid md:grid-cols-2 gap-4 mb-8">
@@ -276,7 +270,7 @@ function UserDashboardContent() {
                 variant="outline"
                 className="h-auto py-5 md:py-6 flex-col items-center"
               >
-                <Link href="/cookbooks" className="flex flex-col items-center">
+                <Link href="/cookbook" className="flex flex-col items-center">
                   <span className="text-xl mb-2">📚</span>
                   <span className="font-semibold text-sm md:text-base mb-1">Browse Cookbooks</span>
                   <span className="text-xs text-slate-500 dark:text-slate-400">
