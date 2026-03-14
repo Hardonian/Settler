@@ -185,6 +185,26 @@
   --page-gutter: var(--space-4);
 }
 
+/* Additional component tokens */
+:root {
+  /* Focus ring offset color for dark backgrounds */
+  --focus-ring-offset: var(--surface);
+
+  /* Transition presets */
+  --transition-fast: 100ms ease-out;
+  --transition-base: 150ms ease-out;
+  --transition-slow: 300ms ease-out;
+
+  /* Z-index scale */
+  --z-base: 0;
+  --z-raised: 10;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+}
+
 /* Backward compatibility aliases */
 :root {
   --color-primary-500: var(--color-teal-500);

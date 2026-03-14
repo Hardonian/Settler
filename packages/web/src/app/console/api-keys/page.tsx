@@ -19,7 +19,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Key, Plus, Trash2, Copy, Check, CheckCircle2 } from "lucide-react";
+import { Key, Plus, Trash2, Copy, Check, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { MilestoneCelebration, MilestoneType } from "@/components/milestones/MilestoneCelebration";
 
@@ -112,19 +113,27 @@ export default function ApiKeysPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div
+        className="flex items-center justify-center min-h-[60vh]"
+        role="status"
+        aria-label="Loading API keys"
+      >
+        <div
+          className="animate-spin rounded-full h-8 w-8 border-2 border-border border-t-primary"
+          aria-hidden="true"
+        />
       </div>
     );
   }
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between pb-6 border-b border-border">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">API Keys</h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            Manage your API keys for authenticating requests to Settler APIs.
+          <p className="section-eyebrow mb-1.5">Developer Console</p>
+          <h1 className="text-2xl font-bold text-foreground tracking-tight mb-1">API Keys</h1>
+          <p className="text-sm text-muted-foreground">
+            Manage API keys for authenticating requests to Settler APIs.
           </p>
         </div>
         <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
@@ -164,46 +173,48 @@ export default function ApiKeysPage() {
 
       {/* New Key Display */}
       {newKey && (
-        <Card className="border-green-500 bg-green-50 dark:bg-green-900/20 shadow-lg">
+        <Card className="border-success/30 bg-success/5">
           <CardHeader>
-            <CardTitle className="text-green-900 dark:text-green-300 flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5" />
-              API Key Created Successfully
+            <CardTitle className="flex items-center gap-2 text-success">
+              <CheckCircle2 className="w-5 h-5" aria-hidden="true" />
+              API Key Created
             </CardTitle>
-            <CardDescription className="text-green-800 dark:text-green-400">
-              ⚠️ Copy this key now. You won't be able to see it again!
+            <CardDescription className="flex items-center gap-1.5 text-warning">
+              <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+              Copy this key now — it won&apos;t be shown again.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center gap-2 p-4 bg-white dark:bg-slate-800 rounded-lg border-2 border-green-200 dark:border-green-800">
-              <code className="flex-1 font-mono text-sm break-all">{newKey.key}</code>
+            <div className="flex items-center gap-2 p-3 bg-card rounded-lg border border-border">
+              <code className="flex-1 font-mono text-sm break-all text-foreground">
+                {newKey.key}
+              </code>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => copyToClipboard(newKey.key)}
                 className="shrink-0"
+                aria-label={copied ? "Copied to clipboard" : "Copy API key"}
               >
                 {copied ? (
                   <>
-                    <Check className="w-4 h-4 mr-2" />
-                    Copied!
+                    <Check className="w-4 h-4" aria-hidden="true" />
+                    Copied
                   </>
                 ) : (
                   <>
-                    <Copy className="w-4 h-4 mr-2" />
+                    <Copy className="w-4 h-4" aria-hidden="true" />
                     Copy
                   </>
                 )}
               </Button>
             </div>
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-              <p className="text-sm text-blue-800 dark:text-blue-200">
-                <strong>Next steps:</strong> Add this key to your environment variables or use it in
-                your SDK initialization.
-              </p>
-            </div>
+            <p className="text-sm text-muted-foreground">
+              Add this key to your environment variables or SDK initialization before closing this
+              dialog.
+            </p>
             <Button variant="outline" className="w-full" onClick={() => setNewKey(null)}>
-              I've copied the key
+              Done — I&apos;ve saved the key
             </Button>
           </CardContent>
         </Card>
@@ -232,15 +243,18 @@ export default function ApiKeysPage() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <Key className="w-5 h-5 text-slate-400" />
-                      <h3 className="font-semibold">{key.name || "Unnamed Key"}</h3>
+                      <Key
+                        className="w-4 h-4 text-muted-foreground flex-shrink-0"
+                        aria-hidden="true"
+                      />
+                      <h3 className="font-semibold text-foreground">{key.name || "Unnamed Key"}</h3>
                       {key.revokedAt && (
-                        <span className="px-2 py-1 text-xs rounded bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                        <Badge variant="destructive" size="sm">
                           Revoked
-                        </span>
+                        </Badge>
                       )}
                     </div>
-                    <div className="space-y-1 text-sm text-slate-600 dark:text-slate-400 ml-8">
+                    <div className="space-y-1 text-sm text-muted-foreground ml-7">
                       <p>
                         <code className="font-mono">{key.keyPrefix}...</code>
                       </p>
@@ -252,8 +266,14 @@ export default function ApiKeysPage() {
                     </div>
                   </div>
                   {!key.revokedAt && (
-                    <Button variant="outline" size="sm" onClick={() => handleRevokeKey(key.id)}>
-                      <Trash2 className="w-4 h-4 mr-2" />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleRevokeKey(key.id)}
+                      className="text-destructive hover:bg-destructive/10 hover:border-destructive/50"
+                      aria-label={`Revoke key ${key.name || key.keyPrefix}`}
+                    >
+                      <Trash2 className="w-4 h-4" aria-hidden="true" />
                       Revoke
                     </Button>
                   )}

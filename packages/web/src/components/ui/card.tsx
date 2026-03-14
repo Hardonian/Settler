@@ -1,15 +1,15 @@
-import * as React from 'react';
-import { cn } from '@/lib/utils';
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
-  
+
   /**
    * Visual elevation variant
    * @default 'default'
    */
-  elevation?: 'none' | 'sm' | 'default' | 'lg';
-  
+  elevation?: "none" | "sm" | "default" | "lg";
+
   /**
    * Whether card has hover effect
    * @default false
@@ -38,24 +38,24 @@ export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, children, elevation = 'default', hover = false, ...props }, ref) => {
+  ({ className, children, elevation = "default", hover = false, ...props }, ref) => {
     const elevationClasses = {
-      none: 'shadow-none',
-      sm: 'shadow-sm',
+      none: "shadow-none",
+      sm: "shadow-sm",
       // Uses runtime token: --ui-card-shadow (safe default set in globals.css)
-      default: 'shadow-[var(--ui-card-shadow)]',
-      lg: 'shadow-lg',
+      default: "shadow-[var(--ui-card-shadow)]",
+      lg: "shadow-lg",
     };
 
     return (
       <div
         ref={ref}
         className={cn(
-          'rounded-[var(--ui-radius-lg)] border bg-card text-card-foreground',
-          'transition-shadow duration-200 ease-out',
-          'motion-reduce:transition-none',
+          "rounded-[var(--ui-radius-lg)] border bg-card text-card-foreground",
+          "transition-shadow duration-200 ease-out",
+          "motion-reduce:transition-none",
           elevationClasses[elevation],
-          hover && 'hover:shadow-lg cursor-pointer',
+          hover && "hover:shadow-lg cursor-pointer",
           className
         )}
         {...props}
@@ -65,28 +65,28 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     );
   }
 );
-Card.displayName = 'Card';
+Card.displayName = "Card";
 
 const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
   ({ className, children, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('flex flex-col space-y-1.5 p-[var(--ui-card-padding)]', className)}
+      className={cn("flex flex-col space-y-1.5 p-[var(--ui-card-padding)]", className)}
       {...props}
     >
       {children}
     </div>
   )
 );
-CardHeader.displayName = 'CardHeader';
+CardHeader.displayName = "CardHeader";
 
 const CardTitle = React.forwardRef<HTMLParagraphElement, CardTitleProps>(
   ({ className, children, ...props }, ref) => (
     <h3
       ref={ref}
       className={cn(
-        'text-fluid-xl font-semibold leading-[1.4] tracking-tight',
-        'break-words overflow-wrap-anywhere', // Prevent text overflow
+        "text-base font-semibold leading-[1.4] tracking-tight",
+        "break-words", // Prevent text overflow
         className
       )}
       {...props}
@@ -95,45 +95,41 @@ const CardTitle = React.forwardRef<HTMLParagraphElement, CardTitleProps>(
     </h3>
   )
 );
-CardTitle.displayName = 'CardTitle';
+CardTitle.displayName = "CardTitle";
 
 const CardDescription = React.forwardRef<HTMLParagraphElement, CardDescriptionProps>(
   ({ className, children, ...props }, ref) => (
     <p
       ref={ref}
-      className={cn(
-        'text-fluid-sm text-muted-foreground leading-[1.5]',
-        'break-words overflow-wrap-anywhere', // Prevent text overflow
-        className
-      )}
+      className={cn("text-sm text-muted-foreground leading-relaxed", "break-words", className)}
       {...props}
     >
       {children}
     </p>
   )
 );
-CardDescription.displayName = 'CardDescription';
+CardDescription.displayName = "CardDescription";
 
 const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
   ({ className, children, ...props }, ref) => (
-    <div ref={ref} className={cn('p-[var(--ui-card-padding)] pt-0', className)} {...props}>
+    <div ref={ref} className={cn("p-[var(--ui-card-padding)] pt-0", className)} {...props}>
       {children}
     </div>
   )
 );
-CardContent.displayName = 'CardContent';
+CardContent.displayName = "CardContent";
 
 const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
   ({ className, children, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('flex items-center p-[var(--ui-card-padding)] pt-0', className)}
+      className={cn("flex items-center p-[var(--ui-card-padding)] pt-0", className)}
       {...props}
     >
       {children}
     </div>
   )
 );
-CardFooter.displayName = 'CardFooter';
+CardFooter.displayName = "CardFooter";
 
 export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent };

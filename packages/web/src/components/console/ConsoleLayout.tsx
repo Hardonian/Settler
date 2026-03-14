@@ -32,7 +32,6 @@ import {
   FileText,
   Building2,
   ShieldCheck,
-  RotateCcw,
   ClipboardCheck,
   Scale,
   Settings,
@@ -51,7 +50,6 @@ const consoleNavSections = [
       { href: "/console/reconciliations", label: "Reconciliations", icon: Scale },
       { href: "/console/audits", label: "Audits", icon: ClipboardCheck },
       { href: "/console/proof-explorer", label: "Proof Explorer", icon: ShieldCheck },
-      { href: "/console/replay-lab", label: "Replay Lab", icon: RotateCcw },
       { href: "/console/policies", label: "Policies", icon: Shield },
       { href: "/console/control-plane", label: "Control Plane", icon: Shield },
     ],
@@ -63,8 +61,8 @@ const consoleNavSections = [
       { href: "/console/insights", label: "AI Insights", icon: Sparkles },
       { href: "/console/activity", label: "Activity Feed", icon: Activity },
       { href: "/console/usage", label: "Usage & Metrics", icon: BarChart3 },
-      { href: "/console/performance", label: "Performance", icon: Activity },
-      { href: "/console/diagnostics", label: "Diagnostics", icon: Activity },
+      { href: "/console/performance", label: "Performance", icon: Zap },
+      { href: "/console/diagnostics", label: "Diagnostics", icon: ScanSearch },
     ],
   },
   {
@@ -134,9 +132,14 @@ export function ConsoleLayout({ children }: ConsoleLayoutProps) {
       });
   }, []);
 
-  const NavLink = ({ item }: { item: { href: string; label: string; icon: typeof LayoutDashboard } }) => {
+  const NavLink = ({
+    item,
+  }: {
+    item: { href: string; label: string; icon: typeof LayoutDashboard };
+  }) => {
     const Icon = item.icon;
-    const isActive = pathname === item.href || (item.href !== "/console" && pathname?.startsWith(item.href + "/"));
+    const isActive =
+      pathname === item.href || (item.href !== "/console" && pathname?.startsWith(item.href + "/"));
 
     return (
       <Link
@@ -161,7 +164,10 @@ export function ConsoleLayout({ children }: ConsoleLayoutProps) {
   };
 
   const NavContent = () => (
-    <nav className="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-8rem)]" aria-label="Console navigation">
+    <nav
+      className="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-8rem)]"
+      aria-label="Console navigation"
+    >
       {consoleNavSections.map((section, idx) => (
         <div key={section.label} className={cn(idx > 0 && "pt-4 mt-3 border-t border-border")}>
           <h3 className="px-3 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
@@ -209,7 +215,7 @@ export function ConsoleLayout({ children }: ConsoleLayoutProps) {
   );
 
   return (
-    <div className="min-h-screen bg-background-light dark:bg-background">
+    <div className="min-h-screen bg-background">
       {/* Mobile Trigger */}
       <div className="md:hidden fixed top-20 left-4 z-50">
         <Sheet open={open} onOpenChange={setOpen}>
@@ -234,7 +240,7 @@ export function ConsoleLayout({ children }: ConsoleLayoutProps) {
 
       <div className="flex">
         {/* Desktop Sidebar */}
-        <aside className="hidden md:flex w-[var(--sidebar-width)] min-h-screen bg-card dark:bg-card border-r border-border fixed left-0 top-0 pt-16 z-30 flex-col">
+        <aside className="hidden md:flex w-[var(--sidebar-width)] min-h-screen bg-card border-r border-border fixed left-0 top-0 pt-16 z-30 flex-col">
           <div className="p-4 border-b border-border">
             <BackendHealthBadge />
           </div>

@@ -1,31 +1,31 @@
-import * as React from 'react';
-import { cn } from '@/lib/utils';
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /**
    * Visual style variant
    * @default 'default'
    */
-  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link' | 'primary';
-  
+  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | "primary";
+
   /**
    * Size variant
    * @default 'default'
    */
-  size?: 'default' | 'sm' | 'lg' | 'icon';
-  
+  size?: "default" | "sm" | "lg" | "icon";
+
   /**
    * Whether to render as child element (for composition)
    * @default false
    */
   asChild?: boolean;
-  
+
   /**
    * Whether button takes full width of container
    * @default false
    */
   fullWidth?: boolean;
-  
+
   /**
    * Loading state - shows spinner and disables button
    * @default false
@@ -37,8 +37,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       className,
-      variant = 'default',
-      size = 'default',
+      variant = "default",
+      size = "default",
       asChild = false,
       fullWidth = false,
       loading = false,
@@ -49,84 +49,86 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const isDisabled = disabled || loading;
-    
+
     const baseStyles = [
-      'inline-flex items-center justify-center gap-2',
-      'rounded-[var(--ui-radius-md)] text-sm font-medium',
-      'ring-offset-background',
+      "inline-flex items-center justify-center gap-2",
+      "rounded-[var(--ui-radius-md)] text-sm font-medium",
+      "ring-offset-background",
       // Typography: ensure minimum line-height for readability
-      'leading-[1.4]',
-      // Text wrapping for long button labels
-      'whitespace-normal break-words',
+      "leading-[1.4]",
+      // Prevent awkward mid-word button wrapping
+      "whitespace-nowrap",
       // Enhanced transitions for all interactive properties
-      'transition-[background-color,color,transform,box-shadow,border-color] duration-100 ease-out',
+      "transition-[background-color,color,transform,box-shadow,border-color] duration-100 ease-out",
       // Focus styles - visible and accessible
-      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-      'focus-visible:ring-offset-background',
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+      "focus-visible:ring-offset-background",
       // Disabled state
-      'disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed',
+      "disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed",
       // Active state with subtle scale
-      'active:scale-[0.98]',
+      "active:scale-[0.98]",
       // Respect reduced motion
-      'motion-reduce:transition-none motion-reduce:active:scale-100',
+      "motion-reduce:transition-none motion-reduce:active:scale-100",
     ];
-    
+
     const variants = {
       default: [
-        'bg-primary-600 text-white',
-        'hover:bg-primary-700 hover:shadow-md',
-        'active:bg-primary-800 active:shadow-sm',
-        'focus-visible:ring-primary-600',
+        "bg-primary-600 text-white",
+        "hover:bg-primary-700 hover:shadow-md",
+        "active:bg-primary-800 active:shadow-sm",
+        "focus-visible:ring-primary-600",
       ],
       destructive: [
-        'bg-destructive text-destructive-foreground',
-        'hover:bg-destructive/90 hover:shadow-md',
-        'active:bg-destructive active:shadow-sm',
-        'focus-visible:ring-destructive',
+        "bg-destructive text-destructive-foreground",
+        "hover:bg-destructive/90 hover:shadow-md",
+        "active:bg-destructive active:shadow-sm",
+        "focus-visible:ring-destructive",
       ],
       outline: [
-        'border-2 border-input bg-background',
-        'hover:bg-accent hover:text-accent-foreground hover:border-accent',
-        'active:bg-accent/80 active:border-accent',
-        'focus-visible:ring-ring',
+        "border-2 border-input bg-background",
+        "hover:bg-accent hover:text-accent-foreground hover:border-accent",
+        "active:bg-accent/80 active:border-accent",
+        "focus-visible:ring-ring",
       ],
       secondary: [
-        'bg-muted text-muted-foreground',
-        'hover:bg-muted/80 hover:shadow-sm',
-        'active:bg-muted/70',
-        'focus-visible:ring-ring',
+        "bg-muted text-muted-foreground",
+        "hover:bg-muted/80 hover:shadow-sm",
+        "active:bg-muted/70",
+        "focus-visible:ring-ring",
       ],
       ghost: [
-        'hover:bg-accent hover:text-accent-foreground',
-        'active:bg-accent/80',
-        'focus-visible:ring-ring',
+        "hover:bg-accent hover:text-accent-foreground",
+        "active:bg-accent/80",
+        "focus-visible:ring-ring",
       ],
       link: [
-        'text-primary-600 underline-offset-4',
-        'hover:underline hover:text-primary-700',
-        'active:text-primary-800',
-        'focus-visible:ring-ring focus-visible:underline',
+        "text-primary-600 underline-offset-4",
+        "hover:underline hover:text-primary-700",
+        "active:text-primary-800",
+        "focus-visible:ring-ring focus-visible:underline",
       ],
+      // 'primary' is an alias for 'default' — kept for backwards compatibility
       primary: [
-        'bg-primary-600 text-white',
-        'hover:bg-primary-700 hover:shadow-md',
-        'active:bg-primary-800 active:shadow-sm',
-        'focus-visible:ring-primary-600',
+        "bg-primary-600 text-white",
+        "hover:bg-primary-700 hover:shadow-md",
+        "active:bg-primary-800 active:shadow-sm",
+        "focus-visible:ring-primary-600",
       ],
+      // ^ identical to 'default', consumers should use variant="default"
     };
 
     const sizes = {
-      sm: 'min-h-9 px-3 text-sm py-2',
-      default: 'min-h-[var(--ui-control-height)] px-4 py-2',
-      lg: 'min-h-11 px-8 text-base py-3',
-      icon: 'h-10 w-10',
+      sm: "min-h-9 px-3 text-sm py-2",
+      default: "min-h-[var(--ui-control-height)] px-4 py-2",
+      lg: "min-h-11 px-8 text-base py-3",
+      icon: "h-10 w-10",
     };
 
     const classes = cn(
       baseStyles,
       variants[variant],
       sizes[size],
-      fullWidth && 'w-full',
+      fullWidth && "w-full",
       className
     );
 
@@ -159,7 +161,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       return React.cloneElement(children as React.ReactElement, {
         className: cn(classes, (children.props as { className?: string })?.className),
         disabled: isDisabled,
-        'aria-busy': loading,
+        "aria-busy": loading,
         ...props,
       });
     }
@@ -168,7 +170,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         className={classes}
         ref={ref}
-        type={props.type || 'button'}
+        type={props.type || "button"}
         disabled={isDisabled}
         aria-busy={loading}
         aria-disabled={isDisabled}
@@ -180,6 +182,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     );
   }
 );
-Button.displayName = 'Button';
+Button.displayName = "Button";
 
 export { Button };
