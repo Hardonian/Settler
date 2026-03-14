@@ -25,7 +25,7 @@ export default function DashboardError({
       <Card className="max-w-md w-full">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-amber-600" />
+            <AlertCircle className="h-5 w-5 text-warning" aria-hidden="true" />
             <CardTitle>Unable to load dashboard</CardTitle>
           </div>
           <CardDescription>
@@ -34,7 +34,7 @@ export default function DashboardError({
         </CardHeader>
         <CardContent className="space-y-4">
           {error.digest && (
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+            <p className="text-xs text-muted-foreground font-mono bg-muted/30 rounded px-2 py-1">
               Error ID: {error.digest}
             </p>
           )}

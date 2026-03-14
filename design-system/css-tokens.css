@@ -153,25 +153,59 @@
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.14);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.2);
+
+  /* ============================================
+     COMPONENT-LEVEL TOKENS
+     ============================================
+     These map semantic intent to base tokens so
+     components stay decoupled from the palette.  */
+
+  /* Card */
+  --ui-card-padding: var(--space-6);
+  --ui-card-shadow: var(--shadow-sm);
+  --ui-card-radius: var(--radius-lg);
+
+  /* Controls (buttons, inputs) */
+  --ui-radius-sm: var(--radius-sm);
+  --ui-radius-md: var(--radius-md);
+  --ui-radius-lg: var(--radius-lg);
+  --ui-control-height: 2.5rem; /* 40px — standard button/input height */
+
+  /* Sidebar */
+  --sidebar-width: 16rem;
+  --sidebar-bg: var(--surface);
+  --sidebar-border: var(--border);
+  --sidebar-item-radius: var(--radius-sm);
+  --sidebar-active-bg: rgba(20, 184, 166, 0.1);
+  --sidebar-active-text: var(--color-teal-500);
+
+  /* Page shell */
+  --page-max-width: 80rem; /* 1280px */
+  --page-gutter: var(--space-4);
 }
 
 /* Backward compatibility aliases */
 :root {
   --color-primary-500: var(--color-teal-500);
+  --color-primary-600: var(--color-teal-600);
+  --color-primary-700: var(--color-teal-700);
   --color-electric-cyan: var(--color-teal-500);
   --color-electric-blue: var(--color-blue-400);
-  --color-electric-purple: #8b5cf6; /* Muted purple if needed */
-  --color-electric-neon: var(--color-teal-500); /* Overwrite loud neon with teal */
+  --color-electric-purple: #8b5cf6;
+  --color-electric-neon: var(--color-teal-500);
 
-  --background: 210 30% 6%; /* #0B0F14 */
-  --foreground: 210 10% 98%; /* Close to white */
-  --card: 210 30% 9%; /* #111827 */
+  /* HSL token aliases for shadcn/ui compatibility */
+  --background: 210 30% 6%;
+  --foreground: 210 10% 98%;
+  --card: 210 30% 9%;
   --card-foreground: 210 10% 98%;
   --muted: 210 30% 15%;
   --muted-foreground: 210 10% 60%;
-  --accent: 171 77% 40%; /* Teal */
+  --accent: 171 77% 40%;
   --accent-foreground: 210 10% 98%;
-  --border: 210 30% 15% / 0.1;
-  --input: 210 30% 15% / 0.1;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
   --ring: 171 77% 40%;
+  --input: 210 30% 15% / 0.1;
 }

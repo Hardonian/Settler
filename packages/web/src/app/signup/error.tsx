@@ -53,7 +53,7 @@ export default function SignupError({
       <Card className="max-w-md w-full shadow-lg">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-red-600" />
+            <AlertCircle className="h-5 w-5 text-destructive" aria-hidden="true" />
             <CardTitle>Sign Up Unavailable</CardTitle>
           </div>
           <CardDescription>
@@ -61,7 +61,7 @@ export default function SignupError({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-muted-foreground">
             This is likely a temporary issue. Please try one of the options below:
           </p>
 
@@ -83,24 +83,24 @@ export default function SignupError({
             </Button>
           </div>
 
-          <div className="bg-slate-100 dark:bg-slate-900 rounded-lg p-3 text-xs text-slate-600 dark:text-slate-400">
+          <div className="bg-muted/30 rounded-lg p-3 text-xs text-muted-foreground">
             <p className="font-medium mb-1">Still having trouble?</p>
             <p>
               Email us at{' '}
-              <a href="mailto:support@settler.dev" className="text-blue-600 dark:text-blue-400 underline">
+              <a href="mailto:support@settler.dev" className="text-primary underline">
                 support@settler.dev
               </a>
             </p>
             {error.digest && (
-              <p className="mt-2 text-slate-500 dark:text-slate-500">
+              <p className="mt-2 text-muted-foreground">
                 Error Reference: {error.digest}
               </p>
             )}
           </div>
 
           {process.env.NODE_ENV === 'development' && error.message && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
-              <p className="text-xs font-mono text-red-800 dark:text-red-200 break-words">
+            <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-3">
+              <p className="text-xs font-mono text-destructive break-words">
                 {error.message}
               </p>
             </div>

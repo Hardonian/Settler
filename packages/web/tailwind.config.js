@@ -26,6 +26,14 @@ module.exports = {
           hover: "var(--primary-hover)",
           light: "var(--primary-light)",
           foreground: "var(--primary-foreground)",
+          600: "var(--color-teal-600)",
+          700: "var(--color-teal-700)",
+          800: "var(--color-teal-700)",
+        },
+        "electric-cyan": "var(--color-teal-500)",
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
         },
         teal: {
           50: "var(--color-teal-50)",
@@ -70,8 +78,15 @@ module.exports = {
           DEFAULT: "var(--primary)",
           highlight: "var(--highlight)",
         },
-        border: "var(--border)",
-        "border-muted": "var(--border-muted)",
+        border: {
+          DEFAULT: "var(--border)",
+          muted: "var(--border-muted)",
+          light: "var(--border)",
+        },
+        ring: "var(--color-teal-500)",
+        "background-light": "var(--color-neutral-400)",
+        "text-main": "var(--text)",
+        "text-secondary": "var(--text-muted)",
       },
       backgroundImage: {
         "grid-quiet":

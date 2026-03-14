@@ -27,7 +27,7 @@ export default function PricingError({
       <Card className="max-w-md">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-red-600" />
+            <AlertCircle className="h-5 w-5 text-destructive" aria-hidden="true" />
             <CardTitle>Failed to load pricing</CardTitle>
           </div>
           <CardDescription>
@@ -35,11 +35,11 @@ export default function PricingError({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-muted-foreground">
             {error.message || 'An unexpected error occurred. Please try again.'}
           </p>
           {error.digest && (
-            <p className="text-xs text-slate-500 dark:text-slate-500 font-mono">
+            <p className="text-xs text-muted-foreground font-mono">
               Error ID: {error.digest}
             </p>
           )}
