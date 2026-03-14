@@ -16,7 +16,7 @@ const siteMode = process.env.NEXT_PUBLIC_SITE_MODE || "oss";
 const primaryNavigationItems = [
   { href: "/platform", label: "Platform" },
   { href: "/capabilities", label: "Capabilities" },
-  { href: "/use-cases", label: "Use Cases" },
+  { href: "/product", label: "Product" },
   ...(siteMode === "enterprise" ? [{ href: "/enterprise", label: "Enterprise" }] : []),
   { href: "/pricing", label: "Pricing" },
   { href: "/docs", label: "Docs" },
@@ -24,11 +24,10 @@ const primaryNavigationItems = [
 
 // Feature pages exposed in a dropdown
 const featureNavigationItems = [
-  { href: "/how-it-works", label: "How It Works" },
   { href: "/architecture", label: "Architecture" },
   { href: "/security-and-audit", label: "Security & Audit" },
   { href: "/open-source", label: "Open Source" },
-  { href: "/roadmap", label: "Roadmap" },
+  { href: "/changelog", label: "Changelog" },
 ];
 
 // Secondary navigation items (in "More" dropdown on desktop, accordion on mobile)

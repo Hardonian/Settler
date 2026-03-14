@@ -62,7 +62,7 @@ export default function IntegrationRequestPage() {
                     <Link href="/docs">View Documentation</Link>
                   </Button>
                   <Button asChild variant="outline">
-                    <Link href="/dashboard/integrations">Go to Dashboard</Link>
+                    <Link href="/console">Go to Console</Link>
                   </Button>
                 </div>
               </CardContent>

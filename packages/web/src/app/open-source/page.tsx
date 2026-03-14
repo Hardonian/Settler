@@ -8,7 +8,6 @@ import {
   Github,
   Code2,
   Shield,
-  RefreshCw,
   Database,
   GitBranch,
   Package,
@@ -155,7 +154,8 @@ export default function OpenSourcePage() {
               What&apos;s Open Source
             </h2>
             <p className="text-slate-600 dark:text-slate-400 mb-10">
-              Every component that processes, hashes, or moves your data is open source and auditable.
+              Every component that processes, hashes, or moves your data is open source and
+              auditable.
             </p>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {ossComponents.map((component) => {
@@ -196,8 +196,8 @@ export default function OpenSourcePage() {
                   Run it in 3 Minutes
                 </h2>
                 <p className="text-slate-600 dark:text-slate-400 mb-6">
-                  Clone, install, and run the demo path to see deterministic reconciliation end-to-end.
-                  No database or API keys needed.
+                  Clone, install, and run the demo path to see deterministic reconciliation
+                  end-to-end. No database or API keys needed.
                 </p>
                 <div className="space-y-3">
                   {quickStartSteps.map((step) => (
@@ -230,9 +230,7 @@ export default function OpenSourcePage() {
               <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <Eye className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-                  <h3 className="font-bold text-slate-900 dark:text-white">
-                    Why Self-Host?
-                  </h3>
+                  <h3 className="font-bold text-slate-900 dark:text-white">Why Self-Host?</h3>
                 </div>
                 <ul className="space-y-3">
                   {selfHostBenefits.map((benefit) => (

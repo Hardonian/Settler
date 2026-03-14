@@ -364,12 +364,12 @@ export function VisualProofCTA() {
           architecture
         </Link>
         ,{" "}
-        <Link href="/how-it-works" className="font-semibold text-blue-700 dark:text-blue-300">
+        <Link href="/product" className="font-semibold text-blue-700 dark:text-blue-300">
           workflow lanes
         </Link>
         , and{" "}
-        <Link href="/roadmap" className="font-semibold text-blue-700 dark:text-blue-300">
-          roadmap labeling
+        <Link href="/changelog" className="font-semibold text-blue-700 dark:text-blue-300">
+          changelog
         </Link>{" "}
         with shipped versus directional separation.
       </p>

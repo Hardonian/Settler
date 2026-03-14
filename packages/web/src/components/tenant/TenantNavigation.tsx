@@ -22,7 +22,7 @@ import { TenantNavigationItem } from "@/shared/tenant/types";
 // Default navigation items (fallback)
 const defaultNavigationItems: TenantNavigationItem[] = [
   { href: "/docs", label: "Docs", type: "internal" },
-  { href: "/cookbooks", label: "Cookbooks", type: "internal" },
+  { href: "/cookbook", label: "Cookbooks", type: "internal" },
   { href: "/receipts", label: "Receipts API", type: "internal" },
   { href: "/feature-flags", label: "Feature Flags", type: "internal" },
   { href: "/console", label: "Console", type: "internal" },

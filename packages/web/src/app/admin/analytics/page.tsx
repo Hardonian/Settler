@@ -1,16 +1,22 @@
-'use client';
+"use client";
 
-import { adminLogger } from '@/lib/admin/utils/logger';
+import { adminLogger } from "@/lib/admin/utils/logger";
 
-import { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { EmptyState } from '@/components/EmptyState';
-import { Skeleton } from '@/components/Skeleton';
-import { safeFetch } from '@/lib/safe-fetch';
+import { useState, useEffect, useCallback } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { EmptyState } from "@/components/EmptyState";
+import { Skeleton } from "@/components/ui/skeleton";
+import { safeFetch } from "@/lib/safe-fetch";
 // Admin check will be done server-side via middleware
-import { DollarSign, Users, Download, AlertCircle } from 'lucide-react';
+import { DollarSign, Users, Download, AlertCircle } from "lucide-react";
 
 interface KPIs {
   mrr: number;
@@ -32,17 +38,17 @@ interface WorkspaceDetail {
   createdAt: Date;
 }
 
-type DateRange = '7d' | '30d' | '90d' | 'all';
+type DateRange = "7d" | "30d" | "90d" | "all";
 
 const isDateRange = (value: string): value is DateRange =>
-  value === '7d' || value === '30d' || value === '90d' || value === 'all';
+  value === "7d" || value === "30d" || value === "90d" || value === "all";
 
 export default function AdminAnalyticsPage() {
   const [kpis, setKpis] = useState<KPIs | null>(null);
   const [workspaces, setWorkspaces] = useState<WorkspaceDetail[]>([]);
   const [loading, setLoading] = useState(true);
-  const [dateRange, setDateRange] = useState<DateRange>('30d');
-  const [planFilter, setPlanFilter] = useState<string>('all');
+  const [dateRange, setDateRange] = useState<DateRange>("30d");
+  const [planFilter, setPlanFilter] = useState<string>("all");
   const [error, setError] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
@@ -51,30 +57,31 @@ export default function AdminAnalyticsPage() {
     try {
       const [kpisResult, workspacesResult] = await Promise.all([
         safeFetch<KPIs>(`/api/admin/analytics/kpis?range=${dateRange}`),
-        safeFetch<{ workspaces: WorkspaceDetail[] }>(`/api/admin/analytics/workspaces?plan=${planFilter}`),
+        safeFetch<{ workspaces: WorkspaceDetail[] }>(
+          `/api/admin/analytics/workspaces?plan=${planFilter}`
+        ),
       ]);
 
       if (kpisResult.success) {
         setKpis(kpisResult.data || null);
       } else {
-        adminLogger.warn('KPIs fetch failed', { error: kpisResult.error });
+        adminLogger.warn("KPIs fetch failed", { error: kpisResult.error });
       }
-      
+
       if (workspacesResult.success) {
         setWorkspaces(workspacesResult.data?.workspaces || []);
       } else {
-        adminLogger.warn('Workspaces fetch failed', { error: workspacesResult.error });
+        adminLogger.warn("Workspaces fetch failed", { error: workspacesResult.error });
       }
-      
+
       // Only set error if both fail
       if (!kpisResult.success && !workspacesResult.success) {
-        setError('Unable to load analytics data. Please try again.');
+        setError("Unable to load analytics data. Please try again.");
       }
-             
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      adminLogger.error('Error loading analytics data', new Error(errorMessage));
-      setError('Failed to load analytics data. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      adminLogger.error("Error loading analytics data", new Error(errorMessage));
+      setError("Failed to load analytics data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -97,9 +104,9 @@ export default function AdminAnalyticsPage() {
       exportedAt: new Date().toISOString(),
     };
     const dataStr = JSON.stringify(data, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
     const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
     link.download = `settler-analytics-${dateRange}-${Date.now()}.json`;
     link.click();
@@ -154,9 +161,7 @@ export default function AdminAnalyticsPage() {
               Error Loading Analytics
             </h3>
           </div>
-          <p className="text-sm text-red-800 dark:text-red-300 mb-4">
-            {error}
-          </p>
+          <p className="text-sm text-red-800 dark:text-red-300 mb-4">{error}</p>
           <Button onClick={loadData} variant="outline" size="sm">
             Retry
           </Button>
@@ -176,8 +181,7 @@ export default function AdminAnalyticsPage() {
             <CardHeader className="pb-3">
               <CardDescription>MRR</CardDescription>
               <CardTitle className="text-3xl flex items-center gap-2">
-                <DollarSign className="w-6 h-6 text-green-600" />
-                ${(kpis.mrr / 1000).toFixed(1)}K
+                <DollarSign className="w-6 h-6 text-green-600" />${(kpis.mrr / 1000).toFixed(1)}K
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -190,9 +194,7 @@ export default function AdminAnalyticsPage() {
           <Card>
             <CardHeader className="pb-3">
               <CardDescription>Churn Rate</CardDescription>
-              <CardTitle className="text-3xl">
-                {(kpis.churn * 100).toFixed(2)}%
-              </CardTitle>
+              <CardTitle className="text-3xl">{(kpis.churn * 100).toFixed(2)}%</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-sm text-slate-600 dark:text-slate-400">
@@ -219,9 +221,7 @@ export default function AdminAnalyticsPage() {
           <Card>
             <CardHeader className="pb-3">
               <CardDescription>Error Rate</CardDescription>
-              <CardTitle className="text-3xl">
-                {(kpis.errorRate * 100).toFixed(2)}%
-              </CardTitle>
+              <CardTitle className="text-3xl">{(kpis.errorRate * 100).toFixed(2)}%</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-sm text-slate-600 dark:text-slate-400">
@@ -251,10 +251,12 @@ export default function AdminAnalyticsPage() {
                 <div
                   key={workspace.id}
                   className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer"
-                  onClick={() => window.location.href = `/admin/workspaces/${workspace.id}`}
+                  onClick={() => (window.location.href = `/admin/workspaces/${workspace.id}`)}
                 >
                   <div>
-                    <div className="font-medium text-slate-900 dark:text-white">{workspace.name}</div>
+                    <div className="font-medium text-slate-900 dark:text-white">
+                      {workspace.name}
+                    </div>
                     <div className="text-sm text-slate-600 dark:text-slate-400">
                       {workspace.plan} • ${workspace.mrr}/month • {workspace.status}
                     </div>

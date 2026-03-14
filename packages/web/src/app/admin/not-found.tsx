@@ -1,13 +1,13 @@
 /**
  * Admin Not Found Page
- * 
+ *
  * 404 page for admin routes.
  */
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileSearch, Home } from 'lucide-react';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FileSearch, Home } from "lucide-react";
 
 export default function AdminNotFound() {
   return (
@@ -27,7 +27,7 @@ export default function AdminNotFound() {
             <Link href="/admin">
               <Button variant="default">
                 <Home className="w-4 h-4 mr-2" />
-                Go to Dashboard
+                Go to Admin
               </Button>
             </Link>
           </div>

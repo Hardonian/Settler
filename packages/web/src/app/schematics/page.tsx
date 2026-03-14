@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,23 +10,17 @@ import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
 import { AnimatedHero } from "@/components/AnimatedHero";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import Link from "next/link";
-import { 
-  Shield,
-  Database,
-  Zap,
-  GitBranch,
-  Layers
-} from "lucide-react";
+import { Shield, Database, Zap, GitBranch, Layers } from "lucide-react";
 
 export default function Schematics() {
   const [selectedSchematic, setSelectedSchematic] = useState<string | null>(null);
 
   const schematics = [
     {
-      id: 'auth-flow',
-      title: 'Authentication Flow',
-      description: 'Complete authentication and authorization flow with Supabase.',
-      category: 'Authentication',
+      id: "auth-flow",
+      title: "Authentication Flow",
+      description: "Complete authentication and authorization flow with Supabase.",
+      category: "Authentication",
       icon: Shield,
       mermaid: `graph TD
     A[User Visits] --> B{Authenticated?}
@@ -38,13 +32,13 @@ export default function Schematics() {
     F --> H[Personalized Content]
     G --> I[Optional: Sign In]
     I --> D`,
-      tags: ['auth', 'supabase', 'session'],
+      tags: ["auth", "supabase", "session"],
     },
     {
-      id: 'console-data',
-      title: 'Console Data Fetch',
-      description: 'How Console fetches and displays data safely.',
-      category: 'Data Flow',
+      id: "console-data",
+      title: "Console Data Fetch",
+      description: "How Console fetches and displays data safely.",
+      category: "Data Flow",
       icon: Database,
       mermaid: `graph LR
     A[Console Page] --> B{Env Check}
@@ -56,13 +50,13 @@ export default function Schematics() {
     G -->|Yes| H[Show Full Console]
     G -->|No| E
     C --> E`,
-      tags: ['console', 'data', 'fetch'],
+      tags: ["console", "data", "fetch"],
     },
     {
-      id: 'error-boundary',
-      title: 'Error Boundary Flow',
-      description: 'How errors are caught and handled gracefully.',
-      category: 'Error Handling',
+      id: "error-boundary",
+      title: "Error Boundary Flow",
+      description: "How errors are caught and handled gracefully.",
+      category: "Error Handling",
       icon: Zap,
       mermaid: `graph TD
     A[Component Error] --> B[Error Boundary]
@@ -74,13 +68,13 @@ export default function Schematics() {
     E --> H[Retry Option]
     F --> I[Sign In Option]
     G --> J[Report to Monitoring]`,
-      tags: ['errors', 'boundaries', 'handling'],
+      tags: ["errors", "boundaries", "handling"],
     },
     {
-      id: 'qa-pipeline',
-      title: 'QA Pipeline Flow',
-      description: 'Automated link checking and smoke testing pipeline.',
-      category: 'CI/CD',
+      id: "qa-pipeline",
+      title: "QA Pipeline Flow",
+      description: "Automated link checking and smoke testing pipeline.",
+      category: "CI/CD",
       icon: GitBranch,
       mermaid: `graph LR
     A[Code Push] --> B[Generate Route Registry]
@@ -92,13 +86,13 @@ export default function Schematics() {
     G --> H{All Pass?}
     H -->|No| F
     H -->|Yes| I[Deploy]`,
-      tags: ['qa', 'ci-cd', 'testing'],
+      tags: ["qa", "ci-cd", "testing"],
     },
     {
-      id: 'content-provider',
-      title: 'Content Provider Pattern',
-      description: 'How content is loaded from Supabase with local fallback.',
-      category: 'Data',
+      id: "content-provider",
+      title: "Content Provider Pattern",
+      description: "How content is loaded from Supabase with local fallback.",
+      category: "Data",
       icon: Layers,
       mermaid: `graph TD
     A[Request Content] --> B[Try Supabase]
@@ -110,11 +104,11 @@ export default function Schematics() {
     G --> C
     F --> D
     D --> H[Render Page]`,
-      tags: ['content', 'fallback', 'supabase'],
+      tags: ["content", "fallback", "supabase"],
     },
   ];
 
-  const selectedSchematicData = schematics.find(s => s.id === selectedSchematic);
+  const selectedSchematicData = schematics.find((s) => s.id === selectedSchematic);
 
   return (
     <AnimatedPageWrapper aria-label="Workflow schematics">
@@ -123,7 +117,7 @@ export default function Schematics() {
       {/* Breadcrumbs */}
       <section className="px-4 sm:px-6 lg:px-8 pt-24">
         <div className="max-w-7xl mx-auto">
-          <Breadcrumbs items={[{ label: 'Schematics' }]} />
+          <Breadcrumbs items={[{ label: "Schematics" }]} />
         </div>
       </section>
 
@@ -219,14 +213,24 @@ export default function Schematics() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <h4 className="font-semibold text-slate-900 dark:text-white mb-4">Mermaid Diagram</h4>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-4">
+                  Mermaid Diagram
+                </h4>
                 <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
                   <pre className="text-xs font-mono text-slate-700 dark:text-slate-300 whitespace-pre-wrap overflow-x-auto">
                     {selectedSchematicData.mermaid}
                   </pre>
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
-                  Copy this Mermaid code to visualize in <a href="https://mermaid.live" target="_blank" rel="noopener noreferrer" className="underline">Mermaid Live Editor</a>
+                  Copy this Mermaid code to visualize in{" "}
+                  <a
+                    href="https://mermaid.live"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    Mermaid Live Editor
+                  </a>
                 </p>
               </div>
               <div className="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
@@ -241,7 +245,7 @@ export default function Schematics() {
                   className="border-slate-300 dark:border-slate-700"
                   asChild
                 >
-                  <Link href="/cookbooks">View Cookbooks</Link>
+                  <Link href="/cookbook">View Cookbooks</Link>
                 </Button>
               </div>
             </CardContent>

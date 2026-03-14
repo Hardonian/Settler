@@ -69,7 +69,6 @@ export default async function BuilderCatchAllPage({ params }: PageProps) {
   try {
     const { builder } = await import("@builder.io/sdk");
     const { builderModels } = await import("@/lib/builder/config");
-    const BuilderPage = (await import("@/components/BuilderPage")).default;
     const apiKey = process.env.NEXT_PUBLIC_BUILDER_API_KEY || process.env.BUILDER_API_KEY;
 
     if (!apiKey) {
@@ -94,8 +93,9 @@ export default async function BuilderCatchAllPage({ params }: PageProps) {
       notFound();
     }
 
-    // Render the page
-    return <BuilderPage content={content} model={builderModels.page} apiKey={apiKey} />;
+    // Render the Builder.io content
+    const { BuilderComponent } = await import("@builder.io/react");
+    return <BuilderComponent content={content} model={builderModels.page} apiKey={apiKey} />;
   } catch {
     notFound();
   }

@@ -57,7 +57,7 @@ const DEFAULT_CHECKLIST: ChecklistItem[] = [
     id: "explore_cookbooks",
     label: "Explore cookbooks",
     description: "Check out ready-to-use workflows",
-    action: { label: "Browse Cookbooks", href: "/cookbooks" },
+    action: { label: "Browse Cookbooks", href: "/cookbook" },
     required: false,
   },
 ];

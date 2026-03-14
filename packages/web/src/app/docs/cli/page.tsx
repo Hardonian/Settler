@@ -184,7 +184,7 @@ settler webhooks delete <webhook-id>`}</code>
               </Link>{" "}
               or explore the{" "}
               <Link
-                href="/cookbooks"
+                href="/cookbook"
                 className="underline hover:text-blue-600 dark:hover:text-blue-300"
               >
                 cookbooks
