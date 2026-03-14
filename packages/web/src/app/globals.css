@@ -58,7 +58,27 @@
 
   /* Hover card lift */
   .card-hover {
-    @apply hover:shadow-md hover:border-border transition-all duration-200;
+    @apply hover:shadow-md hover:border-border/80 transition-all duration-150 cursor-pointer;
+  }
+
+  /* Tabular number rendering for metrics */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Subtle divider */
+  .divider {
+    @apply border-t border-border my-4;
+  }
+
+  /* Page section container */
+  .page-section {
+    @apply space-y-6;
+  }
+
+  /* Data row — used in detail views */
+  .data-row {
+    @apply flex items-center justify-between py-3 border-b border-border last:border-0;
   }
 }
 
@@ -192,14 +212,12 @@
     overflow-x: hidden;
   }
 
-  /* Mobile-first touch targets - minimum 44x44px for accessibility */
+  /* Mobile-first touch targets — applies to standalone interactive controls, not inline links */
   button,
-  a,
   input[type="button"],
   input[type="submit"],
   [role="button"] {
     min-height: 44px;
-    min-width: 44px;
   }
 
   /* Responsive images - prevent overflow */
@@ -208,18 +226,9 @@
     height: auto;
   }
 
-  /* Ensure tables are scrollable on mobile */
+  /* Tables: keep native display, scroll wrapper is handled by Table component */
   table {
-    display: block;
     width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  @media (min-width: 640px) {
-    table {
-      display: table;
-    }
   }
 }
 
@@ -230,7 +239,8 @@ html {
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -366,12 +376,7 @@ html {
   animation: shimmer 2s linear infinite;
 }
 
-/* Respect reduced motion (consolidated — see earlier block) */
-@media (prefers-reduced-motion: reduce) {
-  .animate-shimmer {
-    animation: none;
-  }
-}
+/* Reduced motion: shimmer respects the global rule above */
 
 @keyframes ripple {
   0% {

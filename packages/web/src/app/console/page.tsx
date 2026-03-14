@@ -18,6 +18,7 @@ import {
   ScanSearch,
   ClipboardCheck,
   Bot,
+  CheckCircle2,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getUsageSummary } from "@/domain/console/usage";
@@ -170,10 +171,8 @@ async function ConsoleOverviewContent() {
                 />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
-              Authentication Required
-            </h2>
-            <p className="text-slate-600 dark:text-slate-400">
+            <h2 className="text-xl font-semibold text-foreground">Authentication Required</h2>
+            <p className="text-muted-foreground">
               We couldn't verify your authentication status. Please sign in to access the Developer
               Console.
             </p>
@@ -197,32 +196,21 @@ async function ConsoleOverviewContent() {
       return (
         <div className="space-y-6">
           {/* Hero — sign-in prompt */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 md:p-10">
+          <div className="rounded-xl border border-border bg-card p-8 md:p-10">
             <div className="max-w-xl">
-              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500 mb-3">
-                Developer Console
-              </p>
-              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">
+              <p className="section-eyebrow mb-3">Developer Console</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight mb-3">
                 Settler Developer Console
               </h1>
-              <p className="text-base text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
+              <p className="text-base text-muted-foreground leading-relaxed mb-6">
                 Manage API keys, monitor reconciliation usage, and explore your integration. Sign in
                 for full console access.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Button
-                  asChild
-                  size="lg"
-                  className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 font-semibold px-6 shadow-md"
-                >
+                <Button asChild size="lg">
                   <Link href="/signup">Get Started Free</Link>
                 </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  asChild
-                  className="px-6 border-slate-300 dark:border-slate-700"
-                >
+                <Button variant="outline" size="lg" asChild>
                   <Link href="/login">Sign In</Link>
                 </Button>
               </div>
@@ -234,21 +222,16 @@ async function ConsoleOverviewContent() {
             {/* System status */}
             <Card className="md:col-span-1">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
-                  System Status
-                </CardTitle>
+                <CardTitle className="label-muted">System Status</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2.5">
-                  <div
-                    className="w-2.5 h-2.5 rounded-full bg-green-500 flex-shrink-0"
-                    aria-hidden="true"
-                  />
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  <span className="status-dot-ok" aria-hidden="true" />
+                  <span className="text-sm font-medium text-foreground">
                     All systems operational
                   </span>
                 </div>
-                <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <div className="mt-4 pt-4 border-t border-border">
                   <Button asChild variant="outline" size="sm" className="w-full">
                     <Link href="/status">View Status Page</Link>
                   </Button>
@@ -257,45 +240,35 @@ async function ConsoleOverviewContent() {
             </Card>
 
             {/* Playground */}
-            <Card className="md:col-span-1 hover:shadow-md transition-shadow">
+            <Card className="md:col-span-1 card-hover">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
-                  Playground
-                </CardTitle>
-                <CardDescription className="text-xs">Test APIs without an account</CardDescription>
+                <CardTitle className="label-muted">Playground</CardTitle>
+                <CardDescription>Test APIs without an account</CardDescription>
               </CardHeader>
               <CardContent>
-                <Button
-                  asChild
-                  size="sm"
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
-                >
+                <Button asChild size="sm" className="w-full">
                   <Link href="/console/playground">Open Playground</Link>
                 </Button>
               </CardContent>
             </Card>
 
             {/* Docs */}
-            <Card className="md:col-span-1 hover:shadow-md transition-shadow">
+            <Card className="md:col-span-1 card-hover">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
-                  Documentation
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Guides, reference, and cookbooks
-                </CardDescription>
+                <CardTitle className="label-muted">Documentation</CardTitle>
+                <CardDescription>Guides, reference, and cookbooks</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
                   <Button asChild variant="outline" size="sm" className="w-full justify-start">
                     <Link href="/docs">
-                      <ArrowRight className="w-3.5 h-3.5 mr-2" />
+                      <ArrowRight className="w-3.5 h-3.5" />
                       Quickstart
                     </Link>
                   </Button>
                   <Button asChild variant="outline" size="sm" className="w-full justify-start">
                     <Link href="/cookbook">
-                      <ArrowRight className="w-3.5 h-3.5 mr-2" />
+                      <ArrowRight className="w-3.5 h-3.5" />
                       Cookbooks
                     </Link>
                   </Button>
@@ -305,11 +278,9 @@ async function ConsoleOverviewContent() {
           </div>
 
           {/* What you unlock */}
-          <Card className="bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700">
+          <Card>
             <CardHeader className="pb-4">
-              <CardTitle className="text-base font-semibold text-slate-900 dark:text-white">
-                What you unlock with a free account
-              </CardTitle>
+              <CardTitle>What you unlock with a free account</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-3">
@@ -324,23 +295,16 @@ async function ConsoleOverviewContent() {
                   "Priority support",
                 ].map((item) => (
                   <div key={item} className="flex items-center gap-2">
-                    <Activity className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
-                    <span className="text-sm text-slate-700 dark:text-slate-300">{item}</span>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-success flex-shrink-0" />
+                    <span className="text-sm text-foreground">{item}</span>
                   </div>
                 ))}
               </div>
-              <div className="mt-5 pt-5 border-t border-slate-200 dark:border-slate-700 flex flex-wrap gap-3">
-                <Button
-                  asChild
-                  className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 font-semibold px-6 shadow-sm"
-                >
+              <div className="mt-5 pt-5 border-t border-border flex flex-wrap gap-3">
+                <Button asChild>
                   <Link href="/signup">Create Free Account</Link>
                 </Button>
-                <Button
-                  variant="outline"
-                  asChild
-                  className="px-6 border-slate-300 dark:border-slate-700"
-                >
+                <Button variant="outline" asChild>
                   <Link href="/pricing">View Plans</Link>
                 </Button>
               </div>
@@ -536,32 +500,21 @@ async function ConsoleOverviewContent() {
         {/* Guided Tour */}
         <GuidedTourClient />
 
-        <div className="flex flex-col md:flex-row justify-between md:items-start gap-4 pb-2 border-b border-slate-100 dark:border-slate-800">
+        <div className="flex flex-col md:flex-row justify-between md:items-start gap-4 pb-6 border-b border-border">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500 mb-1.5">
-              Developer Console
-            </p>
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-1">
+            <p className="section-eyebrow mb-1.5">Developer Console</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight mb-1">
               Overview
             </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-500">
+            <p className="text-sm text-muted-foreground">
               API usage, keys, and integration health — last 7 days
             </p>
           </div>
           <div className="flex gap-2 flex-shrink-0">
-            <Button
-              variant="outline"
-              size="sm"
-              asChild
-              className="border-slate-300 dark:border-slate-700"
-            >
+            <Button variant="outline" size="sm" asChild>
               <Link href="/docs">Docs</Link>
             </Button>
-            <Button
-              size="sm"
-              asChild
-              className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
-            >
+            <Button size="sm" asChild>
               <Link href="/playground">Playground</Link>
             </Button>
           </div>
@@ -615,100 +568,64 @@ async function ConsoleOverviewContent() {
           receipts.length > 0 ||
           flags.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card className="hover:shadow-md transition-shadow border-slate-200 dark:border-slate-800">
+              <Card className="card-hover">
                 <CardHeader className="pb-2 pt-5 px-5">
-                  <CardDescription className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-500">
-                    Total API Calls
-                  </CardDescription>
-                  <CardTitle className="text-3xl font-bold tracking-tight mt-1">
-                    {formatNumber(usageSummary.totalCalls)}
-                  </CardTitle>
+                  <CardDescription className="label-muted">Total API Calls</CardDescription>
+                  <div className="metric-value mt-1">{formatNumber(usageSummary.totalCalls)}</div>
                 </CardHeader>
                 <CardContent className="px-5 pb-5">
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-500 mb-3">
-                    <Activity className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-3">
+                    <Activity className="w-3.5 h-3.5" aria-hidden="true" />
                     <span>Last 7 days</span>
                   </div>
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                    className="w-full text-xs border-slate-200 dark:border-slate-800"
-                  >
+                  <Button asChild variant="outline" size="sm" className="w-full text-xs">
                     <Link href="/console/usage">
-                      View Details <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                      View Details <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   </Button>
                 </CardContent>
               </Card>
 
               <RBACGate requiredTier="subscribed_unpaid" feature="API Keys">
-                <Card className="hover:shadow-md transition-shadow border-slate-200 dark:border-slate-800">
+                <Card className="card-hover">
                   <CardHeader className="pb-2 pt-5 px-5">
-                    <CardDescription className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-500">
-                      API Keys
-                    </CardDescription>
-                    <CardTitle className="text-3xl font-bold tracking-tight mt-1">
-                      {apiKeys.length}
-                    </CardTitle>
+                    <CardDescription className="label-muted">API Keys</CardDescription>
+                    <div className="metric-value mt-1">{apiKeys.length}</div>
                   </CardHeader>
                   <CardContent className="px-5 pb-5">
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="sm"
-                      className="w-full text-xs border-slate-200 dark:border-slate-800"
-                    >
+                    <Button asChild variant="outline" size="sm" className="w-full text-xs">
                       <Link href="/console/api-keys">
-                        Manage Keys <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                        Manage Keys <ArrowRight className="w-3.5 h-3.5" />
                       </Link>
                     </Button>
                   </CardContent>
                 </Card>
               </RBACGate>
 
-              <Card className="hover:shadow-md transition-shadow border-slate-200 dark:border-slate-800">
+              <Card className="card-hover">
                 <CardHeader className="pb-2 pt-5 px-5">
-                  <CardDescription className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-500">
-                    Receipts Parsed
-                  </CardDescription>
-                  <CardTitle className="text-3xl font-bold tracking-tight mt-1">
-                    {formatNumber(receipts.length)}
-                  </CardTitle>
+                  <CardDescription className="label-muted">Receipts Parsed</CardDescription>
+                  <div className="metric-value mt-1">{formatNumber(receipts.length)}</div>
                 </CardHeader>
                 <CardContent className="px-5 pb-5">
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                    className="w-full text-xs border-slate-200 dark:border-slate-800"
-                  >
+                  <Button asChild variant="outline" size="sm" className="w-full text-xs">
                     <Link href="/console/receipts">
-                      View Receipts <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                      View Receipts <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   </Button>
                 </CardContent>
               </Card>
 
               <RBACGate requiredTier="subscribed_unpaid" feature="Feature Flags">
-                <Card className="hover:shadow-md transition-shadow border-slate-200 dark:border-slate-800">
+                <Card className="card-hover">
                   <CardHeader className="pb-2 pt-5 px-5">
-                    <CardDescription className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-500">
-                      Feature Flags
-                    </CardDescription>
-                    <CardTitle className="text-3xl font-bold tracking-tight mt-1">
-                      {flags.length}
-                    </CardTitle>
+                    <CardDescription className="label-muted">Feature Flags</CardDescription>
+                    <div className="metric-value mt-1">{flags.length}</div>
                   </CardHeader>
                   <CardContent className="px-5 pb-5">
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="sm"
-                      className="w-full text-xs border-slate-200 dark:border-slate-800"
-                    >
+                    <Button asChild variant="outline" size="sm" className="w-full text-xs">
                       <Link href="/console/feature-flags">
-                        Manage Flags <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                        Manage Flags <ArrowRight className="w-3.5 h-3.5" />
                       </Link>
                     </Button>
                   </CardContent>
@@ -722,7 +639,7 @@ async function ConsoleOverviewContent() {
                 <CardDescription>Start using Settler to see your stats here</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                <p className="text-sm text-muted-foreground mb-4">
                   Once you create an API key and start making API calls, your usage statistics will
                   appear here.
                 </p>
@@ -752,34 +669,28 @@ async function ConsoleOverviewContent() {
                 <CardDescription>API calls in the last 7 days</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 rounded-full bg-blue-500" />
-                      <span className="font-medium">Reconcile API</span>
+                <div className="space-y-2">
+                  {[
+                    { label: "Reconcile API", calls: reconcileCalls, color: "bg-blue-500" },
+                    { label: "Receipts API", calls: receiptsCalls, color: "bg-success" },
+                    { label: "Feature Flags API", calls: flagsCalls, color: "bg-primary" },
+                  ].map(({ label, calls, color }) => (
+                    <div
+                      key={label}
+                      className="flex items-center justify-between px-4 py-3 rounded-lg bg-muted/40 hover:bg-muted/70 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-2 h-2 rounded-full flex-shrink-0 ${color}`}
+                          aria-hidden="true"
+                        />
+                        <span className="text-sm font-medium text-foreground">{label}</span>
+                      </div>
+                      <span className="font-mono text-sm text-muted-foreground tabular-nums">
+                        {formatNumber(calls)} calls
+                      </span>
                     </div>
-                    <span className="text-slate-600 dark:text-slate-400 font-mono text-sm">
-                      {formatNumber(reconcileCalls)} calls
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 rounded-full bg-green-500" />
-                      <span className="font-medium">Receipts API</span>
-                    </div>
-                    <span className="text-slate-600 dark:text-slate-400 font-mono text-sm">
-                      {formatNumber(receiptsCalls)} calls
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 rounded-full bg-purple-500" />
-                      <span className="font-medium">Feature Flags API</span>
-                    </div>
-                    <span className="text-slate-600 dark:text-slate-400 font-mono text-sm">
-                      {formatNumber(flagsCalls)} calls
-                    </span>
-                  </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -815,12 +726,12 @@ async function ConsoleOverviewContent() {
                   <Button
                     asChild
                     variant="outline"
-                    className="h-auto py-4 flex-col items-start hover:bg-slate-50 dark:hover:bg-slate-900"
+                    className="h-auto py-4 flex-col items-start hover:bg-muted/50"
                   >
                     <Link href="/console/api-keys">
-                      <Key className="w-5 h-5 mb-2 text-blue-600" />
+                      <Key className="w-5 h-5 mb-2 text-primary" />
                       <span className="font-semibold">Get API Key</span>
-                      <span className="text-xs text-slate-500 mt-1">
+                      <span className="text-xs text-muted-foreground mt-1 whitespace-normal">
                         Generate a new API key for your application
                       </span>
                     </Link>
@@ -829,12 +740,12 @@ async function ConsoleOverviewContent() {
                 <Button
                   asChild
                   variant="outline"
-                  className="h-auto py-4 flex-col items-start hover:bg-slate-50 dark:hover:bg-slate-900"
+                  className="h-auto py-4 flex-col items-start hover:bg-muted/50"
                 >
                   <Link href="/console/playground">
-                    <Receipt className="w-5 h-5 mb-2 text-green-600" />
+                    <Receipt className="w-5 h-5 mb-2 text-success" />
                     <span className="font-semibold">Try Playground</span>
-                    <span className="text-xs text-slate-500 mt-1">
+                    <span className="text-xs text-muted-foreground mt-1 whitespace-normal">
                       Test APIs without writing code
                     </span>
                   </Link>
@@ -882,13 +793,11 @@ async function ConsoleOverviewContent() {
               />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
-            Unable to Load Console
-          </h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
+          <h2 className="text-2xl font-bold text-foreground mb-4">Unable to Load Console</h2>
+          <p className="text-muted-foreground mb-6">
             We encountered an issue while loading the Developer Console. This may be due to:
           </p>
-          <ul className="text-left text-sm text-slate-600 dark:text-slate-400 mb-6 space-y-2 max-w-md mx-auto">
+          <ul className="text-left text-sm text-muted-foreground mb-6 space-y-2 max-w-md mx-auto">
             <li className="flex items-start gap-2">
               <span className="text-red-500 mt-0.5">•</span>
               <span>Temporary service interruption</span>
@@ -902,7 +811,7 @@ async function ConsoleOverviewContent() {
               <span>Configuration or authentication problems</span>
             </li>
           </ul>
-          <p className="text-sm text-slate-500 dark:text-slate-500 mb-6">
+          <p className="text-sm text-muted-foreground mb-6">
             Please try refreshing the page. If the problem persists, contact our support team.
           </p>
           {isDevelopment && errorMessage && (
