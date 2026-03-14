@@ -44,7 +44,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { BackendHealthBadge } from "./BackendHealthBadge";
 
 const consoleNavItems = [
-  { href: "/console", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/console", label: "Console Home", icon: LayoutDashboard },
   { href: "/console/reconciliations", label: "Reconciliations", icon: Scale },
   { href: "/console/audits", label: "Audits", icon: ClipboardCheck },
   { href: "/console/proof-explorer", label: "Proof Explorer", icon: ShieldCheck },

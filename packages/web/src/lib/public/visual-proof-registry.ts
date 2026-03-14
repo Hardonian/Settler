@@ -109,7 +109,7 @@ export const visualProofRegistry: Record<string, VisualProofEntry[]> = {
       detail:
         "Roadmap statuses are explicitly separated into shipped, in-progress, and directional lanes.",
       refs: [
-        { label: "Roadmap", href: "/roadmap", type: "route" },
+        { label: "Roadmap", href: "/changelog", type: "route" },
         { label: "Changelog", href: "/changelog", type: "route" },
         { label: "Open source", href: "/open-source", type: "route" },
       ],

@@ -155,7 +155,7 @@ export default async function UseCasePage({ params }: { params: Promise<{ slug: 
 
         <Section className="pt-8">
           <UiLink
-            href="/use-cases"
+            href="/product"
             className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             Back to all use cases <ArrowRight className="h-4 w-4" />

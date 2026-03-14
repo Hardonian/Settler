@@ -8,7 +8,7 @@ const footerSections = [
     links: [
       { href: "/platform", label: "Platform" },
       { href: "/capabilities", label: "Capabilities" },
-      { href: "/use-cases", label: "Use Cases" },
+      { href: "/product", label: "Product" },
       { href: "/architecture", label: "Architecture" },
       { href: "/pricing", label: "Pricing" },
       { href: "/security-and-audit", label: "Security" },
@@ -19,7 +19,6 @@ const footerSections = [
     links: [
       { href: "/docs", label: "Documentation" },
       { href: "/docs/quickstart", label: "Quickstart" },
-      { href: "/roadmap", label: "Roadmap" },
       { href: "/changelog", label: "Changelog" },
       { href: "/faq", label: "FAQ" },
     ],

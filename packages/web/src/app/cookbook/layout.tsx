@@ -13,13 +13,9 @@ export const metadata: Metadata = generateMetadata({
     "reconciliation cookbooks",
     "integration examples",
   ],
-  canonical: "https://settler.dev/cookbooks",
+  canonical: "https://settler.dev/cookbook",
 });
 
-export default function CookbooksLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function CookbooksLayout({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }

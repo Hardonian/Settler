@@ -1,17 +1,14 @@
 /**
  * Shared Loading State Components
- * 
+ *
  * Consistent loading states across the application.
  */
 
-'use client';
+"use client";
 
-// Skeleton component - create inline if not available
-const Skeleton = ({ className }: { className?: string }) => (
-  <div className={`animate-pulse bg-slate-200 dark:bg-slate-700 rounded ${className || ''}`} />
-);
-import { LoadingSpinner } from '@/components/admin/microinteractions';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { LoadingSpinner } from "@/components/admin/microinteractions";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function PageLoadingSkeleton() {
   return (
@@ -45,7 +42,7 @@ export function PageLoadingSkeleton() {
   );
 }
 
-export function InlineLoading({ message = 'Loading...' }: { message?: string }) {
+export function InlineLoading({ message = "Loading..." }: { message?: string }) {
   return (
     <div className="flex items-center justify-center py-8" role="status" aria-live="polite">
       <div className="flex flex-col items-center gap-3">

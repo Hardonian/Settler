@@ -75,7 +75,7 @@ export default function CapabilitiesPage() {
           description="Use the architecture and use-case pages to understand execution flow and persona-specific outcomes."
           primaryHref="/architecture"
           primaryLabel="Explore architecture"
-          secondaryHref="/use-cases"
+          secondaryHref="/product"
           secondaryLabel="View use cases"
         />
       </main>
