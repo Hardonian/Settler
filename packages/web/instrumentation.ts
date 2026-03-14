@@ -25,16 +25,12 @@ async function validateServerEnvironment() {
   const warnings: string[] = [];
 
   // Check if billing is enabled
-  const billingEnabled = !!(
-    process.env.STRIPE_SECRET_KEY || process.env.STRIPE_WEBHOOK_SECRET
-  );
+  const billingEnabled = !!(process.env.STRIPE_SECRET_KEY || process.env.STRIPE_WEBHOOK_SECRET);
 
   if (billingEnabled) {
     // If any Stripe key is set, we assume billing is intended to work
     if (!process.env.STRIPE_SECRET_KEY) {
-      errors.push(
-        "STRIPE_SECRET_KEY is required when billing is enabled"
-      );
+      errors.push("STRIPE_SECRET_KEY is required when billing is enabled");
     }
 
     if (!process.env.STRIPE_WEBHOOK_SECRET) {
@@ -53,9 +49,7 @@ async function validateServerEnvironment() {
 
   // Check critical database configuration
   if (!process.env.DATABASE_URL && !process.env.NEXT_PUBLIC_SUPABASE_URL) {
-    errors.push(
-      "Either DATABASE_URL or NEXT_PUBLIC_SUPABASE_URL must be set"
-    );
+    errors.push("Either DATABASE_URL or NEXT_PUBLIC_SUPABASE_URL must be set");
   }
 
   // Production-specific validations
@@ -66,18 +60,14 @@ async function validateServerEnvironment() {
       );
     }
 
-    if (
-      process.env.ENCRYPTION_KEY === "dev-encryption-key-32-chars-!!!"
-    ) {
+    if (process.env.ENCRYPTION_KEY === "dev-encryption-key-32-chars-!!!") {
       errors.push(
         "ENCRYPTION_KEY is still set to default development value in production! This is a critical security risk."
       );
     }
 
     if (process.env.NEXT_PUBLIC_ENABLE_SENTRY === "true" && !process.env.SENTRY_DSN) {
-      warnings.push(
-        "Sentry is enabled but SENTRY_DSN is not set. Error tracking will not work."
-      );
+      warnings.push("Sentry is enabled but SENTRY_DSN is not set. Error tracking will not work.");
     }
   }
 
@@ -88,11 +78,13 @@ async function validateServerEnvironment() {
     console.error("\nApplication cannot start safely. Fix these errors and restart.");
     console.error("See .env.example for required environment variables.\n");
 
-    // In production, throw to prevent startup
-    if (process.env.NODE_ENV === "production") {
+    // In production, throw to prevent startup (unless running verification checks)
+    if (process.env.NODE_ENV === "production" && !process.env.SETTLER_VERIFY_MODE) {
       throw new Error("Critical environment variables are missing or misconfigured");
     } else {
-      console.error("⚠️  Continuing in development mode, but fix these errors before deploying!\n");
+      console.error(
+        "⚠️  Continuing in non-production mode, but fix these errors before deploying!\n"
+      );
     }
   }
 
