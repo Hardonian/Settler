@@ -1,0 +1,10 @@
+{
+  "sequentialCount": 10000,
+  "concurrentCount": 1000,
+  "p50_latency_ms": 0.2310059999999794,
+  "p95_latency_ms": 0.5623169999998936,
+  "p99_latency_ms": 0.8470589999999447,
+  "cas_hit_rate": 1,
+  "memory_growth_bytes": 11946136,
+  "concurrent_total_ms": 334.99695699999984
+}

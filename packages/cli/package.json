@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Settler CLI - Command-line tool for reconciliation operations",
   "bin": {
-    "settler": "./dist/index.js"
+    "settler": "./dist/index.js",
+    "requiem": "./dist/index.js"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
