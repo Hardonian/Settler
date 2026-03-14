@@ -58,7 +58,7 @@
 
   /* Hover card lift */
   .card-hover {
-    @apply hover:shadow-md hover:border-border/80 transition-all duration-150 cursor-pointer;
+    @apply hover:shadow-md transition-all duration-150 cursor-pointer;
   }
 
   /* Tabular number rendering for metrics */
