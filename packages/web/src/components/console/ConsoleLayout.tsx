@@ -43,36 +43,56 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { BackendHealthBadge } from "./BackendHealthBadge";
 
-const consoleNavItems = [
-  { href: "/console", label: "Console Home", icon: LayoutDashboard },
-  { href: "/console/reconciliations", label: "Reconciliations", icon: Scale },
-  { href: "/console/audits", label: "Audits", icon: ClipboardCheck },
-  { href: "/console/proof-explorer", label: "Proof Explorer", icon: ShieldCheck },
-  { href: "/console/replay-lab", label: "Replay Lab", icon: RotateCcw },
-  { href: "/console/policies", label: "Policies", icon: Shield },
-  { href: "/console/organizations", label: "Organizations", icon: Building2 },
-  { href: "/console/api-keys", label: "API Keys", icon: Key },
-  { href: "/console/settings", label: "Settings", icon: Settings },
-  { href: "/console/api-test", label: "API Test Console", icon: Code },
-  { href: "/console/api-playground", label: "API Playground", icon: Code },
-  { href: "/console/tables", label: "API Service Tables", icon: Database },
-  { href: "/console/api-logs", label: "API Call Logs", icon: FileText },
-  { href: "/console/activity", label: "Activity Feed", icon: Activity },
-  { href: "/console/workflows", label: "Workflows", icon: Zap },
-  { href: "/console/control-plane", label: "Control Plane", icon: Shield },
-  { href: "/console/diagnostics", label: "Diagnostics", icon: Activity },
-  { href: "/console/setup-check", label: "Setup Check", icon: ClipboardCheck },
-  { href: "/console/inspector", label: "Inspector", icon: Search },
-  { href: "/console/usage", label: "Usage & Metrics", icon: BarChart3 },
-  { href: "/console/performance", label: "Performance", icon: Activity },
-  { href: "/console/insights", label: "AI Insights", icon: Sparkles },
-  { href: "/console/analytics", label: "Analytics Studio", icon: BarChart3 },
-  { href: "/console/webhooks", label: "Webhooks", icon: Webhook },
-  { href: "/console/billing", label: "Billing & Plan", icon: CreditCard },
-  { href: "/console/receipts", label: "Receipts", icon: Receipt },
-  { href: "/console/feature-flags", label: "Feature Flags", icon: ToggleLeft },
-  { href: "/console/site", label: "Site Designer", icon: Palette },
-  { href: "/console/docs", label: "Docs & Examples", icon: BookOpen },
+const consoleNavSections = [
+  {
+    label: "Operations",
+    items: [
+      { href: "/console", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/console/reconciliations", label: "Reconciliations", icon: Scale },
+      { href: "/console/audits", label: "Audits", icon: ClipboardCheck },
+      { href: "/console/proof-explorer", label: "Proof Explorer", icon: ShieldCheck },
+      { href: "/console/replay-lab", label: "Replay Lab", icon: RotateCcw },
+      { href: "/console/policies", label: "Policies", icon: Shield },
+      { href: "/console/control-plane", label: "Control Plane", icon: Shield },
+    ],
+  },
+  {
+    label: "Intelligence",
+    items: [
+      { href: "/console/analytics", label: "Analytics", icon: BarChart3 },
+      { href: "/console/insights", label: "AI Insights", icon: Sparkles },
+      { href: "/console/activity", label: "Activity Feed", icon: Activity },
+      { href: "/console/usage", label: "Usage & Metrics", icon: BarChart3 },
+      { href: "/console/performance", label: "Performance", icon: Activity },
+      { href: "/console/diagnostics", label: "Diagnostics", icon: Activity },
+    ],
+  },
+  {
+    label: "Developer",
+    items: [
+      { href: "/console/api-keys", label: "API Keys", icon: Key },
+      { href: "/console/api-playground", label: "API Playground", icon: Code },
+      { href: "/console/api-test", label: "API Test Console", icon: Code },
+      { href: "/console/api-logs", label: "API Call Logs", icon: FileText },
+      { href: "/console/tables", label: "Service Tables", icon: Database },
+      { href: "/console/webhooks", label: "Webhooks", icon: Webhook },
+      { href: "/console/workflows", label: "Workflows", icon: Zap },
+      { href: "/console/docs", label: "Docs & Examples", icon: BookOpen },
+    ],
+  },
+  {
+    label: "Settings",
+    items: [
+      { href: "/console/organizations", label: "Organizations", icon: Building2 },
+      { href: "/console/billing", label: "Billing & Plan", icon: CreditCard },
+      { href: "/console/receipts", label: "Receipts", icon: Receipt },
+      { href: "/console/feature-flags", label: "Feature Flags", icon: ToggleLeft },
+      { href: "/console/settings", label: "Settings", icon: Settings },
+      { href: "/console/inspector", label: "Inspector", icon: Search },
+      { href: "/console/setup-check", label: "Setup Check", icon: ClipboardCheck },
+      { href: "/console/site", label: "Site Designer", icon: Palette },
+    ],
+  },
 ];
 
 const enterpriseNavItems = [
@@ -114,129 +134,97 @@ export function ConsoleLayout({ children }: ConsoleLayoutProps) {
       });
   }, []);
 
+  const NavLink = ({ item }: { item: { href: string; label: string; icon: typeof LayoutDashboard } }) => {
+    const Icon = item.icon;
+    const isActive = pathname === item.href || (item.href !== "/console" && pathname?.startsWith(item.href + "/"));
+
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        onClick={() => setOpen(false)}
+        aria-current={isActive ? "page" : undefined}
+        className={cn(
+          "flex items-center gap-3 px-3 py-2 rounded-[var(--sidebar-item-radius)] text-sm font-medium",
+          "transition-colors duration-150",
+          "motion-reduce:transition-none",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+          isActive
+            ? "bg-[var(--sidebar-active-bg)] text-[var(--sidebar-active-text)] font-semibold"
+            : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+        )}
+      >
+        <Icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+        <span className="truncate">{item.label}</span>
+      </Link>
+    );
+  };
+
   const NavContent = () => (
-    <nav className="p-3 space-y-0.5 overflow-y-auto max-h-[calc(100vh-8rem)] scrollbar-thin">
-      <div className="px-3 py-2 mb-2">
-        <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-          Console
-        </h3>
-      </div>
-      {consoleNavItems.map((item) => {
-        const Icon = item.icon;
-        const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
+    <nav className="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-8rem)]" aria-label="Console navigation">
+      {consoleNavSections.map((section, idx) => (
+        <div key={section.label} className={cn(idx > 0 && "pt-4 mt-3 border-t border-border")}>
+          <h3 className="px-3 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            {section.label}
+          </h3>
+          <div className="space-y-0.5">
+            {section.items.map((item) => (
+              <NavLink key={item.href} item={item} />
+            ))}
+          </div>
+        </div>
+      ))}
 
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={() => setOpen(false)}
-            className={cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
-              isActive
-                ? "bg-electric-cyan/10 text-electric-cyan dark:bg-electric-cyan/20 dark:text-electric-cyan shadow-sm"
-                : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:translate-x-0.5"
-            )}
-          >
-            <Icon className={cn("w-5 h-5 transition-transform", isActive && "scale-110")} />
-            {item.label}
-            {isActive && (
-              <span className="ml-auto w-1.5 h-1.5 rounded-full bg-electric-cyan animate-pulse" />
-            )}
-          </Link>
-        );
-      })}
-
-      <div className="pt-4 mt-4 border-t border-slate-200 dark:border-slate-700">
-        <div className="px-3 py-2 mt-2 mb-1 flex items-center justify-between">
-          <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+      {/* Enterprise section */}
+      <div className="pt-4 mt-3 border-t border-border">
+        <div className="px-3 py-1.5 flex items-center justify-between">
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Enterprise
           </h3>
-          <span className="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded bg-electric-cyan/10 text-electric-cyan">
+          <span className="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded bg-primary-light text-primary">
             Premium
           </span>
         </div>
+        <div className="space-y-0.5">
+          {enterpriseNavItems.map((item) => (
+            <NavLink key={item.href} item={item} />
+          ))}
+        </div>
       </div>
-      {enterpriseNavItems.map((item) => {
-        const Icon = item.icon;
-        const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
-
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={() => setOpen(false)}
-            className={cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
-              isActive
-                ? "bg-electric-cyan/10 text-electric-cyan dark:bg-electric-cyan/20 dark:text-electric-cyan shadow-sm"
-                : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:translate-x-0.5"
-            )}
-          >
-            <Icon className={cn("w-5 h-5 transition-transform", isActive && "scale-110")} />
-            {item.label}
-            {isActive && (
-              <span className="ml-auto w-1.5 h-1.5 rounded-full bg-electric-cyan animate-pulse" />
-            )}
-          </Link>
-        );
-      })}
 
       {/* Admin Section */}
       {isSuperAdmin && (
-        <>
-          <div className="pt-4 mt-4 border-t border-slate-200 dark:border-slate-700">
-            <div className="px-3 py-2 mt-2 mb-1">
-              <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                Administration
-              </h3>
-            </div>
+        <div className="pt-4 mt-3 border-t border-border">
+          <h3 className="px-3 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Administration
+          </h3>
+          <div className="space-y-0.5">
+            {adminNavItems.map((item) => (
+              <NavLink key={item.href} item={item} />
+            ))}
           </div>
-          {adminNavItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
-                  isActive
-                    ? "bg-electric-cyan/10 text-electric-cyan dark:bg-electric-cyan/20 dark:text-electric-cyan shadow-sm"
-                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:translate-x-0.5"
-                )}
-              >
-                <Icon className={cn("w-5 h-5 transition-transform", isActive && "scale-110")} />
-                {item.label}
-                {isActive && (
-                  <span className="ml-auto w-1.5 h-1.5 rounded-full bg-electric-cyan animate-pulse" />
-                )}
-              </Link>
-            );
-          })}
-        </>
+        </div>
       )}
     </nav>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+    <div className="min-h-screen bg-background-light dark:bg-background">
       {/* Mobile Trigger */}
-      <div className="md:hidden fixed top-4 left-4 z-50">
+      <div className="md:hidden fixed top-20 left-4 z-50">
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button
               variant="outline"
               size="icon"
-              className="shadow-md bg-background/80 backdrop-blur-sm border-2"
+              className="shadow-md bg-background/90 backdrop-blur-sm"
+              aria-label="Open console menu"
             >
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">Toggle Console Menu</span>
+              <Menu className="h-5 w-5" aria-hidden="true" />
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-72 p-0 pt-12">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-electric-cyan/5 to-transparent">
+            <div className="p-4 border-b border-border">
               <BackendHealthBadge />
             </div>
             <NavContent />
@@ -246,19 +234,17 @@ export function ConsoleLayout({ children }: ConsoleLayoutProps) {
 
       <div className="flex">
         {/* Desktop Sidebar */}
-        <aside className="hidden md:block w-64 min-h-screen bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border-r border-slate-200 dark:border-slate-700 fixed left-0 top-0 pt-16 shadow-lg z-30 overflow-hidden">
-          <div className="h-full flex flex-col">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-electric-cyan/5 to-transparent">
-              <BackendHealthBadge />
-            </div>
-            <div className="flex-1 overflow-hidden">
-              <NavContent />
-            </div>
+        <aside className="hidden md:flex w-[var(--sidebar-width)] min-h-screen bg-card dark:bg-card border-r border-border fixed left-0 top-0 pt-16 z-30 flex-col">
+          <div className="p-4 border-b border-border">
+            <BackendHealthBadge />
+          </div>
+          <div className="flex-1 overflow-y-auto">
+            <NavContent />
           </div>
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 md:ml-64 pt-16">
+        <main className="flex-1 md:ml-[var(--sidebar-width)] pt-16" id="main-content">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</div>
         </main>
       </div>

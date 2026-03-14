@@ -32,7 +32,7 @@ export default function PublicBillingError({
       <Card className="max-w-lg w-full">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-amber-600" />
+            <AlertTriangle className="h-5 w-5 text-warning" aria-hidden="true" />
             <CardTitle>Oops! Something Went Wrong</CardTitle>
           </div>
           <CardDescription>
@@ -51,7 +51,7 @@ export default function PublicBillingError({
 
           <div>
             <p className="text-sm font-medium mb-2">What you can do:</p>
-            <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 list-disc list-inside">
+            <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
               <li>Try refreshing the page</li>
               <li>Return to the pricing page to start over</li>
               <li>Contact our support team for assistance</li>
@@ -71,17 +71,17 @@ export default function PublicBillingError({
           </div>
 
           <div className="border-t pt-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-muted-foreground">
               Need help? Email us at{' '}
               <a
                 href="mailto:support@settler.dev"
-                className="text-blue-600 dark:text-blue-400 hover:underline"
+                className="text-primary hover:underline"
               >
                 support@settler.dev
               </a>
             </p>
             {error.digest && (
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Reference: {error.digest}
               </p>
             )}

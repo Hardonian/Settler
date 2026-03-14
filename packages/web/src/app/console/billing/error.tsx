@@ -60,7 +60,7 @@ export default function BillingError({
       <Card className="max-w-md w-full">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-orange-600" />
+            <CreditCard className="h-5 w-5 text-orange-600" aria-hidden="true" />
             <CardTitle>Billing System Error</CardTitle>
           </div>
           <CardDescription>
@@ -100,7 +100,7 @@ export default function BillingError({
           </div>
 
           {error.digest && (
-            <p className="text-xs text-slate-500 dark:text-slate-400">Error ID: {error.digest}</p>
+            <p className="text-xs text-muted-foreground">Error ID: {error.digest}</p>
           )}
         </CardContent>
       </Card>

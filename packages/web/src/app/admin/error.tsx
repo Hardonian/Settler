@@ -9,7 +9,7 @@ import { adminLogger } from '@/lib/admin/utils/logger';
 
 /**
  * Admin Error Boundary
- * 
+ *
  * Catches errors in admin routes and displays a friendly error message.
  * Never shows stack traces or sensitive information to users.
  */
@@ -28,7 +28,7 @@ export default function AdminError({
   }, [error]);
 
   // Determine if this is an auth error
-  const isAuthError = error.message?.includes('auth') || 
+  const isAuthError = error.message?.includes('auth') ||
                       error.message?.includes('unauthorized') ||
                       error.message?.includes('authentication') ||
                       error.message?.includes('Super admin access required');
@@ -38,32 +38,32 @@ export default function AdminError({
       <Card className="max-w-md w-full">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-red-600" />
+            <AlertCircle className="h-5 w-5 text-destructive" aria-hidden="true" />
             <CardTitle>
               {isAuthError ? 'Access Denied' : 'Something went wrong'}
             </CardTitle>
           </div>
           <CardDescription>
-            {isAuthError 
+            {isAuthError
               ? 'You do not have permission to access the admin panel.'
               : 'We encountered an error loading the admin panel.'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {process.env.NODE_ENV === 'development' && error.message && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
-              <p className="text-xs font-mono text-red-800 dark:text-red-200 break-all">
+            <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-3">
+              <p className="text-xs font-mono text-destructive break-all">
                 {error.message}
               </p>
             </div>
           )}
-          
+
           {!isAuthError && (
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-sm text-muted-foreground">
               This might be a temporary issue. Please try again, or contact support if the problem persists.
             </p>
           )}
-          
+
           <div className="flex gap-2 flex-wrap">
             {isAuthError ? (
               <>

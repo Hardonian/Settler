@@ -32,7 +32,7 @@ export default function DocsError({
       <Card className="max-w-2xl w-full">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-slate-600" />
+            <BookOpen className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
             <CardTitle>Documentation Page Error</CardTitle>
           </div>
           <CardDescription>
@@ -40,8 +40,8 @@ export default function DocsError({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
-            The page you're looking for might have been moved, or there could be a temporary issue.
+          <p className="text-sm text-muted-foreground">
+            The page you&apos;re looking for might have been moved, or there could be a temporary issue.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -74,18 +74,18 @@ export default function DocsError({
             </div>
           </div>
 
-          <div className="bg-slate-100 dark:bg-slate-900 rounded-lg p-4">
+          <div className="bg-muted/30 rounded-lg p-4">
             <div className="flex items-start gap-3">
-              <Search className="h-5 w-5 text-slate-500 mt-0.5" />
+              <Search className="h-5 w-5 text-muted-foreground mt-0.5" aria-hidden="true" />
               <div>
-                <p className="text-sm font-medium mb-1">Can't find what you need?</p>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
+                <p className="text-sm font-medium mb-1">Can&apos;t find what you need?</p>
+                <p className="text-xs text-muted-foreground">
                   Try our{' '}
-                  <Link href="/docs" className="text-blue-600 dark:text-blue-400 hover:underline">
+                  <Link href="/docs" className="text-primary hover:underline">
                     documentation search
                   </Link>
                   {' '}or{' '}
-                  <a href="mailto:support@settler.dev" className="text-blue-600 dark:text-blue-400 hover:underline">
+                  <a href="mailto:support@settler.dev" className="text-primary hover:underline">
                     contact support
                   </a>
                   .
@@ -95,8 +95,8 @@ export default function DocsError({
           </div>
 
           {process.env.NODE_ENV === 'development' && error.message && (
-            <div className="bg-slate-100 dark:bg-slate-900 border rounded-lg p-3">
-              <p className="text-xs font-mono text-slate-700 dark:text-slate-300 break-words">
+            <div className="bg-muted/30 border border-border rounded-lg p-3">
+              <p className="text-xs font-mono text-foreground break-words">
                 {error.message}
               </p>
             </div>

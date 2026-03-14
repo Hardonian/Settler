@@ -1,6 +1,6 @@
 /**
  * Playground Not Found Page
- * 
+ *
  * Shows when a playground route is not found.
  */
 
@@ -15,7 +15,7 @@ export default function PlaygroundNotFound() {
       <Card className="max-w-md">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-slate-600" />
+            <AlertCircle className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
             <CardTitle>Page Not Found</CardTitle>
           </div>
           <CardDescription>
@@ -23,7 +23,7 @@ export default function PlaygroundNotFound() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-muted-foreground">
             The page you requested could not be found in the Playground.
           </p>
           <div className="flex gap-2">

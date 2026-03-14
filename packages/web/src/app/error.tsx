@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 /**
  * Global Error Boundary
- * 
+ *
  * Catches any unhandled errors in the app and displays a user-friendly message.
  * Never shows stack traces or technical details to users.
  */
@@ -20,15 +20,12 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log error to monitoring service in production
     if (process.env.NODE_ENV === 'production') {
       console.error('Global error:', {
         message: error.message,
         digest: error.digest,
-        // Don't log stack traces in production
       });
     } else {
-      // In development, log full error
       console.error('Global error:', error);
     }
   }, [error]);
@@ -36,30 +33,29 @@ export default function GlobalError({
   return (
     <html lang="en">
       <body>
-        <div className="flex items-center justify-center min-h-screen p-6 bg-slate-50 dark:bg-slate-900">
+        <div className="flex items-center justify-center min-h-screen p-6 bg-background">
           <Card className="max-w-md w-full">
             <CardHeader>
-              <div className="flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-red-600" />
-                <CardTitle>Something went wrong</CardTitle>
+              <div className="flex items-center gap-3">
+                <div className="rounded-full bg-destructive/10 p-2">
+                  <AlertCircle className="h-5 w-5 text-destructive" aria-hidden="true" />
+                </div>
+                <div>
+                  <CardTitle>Something went wrong</CardTitle>
+                  <CardDescription>
+                    We encountered an unexpected error. Please try again.
+                  </CardDescription>
+                </div>
               </div>
-              <CardDescription>
-                We encountered an unexpected error. Please try again.
-              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                An unexpected error occurred. Please try again.
-              </p>
               {error.digest && (
-                <p className="text-xs text-slate-500 dark:text-slate-500 font-mono">
+                <p className="text-xs text-muted-foreground font-mono bg-muted/30 rounded px-2 py-1">
                   Error ID: {error.digest}
                 </p>
               )}
-              <div className="flex gap-2">
-                <Button onClick={reset} variant="default">
-                  Try Again
-                </Button>
+              <div className="flex gap-3">
+                <Button onClick={reset}>Try Again</Button>
                 <Button asChild variant="outline">
                   <Link href="/">Go Home</Link>
                 </Button>
