@@ -577,9 +577,9 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {[
                 {
-                  href: "/how-it-works",
+                  href: "/architecture",
                   icon: Network,
-                  label: "How It Works",
+                  label: "Architecture",
                   description:
                     "Step-by-step walkthrough of Settler's reconciliation architecture — from data ingestion through rule evaluation to evidence generation.",
                   cta: "See the architecture",

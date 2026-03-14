@@ -36,11 +36,11 @@ export default function UseCasesPage() {
         </Section>
         <CTASection
           title="Need deeper implementation detail?"
-          description="Continue into docs for API references and into roadmap for what is in-progress versus already shipped."
+          description="Continue into docs for API references and into changelog for shipped work and near-term updates."
           primaryHref="/docs"
           primaryLabel="Open docs"
-          secondaryHref="/roadmap"
-          secondaryLabel="Review roadmap"
+          secondaryHref="/changelog"
+          secondaryLabel="Review changelog"
         />
       </main>
       <Footer />

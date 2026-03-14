@@ -76,7 +76,7 @@ export default function ArchitecturePage() {
           description="Use the security and use-case pages to map architecture boundaries to governance workflows."
           primaryHref="/security-and-audit"
           primaryLabel="View security model"
-          secondaryHref="/use-cases"
+          secondaryHref="/product"
           secondaryLabel="View use cases"
         />
       </main>

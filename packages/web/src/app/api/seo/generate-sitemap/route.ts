@@ -6,7 +6,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
-import { useCases } from "@/content/useCases";
 
 export const GET = withUniversalBillingGate(
   async function GET(_request: NextRequest) {
@@ -23,12 +22,13 @@ export const GET = withUniversalBillingGate(
         "/docs/billing",
         "/support",
         "/enterprise",
-        "/why-settler",
+        "/why",
         "/architecture",
-        "/security",
+        "/security-and-audit",
+        "/product",
+        "/changelog",
+        "/cookbook",
       ];
-
-      const useCaseSlugs = useCases.map((useCase) => useCase.slug);
 
       // Programmatic pages - integrations
       const integrations = ["stripe", "shopify", "paypal", "quickbooks", "xero"];
@@ -42,15 +42,6 @@ ${staticPages
     <loc>${baseUrl}${path}</loc>
     <changefreq>weekly</changefreq>
     <priority>${path === "" ? "1.0" : "0.8"}</priority>
-  </url>`
-  )
-  .join("\n")}
-${useCaseSlugs
-  .map(
-    (useCase) => `  <url>
-    <loc>${baseUrl}/use-cases/${useCase}</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
   </url>`
   )
   .join("\n")}
