@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Key, Settings2, Webhook, Shield, Bell, CreditCard } from "lucide-react";
+import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
 
 const settingsCards = [
   {
@@ -51,21 +52,18 @@ const settingsCards = [
 export default function SettingsPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Settings</h1>
-        <p className="text-slate-600 dark:text-slate-400 mt-2">
-          Configure platform-level settings, API access, governance controls, and tenant
-          preferences.
-        </p>
-      </div>
+      <ConsolePageHeader
+        title="Settings"
+        description="Manage tenant-scoped configuration, API access, governance controls, and billing behavior for this workspace."
+      />
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {settingsCards.map((card) => (
           <Card key={card.href}>
             <CardHeader>
               <div className="flex items-start gap-3">
-                <div className="rounded-lg bg-slate-100 dark:bg-slate-800 p-2">
-                  <card.icon className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                <div className="rounded-lg bg-muted p-2">
+                  <card.icon className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <CardTitle className="text-base">{card.title}</CardTitle>
