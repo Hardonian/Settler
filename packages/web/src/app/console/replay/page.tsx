@@ -1,7 +1,7 @@
 import Link from "next/link";
+import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RouteOperationalNotice } from "@/components/console/RouteOperationalNotice";
 
 const SYNTHETIC_EXECUTIONS = [
   "synthetic_exec_alpha",
@@ -11,22 +11,27 @@ const SYNTHETIC_EXECUTIONS = [
 
 export default function ReplayLabIndexPage() {
   return (
-    <div className="p-6 space-y-6">
-      <RouteOperationalNotice route="/console/replay" />
+    <div className="space-y-6">
+      <ConsolePageHeader
+        title="Replay Lab"
+        description="Synthetic replay samples for UI and workflow validation. This route does not expose tenant production execution history."
+      />
 
       <Card>
         <CardHeader>
-          <CardTitle>Replay Lab</CardTitle>
+          <CardTitle>Available synthetic replays</CardTitle>
           <CardDescription>
-            This surface currently exposes synthetic replay examples for UI validation. It does not
-            expose tenant production execution history.
+            Use these deterministic examples to validate replay layout and disclosure behavior.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           {SYNTHETIC_EXECUTIONS.map((executionId) => (
-            <div key={executionId} className="flex items-center justify-between rounded border p-3">
-              <code>{executionId}</code>
-              <Button asChild size="sm" variant="outline">
+            <div
+              key={executionId}
+              className="flex flex-col gap-3 rounded border p-3 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <code className="text-xs sm:text-sm">{executionId}</code>
+              <Button asChild size="sm" variant="outline" className="w-full sm:w-auto">
                 <Link href={`/console/replay/${executionId}`}>Open synthetic replay</Link>
               </Button>
             </div>

@@ -1,46 +1,46 @@
 import Link from "next/link";
+import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+
+const surfaces = [
+  {
+    title: "Verification runs",
+    description: "Execute deterministic verification checks and review route-level failures.",
+    href: "/verify",
+    cta: "Open verification",
+  },
+  {
+    title: "Audit artifacts",
+    description: "Review receipts, proof manifests, and exportable evidence for control reviews.",
+    href: "/console/receipts",
+    cta: "Open artifacts",
+  },
+];
 
 export default function AuditsPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Audits</h1>
-        <p className="text-slate-600 dark:text-slate-400 mt-2">
-          Centralized audit workflows for verification scans, proof bundles, and exports.
-        </p>
-      </div>
+      <ConsolePageHeader
+        title="Audits"
+        description="Tenant-scoped evidence and verification workflows for compliance and operator review."
+      />
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Bulk Verification Scans</CardTitle>
-            <CardDescription>
-              Trigger and review platform verification outcomes at scale.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild variant="outline" className="w-full">
-              <Link href="/verify">Open Verification</Link>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Audit Bundle Download Center</CardTitle>
-            <CardDescription>
-              Access evidence artifacts, proof manifests, and export packages for compliance
-              reviews.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild variant="outline" className="w-full">
-              <Link href="/console/receipts">Open Audit Artifacts</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      <section aria-label="Audit surfaces" className="grid gap-4 md:grid-cols-2">
+        {surfaces.map((surface) => (
+          <Card key={surface.href}>
+            <CardHeader>
+              <CardTitle>{surface.title}</CardTitle>
+              <CardDescription>{surface.description}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild variant="outline" className="w-full sm:w-auto">
+                <Link href={surface.href}>{surface.cta}</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </section>
     </div>
   );
 }

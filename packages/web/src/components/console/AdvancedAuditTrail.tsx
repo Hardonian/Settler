@@ -50,6 +50,7 @@ export function AdvancedAuditTrail() {
     endDate: "",
   });
   const [showFilters, setShowFilters] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   useEffect(() => {
     fetchLogs();
@@ -96,10 +97,10 @@ export function AdvancedAuditTrail() {
       if (!res.ok) throw new Error("Failed to create export");
 
       const data = await res.json();
-      // In a real implementation, you'd download the file
-      alert(`Export created: ${data.id}`);
+      setStatusMessage(`Export requested: ${data.id}`);
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Failed to export");
+      setStatusMessage(null);
     } finally {
       setLoading(false);
     }
@@ -109,12 +110,12 @@ export function AdvancedAuditTrail() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle>Advanced Audit Trail</CardTitle>
               <CardDescription>View and export audit logs with advanced filtering</CardDescription>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button variant="outline" onClick={() => setShowFilters(!showFilters)}>
                 <Filter className="h-4 w-4 mr-2" />
                 Filters
@@ -124,7 +125,11 @@ export function AdvancedAuditTrail() {
                 Export
               </Button>
               <Button variant="outline" onClick={fetchLogs} disabled={loading}>
-                <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+                <RefreshCw
+                  className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
+                  aria-hidden="true"
+                />
+                <span className="sr-only">Refresh audit logs</span>
               </Button>
             </div>
           </div>
@@ -136,13 +141,19 @@ export function AdvancedAuditTrail() {
             </Alert>
           )}
 
+          {statusMessage ? (
+            <Alert>
+              <AlertDescription>{statusMessage}</AlertDescription>
+            </Alert>
+          ) : null}
+
           {showFilters && (
             <Card>
               <CardHeader>
                 <CardTitle>Filters</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <Label>Actor</Label>
                     <Input
@@ -202,7 +213,7 @@ export function AdvancedAuditTrail() {
           ) : logs.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">No audit logs found</div>
           ) : (
-            <div className="border rounded">
+            <div className="overflow-x-auto rounded border">
               <Table>
                 <TableHeader>
                   <TableRow>
