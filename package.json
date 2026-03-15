@@ -293,7 +293,9 @@
     "audit:migrations": "node scripts/generate-migration-audit.mjs",
     "requiem:prove": "pnpm exec tsx packages/cli/src/index.ts prove",
     "requiem:verify": "pnpm exec tsx packages/cli/src/index.ts verify proofpacks/latest/proofpack.json",
-    "requiem:replay": "pnpm exec tsx packages/cli/src/index.ts replay"
+    "requiem:replay": "pnpm exec tsx packages/cli/src/index.ts replay",
+    "verify:all": "pnpm run validate:all",
+    "verify:repo": "pnpm run repo-integrity"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

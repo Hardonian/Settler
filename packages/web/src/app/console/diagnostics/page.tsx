@@ -14,38 +14,65 @@ import { redirect } from "next/navigation";
 interface DiagnosticItem {
   name: string;
   status: "ok" | "warning" | "error";
+  category: "health" | "configuration" | "auth" | "data" | "integration";
   message: string;
+  detail: string;
   value?: string | number;
 }
 
 async function getDiagnostics(): Promise<DiagnosticItem[]> {
   const diagnostics: DiagnosticItem[] = [];
+  const hasSupabaseEnv = Boolean(
+    process.env.SUPABASE_URL ||
+    process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
 
   // Check Supabase connection
-  try {
-    const supabase = await createClient();
-    const { error } = await supabase.from("tenants").select("id").limit(1);
-    if (error) {
-      // Log error but don't throw - graceful degradation
+  if (!hasSupabaseEnv) {
+    diagnostics.push({
+      name: "Supabase Connection",
+      status: "warning",
+      category: "configuration",
+      message: "Supabase environment variables are not configured",
+      detail:
+        "Console data backed by Supabase is intentionally unavailable in this runtime until SUPABASE_URL and SUPABASE_ANON_KEY are provided.",
+    });
+  } else {
+    try {
+      const supabase = await createClient();
+      const { error } = await supabase.from("tenants").select("id").limit(1);
+      if (error) {
+        // Log error but don't throw - graceful degradation
+        diagnostics.push({
+          name: "Supabase Connection",
+          status: "error",
+          category: "health",
+          message: error.message || "Connection failed",
+          detail:
+            "Authenticated route hydration and tenant-backed data reads are currently degraded because Supabase rejected the probe query.",
+        });
+        // Continue to next check instead of throwing
+      } else {
+        diagnostics.push({
+          name: "Supabase Connection",
+          status: "ok",
+          category: "health",
+          message: "Connected successfully",
+          detail: "Supabase is reachable for tenant and authenticated console queries.",
+        });
+      }
+    } catch (err) {
       diagnostics.push({
         name: "Supabase Connection",
         status: "error",
-        message: error.message || "Connection failed",
-      });
-      // Continue to next check instead of throwing
-    } else {
-      diagnostics.push({
-        name: "Supabase Connection",
-        status: "ok",
-        message: "Connected successfully",
+        category: "health",
+        message: err instanceof Error ? err.message : "Connection failed",
+        detail:
+          "Runtime could not initialize the Supabase client. Authenticated routes may still render but should be treated as degraded.",
       });
     }
-  } catch (err) {
-    diagnostics.push({
-      name: "Supabase Connection",
-      status: "error",
-      message: err instanceof Error ? err.message : "Connection failed",
-    });
   }
 
   // Check Prisma connection
@@ -54,13 +81,17 @@ async function getDiagnostics(): Promise<DiagnosticItem[]> {
     diagnostics.push({
       name: "Database Connection",
       status: "ok",
+      category: "health",
       message: "Connected successfully",
+      detail: "Prisma can execute queries against the configured primary database.",
     });
   } catch (err) {
     diagnostics.push({
       name: "Database Connection",
       status: "error",
+      category: "health",
       message: err instanceof Error ? err.message : "Connection failed",
+      detail: "Database-backed operator surfaces are unavailable until connectivity is restored.",
     });
   }
 
@@ -71,13 +102,18 @@ async function getDiagnostics(): Promise<DiagnosticItem[]> {
     diagnostics.push({
       name: "Stripe Configuration",
       status: "ok",
+      category: "integration",
       message: "Stripe keys configured",
+      detail: "Checkout and billing portal routes are allowed to call Stripe.",
     });
   } else {
     diagnostics.push({
       name: "Stripe Configuration",
       status: "warning",
+      category: "configuration",
       message: "Stripe keys not configured",
+      detail:
+        "Billing pages can render, but upgrade, checkout, and portal actions should be treated as disabled in this environment.",
     });
   }
 
@@ -91,21 +127,29 @@ async function getDiagnostics(): Promise<DiagnosticItem[]> {
       diagnostics.push({
         name: "Last Stripe Webhook",
         status: lastWebhook.status === "processed" ? "ok" : "warning",
+        category: "integration",
         message: `${lastWebhook.type} - ${lastWebhook.status}`,
+        detail:
+          "This reflects persisted webhook processing state and may lag if background workers are not running.",
         value: lastWebhook.receivedAt.toISOString(),
       });
     } else {
       diagnostics.push({
         name: "Last Stripe Webhook",
         status: "warning",
+        category: "data",
         message: "No webhooks received yet",
+        detail:
+          "No webhook events have been persisted in this environment yet; this is not an auth failure by itself.",
       });
     }
   } catch {
     diagnostics.push({
       name: "Last Stripe Webhook",
       status: "error",
+      category: "integration",
       message: "Failed to query webhooks",
+      detail: "Webhook health could not be verified because the stripe_events query failed.",
     });
   }
 
@@ -120,21 +164,29 @@ async function getDiagnostics(): Promise<DiagnosticItem[]> {
         name: "Last Reconciliation Run",
         status:
           lastRun.status === "completed" ? "ok" : lastRun.status === "failed" ? "error" : "warning",
+        category: "data",
         message: `Status: ${lastRun.status}, Matched: ${lastRun.matchedCount || 0}`,
+        detail:
+          "This value comes from persisted reconciliation runs. Pending status means execution did not fully complete yet.",
         value: lastRun.startedAt.toISOString(),
       });
     } else {
       diagnostics.push({
         name: "Last Reconciliation Run",
         status: "warning",
+        category: "data",
         message: "No reconciliation runs yet",
+        detail:
+          "No run data exists yet for this tenant context. Create a run to validate this pipeline end-to-end.",
       });
     }
   } catch {
     diagnostics.push({
       name: "Last Reconciliation Run",
       status: "error",
+      category: "data",
       message: "Failed to query reconciliation runs",
+      detail: "Reconciliation history could not be read due to a database or authorization error.",
     });
   }
 
@@ -152,13 +204,18 @@ async function getDiagnostics(): Promise<DiagnosticItem[]> {
     diagnostics.push({
       name: "Environment Variables",
       status: "ok",
+      category: "configuration",
       message: "All required env vars present",
+      detail: "Core runtime environment contracts are satisfied for authenticated route execution.",
     });
   } else {
     diagnostics.push({
       name: "Environment Variables",
       status: "warning",
+      category: "configuration",
       message: `Missing: ${missingEnvVars.join(", ")}`,
+      detail:
+        "The console remains reachable, but missing variables will degrade auth/session hydration and dependent API actions.",
     });
   }
 
@@ -173,7 +230,7 @@ export default async function DiagnosticsPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/auth/login");
+    redirect("/login?next=/console/diagnostics");
   }
 
   const diagnostics = await getDiagnostics();
@@ -230,10 +287,14 @@ export default async function DiagnosticsPage() {
                 {getStatusIcon(item.status)}
               </div>
               <CardDescription>{item.message}</CardDescription>
+              <p className="text-xs text-muted-foreground">{item.detail}</p>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
                 {getStatusBadge(item.status)}
+                <Badge variant="outline" className="uppercase">
+                  {item.category}
+                </Badge>
                 {item.value && (
                   <span className="text-sm text-slate-500 font-mono">{item.value}</span>
                 )}
