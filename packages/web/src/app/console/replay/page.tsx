@@ -1,25 +1,33 @@
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { RouteOperationalNotice } from "@/components/console/RouteOperationalNotice";
 
-const SAMPLE_EXECUTIONS = ["exec_alpha_001", "exec_policy_002", "exec_connector_003"];
+const SYNTHETIC_EXECUTIONS = [
+  "synthetic_exec_alpha",
+  "synthetic_policy_trace",
+  "synthetic_connector_replay",
+];
 
 export default function ReplayLabIndexPage() {
   return (
     <div className="p-6 space-y-6">
+      <RouteOperationalNotice route="/console/replay" />
+
       <Card>
         <CardHeader>
           <CardTitle>Replay Lab</CardTitle>
           <CardDescription>
-            Open an execution replay with timeline, step inspector, and state diff.
+            This surface currently exposes synthetic replay examples for UI validation. It does not
+            expose tenant production execution history.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          {SAMPLE_EXECUTIONS.map((executionId) => (
+          {SYNTHETIC_EXECUTIONS.map((executionId) => (
             <div key={executionId} className="flex items-center justify-between rounded border p-3">
               <code>{executionId}</code>
               <Button asChild size="sm" variant="outline">
-                <Link href={`/console/replay/${executionId}`}>Open replay</Link>
+                <Link href={`/console/replay/${executionId}`}>Open synthetic replay</Link>
               </Button>
             </div>
           ))}

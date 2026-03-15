@@ -44,6 +44,7 @@ Use `pnpm demo:settler` to run a deterministic end-to-end demo pipeline.
 - Operations/runbooks: `docs/operations/`
 - Security and privacy: `docs/security/`
 - API and references: `docs/reference/`, `docs/api/`
+- Console route maturity/source of truth: `packages/web/src/lib/console/route-maturity.ts` (validated by `pnpm verify:console-route-maturity`)
 - Governance + inventory artifacts: `docs/_meta/`
 - Historical docs archive: `docs/archive/`
 

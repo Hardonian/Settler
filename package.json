@@ -195,7 +195,7 @@
     "lint:boundaries": "node scripts/boundary-linter.mjs",
     "verify:claims": "node scripts/validate-site-claims.mjs",
     "verify:boundaries": "node scripts/enforce-site-boundaries.mjs && node scripts/no-stubs-scan.mjs",
-    "verify:routes": "node scripts/verify-routes.mjs",
+    "verify:routes": "node scripts/verify-routes.mjs && pnpm run verify:console-route-maturity",
     "verify:oss": "node scripts/run-with-env.mjs --set SITE_MODE=oss --set NEXT_PUBLIC_SITE_MODE=oss --unset ENTERPRISE_SITE_URL --unset NEXT_PUBLIC_ENTERPRISE_SITE_URL --unset STRIPE_SECRET_KEY -- pnpm run verify",
     "verify:enterprise": "node scripts/run-with-env.mjs --set SITE_MODE=enterprise --set NEXT_PUBLIC_SITE_MODE=enterprise -- pnpm verify",
     "verify:links": "pnpm qa:links",
@@ -295,7 +295,8 @@
     "requiem:verify": "pnpm exec tsx packages/cli/src/index.ts verify proofpacks/latest/proofpack.json",
     "requiem:replay": "pnpm exec tsx packages/cli/src/index.ts replay",
     "verify:all": "pnpm run validate:all",
-    "verify:repo": "pnpm run repo-integrity"
+    "verify:repo": "pnpm run repo-integrity",
+    "verify:console-route-maturity": "pnpm --filter @settler/web exec tsx scripts/verify-console-route-maturity.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
