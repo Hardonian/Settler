@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ConsoleErrorBoundary } from "@/components/console/ErrorBoundary";
+import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
 import {
   Dialog,
   DialogContent,
@@ -28,8 +29,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Trash2, ExternalLink, CheckCircle2, XCircle } from "lucide-react";
+import {
+  AlertCircle,
+  Loader2,
+  Plus,
+  Trash2,
+  ExternalLink,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 import { format } from "date-fns";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface Webhook {
   id: string;
@@ -41,15 +51,30 @@ interface Webhook {
   failureCount: number;
 }
 
+const availableEvents = [
+  "reconciliation.completed",
+  "reconciliation.failed",
+  "receipt.parsed",
+  "receipt.failed",
+  "feature_flag.updated",
+  "usage.limit_exceeded",
+  "billing.subscription_updated",
+];
+
 export default function WebhooksPage() {
   const [webhooks, setWebhooks] = useState<Webhook[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [newWebhookUrl, setNewWebhookUrl] = useState("");
   const [newWebhookEvents, setNewWebhookEvents] = useState<string[]>([]);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchWebhooks();
+    void fetchWebhooks();
   }, []);
 
   const fetchWebhooks = async () => {
@@ -60,173 +85,229 @@ export default function WebhooksPage() {
         const data = await res.json();
         setWebhooks(data.webhooks || []);
       }
-    } catch (err) {
-      console.error("Failed to fetch webhooks:", err);
+    } catch {
+      // Silent — empty list is a safe degraded state
     } finally {
       setLoading(false);
     }
   };
 
   const createWebhook = async () => {
-    // Validate URL
+    setFormError(null);
+
     try {
       new URL(newWebhookUrl);
     } catch {
-      alert("Please enter a valid URL");
+      setFormError("Enter a valid HTTPS URL.");
       return;
     }
 
-    // Validate events
     if (newWebhookEvents.length === 0) {
-      alert("Please select at least one event");
+      setFormError("Select at least one event type.");
       return;
     }
 
+    setIsCreating(true);
     try {
       const res = await fetch("/api/console/webhooks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          url: newWebhookUrl,
-          events: newWebhookEvents,
-        }),
+        body: JSON.stringify({ url: newWebhookUrl, events: newWebhookEvents }),
       });
 
       if (res.ok) {
         const data = await res.json();
-        setWebhooks([...webhooks, data.webhook]);
+        setWebhooks((prev) => [...prev, data.webhook]);
         setDialogOpen(false);
         setNewWebhookUrl("");
         setNewWebhookEvents([]);
       } else {
-        const error = await res.json();
-        alert(error.error || "Failed to create webhook");
+        const err = await res.json().catch(() => ({}));
+        setFormError((err as { error?: string }).error || "Failed to create webhook. Try again.");
       }
-    } catch (err) {
-      console.error("Failed to create webhook:", err);
-      alert("Failed to create webhook. Please try again.");
+    } catch {
+      setFormError("Network error. Check your connection and try again.");
+    } finally {
+      setIsCreating(false);
     }
   };
 
-  const deleteWebhook = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this webhook?")) return;
+  const confirmDelete = (id: string) => {
+    setPendingDeleteId(id);
+    setActionError(null);
+  };
 
+  const cancelDelete = () => setPendingDeleteId(null);
+
+  const executeDelete = async (id: string) => {
     try {
-      const res = await fetch(`/api/console/webhooks/${id}`, {
-        method: "DELETE",
-      });
-
+      const res = await fetch(`/api/console/webhooks/${id}`, { method: "DELETE" });
       if (res.ok) {
-        setWebhooks(webhooks.filter((w: any) => w.id !== id));
+        setWebhooks((prev) => prev.filter((w) => w.id !== id));
+        setPendingDeleteId(null);
       } else {
-        alert("Failed to delete webhook");
+        setActionError("Failed to delete webhook. Try again.");
+        setPendingDeleteId(null);
       }
-    } catch (err) {
-      console.error("Failed to delete webhook:", err);
-      alert("Failed to delete webhook");
+    } catch {
+      setActionError("Network error. Check your connection and try again.");
+      setPendingDeleteId(null);
     }
   };
 
   const toggleWebhook = async (id: string, active: boolean) => {
+    setTogglingId(id);
+    setActionError(null);
     try {
       const res = await fetch(`/api/console/webhooks/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ active: !active }),
       });
-
       if (res.ok) {
-        setWebhooks(webhooks.map((w) => (w.id === id ? { ...w, active: !active } : w)));
+        setWebhooks((prev) => prev.map((w) => (w.id === id ? { ...w, active: !active } : w)));
+      } else {
+        setActionError("Failed to update webhook status. Try again.");
       }
-    } catch (err) {
-      console.error("Failed to toggle webhook:", err);
+    } catch {
+      setActionError("Network error. Check your connection and try again.");
+    } finally {
+      setTogglingId(null);
     }
   };
 
-  const availableEvents = [
-    "reconciliation.completed",
-    "reconciliation.failed",
-    "receipt.parsed",
-    "receipt.failed",
-    "feature_flag.updated",
-    "usage.limit_exceeded",
-    "billing.subscription_updated",
-  ];
-
   return (
     <ConsoleErrorBoundary>
-      <div className="space-y-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Webhooks</h1>
-            <p className="text-slate-600 dark:text-slate-400">
-              Configure webhooks to receive real-time notifications about events.
-            </p>
+      <div className="space-y-6">
+        <div className="flex items-start justify-between gap-4">
+          <ConsolePageHeader
+            title="Webhooks"
+            description="Configure endpoints to receive real-time event notifications from Settler."
+          />
+          <div className="flex-shrink-0 pt-1">
+            <Button
+              onClick={() => {
+                setFormError(null);
+                setDialogOpen(true);
+              }}
+            >
+              <Plus className="w-4 h-4 mr-2" aria-hidden="true" />
+              Create Webhook
+            </Button>
           </div>
-          <Button onClick={() => setDialogOpen(true)}>
-            <Plus className="w-4 h-4 mr-2" />
-            Create Webhook
-          </Button>
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create Webhook</DialogTitle>
-                <DialogDescription>
-                  Configure a webhook endpoint to receive event notifications.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="url">Webhook URL</Label>
-                  <Input
-                    id="url"
-                    type="url"
-                    placeholder="https://your-app.com/webhooks/settler"
-                    value={newWebhookUrl}
-                    onChange={(e) => setNewWebhookUrl(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label>Events</Label>
-                  <div className="space-y-2 mt-2">
-                    {availableEvents.map((event) => (
-                      <label key={event} className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={newWebhookEvents.includes(event)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setNewWebhookEvents([...newWebhookEvents, event]);
-                            } else {
-                              setNewWebhookEvents(newWebhookEvents.filter((e) => e !== event));
-                            }
-                          }}
-                        />
-                        <code className="text-sm">{event}</code>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-                <Button onClick={createWebhook} className="w-full">
-                  Create Webhook
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
         </div>
 
+        {actionError && (
+          <div className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3">
+            <AlertCircle
+              className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0"
+              aria-hidden="true"
+            />
+            <p className="text-sm text-destructive">{actionError}</p>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="ml-auto -mr-1 -mt-0.5 h-auto p-0 text-xs text-destructive hover:text-destructive"
+              onClick={() => setActionError(null)}
+            >
+              Dismiss
+            </Button>
+          </div>
+        )}
+
+        <Dialog
+          open={dialogOpen}
+          onOpenChange={(open) => {
+            setDialogOpen(open);
+            if (!open) setFormError(null);
+          }}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create Webhook</DialogTitle>
+              <DialogDescription>
+                Configure a webhook endpoint to receive event notifications.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              {formError && (
+                <div className="flex items-start gap-2 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2">
+                  <AlertCircle
+                    className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0"
+                    aria-hidden="true"
+                  />
+                  <p className="text-sm text-destructive">{formError}</p>
+                </div>
+              )}
+              <div className="space-y-1.5">
+                <Label htmlFor="url">Webhook URL</Label>
+                <Input
+                  id="url"
+                  type="url"
+                  placeholder="https://your-app.com/webhooks/settler"
+                  value={newWebhookUrl}
+                  onChange={(e) => setNewWebhookUrl(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Events</Label>
+                <div className="space-y-1.5">
+                  {availableEvents.map((event) => (
+                    <label key={event} className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="rounded border-border"
+                        checked={newWebhookEvents.includes(event)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setNewWebhookEvents((prev) => [...prev, event]);
+                          } else {
+                            setNewWebhookEvents((prev) => prev.filter((ev) => ev !== event));
+                          }
+                        }}
+                      />
+                      <code className="text-sm text-muted-foreground">{event}</code>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <Button onClick={createWebhook} className="w-full" disabled={isCreating}>
+                {isCreating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                    Creating…
+                  </>
+                ) : (
+                  "Create Webhook"
+                )}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {loading ? (
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div
+            className="flex items-center justify-center min-h-[400px]"
+            role="status"
+            aria-label="Loading webhooks"
+          >
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" aria-hidden="true" />
           </div>
         ) : webhooks.length === 0 ? (
           <Card>
-            <CardContent className="py-12 text-center">
-              <p className="text-slate-600 dark:text-slate-400 mb-4">No webhooks configured yet.</p>
-              <Button onClick={() => setDialogOpen(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                Create Your First Webhook
-              </Button>
+            <CardContent className="p-0">
+              <EmptyState
+                icon={Plus}
+                title="No webhooks configured"
+                description="Create a webhook to receive real-time event notifications."
+                action={{
+                  label: "Create Webhook",
+                  onClick: () => {
+                    setFormError(null);
+                    setDialogOpen(true);
+                  },
+                }}
+              />
             </CardContent>
           </Card>
         ) : (
@@ -254,14 +335,17 @@ export default function WebhooksPage() {
                     <TableRow key={webhook.id}>
                       <TableCell>
                         <div className="flex items-center gap-2 min-w-0">
-                          <code className="text-sm truncate">{webhook.url}</code>
+                          <code className="text-sm truncate max-w-[200px] text-foreground">
+                            {webhook.url}
+                          </code>
                           <a
                             href={webhook.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
+                            className="text-muted-foreground hover:text-foreground flex-shrink-0"
+                            aria-label={`Open ${webhook.url} in new tab`}
                           >
-                            <ExternalLink className="w-4 h-4" />
+                            <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
                           </a>
                         </div>
                       </TableCell>
@@ -276,46 +360,76 @@ export default function WebhooksPage() {
                       </TableCell>
                       <TableCell>
                         {webhook.active ? (
-                          <Badge className="bg-green-500">
-                            <CheckCircle2 className="w-3 h-3 mr-1" />
+                          <Badge
+                            variant="default"
+                            className="bg-success/15 text-success border-success/30 hover:bg-success/15"
+                          >
+                            <CheckCircle2 className="w-3 h-3 mr-1" aria-hidden="true" />
                             Active
                           </Badge>
                         ) : (
                           <Badge variant="secondary">
-                            <XCircle className="w-3 h-3 mr-1" />
+                            <XCircle className="w-3 h-3 mr-1" aria-hidden="true" />
                             Inactive
                           </Badge>
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
                         {webhook.lastTriggeredAt
                           ? format(new Date(webhook.lastTriggeredAt), "PPp")
                           : "Never"}
                       </TableCell>
                       <TableCell>
                         {webhook.failureCount > 0 ? (
-                          <span className="text-red-600">{webhook.failureCount}</span>
+                          <span className="text-destructive font-medium tabular-nums">
+                            {webhook.failureCount}
+                          </span>
                         ) : (
-                          <span className="text-slate-400">0</span>
+                          <span className="text-muted-foreground tabular-nums">0</span>
                         )}
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => toggleWebhook(webhook.id, webhook.active)}
-                          >
-                            {webhook.active ? "Deactivate" : "Activate"}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => deleteWebhook(webhook.id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
+                        {pendingDeleteId === webhook.id ? (
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">Delete?</span>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => executeDelete(webhook.id)}
+                            >
+                              Confirm
+                            </Button>
+                            <Button variant="ghost" size="sm" onClick={cancelDelete}>
+                              Cancel
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleWebhook(webhook.id, webhook.active)}
+                              disabled={togglingId === webhook.id}
+                            >
+                              {togglingId === webhook.id ? (
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+                              ) : webhook.active ? (
+                                "Deactivate"
+                              ) : (
+                                "Activate"
+                              )}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => confirmDelete(webhook.id)}
+                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                              aria-label={`Delete webhook ${webhook.url}`}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
+                            </Button>
+                          </div>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}

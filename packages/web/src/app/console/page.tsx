@@ -12,6 +12,8 @@ import Link from "next/link";
 import {
   Activity,
   Key,
+  Lock,
+  Database,
   Receipt,
   ArrowRight,
   ShieldCheck,
@@ -34,6 +36,7 @@ import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { PageLoadingSkeleton, CardLoadingSkeleton } from "@/components/shared/loading-state";
 import { ConsoleSurfaceMap } from "@/components/feature-visual-proof";
 import { RealityEvidencePanel } from "@/components/RealityEvidencePanel";
+import { RouteStateCard } from "@/components/shared/route-state";
 
 // OPTIMIZATION: Code-split heavy dashboard components
 // These are not needed for initial paint and add ~15KB to the bundle
@@ -154,38 +157,16 @@ async function ConsoleOverviewContent() {
         error: errorMessage,
       });
       return (
-        <div className="text-center py-12">
-          <div className="max-w-md mx-auto space-y-4">
-            <div className="w-16 h-16 mx-auto rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
-              <svg
-                className="w-8 h-8 text-blue-600 dark:text-blue-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                />
-              </svg>
-            </div>
-            <h2 className="text-xl font-semibold text-foreground">Authentication Required</h2>
-            <p className="text-muted-foreground">
-              We couldn't verify your authentication status. Please sign in to access the Developer
-              Console.
-            </p>
-            <div className="flex gap-3 justify-center pt-2">
-              <Button asChild>
-                <Link href="/signup">Sign In</Link>
-              </Button>
-              <Button variant="outline" asChild>
-                <Link href="/">Go Home</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
+        <RouteStateCard
+          icon={Lock}
+          title="Authentication required"
+          description="Unable to verify your session. Sign in to access the console."
+          detail="Your session was missing or expired. Re-authenticate to load tenant-scoped data."
+          actions={[
+            { label: "Sign In", href: "/login" },
+            { label: "Go Home", href: "/", variant: "outline" },
+          ]}
+        />
       );
     }
 
@@ -772,65 +753,17 @@ async function ConsoleOverviewContent() {
       ...(process.env.NODE_ENV === "development" && errorStack ? { stack: errorStack } : {}),
     });
 
-    // Provide more detailed error information in development
-    const isDevelopment = process.env.NODE_ENV === "development";
-
     return (
-      <div className="text-center py-12 px-4">
-        <div className="max-w-2xl mx-auto">
-          <div className="w-16 h-16 mx-auto rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-6">
-            <svg
-              className="w-8 h-8 text-red-600 dark:text-red-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-bold text-foreground mb-4">Unable to Load Console</h2>
-          <p className="text-muted-foreground mb-6">
-            We encountered an issue while loading the Developer Console. This may be due to:
-          </p>
-          <ul className="text-left text-sm text-muted-foreground mb-6 space-y-2 max-w-md mx-auto">
-            <li className="flex items-start gap-2">
-              <span className="text-red-500 mt-0.5">•</span>
-              <span>Temporary service interruption</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-red-500 mt-0.5">•</span>
-              <span>Network connectivity issues</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-red-500 mt-0.5">•</span>
-              <span>Configuration or authentication problems</span>
-            </li>
-          </ul>
-          <p className="text-sm text-muted-foreground mb-6">
-            Please try refreshing the page. If the problem persists, contact our support team.
-          </p>
-          {isDevelopment && errorMessage && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6 text-left">
-              <p className="text-xs font-mono text-red-800 dark:text-red-200 break-all">
-                Error: {errorMessage}
-              </p>
-            </div>
-          )}
-          <div className="flex gap-2 justify-center">
-            <Button asChild>
-              <Link href="/console/setup-check">Run Diagnostics</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="/">Go Home</Link>
-            </Button>
-          </div>
-        </div>
-      </div>
+      <RouteStateCard
+        icon={Database}
+        title="Console failed to load"
+        description="An unexpected error occurred while rendering the console overview."
+        detail="Retry or run diagnostics. If this persists, sign in again to refresh your session."
+        actions={[
+          { label: "Run Diagnostics", href: "/console/setup-check" },
+          { label: "Go Home", href: "/", variant: "outline" },
+        ]}
+      />
     );
   }
 }

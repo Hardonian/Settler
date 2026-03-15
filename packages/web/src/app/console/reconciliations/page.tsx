@@ -15,9 +15,9 @@ const surfaces = [
     href: "/console/multi-source-reconciliation",
   },
   {
-    title: "Bulk Export Reports",
-    description: "Export reconciliation evidence for downstream audit and compliance workflows.",
-    href: "/exports",
+    title: "Audit Evidence",
+    description: "Review reconciliation audit logs and export evidence for compliance workflows.",
+    href: "/console/audit-trail",
   },
 ];
 

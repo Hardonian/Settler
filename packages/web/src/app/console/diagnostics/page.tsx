@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import { redirect } from "next/navigation";
+import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
 
 interface DiagnosticItem {
   name: string;
@@ -238,11 +239,11 @@ export default async function DiagnosticsPage() {
   const getStatusIcon = (status: DiagnosticItem["status"]) => {
     switch (status) {
       case "ok":
-        return <CheckCircle2 className="h-5 w-5 text-green-600" />;
+        return <CheckCircle2 className="h-5 w-5 text-success" aria-hidden="true" />;
       case "warning":
-        return <AlertCircle className="h-5 w-5 text-yellow-600" />;
+        return <AlertCircle className="h-5 w-5 text-warning" aria-hidden="true" />;
       case "error":
-        return <XCircle className="h-5 w-5 text-red-600" />;
+        return <XCircle className="h-5 w-5 text-destructive" aria-hidden="true" />;
     }
   };
 
@@ -250,53 +251,50 @@ export default async function DiagnosticsPage() {
     switch (status) {
       case "ok":
         return (
-          <Badge variant="default" className="bg-green-100 text-green-800">
+          <Badge variant="outline" className="text-success border-success/40">
             OK
           </Badge>
         );
       case "warning":
         return (
-          <Badge variant="default" className="bg-yellow-100 text-yellow-800">
+          <Badge variant="outline" className="text-warning border-warning/40">
             Warning
           </Badge>
         );
       case "error":
-        return (
-          <Badge variant="default" className="bg-red-100 text-red-800">
-            Error
-          </Badge>
-        );
+        return <Badge variant="destructive">Error</Badge>;
     }
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">System Diagnostics</h1>
-        <p className="text-slate-600 dark:text-slate-400">
-          Real-time system health and diagnostic information
-        </p>
-      </div>
+    <div className="space-y-6">
+      <ConsolePageHeader
+        title="System Diagnostics"
+        description="Runtime health checks and environment configuration status."
+        scope="global"
+      />
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {diagnostics.map((item) => (
           <Card key={item.name}>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">{item.name}</CardTitle>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between gap-2">
+                <CardTitle className="text-base">{item.name}</CardTitle>
                 {getStatusIcon(item.status)}
               </div>
               <CardDescription>{item.message}</CardDescription>
-              <p className="text-xs text-muted-foreground">{item.detail}</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">{item.detail}</p>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 flex-wrap">
                 {getStatusBadge(item.status)}
-                <Badge variant="outline" className="uppercase">
+                <Badge variant="outline" className="uppercase text-xs">
                   {item.category}
                 </Badge>
                 {item.value && (
-                  <span className="text-sm text-slate-500 font-mono">{item.value}</span>
+                  <span className="text-xs text-muted-foreground font-mono ml-auto">
+                    {item.value}
+                  </span>
                 )}
               </div>
             </CardContent>
@@ -304,26 +302,26 @@ export default async function DiagnosticsPage() {
         ))}
       </div>
 
-      <Card className="mt-8">
+      <Card>
         <CardHeader>
-          <CardTitle>Environment Information</CardTitle>
-          <CardDescription>Runtime environment details</CardDescription>
+          <CardTitle>Runtime Environment</CardTitle>
+          <CardDescription>Server-side environment at request time</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2 font-mono text-sm">
-            <div>
-              <span className="text-slate-500">Node Version:</span>{" "}
-              <span>{process.env.NODE_VERSION || "Unknown"}</span>
+          <dl className="space-y-2 font-mono text-sm">
+            <div className="flex gap-3">
+              <dt className="text-muted-foreground w-28 flex-shrink-0">Node version</dt>
+              <dd className="text-foreground">{process.env.NODE_VERSION || "Unknown"}</dd>
             </div>
-            <div>
-              <span className="text-slate-500">Environment:</span>{" "}
-              <span>{process.env.NODE_ENV || "development"}</span>
+            <div className="flex gap-3">
+              <dt className="text-muted-foreground w-28 flex-shrink-0">Environment</dt>
+              <dd className="text-foreground">{process.env.NODE_ENV || "development"}</dd>
             </div>
-            <div>
-              <span className="text-slate-500">Timestamp:</span>{" "}
-              <span>{new Date().toISOString()}</span>
+            <div className="flex gap-3">
+              <dt className="text-muted-foreground w-28 flex-shrink-0">Timestamp</dt>
+              <dd className="text-foreground">{new Date().toISOString()}</dd>
             </div>
-          </div>
+          </dl>
         </CardContent>
       </Card>
     </div>

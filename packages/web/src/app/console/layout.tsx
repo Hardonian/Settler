@@ -108,7 +108,7 @@ export default async function ConsoleRootLayout({ children }: { children: React.
               detail:
                 "Please retry in a moment. If the issue persists, sign in again to refresh your session context.",
               actions: [
-                { label: "Sign In", href: "/signup" },
+                { label: "Sign In", href: "/login" },
                 { label: "Go Home", href: "/", variant: "outline" },
               ],
             })}
