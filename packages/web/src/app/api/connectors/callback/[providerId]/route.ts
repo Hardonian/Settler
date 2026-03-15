@@ -8,6 +8,7 @@ import { prisma } from "@/shared/db/prismaClient";
 import { appLogger } from "@/lib/utils/logger";
 import { encrypt } from "@/lib/security/encryption";
 import { sanitizeString } from "@/lib/security/input-sanitization";
+import { verifyOAuthState } from "@/lib/security/oauth-state";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -39,6 +40,10 @@ export const GET = withUniversalBillingGate(
       const state = searchParams.get("state");
       const error = searchParams.get("error");
 
+      if (!state) {
+        return NextResponse.json({ error: "Missing OAuth state" }, { status: 400 });
+      }
+
       if (error) {
         // Sanitize error message to prevent XSS
         const sanitizedError = sanitizeString(error);
@@ -56,19 +61,31 @@ export const GET = withUniversalBillingGate(
 
       const typedSupabase = asExtendedClient(supabase);
 
-      // Get connector config
-      const { data: connectors } = await typedSupabase
-        .from("connectors")
-        .select("id, tenant_id, config")
-        .eq("provider_id", providerId)
-        .eq("status", "connecting")
-        .limit(1);
+      const validatedState = verifyOAuthState(state, {
+        providerId,
+        userId: user.id,
+      });
 
-      if (!connectors || connectors.length === 0) {
-        return NextResponse.json({ error: "Connector not found" }, { status: 404 });
+      if (!validatedState) {
+        return NextResponse.json({ error: "Invalid or expired OAuth state" }, { status: 400 });
       }
 
-      const connector = connectors[0];
+      // Get connector config from state binding
+      const { data: connectors } = await typedSupabase
+        .from("connectors")
+        .select("id, tenant_id, status, config")
+        .eq("provider_id", providerId)
+        .eq("tenant_id", validatedState.tenantId)
+        .limit(20);
+
+      const connector = Array.isArray(connectors)
+        ? connectors.find((candidate: Record<string, unknown>) => {
+            const candidateId =
+              typeof candidate.id === "string" ? candidate.id : String(candidate.id);
+            return candidateId === validatedState.connectorId && candidate.status === "connecting";
+          })
+        : null;
+
       if (!connector) {
         return NextResponse.json({ error: "Connector not found" }, { status: 404 });
       }
@@ -92,7 +109,7 @@ export const GET = withUniversalBillingGate(
       if (!tenantId) {
         return NextResponse.json({ error: "Invalid connector tenant_id" }, { status: 400 });
       }
-      const authResult = await driver.handleCallback(code, state || "", {
+      const authResult = await driver.handleCallback(code, state, {
         tenantId,
         redirectUri,
       });
@@ -188,8 +205,7 @@ export const GET = withUniversalBillingGate(
       return NextResponse.redirect(
         new URL("/dashboard/integrations?success=provider_connected", request.url)
       );
-     
-      } catch (error) {
+    } catch (error) {
       appLogger.error("Error in callback route", error);
       // Sanitize error message before redirecting
       const errorMessage =
