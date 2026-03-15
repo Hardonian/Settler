@@ -34,6 +34,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { BackendHealthBadge } from "./BackendHealthBadge";
 import { CONSOLE_ROUTE_REGISTRY, type ConsoleRouteEntry } from "@/lib/console/route-maturity";
+import { OperationalRouteNotice } from "@/components/shared/OperationalRouteNotice";
 
 const navSectionOrder = [
   "Operations",
@@ -193,7 +194,10 @@ export function ConsoleLayout({ children }: ConsoleLayoutProps) {
         </aside>
 
         <main className="flex-1 md:ml-[var(--sidebar-width)] pt-16" id="main-content">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <OperationalRouteNotice />
+            {children}
+          </div>
         </main>
       </div>
     </div>

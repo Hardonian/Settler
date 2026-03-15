@@ -8,6 +8,7 @@ import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import type { Metadata } from "next";
+import { OperationalRouteNotice } from "@/components/shared/OperationalRouteNotice";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -22,6 +23,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <ErrorBoundary context="Dashboard Layout">
       <Navigation />
       <main id="main-content" className="min-h-screen">
+        <div className="mx-auto max-w-7xl px-4 py-4">
+          <OperationalRouteNotice />
+        </div>
         {children}
       </main>
       <Footer />
