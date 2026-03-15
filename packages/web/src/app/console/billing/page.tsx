@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { ConsoleLayout } from "@/components/console/ConsoleLayout";
+import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, CreditCard, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { RouteStateCard, routeStateFromVariant } from "@/components/shared/route-state";
 
 interface BillingData {
   billingAccount: {
@@ -106,26 +107,23 @@ export default function BillingPage() {
 
   if (isLoading) {
     return (
-      <ConsoleLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
-        </div>
-      </ConsoleLayout>
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
     );
   }
 
   if (error || !data) {
     return (
-      <ConsoleLayout>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2 text-red-600">
-              <AlertCircle className="h-5 w-5" />
-              <p>{error || "Failed to load billing data"}</p>
-            </div>
-          </CardContent>
-        </Card>
-      </ConsoleLayout>
+      <RouteStateCard
+        {...routeStateFromVariant("backend-unreachable", {
+          title: "Billing data unavailable",
+          description: error || "Failed to load billing data.",
+          detail:
+            "Billing remains intentionally unreachable until dependencies recover. No billing state was inferred from partial responses.",
+          actions: [{ label: "Retry", href: "/console/billing", variant: "outline" }],
+        })}
+      />
     );
   }
 
@@ -165,15 +163,14 @@ export default function BillingPage() {
   ];
 
   return (
-    <ConsoleLayout>
+    <div className="space-y-6">
+      <ConsolePageHeader
+        title="Billing & Plan"
+        description="Review tenant-scoped plan status, usage thresholds, and billing controls."
+      />
+
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Billing & Plan</h1>
-            <p className="text-slate-600 dark:text-slate-400 mt-1">
-              Manage your subscription and view usage
-            </p>
-          </div>
+        <div className="flex items-center justify-end">
           {data.subscription && data.stripeConfigured && (
             <Button onClick={handleManageBilling} disabled={isCreatingPortal} variant="outline">
               {isCreatingPortal ? (
@@ -232,11 +229,11 @@ export default function BillingPage() {
             {data.subscription && (
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-slate-600 dark:text-slate-400">Plan:</span>
+                  <span className="text-muted-foreground">Plan:</span>
                   <span className="font-medium">{data.subscription.planName}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-600 dark:text-slate-400">Period:</span>
+                  <span className="text-muted-foreground">Period:</span>
                   <span className="font-medium">
                     {new Date(data.subscription.currentPeriodStart).toLocaleDateString()} -{" "}
                     {new Date(data.subscription.currentPeriodEnd).toLocaleDateString()}
@@ -264,11 +261,11 @@ export default function BillingPage() {
               <div key={bar.service} className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="font-medium">{bar.service}</span>
-                  <span className="text-slate-600 dark:text-slate-400">
+                  <span className="text-muted-foreground">
                     {bar.current.toLocaleString()} / {bar.limit.toLocaleString()} {bar.unit}
                   </span>
                 </div>
-                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                <div className="h-2 w-full rounded-full bg-muted">
                   <div
                     className={`h-2 rounded-full transition-all ${
                       bar.percentage >= 90
@@ -322,7 +319,7 @@ export default function BillingPage() {
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">$0/month</p>
+                <p className="mb-4 text-sm text-muted-foreground">$0/month</p>
                 <ul className="text-sm space-y-1 mb-4">
                   <li>• 10,000 reconciliations/month</li>
                   <li>• 1% exception rate included</li>
@@ -355,7 +352,7 @@ export default function BillingPage() {
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">$900/month</p>
+                <p className="mb-4 text-sm text-muted-foreground">$900/month</p>
                 <ul className="text-sm space-y-1 mb-4">
                   <li>• 100,000 reconciliations/month</li>
                   <li>• 1% exception rate included</li>
@@ -402,7 +399,7 @@ export default function BillingPage() {
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">$9,900/month</p>
+                <p className="mb-4 text-sm text-muted-foreground">$9,900/month</p>
                 <ul className="text-sm space-y-1 mb-4">
                   <li>• 1,000,000 reconciliations/month</li>
                   <li>• 1% exception rate included</li>
@@ -449,7 +446,7 @@ export default function BillingPage() {
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">Custom</p>
+                <p className="mb-4 text-sm text-muted-foreground">Custom</p>
                 <ul className="text-sm space-y-1 mb-4">
                   <li>• Custom volume</li>
                   <li>• Custom exception thresholds</li>
@@ -471,6 +468,6 @@ export default function BillingPage() {
           </CardContent>
         </Card>
       </div>
-    </ConsoleLayout>
+    </div>
   );
 }

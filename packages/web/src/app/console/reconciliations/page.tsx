@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
 
 const surfaces = [
   {
@@ -23,12 +24,10 @@ const surfaces = [
 export default function ReconciliationsPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Reconciliations</h1>
-        <p className="text-slate-600 dark:text-slate-400 mt-2">
-          Enterprise reconciliation operations surfaced from kernel and API capabilities.
-        </p>
-      </div>
+      <ConsolePageHeader
+        title="Reconciliations"
+        description="Run tenant-scoped reconciliation workflows, inspect variance, and export evidence without leaving the control plane."
+      />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {surfaces.map((item) => (
