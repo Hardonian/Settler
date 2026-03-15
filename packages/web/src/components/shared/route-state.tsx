@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { AlertTriangle, Database, Lock, SearchX, ShieldX, Users, Wallet } from "lucide-react";
@@ -45,7 +43,7 @@ const ROUTE_STATE_VARIANTS: Record<
     detail: "Your session was missing or expired. Re-authenticate to load tenant-scoped data.",
     icon: Lock,
     actions: [
-      { label: "Sign In", href: "/signup" },
+      { label: "Sign In", href: "/login" },
       { label: "Go Home", href: "/", variant: "outline" },
     ],
   },

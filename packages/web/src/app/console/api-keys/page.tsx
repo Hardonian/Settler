@@ -43,6 +43,7 @@ export default function ApiKeysPage() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [keyName, setKeyName] = useState("");
   const [milestone, setMilestone] = useState<MilestoneType | null>(null);
+  const [pendingRevokeId, setPendingRevokeId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchKeys();
@@ -86,18 +87,17 @@ export default function ApiKeysPage() {
   };
 
   const handleRevokeKey = async (keyId: string) => {
-    if (!confirm("Are you sure you want to revoke this API key? This action cannot be undone.")) {
-      return;
-    }
     try {
       const res = await fetch(`/api/console/api-keys/${keyId}`, {
         method: "DELETE",
       });
       if (res.ok) {
+        setPendingRevokeId(null);
         await fetchKeys();
       }
     } catch (err) {
       console.error("Failed to revoke API key:", err);
+      setPendingRevokeId(null);
     }
   };
 
@@ -265,18 +265,33 @@ export default function ApiKeysPage() {
                       {key.scopes.length > 0 && <p>Scopes: {key.scopes.join(", ")}</p>}
                     </div>
                   </div>
-                  {!key.revokedAt && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleRevokeKey(key.id)}
-                      className="text-destructive hover:bg-destructive/10 hover:border-destructive/50"
-                      aria-label={`Revoke key ${key.name || key.keyPrefix}`}
-                    >
-                      <Trash2 className="w-4 h-4" aria-hidden="true" />
-                      Revoke
-                    </Button>
-                  )}
+                  {!key.revokedAt &&
+                    (pendingRevokeId === key.id ? (
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-xs text-muted-foreground">Revoke key?</span>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleRevokeKey(key.id)}
+                        >
+                          Confirm Revoke
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => setPendingRevokeId(null)}>
+                          Cancel
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPendingRevokeId(key.id)}
+                        className="text-destructive hover:bg-destructive/10 hover:border-destructive/50 flex-shrink-0"
+                        aria-label={`Revoke key ${key.name || key.keyPrefix}`}
+                      >
+                        <Trash2 className="w-4 h-4" aria-hidden="true" />
+                        Revoke
+                      </Button>
+                    ))}
                 </div>
               </CardContent>
             </Card>
