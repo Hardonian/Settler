@@ -51,7 +51,10 @@ export function generateSitemap(): MetadataRoute.Sitemap {
     ...getStaticPaths(),
     ...modePaths.map((path) => ({ path, priority: 0.7, changeFrequency: "monthly" as const })),
   ];
-  return entries.map((route) => ({
+
+  const uniqueEntries = Array.from(new Map(entries.map((entry) => [entry.path, entry])).values());
+
+  return uniqueEntries.map((route) => ({
     url: `${baseUrl}${route.path}`,
     lastModified: new Date(),
     changeFrequency: route.changeFrequency,

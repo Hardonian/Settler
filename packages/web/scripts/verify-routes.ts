@@ -18,29 +18,32 @@ interface RouteInfo {
 }
 
 const ROUTES_TO_VERIFY = [
-  // Marketing
+  // Public marketing/docs/help routes that must remain reachable.
   "/",
+  "/platform",
+  "/capabilities",
+  "/product",
   "/pricing",
   "/enterprise",
-  "/how-it-works",
-  "/why-settler",
-  "/vision",
-  "/security",
+  "/open-source",
+  "/architecture",
+  "/security-and-audit",
   "/status",
-  "/community",
   "/support",
-  "/cookbooks",
+  "/faq",
+  "/contact",
   "/docs",
   "/docs/quickstart",
   "/docs/sdk",
   "/docs/api",
-  "/docs/cli",
-  "/docs/examples",
+  "/blog",
+  "/changelog",
   "/receipts",
   "/feature-flags",
-  "/console/playground",
+  "/about",
+  "/community",
 
-  // Legal
+  // Legal/public compliance routes
   "/legal",
   "/legal/terms",
   "/legal/privacy",
@@ -48,7 +51,11 @@ const ROUTES_TO_VERIFY = [
   "/legal/subprocessors",
   "/legal/license",
 
-  // Console
+  // Auth/public entry points
+  "/login",
+  "/signup",
+
+  // App shells that should resolve to graceful states (not hard crash)
   "/console",
   "/console/receipts",
   "/console/usage",
@@ -65,7 +72,12 @@ function routeToFilePath(route: string): string[] {
     return ["src/app/page.tsx"];
   }
 
-  const parts = route.split("/").filter(Boolean);
+  const parts = route
+    .split("/")
+    .filter(Boolean)
+    // route groups do not appear in URL segments
+    .map((segment) => (segment.startsWith("(") && segment.endsWith(")") ? "" : segment))
+    .filter(Boolean);
   const filePath = join("src/app", ...parts, "page.tsx");
   const layoutPath = join("src/app", ...parts, "layout.tsx");
 
@@ -106,7 +118,7 @@ function checkRouteExists(route: string, appDir: string): RouteInfo {
 }
 
 async function main() {
-  const appDir = join(process.cwd(), "packages/web");
+  const appDir = process.cwd();
 
   console.log("🔍 Verifying routes...\n");
 
