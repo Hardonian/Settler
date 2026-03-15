@@ -27,6 +27,7 @@ import { redirect } from "next/navigation";
 import { AdminErrorBoundary } from "@/components/admin/error-boundary";
 import { MobileMenu } from "@/components/admin/mobile-menu";
 import { SkipLinks } from "@/components/admin/accessibility-skip-links";
+import { OperationalRouteNotice } from "@/components/shared/OperationalRouteNotice";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -117,7 +118,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         {/* Sidebar - Desktop Only */}
         <aside className="hidden lg:flex w-64 border-r border-border bg-card dark:bg-card flex-col fixed h-full z-10">
           <div className="p-5 border-b border-border">
-            <Link href="/admin" className="flex items-center gap-2.5 font-bold text-lg text-foreground">
+            <Link
+              href="/admin"
+              className="flex items-center gap-2.5 font-bold text-lg text-foreground"
+            >
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground text-sm font-bold">
                 S
               </div>
@@ -140,6 +144,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
         {/* Main Content */}
         <main className="flex-1 lg:ml-64 overflow-auto" role="main" id="main-content">
+          <div className="p-4">
+            <OperationalRouteNotice />
+          </div>
           {children}
         </main>
       </div>

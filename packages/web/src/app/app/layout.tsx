@@ -3,6 +3,7 @@ import { EnvErrorPanel } from "@/components/env/EnvErrorPanel";
 import { getAppEnvStatus } from "@/lib/env/runtime-access";
 import { createClient } from "@/lib/supabase/server";
 import { AppSidebar, MobileNav } from "@/components/app/AppNav";
+import { OperationalRouteNotice } from "@/components/shared/OperationalRouteNotice";
 
 function SignedOutScreen() {
   return (
@@ -43,7 +44,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (!user) return <SignedOutScreen />;
 
   const tenantId = user.user_metadata?.tenant_id ?? "—";
-  const envLabel = process.env.NODE_ENV === "production" ? "prod" : process.env.NODE_ENV ?? "dev";
+  const envLabel = process.env.NODE_ENV === "production" ? "prod" : (process.env.NODE_ENV ?? "dev");
 
   return (
     <div className="flex h-screen bg-background">
@@ -53,8 +54,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-3">
             <MobileNav />
             <span className="text-sm text-muted-foreground">
-              Tenant:{" "}
-              <span className="font-medium text-foreground">{tenantId}</span>
+              Tenant: <span className="font-medium text-foreground">{tenantId}</span>
             </span>
           </div>
           <span className="rounded bg-muted/40 px-2 py-1 font-mono text-xs text-muted-foreground">
@@ -62,6 +62,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </span>
         </header>
         <main className="min-h-0 flex-1 overflow-auto p-4 md:p-6" id="main-content">
+          <OperationalRouteNotice />
           {children}
         </main>
       </div>
