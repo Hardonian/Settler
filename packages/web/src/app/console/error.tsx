@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { Lock, TriangleAlert } from "lucide-react";
-import { RouteStateCard } from "@/components/shared/route-state";
+import { TriangleAlert } from "lucide-react";
+import { RouteStateCard, routeStateFromVariant } from "@/components/shared/route-state";
 
 /**
  * Console Error Boundary
@@ -44,30 +44,31 @@ export default function ConsoleError({
 
   return (
     <RouteStateCard
-      icon={isAuthError ? Lock : TriangleAlert}
-      title={isAuthError ? "Authentication Required" : "Console temporarily unavailable"}
-      description={
-        isAuthError
-          ? "Please sign in to access the Developer Console."
-          : "We encountered an error while loading this console surface."
-      }
-      detail={
-        process.env.NODE_ENV === "development" && error.message
-          ? `Debug detail: ${error.message}`
-          : "Try again, or return to the console overview while we recover the session."
-      }
-      actions={
-        isAuthError
-          ? [
+      {...(isAuthError
+        ? routeStateFromVariant("auth-required", {
+            actions: [
               { label: "Sign In", href: `/signup?next=${encodeURIComponent("/console")}` },
               { label: "Go Home", href: "/", variant: "outline" },
-            ]
-          : [
+            ],
+            detail:
+              process.env.NODE_ENV === "development" && error.message
+                ? `Debug detail: ${error.message}`
+                : "Your console session is missing or expired.",
+          })
+        : routeStateFromVariant("backend-unreachable", {
+            icon: TriangleAlert,
+            title: "Console temporarily unavailable",
+            description: "We encountered an error while loading this console surface.",
+            detail:
+              process.env.NODE_ENV === "development" && error.message
+                ? `Debug detail: ${error.message}`
+                : "Try again, or return to the console overview while we recover the session.",
+            actions: [
               { label: "Try Again", onClick: reset },
               { label: "Back to Console", href: "/console", variant: "outline" },
               { label: "Go Home", href: "/", variant: "outline" },
-            ]
-      }
+            ],
+          }))}
     />
   );
 }

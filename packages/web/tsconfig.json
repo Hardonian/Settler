@@ -5,7 +5,7 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "composite": false, // Disable composite mode for Next.js compatibility
+    "composite": false,
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,

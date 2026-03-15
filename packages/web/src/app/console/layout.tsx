@@ -18,7 +18,7 @@ import { EnvErrorPanel } from "@/components/env/EnvErrorPanel";
 import { appLogger } from "@/lib/utils/logger";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import type { Metadata } from "next";
-import { RouteStateCard } from "@/components/shared/route-state";
+import { RouteStateCard, routeStateFromVariant } from "@/components/shared/route-state";
 import { TriangleAlert } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -101,14 +101,17 @@ export default async function ConsoleRootLayout({ children }: { children: React.
         <Navigation />
         <ConsoleLayout>
           <RouteStateCard
-            icon={TriangleAlert}
-            title="Console temporarily unavailable"
-            description="We hit an unexpected error while loading the console shell."
-            detail="Please retry in a moment. If the issue persists, sign in again to refresh your session context."
-            actions={[
-              { label: "Sign In", href: "/signup" },
-              { label: "Go Home", href: "/", variant: "outline" },
-            ]}
+            {...routeStateFromVariant("backend-unreachable", {
+              icon: TriangleAlert,
+              title: "Console temporarily unavailable",
+              description: "We hit an unexpected error while loading the console shell.",
+              detail:
+                "Please retry in a moment. If the issue persists, sign in again to refresh your session context.",
+              actions: [
+                { label: "Sign In", href: "/signup" },
+                { label: "Go Home", href: "/", variant: "outline" },
+              ],
+            })}
           />
         </ConsoleLayout>
         <Footer />
