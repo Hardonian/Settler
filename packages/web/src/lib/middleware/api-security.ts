@@ -60,6 +60,27 @@ function validateMutationOrigin(request: NextRequest): NextResponse | null {
   const requestOrigin = request.nextUrl.origin;
   const origin = request.headers.get("origin");
   const referer = request.headers.get("referer");
+  const secFetchSite = request.headers.get("sec-fetch-site");
+
+  if (secFetchSite && !["same-origin", "same-site", "none"].includes(secFetchSite)) {
+    return NextResponse.json(
+      {
+        code: "INVALID_FETCH_SITE",
+        message: "Cross-site mutation rejected.",
+      },
+      { status: 403 }
+    );
+  }
+
+  if (!origin && !referer) {
+    return NextResponse.json(
+      {
+        code: "MISSING_ORIGIN_CONTEXT",
+        message: "Mutation requests must include an origin or referer header.",
+      },
+      { status: 403 }
+    );
+  }
 
   if (origin && !isSameOrigin(origin, requestOrigin)) {
     return NextResponse.json(
@@ -94,7 +115,7 @@ export function withSecurity<
   const {
     rateLimit = { maxRequests: 60, windowMs: 60 * 1000 },
     requirePrivilegedApproval,
-    requireAuth = false,
+    requireAuth,
   } = options;
 
   const securedHandler = withRateLimit(
@@ -104,7 +125,9 @@ export function withSecurity<
         return originViolation;
       }
 
-      if (requireAuth) {
+      const authRequired = requireAuth ?? isMutationMethod(request);
+
+      if (authRequired) {
         const auth = await authenticateRequest(request);
         if (!auth) {
           return NextResponse.json(

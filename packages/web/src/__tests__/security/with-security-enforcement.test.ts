@@ -57,7 +57,58 @@ describe("withSecurity enforcement", () => {
     expect(payload.code).toBe("INVALID_ORIGIN");
   });
 
+  it("rejects browser mutations that omit both origin and referer", async () => {
+    const handler = withSecurity(async () => NextResponse.json({ ok: true }));
+
+    const response = await handler(
+      createRequest("https://app.settler.test/api/secure", {
+        method: "POST",
+      })
+    );
+
+    expect(response.status).toBe(403);
+    const payload = await response.json();
+    expect(payload.code).toBe("MISSING_ORIGIN_CONTEXT");
+  });
+
+  it("rejects cross-site browser mutations via sec-fetch-site", async () => {
+    const handler = withSecurity(async () => NextResponse.json({ ok: true }));
+
+    const response = await handler(
+      createRequest("https://app.settler.test/api/secure", {
+        method: "POST",
+        headers: {
+          "sec-fetch-site": "cross-site",
+          origin: "https://app.settler.test",
+        },
+      })
+    );
+
+    expect(response.status).toBe(403);
+    const payload = await response.json();
+    expect(payload.code).toBe("INVALID_FETCH_SITE");
+  });
+
+  it("requires auth by default for mutation routes", async () => {
+    authenticateRequestMock.mockResolvedValue(null);
+
+    const handler = withSecurity(async () => NextResponse.json({ ok: true }));
+
+    const response = await handler(
+      createRequest("https://app.settler.test/api/secure", {
+        method: "POST",
+        headers: {
+          origin: "https://app.settler.test",
+        },
+      })
+    );
+
+    expect(response.status).toBe(401);
+  });
+
   it("allows API key mutation requests without browser origin headers", async () => {
+    authenticateRequestMock.mockResolvedValue({ tenantId: "tenant-1", actorId: "user-1" });
+
     const handler = withSecurity(async () => NextResponse.json({ ok: true }));
 
     const response = await handler(
