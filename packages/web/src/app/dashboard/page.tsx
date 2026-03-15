@@ -1,10 +1,10 @@
 /**
- * Public Dashboard - "Loud & High" Metrics Display
+ * Public Dashboard — Ecosystem Metrics
  *
- * Shows real-time aggregated social proof metrics from Supabase
- * Acts as "smoke signals" of a live, active ecosystem
+ * Shows real-time aggregated metrics from Supabase and external APIs.
  */
 
+import { type Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { Suspense } from "react";
 import {
@@ -21,9 +21,17 @@ import { getExternalMetrics } from "@/lib/api/external";
 import { appLogger } from "@/lib/utils/logger";
 import { HoverCard, AnimatedNumber } from "@/components/admin/microinteractions";
 import { TrustBadges } from "@/components/shared/trust-badges";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 
 // Force dynamic rendering since we use cookies
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Ecosystem Metrics — Settler",
+  description: "Real-time community and integration metrics for the Settler ecosystem.",
+  robots: { index: false, follow: false },
+};
 
 // Server Component: Fetch metrics from Supabase
 async function DashboardMetrics() {
@@ -166,13 +174,14 @@ async function DashboardMetrics() {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+        <Navigation />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-electric-cyan dark:via-electric-purple dark:to-electric-blue bg-clip-text text-transparent">
-              Ecosystem Dashboard
+              Ecosystem Metrics
             </h1>
             <p className="text-xl text-slate-700 dark:text-slate-300 mb-4">
-              Real-time metrics from our living system
+              Live community and integration activity
             </p>
             <div className="flex justify-center">
               <TrustBadges />
@@ -191,12 +200,12 @@ async function DashboardMetrics() {
               {metrics.allCylindersFiring ? (
                 <>
                   <Zap className="w-5 h-5" />
-                  Status: Loud and High ✓
+                  All systems active
                 </>
               ) : (
                 <>
                   <Target className="w-5 h-5" />
-                  Status: Building Momentum
+                  Activity building
                 </>
               )}
             </div>
@@ -351,18 +360,23 @@ async function DashboardMetrics() {
             </HoverCard>
           </div>
         </div>
+        <Footer />
       </div>
     );
   } catch (error) {
     appLogger.error("Error in DashboardMetrics", error);
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600 dark:text-red-400 mb-4">Error loading dashboard metrics</p>
-          <p className="text-slate-600 dark:text-slate-400 text-sm">
-            Please try refreshing the page
-          </p>
+      <div className="min-h-screen">
+        <Navigation />
+        <div className="flex items-center justify-center py-24">
+          <div className="text-center">
+            <p className="text-red-600 dark:text-red-400 mb-4">Error loading dashboard metrics</p>
+            <p className="text-slate-600 dark:text-slate-400 text-sm">
+              Please try refreshing the page
+            </p>
+          </div>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -420,12 +434,14 @@ export default function DashboardPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+          <Navigation />
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-electric-cyan mx-auto mb-4"></div>
-              <p className="text-slate-600 dark:text-slate-400">Loading dashboard metrics...</p>
+              <p className="text-slate-600 dark:text-slate-400">Loading metrics…</p>
             </div>
           </div>
+          <Footer />
         </div>
       }
     >

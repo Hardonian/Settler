@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { RealityEvidencePanel } from "@/components/RealityEvidencePanel";
@@ -7,6 +8,12 @@ import {
   PlatformOverviewDiagram,
   VisualProofCTA,
 } from "@/components/public-visual-proof";
+
+export const metadata: Metadata = {
+  title: "Product — Settler",
+  description:
+    "Visual overview of Settler's shipped modules, capability clusters, integration points, and packaging boundaries.",
+};
 
 export default function ProductPage() {
   return (

@@ -31,7 +31,7 @@ export function SOC2Badge() {
   return (
     <Badge variant="outline" className="bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300">
       <Award className="w-3 h-3 mr-1" aria-hidden="true" />
-      <span>SOC 2 Compliant</span>
+      <span>SOC 2 Readiness</span>
     </Badge>
   );
 }

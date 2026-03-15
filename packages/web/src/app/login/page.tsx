@@ -1,11 +1,18 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { type Metadata } from 'next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
+
+export const metadata: Metadata = {
+  title: 'Log In — Settler',
+  description: 'Sign in to your Settler reconciliation workspace.',
+  robots: { index: false, follow: false },
+};
 
 async function loginAction(formData: FormData) {
   'use server';

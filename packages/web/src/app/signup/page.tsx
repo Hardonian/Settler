@@ -4,6 +4,7 @@
  * Handles user registration and account creation.
  */
 
+import { type Metadata } from "next";
 import { signUpUser } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,13 @@ import { Footer } from "@/components/Footer";
 import { UserPlus, AlertCircle } from "lucide-react";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Get Started — Settler",
+  description:
+    "Create a Settler account to start running deterministic reconciliation workflows.",
+  robots: { index: false, follow: false },
+};
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 function SignUpForm() {
