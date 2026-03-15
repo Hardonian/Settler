@@ -8,68 +8,71 @@ interface TriggerRequest {
   sourceInsightId?: string;
 }
 
-export const POST = withSecurity(async (request: NextRequest) => {
-  let payload: TriggerRequest;
+export const POST = withSecurity(
+  async (request: NextRequest) => {
+    let payload: TriggerRequest;
 
-  try {
-    payload = (await request.json()) as TriggerRequest;
-  } catch {
-    return NextResponse.json(
-      {
-        type: "https://settler.dev/problems/triggers",
-        title: "Invalid JSON payload",
-        status: 400,
-        detail: "Expected triggerType in JSON body.",
-        code: "INVALID_JSON",
-      },
-      { status: 400, headers: { "content-type": "application/problem+json" } }
-    );
-  }
+    try {
+      payload = (await request.json()) as TriggerRequest;
+    } catch {
+      return NextResponse.json(
+        {
+          type: "https://settler.dev/problems/triggers",
+          title: "Invalid JSON payload",
+          status: 400,
+          detail: "Expected triggerType in JSON body.",
+          code: "INVALID_JSON",
+        },
+        { status: 400, headers: { "content-type": "application/problem+json" } }
+      );
+    }
 
-  if (!payload.triggerType) {
-    return NextResponse.json(
-      {
-        type: "https://settler.dev/problems/triggers",
-        title: "Validation failed",
-        status: 400,
-        detail: "triggerType is required.",
-        code: "VALIDATION_ERROR",
-      },
-      { status: 400, headers: { "content-type": "application/problem+json" } }
-    );
-  }
+    if (!payload.triggerType) {
+      return NextResponse.json(
+        {
+          type: "https://settler.dev/problems/triggers",
+          title: "Validation failed",
+          status: 400,
+          detail: "triggerType is required.",
+          code: "VALIDATION_ERROR",
+        },
+        { status: 400, headers: { "content-type": "application/problem+json" } }
+      );
+    }
 
-  const triggerId = `trg_${randomUUID()}`;
+    const triggerId = `trg_${randomUUID()}`;
 
-  if (payload.triggerType === "run_diagnostics") {
+    if (payload.triggerType === "run_diagnostics") {
+      return NextResponse.json({
+        triggerId,
+        status: "completed",
+        triggerType: payload.triggerType,
+        sourceInsightId: payload.sourceInsightId ?? null,
+        result: {
+          insights: computeControlPlaneInsights(),
+          executedAt: new Date().toISOString(),
+        },
+        audit: {
+          action: "manual_trigger_executed",
+          reason: "Operator requested control-plane diagnostics refresh.",
+        },
+      });
+    }
+
     return NextResponse.json({
       triggerId,
       status: "completed",
       triggerType: payload.triggerType,
       sourceInsightId: payload.sourceInsightId ?? null,
       result: {
-        insights: computeControlPlaneInsights(),
+        destination: "/console/setup-check",
         executedAt: new Date().toISOString(),
       },
       audit: {
         action: "manual_trigger_executed",
-        reason: "Operator requested control-plane diagnostics refresh.",
+        reason: "Operator requested setup checklist navigation.",
       },
     });
-  }
-
-  return NextResponse.json({
-    triggerId,
-    status: "completed",
-    triggerType: payload.triggerType,
-    sourceInsightId: payload.sourceInsightId ?? null,
-    result: {
-      destination: "/console/setup-check",
-      executedAt: new Date().toISOString(),
-    },
-    audit: {
-      action: "manual_trigger_executed",
-      reason: "Operator requested setup checklist navigation.",
-    },
-  });
-});
+  },
+  { requireAuth: true }
+);

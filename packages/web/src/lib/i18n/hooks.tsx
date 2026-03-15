@@ -1,14 +1,15 @@
 /**
  * React Hooks for i18n
- * 
+ *
  * Provides React hooks for accessing translations in components.
  */
 
-'use client';
+"use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Locale, defaultLocale, supportedLocales, TranslationKeys } from './index';
-import enTranslations from './locales/en.json';
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { Locale, defaultLocale, supportedLocales, TranslationKeys } from "./index";
+import enTranslations from "./locales/en.json";
+import { escapeRegExp } from "@/lib/utils/regex";
 
 // Load translations dynamically
 const translations: Record<Locale, TranslationKeys> = {
@@ -33,18 +34,18 @@ const I18nContext = createContext<I18nContextValue | undefined>(undefined);
  * Get nested value from object by dot-notation key
  */
 function getNestedValue(obj: Record<string, unknown>, key: string): string | undefined {
-  const keys = key.split('.');
+  const keys = key.split(".");
   let value: unknown = obj;
-  
+
   for (const k of keys) {
-    if (value && typeof value === 'object' && value !== null && k in value) {
+    if (value && typeof value === "object" && value !== null && k in value) {
       value = (value as Record<string, unknown>)[k];
     } else {
       return undefined;
     }
   }
-  
-  return typeof value === 'string' ? value : undefined;
+
+  return typeof value === "string" ? value : undefined;
 }
 
 /**
@@ -52,33 +53,29 @@ function getNestedValue(obj: Record<string, unknown>, key: string): string | und
  */
 function replaceParams(str: string, params?: Record<string, string | number>): string {
   if (!params) return str;
-  
+
   let result = str;
   Object.entries(params).forEach(([key, value]) => {
-    result = result.replace(new RegExp(`\\{${key}\\}`, 'g'), String(value));
+    result = result.replace(new RegExp(`\\{${escapeRegExp(key)}\\}`, "g"), String(value));
   });
-  
+
   return result;
 }
 
 /**
  * Translation function
  */
-function translate(
-  locale: Locale,
-  key: string,
-  params?: Record<string, string | number>
-): string {
+function translate(locale: Locale, key: string, params?: Record<string, string | number>): string {
   const localeTranslations = translations[locale] || translations[defaultLocale];
   // TranslationKeys is a complex type, cast to unknown first then to Record
   const translation = getNestedValue(localeTranslations as unknown as Record<string, unknown>, key);
-  
+
   if (!translation) {
     // Fallback to key if translation not found
     console.warn(`Translation missing for key: ${key}`);
     return key;
   }
-  
+
   return replaceParams(translation, params);
 }
 
@@ -87,20 +84,20 @@ function translate(
  */
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(() => {
-    if (typeof window === 'undefined') return defaultLocale;
-    
+    if (typeof window === "undefined") return defaultLocale;
+
     // Check localStorage
-    const stored = localStorage.getItem('locale');
+    const stored = localStorage.getItem("locale");
     if (stored && supportedLocales.includes(stored as Locale)) {
       return stored as Locale;
     }
-    
+
     // Check browser language
-    const browserLang = navigator.language.split('-')[0];
+    const browserLang = navigator.language.split("-")[0];
     if (supportedLocales.includes(browserLang as Locale)) {
       return browserLang as Locale;
     }
-    
+
     return defaultLocale;
   });
 
@@ -109,10 +106,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       console.warn(`Locale ${newLocale} is not supported`);
       return;
     }
-    
+
     setLocaleState(newLocale);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('locale', newLocale);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("locale", newLocale);
       // Update HTML lang attribute
       document.documentElement.lang = newLocale;
     }
@@ -124,16 +121,12 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   // Update HTML lang attribute when locale changes
   useEffect(() => {
-    if (typeof document !== 'undefined') {
+    if (typeof document !== "undefined") {
       document.documentElement.lang = locale;
     }
   }, [locale]);
 
-  return (
-    <I18nContext.Provider value={{ locale, t, setLocale }}>
-      {children}
-    </I18nContext.Provider>
-  );
+  return <I18nContext.Provider value={{ locale, t, setLocale }}>{children}</I18nContext.Provider>;
 }
 
 /**
@@ -141,7 +134,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
  */
 export function useTranslation(): I18nContextValue {
   const context = useContext(I18nContext);
-  
+
   if (!context) {
     // Fallback if provider is not used
     return {
@@ -152,7 +145,7 @@ export function useTranslation(): I18nContextValue {
       setLocale: () => {},
     };
   }
-  
+
   return context;
 }
 
