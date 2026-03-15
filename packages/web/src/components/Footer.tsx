@@ -6,7 +6,7 @@ const footerSections = [
   {
     heading: "Product",
     links: [
-      { href: "/platform", label: "Platform" },
+      { href: "/platform", label: "Product Surface" },
       { href: "/capabilities", label: "Capabilities" },
       { href: "/product", label: "Product" },
       { href: "/architecture", label: "Architecture" },
@@ -31,8 +31,8 @@ const footerSections = [
       { href: "/open-source", label: "Open Source" },
       { href: "/enterprise", label: "Enterprise" },
       { href: "https://github.com/Hardonian/Settler", label: "GitHub", external: true },
-      { href: "/terms", label: "Terms" },
-      { href: "/privacy", label: "Privacy" },
+      { href: "/legal/terms", label: "Terms" },
+      { href: "/legal/privacy", label: "Privacy" },
     ],
   },
 ] as const;
@@ -50,8 +50,8 @@ export function Footer() {
               <SettlerLogo variant="horizontal" className="h-10 w-auto" priority />
             </UiLink>
             <p className="text-sm text-muted-foreground">
-              Open-source reconciliation engine for deterministic, inspectable financial data
-              matching.
+              Settler is a deterministic reconciliation system with auditable evidence, operational
+              diagnostics, and policy-aware controls.
             </p>
           </div>
 

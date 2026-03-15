@@ -1,11 +1,11 @@
 {
-  "name": "Settler - Financial Infrastructure",
+  "name": "Settler.dev \u2014 Deterministic Reconciliation",
   "short_name": "Settler",
-  "description": "The API Infrastructure for Financial Evidence, Deterministic Computation, and Developer Flags.",
+  "description": "Settler is a deterministic reconciliation system for auditable run evidence, policy-aware controls, and operator diagnostics.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#2563eb",
+  "background_color": "#061a2f",
+  "theme_color": "#0b6b7a",
   "orientation": "portrait-primary",
   "icons": [
     {
