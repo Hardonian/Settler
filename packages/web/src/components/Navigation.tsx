@@ -32,9 +32,9 @@ const featureNavigationItems = [
 
 // Secondary navigation items (in "More" dropdown on desktop, accordion on mobile)
 const secondaryNavigationItems = [
+  { href: "/support", label: "Support" },
   { href: "/faq", label: "FAQ" },
   { href: "/contact", label: "Contact" },
-  { href: "/changelog", label: "Changelog" },
   { href: "/privacy", label: "Privacy" },
   { href: "/terms", label: "Terms" },
 ];
@@ -146,23 +146,12 @@ export function Navigation() {
               href="/"
               className={cn(
                 "flex items-center flex-shrink-0",
-                "transition-transform hover:scale-105",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                "rounded relative group"
+                "rounded"
               )}
               aria-label="Settler homepage"
             >
-              <div className="relative overflow-hidden rounded">
-                <SettlerLogo
-                  variant="stacked"
-                  className="h-10 w-auto relative z-10 transition-all duration-300 group-hover:brightness-110 group-hover:drop-shadow-lg"
-                  priority
-                />
-                {/* Shine effect overlay */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 animate-shine" />
-                </div>
-              </div>
+              <SettlerLogo variant="horizontal" className="h-8 w-auto" priority alt="Settler" />
             </Link>
 
             {/* Desktop Navigation */}
@@ -325,7 +314,7 @@ export function Navigation() {
                   href="/login"
                   className="text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400"
                 >
-                  Login
+                  Sign in
                 </Link>
                 <Button asChild variant="default" size="default" className="whitespace-nowrap">
                   <Link href="/signup" aria-label="Get started with Settler">
@@ -365,7 +354,7 @@ export function Navigation() {
                   href="/login"
                   className="text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400"
                 >
-                  Login
+                  Sign in
                 </Link>
                 <Button asChild variant="default" size="sm" className="whitespace-nowrap">
                   <Link href="/signup">Get Started</Link>

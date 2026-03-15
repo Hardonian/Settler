@@ -17,7 +17,7 @@ import { GlobalClientShell } from "@/components/GlobalClientShell";
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://settler.dev"),
   title: {
-    default: "Settler - Open Source Reconciliation Engine",
+    default: "Settler.dev — Deterministic Reconciliation",
     template: "%s | Settler",
   },
   description:
@@ -77,8 +77,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://settler.dev",
-    siteName: "Settler",
-    title: "Settler - Open Source Reconciliation Engine",
+    siteName: "Settler.dev",
+    title: "Settler.dev — Deterministic Reconciliation",
     description:
       "Settler is an open source reconciliation engine that runs deterministic workflows, explains mismatches, and exports verifiable evidence.",
     images: [
@@ -92,7 +92,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Settler - Open Source Reconciliation Engine",
+    title: "Settler.dev — Deterministic Reconciliation",
     description:
       "Settler is an open source reconciliation engine that runs deterministic workflows, explains mismatches, and exports verifiable evidence.",
     images: [getImageUrl("twitterCard")],
@@ -121,7 +121,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  themeColor: "#2563eb",
+  themeColor: "#0b6b7a",
   viewportFit: "cover",
 };
 

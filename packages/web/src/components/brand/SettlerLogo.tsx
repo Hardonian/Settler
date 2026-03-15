@@ -25,10 +25,10 @@ const LOGO_CONFIG = {
     height: 32,
   },
   wordmark: {
-    light: "/brand/settler/logo-horizontal.svg",
-    dark: "/brand/settler/logo-horizontal.svg",
-    width: 520,
-    height: 160,
+    light: "/brand/settler/logo-wordmark.svg",
+    dark: "/brand/settler/logo-wordmark.svg",
+    width: 152,
+    height: 32,
   },
   stacked: {
     light: "/brand/settler/logo-stacked.svg",
