@@ -47,5 +47,6 @@ export const PATCH = withSecurity(
     }
 
     return NextResponse.json({ policy });
-  }
+  },
+  { requireAuth: true }
 );

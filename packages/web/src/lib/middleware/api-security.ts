@@ -17,9 +17,6 @@ export interface SecurityOptions {
     windowMs?: number;
   };
   requireAuth?: boolean;
-  validateQuery?: boolean;
-  validateBody?: boolean;
-  csrf?: boolean;
   requirePrivilegedApproval?: boolean;
 }
 
@@ -62,7 +59,9 @@ function validateMutationOrigin(request: NextRequest): NextResponse | null {
   const referer = request.headers.get("referer");
   const secFetchSite = request.headers.get("sec-fetch-site");
 
-  if (secFetchSite && !["same-origin", "same-site", "none"].includes(secFetchSite)) {
+  // Settler's browser mutation trust model is same-origin only.
+  // sibling same-site origins (for example app.example.com -> api.example.com) are not trusted.
+  if (secFetchSite && !["same-origin", "none"].includes(secFetchSite)) {
     return NextResponse.json(
       {
         code: "INVALID_FETCH_SITE",

@@ -71,6 +71,23 @@ describe("withSecurity enforcement", () => {
     expect(payload.code).toBe("MISSING_ORIGIN_CONTEXT");
   });
 
+  it("rejects same-site browser mutations to enforce strict same-origin trust", async () => {
+    const handler = withSecurity(async () => NextResponse.json({ ok: true }));
+
+    const response = await handler(
+      createRequest("https://app.settler.test/api/secure", {
+        method: "POST",
+        headers: {
+          "sec-fetch-site": "same-site",
+          origin: "https://app.settler.test",
+        },
+      })
+    );
+
+    expect(response.status).toBe(403);
+    const payload = await response.json();
+    expect(payload.code).toBe("INVALID_FETCH_SITE");
+  });
   it("rejects cross-site browser mutations via sec-fetch-site", async () => {
     const handler = withSecurity(async () => NextResponse.json({ ok: true }));
 

@@ -1,15 +1,17 @@
 /**
  * Internationalization (i18n) System
- * 
+ *
  * Provides a lightweight i18n solution for externalizing user-facing strings.
  * Ready for future integration with next-intl or similar libraries.
  */
 
-export type Locale = 'en' | 'fr' | 'es' | 'de' | 'ja' | 'zh';
+import { escapeRegExp } from "@/lib/utils/regex";
 
-export const defaultLocale: Locale = 'en';
+export type Locale = "en" | "fr" | "es" | "de" | "ja" | "zh";
 
-export const supportedLocales: Locale[] = ['en'];
+export const defaultLocale: Locale = "en";
+
+export const supportedLocales: Locale[] = ["en"];
 
 /**
  * Translation keys structure
@@ -107,7 +109,7 @@ export interface I18nContextValue {
  * Simple translation function
  * Loads translations from locale files
  */
-import enTranslations from './locales/en.json';
+import enTranslations from "./locales/en.json";
 
 const translations: Record<Locale, any> = {
   en: enTranslations,
@@ -123,18 +125,18 @@ const translations: Record<Locale, any> = {
  * Get nested value from object by dot-notation key
  */
 function getNestedValue(obj: Record<string, unknown>, key: string): string | undefined {
-  const keys = key.split('.');
+  const keys = key.split(".");
   let value: unknown = obj;
-  
+
   for (const k of keys) {
-    if (value && typeof value === 'object' && value !== null && k in value) {
+    if (value && typeof value === "object" && value !== null && k in value) {
       value = (value as Record<string, unknown>)[k];
     } else {
       return undefined;
     }
   }
-  
-  return typeof value === 'string' ? value : undefined;
+
+  return typeof value === "string" ? value : undefined;
 }
 
 /**
@@ -142,12 +144,12 @@ function getNestedValue(obj: Record<string, unknown>, key: string): string | und
  */
 function replaceParams(str: string, params?: Record<string, string | number>): string {
   if (!params) return str;
-  
+
   let result = str;
   Object.entries(params).forEach(([key, value]) => {
-    result = result.replace(new RegExp(`\\{${key}\\}`, 'g'), String(value));
+    result = result.replace(new RegExp(`\\{${escapeRegExp(key)}\\}`, "g"), String(value));
   });
-  
+
   return result;
 }
 
@@ -158,13 +160,13 @@ export function translate(
 ): string {
   const localeTranslations = translations[locale] || translations[defaultLocale];
   const translation = getNestedValue(localeTranslations, key);
-  
+
   if (!translation) {
     // Fallback to key if translation not found
     console.warn(`Translation missing for key: ${key}`);
     return key;
   }
-  
+
   return replaceParams(translation, params);
 }
 
@@ -172,20 +174,20 @@ export function translate(
  * Get locale from browser or storage
  */
 export function getLocale(): Locale {
-  if (typeof window === 'undefined') return defaultLocale;
-  
+  if (typeof window === "undefined") return defaultLocale;
+
   // Check localStorage first
-  const stored = localStorage.getItem('locale');
+  const stored = localStorage.getItem("locale");
   if (stored && supportedLocales.includes(stored as Locale)) {
     return stored as Locale;
   }
-  
+
   // Check browser language
-  const browserLang = navigator.language.split('-')[0];
+  const browserLang = navigator.language.split("-")[0];
   if (supportedLocales.includes(browserLang as Locale)) {
     return browserLang as Locale;
   }
-  
+
   return defaultLocale;
 }
 
@@ -193,7 +195,7 @@ export function getLocale(): Locale {
  * Set locale preference
  */
 export function setLocale(locale: Locale): void {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem('locale', locale);
+  if (typeof window === "undefined") return;
+  localStorage.setItem("locale", locale);
   // In a full implementation, this would trigger a re-render
 }
