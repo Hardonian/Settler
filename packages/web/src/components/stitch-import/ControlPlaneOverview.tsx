@@ -1,10 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Building,
   ChevronDown,
-  User,
   RefreshCw,
   AlertTriangle,
   X,
@@ -17,295 +16,319 @@ import {
   Clock,
   Gauge,
 } from "lucide-react";
+import { DemoBanner } from "@/components/app/DemoBanner";
 
 const ControlPlaneOverview: React.FC = () => {
+  const [alertDismissed, setAlertDismissed] = useState(false);
+
   return (
-    <main className="flex-1 overflow-y-auto pb-24 no-scrollbar">
-      <header className="sticky top-0 z-20 bg-surface-header/95 backdrop-blur-md border-b border-border-strong px-4 py-3 flex items-center justify-between shadow-sm-subtle">
-        <div className="flex items-center gap-3 cursor-pointer group">
-          <div className="w-9 h-9 rounded-lg bg-primary text-white flex items-center justify-center shadow-md shadow-blue-900/10">
-            <Building className="h-5 w-5" />
+    <div className="space-y-6">
+      <DemoBanner label="Metrics, run cards, and alerts below are sample data. Wire the control-plane API to populate this surface with live telemetry." />
+
+      {/* Workspace selector */}
+      <div className="flex items-center justify-between">
+        <button className="group flex items-center gap-3" aria-label="Switch workspace">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white shadow-sm">
+            <Building className="h-5 w-5" aria-hidden="true" />
           </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wider leading-none mb-0.5">
+          <div className="flex flex-col text-left">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 leading-none mb-0.5">
               Workspace
             </span>
-            <div className="flex items-center gap-1 text-sm font-bold text-text-primary leading-none">
+            <span className="flex items-center gap-1 text-sm font-bold text-slate-900 leading-none">
               Acme Corp / Prod
-              <ChevronDown className="h-4 w-4 text-text-muted group-hover:text-primary transition-colors" />
-            </div>
+              <ChevronDown className="h-4 w-4 text-slate-400 group-hover:text-primary transition-colors" aria-hidden="true" />
+            </span>
           </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <label className="flex items-center cursor-pointer relative" htmlFor="freeze-toggle">
-            <div className="relative">
-              <input className="sr-only" id="freeze-toggle" type="checkbox" />
-              <div className="w-10 h-6 bg-gray-200 rounded-full shadow-inner border border-gray-300 transition-colors duration-300 ease-in-out peer-checked:bg-red-100 peer-checked:border-red-200"></div>
-              <div className="absolute w-4 h-4 bg-white rounded-full shadow border border-gray-300 left-1 top-1 transition-transform duration-300 ease-in-out peer-checked:translate-x-full peer-checked:border-red-500 peer-checked:bg-red-600"></div>
-            </div>
-            <span className="sr-only">Freeze System</span>
-          </label>
-          <button className="w-9 h-9 rounded-full bg-white border border-border-strong flex items-center justify-center text-text-secondary shadow-sm hover:bg-gray-50 relative">
-            <User className="h-5 w-5" />
-            <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
-          </button>
-        </div>
-      </header>
-      <div className="w-full flex justify-center py-3">
-        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-text-muted/70 bg-gray-100 px-3 py-1 rounded-full">
-          <RefreshCw className="h-3 w-3 animate-spin" />
-          Live Updates
-        </div>
+        </button>
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+          <RefreshCw className="h-3 w-3" aria-hidden="true" />
+          Sample data
+        </span>
       </div>
-      <div className="px-4 mb-6">
-        <div className="relative overflow-hidden rounded-xl bg-white border-l-4 border-red-500 shadow-card p-4 flex items-start gap-3">
-          <div className="bg-red-50 rounded-full p-2 shrink-0 flex items-center justify-center border border-red-100">
-            <AlertTriangle className="h-5 w-5 text-red-600" />
+
+      {/* Critical alert (dismissible) */}
+      {!alertDismissed && (
+        <div className="relative overflow-hidden rounded-xl border-l-4 border-red-500 bg-white p-4 shadow-sm flex items-start gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-red-100 bg-red-50">
+            <AlertTriangle className="h-5 w-5 text-red-600" aria-hidden="true" />
           </div>
           <div className="flex-1">
-            <h3 className="text-sm font-bold text-gray-900 mb-0.5 flex items-center gap-2">
-              CRITICAL ALERT
-              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700">
+            <h3 className="flex items-center gap-2 text-sm font-bold text-slate-900">
+              Critical Alert
+              <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-bold text-red-700">
                 P0
               </span>
             </h3>
-            <p className="text-xs text-gray-600 leading-relaxed font-medium">
+            <p className="mt-0.5 text-xs font-medium leading-relaxed text-slate-600">
               Webhook latency &gt; 500ms in EU-West region. Automatic scaling in progress.
             </p>
           </div>
-          <button className="shrink-0 text-gray-400 hover:text-gray-600 p-1">
-            <X className="h-5 w-5" />
+          <button
+            onClick={() => setAlertDismissed(true)}
+            className="shrink-0 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+            aria-label="Dismiss alert"
+          >
+            <X className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
-      </div>
-      <div className="px-4 mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">System Health</h2>
-          <span className="px-2.5 py-1 rounded-md bg-green-50 text-green-700 text-[11px] font-bold uppercase tracking-wider border border-green-200 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-green-500 inline-block mr-1"></span>
+      )}
+
+      {/* System health metrics */}
+      <div>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-base font-bold text-slate-900">System Health</h2>
+          <span className="inline-flex items-center gap-1.5 rounded-md border border-green-200 bg-green-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-green-700 shadow-sm">
+            <span className="h-2 w-2 rounded-full bg-green-500" aria-hidden="true" />
             Stable
           </span>
         </div>
         <div className="grid grid-cols-2 gap-4 mb-4">
-          <div className="bg-surface-card rounded-xl p-4 border border-border-subtle flex flex-col justify-between h-[120px] shadow-card hover:border-border-strong transition-colors">
-            <div className="flex justify-between items-start">
-              <span className="text-xs font-semibold text-text-secondary uppercase tracking-wide">
+          <div className="flex h-[120px] flex-col justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div className="flex items-start justify-between">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 Uptime (24h)
               </span>
-              <Gauge className="h-5 w-5 text-primary bg-blue-50 p-1 rounded-md" />
+              <Gauge className="h-5 w-5 rounded-md bg-blue-50 p-1 text-primary" aria-hidden="true" />
             </div>
             <div>
-              <div className="text-3xl font-bold text-gray-900 tracking-tight">
-                99.98<span className="text-lg text-gray-500">%</span>
+              <div className="text-3xl font-bold tracking-tight text-slate-900">
+                99.98<span className="text-lg text-slate-400">%</span>
               </div>
-              <div className="flex items-center gap-1 mt-1 text-xs font-bold text-green-600 bg-green-50 w-fit px-1.5 py-0.5 rounded">
-                <TrendingUp className="h-3.5 w-3.5" />
+              <div className="mt-1 flex w-fit items-center gap-1 rounded bg-green-50 px-1.5 py-0.5 text-xs font-bold text-green-600">
+                <TrendingUp className="h-3.5 w-3.5" aria-hidden="true" />
                 +0.01%
               </div>
             </div>
           </div>
-          <div className="bg-surface-card rounded-xl p-4 border border-border-subtle flex flex-col justify-between h-[120px] shadow-card hover:border-border-strong transition-colors">
-            <div className="flex justify-between items-start">
-              <span className="text-xs font-semibold text-text-secondary uppercase tracking-wide">
+          <div className="flex h-[120px] flex-col justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div className="flex items-start justify-between">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 Backlog Queue
               </span>
-              <Gauge className="h-5 w-5 text-orange-600 bg-orange-50 p-1 rounded-md" />
+              <Gauge className="h-5 w-5 rounded-md bg-orange-50 p-1 text-orange-600" aria-hidden="true" />
             </div>
             <div>
-              <div className="text-3xl font-bold text-gray-900 tracking-tight">452</div>
-              <div className="flex items-center gap-1 mt-1 text-xs font-bold text-green-600 bg-green-50 w-fit px-1.5 py-0.5 rounded">
-                <TrendingDown className="h-3.5 w-3.5" />
-                -12% Items
+              <div className="text-3xl font-bold tracking-tight text-slate-900">452</div>
+              <div className="mt-1 flex w-fit items-center gap-1 rounded bg-green-50 px-1.5 py-0.5 text-xs font-bold text-green-600">
+                <TrendingDown className="h-3.5 w-3.5" aria-hidden="true" />
+                −12% items
               </div>
             </div>
           </div>
         </div>
-        <div className="w-full bg-white rounded-xl p-5 border border-orange-200 shadow-card relative overflow-hidden group">
-          <div className="absolute right-0 top-0 h-full w-full bg-gradient-to-l from-orange-50 via-white to-white opacity-80"></div>
+
+        <div className="relative overflow-hidden rounded-xl border border-orange-200 bg-white p-5 shadow-sm">
+          <div className="absolute inset-0 bg-gradient-to-l from-orange-50 via-white to-white opacity-80 pointer-events-none" />
           <div className="relative z-10 flex items-center justify-between mb-3">
-            <span className="text-xs font-bold text-orange-800 uppercase tracking-wider flex items-center gap-2 bg-orange-100/50 px-2 py-1 rounded">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+            <span className="flex items-center gap-2 rounded bg-orange-100/50 px-2 py-1 text-xs font-bold uppercase tracking-wider text-orange-800">
+              <span className="relative flex h-2 w-2" aria-hidden="true">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-orange-500" />
               </span>
               Mismatch Anomaly Risk
             </span>
-            <AlertTriangle className="h-6 w-6 text-orange-600" />
+            <AlertTriangle className="h-6 w-6 text-orange-600" aria-hidden="true" />
           </div>
           <div className="relative z-10 flex items-end justify-between">
             <div>
-              <div className="text-2xl font-bold text-gray-900">12 Spikes</div>
-              <div className="text-xs font-medium text-gray-500 mt-1">Detected in last 60m</div>
+              <div className="text-2xl font-bold text-slate-900">12 Spikes</div>
+              <div className="mt-1 text-xs font-medium text-slate-500">Detected in last 60m</div>
             </div>
-            <button className="bg-white text-gray-700 text-xs font-bold px-4 py-2 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 hover:text-primary hover:border-primary/30 transition-all">
+            <button className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-sm transition-all hover:border-primary/30 hover:bg-slate-50 hover:text-primary">
               View Log
             </button>
           </div>
         </div>
       </div>
-      <div className="px-4">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-900">Active Runs</h2>
-          <button className="text-primary text-sm font-semibold hover:text-primary-hover transition-colors bg-blue-50 px-3 py-1 rounded-full">
+
+      {/* Active runs */}
+      <div>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-base font-bold text-slate-900">Active Runs</h2>
+          <button className="rounded-full bg-blue-50 px-3 py-1 text-sm font-semibold text-primary transition-colors hover:bg-blue-100">
             See All (3)
           </button>
         </div>
-        <div className="space-y-4">
-          <div className="bg-surface-card rounded-xl p-0 border border-border-subtle shadow-card overflow-hidden">
+        <div className="space-y-3">
+          {/* Run 1 */}
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
             <div className="p-4">
-              <div className="flex justify-between items-start mb-3">
+              <div className="mb-3 flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-primary shadow-sm">
-                    <RefreshCw className="h-6 w-6" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-primary shadow-sm">
+                    <RefreshCw className="h-6 w-6" aria-hidden="true" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-gray-900">Run #8821</h4>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700 border border-blue-200">
+                    <h4 className="text-sm font-bold text-slate-900">Run #8821</h4>
+                    <div className="mt-0.5 flex items-center gap-2">
+                      <span className="rounded border border-blue-200 bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-700">
                         Running
                       </span>
-                      <span className="text-xs text-gray-400 font-mono font-medium">2m 14s</span>
+                      <span className="font-mono text-xs font-medium text-slate-400">2m 14s</span>
                     </div>
                   </div>
                 </div>
-                <button className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors">
-                  <MoreVertical className="h-5 w-5" />
+                <button
+                  aria-label="More options for Run #8821"
+                  className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                >
+                  <MoreVertical className="h-5 w-5" aria-hidden="true" />
                 </button>
               </div>
-              <div className="grid grid-cols-2 gap-4 py-3 border-t border-dashed border-gray-200">
+              <div className="grid grid-cols-2 gap-4 border-t border-dashed border-slate-200 py-3">
                 <div>
-                  <div className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">
+                  <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">
                     Volume
                   </div>
-                  <div className="text-sm font-bold text-gray-900">$1.2M</div>
+                  <div className="text-sm font-bold text-slate-900">$1.2M</div>
                 </div>
                 <div>
-                  <div className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">
+                  <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">
                     Trace ID
                   </div>
-                  <div className="text-sm font-mono text-gray-600 flex items-center gap-1 bg-gray-50 px-1.5 py-0.5 rounded w-fit border border-gray-200">
+                  <div className="flex w-fit items-center gap-1 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 font-mono text-sm text-slate-600">
                     trc_8a9...b2
-                    <button className="text-gray-400 hover:text-primary ml-1">
-                      <Copy className="h-3.5 w-3.5" />
+                    <button
+                      aria-label="Copy trace ID"
+                      className="ml-1 text-slate-400 transition-colors hover:text-primary"
+                    >
+                      <Copy className="h-3.5 w-3.5" aria-hidden="true" />
                     </button>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="flex border-t border-gray-200 bg-gray-50/50">
-              <button className="flex-1 h-10 text-red-600 text-xs font-bold hover:bg-red-50 transition-colors flex items-center justify-center gap-1.5 border-r border-gray-200">
-                <XCircle className="h-5 w-5" />
+            <div className="flex border-t border-slate-200 bg-slate-50/50">
+              <button className="flex h-10 flex-1 items-center justify-center gap-1.5 border-r border-slate-200 text-xs font-bold text-red-600 transition-colors hover:bg-red-50">
+                <XCircle className="h-5 w-5" aria-hidden="true" />
                 Abort
               </button>
-              <button className="flex-1 h-10 text-gray-700 text-xs font-bold hover:bg-gray-100 transition-colors flex items-center justify-center gap-1.5">
-                <Eye className="h-5 w-5" />
+              <button className="flex h-10 flex-1 items-center justify-center gap-1.5 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-100">
+                <Eye className="h-5 w-5" aria-hidden="true" />
                 Details
               </button>
             </div>
           </div>
-          <div className="bg-surface-card rounded-xl p-0 border border-border-subtle shadow-card overflow-hidden">
+
+          {/* Run 2 */}
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
             <div className="p-4">
-              <div className="flex justify-between items-start mb-3">
+              <div className="mb-3 flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shadow-sm">
-                    <RefreshCw className="h-6 w-6" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-amber-100 bg-amber-50 text-amber-600 shadow-sm">
+                    <RefreshCw className="h-6 w-6" aria-hidden="true" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-gray-900">Run #8820</h4>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                    <h4 className="text-sm font-bold text-slate-900">Run #8820</h4>
+                    <div className="mt-0.5 flex items-center gap-2">
+                      <span className="rounded border border-amber-200 bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">
                         Retrying
                       </span>
-                      <span className="text-xs text-gray-400 font-mono font-medium">0m 45s</span>
+                      <span className="font-mono text-xs font-medium text-slate-400">0m 45s</span>
                     </div>
                   </div>
                 </div>
-                <button className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors">
-                  <MoreVertical className="h-5 w-5" />
+                <button
+                  aria-label="More options for Run #8820"
+                  className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                >
+                  <MoreVertical className="h-5 w-5" aria-hidden="true" />
                 </button>
               </div>
-              <div className="grid grid-cols-2 gap-4 py-3 border-t border-dashed border-gray-200">
+              <div className="grid grid-cols-2 gap-4 border-t border-dashed border-slate-200 py-3">
                 <div>
-                  <div className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">
+                  <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">
                     Volume
                   </div>
-                  <div className="text-sm font-bold text-gray-900">$850K</div>
+                  <div className="text-sm font-bold text-slate-900">$850K</div>
                 </div>
                 <div>
-                  <div className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">
+                  <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">
                     Trace ID
                   </div>
-                  <div className="text-sm font-mono text-gray-600 flex items-center gap-1 bg-gray-50 px-1.5 py-0.5 rounded w-fit border border-gray-200">
+                  <div className="flex w-fit items-center gap-1 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 font-mono text-sm text-slate-600">
                     trc_2c4...e1
-                    <button className="text-gray-400 hover:text-primary ml-1">
-                      <Copy className="h-3.5 w-3.5" />
+                    <button
+                      aria-label="Copy trace ID"
+                      className="ml-1 text-slate-400 transition-colors hover:text-primary"
+                    >
+                      <Copy className="h-3.5 w-3.5" aria-hidden="true" />
                     </button>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="flex border-t border-gray-200 bg-gray-50/50">
-              <button className="flex-1 h-10 text-red-600 text-xs font-bold hover:bg-red-50 transition-colors flex items-center justify-center gap-1.5 border-r border-gray-200">
-                <XCircle className="h-5 w-5" />
+            <div className="flex border-t border-slate-200 bg-slate-50/50">
+              <button className="flex h-10 flex-1 items-center justify-center gap-1.5 border-r border-slate-200 text-xs font-bold text-red-600 transition-colors hover:bg-red-50">
+                <XCircle className="h-5 w-5" aria-hidden="true" />
                 Abort
               </button>
-              <button className="flex-1 h-10 text-gray-700 text-xs font-bold hover:bg-gray-100 transition-colors flex items-center justify-center gap-1.5">
-                <Eye className="h-5 w-5" />
+              <button className="flex h-10 flex-1 items-center justify-center gap-1.5 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-100">
+                <Eye className="h-5 w-5" aria-hidden="true" />
                 Details
               </button>
             </div>
           </div>
-          <div className="bg-surface-card rounded-xl p-0 border border-border-subtle shadow-sm opacity-80 overflow-hidden">
+
+          {/* Run 3 (queued) */}
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white opacity-80 shadow-sm">
             <div className="p-4">
-              <div className="flex justify-between items-start mb-3">
+              <div className="mb-3 flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-600">
-                    <Clock className="h-6 w-6" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-slate-600">
+                    <Clock className="h-6 w-6" aria-hidden="true" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-gray-900">Run #8819</h4>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-700 border border-gray-200">
+                    <h4 className="text-sm font-bold text-slate-900">Run #8819</h4>
+                    <div className="mt-0.5 flex items-center gap-2">
+                      <span className="rounded border border-slate-200 bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700">
                         Queued
                       </span>
-                      <span className="text-xs text-gray-400 font-mono font-medium">--:--</span>
+                      <span className="font-mono text-xs font-medium text-slate-400">—</span>
                     </div>
                   </div>
                 </div>
-                <button className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors">
-                  <MoreVertical className="h-5 w-5" />
+                <button
+                  aria-label="More options for Run #8819"
+                  className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                >
+                  <MoreVertical className="h-5 w-5" aria-hidden="true" />
                 </button>
               </div>
-              <div className="grid grid-cols-2 gap-4 py-3 border-t border-dashed border-gray-200">
+              <div className="grid grid-cols-2 gap-4 border-t border-dashed border-slate-200 py-3">
                 <div>
-                  <div className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">
+                  <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">
                     Volume
                   </div>
-                  <div className="text-sm font-bold text-gray-900">$3.4M</div>
+                  <div className="text-sm font-bold text-slate-900">$3.4M</div>
                 </div>
                 <div>
-                  <div className="text-[10px] uppercase text-gray-500 font-bold tracking-wider mb-1">
+                  <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">
                     Trace ID
                   </div>
-                  <div className="text-sm font-mono text-gray-600 flex items-center gap-1 bg-gray-50 px-1.5 py-0.5 rounded w-fit border border-gray-200">
+                  <div className="flex w-fit items-center gap-1 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 font-mono text-sm text-slate-600">
                     trc_x91...p0
-                    <button className="text-gray-400 hover:text-primary ml-1">
-                      <Copy className="h-3.5 w-3.5" />
+                    <button
+                      aria-label="Copy trace ID"
+                      className="ml-1 text-slate-400 transition-colors hover:text-primary"
+                    >
+                      <Copy className="h-3.5 w-3.5" aria-hidden="true" />
                     </button>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="flex border-t border-gray-200 bg-gray-50/50">
-              <button className="flex-1 h-10 text-gray-700 text-xs font-bold hover:bg-gray-100 transition-colors flex items-center justify-center gap-1.5 w-full">
-                <Eye className="h-5 w-5" />
+            <div className="flex border-t border-slate-200 bg-slate-50/50">
+              <button className="flex h-10 w-full items-center justify-center gap-1.5 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-100">
+                <Eye className="h-5 w-5" aria-hidden="true" />
                 Details
               </button>
             </div>
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 

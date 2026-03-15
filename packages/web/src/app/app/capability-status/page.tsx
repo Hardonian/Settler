@@ -1,6 +1,7 @@
 import { headers } from 'next/headers';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { CheckCircle, AlertTriangle, XCircle, Clock } from 'lucide-react';
 
 type StatusPayload = {
   overallStatus?: string;
@@ -26,7 +27,10 @@ async function fetchLocal<T>(route: string): Promise<T | null> {
   const host = h.get('host') || 'localhost:3000';
   const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
   try {
-    const res = await fetch(`${protocol}://${host}${route}`, { cache: 'no-store' });
+    const res = await fetch(`${protocol}://${host}${route}`, {
+      cache: 'no-store',
+      headers: { authorization: h.get('authorization') || '' },
+    });
     if (!res.ok) return null;
     return (await res.json()) as T;
   } catch {
@@ -35,9 +39,39 @@ async function fetchLocal<T>(route: string): Promise<T | null> {
 }
 
 async function loadCapabilities(): Promise<Capability[]> {
-  const file = path.join(process.cwd(), 'docs/reference/capability-surface.registry.json');
-  const json = JSON.parse(await fs.readFile(file, 'utf8'));
-  return json.capabilities;
+  try {
+    const file = path.join(process.cwd(), 'docs/reference/capability-surface.registry.json');
+    const json = JSON.parse(await fs.readFile(file, 'utf8'));
+    return json.capabilities ?? [];
+  } catch {
+    return [];
+  }
+}
+
+function systemStatusIcon(status?: string) {
+  const s = (status ?? '').toLowerCase();
+  if (s === 'operational' || s === 'ok' || s === 'healthy') {
+    return <CheckCircle className="h-4 w-4 text-green-600 shrink-0" aria-hidden="true" />;
+  }
+  if (s === 'degraded' || s === 'warning') {
+    return <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0" aria-hidden="true" />;
+  }
+  if (s === 'down' || s === 'error' || s === 'critical') {
+    return <XCircle className="h-4 w-4 text-red-500 shrink-0" aria-hidden="true" />;
+  }
+  return <Clock className="h-4 w-4 text-slate-400 shrink-0" aria-hidden="true" />;
+}
+
+function formatTimestamp(ts?: string): string {
+  if (!ts) return '—';
+  try {
+    return new Intl.DateTimeFormat('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }).format(new Date(ts));
+  } catch {
+    return ts;
+  }
 }
 
 export default async function CapabilityStatusPage() {
@@ -47,49 +81,113 @@ export default async function CapabilityStatusPage() {
     loadCapabilities(),
   ]);
 
+  const allServicesNominal = health?.allCylindersFiring === true;
+  const healthStatus = health?.status ?? 'unavailable';
+
   return (
     <div className="space-y-6">
       <section className="rounded-xl border border-slate-200 bg-white p-6">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Capability Status</p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900">Availability and operational posture</h1>
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          Capability Status
+        </p>
+        <h1 className="mt-2 text-2xl font-semibold text-slate-900">
+          Availability and operational posture
+        </h1>
         <p className="mt-2 text-sm text-slate-600">
-          This page combines runtime status endpoints with the surfaced capability registry.
+          Combines runtime status endpoints with the surfaced capability registry.
         </p>
       </section>
 
       <section className="grid gap-4 md:grid-cols-2">
+        {/* System status */}
         <article className="rounded-lg border border-slate-200 bg-white p-4">
-          <h2 className="font-semibold text-slate-900">System status API</h2>
-          <p className="mt-2 text-sm text-slate-700">Overall: {status?.overallStatus ?? 'unavailable'}</p>
-          <ul className="mt-2 space-y-1 text-sm text-slate-600">
-            {(status?.systems ?? []).slice(0, 6).map((s) => (
-              <li key={s.name}>{s.name}: {s.status ?? 'unknown'}</li>
+          <h2 className="font-semibold text-slate-900">System Status</h2>
+          {status ? (
+            <>
+              <div className="mt-3 flex items-center gap-2">
+                {systemStatusIcon(status.overallStatus)}
+                <span className="text-sm font-medium capitalize text-slate-800">
+                  {status.overallStatus ?? 'Unknown'}
+                </span>
+              </div>
+              {status.systems && status.systems.length > 0 && (
+                <ul className="mt-3 space-y-2" aria-label="System component statuses">
+                  {status.systems.slice(0, 6).map((s) => (
+                    <li key={s.name} className="flex items-center justify-between text-sm">
+                      <span className="text-slate-600">{s.name}</span>
+                      <span className="flex items-center gap-1.5">
+                        {systemStatusIcon(s.status)}
+                        <span className="capitalize text-slate-700">{s.status ?? 'unknown'}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {status.error && (
+                <p className="mt-3 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-700">
+                  {status.error}
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="mt-2 text-sm text-slate-500">Status endpoint unavailable.</p>
+          )}
+        </article>
+
+        {/* Health check */}
+        <article className="rounded-lg border border-slate-200 bg-white p-4">
+          <h2 className="font-semibold text-slate-900">Health Check</h2>
+          {health ? (
+            <>
+              <div className="mt-3 flex items-center gap-2">
+                {systemStatusIcon(healthStatus)}
+                <span className="text-sm font-medium capitalize text-slate-800">{healthStatus}</span>
+              </div>
+              <div className="mt-3 flex items-center gap-2">
+                {allServicesNominal ? (
+                  <CheckCircle className="h-4 w-4 text-green-600 shrink-0" aria-hidden="true" />
+                ) : (
+                  <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0" aria-hidden="true" />
+                )}
+                <span className="text-sm text-slate-600">
+                  {allServicesNominal ? 'All services nominal' : 'One or more services degraded'}
+                </span>
+              </div>
+              <p className="mt-3 text-xs text-slate-400">
+                Last checked: {formatTimestamp(health.timestamp)}
+              </p>
+            </>
+          ) : (
+            <p className="mt-2 text-sm text-slate-500">Health endpoint unavailable.</p>
+          )}
+        </article>
+      </section>
+
+      {capabilities.length > 0 && (
+        <section className="rounded-lg border border-slate-200 bg-white p-4">
+          <h2 className="font-semibold text-slate-900">Surfaced Capabilities</h2>
+          <div className="mt-3 grid gap-3 md:grid-cols-2">
+            {capabilities.map((cap) => (
+              <article key={cap.name} className="rounded border border-slate-200 p-3 text-sm">
+                <p className="font-medium text-slate-900">{cap.name}</p>
+                <dl className="mt-1 space-y-0.5">
+                  <div className="flex gap-2">
+                    <dt className="text-slate-400 w-16 shrink-0">Maturity</dt>
+                    <dd className="text-slate-700 capitalize">{cap.maturity}</dd>
+                  </div>
+                  <div className="flex gap-2">
+                    <dt className="text-slate-400 w-16 shrink-0">Visibility</dt>
+                    <dd className="text-slate-700 capitalize">{cap.visibility}</dd>
+                  </div>
+                </dl>
+                {cap.gating && (
+                  <p className="mt-2 text-xs text-slate-400">{cap.gating}</p>
+                )}
+              </article>
             ))}
-          </ul>
-          {status?.error ? <p className="mt-2 text-sm text-amber-700">{status.error}</p> : null}
-        </article>
-
-        <article className="rounded-lg border border-slate-200 bg-white p-4">
-          <h2 className="font-semibold text-slate-900">Health API</h2>
-          <p className="mt-2 text-sm text-slate-700">Status: {health?.status ?? 'unavailable'}</p>
-          <p className="text-sm text-slate-600">All cylinders firing: {String(health?.allCylindersFiring ?? false)}</p>
-          <p className="text-xs text-slate-500">Timestamp: {health?.timestamp ?? 'not returned'}</p>
-        </article>
-      </section>
-
-      <section className="rounded-lg border border-slate-200 bg-white p-4">
-        <h2 className="font-semibold text-slate-900">Surfaced capabilities</h2>
-        <div className="mt-3 grid gap-3 md:grid-cols-2">
-          {capabilities.map((cap) => (
-            <article key={cap.name} className="rounded border border-slate-200 p-3 text-sm">
-              <p className="font-medium text-slate-900">{cap.name}</p>
-              <p className="text-slate-600">Maturity: {cap.maturity}</p>
-              <p className="text-slate-600">Visibility: {cap.visibility}</p>
-              <p className="mt-1 text-xs text-slate-500">{cap.gating}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
