@@ -297,7 +297,8 @@
     "verify:all": "pnpm run validate:all",
     "verify:repo": "pnpm run repo-integrity",
     "verify:console-route-maturity": "pnpm --filter @settler/web exec tsx scripts/verify-console-route-maturity.ts",
-    "verify:operational-route-truth": "pnpm --filter @settler/web exec tsx scripts/verify-operational-route-truth.ts"
+    "verify:operational-route-truth": "pnpm --filter @settler/web exec tsx scripts/verify-operational-route-truth.ts",
+    "verify:styles": "node scripts/verify-styles.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
