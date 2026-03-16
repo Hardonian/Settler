@@ -5,6 +5,11 @@ import { createClient } from "@/lib/supabase/server";
 import { AppSidebar, MobileNav } from "@/components/app/AppNav";
 import { OperationalRouteNotice } from "@/components/shared/OperationalRouteNotice";
 
+// All /app/* routes require authenticated session state via cookies.
+// Force dynamic rendering to prevent Next.js from attempting static prerender
+// during build, which causes "[Supabase] Failed to get cookies" errors.
+export const dynamic = "force-dynamic";
+
 function SignedOutScreen() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-6">
