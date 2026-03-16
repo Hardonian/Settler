@@ -1,3 +1,5 @@
+// ROUTE_CLASS: api-key-service
+// AUTH: API key auth — tenant isolated via ctx.tenantId in all queries
 import { NextRequest, NextResponse } from "next/server";
 import {
   RunCreateSchema,

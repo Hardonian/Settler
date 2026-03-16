@@ -16,6 +16,9 @@
  * Response: 200 application/json
  */
 
+// ROUTE_CLASS: admin-internal
+// AUTH: session — aggregated ops metrics
+
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withSecurity } from "@/lib/middleware/api-security";

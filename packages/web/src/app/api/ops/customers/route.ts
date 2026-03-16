@@ -2,6 +2,9 @@
  * Ops Customers API
  */
 
+// ROUTE_CLASS: admin-internal
+// AUTH: session + adminRole — returns all billing accounts
+
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/api/auth-gate";
 import { prisma } from "@/shared/db/prismaClient";
@@ -15,7 +18,6 @@ export const runtime = "nodejs";
 export const GET = withSecurity(
   withUniversalBillingGate(
     async function GET(request: Request) {
-       
       const adminCheck = await requireAdmin(request as any);
       if (!adminCheck.isAdmin) {
         return adminCheck.error!;

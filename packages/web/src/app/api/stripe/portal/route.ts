@@ -5,6 +5,9 @@
  * Includes input validation and security checks.
  */
 
+// ROUTE_CLASS: authenticated-user
+// AUTH: session auth required
+
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/shared/db/prismaClient";

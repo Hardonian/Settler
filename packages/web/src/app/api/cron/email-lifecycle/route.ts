@@ -5,6 +5,9 @@
  * Should be called via Vercel Cron or external scheduler
  */
 
+// ROUTE_CLASS: cron-internal
+// AUTH: CRON_SECRET bearer token — fail-closed in production
+
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -30,9 +33,17 @@ const CRON_SECRET = getEnv("CRON_SECRET", false) || "";
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify cron secret
+    // Verify cron secret — fail closed: if CRON_SECRET is unset, only allow in development
     const authHeader = request.headers.get("authorization");
-    if (CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
+    const cronSecret = process.env.CRON_SECRET || CRON_SECRET;
+    if (!cronSecret) {
+      if (process.env.NODE_ENV !== "development") {
+        return NextResponse.json(
+          { error: "Unauthorized: CRON_SECRET not configured" },
+          { status: 401 }
+        );
+      }
+    } else if (authHeader !== `Bearer ${cronSecret}`) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -305,7 +316,7 @@ export async function GET(request: NextRequest) {
           await sendTrialEndedEmail(lifecycleUser);
 
           // Update plan to free if not upgraded
-           
+
           await (supabase.from("profiles") as any)
             .update({ plan_type: "free" })
             .eq("id", user.id)

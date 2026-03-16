@@ -4,6 +4,10 @@
  * Gated admin/console page showing system health and diagnostics.
  */
 
+// Reads auth session cookies via Supabase server client — must be dynamic.
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/shared/db/prismaClient";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";

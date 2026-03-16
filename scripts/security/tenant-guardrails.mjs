@@ -179,6 +179,151 @@ const classificationRules = [
     class: "tenant",
     reason: "Workspace APIs are tenant/user-bound.",
   },
+  {
+    prefix: "packages/web/src/app/api/ai/",
+    class: "authenticated-user",
+    reason: "AI endpoints require authenticated user session.",
+  },
+  {
+    prefix: "packages/web/src/app/api/billing/",
+    class: "authenticated-user",
+    reason: "Billing endpoints require authenticated user session.",
+  },
+  {
+    prefix: "packages/web/src/app/api/connectors/",
+    class: "tenant",
+    reason: "Connector endpoints are tenant-scoped integration data.",
+  },
+  {
+    prefix: "packages/web/src/app/api/control-plane/",
+    class: "admin-internal",
+    reason: "Control-plane endpoints are restricted to super-admin operators.",
+  },
+  {
+    prefix: "packages/web/src/app/api/data/",
+    class: "tenant",
+    reason: "Data endpoints expose or mutate tenant-scoped records.",
+  },
+  {
+    prefix: "packages/web/src/app/api/enterprise/",
+    class: "admin-internal",
+    reason: "Enterprise management endpoints require admin authorization.",
+  },
+  {
+    prefix: "packages/web/src/app/api/explorer/",
+    class: "tenant",
+    reason: "Explorer endpoints query tenant-scoped data sets.",
+  },
+  {
+    prefix: "packages/web/src/app/api/feedback-loops/",
+    class: "tenant",
+    reason: "Feedback-loop endpoints operate on tenant-bound pipeline state.",
+  },
+  {
+    prefix: "packages/web/src/app/api/foundry/",
+    class: "tenant",
+    reason: "Foundry endpoints manage tenant-scoped pipeline definitions.",
+  },
+  {
+    prefix: "packages/web/src/app/api/gtm/",
+    class: "authenticated-user",
+    reason: "GTM/growth endpoints require authenticated user context.",
+  },
+  {
+    prefix: "packages/web/src/app/api/image-optimize/",
+    class: "authenticated-user",
+    reason: "Image optimization endpoints require authenticated user session.",
+  },
+  {
+    prefix: "packages/web/src/app/api/integrations/",
+    class: "tenant",
+    reason: "Integration endpoints are tenant-scoped credential/config data.",
+  },
+  {
+    prefix: "packages/web/src/app/api/invite/",
+    class: "public-write",
+    reason: "Invite acceptance endpoints are intentionally public write paths.",
+  },
+  {
+    prefix: "packages/web/src/app/api/metrics/",
+    class: "tenant",
+    reason: "Metrics endpoints expose tenant-scoped analytics.",
+  },
+  {
+    prefix: "packages/web/src/app/api/milestones/",
+    class: "authenticated-user",
+    reason: "Milestone endpoints require authenticated user session.",
+  },
+  {
+    prefix: "packages/web/src/app/api/onboarding/",
+    class: "authenticated-user",
+    reason: "Onboarding endpoints require authenticated user session.",
+  },
+  {
+    prefix: "packages/web/src/app/api/operator/",
+    class: "admin-internal",
+    reason: "Operator endpoints are restricted to admin-level principals.",
+  },
+  {
+    prefix: "packages/web/src/app/api/ops/",
+    class: "admin-internal",
+    reason: "Ops endpoints are restricted to internal admin operations.",
+  },
+  {
+    prefix: "packages/web/src/app/api/oss/",
+    class: "public-read",
+    reason: "OSS endpoints are intentionally public read paths.",
+  },
+  {
+    prefix: "packages/web/src/app/api/pricing/",
+    class: "admin-internal",
+    reason: "Pricing management endpoints require admin authorization.",
+  },
+  {
+    prefix: "packages/web/src/app/api/projects/",
+    class: "tenant",
+    reason: "Project endpoints are tenant-scoped.",
+  },
+  {
+    prefix: "packages/web/src/app/api/quota/",
+    class: "tenant",
+    reason: "Quota endpoints expose tenant-scoped usage limits.",
+  },
+  {
+    prefix: "packages/web/src/app/api/rbac/",
+    class: "admin-internal",
+    reason: "RBAC management endpoints require admin authorization.",
+  },
+  {
+    prefix: "packages/web/src/app/api/receipts/",
+    class: "tenant",
+    reason: "Receipt endpoints operate on tenant-scoped financial records.",
+  },
+  {
+    prefix: "packages/web/src/app/api/referrals/",
+    class: "authenticated-user",
+    reason: "Referral endpoints require authenticated user session.",
+  },
+  {
+    prefix: "packages/web/src/app/api/seo/",
+    class: "admin-internal",
+    reason: "SEO management endpoints require admin authorization.",
+  },
+  {
+    prefix: "packages/web/src/app/api/share/",
+    class: "public-read",
+    reason: "Share endpoints are intentionally public read paths for shared artifacts.",
+  },
+  {
+    prefix: "packages/web/src/app/api/support/",
+    class: "authenticated-user",
+    reason: "Support endpoints require authenticated user session.",
+  },
+  {
+    prefix: "packages/web/src/app/api/user/",
+    class: "authenticated-user",
+    reason: "User endpoints operate on the authenticated caller's own data.",
+  },
 ];
 
 export const knownExemptPrefixes = [

@@ -1,131 +1,140 @@
 /**
  * Internal Admin Health Endpoint
- * 
+ *
  * Provides detailed health metrics for admin/internal use.
  * Requires authentication and admin access.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { isSuperAdmin } from '@/lib/auth/super-admin';
-import { prisma } from '@/shared/db/prismaClient';
-import { appLogger } from '@/lib/utils/logger';
-import { withSecurity } from '@/lib/middleware/api-security';
+// ROUTE_CLASS: admin-internal
+// AUTH: session + superAdmin
 
-export const GET = withSecurity(async function GET(_request: NextRequest) {
-  try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { isSuperAdmin } from "@/lib/auth/super-admin";
+import { prisma } from "@/shared/db/prismaClient";
+import { appLogger } from "@/lib/utils/logger";
+import { withSecurity } from "@/lib/middleware/api-security";
 
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+export const GET = withSecurity(
+  async function GET(_request: NextRequest) {
+    try {
+      const supabase = await createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    // Check admin access
-    const isAdmin = await isSuperAdmin();
-    if (!isAdmin) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
+      if (!user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
 
-    const now = new Date();
-    const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-    const last7d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      // Check admin access
+      const isAdmin = await isSuperAdmin();
+      if (!isAdmin) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
 
-    // Get webhook failures (last 24h)
-    const webhookFailures = await prisma.stripeEvent.count({
-      where: {
-        status: 'failed',
-        receivedAt: {
-          gte: last24h,
-        },
-      },
-    });
+      const now = new Date();
+      const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      const last7d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    // Get reconciliation error counts (last 24h)
-    const reconErrors = await prisma.reconResult.count({
-      where: {
-        status: 'failed',
-        startedAt: {
-          gte: last24h,
-        },
-      },
-    });
-
-    // Get retry backlog (failed webhook deliveries)
-    const retryBacklog = await prisma.webhookDelivery.count({
-      where: {
-        status: 'failed',
-        nextRetryAt: {
-          not: null,
-        },
-      },
-    });
-
-    // Get queue lag (simplified - would need actual queue metrics)
-    const queueLag = {
-      webhooks: retryBacklog,
-      reconciliations: await prisma.reconciliationRun.count({
+      // Get webhook failures (last 24h)
+      const webhookFailures = await prisma.stripeEvent.count({
         where: {
-          status: 'pending',
+          status: "failed",
+          receivedAt: {
+            gte: last24h,
+          },
         },
-      }),
-    };
+      });
 
-    // Get recent error spikes
-    const errorSpikes = await prisma.reconResult.count({
-      where: {
-        status: 'failed',
-        startedAt: {
-          gte: last7d,
+      // Get reconciliation error counts (last 24h)
+      const reconErrors = await prisma.reconResult.count({
+        where: {
+          status: "failed",
+          startedAt: {
+            gte: last24h,
+          },
         },
-      },
-    });
+      });
 
-    // Get system components status
-    const components = {
-      web: 'operational', // Would check actual web server
-      api: 'operational', // Would check API server
-      db: await checkDatabaseHealth(),
-      stripeWebhooks: webhookFailures < 10 ? 'operational' : 'degraded',
-      providerConnectors: 'operational', // Would check connector health
-    };
+      // Get retry backlog (failed webhook deliveries)
+      const retryBacklog = await prisma.webhookDelivery.count({
+        where: {
+          status: "failed",
+          nextRetryAt: {
+            not: null,
+          },
+        },
+      });
 
-    return NextResponse.json({
-      timestamp: now.toISOString(),
-      components,
-      metrics: {
-        webhookFailures24h: webhookFailures,
-        reconErrors24h: reconErrors,
-        retryBacklog,
-        queueLag,
-        errorSpikes7d: errorSpikes,
-      },
-      alerts: [
-        ...(webhookFailures > 10 ? [{ type: 'webhook_failures', severity: 'high', count: webhookFailures }] : []),
-        ...(reconErrors > 50 ? [{ type: 'recon_errors', severity: 'high', count: reconErrors }] : []),
-        ...(retryBacklog > 100 ? [{ type: 'retry_backlog', severity: 'medium', count: retryBacklog }] : []),
-      ],
-    });
-   
-      } catch (error) {
-    appLogger.error('Failed to get admin health', error);
-    return NextResponse.json(
-      { error: 'Failed to retrieve health metrics' },
-      { status: 500 }
-    );
-  }
-  // Note: Using shared Prisma singleton - don't disconnect (handles connection pooling)
-},
+      // Get queue lag (simplified - would need actual queue metrics)
+      const queueLag = {
+        webhooks: retryBacklog,
+        reconciliations: await prisma.reconciliationRun.count({
+          where: {
+            status: "pending",
+          },
+        }),
+      };
+
+      // Get recent error spikes
+      const errorSpikes = await prisma.reconResult.count({
+        where: {
+          status: "failed",
+          startedAt: {
+            gte: last7d,
+          },
+        },
+      });
+
+      // Get system components status
+      const components = {
+        web: "operational", // Would check actual web server
+        api: "operational", // Would check API server
+        db: await checkDatabaseHealth(),
+        stripeWebhooks: webhookFailures < 10 ? "operational" : "degraded",
+        providerConnectors: "operational", // Would check connector health
+      };
+
+      return NextResponse.json({
+        timestamp: now.toISOString(),
+        components,
+        metrics: {
+          webhookFailures24h: webhookFailures,
+          reconErrors24h: reconErrors,
+          retryBacklog,
+          queueLag,
+          errorSpikes7d: errorSpikes,
+        },
+        alerts: [
+          ...(webhookFailures > 10
+            ? [{ type: "webhook_failures", severity: "high", count: webhookFailures }]
+            : []),
+          ...(reconErrors > 50
+            ? [{ type: "recon_errors", severity: "high", count: reconErrors }]
+            : []),
+          ...(retryBacklog > 100
+            ? [{ type: "retry_backlog", severity: "medium", count: retryBacklog }]
+            : []),
+        ],
+      });
+    } catch (error) {
+      appLogger.error("Failed to get admin health", error);
+      return NextResponse.json({ error: "Failed to retrieve health metrics" }, { status: 500 });
+    }
+    // Note: Using shared Prisma singleton - don't disconnect (handles connection pooling)
+  },
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
 );
 
-async function checkDatabaseHealth(): Promise<'operational' | 'degraded' | 'down'> {
+async function checkDatabaseHealth(): Promise<"operational" | "degraded" | "down"> {
   try {
     await prisma.$queryRaw`SELECT 1`;
-    return 'operational';
-   
-      } catch (error) {
-    appLogger.error('Database health check failed', error);
-    return 'degraded';
+    return "operational";
+  } catch (error) {
+    appLogger.error("Database health check failed", error);
+    return "degraded";
   }
 }

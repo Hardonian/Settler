@@ -23,9 +23,13 @@ export interface ImageConfig {
 /**
  * Settler brand images configuration
  * All active brand images are located in /public/brand/settler/
+ *
+ * SVG variants are preferred for UI rendering (scalable, small file size).
+ * PNG variants are canonical brand assets for favicon, app icons, OG images,
+ * email templates, and external platforms that require raster images.
  */
 const SETTLER_IMAGES_CONFIG = {
-  // Favicons
+  // Favicons — SVG for modern browsers, PNG fallbacks for email/platform use
   favicon: {
     path: "/brand/settler/favicon-192x192.svg",
     width: 192,
@@ -50,6 +54,24 @@ const SETTLER_IMAGES_CONFIG = {
     category: "favicon" as const,
     mimeType: "image/svg+xml",
   },
+  // Canonical PNG favicon — for platforms that do not support SVG favicons
+  faviconPng: {
+    path: "/brand/settler/favicon.png",
+    width: 512,
+    height: 512,
+    alt: "Settler App Icon",
+    category: "favicon" as const,
+    mimeType: "image/png",
+  },
+  // App icon — used for PWA install prompts and app store listings
+  appIcon: {
+    path: "/brand/settler/app-icon.png",
+    width: 512,
+    height: 512,
+    alt: "Settler App Icon",
+    category: "favicon" as const,
+    mimeType: "image/png",
+  },
 
   // Social Media Images
   ogImage: {
@@ -69,7 +91,7 @@ const SETTLER_IMAGES_CONFIG = {
     mimeType: "image/png",
   },
 
-  // Logos
+  // Logos — SVG preferred for UI; PNG available for external/raster contexts
   logoMain: {
     path: "/brand/settler/logo-horizontal.svg",
     width: 160,
@@ -77,6 +99,55 @@ const SETTLER_IMAGES_CONFIG = {
     alt: "Settler Logo",
     category: "logo" as const,
     mimeType: "image/svg+xml",
+  },
+  // Canonical PNG logos (for email templates, OG images, external platforms)
+  logoHorizontalLight: {
+    path: "/brand/settler/logo-horizontal-light.png",
+    width: 1200,
+    height: 314,
+    alt: "Settler Logo — Horizontal Light",
+    category: "logo" as const,
+    mimeType: "image/png",
+  },
+  logoHorizontalDark: {
+    path: "/brand/settler/logo-horizontal-dark.png",
+    width: 1200,
+    height: 314,
+    alt: "Settler Logo — Horizontal Dark",
+    category: "logo" as const,
+    mimeType: "image/png",
+  },
+  logoStackedLight: {
+    path: "/brand/settler/logo-stacked-light.png",
+    width: 960,
+    height: 540,
+    alt: "Settler Logo — Stacked Light",
+    category: "logo" as const,
+    mimeType: "image/png",
+  },
+  logoSquareLight: {
+    path: "/brand/settler/square-logo-light.png",
+    width: 512,
+    height: 512,
+    alt: "Settler Square Logo",
+    category: "logo" as const,
+    mimeType: "image/png",
+  },
+  logoIconLight: {
+    path: "/brand/settler/icon-light.png",
+    width: 512,
+    height: 512,
+    alt: "Settler Icon Mark",
+    category: "logo" as const,
+    mimeType: "image/png",
+  },
+  logoWordmarkLight: {
+    path: "/brand/settler/wordmark-light.png",
+    width: 1200,
+    height: 314,
+    alt: "Settler Wordmark",
+    category: "logo" as const,
+    mimeType: "image/png",
   },
   logoSEO: {
     path: "/opengraph-image",

@@ -1,38 +1,41 @@
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
-import { type Metadata } from 'next';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { type Metadata } from "next";
+
+// Login page reads auth cookies via Supabase server client — must be dynamic.
+export const dynamic = "force-dynamic";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: 'Log In — Settler',
-  description: 'Sign in to your Settler reconciliation workspace.',
+  title: "Log In — Settler",
+  description: "Sign in to your Settler reconciliation workspace.",
   robots: { index: false, follow: false },
 };
 
 async function loginAction(formData: FormData) {
-  'use server';
+  "use server";
 
-  const email = String(formData.get('email') ?? '').trim();
-  const password = String(formData.get('password') ?? '');
-  const nextPath = String(formData.get('next') ?? '/app');
+  const email = String(formData.get("email") ?? "").trim();
+  const password = String(formData.get("password") ?? "");
+  const nextPath = String(formData.get("next") ?? "/app");
 
   if (!email || !password) {
-    redirect('/login?error=missing_credentials');
+    redirect("/login?error=missing_credentials");
   }
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    redirect('/login?error=invalid_credentials');
+    redirect("/login?error=invalid_credentials");
   }
 
-  redirect(nextPath.startsWith('/') ? nextPath : '/app');
+  redirect(nextPath.startsWith("/") ? nextPath : "/app");
 }
 
 interface LoginPageProps {
@@ -41,12 +44,12 @@ interface LoginPageProps {
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
-  const nextPath = params.next && params.next.startsWith('/') ? params.next : '/app';
+  const nextPath = params.next && params.next.startsWith("/") ? params.next : "/app";
   const errorMessage =
-    params.error === 'invalid_credentials'
-      ? 'Invalid email or password.'
-      : params.error === 'missing_credentials'
-        ? 'Email and password are required.'
+    params.error === "invalid_credentials"
+      ? "Invalid email or password."
+      : params.error === "missing_credentials"
+        ? "Email and password are required."
         : null;
 
   return (
@@ -81,7 +84,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </form>
 
           <p className="mt-6 text-sm text-muted-foreground">
-            New to Settler?{' '}
+            New to Settler?{" "}
             <Link href="/signup" className="text-primary hover:underline">
               Get Started
             </Link>

@@ -68,9 +68,13 @@ export const metadata: Metadata = {
         sizes: "512x512",
       },
       { url: "/brand/settler/logo-icon.svg", type: "image/svg+xml" },
+      // PNG fallback for platforms without SVG favicon support
+      { url: SETTLER_IMAGES.faviconPng.path, type: "image/png", sizes: "512x512" },
     ],
     apple: [
       { url: SETTLER_IMAGES.favicon.path, type: SETTLER_IMAGES.favicon.mimeType, sizes: "180x180" },
+      // PNG fallback for Apple touch icon
+      { url: SETTLER_IMAGES.appIcon.path, type: "image/png", sizes: "512x512" },
     ],
   },
   openGraph: {

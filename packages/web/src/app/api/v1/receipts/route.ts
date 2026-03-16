@@ -4,6 +4,9 @@
  * Accepts receipt images/PDFs and returns normalized JSON.
  */
 
+// ROUTE_CLASS: api-key-service
+// AUTH: API key auth — tenant-scoped
+
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateApiKey } from "@/shared/auth/apiKey";
 import { recordServiceUsage } from "@/shared/usage/usageEvent";
