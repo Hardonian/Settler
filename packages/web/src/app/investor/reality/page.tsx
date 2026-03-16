@@ -1,27 +1,30 @@
 /**
  * Board/Investor KPI Dashboard
- * 
+ *
  * Executive-level view showing key metrics suitable for investor presentations.
  * Read-only, privileged access. High signal, low noise.
  */
 
-import { Suspense } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import {
-  DollarSign,
-  Users,
-  TrendingUp,
-  AlertTriangle,
-  CheckCircle,
-  Loader2
-} from 'lucide-react';
-import { getInvestorRealityData } from '@/lib/investor/reality-data';
+import { Suspense } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { DollarSign, Users, TrendingUp, AlertTriangle, CheckCircle, Loader2 } from "lucide-react";
+import { getInvestorRealityData } from "@/lib/investor/reality-data";
 
-export const revalidate = 300;
+// ISR (revalidate) is incompatible with this route: getInvestorRealityData()
+// calls createClient() which reads cookies(). Cookies are request-bound and
+// unavailable during background ISR regeneration, causing build-time errors.
+// Force dynamic to always serve fresh live data for the board dashboard.
+export const dynamic = "force-dynamic";
 
 type InvestorRealityPayload = {
-  revenue: { mrr: number; mrr_growth: number | null; active_subscriptions: number; churn: number | null; status: string };
+  revenue: {
+    mrr: number;
+    mrr_growth: number | null;
+    active_subscriptions: number;
+    churn: number | null;
+    status: string;
+  };
   usage: { dau: number; wau: number; active_tenants: number; status: string };
   reliability: { uptime_proxy: number | null; failure_events: number };
   risk_index: number;
@@ -31,8 +34,8 @@ type InvestorRealityPayload = {
 };
 
 const FALLBACK_DASHBOARD_DATA: InvestorRealityPayload = {
-  revenue: { mrr: 0, mrr_growth: null, active_subscriptions: 0, churn: null, status: 'assumed' },
-  usage: { dau: 0, wau: 0, active_tenants: 0, status: 'assumed' },
+  revenue: { mrr: 0, mrr_growth: null, active_subscriptions: 0, churn: null, status: "assumed" },
+  usage: { dau: 0, wau: 0, active_tenants: 0, status: "assumed" },
   reliability: { uptime_proxy: null, failure_events: 0 },
   risk_index: 0,
   evidence_index: 0,
@@ -57,27 +60,32 @@ export async function InvestorDashboardContent() {
   }
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(value);
   };
 
   const formatPercent = (value: number | string | null) => {
-    if (value === null || value === undefined) return 'N/A';
-    const num = typeof value === 'string' ? parseFloat(value) : value;
-    return `${num >= 0 ? '+' : ''}${num.toFixed(1)}%`;
+    if (value === null || value === undefined) return "N/A";
+    const num = typeof value === "string" ? parseFloat(value) : value;
+    return `${num >= 0 ? "+" : ""}${num.toFixed(1)}%`;
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'proven':
-        return <Badge className="bg-green-500"><CheckCircle className="w-3 h-3 mr-1" />PROVEN</Badge>;
-      case 'assumed':
+      case "proven":
+        return (
+          <Badge className="bg-green-500">
+            <CheckCircle className="w-3 h-3 mr-1" />
+            PROVEN
+          </Badge>
+        );
+      case "assumed":
         return <Badge className="bg-yellow-500">ASSUMED</Badge>;
-      case 'broken':
+      case "broken":
         return <Badge variant="destructive">BROKEN</Badge>;
       default:
         return <Badge>{status}</Badge>;
@@ -89,7 +97,8 @@ export async function InvestorDashboardContent() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Board KPI Dashboard</h1>
         <p className="text-muted-foreground">
-          Key performance indicators powered by the Reality System. Evidence-based metrics for investor review.
+          Key performance indicators powered by the Reality System. Evidence-based metrics for
+          investor review.
         </p>
       </div>
 
@@ -98,7 +107,8 @@ export async function InvestorDashboardContent() {
           <CardHeader>
             <CardTitle>Live metrics unavailable</CardTitle>
             <CardDescription>
-              Rendering fallback values because optional runtime services are unavailable in this environment.
+              Rendering fallback values because optional runtime services are unavailable in this
+              environment.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -132,7 +142,9 @@ export async function InvestorDashboardContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{data.revenue.active_subscriptions.toLocaleString()}</div>
+            <div className="text-3xl font-bold">
+              {data.revenue.active_subscriptions.toLocaleString()}
+            </div>
             <div className="text-sm text-muted-foreground mt-1">
               Churn: {formatPercent(data.revenue.churn)}
             </div>
@@ -247,7 +259,7 @@ export async function InvestorDashboardContent() {
             <div>
               <div className="text-sm text-muted-foreground mb-1">Uptime Proxy</div>
               <div className="text-2xl font-bold">
-                {data.reliability.uptime_proxy ? `${data.reliability.uptime_proxy}%` : 'N/A'}
+                {data.reliability.uptime_proxy ? `${data.reliability.uptime_proxy}%` : "N/A"}
               </div>
             </div>
             <div>
@@ -269,8 +281,8 @@ export async function InvestorDashboardContent() {
             <div className="text-4xl font-bold">{data.evidence_index}%</div>
             <div className="flex-1">
               <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-4">
-                <div 
-                  className="bg-green-600 h-4 rounded-full transition-all" 
+                <div
+                  className="bg-green-600 h-4 rounded-full transition-all"
                   style={{ width: `${data.evidence_index}%` }}
                 ></div>
               </div>
@@ -293,11 +305,13 @@ export async function InvestorDashboardContent() {
 
 export default function InvestorRealityPage() {
   return (
-    <Suspense fallback={
-      <div className="container mx-auto p-8 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="container mx-auto p-8 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin" />
+        </div>
+      }
+    >
       <InvestorDashboardContent />
     </Suspense>
   );
