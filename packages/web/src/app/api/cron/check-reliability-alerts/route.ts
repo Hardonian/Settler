@@ -1,32 +1,43 @@
 /**
  * Cron Job: Check Reliability Alerts
- * 
+ *
  * Periodically checks for reliability issues and sends alerts.
  * Should be called every 5 minutes via Vercel Cron or similar.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { sendAlert, shouldSendAlert } from '@/lib/alerts/reliability-alerts';
-import { appLogger } from '@/lib/utils/logger';
+// ROUTE_CLASS: cron-internal
+// AUTH: CRON_SECRET bearer token — fail-closed in production
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+import { NextRequest, NextResponse } from "next/server";
+import { sendAlert, shouldSendAlert } from "@/lib/alerts/reliability-alerts";
+import { appLogger } from "@/lib/utils/logger";
+
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify cron secret
-    const authHeader = request.headers.get('authorization');
+    // Verify cron secret — fail closed: if CRON_SECRET is unset, only allow in development
+    const authHeader = request.headers.get("authorization");
     const cronSecret = process.env.CRON_SECRET;
-    
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    if (!cronSecret) {
+      if (process.env.NODE_ENV !== "development") {
+        return NextResponse.json(
+          { error: "Unauthorized: CRON_SECRET not configured" },
+          { status: 401 }
+        );
+      }
+    } else if (authHeader !== `Bearer ${cronSecret}`) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Fetch alerts from the alerts endpoint
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : 'http://localhost:3000';
-    
+    const baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "http://localhost:3000";
+
     const alertsResponse = await fetch(`${baseUrl}/api/admin/monitoring/alerts`, {
       headers: {
         // Note: This cron job needs to authenticate as super admin
@@ -36,25 +47,31 @@ export async function POST(request: NextRequest) {
     });
 
     if (!alertsResponse.ok) {
-      appLogger.error('[Cron Alerts] Failed to fetch alerts', new Error(`Status: ${alertsResponse.status}`));
-      return NextResponse.json({ 
-        error: 'Failed to fetch alerts',
-        checked: false,
-      }, { status: 200 }); // Don't fail the cron job
+      appLogger.error(
+        "[Cron Alerts] Failed to fetch alerts",
+        new Error(`Status: ${alertsResponse.status}`)
+      );
+      return NextResponse.json(
+        {
+          error: "Failed to fetch alerts",
+          checked: false,
+        },
+        { status: 200 }
+      ); // Don't fail the cron job
     }
 
     const { alerts, summary } = await alertsResponse.json();
 
     if (summary.critical > 0) {
       // Send critical alerts
-      const criticalAlerts = alerts.filter((a: { severity: string }) => a.severity === 'high');
-      
+      const criticalAlerts = alerts.filter((a: { severity: string }) => a.severity === "high");
+
       for (const alert of criticalAlerts) {
-        const alertKey = `${alert.type}:${alert.operation || alert.adapter || 'general'}`;
-        
+        const alertKey = `${alert.type}:${alert.operation || alert.adapter || "general"}`;
+
         if (shouldSendAlert(alertKey, 15)) {
           await sendAlert({
-            severity: 'high',
+            severity: "high",
             type: alert.type,
             message: alert.message,
             details: alert,
@@ -64,16 +81,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Send medium severity alerts to Slack only (not PagerDuty)
-    const mediumAlerts = alerts.filter((a: { severity: string }) => a.severity === 'medium');
+    const mediumAlerts = alerts.filter((a: { severity: string }) => a.severity === "medium");
     if (mediumAlerts.length > 0) {
       for (const alert of mediumAlerts) {
-        const alertKey = `${alert.type}:${alert.operation || alert.adapter || 'general'}`;
-        
+        const alertKey = `${alert.type}:${alert.operation || alert.adapter || "general"}`;
+
         if (shouldSendAlert(alertKey, 30)) {
           // Only send to Slack for medium alerts
-          const { sendSlackAlert } = await import('@/lib/alerts/reliability-alerts');
+          const { sendSlackAlert } = await import("@/lib/alerts/reliability-alerts");
           await sendSlackAlert({
-            severity: 'medium',
+            severity: "medium",
             type: alert.type,
             message: alert.message,
             details: alert,
@@ -90,12 +107,15 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    appLogger.error('[Cron Alerts] Error', error);
+    appLogger.error("[Cron Alerts] Error", error);
     // Don't fail the cron job - return success but log error
-    return NextResponse.json({
-      checked: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      timestamp: new Date().toISOString(),
-    }, { status: 200 });
+    return NextResponse.json(
+      {
+        checked: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+        timestamp: new Date().toISOString(),
+      },
+      { status: 200 }
+    );
   }
 }

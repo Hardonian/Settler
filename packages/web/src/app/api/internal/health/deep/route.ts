@@ -8,14 +8,20 @@
  * - Job queue tables exist
  */
 
+// ROUTE_CLASS: admin-internal
+// AUTH: session + superAdmin
+
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createLogger } from '@/lib/logger';
 import { withSecurity } from '@/lib/middleware/api-security';
 
+
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 const DEEP_HEALTH_SECRET = process.env.DEEP_HEALTH_SECRET || '';
 
-export const runtime = 'nodejs';
 
 interface HealthCheck {
   name: string;

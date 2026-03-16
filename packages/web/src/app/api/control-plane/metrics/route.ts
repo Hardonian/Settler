@@ -1,3 +1,5 @@
+// ROUTE_CLASS: admin-internal
+// AUTH: API key + adminRole
 import { randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { withSecurity } from "@/lib/middleware/api-security";

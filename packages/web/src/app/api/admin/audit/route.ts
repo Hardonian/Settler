@@ -5,6 +5,9 @@
  * Requires super admin access.
  */
 
+// ROUTE_CLASS: admin-internal
+// AUTH: session + superAdmin
+
 import { NextRequest, NextResponse } from "next/server";
 import { isSuperAdmin } from "@/lib/auth/super-admin";
 import { AuditQueryParamsSchema, AuditItemSchema } from "@/lib/admin/metrics/types";
@@ -108,8 +111,7 @@ export const GET = withSecurity(
         limit: params.limit,
         offset: params.offset,
       });
-     
-      } catch (error) {
+    } catch (error) {
       appLogger.error("[Admin Audit] Error", error);
 
       if (error instanceof Error && error.name === "ZodError") {

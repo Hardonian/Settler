@@ -12,6 +12,8 @@ import { createClient } from "@/lib/supabase/server";
 import { appLogger } from "@/lib/utils/logger";
 import { v4 as uuidv4 } from "uuid";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 // Validation schema - simplified for Zod v4 compatibility
 const enqueueSchema = z.object({
   tenant_id: z.string(),

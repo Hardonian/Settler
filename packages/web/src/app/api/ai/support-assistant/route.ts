@@ -13,6 +13,8 @@ import {
   buildAdvisoryPolicyMetadata,
 } from "@/lib/ai/advisory-policy";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 interface SupportRequest {
   question: string;
   context?: {

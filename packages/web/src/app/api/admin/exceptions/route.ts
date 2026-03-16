@@ -5,6 +5,9 @@
  * Requires super admin access.
  */
 
+// ROUTE_CLASS: admin-internal
+// AUTH: session + superAdmin
+
 import { NextRequest, NextResponse } from "next/server";
 import { isSuperAdmin } from "@/lib/auth/super-admin";
 import { ExceptionsQueryParamsSchema, ExceptionItemSchema } from "@/lib/admin/metrics/types";
@@ -147,8 +150,7 @@ export const GET = withSecurity(
           },
         }
       );
-     
-      } catch (error) {
+    } catch (error) {
       adminLogger.error("Failed to retrieve exceptions", error);
 
       if (error instanceof Error && error.name === "ZodError") {

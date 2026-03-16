@@ -6,6 +6,9 @@
  * Requires super admin access.
  */
 
+// ROUTE_CLASS: admin-internal
+// AUTH: session + superAdmin
+
 import { NextRequest, NextResponse } from "next/server";
 import { isSuperAdmin } from "@/lib/auth/super-admin";
 import { HealthDeltaSchema, StreamEvent } from "@/lib/admin/metrics/types";
@@ -63,8 +66,7 @@ export const GET = withSecurity(
           try {
             const json = JSON.stringify(data);
             controller.enqueue(encoder.encode(`data: ${json}\n\n`));
-           
-      } catch (error) {
+          } catch (error) {
             appLogger.error("[SSE Stream] Error encoding event", error);
           }
         };
@@ -137,7 +139,6 @@ export const GET = withSecurity(
                         : null,
                     },
                     timestamp: new Date().toISOString(),
-                     
                   } as any,
                   timestamp: Date.now(),
                 });
@@ -203,7 +204,6 @@ export const GET = withSecurity(
                     type: "exceptions_delta",
                     added,
                     timestamp: new Date().toISOString(),
-                     
                   } as any,
                   timestamp: Date.now(),
                 });
@@ -249,15 +249,13 @@ export const GET = withSecurity(
                         updatedAt: run.updatedAt.toISOString(),
                       },
                       timestamp: new Date().toISOString(),
-                       
                     } as any,
                     timestamp: Date.now(),
                   });
                 }
               }
             }
-           
-      } catch (error) {
+          } catch (error) {
             appLogger.error("[SSE Stream] Polling error", error);
             sendHealth("reconnecting", null);
           }

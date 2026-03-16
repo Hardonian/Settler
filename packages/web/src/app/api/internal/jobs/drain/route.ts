@@ -5,6 +5,9 @@
  * Called by Vercel Cron or worker process.
  */
 
+// ROUTE_CLASS: admin-internal
+// AUTH: JOB_DRAIN_SECRET bearer token
+
 import { NextRequest, NextResponse } from 'next/server';
 import { processJobs } from '@/lib/jobs/worker';
 import { processRunJob } from '@/lib/jobs/handlers/run-processor';

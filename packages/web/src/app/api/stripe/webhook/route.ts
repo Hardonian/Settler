@@ -9,6 +9,9 @@
  * - Bypasses all auth middleware
  */
 
+// ROUTE_CLASS: webhook-provider
+// AUTH: Stripe-Signature HMAC — raw body, bypasses middleware
+
 import { NextRequest, NextResponse } from "next/server";
 import { stripe, syncSubscriptionFromWebhook } from "@/domain/billing/stripeService";
 import { reconcileBillingAccount } from "@/domain/billing/reconciliation";
@@ -166,7 +169,7 @@ function extractBillingAccountId(event: Stripe.Event): string | null {
     const invoice = event.data.object as Stripe.Invoice;
     // Invoice.subscription can be string | Stripe.Subscription | null
     // Access via type assertion since TypeScript types may not expose it directly
-     
+
     const subscription = (invoice as any).subscription as string | Stripe.Subscription | null;
     if (!subscription || typeof subscription === "string") {
       // We'd need to fetch the subscription to get metadata, but for now return null
@@ -250,7 +253,11 @@ export async function POST(request: NextRequest) {
 
   // Record event receipt (with idempotency protection)
   try {
-    await recordEventReceived(event.id, event.type, safeJsonParseWithDefault(body, {}, "stripe webhook body"));
+    await recordEventReceived(
+      event.id,
+      event.type,
+      safeJsonParseWithDefault(body, {}, "stripe webhook body")
+    );
   } catch (error) {
     await safeLogger.error("[Stripe Webhook] Failed to record event", {
       eventId: event.id,
@@ -529,7 +536,12 @@ export async function POST(request: NextRequest) {
 
     const response = NextResponse.json({ received: true, trace_id: traceId });
     response.headers.set("x-trace-id", traceId);
-    serverLogger.info("stripe_webhook.processed", { trace_id: traceId, eventId: event.id, eventType: event.type, duration_ms: Date.now() - startTime });
+    serverLogger.info("stripe_webhook.processed", {
+      trace_id: traceId,
+      eventId: event.id,
+      eventType: event.type,
+      duration_ms: Date.now() - startTime,
+    });
     return response;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
