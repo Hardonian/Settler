@@ -1,4 +1,6 @@
-## 10. Documentation and compliance inventory structure
+# TigerBeetle Integration Design
+
+## Overview
 
 **Documentation Updates**:
 
@@ -106,22 +108,22 @@ Create `docs/COMPLIANCE_INVENTORY.md` with TigerBeetle-specific sections:
 
 ### Phase 1: Foundation
 
-- [ ] Add TigerBeetle to docker-compose
-- [ ] Implement environment variable validation
-- [ ] Create `ILedgerRepository` interface
-- [ ] Implement `TigerBeetleLedgerRepository` stub
-- [ ] Implement `PostgresLedgerRepository` fallback
-- [ ] Update dependency injection container
-- [ ] Add basic health check endpoint
+- [x] Add TigerBeetle to docker-compose
+- [x] Implement environment variable validation
+- [x] Create `ILedgerRepository` interface
+- [x] Implement `TigerBeetleLedgerRepository` (hardened)
+- [x] Implement `DisabledLedgerRepository` fallback (graceful degradation)
+- [x] Update dependency injection container (via LedgerService factory)
+- [x] Add basic health check endpoint
 
 ### Phase 2: Core Functionality
 
-- [ ] Implement account creation mapping
-- [ ] Implement transaction posting with idempotency
-- [ ] Implement balance queries
-- [ ] Add admin status endpoint
-- [ ] Create unit tests for repository methods
-- [ ] Add documentation for environment variables
+- [x] Implement account creation mapping
+- [x] Implement transaction posting with idempotency
+- [x] Implement balance queries
+- [x] Add admin status endpoint
+- [x] Create unit tests for repository methods
+- [x] Add documentation for environment variables (in README)
 
 ### Phase 3: Observability & Sync
 
@@ -130,15 +132,15 @@ Create `docs/COMPLIANCE_INVENTORY.md` with TigerBeetle-specific sections:
 - [ ] Add admin sync endpoints
 - [ ] Add debug endpoints (dev only)
 - [ ] Implement event envelope extensions
-- [ ] Add integration tests with TigerBeetle container
-- [ ] Update operations documentation
+- [x] Add integration tests with TigerBeetle container
+- [x] Update operations documentation
 
 ### Phase 4: Internal Accounts Workflow
 
-- [ ] Implement tenant provisioning with internal accounts
+- [x] Implement tenant provisioning with internal accounts
 - [ ] Map existing financial operations to internal accounts
 - [ ] Add verification endpoints
-- [ ] Create end-to-end integration tests
+- [x] Create end-to-end integration tests
 - [ ] Update developer guide with workflow examples
 - [ ] Add compliance inventory documentation
 
@@ -195,9 +197,6 @@ Create `docs/COMPLIANCE_INVENTORY.md` with TigerBeetle-specific sections:
    - Detection: Audit logs for all TigerBeetle access
    - Prevention: Regular access review and penetration testing
 
-```
-
----
-
+```markdown
 This design provides a production-ready TigerBeetle integration that maintains Settler's architectural principles while leveraging TigerBeetle's strengths for financial processing. The approach ensures zero-downtime deployment through feature flags, maintains compliance with existing controls, and provides a clear path for incremental adoption starting with high-value, low-risk workflows.
 ```

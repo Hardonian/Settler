@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 /**
  * TigerBeetle Integration Test
  *
@@ -120,8 +121,10 @@ describe("TigerBeetle Integration", () => {
 
     test("should handle reversals", async () => {
       const originalKey = `to-reverse-${Date.now()}`;
+      // 1. Get initial balance
+      const startBalanceA = await repository.getBalance(accountAId, tenantId);
 
-      // 1. Post original
+      // 2. Post original
       const original = await repository.postTransfer({
         tenantId,
         debitAccountId: accountAId,
@@ -130,7 +133,7 @@ describe("TigerBeetle Integration", () => {
         idempotencyKey: originalKey,
       });
 
-      // 2. Reverse it
+      // 3. Reverse it
       const reversal = await repository.reverseTransfer({
         transferId: original.id,
         tenantId,
@@ -141,9 +144,9 @@ describe("TigerBeetle Integration", () => {
       expect(reversal.debitAccountId).toBe(original.creditAccountId);
       expect(reversal.creditAccountId).toBe(original.debitAccountId);
 
-      // 3. Verify net balance effect is zero
+      // 4. Verify net balance effect is zero
       const finalBalanceA = await repository.getBalance(accountAId, tenantId);
-      expect(finalBalanceA.balance.value).toBe(balanceA.balance.value + 100); // 100 from previous test + 50 - 50? No, each test should be independent if possible but they share IDs here.
+      expect(finalBalanceA.balance.value).toBe(startBalanceA.balance.value);
     });
   });
 

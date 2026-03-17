@@ -15,7 +15,8 @@ import { IUserRepository } from "../../domain/repositories/IUserRepository";
 import { User, UserRole, UserProps } from "../../domain/entities/User";
 import { config } from "../../config";
 import { query } from "../../db";
-import { logInfo } from "../../utils/logger";
+import { logInfo, logError } from "../../utils/logger";
+import { getLedgerService } from "../../domain/services/LedgerService";
 
 export class TenantService {
   constructor(
@@ -89,6 +90,40 @@ export class TenantService {
        ON CONFLICT (tenant_id) DO NOTHING`,
       [tenant.id]
     );
+
+    // Provision TigerBeetle accounts if enabled
+    const ledgerService = getLedgerService();
+    if (ledgerService.isEnabled()) {
+      try {
+        const ledgerRepo = ledgerService.getRepository();
+
+        // Create standard internal accounts for the tenant
+        await Promise.all([
+          ledgerRepo.createAccount({
+            tenantId: tenant.id,
+            type: "revenue",
+            name: "Default Revenue Account",
+          }),
+          ledgerRepo.createAccount({
+            tenantId: tenant.id,
+            type: "liability",
+            name: "Default Liability Account",
+          }),
+          ledgerRepo.createAccount({
+            tenantId: tenant.id,
+            type: "asset",
+            name: "Default Asset Account",
+          }),
+        ]);
+        logInfo("TigerBeetle accounts provisioned", { tenantId: tenant.id });
+      } catch (error: unknown) {
+        // We log but don't fail the whole tenant creation, following graceful degradation
+        logError("Failed to provision TigerBeetle accounts", {
+          tenantId: tenant.id,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
 
     logInfo("Tenant created", { tenantId: tenant.id, slug: data.slug });
 

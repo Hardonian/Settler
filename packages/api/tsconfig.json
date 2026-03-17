@@ -7,8 +7,9 @@
     "declarationMap": false,
     "exactOptionalPropertyTypes": false,
     "skipLibCheck": true,
-    "paths": {}
+    "paths": {},
+    "types": ["jest", "node"]
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "src/__tests__/**/*"]
+  "exclude": ["node_modules", "dist"]
 }

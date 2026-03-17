@@ -1,4 +1,5 @@
 #!/usr/bin/env tsx
+/* eslint-disable no-console */
 /**
  * Repository Integrity Check
  *
@@ -438,7 +439,7 @@ function checkNoCommittedNodeModules(): void {
         details: nodeModulesFiles.slice(0, 20), // Show first 20
       });
     }
-  } catch (error) {
+  } catch {
     // If git command fails, check filesystem as fallback
     const nodeModulesPaths: string[] = [];
     function findNodeModules(dir: string, depth = 0): void {
@@ -486,6 +487,37 @@ function checkNoCommittedNodeModules(): void {
 }
 
 /**
+ * Check 7: TigerBeetle configuration validity
+ */
+function checkTigerBeetleConfig(): void {
+  // Check packages/api/.env.local and .env.example
+  const apiEnvExamplePath = join(packagesDir, "api", ".env.example");
+  const typesEnvPath = join(packagesDir, "types", "src", "typed-env.ts");
+
+  if (existsSync(apiEnvExamplePath)) {
+    const content = readFileSync(apiEnvExamplePath, "utf-8");
+    if (!content.includes("TIGERBEETLE_ADDRESS")) {
+      errors.push({
+        check: "TigerBeetle configuration",
+        severity: "warning",
+        message: "API .env.example missing TIGERBEETLE_ADDRESS",
+      });
+    }
+  }
+
+  if (existsSync(typesEnvPath)) {
+    const content = readFileSync(typesEnvPath, "utf-8");
+    if (!content.includes("TIGERBEETLE_ENABLED")) {
+      errors.push({
+        check: "TigerBeetle configuration",
+        severity: "error",
+        message: "types/src/typed-env.ts missing TIGERBEETLE_ENABLED schema",
+      });
+    }
+  }
+}
+
+/**
  * Main execution
  */
 async function main() {
@@ -497,6 +529,7 @@ async function main() {
   checkScriptReferences();
   checkTypeScriptContracts();
   checkNoCommittedNodeModules();
+  checkTigerBeetleConfig();
 
   // Print results
   const errorCount = errors.filter((e) => e.severity === "error").length;
