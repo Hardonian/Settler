@@ -159,9 +159,11 @@
     "turbo.json",
     "ui",
     "vercel.json",
-    "verify_patch.py"
+    "verify_patch.py",
+    "stitch_integrations_data_sources.zip",
+    ".vscode"
   ],
-  "blockedExtensions": [".zip", ".tar", ".tgz", ".bak", ".tmp", ".old"],
+  "blockedExtensions": [".tar", ".tgz", ".bak", ".tmp", ".old"],
   "localClutterPatterns": [
     "^\\.env\\.local$",
     "^\\.DS_Store$",

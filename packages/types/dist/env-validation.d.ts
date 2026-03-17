@@ -23,6 +23,11 @@ export declare const serverEnvSchema: z.ZodObject<{
     SENTRY_DSN: z.ZodOptional<z.ZodString>;
     STRIPE_SECRET_KEY: z.ZodOptional<z.ZodString>;
     STRIPE_WEBHOOK_SECRET: z.ZodOptional<z.ZodString>;
+    TIGERBEETLE_ENABLED: z.ZodPipeline<z.ZodDefault<z.ZodEffects<z.ZodString, boolean, string>>, z.ZodBoolean>;
+    TIGERBEETLE_ADDRESS: z.ZodDefault<z.ZodString>;
+    TIGERBEETLE_CLUSTER_ID: z.ZodPipeline<z.ZodDefault<z.ZodEffects<z.ZodString, number, string>>, z.ZodNumber>;
+    TIGERBEETLE_TIMEOUT_MS: z.ZodPipeline<z.ZodDefault<z.ZodEffects<z.ZodString, number, string>>, z.ZodNumber>;
+    TIGERBEETLE_MAX_RETRIES: z.ZodPipeline<z.ZodDefault<z.ZodEffects<z.ZodString, number, string>>, z.ZodNumber>;
 }, "strip", z.ZodTypeAny, {
     DATABASE_URL: string;
     SUPABASE_URL: string;
@@ -30,6 +35,11 @@ export declare const serverEnvSchema: z.ZodObject<{
     SUPABASE_SERVICE_ROLE_KEY: string;
     JWT_SECRET: string;
     ENCRYPTION_KEY: string;
+    TIGERBEETLE_ENABLED: boolean;
+    TIGERBEETLE_ADDRESS: string;
+    TIGERBEETLE_CLUSTER_ID: number;
+    TIGERBEETLE_TIMEOUT_MS: number;
+    TIGERBEETLE_MAX_RETRIES: number;
     REDIS_URL?: string | undefined;
     UPSTASH_REDIS_REST_URL?: string | undefined;
     UPSTASH_REDIS_REST_TOKEN?: string | undefined;
@@ -53,6 +63,11 @@ export declare const serverEnvSchema: z.ZodObject<{
     SENTRY_DSN?: string | undefined;
     STRIPE_SECRET_KEY?: string | undefined;
     STRIPE_WEBHOOK_SECRET?: string | undefined;
+    TIGERBEETLE_ENABLED?: string | undefined;
+    TIGERBEETLE_ADDRESS?: string | undefined;
+    TIGERBEETLE_CLUSTER_ID?: string | undefined;
+    TIGERBEETLE_TIMEOUT_MS?: string | undefined;
+    TIGERBEETLE_MAX_RETRIES?: string | undefined;
 }>;
 /**
  * Client-side environment schema
@@ -95,6 +110,11 @@ export declare const fullEnvSchema: z.ZodObject<{
     SENTRY_DSN: z.ZodOptional<z.ZodString>;
     STRIPE_SECRET_KEY: z.ZodOptional<z.ZodString>;
     STRIPE_WEBHOOK_SECRET: z.ZodOptional<z.ZodString>;
+    TIGERBEETLE_ENABLED: z.ZodPipeline<z.ZodDefault<z.ZodEffects<z.ZodString, boolean, string>>, z.ZodBoolean>;
+    TIGERBEETLE_ADDRESS: z.ZodDefault<z.ZodString>;
+    TIGERBEETLE_CLUSTER_ID: z.ZodPipeline<z.ZodDefault<z.ZodEffects<z.ZodString, number, string>>, z.ZodNumber>;
+    TIGERBEETLE_TIMEOUT_MS: z.ZodPipeline<z.ZodDefault<z.ZodEffects<z.ZodString, number, string>>, z.ZodNumber>;
+    TIGERBEETLE_MAX_RETRIES: z.ZodPipeline<z.ZodDefault<z.ZodEffects<z.ZodString, number, string>>, z.ZodNumber>;
 } & {
     NEXT_PUBLIC_SITE_URL: z.ZodDefault<z.ZodString>;
     NEXT_PUBLIC_SUPABASE_URL: z.ZodString;
@@ -108,6 +128,11 @@ export declare const fullEnvSchema: z.ZodObject<{
     SUPABASE_SERVICE_ROLE_KEY: string;
     JWT_SECRET: string;
     ENCRYPTION_KEY: string;
+    TIGERBEETLE_ENABLED: boolean;
+    TIGERBEETLE_ADDRESS: string;
+    TIGERBEETLE_CLUSTER_ID: number;
+    TIGERBEETLE_TIMEOUT_MS: number;
+    TIGERBEETLE_MAX_RETRIES: number;
     NEXT_PUBLIC_SITE_URL: string;
     NEXT_PUBLIC_SUPABASE_URL: string;
     NEXT_PUBLIC_SUPABASE_ANON_KEY: string;
@@ -138,6 +163,11 @@ export declare const fullEnvSchema: z.ZodObject<{
     SENTRY_DSN?: string | undefined;
     STRIPE_SECRET_KEY?: string | undefined;
     STRIPE_WEBHOOK_SECRET?: string | undefined;
+    TIGERBEETLE_ENABLED?: string | undefined;
+    TIGERBEETLE_ADDRESS?: string | undefined;
+    TIGERBEETLE_CLUSTER_ID?: string | undefined;
+    TIGERBEETLE_TIMEOUT_MS?: string | undefined;
+    TIGERBEETLE_MAX_RETRIES?: string | undefined;
     NEXT_PUBLIC_SITE_URL?: string | undefined;
     NEXT_PUBLIC_SENTRY_DSN?: string | undefined;
     NEXT_PUBLIC_APP_URL?: string | undefined;

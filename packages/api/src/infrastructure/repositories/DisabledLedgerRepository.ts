@@ -171,7 +171,7 @@ export class DisabledLedgerRepository implements ILedgerRepository {
       items: [],
       total: 0,
       page: 1,
-      pageSize: _filters.limit || 50,
+      limit: _filters.limit || 50,
       hasMore: false,
     };
   }
@@ -186,10 +186,10 @@ export class DisabledLedgerRepository implements ILedgerRepository {
     return {
       accountId: _accountId,
       tenantId: _tenantId,
-      available: { value: 0, currency: "USD" },
-      pending: { value: 0, currency: "USD" },
-      settled: { value: 0, currency: "USD" },
-      timestamp: new Date(),
+      balance: { value: 0, currency: "USD" },
+      pendingBalance: { value: 0, currency: "USD" },
+      settledBalance: { value: 0, currency: "USD" },
+      asOf: new Date(),
     };
   }
 
@@ -199,10 +199,10 @@ export class DisabledLedgerRepository implements ILedgerRepository {
     return _accountIds.map((accountId) => ({
       accountId,
       tenantId: _tenantId,
-      available: { value: 0, currency: "USD" },
-      pending: { value: 0, currency: "USD" },
-      settled: { value: 0, currency: "USD" },
-      timestamp: new Date(),
+      balance: { value: 0, currency: "USD" },
+      pendingBalance: { value: 0, currency: "USD" },
+      settledBalance: { value: 0, currency: "USD" },
+      asOf: new Date(),
     }));
   }
 

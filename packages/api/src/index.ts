@@ -79,7 +79,7 @@ import {
   isLedgerUsingFallback,
   getLedgerDisabledReason,
 } from "./domain/services/LedgerService";
-import { logInfo as logLedgerInfo, logWarn } from "./utils/logger";
+import { logInfo as logLedgerInfo } from "./utils/logger";
 
 const app: Express = express();
 const PORT = config.port;

@@ -6,7 +6,7 @@
  */
 import { z } from "zod";
 export declare const CLIENT_ENV_KEYS: readonly ["NEXT_PUBLIC_SITE_URL", "NEXT_PUBLIC_APP_URL", "NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY", "NEXT_PUBLIC_SENTRY_DSN"];
-export declare const SERVER_ENV_KEYS: readonly ["NODE_ENV", "SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY", "DATABASE_URL", "SUPABASE_DATABASE_URL", "DIRECT_URL", "JWT_SECRET", "ENCRYPTION_KEY", "STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET", "RESEND_API_KEY", "RESEND_FROM_EMAIL"];
+export declare const SERVER_ENV_KEYS: readonly ["NODE_ENV", "SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY", "DATABASE_URL", "SUPABASE_DATABASE_URL", "DIRECT_URL", "JWT_SECRET", "ENCRYPTION_KEY", "STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET", "RESEND_API_KEY", "RESEND_FROM_EMAIL", "TIGERBEETLE_ENABLED", "TIGERBEETLE_ADDRESS", "TIGERBEETLE_CLUSTER_ID", "TIGERBEETLE_TIMEOUT_MS", "TIGERBEETLE_MAX_RETRIES"];
 export declare const BUILD_REQUIRED_SERVER_KEYS: readonly ["SUPABASE_URL", "SUPABASE_ANON_KEY"];
 export declare const RUNTIME_REQUIRED_SERVER_KEYS: readonly ["SUPABASE_SERVICE_ROLE_KEY", "JWT_SECRET", "ENCRYPTION_KEY"];
 export type ClientEnvKey = (typeof CLIENT_ENV_KEYS)[number];
@@ -44,12 +44,22 @@ declare const serverEnvSchema: z.ZodEffects<z.ZodObject<{
     STRIPE_WEBHOOK_SECRET: z.ZodOptional<z.ZodString>;
     RESEND_API_KEY: z.ZodOptional<z.ZodString>;
     RESEND_FROM_EMAIL: z.ZodOptional<z.ZodString>;
+    TIGERBEETLE_ENABLED: z.ZodPipeline<z.ZodDefault<z.ZodEffects<z.ZodString, boolean, string>>, z.ZodBoolean>;
+    TIGERBEETLE_ADDRESS: z.ZodDefault<z.ZodString>;
+    TIGERBEETLE_CLUSTER_ID: z.ZodPipeline<z.ZodDefault<z.ZodEffects<z.ZodString, number, string>>, z.ZodNumber>;
+    TIGERBEETLE_TIMEOUT_MS: z.ZodPipeline<z.ZodDefault<z.ZodEffects<z.ZodString, number, string>>, z.ZodNumber>;
+    TIGERBEETLE_MAX_RETRIES: z.ZodPipeline<z.ZodDefault<z.ZodEffects<z.ZodString, number, string>>, z.ZodNumber>;
 }, "strict", z.ZodTypeAny, {
     SUPABASE_URL: string;
     SUPABASE_ANON_KEY: string;
     SUPABASE_SERVICE_ROLE_KEY: string;
     JWT_SECRET: string;
     ENCRYPTION_KEY: string;
+    TIGERBEETLE_ENABLED: boolean;
+    TIGERBEETLE_ADDRESS: string;
+    TIGERBEETLE_CLUSTER_ID: number;
+    TIGERBEETLE_TIMEOUT_MS: number;
+    TIGERBEETLE_MAX_RETRIES: number;
     NODE_ENV: "development" | "production" | "test";
     DATABASE_URL?: string | undefined;
     RESEND_API_KEY?: string | undefined;
@@ -69,6 +79,11 @@ declare const serverEnvSchema: z.ZodEffects<z.ZodObject<{
     RESEND_FROM_EMAIL?: string | undefined;
     STRIPE_SECRET_KEY?: string | undefined;
     STRIPE_WEBHOOK_SECRET?: string | undefined;
+    TIGERBEETLE_ENABLED?: string | undefined;
+    TIGERBEETLE_ADDRESS?: string | undefined;
+    TIGERBEETLE_CLUSTER_ID?: string | undefined;
+    TIGERBEETLE_TIMEOUT_MS?: string | undefined;
+    TIGERBEETLE_MAX_RETRIES?: string | undefined;
     NODE_ENV?: "development" | "production" | "test" | undefined;
     SUPABASE_DATABASE_URL?: string | undefined;
     DIRECT_URL?: string | undefined;
@@ -78,6 +93,11 @@ declare const serverEnvSchema: z.ZodEffects<z.ZodObject<{
     SUPABASE_SERVICE_ROLE_KEY: string;
     JWT_SECRET: string;
     ENCRYPTION_KEY: string;
+    TIGERBEETLE_ENABLED: boolean;
+    TIGERBEETLE_ADDRESS: string;
+    TIGERBEETLE_CLUSTER_ID: number;
+    TIGERBEETLE_TIMEOUT_MS: number;
+    TIGERBEETLE_MAX_RETRIES: number;
     NODE_ENV: "development" | "production" | "test";
     DATABASE_URL?: string | undefined;
     RESEND_API_KEY?: string | undefined;
@@ -97,6 +117,11 @@ declare const serverEnvSchema: z.ZodEffects<z.ZodObject<{
     RESEND_FROM_EMAIL?: string | undefined;
     STRIPE_SECRET_KEY?: string | undefined;
     STRIPE_WEBHOOK_SECRET?: string | undefined;
+    TIGERBEETLE_ENABLED?: string | undefined;
+    TIGERBEETLE_ADDRESS?: string | undefined;
+    TIGERBEETLE_CLUSTER_ID?: string | undefined;
+    TIGERBEETLE_TIMEOUT_MS?: string | undefined;
+    TIGERBEETLE_MAX_RETRIES?: string | undefined;
     NODE_ENV?: "development" | "production" | "test" | undefined;
     SUPABASE_DATABASE_URL?: string | undefined;
     DIRECT_URL?: string | undefined;
