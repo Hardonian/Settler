@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Period Close Readiness Checklist - Settler</title>
+<!-- Tailwind CSS v3 CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style data-purpose="typography-and-base">
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* Custom scrollbar for high-density lists */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen text-slate-900">
+<!-- BEGIN: MainHeader -->
+<header class="bg-white border-b border-slate-200 sticky top-0 z-50 px-4 py-3" data-purpose="app-header">
+<div class="flex flex-col gap-2">
+<!-- Entity and Context -->
+<div class="flex justify-between items-start">
+<div>
+<h1 class="text-lg font-bold text-slate-900">Oct 2023 Period Close</h1>
+<p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Settler US Core</p>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+          In Progress (82%)
+        </span>
+</div>
+</div>
+<!-- Progress Bar Container -->
+<div class="w-full bg-slate-100 rounded-full h-2 mt-1">
+<div class="bg-blue-600 h-2 rounded-full transition-all duration-500" style="width: 82%"></div>
+</div>
+</div>
+</header>
+<!-- END: MainHeader -->
+<main class="flex-grow pb-40">
+<!-- BEGIN: Period Summary Card -->
+<section class="p-4" data-purpose="period-summary">
+<div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col gap-3">
+<h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Financial Summary</h2>
+<div class="grid grid-cols-2 gap-4">
+<div class="border-l-2 border-slate-200 pl-3">
+<p class="text-[10px] text-slate-500 font-medium">Total Volume</p>
+<p class="text-lg font-bold text-slate-900">$14.2M</p>
+</div>
+<div class="border-l-2 border-amber-400 pl-3">
+<p class="text-[10px] text-slate-500 font-medium">Net Variance</p>
+<p class="text-lg font-bold text-amber-700">+$124.5k</p>
+</div>
+</div>
+</div>
+</section>
+<!-- END: Period Summary Card -->
+<!-- BEGIN: WarningBanner -->
+<section class="px-4 pb-4" data-purpose="alert-section">
+<div class="flex items-start gap-3 p-3 rounded-lg bg-red-50 border border-red-200">
+<span class="material-symbols-outlined text-red-600 text-[20px]">error</span>
+<div class="flex flex-col">
+<p class="text-sm font-semibold text-red-800">Critical Blocker</p>
+<p class="text-xs text-red-700">14 Unresolved Exceptions remain in the queue.</p>
+</div>
+</div>
+</section>
+<!-- END: WarningBanner -->
+<!-- BEGIN: ChecklistSection -->
+<section class="px-4 space-y-3" data-purpose="checklist-container">
+<!-- Item 1: Data Ingestion (Green/Ready) -->
+<article class="bg-white border border-slate-200 rounded-xl p-4 flex items-start gap-4 shadow-sm" data-purpose="checklist-item">
+<div class="flex-shrink-0 mt-1">
+<div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center border border-green-200">
+<span class="material-symbols-outlined text-green-600 text-[16px]">check</span>
+</div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-center mb-1">
+<h3 class="text-sm font-semibold text-slate-800">Data Ingestion</h3>
+<span class="text-[10px] font-medium bg-green-50 text-green-700 px-2 py-0.5 rounded border border-green-100">Ready</span>
+</div>
+<p class="text-xs text-slate-500">All 12 connectors synced. Last update 14m ago.</p>
+</div>
+</article>
+<!-- Item 2: Reconciliation (Amber/Blocker) -->
+<article class="bg-white border-2 border-amber-500/30 rounded-xl p-4 flex flex-col gap-3 shadow-[0_4px_12px_rgba(245,158,11,0.08)]" data-purpose="checklist-item">
+<div class="flex items-start gap-4">
+<div class="flex-shrink-0 mt-1">
+<div class="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center border border-amber-200">
+<span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+</div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-center mb-1">
+<h3 class="text-sm font-bold text-slate-800">Reconciliation</h3>
+<span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded uppercase tracking-tight">Needs Action</span>
+</div>
+<p class="text-xs text-slate-600 leading-relaxed">8/22 Tasks completed. 14 exceptions pending resolution in ledger vs bank data.</p>
+</div>
+</div>
+<div class="pt-1">
+<button class="w-full bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-sm">
+          Resolve Exceptions in Workspace
+          <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</article>
+<!-- Item 3: Variance Analysis (Gray/Locked) -->
+<article class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start gap-4 opacity-75" data-purpose="checklist-item">
+<div class="flex-shrink-0 mt-1">
+<div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center border border-slate-300">
+<span class="material-symbols-outlined text-slate-400 text-[14px]">lock</span>
+</div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-center mb-1">
+<h3 class="text-sm font-semibold text-slate-600">Variance Analysis</h3>
+<span class="text-[10px] font-medium bg-slate-100 text-slate-500 px-2 py-0.5 rounded">0/5 Tasks</span>
+</div>
+<p class="text-xs text-slate-400">Locked: Pending reconciliation completion.</p>
+</div>
+</article>
+<!-- Item 4: Manual Adjustments (Gray/Locked) -->
+<article class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start gap-4 opacity-75" data-purpose="checklist-item">
+<div class="flex-shrink-0 mt-1">
+<div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center border border-slate-300">
+<span class="material-symbols-outlined text-slate-400 text-[14px]">lock</span>
+</div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-center mb-1">
+<h3 class="text-sm font-semibold text-slate-600">Manual Adjustments</h3>
+<span class="text-[10px] font-medium bg-slate-100 text-slate-500 px-2 py-0.5 rounded">0/2 Tasks</span>
+</div>
+<p class="text-xs text-slate-400">2 entries required for year-end accrual adjustments.</p>
+</div>
+</article>
+<!-- Item 5: Attestations (Disabled) -->
+<article class="bg-slate-100 border border-slate-200 rounded-xl p-4 flex items-start gap-4 grayscale" data-purpose="checklist-item">
+<div class="flex-shrink-0 mt-1">
+<div class="w-6 h-6 rounded-full border-2 border-slate-300 border-dashed"></div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-center mb-1">
+<h3 class="text-sm font-semibold text-slate-400">Attestations</h3>
+<span class="text-[10px] font-medium bg-slate-200 text-slate-400 px-2 py-0.5 rounded uppercase tracking-tighter">Pending</span>
+</div>
+<p class="text-xs text-slate-400">Final officer sign-off and SOX compliance check.</p>
+</div>
+</article>
+</section>
+<!-- END: ChecklistSection -->
+</main>
+<!-- BEGIN: StickyFooter -->
+<footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-50" data-purpose="action-bar">
+<div class="flex flex-col gap-2">
+<button class="w-full py-3 px-4 rounded-lg border border-slate-300 text-slate-700 font-semibold text-sm hover:bg-slate-50 active:bg-slate-100 transition-colors" data-purpose="secondary-action">
+      Download Preliminary Evidence Pack
+    </button>
+<div class="flex flex-col gap-1.5">
+<button class="w-full py-3 px-4 rounded-lg bg-slate-200 text-slate-400 font-bold text-sm cursor-not-allowed flex items-center justify-center gap-2" data-purpose="primary-action-disabled" disabled="">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+        Sign &amp; Close Period
+      </button>
+<div class="flex items-center gap-1.5 justify-center">
+<span class="material-symbols-outlined text-slate-400 text-[14px]">info</span>
+<p class="text-[10px] text-slate-500 text-center font-medium italic">Complete 21 remaining tasks to enable period closure.</p>
+</div>
+</div>
+</div>
+</footer>
+<!-- END: StickyFooter -->
+</body></html>

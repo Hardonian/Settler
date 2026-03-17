@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Time Truth &amp; Lineage Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec5b13",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221610",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<!-- Header Navigation -->
+<header class="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl">schedule</span>
+<h1 class="text-xl font-bold tracking-tight">Time Truth &amp; Lineage</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
+<span class="text-xs font-bold text-primary">JD</span>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+<!-- Stale Data Warning Banner -->
+<div class="group/banner">
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 rounded-xl border border-primary/20 bg-primary/5 dark:bg-primary/10">
+<div class="flex items-start gap-3">
+<div class="mt-0.5">
+<span class="material-symbols-outlined text-primary">warning</span>
+</div>
+<div>
+<p class="font-bold text-slate-900 dark:text-slate-100">Data Freshness Warning</p>
+<p class="text-sm text-slate-600 dark:text-slate-400">Last sync 4h ago — Data ingestion delay detected in EMEA region. Financial logic may be stale.</p>
+</div>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-semibold text-sm hover:bg-primary/90 transition-colors shadow-sm whitespace-nowrap">
+<span class="material-symbols-outlined text-sm">sync</span>
+                    Sync Now
+                </button>
+</div>
+</div>
+<!-- Dashboard Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Period Comparison Widget 1 -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Match Rate</p>
+<span class="flex items-center text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-xs mr-1">trending_up</span>
+                        1.2%
+                    </span>
+</div>
+<div class="flex items-end gap-2">
+<span class="text-3xl font-bold">98.2%</span>
+<span class="text-sm text-slate-400 mb-1">vs 97.0% prev</span>
+</div>
+<div class="mt-4 h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 98.2%"></div>
+</div>
+</div>
+<!-- Period Comparison Widget 2 -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Variance</p>
+<span class="flex items-center text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-xs mr-1">trending_down</span>
+                        0.01%
+                    </span>
+</div>
+<div class="flex items-end gap-2">
+<span class="text-3xl font-bold">0.04%</span>
+<span class="text-sm text-slate-400 mb-1">vs 0.05% prev</span>
+</div>
+<div class="mt-4 flex items-center gap-2">
+<div class="flex-1 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full">
+<div class="h-full bg-amber-500" style="width: 40%"></div>
+</div>
+</div>
+</div>
+<!-- Period Comparison Widget 3 -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">System Drift</p>
+<span class="flex items-center text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-xs mr-1">timer</span>
+                        +0.5ms
+                    </span>
+</div>
+<div class="flex items-end gap-2">
+<span class="text-3xl font-bold">+2.1ms</span>
+<span class="text-sm text-slate-400 mb-1">vs 1.6ms prev</span>
+</div>
+<div class="mt-4 flex justify-between text-xs text-slate-500">
+<span>Target: &lt;1.0ms</span>
+<span class="font-bold text-primary">SLA Caution</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Vertical Timeline Component (Spans 2 columns) -->
+<div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+<div class="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+<h2 class="text-lg font-bold">Transaction Lineage (TX-904221)</h2>
+<div class="flex gap-2">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
+                            ID: 0x88F...42
+                        </span>
+</div>
+</div>
+<div class="p-8">
+<div class="relative space-y-12">
+<!-- Connecting Line -->
+<div class="absolute left-[19px] top-2 bottom-2 w-0.5 bg-slate-200 dark:bg-slate-800"></div>
+<!-- Step 1: Ingested -->
+<div class="relative flex gap-6">
+<div class="z-10 flex items-center justify-center w-10 h-10 rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/20">
+<span class="material-symbols-outlined text-lg">cloud_download</span>
+</div>
+<div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+<div>
+<h4 class="font-bold text-slate-900 dark:text-slate-100">Ingested</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400">Connector: SWIFT-A24</p>
+</div>
+<div class="flex flex-col md:items-end text-sm">
+<div class="flex items-center gap-2">
+<span class="text-slate-400">Event Time:</span>
+<span class="font-mono font-medium">10:24:01.002</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-slate-400">Process Time:</span>
+<span class="font-mono font-medium">10:24:01.445</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Step 2: Validated -->
+<div class="relative flex gap-6">
+<div class="z-10 flex items-center justify-center w-10 h-10 rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/20">
+<span class="material-symbols-outlined text-lg">verified</span>
+</div>
+<div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+<div>
+<h4 class="font-bold text-slate-900 dark:text-slate-100">Validated</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400">Schema Integrity Check</p>
+</div>
+<div class="flex flex-col md:items-end text-sm">
+<div class="flex items-center gap-2">
+<span class="text-slate-400">System Time:</span>
+<span class="font-mono font-medium">10:24:02.110</span>
+</div>
+<div class="text-xs text-emerald-600 font-bold uppercase tracking-tighter mt-1">
+                                        Latency: 665ms
+                                    </div>
+</div>
+</div>
+</div>
+<!-- Step 3: Matched -->
+<div class="relative flex gap-6">
+<div class="z-10 flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-lg">rule</span>
+</div>
+<div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+<div>
+<h4 class="font-bold text-slate-900 dark:text-slate-100">Matched</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400">Reconciliation Logic (V3.2)</p>
+</div>
+<div class="flex flex-col md:items-end text-sm">
+<div class="flex items-center gap-2">
+<span class="text-slate-400">Logic Time:</span>
+<span class="font-mono font-medium">10:24:03.901</span>
+</div>
+<div class="text-xs text-primary font-bold uppercase tracking-tighter mt-1">
+                                        Logic Drift: +1.2ms
+                                    </div>
+</div>
+</div>
+</div>
+<!-- Step 4: Settled -->
+<div class="relative flex gap-6">
+<div class="z-10 flex items-center justify-center w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-400">
+<span class="material-symbols-outlined text-lg">account_balance</span>
+</div>
+<div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 opacity-50">
+<div>
+<h4 class="font-bold text-slate-900 dark:text-slate-100">Settled</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400">Awaiting Settlement Confirm</p>
+</div>
+<div class="flex flex-col md:items-end text-sm">
+<div class="flex items-center gap-2">
+<span class="text-slate-400">Settlement Time:</span>
+<span class="font-mono font-medium">PENDING</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Aging & SLA Component -->
+<div class="space-y-6">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-6 border-b border-slate-100 dark:border-slate-800 pb-2">Active Aging Tiers</h3>
+<div class="space-y-4">
+<!-- SLA Badge: < 1h -->
+<div class="flex items-center justify-between p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400">check_circle</span>
+<span class="font-bold text-emerald-900 dark:text-emerald-100">&lt; 1h</span>
+</div>
+<span class="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-300">42 Transactions</span>
+</div>
+<!-- SLA Badge: 2-4h -->
+<div class="flex items-center justify-between p-3 rounded-lg bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-amber-600 dark:text-amber-400">hourglass_top</span>
+<span class="font-bold text-amber-900 dark:text-amber-100">2-4h</span>
+</div>
+<span class="text-xs font-mono font-bold text-amber-700 dark:text-amber-300">18 Transactions</span>
+</div>
+<!-- SLA Badge: 24h+ -->
+<div class="flex items-center justify-between p-3 rounded-lg bg-primary/5 border border-primary/20">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">warning</span>
+<span class="font-bold text-slate-900 dark:text-slate-100">24h+</span>
+</div>
+<span class="text-xs font-mono font-bold text-primary">7 Transactions</span>
+</div>
+<!-- SLA Badge: Breach -->
+<div class="flex items-center justify-between p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/40">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-red-600 dark:text-red-400">emergency</span>
+<span class="font-bold text-red-900 dark:text-red-100">SLA Breach</span>
+</div>
+<div class="text-right">
+<p class="text-[10px] uppercase font-bold text-red-500">Critical</p>
+<p class="text-xs font-mono font-bold text-red-700 dark:text-red-300">00:45:12</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity/Log -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-4">Time Drift Monitor</h3>
+<div class="space-y-3">
+<div class="flex items-center justify-between text-xs">
+<span class="text-slate-500">NY Core -&gt; LON Edge</span>
+<span class="font-mono text-emerald-500">42ms</span>
+</div>
+<div class="flex items-center justify-between text-xs">
+<span class="text-slate-500">LON Edge -&gt; HK Node</span>
+<span class="font-mono text-primary">128ms</span>
+</div>
+<div class="flex items-center justify-between text-xs">
+<span class="text-slate-500">PTP Precision Error</span>
+<span class="font-mono text-slate-500">&lt; 1μs</span>
+</div>
+<div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+<img class="h-24 w-full object-cover rounded border border-slate-200 dark:border-slate-800" data-alt="Abstract data visualization showing time drift spikes over time" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAL6wGWWk7tbgN04zOSGpHcFlIWcFt3DD_DkqQ_49fumFS4mCyMVuGw6dTzQ4QqEYml7rZU5GJdNQ8R7dn1UNyfhGAbs0XaBj-vEt87I19T0fY-nD-xnP5rQP44N0VX_ebQaTfDXswChgMjLvtC1HjraYSHpa7alFEu7bAEtM9OITNX5NKeEYBAQiW7G61fNg2S1k4KGxVXpcP1OldXR-LOyW8pPyRqwD1PtXNDu86jxd6TLxsPulCMDJ_hMQRe2yLBOhEUnai2tQ"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Mobile) -->
+<div class="fixed bottom-0 left-0 right-0 lg:hidden bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-4 py-2">
+<div class="flex justify-around items-center">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold">Dash</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="text-[10px] font-bold">Lineage</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">security</span>
+<span class="text-[10px] font-bold">Audits</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-bold">Config</span>
+</a>
+</div>
+</div>
+</body></html>

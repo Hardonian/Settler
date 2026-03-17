@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settler Mobile - Reconciliation Workspace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec5b13",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221610",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased overflow-hidden">
+<div class="relative flex h-screen w-full flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-2xl overflow-hidden border-x border-slate-200 dark:border-slate-800">
+<!-- Header -->
+<header class="sticky top-0 z-30 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md">
+<div class="flex items-center p-4 pb-2 justify-between">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">Investigation</h2>
+<div class="flex w-10 items-center justify-end">
+<button class="flex size-10 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+</div>
+<!-- Breadcrumbs -->
+<div class="px-4 py-1">
+<nav class="flex text-[10px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 gap-1 items-center">
+<span>Workspace</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span>Investigation</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="text-primary">TXN-94021-X</span>
+</nav>
+</div>
+<!-- Filters -->
+<div class="flex gap-2 p-4 overflow-x-auto no-scrollbar">
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-primary/10 border border-primary/20 px-3 transition-colors">
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+<p class="text-primary text-xs font-semibold leading-normal">Status: Unmatched</p>
+<span class="material-symbols-outlined text-primary text-base">expand_more</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-primary/10 border border-primary/20 px-3 transition-colors">
+<span class="material-symbols-outlined text-primary text-lg">calendar_today</span>
+<p class="text-primary text-xs font-semibold leading-normal">Last 7 Days</p>
+<span class="material-symbols-outlined text-primary text-base">expand_more</span>
+</button>
+</div>
+</header>
+<!-- Main List Content -->
+<main class="flex-1 overflow-y-auto px-4 space-y-3 pb-24">
+<!-- Selected Card -->
+<div class="relative group">
+<div class="flex flex-col items-stretch justify-start rounded-xl shadow-lg ring-2 ring-primary bg-white dark:bg-slate-900 overflow-hidden">
+<div class="h-1.5 w-full bg-primary"></div>
+<div class="flex w-full flex-col p-4">
+<div class="flex justify-between items-start mb-2">
+<div>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-tighter">Transaction ID</p>
+<p class="text-slate-900 dark:text-slate-100 text-base font-bold">TXN-94021-X</p>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 uppercase">Pending</span>
+</div>
+<div class="flex items-end justify-between mt-1">
+<div>
+<p class="text-2xl font-black text-slate-900 dark:text-slate-50 leading-none">$4,200.00</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs mt-1 italic">Settlement Account • Oct 24, 2023</p>
+</div>
+<button class="flex h-8 px-4 items-center justify-center rounded-lg bg-primary text-white text-xs font-bold transition-transform active:scale-95 shadow-md shadow-primary/20">
+                                View Details
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Other items (Dimmed background simulation) -->
+<div class="space-y-3 opacity-60">
+<div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50">
+<div class="flex justify-between items-center mb-1">
+<p class="text-slate-900 dark:text-slate-100 font-semibold">TXN-93882-Y</p>
+<p class="text-slate-900 dark:text-slate-100 font-bold">$1,240.50</p>
+</div>
+<p class="text-slate-500 text-xs">Internal Transfer • Oct 23, 2023</p>
+</div>
+<div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50">
+<div class="flex justify-between items-center mb-1">
+<p class="text-slate-900 dark:text-slate-100 font-semibold">TXN-93710-A</p>
+<p class="text-slate-900 dark:text-slate-100 font-bold">$890.00</p>
+</div>
+<p class="text-slate-500 text-xs">Merchant Payout • Oct 22, 2023</p>
+</div>
+</div>
+</main>
+<!-- Bottom Drawer (Sheet) adapted for Mobile Flow -->
+<div class="absolute inset-0 z-40 bg-black/40 backdrop-blur-[1px]">
+<!-- Clickable area to close -->
+<div class="h-1/4 w-full"></div>
+<!-- The Sheet -->
+<div class="h-3/4 w-full bg-white dark:bg-background-dark rounded-t-3xl shadow-[0_-8px_30px_rgb(0,0,0,0.12)] flex flex-col border-t border-slate-200 dark:border-slate-800">
+<div class="w-full flex justify-center py-3">
+<div class="w-12 h-1.5 bg-slate-300 dark:bg-slate-700 rounded-full"></div>
+</div>
+<div class="flex items-center justify-between px-6 pb-4 border-b border-slate-100 dark:border-slate-800/50">
+<div>
+<h3 class="text-xl font-bold text-slate-900 dark:text-slate-100">Transaction Detail</h3>
+<p class="text-primary font-mono text-sm">TXN-94021-X</p>
+</div>
+<button class="size-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">
+<span class="material-symbols-outlined text-lg">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-6">
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Amount</p>
+<p class="text-lg font-bold text-slate-900 dark:text-slate-100">$4,200.00 USD</p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Network</p>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-base">account_balance</span>
+<p class="text-base font-semibold text-slate-900 dark:text-slate-100">ACH Main</p>
+</div>
+</div>
+</div>
+<div class="bg-primary/5 rounded-xl p-4 border border-primary/10">
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest mb-3">Counterparty Data</p>
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">person</span>
+</div>
+<div>
+<p class="font-bold text-slate-900 dark:text-slate-100">Global Logistics Corp</p>
+<p class="text-xs text-slate-500">Routing: ****9281 • Acc: ****1102</p>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Audit Timeline</p>
+<div class="relative pl-6 space-y-6 before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-px before:bg-slate-200 dark:before:bg-slate-800">
+<div class="relative">
+<div class="absolute -left-[23px] top-1 size-4 rounded-full bg-primary border-4 border-white dark:border-background-dark ring-1 ring-primary/20"></div>
+<p class="text-sm font-bold text-slate-900 dark:text-slate-100">Unmatched Detected</p>
+<p class="text-xs text-slate-500">Today, 09:42 AM</p>
+</div>
+<div class="relative">
+<div class="absolute -left-[23px] top-1 size-4 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+<p class="text-sm font-semibold text-slate-500">Initiated by System</p>
+<p class="text-xs text-slate-400">Oct 24, 11:20 PM</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 pt-2 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800">
+<div class="flex gap-3">
+<button class="flex-1 h-12 rounded-xl border border-slate-200 dark:border-slate-700 font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800">
+                            Exclude
+                        </button>
+<button class="flex-[2] h-12 rounded-xl bg-primary text-white font-bold shadow-lg shadow-primary/25">
+                            Resolve Match
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation Bar -->
+<nav class="absolute bottom-0 left-0 right-0 z-50 bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 px-2 py-2 flex items-center justify-around">
+<a class="flex flex-col items-center gap-1 p-2 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
+<p class="text-[10px] font-bold">Workspace</p>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 text-slate-400 dark:text-slate-600" href="#">
+<span class="material-symbols-outlined">history</span>
+<p class="text-[10px] font-medium">History</p>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 text-slate-400 dark:text-slate-600" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+<p class="text-[10px] font-medium">Reports</p>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 text-slate-400 dark:text-slate-600" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-[10px] font-medium">Settings</p>
+</a>
+</nav>
+</div>
+</body></html>

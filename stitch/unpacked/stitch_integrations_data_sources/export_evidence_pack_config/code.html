@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Export Evidence Pack - Settler</title>
+<!-- BEGIN: External Scripts -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- END: External Scripts -->
+<!-- BEGIN: Custom Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            settler: {
+              slate: '#1e293b',
+              border: '#e2e8f0',
+              muted: '#64748b',
+              primary: '#0f172a'
+            }
+          }
+        }
+      }
+    }
+  </script>
+<!-- END: Custom Configuration -->
+<style data-purpose="custom-styling">
+    body {
+      background-color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    /* Custom radio/checkbox styles for high-density UI */
+    input[type="checkbox"]:checked {
+      background-color: #0f172a;
+      border-color: #0f172a;
+    }
+    /* Hide scrollbars for clean mobile look while keeping functionality */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+<!-- BEGIN: MainHeader -->
+<header class="bg-white border-b border-settler-border sticky top-0 z-10" data-purpose="page-header">
+<div class="px-4 py-4 flex items-center justify-between">
+<h1 class="text-lg font-semibold text-settler-slate">Export Evidence Pack</h1>
+<button aria-label="Close" class="p-2 text-settler-muted hover:bg-slate-100 rounded-full transition-colors">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+</header>
+<!-- END: MainHeader -->
+<main class="flex-grow p-4 space-y-6 pb-24">
+<!-- BEGIN: AuditScopeSection -->
+<section class="space-y-4" data-purpose="audit-scope-configuration">
+<h2 class="text-xs font-bold uppercase tracking-wider text-settler-muted">Audit Scope</h2>
+<div class="bg-white border border-settler-border rounded-lg p-4 space-y-4">
+<!-- Date Range Picker -->
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-medium text-settler-slate" for="date-range">Date Range</label>
+<div class="relative">
+<input class="w-full text-sm border-settler-border rounded-md pl-3 pr-10 py-2 focus:ring-settler-primary focus:border-settler-primary bg-slate-50 cursor-default" id="date-range" readonly="" type="text" value="Oct 1, 2023 - Oct 31, 2023"/>
+<div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+<svg class="h-4 w-4 text-settler-muted" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Entity Selection -->
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-medium text-settler-slate" for="entity-select">Entity Selection</label>
+<select class="w-full text-sm border-settler-border rounded-md py-2 focus:ring-settler-primary focus:border-settler-primary" id="entity-select">
+<option selected="">Settler US Core</option>
+<option>Settler EU Operations</option>
+<option>Settler APAC Hub</option>
+</select>
+</div>
+</div>
+</section>
+<!-- END: AuditScopeSection -->
+<!-- BEGIN: DataPackagesSection -->
+<section class="space-y-4" data-purpose="data-package-selection">
+<h2 class="text-xs font-bold uppercase tracking-wider text-settler-muted">Data Packages</h2>
+<div class="bg-white border border-settler-border rounded-lg divide-y divide-settler-border">
+<!-- Package Item 1 -->
+<label class="flex items-start p-4 gap-3 cursor-pointer active:bg-slate-50">
+<input checked="" class="mt-1 h-4 w-4 text-settler-primary border-settler-border rounded" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-settler-slate">Reconciliation Logs</span>
+<span class="text-xs text-settler-muted">Full audit trail of matches and unmatches.</span>
+</div>
+</label>
+<!-- Package Item 2 -->
+<label class="flex items-start p-4 gap-3 cursor-pointer active:bg-slate-50">
+<input checked="" class="mt-1 h-4 w-4 text-settler-primary border-settler-border rounded" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-settler-slate">Transaction Manifest</span>
+<span class="text-xs text-settler-muted">Source data from all connected financial channels.</span>
+</div>
+</label>
+<!-- Package Item 3 -->
+<label class="flex items-start p-4 gap-3 cursor-pointer active:bg-slate-50">
+<input class="mt-1 h-4 w-4 text-settler-primary border-settler-border rounded" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-settler-slate">Exception History</span>
+<span class="text-xs text-settler-muted">Resolution notes and SLA breach logs.</span>
+</div>
+</label>
+<!-- Package Item 4 -->
+<label class="flex items-start p-4 gap-3 cursor-pointer active:bg-slate-50">
+<input class="mt-1 h-4 w-4 text-settler-primary border-settler-border rounded" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-settler-slate">Sign-off &amp; Attestations</span>
+<span class="text-xs text-settler-muted">Compliance officer approval timestamps.</span>
+</div>
+</label>
+</div>
+</section>
+<!-- END: DataPackagesSection -->
+<!-- BEGIN: FormatSection -->
+<section class="space-y-4 pb-4" data-purpose="export-format-selection">
+<h2 class="text-xs font-bold uppercase tracking-wider text-settler-muted">Format</h2>
+<div class="bg-white border border-settler-border rounded-lg p-4 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-sm font-medium text-settler-slate">Output Type</span>
+<span class="text-xs text-settler-muted">Select report density level</span>
+</div>
+<!-- Format Toggle Switch -->
+<div class="flex p-1 bg-slate-100 rounded-lg" data-purpose="toggle-container">
+<button class="px-4 py-1.5 text-xs font-medium bg-white shadow-sm rounded-md text-settler-primary">PDF</button>
+<button class="px-4 py-1.5 text-xs font-medium text-settler-muted">CSV/JSON</button>
+</div>
+</div>
+<p class="text-[11px] text-settler-muted px-1 italic">
+        * PDF exports include an Executive Summary with visualized metrics.
+      </p>
+</section>
+<!-- END: FormatSection -->
+</main>
+<!-- BEGIN: StickyFooter -->
+<footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-settler-border p-4 flex flex-col gap-3" data-purpose="footer-actions">
+<button class="w-full bg-settler-primary text-white font-semibold py-3 rounded-lg text-sm active:opacity-90 transition-opacity">
+      Generate Evidence Pack
+    </button>
+<button class="w-full text-settler-slate font-medium py-2 rounded-lg text-sm active:bg-slate-100 transition-colors">
+      Cancel
+    </button>
+</footer>
+<!-- END: StickyFooter -->
+</body></html>

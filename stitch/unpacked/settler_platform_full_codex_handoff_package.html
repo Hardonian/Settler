@@ -1,0 +1,394 @@
+==================================================
+SCREEN_ID: workspace-queue-default
+SCREEN_NAME: Workspace: Refined Mobile Queue
+ROUTE: /workspace
+SCREEN_TYPE: page
+PARENT_LAYOUT: main app shell
+NAV_SECTION: Workspace
+PRIORITY: primary route
+==================================================
+PURPOSE
+The primary operational queue where analysts monitor and manage incoming transaction reconciliation items. This mobile-optimized view provides high-density information about unmatched pairs and review requirements.
+
+HTML
+{{DATA:HTML:SCREEN_39}}
+
+CSS
+[Refer to embedded styles in {{DATA:HTML:SCREEN_39}}]
+
+ASSETS_REQUIRED
+- User avatars (Actor icons)
+- Transaction source icons (Stripe, Wells Fargo)
+- Chevron-down icons for expansion
+
+ASSET_PATH_RECOMMENDATION
+public/images/workspace
+
+REUSABLE_COMPONENTS_PRESENT
+- App Header (Title + Breadcrumb + Filter Icon)
+- Transaction Card (Source A/B layout + Delta Badge)
+- Status Badge (Unmatched, Review Required)
+- Bottom Action Bar (Select All, Assign, Match Selected)
+
+REUSABLE_COMPONENT_EXTRACTION_HINTS
+The `TransactionCard` is the most repeated element and should be extracted as a standalone component with props for status, amounts, and source names.
+
+RESPONSIVE_BEHAVIOR
+Desktop behavior: Full table with side rail filters.
+Mobile behavior: Stacked cards as seen in this screen.
+Sticky regions: Bottom action bar.
+
+INTERACTION_NOTES
+- Filter icon => Opens filter bottom sheet.
+- Card click => Navigates to /workspace/investigate/:id.
+- Select All checkbox => Toggles all items for bulk action.
+- Match Selected button => Triggers bulk reconciliation confirmation.
+
+STATE_VARIANTS
+Default: Shown in SCREEN_39.
+Empty: Placeholder illustration with "All caught up" text.
+Degraded: Yellow banner indicating connector lag (see SCREEN_23).
+
+DATA_SHAPE_HINTS
+List of ReconciliationItem objects containing transaction pair metadata, variance deltas, and risk scores.
+
+ACCESSIBILITY_NOTES
+- Landmark regions for header and main content.
+- Checkbox labels for each card.
+- Semantic grouping for transaction pairs.
+
+CODEX_IMPLEMENTATION_NOTES
+Implement as a standard Next.js page component. Use a shared layout for the bottom navigation bar.
+
+==================================================
+SCREEN_ID: workspace-investigation-detail
+SCREEN_NAME: Workspace: Mobile Investigation Detail
+ROUTE: /workspace/investigate/[id]
+SCREEN_TYPE: subpage
+PARENT_LAYOUT: main app shell
+NAV_SECTION: Workspace
+PRIORITY: secondary route
+==================================================
+PURPOSE
+A deep-dive investigative surface for a specific transaction discrepancy. It provides the causal logic, chronological timeline, and record metadata needed to force a match or escalate.
+
+HTML
+{{DATA:HTML:SCREEN_35}}
+
+CSS
+[Refer to embedded styles in {{DATA:HTML:SCREEN_35}}]
+
+ASSETS_REQUIRED
+- Logic icons (Check/Cross)
+- Timeline event icons
+
+ASSET_PATH_RECOMMENDATION
+public/images/investigation
+
+REUSABLE_COMPONENTS_PRESENT
+- Detail Header (ID + Status + Escalate Action)
+- Explanation Card (Yellow info box)
+- Comparison List (Record A vs Record B)
+- Timeline Component
+
+REUSABLE_COMPONENT_EXTRACTION_HINTS
+The `Timeline` and `FieldComparison` components are candidate for reuse in audit and run detail views.
+
+RESPONSIVE_BEHAVIOR
+Mobile behavior: Full-screen sheet with sticky footer actions.
+
+INTERACTION_NOTES
+- Escalate button => Opens escalation level modal.
+- Force Match button => Triggers final reconciliation side effect.
+- Comment input => Local state for adding notes.
+
+STATE_VARIANTS
+Default: Shown in SCREEN_35.
+Ambiguous Match: Displays guidance for multiple candidates (see SCREEN_49).
+
+DATA_SHAPE_HINTS
+ReconciliationItem detail with nested lists for timeline events and linked record metadata.
+
+ACCESSIBILITY_NOTES
+- Heading structure (H1 for ID, H2 for sections).
+- ARIA labels for status icons.
+
+CODEX_IMPLEMENTATION_NOTES
+This should be a dynamic route. The "Assign to..." and "Force Match" buttons should be sticky at the bottom.
+
+==================================================
+SCREEN_ID: exceptions-dashboard
+SCREEN_NAME: Exceptions: Mobile Dashboard
+ROUTE: /exceptions
+SCREEN_TYPE: page
+PARENT_LAYOUT: main app shell
+NAV_SECTION: Exceptions
+PRIORITY: primary route
+==================================================
+PURPOSE
+A high-level overview of unresolved exceptions and SLA breaches. Allows finance leads to prioritize aging breaks by severity and amount.
+
+HTML
+{{DATA:HTML:SCREEN_4}}
+
+CSS
+[Refer to embedded styles in {{DATA:HTML:SCREEN_4}}]
+
+REUSABLE_COMPONENTS_PRESENT
+- KPI Cards (Critical, SLA Breaches)
+- Exception Item Row
+- Priority Segment Header
+
+INTERACTION_NOTES
+- KPI Card click => Filters list by that category.
+- Row click => Navigates to /exceptions/:id.
+
+CODEX_IMPLEMENTATION_NOTES
+Page component using `layout.tsx` for navigation.
+
+==================================================
+SCREEN_ID: matching-rules-editor
+SCREEN_NAME: Matching Rules: Logic Editor
+ROUTE: /matching-rules/editor/[id]
+SCREEN_TYPE: page
+PARENT_LAYOUT: admin shell
+NAV_SECTION: Configuration
+PRIORITY: primary route
+==================================================
+PURPOSE
+A technical editor for defining reconciliation logic. Operators use this to build nested AND/OR conditions and test them against sample data.
+
+HTML
+{{DATA:HTML:SCREEN_28}}
+
+CSS
+[Refer to embedded styles in {{DATA:HTML:SCREEN_28}}]
+
+INTERACTION_NOTES
+- Run Batch Simulation => Triggers server-side simulation and updates the "Test Rule Result" pane.
+- Save Rule => Commits changes to the AST.
+
+CODEX_IMPLEMENTATION_NOTES
+This is a complex form. Use a logic builder library or custom state management for the nested groups.
+
+==================================================
+SCREEN_ID: audit-log-explorer
+SCREEN_NAME: Audit Log Explorer
+ROUTE: /admin/audit-log
+SCREEN_TYPE: page
+PARENT_LAYOUT: admin shell
+NAV_SECTION: Governance
+PRIORITY: secondary route
+==================================================
+PURPOSE
+A tamper-proof explorer for all system and user activities. Essential for compliance and forensic investigation of mismatched data.
+
+HTML
+{{DATA:HTML:SCREEN_12}}
+
+CSS
+[Refer to embedded styles in {{DATA:HTML:SCREEN_12}}]
+
+REUSABLE_COMPONENTS_PRESENT
+- Audit Card (Actor, Action, Entity, Time)
+- Search/Filter Bar
+- Configuration Diff View (Drawer content)
+
+==================================================
+SCREEN_ID: period-close-checklist
+SCREEN_NAME: Period Close Checklist
+ROUTE: /period-close
+SCREEN_TYPE: page
+PARENT_LAYOUT: operator shell
+NAV_SECTION: Reporting
+PRIORITY: primary route
+==================================================
+PURPOSE
+The final checklist for closing a fiscal period. It enforces operational truth by blocking sign-off if critical exceptions or data gaps exist.
+
+HTML
+{{DATA:HTML:SCREEN_45}}
+
+CSS
+[Refer to embedded styles in {{DATA:HTML:SCREEN_45}}]
+
+INTERACTION_NOTES
+- Resolve Unmatched button => Navigates back to /workspace with relevant filters.
+- Sign-off button => Disabled until readiness is 100%.
+
+==================================================
+SCREEN_ID: export-evidence-pack
+SCREEN_NAME: Export Evidence Pack: Config
+ROUTE: owned by /period-close
+SCREEN_TYPE: modal
+PARENT_LAYOUT: operator shell
+NAV_SECTION: Reporting
+PRIORITY: support surface
+==================================================
+PURPOSE
+Configuration modal for exporting a comprehensive audit evidence pack.
+
+HTML
+{{DATA:HTML:SCREEN_18}}
+
+==================================================
+SCREEN_ID: export-evidence-ready
+SCREEN_NAME: Export Evidence Pack: Ready
+ROUTE: owned by /period-close
+SCREEN_TYPE: modal
+PARENT_LAYOUT: operator shell
+NAV_SECTION: Reporting
+PRIORITY: support surface
+==================================================
+PURPOSE
+Final state of the evidence pack export, providing the download link and verification hash.
+
+HTML
+{{DATA:HTML:SCREEN_47}}
+
+==================================================
+SCREEN_ID: report-customization
+SCREEN_NAME: Customize PDF Summary Report
+ROUTE: /reports/customize
+SCREEN_TYPE: page
+PARENT_LAYOUT: main app shell
+NAV_SECTION: Reports
+PRIORITY: secondary route
+==================================================
+PURPOSE
+Customization interface for generating PDF audit reports.
+
+HTML
+{{DATA:HTML:SCREEN_9}}
+
+==================================================
+SCREEN_ID: run-monitor-detail
+SCREEN_NAME: Run Monitor: Detail View
+ROUTE: /runs/[id]
+SCREEN_TYPE: subpage
+PARENT_LAYOUT: main app shell
+NAV_SECTION: Monitoring
+PRIORITY: secondary route
+==================================================
+PURPOSE
+Granular monitor for a specific data processing job. Shows progress, failure points, and logs.
+
+HTML
+{{DATA:HTML:SCREEN_41}}
+
+==================================================
+SCREEN_ID: settlement-payout-queue
+SCREEN_NAME: Settlement: Payout Queue
+ROUTE: /settlement
+SCREEN_TYPE: page
+PARENT_LAYOUT: main app shell
+NAV_SECTION: Treasury
+PRIORITY: primary route
+==================================================
+PURPOSE
+Operational queue for approving payout batches and monitoring variances.
+
+HTML
+{{DATA:HTML:SCREEN_50}}
+
+==================================================
+GLOBAL ARTIFACTS
+==================================================
+
+ROUTE MANIFEST
+JSON
+[
+  {
+    "screenId": "workspace-queue-default",
+    "screenName": "Workspace: Refined Mobile Queue",
+    "route": "/workspace",
+    "screenType": "page",
+    "parentLayout": "main app shell",
+    "navSection": "Workspace",
+    "priority": "primary",
+    "htmlFileName": "workspace-queue.html",
+    "cssFileName": "workspace.css",
+    "assets": ["stripe-icon.png", "wells-fargo-icon.png"]
+  },
+  {
+    "screenId": "workspace-investigation-detail",
+    "screenName": "Workspace: Mobile Investigation Detail",
+    "route": "/workspace/investigate/[id]",
+    "screenType": "subpage",
+    "parentLayout": "main app shell",
+    "navSection": "Workspace",
+    "priority": "secondary",
+    "htmlFileName": "investigation-detail.html",
+    "cssFileName": "investigation.css",
+    "assets": ["check-icon.svg", "cross-icon.svg"]
+  },
+  {
+    "screenId": "matching-rules-editor",
+    "screenName": "Matching Rules: Logic Editor",
+    "route": "/matching-rules/editor/[id]",
+    "screenType": "page",
+    "parentLayout": "admin shell",
+    "navSection": "Configuration",
+    "priority": "primary",
+    "htmlFileName": "rules-editor.html",
+    "cssFileName": "rules.css",
+    "assets": ["drag-handle.svg"]
+  }
+]
+
+COMPONENT INVENTORY
+JSON
+[
+  {
+    "componentName": "AppHeader",
+    "usedByScreens": ["All"],
+    "purpose": "Global navigation and context bar",
+    "recommendedNextJsLocation": "/components/shared/AppHeader.tsx"
+  },
+  {
+    "componentName": "StatusBadge",
+    "usedByScreens": ["Workspace", "Exceptions", "Settlement"],
+    "purpose": "Semantic status indicator",
+    "recommendedNextJsLocation": "/components/ui/StatusBadge.tsx"
+  },
+  {
+    "componentName": "Timeline",
+    "usedByScreens": ["Investigation", "Audit", "Runs"],
+    "purpose": "Chronological event list",
+    "recommendedNextJsLocation": "/components/shared/Timeline.tsx"
+  }
+]
+
+DESIGN TOKEN SUMMARY
+JSON
+{
+  "colors": {
+    "background": ["#F8FAFC", "#FFFFFF"],
+    "surface": ["#FFFFFF", "#F1F5F9"],
+    "text": ["#0F172A", "#475569", "#64748B"],
+    "border": ["#E2E8F0"],
+    "status": {
+      "success": ["#10B981", "#ECFDF5"],
+      "warning": ["#F59E0B", "#FFFBEB"],
+      "danger": ["#EF4444", "#FEF2F2"],
+      "info": ["#3B82F6", "#EFF6FF"]
+    }
+  },
+  "typography": {
+    "fontFamilies": ["Inter", "system-ui"],
+    "fontSizes": ["12px", "14px", "16px", "20px"],
+    "fontWeights": ["400", "500", "600"],
+    "lineHeights": ["1.2", "1.5"]
+  },
+  "spacing": ["4px", "8px", "12px", "16px", "24px", "32px"],
+  "radius": ["4px", "8px", "12px"],
+  "shadow": ["0 1px 3px rgba(0,0,0,0.1)", "0 4px 6px rgba(0,0,0,0.05)"]
+}
+
+GLOBAL IMPLEMENTATION NOTES FOR CODEX
+1. Next.js App Router: Use the App Router convention. Screens defined as 'page' should go in `app/[route]/page.tsx`. Modals/Drawers should be implemented as client components within those pages or as parallel routes/intercepting routes if deep-linking is required.
+2. Shared Layouts: The sidebar, bottom nav, and top header should be part of a root `layout.tsx` or nested layouts (e.g., `app/(main)/layout.tsx`).
+3. Component Extraction: Prioritize extracting the `StatusBadge`, `Timeline`, and `AuditCard` into a shared UI library (`/components/ui`) to ensure visual consistency.
+4. Tailwind Translation: Convert the provided CSS into Tailwind utility classes where possible for easier maintenance.
+5. Static Placeholders: Any dynamic data (transaction IDs, amounts, counts) should be passed as props. For this handoff, use the data in the HTML as mock initial state.
+6. Asset Management: Store all icons and brand assets in `/public/assets`. Use SVG where possible for scalability.

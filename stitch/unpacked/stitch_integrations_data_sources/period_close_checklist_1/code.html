@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Period Close Readiness Checklist - Settler</title>
+<!-- Tailwind CSS v3 CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style data-purpose="typography-and-base">
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* Custom scrollbar for high-density lists */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen text-slate-900">
+<!-- BEGIN: MainHeader -->
+<header class="bg-white border-b border-slate-200 sticky top-0 z-50 px-4 py-3" data-purpose="app-header">
+<div class="flex flex-col gap-2">
+<!-- Entity and Context -->
+<div class="flex justify-between items-start">
+<div>
+<h1 class="text-lg font-bold text-slate-900">Oct 2023 Period Close</h1>
+<p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Settler US Core</p>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+            In Progress (82%)
+          </span>
+</div>
+</div>
+<!-- Progress Bar Container -->
+<div class="w-full bg-slate-100 rounded-full h-2 mt-1">
+<div class="bg-blue-600 h-2 rounded-full transition-all duration-500" style="width: 82%"></div>
+</div>
+</div>
+</header>
+<!-- END: MainHeader -->
+<main class="flex-grow pb-32">
+<!-- BEGIN: WarningBanner -->
+<section class="p-4" data-purpose="alert-section">
+<div class="flex items-start gap-3 p-3 rounded-lg bg-red-50 border border-red-200">
+<svg class="h-5 w-5 text-red-600 mt-0.5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" fill-rule="evenodd"></path>
+</svg>
+<div class="flex flex-col">
+<p class="text-sm font-semibold text-red-800">Critical Blocker</p>
+<p class="text-xs text-red-700">14 Unresolved Exceptions remain in the queue.</p>
+</div>
+</div>
+</section>
+<!-- END: WarningBanner -->
+<!-- BEGIN: ChecklistSection -->
+<section class="px-4 space-y-3" data-purpose="checklist-container">
+<!-- Item 1: Data Ingestion (Green) -->
+<article class="bg-white border border-slate-200 rounded-xl p-4 flex items-start gap-4 shadow-sm" data-purpose="checklist-item">
+<div class="flex-shrink-0 mt-1">
+<div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center border border-green-200">
+<svg class="h-4 w-4 text-green-600" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" fill-rule="evenodd"></path>
+</svg>
+</div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-center mb-1">
+<h3 class="text-sm font-semibold text-slate-800">Data Ingestion</h3>
+<span class="text-[10px] font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded">12/12 Tasks</span>
+</div>
+<p class="text-xs text-slate-500">All connectors synced successfully. Last update 14m ago.</p>
+</div>
+</article>
+<!-- Item 2: Reconciliation (Amber) -->
+<article class="bg-white border-2 border-amber-100 rounded-xl p-4 flex items-start gap-4 shadow-sm" data-purpose="checklist-item">
+<div class="flex-shrink-0 mt-1">
+<div class="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center border border-amber-200">
+<span class="w-2 h-2 rounded-full bg-amber-500"></span>
+</div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-center mb-1">
+<h3 class="text-sm font-semibold text-slate-800">Reconciliation</h3>
+<span class="text-[10px] font-medium bg-amber-50 text-amber-700 px-2 py-0.5 rounded border border-amber-100">8/22 Tasks</span>
+</div>
+<p class="text-xs text-slate-500">14 exceptions pending resolution in ledger vs bank data.</p>
+<div class="mt-3">
+<a class="text-xs font-semibold text-blue-600 flex items-center gap-1 hover:underline" href="#">
+              View Blocker
+              <svg class="h-3 w-3" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</a>
+</div>
+</div>
+</article>
+<!-- Item 3: Variance Analysis (Gray) -->
+<article class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start gap-4 opacity-75" data-purpose="checklist-item">
+<div class="flex-shrink-0 mt-1">
+<div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center border border-slate-300">
+<span class="w-2 h-2 rounded-full bg-slate-400"></span>
+</div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-center mb-1">
+<h3 class="text-sm font-semibold text-slate-600">Variance Analysis</h3>
+<span class="text-[10px] font-medium bg-slate-100 text-slate-500 px-2 py-0.5 rounded">0/5 Tasks</span>
+</div>
+<p class="text-xs text-slate-400">Locked: Pending reconciliation completion.</p>
+</div>
+</article>
+<!-- Item 4: Manual Adjustments (Gray) -->
+<article class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start gap-4 opacity-75" data-purpose="checklist-item">
+<div class="flex-shrink-0 mt-1">
+<div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center border border-slate-300">
+<span class="w-2 h-2 rounded-full bg-slate-400"></span>
+</div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-center mb-1">
+<h3 class="text-sm font-semibold text-slate-600">Manual Adjustments</h3>
+<span class="text-[10px] font-medium bg-slate-100 text-slate-500 px-2 py-0.5 rounded">0/2 Tasks</span>
+</div>
+<p class="text-xs text-slate-400">2 entries required for year-end accrual adjustments.</p>
+</div>
+</article>
+<!-- Item 5: Attestations (Disabled) -->
+<article class="bg-slate-100 border border-slate-200 rounded-xl p-4 flex items-start gap-4 grayscale" data-purpose="checklist-item">
+<div class="flex-shrink-0 mt-1">
+<div class="w-6 h-6 rounded-full border-2 border-slate-300 border-dashed"></div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-center mb-1">
+<h3 class="text-sm font-semibold text-slate-400">Attestations</h3>
+<span class="text-[10px] font-medium bg-slate-200 text-slate-400 px-2 py-0.5 rounded">Locked</span>
+</div>
+<p class="text-xs text-slate-400">Final officer sign-off and SOX compliance check.</p>
+</div>
+</article>
+</section>
+<!-- END: ChecklistSection -->
+</main>
+<!-- BEGIN: StickyFooter -->
+<footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]" data-purpose="action-bar">
+<div class="flex flex-col gap-2">
+<button class="w-full py-3 px-4 rounded-lg border border-slate-300 text-slate-700 font-semibold text-sm hover:bg-slate-50 active:bg-slate-100 transition-colors" data-purpose="secondary-action">
+        Download Preliminary Evidence Pack
+      </button>
+<button class="w-full py-3 px-4 rounded-lg bg-slate-200 text-slate-400 font-bold text-sm cursor-not-allowed" data-purpose="primary-action-disabled" disabled="">
+        Sign &amp; Close Period
+      </button>
+</div>
+</footer>
+<!-- END: StickyFooter -->
+</body></html>

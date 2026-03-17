@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Payout Queue - Settlement Operations</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec5b13",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221610",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<!-- Header / Top Nav -->
+<header class="sticky top-0 z-30 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center p-4 justify-between">
+<div class="flex items-center gap-3">
+<div class="material-symbols-outlined text-slate-600 dark:text-slate-400">arrow_back</div>
+<h1 class="text-lg font-bold tracking-tight">Payout Queue</h1>
+</div>
+<div class="flex gap-2">
+<button class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+</div>
+<!-- Tabs -->
+<div class="flex px-4 gap-6 overflow-x-auto no-scrollbar">
+<a class="flex flex-col items-center border-b-2 border-primary pb-3 pt-2" href="#">
+<span class="text-sm font-bold text-primary whitespace-nowrap">All Batches</span>
+</a>
+<a class="flex flex-col items-center border-b-2 border-transparent pb-3 pt-2 text-slate-500 dark:text-slate-400" href="#">
+<span class="text-sm font-medium whitespace-nowrap">High Priority</span>
+</a>
+<a class="flex flex-col items-center border-b-2 border-transparent pb-3 pt-2 text-slate-500 dark:text-slate-400" href="#">
+<span class="text-sm font-medium whitespace-nowrap">Flagged</span>
+</a>
+<a class="flex flex-col items-center border-b-2 border-transparent pb-3 pt-2 text-slate-500 dark:text-slate-400" href="#">
+<span class="text-sm font-medium whitespace-nowrap">Archived</span>
+</a>
+</div>
+</header>
+<main class="p-4 space-y-4 pb-32">
+<!-- Quick Stats / Filters -->
+<div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+<button class="flex h-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-white px-4 text-sm font-medium">
+                Pending (12)
+            </button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-2 rounded-full bg-slate-200 dark:bg-slate-800 px-4 text-sm font-medium">
+                Processing
+            </button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-2 rounded-full bg-slate-200 dark:bg-slate-800 px-4 text-sm font-medium">
+                Settled
+            </button>
+</div>
+<!-- Batch List -->
+<div class="space-y-3">
+<!-- Batch Item 1 -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 w-1 h-full bg-primary"></div>
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined text-primary text-xl">account_balance</span>
+</div>
+<div>
+<h3 class="font-bold text-sm">Batch #88291 • USD</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 font-medium">45 Transactions • $1.2M Total</p>
+</div>
+</div>
+<span class="bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 uppercase tracking-wider">
+<span class="material-symbols-outlined text-[12px]">schedule</span>
+                        SLA: 12m
+                    </span>
+</div>
+<div class="grid grid-cols-2 gap-3 mb-4">
+<div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-tight">Variance</p>
+<p class="text-sm font-semibold text-emerald-600">+$1,200.00</p>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-tight">Status</p>
+<div class="flex items-center gap-1.5">
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+<p class="text-sm font-semibold">Pending</p>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="User avatar 1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdzpcgLfAYYq46jOiEi2jiMQZkhSz15zEpFSFT-dbXrKc15LSly1d5K3te1dohIRZWC8bCGjUgLvIfTROypiWGkSOuA_JO3u6lB8vjh1ct384thadTy13zuUQq4tawlGJhiweXvRDFAnB7TU6Bryvsy2wz_Xi--SjxY4_q-N65Nu6Az5r6yH5RTrZfiFevtUI4XI3G3v9SylpJAP_vAPNl3BqBKyiDLV0dWUntUS2b5I8e4LSwf8DOYjQolxhAFKyDhUbGPL3j6Q"/>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 flex items-center justify-center overflow-hidden text-[8px] font-bold">
+                            +2
+                        </div>
+</div>
+<div class="flex gap-2">
+<span class="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-500">Tier 1 Approval</span>
+</div>
+</div>
+</div>
+<!-- Batch Item 2 (With Reserve/Hold) -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
+<span class="material-symbols-outlined text-slate-500 text-xl">payments</span>
+</div>
+<div>
+<h3 class="font-bold text-sm">Batch #88295 • EUR</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 font-medium">12 Transactions • €450k Total</p>
+</div>
+</div>
+<span class="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 uppercase tracking-wider">
+<span class="material-symbols-outlined text-[12px]">block</span>
+                        Reserve Hold
+                    </span>
+</div>
+<div class="grid grid-cols-2 gap-3 mb-4">
+<div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg border border-red-200 dark:border-red-900/30">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-tight">Variance</p>
+<p class="text-sm font-semibold text-red-600">-$4,150.20</p>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-tight">Status</p>
+<div class="flex items-center gap-1.5 text-slate-500">
+<div class="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
+<p class="text-sm font-semibold">Flagged</p>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 text-red-600 font-medium text-xs">
+<span class="material-symbols-outlined text-[16px]">info</span>
+                        KYB documentation missing
+                    </div>
+<button class="text-primary font-bold text-xs uppercase">Review</button>
+</div>
+</div>
+<!-- Batch Item 3 -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm opacity-80">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-emerald-50 dark:bg-emerald-900/10 rounded-lg">
+<span class="material-symbols-outlined text-emerald-500 text-xl">check_circle</span>
+</div>
+<div>
+<h3 class="font-bold text-sm">Batch #88289 • GBP</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 font-medium">211 Transactions • £2.8M Total</p>
+</div>
+</div>
+<span class="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 uppercase tracking-wider">
+                        Settled
+                    </span>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-tight">Variance</p>
+<p class="text-sm font-semibold text-slate-600 dark:text-slate-300">$0.00</p>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-tight">Completed At</p>
+<p class="text-sm font-semibold">10:45 AM</p>
+</div>
+</div>
+</div>
+<!-- Batch Item 4 -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 w-1 h-full bg-primary/40"></div>
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-primary/5 rounded-lg">
+<span class="material-symbols-outlined text-primary/60 text-xl">lan</span>
+</div>
+<div>
+<h3 class="font-bold text-sm">Batch #88302 • JPY</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 font-medium">8 Transactions • ¥8.5M Total</p>
+</div>
+</div>
+<span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 uppercase tracking-wider">
+<span class="material-symbols-outlined text-[12px] animate-pulse">sync</span>
+                        Processing
+                    </span>
+</div>
+<div class="grid grid-cols-2 gap-3 mb-4">
+<div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-tight">Variance</p>
+<p class="text-sm font-semibold text-emerald-600">+$25.00</p>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-tight">Progress</p>
+<div class="w-full bg-slate-200 dark:bg-slate-700 h-1 rounded-full mt-2">
+<div class="bg-primary h-1 rounded-full w-2/3"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Sticky Actions -->
+<div class="fixed bottom-0 left-0 right-0 z-40">
+<div class="bg-white/95 dark:bg-background-dark/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-4 py-4 mb-16">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold h-14 rounded-xl flex items-center justify-center gap-3 shadow-lg shadow-primary/20 transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined">verified</span>
+                Approve Batch #88291
+            </button>
+</div>
+<!-- Bottom Tab Bar -->
+<nav class="bg-background-light dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 flex items-center justify-around h-16 px-2">
+<a class="flex flex-col items-center justify-center gap-1 flex-1 text-primary" href="#">
+<span class="material-symbols-outlined text-[24px]">list_alt</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Queue</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 flex-1 text-slate-500 dark:text-slate-400" href="#">
+<span class="material-symbols-outlined text-[24px]">monitoring</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Reports</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 flex-1 text-slate-500 dark:text-slate-400" href="#">
+<span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Treasury</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 flex-1 text-slate-500 dark:text-slate-400" href="#">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Settings</span>
+</a>
+</nav>
+</div>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body></html>

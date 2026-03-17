@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settler | Audit Log Explorer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec5b13",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221610",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .json-diff {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header Section -->
+<header class="sticky top-0 z-30 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-primary/10">
+<div class="flex items-center p-4 justify-between">
+<div class="flex items-center gap-3">
+<div class="text-primary flex size-10 items-center justify-center rounded-lg bg-primary/10">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<div>
+<h2 class="text-lg font-bold leading-tight tracking-tight">Audit Log Explorer</h2>
+<p class="text-xs text-slate-500 dark:text-slate-400">Settler Control Plane</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined">download</span>
+</button>
+<button class="flex size-10 items-center justify-center rounded-full bg-primary text-white">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+</div>
+<!-- Search Bar -->
+<div class="px-4 pb-3">
+<label class="flex flex-col w-full">
+<div class="flex w-full items-stretch rounded-xl h-11 bg-slate-200/50 dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 focus-within:border-primary transition-colors">
+<div class="text-slate-500 dark:text-slate-400 flex items-center justify-center pl-3">
+<span class="material-symbols-outlined text-[20px]">manage_search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 border-none bg-transparent focus:ring-0 px-3 text-sm placeholder:text-slate-500" placeholder="Search by Action, Actor, or Entity" value=""/>
+</div>
+</label>
+</div>
+<!-- Filters Scrollable -->
+<div class="flex gap-2 px-4 pb-4 overflow-x-auto no-scrollbar">
+<button class="flex h-8 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-white px-4 text-xs font-semibold whitespace-nowrap">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+                    Last 24 Hours
+                    <span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-2 rounded-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-4 text-xs font-medium whitespace-nowrap">
+                    Event Type
+                    <span class="material-symbols-outlined text-[16px]">filter_list</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-2 rounded-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-4 text-xs font-medium whitespace-nowrap">
+                    Actor: All
+                    <span class="material-symbols-outlined text-[16px]">person</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-2 rounded-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-4 text-xs font-medium whitespace-nowrap">
+                    System
+                    <span class="material-symbols-outlined text-[16px]">settings_input_component</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 px-4 py-2 space-y-4">
+<div class="flex items-center justify-between">
+<h4 class="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-widest">Today, Oct 24</h4>
+<div class="h-[1px] flex-1 bg-slate-200 dark:bg-slate-800 ml-4"></div>
+</div>
+<!-- Log Entries -->
+<div class="space-y-3">
+<!-- Card 1 -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm active:scale-[0.98] transition-transform">
+<div class="p-4">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<div class="size-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[18px]">person</span>
+</div>
+<div>
+<p class="text-xs font-bold">admin@settler.io</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-tighter">Human Actor</p>
+</div>
+</div>
+<span class="text-[10px] font-mono text-slate-400">14:22:01.452</span>
+</div>
+<div class="space-y-1">
+<p class="text-sm font-semibold text-slate-900 dark:text-slate-100">Update Security Policy</p>
+<p class="text-xs text-slate-600 dark:text-slate-400">
+                                Entity: <a class="text-primary hover:underline font-mono" href="#">sec_policy_v4_prod</a>
+</p>
+</div>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800/50 px-4 py-2 flex justify-between items-center border-t border-slate-100 dark:border-slate-800">
+<span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900/20 px-2 py-1 text-[10px] font-medium text-green-700 dark:text-green-400 ring-1 ring-inset ring-green-600/20">SUCCESS</span>
+<button class="text-xs font-bold text-primary flex items-center gap-1">
+                            View Diff <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm">
+<div class="p-4">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<div class="size-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined text-[18px]">smart_toy</span>
+</div>
+<div>
+<p class="text-xs font-bold">SYSTEM_SCHEDULER</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-tighter">System Actor</p>
+</div>
+</div>
+<span class="text-[10px] font-mono text-slate-400">14:15:00.000</span>
+</div>
+<div class="space-y-1">
+<p class="text-sm font-semibold text-slate-900 dark:text-slate-100">Rotate API Tokens</p>
+<p class="text-xs text-slate-600 dark:text-slate-400">
+                                Entity: <a class="text-primary hover:underline font-mono" href="#">vault/service-mesh/tokens</a>
+</p>
+</div>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800/50 px-4 py-2 flex justify-between items-center border-t border-slate-100 dark:border-slate-800">
+<span class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-900/20 px-2 py-1 text-[10px] font-medium text-blue-700 dark:text-blue-400 ring-1 ring-inset ring-blue-600/20">AUTOMATED</span>
+<button class="text-xs font-bold text-primary flex items-center gap-1">
+                            View Diff <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Card 3 - Failed State -->
+<div class="bg-white dark:bg-slate-900 border-l-4 border-l-red-500 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm">
+<div class="p-4">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<div class="size-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[18px]">person</span>
+</div>
+<div>
+<p class="text-xs font-bold">dev-lead-01@settler.io</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-tighter">Human Actor</p>
+</div>
+</div>
+<span class="text-[10px] font-mono text-slate-400">13:58:12.881</span>
+</div>
+<div class="space-y-1">
+<p class="text-sm font-semibold text-slate-900 dark:text-slate-100">Delete Resource Group</p>
+<p class="text-xs text-slate-600 dark:text-slate-400">
+                                Entity: <a class="text-primary hover:underline font-mono" href="#">rg-us-east-core</a>
+</p>
+</div>
+</div>
+<div class="bg-red-50/50 dark:bg-red-900/10 px-4 py-2 flex justify-between items-center border-t border-slate-100 dark:border-slate-800">
+<span class="inline-flex items-center rounded-md bg-red-100 dark:bg-red-900/40 px-2 py-1 text-[10px] font-medium text-red-700 dark:text-red-400 ring-1 ring-inset ring-red-600/20">FAILED</span>
+<button class="text-xs font-bold text-red-600 dark:text-red-400 flex items-center gap-1">
+                            Error Details <span class="material-symbols-outlined text-[14px]">error</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Detail Drawer Simulation (Visible for demo) -->
+<div class="mt-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
+<div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/30">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">analytics</span>
+<h3 class="font-bold text-sm uppercase tracking-tight">Audit Details</h3>
+</div>
+<button class="size-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="p-4 space-y-6">
+<!-- JSON Diff Section -->
+<div class="space-y-2">
+<h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Configuration Diff</h4>
+<div class="rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden text-[11px] json-diff">
+<div class="bg-red-50/50 dark:bg-red-900/10 p-2 flex gap-2 border-b border-slate-100 dark:border-slate-800">
+<span class="text-red-500 font-bold">-</span>
+<code class="text-red-700 dark:text-red-400">"access_level": "read_write"</code>
+</div>
+<div class="bg-green-50/50 dark:bg-green-900/10 p-2 flex gap-2">
+<span class="text-green-500 font-bold">+</span>
+<code class="text-green-700 dark:text-green-400">"access_level": "restricted_audit"</code>
+</div>
+</div>
+</div>
+<!-- Preconditions -->
+<div class="space-y-2">
+<h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Met Preconditions</h4>
+<ul class="space-y-2">
+<li class="flex items-start gap-2 text-xs">
+<span class="material-symbols-outlined text-green-500 text-[16px]">check_circle</span>
+<span>MFA session valid (Expires in 23m)</span>
+</li>
+<li class="flex items-start gap-2 text-xs">
+<span class="material-symbols-outlined text-green-500 text-[16px]">check_circle</span>
+<span>Resource lock "rg-01" successfully bypassed</span>
+</li>
+<li class="flex items-start gap-2 text-xs">
+<span class="material-symbols-outlined text-green-500 text-[16px]">check_circle</span>
+<span>Change Request ID: <span class="font-mono text-primary">CR-9921-A</span></span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navbar -->
+<nav class="sticky bottom-0 z-30 flex gap-2 border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur px-4 pb-6 pt-3">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">list_alt</span>
+<p class="text-[10px] font-bold uppercase">Logs</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<p class="text-[10px] font-bold uppercase">Metrics</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">security</span>
+<p class="text-[10px] font-bold uppercase">Security</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-[10px] font-bold uppercase">System</p>
+</a>
+</nav>
+</div>
+</body></html>

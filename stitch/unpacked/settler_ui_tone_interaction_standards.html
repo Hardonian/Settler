@@ -1,0 +1,25 @@
+# Settler: UI Tone & Interaction Standards
+
+## 1. Visual Stability Principles
+- **Predictable Layouts**: Every screen follows a strict 8px grid. Components have fixed or predictable height behaviors to prevent layout shifts during data loading.
+- **Skeleton States**: All data-heavy components (tables, metric cards) must use skeleton loaders that match the final content's dimensions exactly.
+- **Transition Control**: No "spring" or aggressive animations. All transitions are linear or standard ease-in-out at 200ms.
+
+## 2. Color Discipline
+- **Primary Palette**: High-contrast neutrals (Slate 50 to Slate 900).
+- **Reserved Semantic Color**: 
+    - **Red**: Only for critical failures or irreversible destructive actions.
+    - **Amber**: For warnings, stale data, or SLA risks.
+    - **Green**: For successful reconciliation or healthy system states.
+    - **Blue**: For information, processing states, or active selection.
+- **Saturation**: Reduced saturation across the board to create a "clinical" and trustworthy environment.
+
+## 3. Feedback & Communication Tone
+- **Action Acknowledgment**: Every button press or system action provides immediate, non-intrusive feedback (e.g., inline success check or subtle toast).
+- **Factual Error Messages**: Errors must explain *what* happened and *how* to fix it without using alarming language (e.g., "Connection Timeout" vs. "CRITICAL ERROR").
+- **No Ambiguity**: If a state is unknown, it is explicitly labeled as "Unknown" rather than left blank or guessed.
+
+## 4. Interaction Consistency
+- **Unified Row Behavior**: All table rows across the app use the same hover, select, and expansion logic.
+- **Drawer Standards**: Right-side drawers are the primary method for detail exploration to maintain background context.
+- **Form Patterns**: Labels are always visible; helper text is persistent for complex fields.

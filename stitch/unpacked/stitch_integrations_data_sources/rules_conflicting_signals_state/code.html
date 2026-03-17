@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settler - Matching Rules Builder</title>
+<!-- BEGIN: Tailwind CSS & Config -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            settler: {
+              primary: '#1a1a1a',
+              secondary: '#4a5568',
+              warning: '#d97706',
+              warningBg: '#fffbeb',
+              border: '#e2e8f0',
+              accent: '#2563eb'
+            }
+          }
+        }
+      }
+    }
+  </script>
+<!-- END: Tailwind CSS & Config -->
+<!-- BEGIN: Custom Styles -->
+<style data-purpose="high-density-layout">
+    body {
+      background-color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .rule-card {
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .status-badge {
+      font-size: 0.65rem;
+      letter-spacing: 0.025em;
+    }
+  </style>
+<!-- END: Custom Styles -->
+</head>
+<body class="flex flex-col h-screen overflow-hidden">
+<!-- BEGIN: Mobile Header -->
+<header class="bg-white border-b border-settler-border px-4 py-3 flex items-center justify-between sticky top-0 z-10" data-purpose="app-header">
+<div class="flex items-center gap-2">
+<button class="text-settler-secondary p-1">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<h1 class="font-bold text-sm tracking-tight text-settler-primary uppercase">Matching Rules Builder</h1>
+</div>
+<div class="flex gap-3">
+<button class="text-xs font-semibold text-settler-accent uppercase">Draft</button>
+</div>
+</header>
+<!-- END: Mobile Header -->
+<!-- BEGIN: Main Content Area -->
+<main class="flex-1 overflow-y-auto p-4 space-y-4 pb-24" data-purpose="main-content">
+<!-- BEGIN: Alert - Conflicting Signals -->
+<section class="bg-amber-50 border border-amber-200 rounded-md p-3" data-purpose="conflict-alert">
+<div class="flex gap-3">
+<div class="shrink-0">
+<!-- High-contrast warning icon -->
+<svg class="h-5 w-5 text-settler-warning" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<div class="space-y-1">
+<h2 class="text-sm font-bold text-amber-900 leading-none">Logic Conflict Detected</h2>
+<p class="text-xs text-amber-800 opacity-90 leading-tight">
+            The current criteria for <span class="font-bold underline italic">Rule #412</span> overlap with existing <span class="font-bold underline italic">Rule #084</span>.
+          </p>
+</div>
+</div>
+</section>
+<!-- END: Alert - Conflicting Signals -->
+<!-- BEGIN: Rule Definition Section -->
+<section class="space-y-3" data-purpose="rule-definition">
+<div class="flex items-center justify-between">
+<label class="text-[10px] uppercase font-bold text-settler-secondary tracking-widest">Active Rule Logic</label>
+<span class="text-[10px] font-medium text-settler-accent px-1.5 py-0.5 bg-blue-50 border border-blue-100 rounded">Drafting</span>
+</div>
+<div class="bg-white border border-settler-border rounded-lg overflow-hidden rule-card">
+<div class="p-3 bg-gray-50 border-b border-settler-border flex justify-between items-center">
+<span class="text-xs font-semibold text-settler-primary">Rule #412: APAC Retail Match</span>
+<svg class="h-4 w-4 text-gray-400" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+<path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+</svg>
+</div>
+<div class="p-4 space-y-3">
+<div class="flex flex-col gap-1">
+<span class="text-[10px] text-gray-400 font-bold uppercase">Condition A</span>
+<div class="p-2 border border-settler-border rounded text-xs bg-white text-settler-primary font-medium">
+              Region <span class="text-settler-accent italic font-bold">EQUALS</span> "APAC"
+            </div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-[10px] text-gray-400 font-bold uppercase">Condition B</span>
+<div class="p-2 border border-settler-border rounded text-xs bg-white text-settler-primary font-medium">
+              Revenue <span class="text-settler-accent italic font-bold">GREATER THAN</span> $1M
+            </div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: Rule Definition Section -->
+<!-- BEGIN: Rule Lineage Comparison -->
+<section class="space-y-3" data-purpose="lineage-comparison">
+<h3 class="text-[10px] uppercase font-bold text-settler-secondary tracking-widest">Rule Lineage Comparison</h3>
+<div class="grid grid-cols-2 gap-2">
+<!-- New Rule Column -->
+<div class="bg-white border border-settler-border rounded-lg p-3 space-y-2 opacity-100 ring-2 ring-amber-400 ring-opacity-30">
+<p class="text-[10px] font-bold text-settler-primary text-center">CURRENT (NEW)</p>
+<div class="text-[10px] bg-gray-50 p-2 rounded border border-gray-100 text-gray-600 space-y-1">
+<p>• Region: APAC</p>
+<p>• Rev: &gt;$1M</p>
+<p class="text-amber-600 font-bold pt-1">Result: [Conflict]</p>
+</div>
+</div>
+<!-- Existing Rule Column -->
+<div class="bg-white border border-settler-border rounded-lg p-3 space-y-2">
+<p class="text-[10px] font-bold text-settler-primary text-center">EXISTING (#084)</p>
+<div class="text-[10px] bg-gray-50 p-2 rounded border border-gray-100 text-gray-600 space-y-1">
+<p>• Country: China</p>
+<p>• Segment: Corp</p>
+<p class="text-gray-400 font-bold pt-1 italic">Result: Route Sales</p>
+</div>
+</div>
+</div>
+<p class="text-[10px] leading-relaxed text-settler-secondary italic">
+        * Comparison shows Rule #412 overlaps with records that could satisfy Rule #084 filters (Region APAC includes China).
+      </p>
+</section>
+<!-- END: Rule Lineage Comparison -->
+<!-- BEGIN: Safe Default Message -->
+<section class="bg-gray-100 border border-gray-200 rounded p-3" data-purpose="safe-default-behavior">
+<div class="flex items-center gap-2 mb-1">
+<svg class="h-3 w-3 text-settler-secondary" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="text-[10px] font-bold uppercase text-settler-secondary">Safe Default Behavior</span>
+</div>
+<p class="text-xs text-settler-secondary leading-snug">
+        In cases of overlap, System defaults to <span class="font-bold text-settler-primary underline">Manual Review</span>. No records will be auto-assigned until logic is resolved.
+      </p>
+</section>
+<!-- END: Safe Default Message -->
+</main>
+<!-- END: Main Content Area -->
+<!-- BEGIN: Bottom Action Bar -->
+<footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-settler-border p-4 flex gap-3 z-20" data-purpose="actions">
+<button class="flex-1 py-3 px-4 border border-settler-border text-xs font-bold uppercase rounded text-settler-primary hover:bg-gray-50 transition-colors">
+      Modify Logic
+    </button>
+<button class="flex-1 py-3 px-4 bg-settler-primary text-xs font-bold uppercase rounded text-white hover:opacity-90 transition-opacity">
+      Resolve &amp; Save
+    </button>
+</footer>
+<!-- END: Bottom Action Bar -->
+</body></html>

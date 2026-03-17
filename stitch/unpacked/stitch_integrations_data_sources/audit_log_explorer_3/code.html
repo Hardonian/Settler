@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settler Audit Log Explorer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec5b13",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221610",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<!-- Header Section -->
+<header class="sticky top-0 z-10 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">arrow_back</span>
+<h1 class="text-xl font-bold tracking-tight">Audit Log</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Quick Filters Horizontal Scroll -->
+<div class="flex gap-2 p-4 overflow-x-auto no-scrollbar bg-background-light dark:bg-background-dark">
+<button class="flex h-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-white px-4 text-sm font-medium">
+<span>All Activity</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 text-sm font-medium">
+<span>Actors</span>
+<span class="material-symbols-outlined text-xs">expand_more</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 text-sm font-medium">
+<span>Action Type</span>
+<span class="material-symbols-outlined text-xs">expand_more</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 text-sm font-medium">
+<span>Date Range</span>
+<span class="material-symbols-outlined text-xs">calendar_today</span>
+</button>
+</div>
+<!-- Audit Entries List -->
+<main class="flex-1 px-4 pb-24 space-y-3">
+<!-- Entry 1: Transaction Matched -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-start justify-between mb-3">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden border border-slate-100 dark:border-slate-600">
+<img alt="Alex Rivera" class="w-full h-full object-cover" data-alt="Profile photo of Alex Rivera" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkJyT7D8cdhyAe-vEY1MGqNKa75OS6HhmiBCOB2TAWi8GGL-Cl-4mg9hgHZeMriRfYMNV8sDqj_tQCDBB8Ib_2_skhL_mHMdXkBwA7lXeJNaYSshb1sAu1v9Nhg0UFOMVo26BNroLnE5-4MSMNSCewiA-UCW7yQhumut0IlCwDIHzQpQKXGNljTXgrKdjyHyFRSouZxZ17NxwROPizVYdBqUAGRSNVBw3sRY6xYF8e0XrGj-hW6j3tYIzCWCoJ_YQfs-6Lf9vSoQ"/>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-slate-100 leading-none">Alex Rivera</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Global Treasury • Tenant ID: T-881</p>
+</div>
+</div>
+<span class="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">2 mins ago</span>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-[11px] font-bold uppercase tracking-tight">Matched Transaction</span>
+<span class="text-slate-300 dark:text-slate-700">•</span>
+<span class="text-xs font-mono font-medium text-slate-600 dark:text-slate-300">TXN-94021-X</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">System-assisted reconciliation for internal ledger mismatch.</p>
+</div>
+<!-- Entry 2: Rule Updated -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-start justify-between mb-3">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden border border-slate-100 dark:border-slate-600">
+<img alt="Sarah Chen" class="w-full h-full object-cover" data-alt="Profile photo of Sarah Chen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjzMgb2RDPU4uXyziQRqKRgdcU-N36x-BLzs1E3Vg_9JU-9_qrQc0qHwt2-5DmkxFo9sSjGyOKiTuBxQ5HK80CNe9RqFV4nSpZtsyqGXSLY684Mj4CaJE4JHRKZfaSXcFBxGSZK57tghTebRmydwU2C53IWcu3T0Rufn8bIULJ6CcLBdTL2MToDDKlAbJvZoCB_QUlV0Mc3OfqBp3PdHgxye3nNc_JcEx446TZUgQ1ju8pZIWH7jV-4TXFisi57S4zw-ZNGDmsUw"/>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-slate-100 leading-none">Sarah Chen</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Compliance Lead • Tenant ID: T-102</p>
+</div>
+</div>
+<span class="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">09:12 AM</span>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-0.5 rounded bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-[11px] font-bold uppercase tracking-tight">Updated Rule</span>
+<span class="text-slate-300 dark:text-slate-700">•</span>
+<span class="text-xs font-mono font-medium text-slate-600 dark:text-slate-300">RULE-772-B</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Adjusted tolerance threshold for EMEA region liquidity triggers.</p>
+</div>
+<!-- Entry 3: Exception Escalated -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm border-l-4 border-l-primary">
+<div class="flex items-start justify-between mb-3">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden border border-slate-100 dark:border-slate-600">
+<img alt="Marcus Thorne" class="w-full h-full object-cover" data-alt="Profile photo of Marcus Thorne" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAznAFSAVki770Kd7BUtfVlSHQFccywt2fMoFmCTooAF0slmjO8LOYFrILTaZINZCCqW9wNl7wRwR9gP50tFVPrgPtd3j-y85hKY0v17n8ER972ph4Yov80DwmSjlavkpcd0HenBJOVeQTeLESurBrWqKFc7U3mzjyCmHxUxQUsiHGGMlCaH3qLHnRehDW9NaC5grSdbjqV4_hGyNsI_7R9cgk5_5Ol6B06bpNXjlLxQorUA_z-5wqwn1CdUau3OOBRPvzOKAH0Aw"/>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-slate-100 leading-none">Marcus Thorne</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Risk Analyst • Tenant ID: T-881</p>
+</div>
+</div>
+<span class="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Yesterday</span>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-0.5 rounded bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-[11px] font-bold uppercase tracking-tight">Escalated Exception</span>
+<span class="text-slate-300 dark:text-slate-700">•</span>
+<span class="text-xs font-mono font-medium text-slate-600 dark:text-slate-300">EX-5502-K</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Manual escalation of high-value discrepancy in Q3 closure.</p>
+</div>
+<!-- Entry 4: Access Granted -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-start justify-between mb-3">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden border border-slate-100 dark:border-slate-600 flex items-center justify-center bg-primary/10">
+<span class="material-symbols-outlined text-primary text-xl">admin_panel_settings</span>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-slate-100 leading-none">System Admin</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Automated Task • Internal</p>
+</div>
+</div>
+<span class="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Yesterday</span>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-0.5 rounded bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[11px] font-bold uppercase tracking-tight">Access Granted</span>
+<span class="text-slate-300 dark:text-slate-700">•</span>
+<span class="text-xs font-mono font-medium text-slate-600 dark:text-slate-300">USR-AUTH-99</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">OAuth2 token generated for external API integration service.</p>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 pb-safe-area-inset-bottom">
+<div class="flex items-center justify-around h-16">
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">inbox</span>
+<span class="text-[10px] font-medium">Queue</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">history_edu</span>
+<span class="text-[10px] font-medium">Audit</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">account_balance</span>
+<span class="text-[10px] font-medium">Treasury</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="text-[10px] font-medium">Reports</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</a>
+</div>
+</nav>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .pb-safe-area-inset-bottom {
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+    </style>
+</body></html>

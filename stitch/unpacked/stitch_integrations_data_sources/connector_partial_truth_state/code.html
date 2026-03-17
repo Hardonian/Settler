@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Connector Detail - Partial Truth State</title>
+<!-- BEGIN: Tailwind CSS & Configuration -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            settler: {
+              navy: '#1E293B',
+              amber: '#D97706',
+              lightAmber: '#FEF3C7',
+              gray: '#F8FAFC',
+              border: '#E2E8F0'
+            }
+          }
+        }
+      }
+    }
+  </script>
+<!-- END: Tailwind CSS & Configuration -->
+<style data-purpose="custom-animations">
+    @keyframes pulse-slow {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .animate-pulse-slow {
+      animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="bg-settler-gray font-sans antialiased text-slate-900 min-h-screen">
+<!-- BEGIN: Warning Banner -->
+<header class="bg-settler-amber text-white px-4 py-2 text-center text-sm font-semibold shadow-sm sticky top-0 z-50">
+<div class="flex items-center justify-center gap-2">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+      Data Incompleteness Warning - Sync in Progress
+    </div>
+</header>
+<!-- END: Warning Banner -->
+<main class="p-4 max-w-md mx-auto space-y-6">
+<!-- BEGIN: Header Section -->
+<section class="flex flex-col gap-1" data-purpose="view-header">
+<div class="flex items-center gap-2 text-slate-500 text-sm">
+<span>Connectors</span>
+<span>/</span>
+<span class="font-medium text-slate-800">Stripe US Core</span>
+</div>
+<h1 class="text-2xl font-bold text-settler-navy">Connector Detail</h1>
+</section>
+<!-- END: Header Section -->
+<!-- BEGIN: Metric Cards -->
+<section class="grid grid-cols-2 gap-4" data-purpose="metrics-grid">
+<!-- Match Rate Card -->
+<div class="bg-white p-4 rounded-xl border border-settler-border shadow-sm relative overflow-hidden">
+<p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Match Rate</p>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-2xl font-bold text-settler-navy">94.2%</span>
+<!-- Partial Truth Watermark -->
+<div class="flex items-center gap-1 px-1.5 py-0.5 rounded bg-settler-lightAmber text-[10px] font-bold text-settler-amber uppercase animate-pulse-slow">
+            Partial
+          </div>
+</div>
+<div class="absolute bottom-0 left-0 h-1 bg-settler-amber w-3/4"></div>
+</div>
+<!-- Total Variance Card -->
+<div class="bg-white p-4 rounded-xl border border-settler-border shadow-sm relative overflow-hidden">
+<p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Variance</p>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-2xl font-bold text-settler-navy">$4.2k</span>
+<div class="w-2 h-2 rounded-full bg-settler-amber animate-ping"></div>
+</div>
+<div class="absolute bottom-0 left-0 h-1 bg-settler-amber w-1/2"></div>
+</div>
+</section>
+<!-- END: Metric Cards -->
+<!-- BEGIN: System Guidance Section -->
+<section class="bg-white rounded-xl border border-settler-amber/30 p-4 shadow-sm border-l-4 border-l-settler-amber" data-purpose="system-guidance">
+<div class="flex gap-3">
+<div class="shrink-0 text-settler-amber">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="space-y-2">
+<h2 class="text-sm font-bold text-settler-navy">System Guidance</h2>
+<p class="text-sm text-slate-600 leading-relaxed">
+            Current results are based on <span class="font-bold text-settler-navy">85%</span> of expected data. 
+            <span class="font-medium text-settler-amber">3 of 20 runs</span> are still processing. 
+          </p>
+<div class="w-full bg-slate-100 h-1.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-settler-amber h-full w-[85%] rounded-full transition-all duration-1000"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: System Guidance Section -->
+<!-- BEGIN: Action Controls -->
+<section class="space-y-4 pt-4 border-t border-settler-border" data-purpose="action-controls">
+<h3 class="text-xs font-semibold text-slate-400 uppercase">Available Actions</h3>
+<div class="grid grid-cols-1 gap-3">
+<!-- View Raw Logs (Enabled) -->
+<button class="w-full bg-white border border-settler-border py-3 px-4 rounded-lg text-sm font-semibold text-settler-navy flex justify-between items-center active:bg-slate-50 transition-colors">
+          View Processing Logs
+          <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<!-- Period Close (Disabled) -->
+<div class="relative group">
+<button class="w-full bg-slate-100 border border-slate-200 py-3 px-4 rounded-lg text-sm font-semibold text-slate-400 flex justify-between items-center cursor-not-allowed" disabled="">
+            Period Close
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<!-- Tooltip -->
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[11px] px-3 py-1.5 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+            Blocked until data sync is 100% complete
+            <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
+</div>
+</div>
+<!-- Approve Payout (Disabled) -->
+<div class="relative group">
+<button class="w-full bg-slate-100 border border-slate-200 py-3 px-4 rounded-lg text-sm font-semibold text-slate-400 flex justify-between items-center cursor-not-allowed" disabled="">
+            Approve Payout
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<!-- Tooltip -->
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[11px] px-3 py-1.5 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+            Blocked until data sync is 100% complete
+            <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: Action Controls -->
+<!-- BEGIN: Data Health List -->
+<section class="space-y-3" data-purpose="data-health">
+<h3 class="text-xs font-semibold text-slate-400 uppercase tracking-tight">Processing Status</h3>
+<div class="bg-white border border-settler-border rounded-xl divide-y divide-settler-border">
+<div class="p-3 flex items-center justify-between">
+<span class="text-sm text-slate-700">Daily Sales Batch #402</span>
+<span class="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded uppercase">Synced</span>
+</div>
+<div class="p-3 flex items-center justify-between bg-slate-50/50">
+<span class="text-sm text-slate-700">Refund Stream #92</span>
+<div class="flex items-center gap-2">
+<span class="text-[10px] font-bold text-settler-amber animate-pulse">Processing...</span>
+</div>
+</div>
+<div class="p-3 flex items-center justify-between">
+<span class="text-sm text-slate-700">Chargeback Ledger (Legacy)</span>
+<span class="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded uppercase">Synced</span>
+</div>
+</div>
+</section>
+<!-- END: Data Health List -->
+</main>
+<!-- BEGIN: Navigation Tab Bar (Mobile Aesthetic) -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-settler-border px-6 py-3 flex justify-between items-center max-w-md mx-auto">
+<div class="flex flex-col items-center gap-1 text-slate-400">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="text-[10px] font-medium">Home</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-settler-navy">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="text-[10px] font-bold">Connectors</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-400">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="text-[10px] font-medium">Ledgers</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-400">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="text-[10px] font-medium">Settings</span>
+</div>
+</nav>
+<!-- END: Navigation Tab Bar -->
+<!-- Add some padding to avoid content being hidden by nav -->
+<div class="h-20"></div>
+</body></html>

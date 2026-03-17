@@ -161,7 +161,8 @@
     "vercel.json",
     "verify_patch.py",
     "stitch_integrations_data_sources.zip",
-    ".vscode"
+    ".vscode",
+    "stitch"
   ],
   "blockedExtensions": [".tar", ".tgz", ".bak", ".tmp", ".old"],
   "localClutterPatterns": [

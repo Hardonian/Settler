@@ -1,0 +1,87 @@
+# Settler: Deep Surface Expansion PRD
+
+## 1. Full Route Map
+
+### Core Operations
+- `/workspace` - Default Queue View
+    - `/workspace/investigate/:id` - Split-pane Investigation
+    - `/workspace/bulk-triage` - Bulk Action Mode
+- `/exceptions` - Exceptions List
+    - `/exceptions/:id` - Exception Detail Page
+    - `/exceptions/playbooks` - Playbook Library
+- `/runs` - Processing Monitor
+    - `/runs/:id` - Run Detail & Logs
+
+### Configuration & Data
+- `/matching-rules` - Rules List
+    - `/matching-rules/editor/:id` - Rule Builder (Conditions, Test Mode)
+    - `/matching-rules/history/:id` - Version History & Rollback
+- `/connectors` - Connectors Gallery
+    - `/connectors/setup/:provider` - Multi-step Setup Wizard
+    - `/connectors/:id` - Connector Health & Sync Logs
+    - `/connectors/:id/mapping` - Field Mapping UI
+- `/webhooks` - Webhook Delivery & API Keys
+
+### Admin & Governance
+- `/admin/team` - Members List
+    - `/admin/team/invite` - Invite Flow
+- `/admin/roles` - RBAC Matrix & Role Builder
+- `/admin/audit-log` - Global Activity Explorer
+- `/admin/security` - Session Management & Security Posture
+
+### Reporting
+- `/dashboard` - Executive Overview
+- `/reports` - Report Builder & Catalog
+
+---
+
+## 2. Component Definitions
+
+### App Shell
+- **Sidebar Nav:** Collapsible, 240px width. Icons + Labels. High contrast active states.
+- **Top Command Bar:** Global Search (Cmd+K), Breadcrumbs, Notifications, User Profile.
+- **Surface:** F1F5F9 background. Cards/Panels use White (#FFFFFF) with 1px border (#E2E8F0).
+
+### Data Table Primitives
+- **Density:** Compact (32px row height) vs Default (40px).
+- **Header:** Sticky, sortable columns, filter icons in-header.
+- **Row States:** Default, Hover, Selected, Focused (Keyboard).
+- **Virtualization:** Required for >500 rows.
+
+### Badges & Status
+- **Success (Matched):** Green text on light green bg.
+- **Warning (Unmatched/Stale):** Amber text on light amber bg.
+- **Danger (Failed/Breached):** Red text on light red bg.
+- **Neutral (Pending/Draft):** Gray text on light gray bg.
+- **Info (Processing):** Blue text on light blue bg.
+
+### Interaction Elements
+- **Drawers:** Slide from right, 480px width (Desktop) or 100% (Mobile). Overlay backdrop.
+- **Modals:** Centered, 560px max width for forms.
+- **Buttons:** Primary (Filled), Secondary (Outline), Ghost (Icon-only).
+
+---
+
+## 3. Screen-by-Screen Expansion
+
+### 1. Reconciliation Workspace (Expansion)
+- **Central Table:** Columns [Checkbox, Transaction ID, Source A (Stripe), Source B (Bank Ledger), Variance ($), Status (Badge), Owner, Age]. 
+- **Evidence Drawer:** 
+    - **Header:** ID + Status + Assignee.
+    - **Tabs:** Overview (Explanation Text), Timeline (Audit), Raw Data (JSON Diff).
+    - **Actions:** 'Force Match', 'Flag for Review', 'Assign to Analyst'.
+
+### 2. Exceptions Management (Expansion)
+- **SLA Countdown:** "2h 15m remaining" (Amber) -> "EXPIRED" (Red).
+- **Playbook Panel:** Sidebar panel with "Suggested Fix: Manual Ledger Entry" + Confidence Score (92%).
+
+### 3. Matching Rules (Expansion)
+- **Condition Builder:** Nested logic: `IF (Source_A.Amount == Source_B.Amount) AND (Source_A.Date within 24h of Source_B.Date)`.
+- **Test Mode:** Side-by-side "Proposed Rule" vs "Current Results" showing match rate change.
+
+---
+
+## 4. Mobile Adaptations
+- **Tables:** Collapse into card lists. Header becomes "Sort/Filter" button.
+- **Drawers:** Full-screen sheets with bottom sticky actions.
+- **Navigation:** Bottom tab bar for top 4 routes (Dashboard, Workspace, Exceptions, Connectors).

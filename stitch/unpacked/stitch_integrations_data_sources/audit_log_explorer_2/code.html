@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settler | Audit Log Explorer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec5b13",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221610",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        .material-symbols-outlined { font-size: 20px; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<!-- Header Section -->
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center p-4 justify-between max-w-7xl mx-auto w-full">
+<div class="flex items-center gap-3">
+<div class="bg-primary/10 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">history_edu</span>
+</div>
+<div>
+<h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Audit Log Explorer</h1>
+<p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Immutable System Activity</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors">
+<span class="material-symbols-outlined">download</span>
+</button>
+<button class="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</div>
+<!-- Global Search -->
+<div class="px-4 pb-4 max-w-7xl mx-auto w-full">
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="block w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-slate-400" placeholder="Search by TXN ID, Actor Name, or Metadata hash..." type="text"/>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+<span class="text-[10px] font-bold bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-500 border border-slate-200 dark:border-slate-700">⌘K</span>
+</div>
+</div>
+</div>
+<!-- Filters Strip -->
+<div class="px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar max-w-7xl mx-auto w-full">
+<button class="flex shrink-0 items-center gap-2 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-semibold hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-slate-400">calendar_today</span>
+                Last 24 Hours
+                <span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+<button class="flex shrink-0 items-center gap-2 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-semibold hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-slate-400">person</span>
+                Actor: All
+                <span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+<button class="flex shrink-0 items-center gap-2 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-semibold hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-slate-400">category</span>
+                Action Type
+                <span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+<button class="flex shrink-0 items-center gap-2 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-semibold hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-slate-400">database</span>
+                Entity
+                <span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+<div class="h-8 w-[1px] bg-slate-200 dark:bg-slate-800 mx-1 self-center"></div>
+<button class="flex shrink-0 items-center gap-1 px-3 py-1.5 rounded-lg text-primary text-xs font-bold hover:bg-primary/10">
+<span class="material-symbols-outlined">filter_list_off</span>
+                Clear
+            </button>
+</div>
+</header>
+<!-- Main Content: Audit Feed -->
+<main class="flex-1 max-w-7xl mx-auto w-full p-4 space-y-px bg-slate-100 dark:bg-slate-900/50">
+<!-- Row 1 -->
+<div class="group relative flex flex-col md:flex-row md:items-center gap-4 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 first:rounded-t-xl last:rounded-b-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-all">
+<div class="flex items-center gap-3 md:w-1/4">
+<div class="size-9 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs ring-2 ring-background-light dark:ring-background-dark">
+                    SM
+                </div>
+<div class="overflow-hidden">
+<p class="text-sm font-bold truncate">Sarah Miller</p>
+<p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">User Actor</p>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-1">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-tighter">Manual Match</span>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        Manually matched <span class="font-bold text-slate-900 dark:text-white underline decoration-slate-300">TXN-88291</span>
+</p>
+</div>
+<div class="flex items-center gap-3 text-xs text-slate-500">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">link</span> Ledger_V2</span>
+<span class="flex items-center gap-1 text-primary font-semibold"><span class="material-symbols-outlined text-[14px]">payments</span> Variance: $1,200.00</span>
+</div>
+</div>
+<div class="md:w-48 text-right flex flex-col justify-center">
+<p class="text-xs font-bold text-slate-900 dark:text-slate-100">2 mins ago</p>
+<p class="text-[10px] text-slate-400">Oct 24, 2023 • 14:22:10 UTC</p>
+</div>
+<div class="absolute right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-slate-400">chevron_right</span>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="group relative flex flex-col md:flex-row md:items-center gap-4 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-all">
+<div class="flex items-center gap-3 md:w-1/4">
+<div class="size-9 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined">settings_suggest</span>
+</div>
+<div class="overflow-hidden">
+<p class="text-sm font-bold truncate">Auto-Reconciler</p>
+<p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">System Actor</p>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-1">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-tighter">Rule Execution</span>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        Executed <span class="italic text-slate-500">Match_Exact_Vendor</span> on 452 entities
+                    </p>
+</div>
+<div class="flex items-center gap-3 text-xs text-slate-500">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">rule</span> Batch_9921_A</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check_circle</span> 100% Confirmed</span>
+</div>
+</div>
+<div class="md:w-48 text-right flex flex-col justify-center">
+<p class="text-xs font-bold text-slate-900 dark:text-slate-100">12 mins ago</p>
+<p class="text-[10px] text-slate-400">Oct 24, 2023 • 14:12:45 UTC</p>
+</div>
+<div class="absolute right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-slate-400">chevron_right</span>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="group relative flex flex-col md:flex-row md:items-center gap-4 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-all">
+<div class="flex items-center gap-3 md:w-1/4">
+<div class="size-9 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400 font-bold text-xs">
+                    JD
+                </div>
+<div class="overflow-hidden">
+<p class="text-sm font-bold truncate">James Doe</p>
+<p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Admin Actor</p>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-1">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-[10px] font-bold uppercase tracking-tighter">Rule Update</span>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        Modified threshold for <span class="font-bold">Global_Threshold_Rule</span>
+</p>
+</div>
+<div class="flex items-center gap-3 text-xs text-slate-500">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">edit</span> Change: 0.5% -&gt; 0.8%</span>
+</div>
+</div>
+<div class="md:w-48 text-right flex flex-col justify-center">
+<p class="text-xs font-bold text-slate-900 dark:text-slate-100">45 mins ago</p>
+<p class="text-[10px] text-slate-400">Oct 24, 2023 • 13:39:02 UTC</p>
+</div>
+<div class="absolute right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-slate-400">chevron_right</span>
+</div>
+</div>
+<!-- Row 4 -->
+<div class="group relative flex flex-col md:flex-row md:items-center gap-4 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-all">
+<div class="flex items-center gap-3 md:w-1/4">
+<div class="size-9 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold text-xs">
+                    LM
+                </div>
+<div class="overflow-hidden">
+<p class="text-sm font-bold truncate">Lisa Mong</p>
+<p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Owner Actor</p>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-1">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-[10px] font-bold uppercase tracking-tighter">Invite Sent</span>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        Sent organization invite to <span class="italic">dev-team@partner.com</span>
+</p>
+</div>
+<div class="flex items-center gap-3 text-xs text-slate-500">
+<span class="flex items-center gap-1 text-purple-500 font-semibold"><span class="material-symbols-outlined text-[14px]">shield_person</span> Role: Auditor</span>
+</div>
+</div>
+<div class="md:w-48 text-right flex flex-col justify-center">
+<p class="text-xs font-bold text-slate-900 dark:text-slate-100">1 hour ago</p>
+<p class="text-[10px] text-slate-400">Oct 24, 2023 • 13:10:22 UTC</p>
+</div>
+<div class="absolute right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-slate-400">chevron_right</span>
+</div>
+</div>
+<!-- Row 5 -->
+<div class="group relative flex flex-col md:flex-row md:items-center gap-4 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 last:rounded-b-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-all">
+<div class="flex items-center gap-3 md:w-1/4">
+<div class="size-9 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined">security</span>
+</div>
+<div class="overflow-hidden">
+<p class="text-sm font-bold truncate">Auth-Guard</p>
+<p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">System Actor</p>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-1">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 text-[10px] font-bold uppercase tracking-tighter">Security Alert</span>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        Failed login attempt detected from new IP range <span class="font-mono text-xs">192.168.1.1</span>
+</p>
+</div>
+<div class="flex items-center gap-3 text-xs text-slate-500">
+<span class="flex items-center gap-1 text-rose-500 font-bold"><span class="material-symbols-outlined text-[14px]">warning</span> Severity: High</span>
+</div>
+</div>
+<div class="md:w-48 text-right flex flex-col justify-center">
+<p class="text-xs font-bold text-slate-900 dark:text-slate-100">2 hours ago</p>
+<p class="text-[10px] text-slate-400">Oct 24, 2023 • 12:05:01 UTC</p>
+</div>
+<div class="absolute right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-slate-400">chevron_right</span>
+</div>
+</div>
+<div class="py-6 text-center">
+<button class="text-xs font-bold text-primary hover:underline flex items-center gap-1 mx-auto">
+<span class="material-symbols-outlined text-sm">restart_alt</span>
+                Load more activity
+            </button>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<footer class="bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 safe-area-bottom">
+<div class="flex gap-1 px-4 pb-2 pt-2 max-w-lg mx-auto">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 hover:text-primary transition-colors py-2" href="#">
+<span class="material-symbols-outlined">home</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary transition-colors py-2 border-t-2 border-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">list_alt</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Logs</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 hover:text-primary transition-colors py-2" href="#">
+<span class="material-symbols-outlined">shield</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Rules</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 hover:text-primary transition-colors py-2" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Settings</p>
+</a>
+</div>
+</footer>
+<!-- Help Tooltip (Floating) -->
+<div class="fixed bottom-24 right-6 hidden md:block">
+<div class="bg-slate-900 text-white text-[10px] px-3 py-1.5 rounded-full font-bold shadow-xl border border-slate-700 animate-pulse">
+            Tapping a row opens transaction lineage
+        </div>
+</div>
+</body></html>

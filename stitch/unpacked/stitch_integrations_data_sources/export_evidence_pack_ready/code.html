@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settler - Exporting Evidence Pack</title>
+<!-- BEGIN: Scripts -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            settler: {
+              navy: '#0F172A',
+              blue: '#2563EB',
+              success: '#10B981',
+              border: '#E2E8F0'
+            }
+          }
+        }
+      }
+    }
+  </script>
+<!-- END: Scripts -->
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col">
+<!-- BEGIN: MainContent -->
+<main class="flex-grow p-4 md:p-8 max-w-2xl mx-auto w-full">
+<!-- BEGIN: HeaderSection -->
+<header class="mb-8" data-purpose="page-header">
+<h1 class="text-2xl font-bold text-settler-navy">Exporting Evidence Pack</h1>
+<p class="text-slate-500 text-sm">Settler Compliance &amp; Audit Platform</p>
+</header>
+<!-- END: HeaderSection -->
+<!-- BEGIN: GeneratingStatusSection -->
+<section class="bg-white rounded-xl border border-settler-border p-6 mb-6 shadow-sm" data-purpose="generation-status">
+<div class="flex items-center gap-6 mb-8">
+<!-- Circular Progress Indicator (75%) -->
+<div class="relative flex-shrink-0 w-20 h-20" data-purpose="progress-ring">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-slate-100" cx="40" cy="40" fill="transparent" r="36" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-settler-blue transition-all duration-500" cx="40" cy="40" fill="transparent" r="36" stroke="currentColor" stroke-dasharray="226.19" stroke-dashoffset="56.54" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="text-lg font-bold text-settler-navy">75%</span>
+</div>
+</div>
+<div>
+<h2 class="text-lg font-semibold text-settler-navy">Generating...</h2>
+<p class="text-sm text-slate-500">Preparing your cryptographically signed audit trail.</p>
+</div>
+</div>
+<!-- Step List -->
+<div class="space-y-4" data-purpose="step-list">
+<!-- Step 1: Complete -->
+<div class="flex items-center gap-3">
+<div class="w-5 h-5 flex items-center justify-center bg-settler-success rounded-full">
+<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></svg>
+</div>
+<span class="text-sm font-medium text-slate-700">Aggregating transaction logs...</span>
+<span class="text-xs text-settler-success ml-auto font-semibold">Complete</span>
+</div>
+<!-- Step 2: Complete -->
+<div class="flex items-center gap-3">
+<div class="w-5 h-5 flex items-center justify-center bg-settler-success rounded-full">
+<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></svg>
+</div>
+<span class="text-sm font-medium text-slate-700">Compiling attestation records...</span>
+<span class="text-xs text-settler-success ml-auto font-semibold">Complete</span>
+</div>
+<!-- Step 3: In Progress -->
+<div class="flex items-center gap-3">
+<div class="w-5 h-5 flex items-center justify-center">
+<div class="w-4 h-4 border-2 border-settler-blue border-t-transparent rounded-full animate-spin"></div>
+</div>
+<span class="text-sm font-medium text-slate-900">Generating checksums for immutability...</span>
+<span class="text-xs text-settler-blue ml-auto font-semibold">In Progress</span>
+</div>
+</div>
+</section>
+<!-- END: GeneratingStatusSection -->
+<!-- BEGIN: SuccessSection -->
+<section class="bg-white rounded-xl border border-settler-border overflow-hidden shadow-sm" data-purpose="ready-status">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<h2 class="text-xl font-bold text-settler-navy">Evidence Pack Ready</h2>
+</div>
+<button class="w-full bg-settler-navy hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-lg flex items-center justify-center gap-3 transition-colors mb-8 shadow-lg shadow-slate-200" data-purpose="download-button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          Download .zip (42MB)
+        </button>
+<!-- Metadata Grid -->
+<div class="bg-slate-50 rounded-lg p-4 grid grid-cols-1 gap-4 border border-slate-100" data-purpose="metadata-container">
+<div>
+<span class="block text-[10px] uppercase tracking-wider font-bold text-slate-400 mb-1">Pack ID</span>
+<code class="text-sm font-mono text-slate-700">EP-2023-10-882</code>
+</div>
+<div>
+<span class="block text-[10px] uppercase tracking-wider font-bold text-slate-400 mb-1">Generated</span>
+<span class="text-sm font-medium text-slate-700">Oct 31, 2023 10:42 AM</span>
+</div>
+<div>
+<span class="block text-[10px] uppercase tracking-wider font-bold text-slate-400 mb-1">SHA-256 Hash</span>
+<code class="text-xs font-mono text-slate-500 break-all bg-white p-2 rounded block border border-slate-200 mt-1">8f2b1c...3c1a9d0f4e2g...</code>
+</div>
+</div>
+</div>
+</section>
+<!-- END: SuccessSection -->
+</main>
+<!-- END: MainContent -->
+<!-- BEGIN: FooterAction -->
+<footer class="p-6 mt-auto border-t border-settler-border bg-white" data-purpose="footer-navigation">
+<div class="max-w-2xl mx-auto">
+<button class="flex items-center gap-2 text-slate-600 hover:text-settler-navy font-semibold text-sm transition-colors">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+        Back to Period Close
+      </button>
+</div>
+</footer>
+<!-- END: FooterAction -->
+</body></html>

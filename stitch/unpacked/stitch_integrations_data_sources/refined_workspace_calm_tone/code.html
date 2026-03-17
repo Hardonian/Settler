@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settler Mobile Workspace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec5b13",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221610",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Public Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex min-h-screen flex-col max-w-md mx-auto bg-white dark:bg-slate-900 shadow-xl overflow-hidden">
+<!-- Header -->
+<header class="flex items-center justify-between px-4 pt-6 pb-2 border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">grid_view</span>
+</div>
+<div>
+<h1 class="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Workspace</h1>
+<p class="text-lg font-bold leading-tight">Settler Main</p>
+</div>
+</div>
+<button class="size-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">notifications</span>
+</button>
+</header>
+<!-- Stats Grid -->
+<div class="grid grid-cols-2 gap-px bg-slate-200 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-800">
+<div class="bg-white dark:bg-slate-900 p-4">
+<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Total Balance</p>
+<p class="text-xl font-bold font-display tracking-tight">$12,450.00</p>
+</div>
+<div class="bg-white dark:bg-slate-900 p-4 border-l border-slate-200 dark:border-slate-800">
+<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Pending Sync</p>
+<p class="text-xl font-bold font-display tracking-tight">3 Items</p>
+</div>
+</div>
+<!-- System Notification (Restrained Amber) -->
+<div class="px-4 py-3 bg-amber-50 dark:bg-amber-900/10 border-b border-amber-200/50 dark:border-amber-800/30 flex items-start gap-3">
+<span class="material-symbols-outlined text-amber-600 dark:text-amber-500 text-[20px] mt-0.5">sync_problem</span>
+<div class="flex-1">
+<p class="text-xs font-bold text-amber-800 dark:text-amber-400 leading-tight">Connector Lag Detected</p>
+<p class="text-xs text-amber-700 dark:text-amber-500/80 mt-0.5 leading-relaxed">System synchronization is currently delayed by 4 minutes. Financial data may be stale.</p>
+</div>
+<button class="text-xs font-bold text-amber-800 dark:text-amber-400 underline underline-offset-4">Status</button>
+</div>
+<!-- Filter Tabs -->
+<nav class="flex border-b border-slate-200 dark:border-slate-800">
+<button class="flex-1 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-primary text-slate-900 dark:text-white">All Ledger</button>
+<button class="flex-1 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 dark:text-slate-500">Recent</button>
+<button class="flex-1 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 dark:text-slate-500">Stale</button>
+</nav>
+<!-- Transaction List (High Density) -->
+<main class="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950/50">
+<div class="divide-y divide-slate-100 dark:divide-slate-800">
+<!-- Row 1 -->
+<div class="flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-900 h-16">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px] text-slate-500">account_balance</span>
+</div>
+<div>
+<p class="text-sm font-semibold leading-none">Chase Commercial Pay</p>
+<p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">ID: #8829-10</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold leading-none">$2,140.00</p>
+<p class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mt-1">Confirmed</p>
+</div>
+</div>
+<!-- Row 2 (Stale Data Highlight) -->
+<div class="flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-900 h-16 border-l-4 border-l-amber-400">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px] text-slate-500">receipt_long</span>
+</div>
+<div>
+<p class="text-sm font-semibold leading-none">AWS Cloud Services</p>
+<p class="text-[11px] text-amber-600 dark:text-amber-500 mt-1 font-medium italic">Pending Sync</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold leading-none">$458.12</p>
+<p class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mt-1">04:02 PM</p>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-900 h-16">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px] text-slate-500">send_and_archive</span>
+</div>
+<div>
+<p class="text-sm font-semibold leading-none">Global Wire Transfer</p>
+<p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">ID: #9901-XL</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold leading-none">$8,000.00</p>
+<p class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mt-1">Processing</p>
+</div>
+</div>
+<!-- Row 4 -->
+<div class="flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-900 h-16">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px] text-slate-500">inventory_2</span>
+</div>
+<div>
+<p class="text-sm font-semibold leading-none">Office Supplies Ltd</p>
+<p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">ID: #4412-BB</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold leading-none text-slate-400 dark:text-slate-500">-$122.50</p>
+<p class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mt-1">Settled</p>
+</div>
+</div>
+<!-- Row 5 -->
+<div class="flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-900 h-16">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px] text-slate-500">credit_card</span>
+</div>
+<div>
+<p class="text-sm font-semibold leading-none">Corporate Visa 4011</p>
+<p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">ID: #1102-CC</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold leading-none">$12.00</p>
+<p class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mt-1">Confirmed</p>
+</div>
+</div>
+</div>
+<div class="p-6 flex flex-col items-center gap-4">
+<button class="w-full h-11 bg-primary text-white font-bold text-xs uppercase tracking-widest rounded transition-opacity active:opacity-90">
+                    Add New Transaction
+                </button>
+<button class="w-full h-11 bg-transparent border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-bold text-xs uppercase tracking-widest rounded transition-colors active:bg-slate-50 dark:active:bg-slate-800">
+                    Generate Report
+                </button>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<div class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 pb-4 pt-2 flex justify-between">
+<a class="flex flex-1 flex-col items-center gap-1 group" href="#">
+<div class="flex h-8 items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-tight text-slate-900 dark:text-white">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center gap-1 group text-slate-400 dark:text-slate-500" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">format_list_bulleted</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-tight">Ledger</p>
+</a>
+<a class="flex flex-1 flex-col items-center gap-1 group text-slate-400 dark:text-slate-500" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">query_stats</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-tight">Stats</p>
+</a>
+<a class="flex flex-1 flex-col items-center gap-1 group text-slate-400 dark:text-slate-500" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">settings</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-tight">Settings</p>
+</a>
+</div>
+</div>
+</body></html>

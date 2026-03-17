@@ -1,0 +1,86 @@
+# Settler: Product Requirements Document (PRD)
+
+## 1. Executive Summary
+Settler is an enterprise-grade financial reconciliation and operational control platform. It is designed to provide finance and operations teams with a trustworthy, auditable, and high-density workspace for managing complex transaction flows, exceptions, and compliance requirements.
+
+## 2. Information Architecture & Route Map
+
+### 2.1 Core Operations
+- `/workspace` - Reconciliation Queue (Default)
+- `/workspace/investigate/:id` - Investigation Detail (Overlay/Full-screen)
+- `/exceptions` - Exceptions Dashboard
+- `/exceptions/:id` - Exception Investigation Detail
+- `/runs` - Processing Monitor List
+- `/runs/:id` - Run Granular Logs & Detail
+
+### 2.2 Configuration
+- `/matching-rules` - Rules Management
+- `/matching-rules/editor/:id` - Logic Builder & Simulation
+- `/connectors` - Integration Gallery
+- `/connectors/:id` - Connector Health & Sync Logs
+- `/connectors/setup` - Setup Wizard (Multi-step)
+
+### 2.3 Financial Control
+- `/period-close` - Period Close Readiness & Checklist
+- `/settlement` - Payout & Settlement Queue
+- `/reports` - Report Builder & Catalog
+
+### 2.4 Administration
+- `/admin/team` - Member Management
+- `/admin/roles` - RBAC Matrix
+- `/admin/audit-log` - Global Activity Explorer
+- `/admin/security` - Session & API Key Governance
+
+---
+
+## 3. Core System Principles
+
+### 3.1 Operational Truth (Safety First)
+- **Determinism**: Every system decision must be backed by a specific rule and audit-grade evidence.
+- **No Silent Assumptions**: Ambiguous matches or incomplete data must be explicitly flagged to the operator.
+- **Auditability**: Every state change is attributed to an actor (user or system) with a timestamp and "before/after" context.
+
+### 3.2 Temporal Truth
+- **Dual Timeframes**: Distinguish between "Event Time" (when the transaction occurred) and "Processing Time" (when Settler ingested/acted on it).
+- **Aging & SLAs**: Critical items are tracked by age buckets (0-24h, 24-48h, etc.) and SLA deadlines.
+
+### 3.3 Risk & Priority
+- **Risk Scoring**: Items are weighted by amount, age, and systemic confidence.
+- **Visual Hierarchy**: High-risk entities use semantic color (Red/Amber) and elevated positioning in queues.
+
+---
+
+## 4. UI/UX Standards
+
+### 4.1 Design System
+- **Tone**: Calm, professional, and dense.
+- **Palette**: Neutral Slate base with semantic accents (Emerald for Success, Amber for Warning, Rose for Critical).
+- **Typography**: Optimized for data legibility (tabular numbers, clear hierarchy).
+- **Layout**: Stable, grid-aligned, avoiding jitter and layout shifts.
+
+### 4.2 Progressive Disclosure
+- Summary views for rapid scanning.
+- Deep-dive drawers or full-screen sheets for forensic investigation.
+- Hidden technical metadata (JSON, raw logs) available via toggle.
+
+### 4.3 Navigation & Continuity
+- **Non-destructive**: Filters and selections must persist during drill-downs.
+- **Overlay Priority**: Prefer drawers/modals for detail views to maintain background context.
+
+---
+
+## 5. Failure & Degraded State Handling
+- **Banners & Watermarks**: Explicitly signal when data is stale or a connector is lagging.
+- **Disabled Actions**: Block high-risk actions (like Period Close) if system invariants are violated or data is incomplete.
+- **Recovery Paths**: Provide direct links to retry failed runs or re-auth broken connectors.
+
+---
+
+## 6. Audit & Evidence Pack
+- **Evidence Packs**: Tamper-proof ZIP exports containing scoped transactions, logs, and attestations.
+- **SHA-256 Verification**: Every export includes a unique hash for external verification.
+
+---
+
+## 7. Screen Inventory & Visual Source of Truth
+(References to all generated screens in DataStore Snapshot {{DATA:SCREEN:SCREEN_2}} through {{DATA:SCREEN:SCREEN_51}})

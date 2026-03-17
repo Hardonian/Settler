@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settler Exceptions Management</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Custom Configuration -->
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            settler: {
+              background: '#F8FAFC',
+              critical: '#EF4444',
+              sla: '#F59E0B',
+              surface: '#FFFFFF',
+              border: '#E2E8F0',
+              text: '#1E293B',
+              textMuted: '#64748B'
+            }
+          }
+        }
+      }
+    }
+  </script>
+<!-- Styling for dense operational UI -->
+<style data-purpose="layout-refinements">
+    body {
+      background-color: #F8FAFC;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .card-shadow {
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
+    }
+    /* Dense lists for operational efficiency */
+    .dense-text {
+      font-size: 0.8125rem;
+      line-height: 1.125rem;
+    }
+    /* Animation for triage mode */
+    .triage-checkbox {
+      transition: width 0.2s ease, opacity 0.2s ease;
+    }
+    .triage-mode-active .triage-checkbox {
+      width: 2rem;
+      opacity: 1;
+    }
+    .triage-mode-inactive .triage-checkbox {
+      width: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="text-settler-text">
+<!-- BEGIN: MobileHeader -->
+<header class="sticky top-0 z-30 bg-white border-b border-settler-border px-4 py-3">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-indigo-600 rounded flex items-center justify-center">
+<span class="text-white font-bold text-xs">S</span>
+</div>
+<h1 class="font-bold text-lg tracking-tight">Exceptions</h1>
+</div>
+<button class="p-2 rounded-full hover:bg-gray-100">
+<svg class="h-6 w-6 text-settler-textMuted" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+<!-- BEGIN: SummaryMetrics -->
+<div class="flex gap-3 overflow-x-auto pb-1 no-scrollbar" data-purpose="metrics-row">
+<div class="flex-1 min-w-[140px] bg-red-50 border border-red-100 rounded-lg p-3">
+<span class="text-[10px] uppercase font-bold text-red-600 tracking-wider">Critical</span>
+<div class="text-2xl font-bold text-red-700 leading-tight">12</div>
+</div>
+<div class="flex-1 min-w-[140px] bg-amber-50 border border-amber-100 rounded-lg p-3">
+<span class="text-[10px] uppercase font-bold text-amber-600 tracking-wider">SLA Breaches</span>
+<div class="text-2xl font-bold text-amber-700 leading-tight">4</div>
+</div>
+</div>
+<!-- END: SummaryMetrics -->
+<!-- BEGIN: TriageControls -->
+<div class="flex items-center justify-between mt-4">
+<div class="flex items-center gap-2">
+<label class="inline-flex relative items-center cursor-pointer" for="bulkTriageToggle">
+<input class="sr-only peer" id="bulkTriageToggle" onclick="toggleTriageMode()" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+<span class="ml-2 text-xs font-semibold text-settler-textMuted">Bulk Triage</span>
+</label>
+</div>
+<div class="flex gap-2">
+<button class="text-xs font-semibold text-indigo-600 px-3 py-1 border border-indigo-100 rounded-md bg-indigo-50">Filter</button>
+</div>
+</div>
+<!-- END: TriageControls -->
+</header>
+<!-- END: MobileHeader -->
+<!-- BEGIN: MainContent -->
+<main class="p-4 space-y-6 triage-mode-inactive" id="exceptionListContainer">
+<!-- BEGIN: SeverityGroupHigh -->
+<section>
+<div class="flex items-center justify-between mb-3">
+<h2 class="text-xs font-bold uppercase tracking-widest text-settler-textMuted flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-red-500"></span>
+          High Priority
+        </h2>
+<span class="text-[10px] font-medium bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full">8 items</span>
+</div>
+<div class="space-y-3">
+<!-- BEGIN: ExceptionCard_1 (With RCA Panel) -->
+<div class="flex flex-col bg-white rounded-xl border border-settler-border card-shadow overflow-hidden" data-purpose="exception-card">
+<div class="flex items-center gap-0">
+<div class="triage-checkbox pl-3">
+<input class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" type="checkbox"/>
+</div>
+<div class="flex-1 p-4 flex gap-3">
+<!-- Severity Icon -->
+<div class="flex-shrink-0 mt-1">
+<svg fill="none" height="16" viewbox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+<path d="M8 0L15 8L8 16L1 8L8 0Z" fill="#EF4444"></path>
+</svg>
+</div>
+<!-- Card Details -->
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="dense-text font-bold truncate pr-2">Unmatched Wire Transfer</h3>
+<span class="dense-text font-bold">$250,000</span>
+</div>
+<div class="flex justify-between items-end">
+<div class="space-y-1">
+<p class="text-[11px] text-settler-textMuted">Ref: WT-9023412-GB</p>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-full bg-amber-400 border border-amber-500"></span>
+<span class="text-[11px] font-bold text-amber-700">1h 30m remaining</span>
+</div>
+</div>
+<!-- Owner Avatar -->
+<div class="flex-shrink-0" data-purpose="owner-avatar">
+<img alt="Owner" class="w-6 h-6 rounded-full border border-white ring-1 ring-gray-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCe_M6x5ZV_ithcCSJwRWW-Dn9tSpgr7BFYmJpvrURFIUEZD7X1LHlQn-Q9EtFCQDDvDtb27AwG9yFC3jag74WM6ZohiPuH8EuAd3XZJR0JXYbjdUQn5IkfndL_tL-TrhLSQah8_kENhs6B6YeWF2wKQBx1AiiKzbT5IUg5xzSptoLSDclT28RW37wAYbENcljiA5eYger9i-6ok4nuRcPnrcxPWSkiU9Nd-Aopi1UMjlBWcXVMR14qHcq_vEmrarim8C2ywMZvzQ"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- BEGIN: RCA Panel -->
+<div class="bg-slate-50 border-t border-settler-border p-3 space-y-3">
+<div class="flex justify-between items-center">
+<span class="text-[10px] font-bold text-settler-textMuted uppercase tracking-wider">Root Cause Analysis</span>
+<span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">Action Required</span>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="space-y-1">
+<p class="text-[10px] text-settler-textMuted">Primary Reason</p>
+<p class="text-xs font-bold text-settler-text">Currency Variance</p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] text-settler-textMuted">Delta Breakdown</p>
+<p class="text-xs font-black text-red-600">-$250.00 Variance</p>
+</div>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] text-settler-textMuted">Rule Failure</p>
+<div class="flex items-center gap-1.5">
+<svg class="w-3 h-3 text-red-500" fill="currentColor" viewbox="0 0 20 20">
+<path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"></path>
+</svg>
+<p class="text-[11px] font-medium leading-none">R-402: Auto-Match Threshold</p>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-slate-200">
+<div class="flex items-center gap-1.5">
+<p class="text-[10px] text-settler-textMuted">System Context:</p>
+<span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+              SWIFT Connector (Degraded)
+            </span>
+</div>
+<button class="text-[10px] font-bold text-indigo-600">Details</button>
+</div>
+</div>
+<!-- END: RCA Panel -->
+</div>
+<!-- END: ExceptionCard_1 -->
+<!-- BEGIN: ExceptionCard_2 -->
+<div class="flex items-center gap-0 bg-white rounded-xl border border-settler-border card-shadow overflow-hidden" data-purpose="exception-card">
+<div class="triage-checkbox pl-3">
+<input class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" type="checkbox"/>
+</div>
+<div class="flex-1 p-4 flex gap-3">
+<div class="flex-shrink-0 mt-1">
+<svg fill="none" height="16" viewbox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+<path d="M8 0L15 8L8 16L1 8L8 0Z" fill="#EF4444"></path>
+</svg>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="dense-text font-bold truncate pr-2">Sanction Screen Hold</h3>
+<span class="dense-text font-bold">$12,400</span>
+</div>
+<div class="flex justify-between items-end">
+<div class="space-y-1">
+<p class="text-[11px] text-settler-textMuted">Ref: SS-4421</p>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-full bg-red-500 border border-red-600"></span>
+<span class="text-[11px] font-bold text-red-600">SLA BREACHED</span>
+</div>
+</div>
+<div class="flex-shrink-0" data-purpose="owner-avatar">
+<img alt="Owner" class="w-6 h-6 rounded-full border border-white ring-1 ring-gray-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXB70CpSoau9BlPlg2f7ZIapEH_MK4ytBxklAB9gQVZFDwhDSB2KMKVPbX9hNltzsUeKeX9f6p7_zoh5RjDcKUOvUREa14Wlln-ObyJFpP0Vz8RTKNGqdiiNilMmgkVj5CC93SBvs4jsu-jvejyiUP7dqK3idARtuIjkLG9ji3ccm8SfriHn1N4CCN_ELCltNpFyk5Uq2e1vy_HfjLmlg30hh0hh6vJsGbvc7geBV0svFJmIIcuyZ-uDB0o2-cZwABJOYuVLtySg"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- END: ExceptionCard_2 -->
+<!-- BEGIN: ExceptionCard_3 -->
+<div class="flex items-center gap-0 bg-white rounded-xl border border-settler-border card-shadow overflow-hidden" data-purpose="exception-card">
+<div class="triage-checkbox pl-3">
+<input class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" type="checkbox"/>
+</div>
+<div class="flex-1 p-4 flex gap-3">
+<div class="flex-shrink-0 mt-1">
+<svg fill="none" height="16" viewbox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+<path d="M8 0L15 8L8 16L1 8L8 0Z" fill="#EF4444"></path>
+</svg>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="dense-text font-bold truncate pr-2">FX Rate Mismatch</h3>
+<span class="dense-text font-bold">$1,040,000</span>
+</div>
+<div class="flex justify-between items-end">
+<div class="space-y-1">
+<p class="text-[11px] text-settler-textMuted">Ref: FX-88210</p>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-full bg-amber-400 border border-amber-500"></span>
+<span class="text-[11px] font-bold text-amber-700">0h 15m remaining</span>
+</div>
+</div>
+<div class="flex-shrink-0" data-purpose="owner-avatar">
+<img alt="Owner" class="w-6 h-6 rounded-full border border-white ring-1 ring-gray-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC17gv_tVJSeqBRvO8okOJAqe3crZEVWf3ioNkhfVLWPjnhq99MEZb590-cFP7bx9L7yLBgGyTfyw8dMd8hkb_As5-D-I3lgjnJNKj9CxP12CVvaXlkxXPiPiO2GxgtasaiXbt6ozcbCBDZRBjqEqZIGqr1kumwgJ_8QdwDGGZYKtSfBf52w2oxk2BF1fwTOKhgnJyZrwIKz2gfAZx-7BEfV0KnGb7a4aWVL2m-406XHSn3BDJ4wj20pEeU9daYNObBw_z_ko10WA"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- END: ExceptionCard_3 -->
+</div>
+</section>
+<!-- END: SeverityGroupHigh -->
+<!-- BEGIN: SeverityGroupMedium -->
+<section>
+<div class="flex items-center justify-between mb-3">
+<h2 class="text-xs font-bold uppercase tracking-widest text-settler-textMuted flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-amber-500"></span>
+          Medium Priority
+        </h2>
+<span class="text-[10px] font-medium bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full">14 items</span>
+</div>
+<div class="space-y-3 opacity-80">
+<!-- BEGIN: ExceptionCard_Medium_1 (With RCA Panel) -->
+<div class="flex flex-col bg-white rounded-xl border border-settler-border card-shadow overflow-hidden" data-purpose="exception-card">
+<div class="flex items-center gap-0">
+<div class="triage-checkbox pl-3">
+<input class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" type="checkbox"/>
+</div>
+<div class="flex-1 p-4 flex gap-3">
+<div class="flex-shrink-0 mt-1">
+<svg fill="none" height="16" viewbox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+<path d="M8 0L15 8L8 16L1 8L8 0Z" fill="#F59E0B"></path>
+</svg>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="dense-text font-bold truncate pr-2">Incorrect Settlement Date</h3>
+<span class="dense-text font-bold">$4,500</span>
+</div>
+<div class="flex justify-between items-end">
+<div class="space-y-1">
+<p class="text-[11px] text-settler-textMuted">Ref: ST-002</p>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-full bg-gray-300 border border-gray-400"></span>
+<span class="text-[11px] font-bold text-gray-500">5h 40m remaining</span>
+</div>
+</div>
+<div class="flex-shrink-0" data-purpose="owner-avatar">
+<div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[8px] font-bold text-gray-400 border border-dashed border-gray-300">UN</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- BEGIN: RCA Panel -->
+<div class="bg-slate-50 border-t border-settler-border p-3 space-y-3">
+<div class="flex justify-between items-center">
+<span class="text-[10px] font-bold text-settler-textMuted uppercase tracking-wider">Root Cause Analysis</span>
+<span class="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">Investigating</span>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="space-y-1">
+<p class="text-[10px] text-settler-textMuted">Primary Reason</p>
+<p class="text-xs font-bold text-settler-text">Date Mismatch</p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] text-settler-textMuted">Delta Breakdown</p>
+<p class="text-xs font-black text-settler-text">T+1 vs T+2</p>
+</div>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] text-settler-textMuted">Rule Failure</p>
+<div class="flex items-center gap-1.5">
+<svg class="w-3 h-3 text-red-500" fill="currentColor" viewbox="0 0 20 20">
+<path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"></path>
+</svg>
+<p class="text-[11px] font-medium leading-none">R-109: Value Date Consistency</p>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-slate-200">
+<div class="flex items-center gap-1.5">
+<p class="text-[10px] text-settler-textMuted">System Context:</p>
+<span class="inline-flex items-center gap-1 text-[10px] font-bold text-gray-500">
+<span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+              Custody Ledger (Stale)
+            </span>
+</div>
+</div>
+</div>
+<!-- END: RCA Panel -->
+</div>
+<!-- END: ExceptionCard_Medium_1 -->
+</div>
+</section>
+<!-- END: SeverityGroupMedium -->
+</main>
+<!-- END: MainContent -->
+<!-- BEGIN: BulkActionFooter -->
+<div class="fixed bottom-0 left-0 right-0 bg-white border-t border-settler-border p-4 transition-transform translate-y-full z-40" id="bulkActionFooter">
+<div class="flex gap-3">
+<button class="flex-1 bg-indigo-600 text-white py-3 rounded-xl font-bold text-sm shadow-lg shadow-indigo-100">Assign Selected</button>
+<button class="flex-1 bg-white border border-settler-border text-settler-text py-3 rounded-xl font-bold text-sm">Dismiss</button>
+</div>
+</div>
+<!-- END: BulkActionFooter -->
+<!-- BEGIN: ScriptHandlers -->
+<script data-purpose="triage-logic">
+    function toggleTriageMode() {
+      const container = document.getElementById('exceptionListContainer');
+      const footer = document.getElementById('bulkActionFooter');
+      const isChecked = document.getElementById('bulkTriageToggle').checked;
+
+      if (isChecked) {
+        container.classList.remove('triage-mode-inactive');
+        container.classList.add('triage-mode-active');
+        footer.classList.remove('translate-y-full');
+      } else {
+        container.classList.remove('triage-mode-active');
+        container.classList.add('triage-mode-inactive');
+        footer.classList.add('translate-y-full');
+      }
+    }
+  </script>
+<!-- END: ScriptHandlers -->
+</body></html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Period Close Checklist - Settler</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec5b13",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221610",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex min-h-screen flex-col overflow-x-hidden max-w-md mx-auto border-x border-slate-200 dark:border-slate-800 shadow-xl bg-white dark:bg-slate-950">
+<!-- Header -->
+<header class="sticky top-0 z-20 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center p-4 justify-between">
+<button class="text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="flex flex-col items-center">
+<h1 class="text-base font-bold leading-tight tracking-tight">Period Close: Oct 2023</h1>
+<div class="flex items-center gap-1 mt-0.5 opacity-80">
+<span class="material-symbols-outlined text-xs">corporate_fare</span>
+<p class="text-[10px] font-semibold uppercase tracking-wider">Settler Corp - US</p>
+<span class="material-symbols-outlined text-xs">expand_more</span>
+</div>
+</div>
+<button class="text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+</header>
+<main class="flex-1 pb-32">
+<!-- Readiness Card -->
+<div class="p-4 bg-slate-50 dark:bg-slate-900/50">
+<div class="flex flex-col gap-4 p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+<div class="flex justify-between items-end">
+<div class="space-y-1">
+<p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Overall Readiness</p>
+<p class="text-3xl font-bold">68%</p>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-bold uppercase tracking-wide border border-amber-200 dark:border-amber-800/50">
+<span class="size-2 rounded-full bg-amber-500"></span>
+                                Blocked
+                            </span>
+</div>
+</div>
+<div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary transition-all duration-500" style="width: 68%;"></div>
+</div>
+</div>
+</div>
+<!-- Hard Blockers Highlight -->
+<div class="px-4 py-2">
+<div class="flex items-center gap-3 p-4 rounded-xl border-l-4 border-amber-500 bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-200">
+<span class="material-symbols-outlined text-amber-600 dark:text-amber-400">error</span>
+<div>
+<p class="text-sm font-bold">12 Hard Blockers Detected</p>
+<p class="text-xs opacity-80">These items must be resolved before sign-off is enabled.</p>
+</div>
+</div>
+</div>
+<!-- Checklist Sections -->
+<div class="px-4 mt-4 space-y-3">
+<!-- Category 1: Data Completeness -->
+<div class="group flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+<div class="flex items-center justify-between p-4 bg-white dark:bg-slate-900">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">database</span>
+</div>
+<div>
+<p class="text-sm font-bold">Data Completeness</p>
+<p class="text-[11px] text-slate-500">4/4 Connectors Ingested</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-green-600">check_circle</span>
+</div>
+</div>
+<!-- Category 2: Reconciliation -->
+<div class="flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-slate-900">
+<div class="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined text-primary">account_balance_wallet</span>
+</div>
+<div>
+<p class="text-sm font-bold">Reconciliation</p>
+<p class="text-[11px] text-slate-500">12 Unmatched Transactions</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-amber-500">warning</span>
+</div>
+<div class="p-4 space-y-4 bg-slate-50/50 dark:bg-slate-900/50">
+<div class="flex items-center justify-between text-xs">
+<span class="text-slate-600 dark:text-slate-400">Bank Statement Variance</span>
+<span class="font-mono font-bold text-red-600">-$1,420.00</span>
+</div>
+<div class="flex items-center justify-between text-xs">
+<span class="text-slate-600 dark:text-slate-400">Intercompany Matches</span>
+<span class="font-bold text-green-600">Complete</span>
+</div>
+<button class="w-full py-2 text-xs font-bold text-primary border border-primary/30 rounded-lg hover:bg-primary/5 transition-colors">
+                            Resolve Unmatched (12)
+                        </button>
+</div>
+</div>
+<!-- Category 3: Exceptions -->
+<div class="group flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-slate-900">
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">rule_folder</span>
+</div>
+<div>
+<p class="text-sm font-bold">Exceptions</p>
+<p class="text-[11px] text-slate-500">2 Critical SLA Breaches</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-amber-500">priority_high</span>
+</div>
+</div>
+<!-- Category 4: Attestations -->
+<div class="group flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-slate-900">
+<div class="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">draw</span>
+</div>
+<div>
+<p class="text-sm font-bold">Attestations</p>
+<p class="text-[11px] text-slate-500">0/2 Sign-offs Received</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-300">radio_button_unchecked</span>
+</div>
+<div class="p-4 space-y-3">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold">JD</div>
+<div class="flex-1">
+<p class="text-xs font-medium">Controller Sign-off</p>
+<p class="text-[10px] text-slate-500">Pending Jane Doe</p>
+</div>
+<span class="text-[10px] font-bold text-slate-400 uppercase">Awaiting</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Audit Trail Link -->
+<div class="px-4 py-6 text-center">
+<button class="inline-flex items-center gap-2 text-slate-500 hover:text-primary text-xs font-semibold">
+<span class="material-symbols-outlined text-sm">history</span>
+                    View Full Audit Trail
+                </button>
+</div>
+</main>
+<!-- Fixed Bottom Actions -->
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 p-4 space-y-3 z-30">
+<button class="w-full bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all">
+<span class="material-symbols-outlined text-xl">lock</span>
+                Sign-off &amp; Close Period
+            </button>
+<button class="w-full bg-transparent border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all">
+<span class="material-symbols-outlined text-xl">ios_share</span>
+                Export Evidence Pack
+            </button>
+</div>
+<!-- Navigation Bar -->
+<nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 hidden">
+<!-- Hidden in this view as actions take precedence, but kept for structural reference -->
+</nav>
+</div>
+</body></html>

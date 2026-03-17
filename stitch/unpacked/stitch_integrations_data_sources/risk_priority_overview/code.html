@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settler - Risk &amp; Priority Overview</title>
+<!-- BEGIN: External Scripts -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            settler: {
+              primary: '#1E293B',
+              accent: '#2563EB',
+              danger: '#DC2626',
+              warning: '#D97706',
+              info: '#2563EB',
+              surface: '#F8FAFC',
+              border: '#E2E8F0'
+            }
+          }
+        }
+      }
+    }
+  </script>
+<!-- END: External Scripts -->
+<style data-purpose="typography">
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+  </style>
+<style data-purpose="ui-elements">
+    .risk-score-ring {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .heatmap-cell {
+      aspect-ratio: 1 / 1;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+<!-- BEGIN: Top Navigation -->
+<header class="sticky top-0 z-50 bg-white border-b border-settler-border px-4 py-3 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-settler-primary rounded flex items-center justify-center text-white">
+<span class="font-bold text-lg">S</span>
+</div>
+<h1 class="text-lg font-semibold tracking-tight">Risk &amp; Priority</h1>
+</div>
+<button class="p-2 hover:bg-slate-100 rounded-full">
+<svg class="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</header>
+<!-- END: Top Navigation -->
+<main class="p-4 space-y-6 pb-20">
+<!-- BEGIN: Summary Dashboard -->
+<section class="grid grid-cols-2 gap-3" data-purpose="summary-metrics">
+<!-- Critical Exposure Card -->
+<div class="bg-white border border-settler-border rounded-xl p-4 shadow-sm">
+<p class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Critical Exposure</p>
+<div class="flex items-baseline gap-1">
+<span class="text-2xl font-bold text-settler-danger">$1.4M</span>
+</div>
+<div class="mt-2 flex items-center text-[10px] text-red-600 font-medium">
+<svg class="w-3 h-3 mr-1" fill="currentColor" viewbox="0 0 20 20"><path clip-rule="evenodd" d="M12 13a1 1 0 100 2h5a1 1 0 001-1V9a1 1 0 10-2 0v2.586l-4.293-4.293a1 1 0 00-1.414 0L8 9.586 3.707 5.293a1 1 0 00-1.414 1.414l5 5a1 1 0 001.414 0L11 9.414 14.586 13H12z" fill-rule="evenodd"></path></svg>
+          +12% vs LY
+        </div>
+</div>
+<!-- High Priority Items Card -->
+<div class="bg-white border border-settler-border rounded-xl p-4 shadow-sm">
+<p class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">High Priority</p>
+<div class="flex items-baseline gap-1">
+<span class="text-2xl font-bold text-slate-900">24</span>
+<span class="text-xs text-slate-400 font-normal">items</span>
+</div>
+<div class="mt-2 flex items-center text-[10px] text-amber-600 font-medium">
+<svg class="w-3 h-3 mr-1" fill="currentColor" viewbox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path></svg>
+          Requires Review
+        </div>
+</div>
+</section>
+<!-- END: Summary Dashboard -->
+<!-- BEGIN: Risk Heatmap -->
+<section class="bg-white border border-settler-border rounded-xl p-4 shadow-sm" data-purpose="risk-heatmap">
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-sm font-bold text-slate-800">Risk Distribution</h2>
+<span class="text-[10px] font-semibold bg-slate-100 px-2 py-0.5 rounded text-slate-500 uppercase">Age vs Amount</span>
+</div>
+<!-- Simple Grid Heatmap Representation -->
+<div class="grid grid-cols-5 gap-1 mb-2">
+<!-- Low Risk (Blue/Slate) -->
+<div class="heatmap-cell bg-slate-100"></div>
+<div class="heatmap-cell bg-slate-100"></div>
+<div class="heatmap-cell bg-blue-100"></div>
+<div class="heatmap-cell bg-blue-200"></div>
+<div class="heatmap-cell bg-blue-300"></div>
+<div class="heatmap-cell bg-slate-100"></div>
+<div class="heatmap-cell bg-blue-100"></div>
+<div class="heatmap-cell bg-amber-100"></div>
+<div class="heatmap-cell bg-amber-200"></div>
+<div class="heatmap-cell bg-amber-300"></div>
+<div class="heatmap-cell bg-blue-100"></div>
+<div class="heatmap-cell bg-amber-200"></div>
+<div class="heatmap-cell bg-amber-400"></div>
+<div class="heatmap-cell bg-red-300"></div>
+<div class="heatmap-cell bg-red-400"></div>
+<div class="heatmap-cell bg-blue-200"></div>
+<div class="heatmap-cell bg-amber-300"></div>
+<div class="heatmap-cell bg-red-400"></div>
+<div class="heatmap-cell bg-red-600"></div>
+<div class="heatmap-cell bg-red-800"></div>
+</div>
+<div class="flex justify-between text-[10px] text-slate-400 uppercase font-medium">
+<span>Low Impact</span>
+<span>High Impact</span>
+</div>
+</section>
+<!-- END: Risk Heatmap -->
+<!-- BEGIN: Risk Exceptions List -->
+<section class="space-y-4" data-purpose="risk-exceptions-list">
+<div class="flex items-center justify-between">
+<h2 class="text-sm font-bold text-slate-800">Top Risk Exceptions</h2>
+<div class="flex items-center gap-1 text-xs font-semibold text-settler-accent">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          Highest Risk First
+        </div>
+</div>
+<!-- Exception Item 1 -->
+<div class="bg-white border border-settler-border rounded-xl overflow-hidden shadow-sm">
+<div class="p-4">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="flex flex-col items-center justify-center w-12 h-12 rounded-lg bg-red-50 border border-red-100">
+<span class="text-xs font-bold text-red-600">92</span>
+<span class="text-[8px] uppercase font-bold text-red-500">Score</span>
+</div>
+<div>
+<h3 class="font-bold text-slate-900 leading-tight">JPM Morgan Chase</h3>
+<p class="text-xs text-slate-500">ID: #RE-49201 • Trans: Settlement</p>
+</div>
+</div>
+<span class="px-2 py-1 rounded bg-red-100 text-red-700 text-[10px] font-bold uppercase">High Risk</span>
+</div>
+<!-- Indicators -->
+<div class="flex flex-wrap gap-2">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-medium border border-slate-200">
+<div class="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5"></div> Large Amount
+            </span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-medium border border-slate-200">
+<div class="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5"></div> High Age (45d)
+            </span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-medium border border-slate-200">
+<div class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></div> Low Confidence
+            </span>
+</div>
+</div>
+<div class="bg-slate-50 px-4 py-2 border-t border-settler-border flex justify-between items-center">
+<span class="text-xs font-bold text-slate-900">$425,000.00</span>
+<button class="text-xs font-bold text-settler-accent hover:underline">Review Details →</button>
+</div>
+</div>
+<!-- Exception Item 2 -->
+<div class="bg-white border border-settler-border rounded-xl overflow-hidden shadow-sm">
+<div class="p-4">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="flex flex-col items-center justify-center w-12 h-12 rounded-lg bg-amber-50 border border-amber-100">
+<span class="text-xs font-bold text-amber-600">68</span>
+<span class="text-[8px] uppercase font-bold text-amber-500">Score</span>
+</div>
+<div>
+<h3 class="font-bold text-slate-900 leading-tight">Citibank NA</h3>
+<p class="text-xs text-slate-500">ID: #RE-38291 • Trans: FX Swap</p>
+</div>
+</div>
+<span class="px-2 py-1 rounded bg-amber-100 text-amber-700 text-[10px] font-bold uppercase">Medium</span>
+</div>
+<!-- Indicators -->
+<div class="flex flex-wrap gap-2">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-medium border border-slate-200">
+<div class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></div> Large Amount
+            </span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-medium border border-slate-200">
+<div class="w-1.5 h-1.5 rounded-full bg-slate-300 mr-1.5"></div> Low Age (3d)
+            </span>
+</div>
+</div>
+<div class="bg-slate-50 px-4 py-2 border-t border-settler-border flex justify-between items-center">
+<span class="text-xs font-bold text-slate-900">$189,200.00</span>
+<button class="text-xs font-bold text-settler-accent hover:underline">Review Details →</button>
+</div>
+</div>
+<!-- Exception Item 3 -->
+<div class="bg-white border border-settler-border rounded-xl overflow-hidden shadow-sm opacity-80">
+<div class="p-4">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="flex flex-col items-center justify-center w-12 h-12 rounded-lg bg-blue-50 border border-blue-100">
+<span class="text-xs font-bold text-blue-600">24</span>
+<span class="text-[8px] uppercase font-bold text-blue-500">Score</span>
+</div>
+<div>
+<h3 class="font-bold text-slate-900 leading-tight">HSBC Global</h3>
+<p class="text-xs text-slate-500">ID: #RE-21004 • Trans: Int. Payment</p>
+</div>
+</div>
+<span class="px-2 py-1 rounded bg-blue-100 text-blue-700 text-[10px] font-bold uppercase">Low Risk</span>
+</div>
+<!-- Indicators -->
+<div class="flex flex-wrap gap-2">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-medium border border-slate-200">
+<div class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5"></div> High Confidence
+            </span>
+</div>
+</div>
+<div class="bg-slate-50 px-4 py-2 border-t border-settler-border flex justify-between items-center">
+<span class="text-xs font-bold text-slate-900">$12,450.00</span>
+<button class="text-xs font-bold text-settler-accent hover:underline">Review Details →</button>
+</div>
+</div>
+</section>
+<!-- END: Risk Exceptions List -->
+</main>
+<!-- BEGIN: Bottom Tab Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-settler-border px-6 py-3 flex justify-between items-center shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+<div class="flex flex-col items-center gap-1 text-slate-400">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="text-[10px] font-medium">Home</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-settler-accent">
+<svg class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1-11v6h2v-6h-2zm0-4v2h2V7h-2z"></path></svg>
+<span class="text-[10px] font-bold">Risk</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-400">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="text-[10px] font-medium">Analytics</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-400">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="text-[10px] font-medium">Profile</span>
+</div>
+</nav>
+<!-- END: Bottom Tab Navigation -->
+</body></html>

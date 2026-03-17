@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Period Close Readiness Checklist - Settler</title>
+<!-- Tailwind CSS v3 CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<style data-purpose="typography-and-base">
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* Custom scrollbar for high-density lists */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+    details summary::-webkit-details-marker {
+      display: none;
+    }
+    details[open] summary .expand-icon {
+      transform: rotate(180deg);
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen text-slate-900">
+<!-- BEGIN: MainHeader -->
+<header class="bg-white border-b border-slate-200 sticky top-0 z-50 px-4 py-3" data-purpose="app-header">
+<div class="flex flex-col gap-2">
+<!-- Entity and Context -->
+<div class="flex justify-between items-start">
+<div>
+<h1 class="text-lg font-bold text-slate-900">Oct 2023 Period Close</h1>
+<p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Settler US Core</p>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+          In Progress (82%)
+        </span>
+</div>
+</div>
+<!-- Progress Bar Container -->
+<div class="w-full bg-slate-100 rounded-full h-2 mt-1">
+<div class="bg-blue-600 h-2 rounded-full transition-all duration-500" style="width: 82%"></div>
+</div>
+</div>
+</header>
+<!-- END: MainHeader -->
+<main class="flex-grow pb-48">
+<!-- BEGIN: WarningBanner -->
+<section class="p-4" data-purpose="alert-section">
+<div class="flex items-start gap-3 p-3 rounded-lg bg-red-50 border border-red-200">
+<span class="material-symbols-outlined text-red-600 text-[20px] mt-0.5">error</span>
+<div class="flex flex-col flex-grow">
+<p class="text-sm font-semibold text-red-800">Critical Blocker</p>
+<p class="text-xs text-red-700">14 Unresolved Exceptions remain in the queue.</p>
+</div>
+<button class="text-xs font-semibold text-red-700 underline underline-offset-2">View All</button>
+</div>
+</section>
+<!-- END: WarningBanner -->
+<!-- BEGIN: ChecklistSection -->
+<section class="px-4 space-y-3" data-purpose="checklist-container">
+<!-- Category 1: Data Completeness -->
+<details class="group bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm" open="">
+<summary class="list-none cursor-pointer p-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center border border-green-200">
+<span class="material-symbols-outlined text-green-600 text-[16px] font-bold">check</span>
+</div>
+<div>
+<h3 class="text-sm font-semibold text-slate-800">Data Completeness</h3>
+<div class="flex items-center gap-2 mt-0.5">
+<div class="w-20 bg-slate-100 h-1 rounded-full overflow-hidden">
+<div class="bg-green-500 h-full w-full"></div>
+</div>
+<span class="text-[10px] text-slate-500 font-medium">100% Complete</span>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 transition-transform expand-icon">expand_more</span>
+</div>
+</summary>
+<div class="px-4 pb-4 pt-2 border-t border-slate-50 space-y-3">
+<div class="flex items-center justify-between py-2 border-b border-slate-50">
+<span class="text-xs text-slate-600">ERP Sync (NetSuite)</span>
+<button class="px-3 py-1 bg-slate-100 text-slate-400 rounded text-[10px] font-bold cursor-not-allowed" disabled="">Verified</button>
+</div>
+<div class="flex items-center justify-between py-2">
+<span class="text-xs text-slate-600">Bank Statement Ingestion</span>
+<button class="px-3 py-1 bg-slate-100 text-slate-400 rounded text-[10px] font-bold cursor-not-allowed" disabled="">Verified</button>
+</div>
+</div>
+</details>
+<!-- Category 2: Reconciliation -->
+<details class="group bg-white border-2 border-amber-100 rounded-xl overflow-hidden shadow-sm" open="">
+<summary class="list-none cursor-pointer p-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center border border-amber-200">
+<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+</div>
+<div>
+<h3 class="text-sm font-semibold text-slate-800">Reconciliation</h3>
+<div class="flex items-center gap-2 mt-0.5">
+<div class="w-20 bg-slate-100 h-1 rounded-full overflow-hidden">
+<div class="bg-amber-500 h-full w-[36%]"></div>
+</div>
+<span class="text-[10px] text-slate-500 font-medium">8/22 Tasks</span>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 transition-transform expand-icon">expand_more</span>
+</div>
+</summary>
+<div class="px-4 pb-4 pt-2 border-t border-slate-50 space-y-3">
+<div class="p-3 bg-amber-50/50 rounded-lg flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="text-xs font-medium text-slate-700">Operating Account Reconcile</span>
+<button class="px-3 py-1 bg-blue-600 text-white rounded text-[10px] font-bold shadow-sm hover:bg-blue-700 active:scale-95 transition-all">Verify</button>
+</div>
+<p class="text-[10px] text-amber-700">System check: Balanced within tolerance (±$0.01)</p>
+</div>
+<div class="p-3 bg-slate-50 rounded-lg flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="text-xs font-medium text-slate-500">Corporate Card Clearings</span>
+<button class="px-3 py-1 bg-slate-200 text-slate-400 rounded text-[10px] font-bold cursor-not-allowed" disabled="">Verify</button>
+</div>
+<p class="text-[10px] text-slate-400 italic">Waiting for 14 exceptions to be resolved...</p>
+</div>
+</div>
+</details>
+<!-- Category 3: Exceptions & Overrides -->
+<details class="group bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+<summary class="list-none cursor-pointer p-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200">
+<span class="material-symbols-outlined text-slate-400 text-[16px]">priority_high</span>
+</div>
+<div>
+<h3 class="text-sm font-semibold text-slate-800">Exceptions</h3>
+<div class="flex items-center gap-2 mt-0.5">
+<div class="w-20 bg-slate-100 h-1 rounded-full overflow-hidden">
+<div class="bg-red-500 h-full w-[10%]"></div>
+</div>
+<span class="text-[10px] text-slate-500 font-medium">14 Flagged</span>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 transition-transform expand-icon">expand_more</span>
+</div>
+</summary>
+<div class="px-4 pb-4 pt-2 border-t border-slate-50 space-y-3">
+<div class="p-3 border border-slate-100 rounded-lg space-y-2">
+<div class="flex justify-between items-start">
+<span class="text-xs font-medium text-slate-700">Rounding Variance (ID: 9822)</span>
+<span class="text-[9px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-100">NON-BLOCKING</span>
+</div>
+<p class="text-[10px] text-slate-500">A $4.12 variance was detected in intercompany mapping.</p>
+<div class="flex gap-2">
+<button class="flex-1 py-1.5 bg-slate-50 border border-slate-200 text-slate-600 rounded text-[10px] font-semibold hover:bg-slate-100">Review</button>
+<button class="flex-1 py-1.5 bg-white border border-amber-200 text-amber-700 rounded text-[10px] font-semibold hover:bg-amber-50">Request Override</button>
+</div>
+</div>
+</div>
+</details>
+<!-- Category 4: Attestations -->
+<details class="group bg-slate-50 border border-slate-200 rounded-xl overflow-hidden opacity-75">
+<summary class="list-none cursor-not-allowed p-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full border-2 border-slate-300 border-dashed"></div>
+<div>
+<h3 class="text-sm font-semibold text-slate-400">Attestations</h3>
+<div class="flex items-center gap-2 mt-0.5">
+<div class="w-20 bg-slate-200 h-1 rounded-full"></div>
+<span class="text-[10px] text-slate-400 font-medium tracking-tighter uppercase">Locked</span>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-300">lock</span>
+</div>
+</summary>
+</details>
+</section>
+<!-- END: ChecklistSection -->
+</main>
+<!-- BEGIN: StickyFooter -->
+<footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 shadow-[0_-8px_20px_rgba(0,0,0,0.08)] z-50" data-purpose="action-bar">
+<div class="flex flex-col gap-3 max-w-lg mx-auto">
+<!-- Action Stepper (Visual Only Context) -->
+<div class="flex justify-between items-center px-6">
+<div class="flex flex-col items-center gap-1">
+<div class="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center text-[10px] text-white font-bold">1</div>
+<span class="text-[9px] font-bold text-blue-600 uppercase">Review</span>
+</div>
+<div class="flex-grow h-[1px] bg-slate-200 mx-2 mb-4"></div>
+<div class="flex flex-col items-center gap-1">
+<div class="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-[10px] text-slate-500 font-bold">2</div>
+<span class="text-[9px] font-medium text-slate-400 uppercase">Attest</span>
+</div>
+<div class="flex-grow h-[1px] bg-slate-200 mx-2 mb-4"></div>
+<div class="flex flex-col items-center gap-1">
+<div class="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-[10px] text-slate-500 font-bold">3</div>
+<span class="text-[9px] font-medium text-slate-400 uppercase">Submit</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Evidence Pack Button (Linked to report gen) -->
+<button class="w-full py-3 px-4 rounded-lg border border-slate-300 text-slate-700 font-semibold text-sm hover:bg-slate-50 active:bg-slate-100 transition-colors flex items-center justify-center gap-2" data-purpose="secondary-action">
+<span class="material-symbols-outlined text-[18px]">summarize</span>
+        Generate &amp; Export Evidence Pack
+      </button>
+<!-- Multi-stage Primary Button -->
+<button class="w-full py-3 px-4 rounded-lg bg-slate-900 text-white font-bold text-sm shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 group" data-purpose="primary-action">
+        Start Final Review
+        <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</footer>
+<!-- END: StickyFooter -->
+</body></html>

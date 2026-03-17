@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Connector Setup Wizard - Field Mapping</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec5b13",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221610",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Public Sans', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen font-display">
+<!-- Header / Nav -->
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-primary/10">
+<div class="flex items-center p-4 justify-between max-w-xl mx-auto w-full">
+<div class="flex items-center gap-3">
+<button class="flex size-10 items-center justify-center rounded-full hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-slate-700 dark:text-slate-300">arrow_back</span>
+</button>
+<h2 class="text-lg font-bold tracking-tight">Setup Wizard</h2>
+</div>
+<button class="text-sm font-semibold text-primary">Exit</button>
+</div>
+</header>
+<main class="max-w-xl mx-auto pb-32">
+<!-- Progress Stepper -->
+<div class="px-6 py-8">
+<div class="flex items-center justify-between relative">
+<!-- Line -->
+<div class="absolute top-1/2 left-0 w-full h-0.5 bg-primary/20 -translate-y-1/2 z-0"></div>
+<!-- Active Progress Line -->
+<div class="absolute top-1/2 left-0 w-3/4 h-0.5 bg-primary -translate-y-1/2 z-0"></div>
+<!-- Step 1: Auth -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="size-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
+<span class="material-symbols-outlined text-sm">check</span>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Auth</span>
+</div>
+<!-- Step 2: Scopes -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="size-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
+<span class="material-symbols-outlined text-sm">check</span>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Scopes</span>
+</div>
+<!-- Step 3: Settings -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="size-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
+<span class="material-symbols-outlined text-sm">check</span>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Settings</span>
+</div>
+<!-- Step 4: Mapping (Active) -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="size-8 rounded-full bg-primary ring-4 ring-primary/20 text-white flex items-center justify-center text-xs font-bold">
+                        4
+                    </div>
+<span class="text-[10px] font-bold uppercase tracking-wider text-primary">Mapping</span>
+</div>
+<!-- Step 5: Review -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="size-8 rounded-full bg-background-light dark:bg-background-dark border-2 border-primary/30 text-slate-400 flex items-center justify-center text-xs font-bold">
+                        5
+                    </div>
+<span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Review</span>
+</div>
+</div>
+</div>
+<!-- Page Content Header -->
+<div class="px-6 mb-8">
+<h3 class="text-2xl font-bold leading-tight mb-2">Map Stripe Fields</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                Connect your source data fields to the system schema. Apply transformations to ensure data consistency.
+            </p>
+</div>
+<!-- Mapping List -->
+<div class="px-4 space-y-4">
+<!-- Item 1 -->
+<div class="bg-white dark:bg-slate-800/50 rounded-xl p-4 border border-primary/10 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">info</span>
+<span class="text-[10px] font-bold uppercase text-slate-400 tracking-widest">Transaction ID</span>
+</div>
+<span class="material-symbols-outlined text-green-500 text-sm">check_circle</span>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<div>
+<label class="text-xs font-semibold text-slate-500 mb-1 block">Source Field (Stripe)</label>
+<div class="flex items-center justify-between bg-primary/5 dark:bg-primary/10 p-2.5 rounded border border-primary/20">
+<code class="text-sm font-medium text-slate-700 dark:text-slate-200">id</code>
+<span class="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded font-bold">STRING</span>
+</div>
+</div>
+<div class="flex justify-center py-1">
+<span class="material-symbols-outlined text-slate-300">expand_more</span>
+</div>
+<div>
+<label class="text-xs font-semibold text-slate-500 mb-1 block">Canonical Field</label>
+<select class="w-full bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-primary focus:border-primary">
+<option>external_id</option>
+<option>transaction_ref</option>
+<option>meta_data_id</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Item 2 with Transformation -->
+<div class="bg-white dark:bg-slate-800/50 rounded-xl p-4 border border-primary/10 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">info</span>
+<span class="text-[10px] font-bold uppercase text-slate-400 tracking-widest">Amount</span>
+</div>
+<span class="material-symbols-outlined text-amber-500 text-sm">warning</span>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<div>
+<label class="text-xs font-semibold text-slate-500 mb-1 block">Source Field (Stripe)</label>
+<div class="flex items-center justify-between bg-primary/5 dark:bg-primary/10 p-2.5 rounded border border-primary/20">
+<code class="text-sm font-medium text-slate-700 dark:text-slate-200">amount</code>
+<span class="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded font-bold">INTEGER</span>
+</div>
+</div>
+<div>
+<label class="text-xs font-semibold text-slate-500 mb-1 block">Transformation</label>
+<select class="w-full bg-primary/10 border-primary/30 rounded-lg text-sm font-medium text-primary focus:ring-primary focus:border-primary">
+<option>Divide by 100 (Cents to Dollar)</option>
+<option>Absolute Value</option>
+<option>Format as Currency</option>
+</select>
+</div>
+<div>
+<label class="text-xs font-semibold text-slate-500 mb-1 block">Canonical Field</label>
+<select class="w-full bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-primary focus:border-primary">
+<option>total_amount</option>
+<option>subtotal</option>
+<option>tax_amount</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="bg-white dark:bg-slate-800/50 rounded-xl p-4 border border-primary/10 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">info</span>
+<span class="text-[10px] font-bold uppercase text-slate-400 tracking-widest">Created Date</span>
+</div>
+<span class="material-symbols-outlined text-green-500 text-sm">check_circle</span>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<div>
+<label class="text-xs font-semibold text-slate-500 mb-1 block">Source Field (Stripe)</label>
+<div class="flex items-center justify-between bg-primary/5 dark:bg-primary/10 p-2.5 rounded border border-primary/20">
+<code class="text-sm font-medium text-slate-700 dark:text-slate-200">created</code>
+<span class="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded font-bold">TIMESTAMP</span>
+</div>
+</div>
+<div>
+<label class="text-xs font-semibold text-slate-500 mb-1 block">Transformation</label>
+<select class="w-full bg-primary/10 border-primary/30 rounded-lg text-sm font-medium text-primary focus:ring-primary focus:border-primary">
+<option>Format: YYYY-MM-DD HH:mm</option>
+<option>Unix to ISO</option>
+<option>Extract Date Only</option>
+</select>
+</div>
+<div>
+<label class="text-xs font-semibold text-slate-500 mb-1 block">Canonical Field</label>
+<select class="w-full bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-primary focus:border-primary">
+<option>transaction_date</option>
+<option>settlement_date</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+<!-- Add Custom Mapping -->
+<div class="px-6 py-6">
+<button class="w-full border-2 border-dashed border-primary/30 rounded-xl py-4 flex items-center justify-center gap-2 text-primary font-semibold hover:bg-primary/5 transition-colors">
+<span class="material-symbols-outlined">add</span>
+<span>Add custom mapping</span>
+</button>
+</div>
+</main>
+<!-- Bottom Action Bar / Nav -->
+<div class="fixed bottom-0 left-0 w-full z-50 bg-background-light dark:bg-background-dark border-t border-primary/10">
+<div class="max-w-xl mx-auto px-4 py-4 flex items-center gap-3">
+<button class="flex-1 py-4 px-6 rounded-xl font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+                Back
+            </button>
+<button class="flex-[2] py-4 px-6 rounded-xl font-bold bg-primary text-white shadow-lg shadow-primary/30">
+                Review &amp; Save
+            </button>
+</div>
+<!-- Tab Bar Navigation (BottomNavBar Component Reference) -->
+<div class="flex gap-2 bg-slate-50 dark:bg-slate-900/50 px-4 pb-3 pt-2 border-t border-slate-200 dark:border-slate-800">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined">hub</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Connectors</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">sync</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Syncs</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">list_alt</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Logs</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Settings</p>
+</a>
+</div>
+</div>
+</body></html>

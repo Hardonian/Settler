@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settler Reconciliation Workspace - Mobile</title>
+<!-- Tailwind CSS v3 with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            settler: {
+              primary: '#1e293b',
+              secondary: '#64748b',
+              accent: '#3b82f6',
+              unmatched: '#f59e0b',
+              matched: '#10b981',
+              danger: '#ef4444'
+            }
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Styles -->
+<style data-purpose="custom-typography">
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .text-xxs {
+      font-size: 0.65rem;
+      line-height: 1rem;
+    }
+    /* Simple accordion toggle styles */
+    .details-content { display: none; }
+    .details-open .details-content { display: block; }
+    .details-open .chevron-icon { transform: rotate(180deg); }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen pb-32">
+<!-- BEGIN: NavigationHeader -->
+<header class="sticky top-0 z-20 bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-sm" data-purpose="app-header">
+<nav aria-label="Breadcrumb" class="flex items-center space-x-2 overflow-hidden">
+<span class="text-slate-500 text-sm whitespace-nowrap">Workspace</span>
+<span class="material-symbols-outlined text-slate-400 text-sm">chevron_right</span>
+<span class="text-slate-900 font-semibold text-sm truncate">Queue</span>
+</nav>
+<div class="flex items-center gap-1">
+<button aria-label="Open filters" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[22px]">filter_list</span>
+</button>
+</div>
+</header>
+<!-- END: NavigationHeader -->
+<!-- BEGIN: TransactionList -->
+<main class="p-4 space-y-4" data-purpose="stacked-card-list">
+<!-- BEGIN: CardItem 1 -->
+<article class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden" data-purpose="transaction-card">
+<!-- Section: Summary Header -->
+<div class="p-4 border-b border-slate-50">
+<div class="flex justify-between items-center mb-2">
+<div class="flex items-center gap-3">
+<input class="h-5 w-5 rounded border-slate-300 text-settler-accent focus:ring-settler-accent" type="checkbox"/>
+<h3 class="text-sm font-bold text-slate-900 tracking-tight">TXN-88294-XB</h3>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 uppercase tracking-wider">Unmatched</span>
+</div>
+<div class="flex items-center gap-4 text-slate-500">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">schedule</span>
+<span class="text-xs">2 days ago</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">payments</span>
+<span class="text-xs font-semibold text-settler-danger">Var: +$5.00</span>
+</div>
+</div>
+</div>
+<!-- Section: Comparison -->
+<div class="grid grid-cols-2 divide-x divide-slate-100 bg-slate-50/30">
+<div class="p-3">
+<p class="text-xxs text-slate-400 font-bold uppercase tracking-wider mb-0.5">Stripe</p>
+<p class="text-[15px] font-bold text-slate-900">$1,250.00</p>
+</div>
+<div class="p-3">
+<p class="text-xxs text-slate-400 font-bold uppercase tracking-wider mb-0.5">Wells Fargo</p>
+<p class="text-[15px] font-bold text-slate-900">$1,245.00</p>
+</div>
+</div>
+<!-- Section: Progressive Disclosure (Evidence/Details) -->
+<div class="border-t border-slate-100" id="details-1">
+<button class="w-full flex items-center justify-between px-4 py-2 text-slate-500 hover:bg-slate-50 transition-colors" onclick="document.getElementById('details-1').classList.toggle('details-open')">
+<span class="text-xxs font-bold uppercase tracking-widest">Evidence &amp; Raw Data</span>
+<span class="material-symbols-outlined text-sm chevron-icon transition-transform">expand_more</span>
+</button>
+<div class="details-content px-4 pb-4">
+<div class="space-y-3 pt-2">
+<div class="grid grid-cols-2 gap-2 text-xs">
+<div>
+<span class="block text-xxs text-slate-400 uppercase font-medium">Internal ID</span>
+<span class="font-mono text-slate-700">STR_772_XC</span>
+</div>
+<div>
+<span class="block text-xxs text-slate-400 uppercase font-medium">Settlement Date</span>
+<span class="text-slate-700">Oct 24, 2023</span>
+</div>
+</div>
+<div class="p-2 bg-slate-100 rounded text-[10px] font-mono text-slate-600 leading-relaxed overflow-x-auto">
+              {"meta": {"auth_code": "4882", "trace": "009122"}}
+            </div>
+</div>
+</div>
+</div>
+</article>
+<!-- END: CardItem 1 -->
+<!-- BEGIN: CardItem 2 -->
+<article class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden" data-purpose="transaction-card">
+<div class="p-4 border-b border-slate-50">
+<div class="flex justify-between items-center mb-2">
+<div class="flex items-center gap-3">
+<input class="h-5 w-5 rounded border-slate-300 text-settler-accent focus:ring-settler-accent" type="checkbox"/>
+<h3 class="text-sm font-bold text-slate-900 tracking-tight">TXN-90124-KL</h3>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 uppercase tracking-wider">Unmatched</span>
+</div>
+<div class="flex items-center gap-4 text-slate-500">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">schedule</span>
+<span class="text-xs">5 hours ago</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">payments</span>
+<span class="text-xs font-semibold text-settler-danger">Var: +$2.20</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 divide-x divide-slate-100 bg-slate-50/30">
+<div class="p-3">
+<p class="text-xxs text-slate-400 font-bold uppercase tracking-wider mb-0.5">Stripe</p>
+<p class="text-[15px] font-bold text-slate-900">$482.20</p>
+</div>
+<div class="p-3">
+<p class="text-xxs text-slate-400 font-bold uppercase tracking-wider mb-0.5">Wells Fargo</p>
+<p class="text-[15px] font-bold text-slate-900">$480.00</p>
+</div>
+</div>
+<div class="border-t border-slate-100" id="details-2">
+<button class="w-full flex items-center justify-between px-4 py-2 text-slate-500 hover:bg-slate-50 transition-colors" onclick="document.getElementById('details-2').classList.toggle('details-open')">
+<span class="text-xxs font-bold uppercase tracking-widest">Evidence &amp; Raw Data</span>
+<span class="material-symbols-outlined text-sm chevron-icon transition-transform">expand_more</span>
+</button>
+<div class="details-content px-4 pb-4">
+<div class="space-y-3 pt-2">
+<div class="grid grid-cols-2 gap-2 text-xs">
+<div>
+<span class="block text-xxs text-slate-400 uppercase font-medium">Internal ID</span>
+<span class="font-mono text-slate-700">STR_991_KL</span>
+</div>
+<div>
+<span class="block text-xxs text-slate-400 uppercase font-medium">Settlement Date</span>
+<span class="text-slate-700">Today, 08:30 AM</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- END: CardItem 2 -->
+<!-- BEGIN: CardItem 3 -->
+<article class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden" data-purpose="transaction-card">
+<div class="p-4 border-b border-slate-50">
+<div class="flex justify-between items-center mb-2">
+<div class="flex items-center gap-3">
+<input class="h-5 w-5 rounded border-slate-300 text-settler-accent focus:ring-settler-accent" type="checkbox"/>
+<h3 class="text-sm font-bold text-slate-900 tracking-tight">TXN-77312-PQ</h3>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700 uppercase tracking-wider">Review Required</span>
+</div>
+<div class="flex items-center gap-4 text-slate-500">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">schedule</span>
+<span class="text-xs">Just now</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">payments</span>
+<span class="text-xs font-semibold text-settler-danger">Var: +$10.4k</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 divide-x divide-slate-100 bg-slate-50/30">
+<div class="p-3">
+<p class="text-xxs text-slate-400 font-bold uppercase tracking-wider mb-0.5">Stripe</p>
+<p class="text-[15px] font-bold text-slate-900">$10,400.00</p>
+</div>
+<div class="p-3">
+<p class="text-xxs text-slate-400 font-bold uppercase tracking-wider mb-0.5">Wells Fargo</p>
+<p class="text-[15px] font-bold text-slate-900">$0.00</p>
+</div>
+</div>
+<div class="border-t border-slate-100" id="details-3">
+<button class="w-full flex items-center justify-between px-4 py-2 text-slate-500 hover:bg-slate-50 transition-colors" onclick="document.getElementById('details-3').classList.toggle('details-open')">
+<span class="text-xxs font-bold uppercase tracking-widest">Evidence &amp; Raw Data</span>
+<span class="material-symbols-outlined text-sm chevron-icon transition-transform">expand_more</span>
+</button>
+<div class="details-content px-4 pb-4 text-center py-6">
+<p class="text-xs text-slate-400 italic">No corresponding bank record found for this transaction ID.</p>
+</div>
+</div>
+</article>
+<!-- END: CardItem 3 -->
+</main>
+<!-- END: TransactionList -->
+<!-- BEGIN: StickyFooterActions -->
+<footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] z-30" data-purpose="bulk-actions-bar">
+<div class="flex flex-col gap-4 max-w-lg mx-auto">
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-3 cursor-pointer">
+<input class="h-5 w-5 rounded border-slate-300 text-settler-accent focus:ring-settler-accent" id="selectAll" type="checkbox"/>
+<span class="text-sm font-semibold text-slate-700">Select All (0)</span>
+</label>
+<button class="flex items-center gap-1 text-slate-500 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-slate-50">
+<span class="material-symbols-outlined text-lg">flag</span>
+<span>Escalate</span>
+</button>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-white border border-slate-300 text-slate-700 py-3 rounded-xl text-sm font-bold active:scale-[0.98] transition-all">
+          Assign
+        </button>
+<button class="flex-1 bg-settler-primary text-white py-3 rounded-xl text-sm font-bold active:scale-[0.98] transition-all shadow-lg shadow-slate-200">
+          Match Selected
+        </button>
+</div>
+</div>
+</footer>
+<!-- END: StickyFooterActions -->
+<!-- BEGIN: InteractiveElements -->
+<script data-purpose="mobile-interaction-logic">
+    // Simple logic to handle checkbox selection interaction
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('main input[type="checkbox"]');
+    const selectAllLabel = selectAll.nextElementSibling;
+
+    const updateLabel = () => {
+      const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+      selectAllLabel.textContent = `Select All (${checkedCount})`;
+    };
+
+    selectAll.addEventListener('change', (e) => {
+      checkboxes.forEach(cb => {
+        cb.checked = e.target.checked;
+      });
+      updateLabel();
+    });
+
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        const allChecked = Array.from(checkboxes).every(c => c.checked);
+        selectAll.checked = allChecked;
+        updateLabel();
+      });
+    });
+  </script>
+<!-- END: InteractiveElements -->
+</body></html>

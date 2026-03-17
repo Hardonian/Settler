@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settler Reconciliation Workspace - Mobile (Degraded State)</title>
+<!-- Tailwind CSS v3 with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            settler: {
+              primary: '#1e293b',
+              secondary: '#64748b',
+              accent: '#3b82f6',
+              unmatched: '#f59e0b',
+              matched: '#10b981',
+              danger: '#ef4444'
+            }
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Styles for high-density layout -->
+<style data-purpose="custom-typography">
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .text-xxs {
+      font-size: 0.65rem;
+      line-height: 1rem;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen pb-24">
+<!-- BEGIN: Degraded State Banner -->
+<div class="bg-amber-50 border-b border-amber-200 px-4 py-2.5 flex flex-col gap-1" data-purpose="degraded-state-banner">
+<div class="flex items-start gap-2">
+<span class="text-sm shrink-0">⚠️</span>
+<p class="text-xs font-medium text-amber-900 leading-tight">
+      Partial Data Mode: Stripe Connector lagging by 45 minutes. Results may be incomplete.
+    </p>
+</div>
+<div class="pl-6 flex gap-3">
+<button class="text-xxs font-bold text-amber-700 underline uppercase tracking-wider">Force Sync</button>
+<button class="text-xxs font-bold text-amber-700 underline uppercase tracking-wider">View Health</button>
+</div>
+</div>
+<!-- END: Degraded State Banner -->
+<!-- BEGIN: NavigationHeader -->
+<header class="sticky top-0 z-10 bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-sm" data-purpose="app-header">
+<nav aria-label="Breadcrumb" class="flex items-center space-x-2 overflow-hidden">
+<span class="text-slate-500 text-sm whitespace-nowrap">Workspace</span>
+<svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="text-slate-900 font-semibold text-sm truncate">Queue</span>
+</nav>
+<button aria-label="Open filters" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors" data-purpose="filter-toggle">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</header>
+<!-- END: NavigationHeader -->
+<!-- BEGIN: TransactionList -->
+<main class="p-4 space-y-3" data-purpose="stacked-card-list">
+<!-- BEGIN: CardItem 1 -->
+<article class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden" data-purpose="transaction-card">
+<div class="p-4">
+<!-- Card Header -->
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<input class="h-4 w-4 rounded border-slate-300 text-settler-accent focus:ring-settler-accent" type="checkbox"/>
+<h3 class="text-sm font-bold text-slate-900">TXN-88294-XB</h3>
+</div>
+<span class="px-2 py-0.5 rounded text-xxs font-semibold bg-amber-100 text-amber-700 uppercase tracking-wider">Unmatched</span>
+</div>
+<!-- Middle Column Content -->
+<div class="grid grid-cols-2 gap-4 py-3 border-y border-slate-50">
+<div>
+<div class="flex items-center gap-1 mb-0.5">
+<p class="text-xxs text-slate-500 uppercase tracking-tight">Source: Stripe</p>
+<span class="px-1 bg-amber-100 text-amber-700 text-[10px] font-bold rounded uppercase">Stale</span>
+</div>
+<p class="text-sm font-semibold text-slate-900">$1,250.00</p>
+</div>
+<div class="border-l border-slate-100 pl-4">
+<p class="text-xxs text-slate-500 uppercase tracking-tight">Source: Wells Fargo</p>
+<p class="text-sm font-semibold text-slate-900">$1,245.00</p>
+</div>
+</div>
+<!-- Card Bottom -->
+<div class="mt-3 flex justify-between items-center">
+<div class="flex items-center gap-1.5">
+<span class="text-xxs text-slate-400 uppercase">Var:</span>
+<span class="text-xs font-bold text-settler-danger">+$5.00</span>
+</div>
+<div class="flex items-center gap-1.5">
+<svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="text-xs text-slate-500">2 days</span>
+</div>
+</div>
+</div>
+</article>
+<!-- END: CardItem 1 -->
+<!-- BEGIN: CardItem 2 -->
+<article class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden" data-purpose="transaction-card">
+<div class="p-4">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<input class="h-4 w-4 rounded border-slate-300 text-settler-accent focus:ring-settler-accent" type="checkbox"/>
+<h3 class="text-sm font-bold text-slate-900">TXN-90124-KL</h3>
+</div>
+<span class="px-2 py-0.5 rounded text-xxs font-semibold bg-amber-100 text-amber-700 uppercase tracking-wider">Unmatched</span>
+</div>
+<div class="grid grid-cols-2 gap-4 py-3 border-y border-slate-50">
+<div>
+<div class="flex items-center gap-1 mb-0.5">
+<p class="text-xxs text-slate-500 uppercase tracking-tight">Source: Stripe</p>
+<span class="px-1 bg-amber-100 text-amber-700 text-[10px] font-bold rounded uppercase">Stale</span>
+</div>
+<p class="text-sm font-semibold text-slate-900">$482.20</p>
+</div>
+<div class="border-l border-slate-100 pl-4">
+<p class="text-xxs text-slate-500 uppercase tracking-tight">Source: Wells Fargo</p>
+<p class="text-sm font-semibold text-slate-900">$480.00</p>
+</div>
+</div>
+<div class="mt-3 flex justify-between items-center">
+<div class="flex items-center gap-1.5">
+<span class="text-xxs text-slate-400 uppercase">Var:</span>
+<span class="text-xs font-bold text-settler-danger">+$2.20</span>
+</div>
+<div class="flex items-center gap-1.5">
+<svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="text-xs text-slate-500">5 hours</span>
+</div>
+</div>
+</div>
+</article>
+<!-- END: CardItem 2 -->
+<!-- BEGIN: CardItem 3 -->
+<article class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden" data-purpose="transaction-card">
+<div class="p-4">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<input class="h-4 w-4 rounded border-slate-300 text-settler-accent focus:ring-settler-accent" type="checkbox"/>
+<h3 class="text-sm font-bold text-slate-900">TXN-77312-PQ</h3>
+</div>
+<span class="px-2 py-0.5 rounded text-xxs font-semibold bg-blue-100 text-blue-700 uppercase tracking-wider">Review Required</span>
+</div>
+<div class="grid grid-cols-2 gap-4 py-3 border-y border-slate-50">
+<div>
+<div class="flex items-center gap-1 mb-0.5">
+<p class="text-xxs text-slate-500 uppercase tracking-tight">Source: Stripe</p>
+<span class="px-1 bg-amber-100 text-amber-700 text-[10px] font-bold rounded uppercase">Stale</span>
+</div>
+<p class="text-sm font-semibold text-slate-900">$10,400.00</p>
+</div>
+<div class="border-l border-slate-100 pl-4">
+<p class="text-xxs text-slate-500 uppercase tracking-tight">Source: Wells Fargo</p>
+<p class="text-sm font-semibold text-slate-900">$0.00</p>
+</div>
+</div>
+<div class="mt-3 flex justify-between items-center">
+<div class="flex items-center gap-1.5">
+<span class="text-xxs text-slate-400 uppercase">Var:</span>
+<span class="text-xs font-bold text-settler-danger">+$10.4k</span>
+</div>
+<div class="flex items-center gap-1.5">
+<svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="text-xs text-slate-500">Just now</span>
+</div>
+</div>
+</div>
+</article>
+<!-- END: CardItem 3 -->
+</main>
+<!-- END: TransactionList -->
+<!-- BEGIN: StickyFooterActions -->
+<footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]" data-purpose="bulk-actions-bar">
+<div class="flex items-center justify-between max-w-lg mx-auto">
+<div class="flex items-center gap-3">
+<label class="flex items-center gap-2 cursor-pointer opacity-50 cursor-not-allowed">
+<input class="h-5 w-5 rounded border-slate-300 text-slate-400 focus:ring-slate-400" disabled="" id="selectAll" type="checkbox"/>
+<span class="text-sm font-medium text-slate-500">Select All</span>
+</label>
+</div>
+<div class="flex flex-col items-end gap-1">
+<button class="bg-slate-300 text-slate-500 px-6 py-2.5 rounded-lg text-sm font-bold cursor-not-allowed" data-purpose="assign-button" disabled="">
+    Assign
+  </button>
+<span class="text-[10px] font-medium text-amber-600">Disabled until data syncs</span>
+</div>
+</div>
+</footer>
+<!-- END: StickyFooterActions -->
+<!-- BEGIN: InteractiveElements -->
+<script data-purpose="mobile-interaction-logic">
+    // Simple logic to handle checkbox selection interaction
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('main input[type="checkbox"]');
+
+    if(selectAll) {
+      selectAll.addEventListener('change', (e) => {
+        checkboxes.forEach(cb => cb.checked = e.target.checked);
+      });
+    }
+  </script>
+<!-- END: InteractiveElements -->
+</body></html>

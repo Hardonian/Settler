@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Period Close Attestation - Settler</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec5b13",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221610",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex items-center justify-center p-4">
+<!-- Modal Container -->
+<div class="max-w-2xl w-full bg-white dark:bg-slate-900 rounded-xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
+<!-- Step 1: Review & Attest -->
+<div class="flex flex-col">
+<!-- Header -->
+<div class="flex items-center bg-slate-50 dark:bg-slate-800/50 p-6 border-b border-slate-200 dark:border-slate-800 justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="assignment_turned_in">assignment_turned_in</span>
+<h2 class="text-xl font-bold leading-tight tracking-tight">Period Close Attestation</h2>
+</div>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<!-- Progress Indicator -->
+<div class="flex w-full flex-row items-center justify-center gap-3 py-6 bg-white dark:bg-slate-900">
+<div class="h-2 w-8 rounded-full bg-primary"></div>
+<div class="h-2 w-2 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+<div class="h-2 w-2 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+</div>
+<div class="px-8 pb-8">
+<!-- Summary Section -->
+<div class="mb-8">
+<h3 class="text-lg font-semibold mb-4">October 2023 Summary</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="flex flex-col gap-1 rounded-xl p-5 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Reporting Period</p>
+<p class="text-2xl font-bold">Oct 2023</p>
+</div>
+<div class="flex flex-col gap-1 rounded-xl p-5 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Volume</p>
+<p class="text-2xl font-bold">$4.2B</p>
+</div>
+</div>
+</div>
+<!-- Attestations Checklist -->
+<div class="space-y-4">
+<h3 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Legal Attestations</h3>
+<div class="space-y-3">
+<label class="flex items-start gap-3 p-4 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
+<input class="mt-1 h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-medium">Exceptions Review</span>
+<span class="text-sm text-slate-500 dark:text-slate-400">I confirm all exceptions have been reviewed and resolved for this period.</span>
+</div>
+</label>
+<label class="flex items-start gap-3 p-4 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
+<input class="mt-1 h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-medium">Data Integrity Verification</span>
+<span class="text-sm text-slate-500 dark:text-slate-400">I verify that the data presented accurately reflects the ledger state.</span>
+</div>
+</label>
+<label class="flex items-start gap-3 p-4 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
+<input class="mt-1 h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-medium">Compliance Declaration</span>
+<span class="text-sm text-slate-500 dark:text-slate-400">All financial reporting complies with internal control frameworks and legal standards.</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Actions -->
+<div class="mt-8 flex justify-end gap-3">
+<button class="px-6 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">Save Draft</button>
+<button class="px-6 py-2.5 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 transition-colors">Continue to Sign</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Step 2: Digital Signature (Placeholder - hidden or for visual reference) -->
+<!-- In a real app, this would replace the content above -->
+<div class="hidden max-w-2xl w-full bg-white dark:bg-slate-900 rounded-xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 mt-8">
+<div class="flex items-center bg-slate-50 dark:bg-slate-800/50 p-6 border-b border-slate-200 dark:border-slate-800 justify-between">
+<h2 class="text-xl font-bold">Digital Signature</h2>
+<button class="text-slate-400"><span class="material-symbols-outlined">close</span></button>
+</div>
+<div class="flex w-full flex-row items-center justify-center gap-3 py-6">
+<div class="h-2 w-2 rounded-full bg-primary/40"></div>
+<div class="h-2 w-8 rounded-full bg-primary"></div>
+<div class="h-2 w-2 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+</div>
+<div class="px-8 pb-8 text-center">
+<div class="mb-6">
+<p class="text-slate-600 dark:text-slate-400">Please confirm your identity by entering your security password or digital key.</p>
+</div>
+<div class="max-w-sm mx-auto space-y-4">
+<input class="w-full px-4 py-3 rounded-lg border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-primary focus:border-primary" placeholder="Enter security password" type="password"/>
+<div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 p-3 rounded">
+<span class="material-symbols-outlined text-sm">info</span>
+<span>Signing this document is legally equivalent to a handwritten signature.</span>
+</div>
+<button class="w-full py-3 rounded-lg bg-primary text-white font-bold">Confirm &amp; Sign</button>
+</div>
+</div>
+</div>
+<!-- Step 3: Success State (Placeholder) -->
+<div class="hidden max-w-2xl w-full bg-white dark:bg-slate-900 rounded-xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 mt-8">
+<div class="p-12 text-center flex flex-col items-center">
+<div class="w-20 h-20 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-4xl">check_circle</span>
+</div>
+<h2 class="text-2xl font-bold mb-2">Attestation Confirmed</h2>
+<p class="text-slate-600 dark:text-slate-400 mb-8">The period close for October 2023 has been successfully attested and locked.</p>
+<div class="w-full max-w-md bg-slate-50 dark:bg-slate-800/50 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 text-left mb-8">
+<div class="space-y-4">
+<div>
+<p class="text-xs font-bold text-slate-400 uppercase">Unique Transaction Hash</p>
+<p class="font-mono text-sm break-all text-slate-700 dark:text-slate-300">0x7a2e4b91c8f362d51b0a9e8f7c6d5b4a3e210f98c76543210abcd</p>
+</div>
+<div>
+<p class="text-xs font-bold text-slate-400 uppercase">Timestamp</p>
+<p class="text-sm font-medium">Nov 01, 2023 • 09:42:15 AM UTC</p>
+</div>
+<div>
+<p class="text-xs font-bold text-slate-400 uppercase">Signatory</p>
+<p class="text-sm font-medium">Alexander Wright (Controller)</p>
+</div>
+</div>
+</div>
+<div class="flex gap-4">
+<button class="flex items-center gap-2 px-6 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 font-semibold hover:bg-slate-100 transition-colors">
+<span class="material-symbols-outlined text-lg">download</span>
+                    Download PDF
+                </button>
+<button class="px-8 py-2.5 rounded-lg bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-semibold">Done</button>
+</div>
+</div>
+</div>
+</body></html>

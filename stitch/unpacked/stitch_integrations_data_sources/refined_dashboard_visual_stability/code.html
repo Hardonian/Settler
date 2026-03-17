@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Visual Stability Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec5b13",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221610",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Public Sans', sans-serif;
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .dark .skeleton {
+            background: linear-gradient(90deg, #3d2b22 25%, #4a352a 50%, #3d2b22 75%);
+            background-size: 200% 100%;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header -->
+<header class="flex items-center bg-background-light dark:bg-background-dark p-4 border-b border-slate-200 dark:border-primary/20 justify-between sticky top-0 z-10">
+<div class="flex items-center gap-3">
+<div class="text-primary flex size-10 items-center justify-center">
+<span class="material-symbols-outlined text-3xl">analytics</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight">Settler Executive</h2>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Last synced: 2m ago</span>
+<button class="flex size-10 items-center justify-center rounded-lg hover:bg-slate-200 dark:hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-300">refresh</span>
+</button>
+</div>
+</header>
+<!-- Navigation Tabs -->
+<nav class="bg-background-light dark:bg-background-dark border-b border-slate-200 dark:border-primary/10">
+<div class="flex px-4 gap-8">
+<a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-4 hover:text-primary" href="#">
+<p class="text-sm font-semibold leading-normal">Overview</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-2 border-primary text-primary pb-3 pt-4" href="#">
+<p class="text-sm font-bold leading-normal">Visual Stability</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-4 hover:text-primary" href="#">
+<p class="text-sm font-semibold leading-normal">Core Web Vitals</p>
+</a>
+</div>
+</nav>
+<main class="flex-1 p-4 max-w-5xl mx-auto w-full">
+<div class="mb-6">
+<h1 class="text-slate-900 dark:text-slate-100 text-2xl font-bold leading-tight mb-1">Visual Stability Metrics</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Monitoring layout shifts and paint stability across global edge nodes.</p>
+</div>
+<!-- Metrics Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+<!-- CLS Card -->
+<div class="flex flex-col gap-2 rounded-xl p-5 border border-slate-200 dark:border-primary/20 bg-white dark:bg-background-dark/50">
+<div class="flex justify-between items-start">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">CLS Score</p>
+<span class="material-symbols-outlined text-slate-400 text-sm">info</span>
+</div>
+<div class="flex items-baseline gap-2">
+<p class="text-slate-900 dark:text-slate-100 text-3xl font-bold">0.024</p>
+<p class="text-primary text-xs font-semibold px-1.5 py-0.5 bg-primary/10 rounded">-0.002</p>
+</div>
+<div class="mt-2 h-1 w-full bg-slate-100 dark:bg-primary/10 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[85%]"></div>
+</div>
+</div>
+<!-- LCP Card -->
+<div class="flex flex-col gap-2 rounded-xl p-5 border border-slate-200 dark:border-primary/20 bg-white dark:bg-background-dark/50">
+<div class="flex justify-between items-start">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Largest Contentful Paint</p>
+<span class="material-symbols-outlined text-slate-400 text-sm">timer</span>
+</div>
+<div class="flex items-baseline gap-2">
+<p class="text-slate-900 dark:text-slate-100 text-3xl font-bold">1.18s</p>
+<p class="text-primary text-xs font-semibold px-1.5 py-0.5 bg-primary/10 rounded">+0.05s</p>
+</div>
+<div class="mt-2 h-1 w-full bg-slate-100 dark:bg-primary/10 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[92%]"></div>
+</div>
+</div>
+<!-- Stability Index -->
+<div class="flex flex-col gap-2 rounded-xl p-5 border border-slate-200 dark:border-primary/20 bg-white dark:bg-background-dark/50">
+<div class="flex justify-between items-start">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Stability Index</p>
+<span class="material-symbols-outlined text-slate-400 text-sm">bolt</span>
+</div>
+<div class="flex items-baseline gap-2">
+<p class="text-slate-900 dark:text-slate-100 text-3xl font-bold">99.2%</p>
+<p class="text-primary text-xs font-semibold px-1.5 py-0.5 bg-primary/10 rounded">Optimal</p>
+</div>
+<div class="mt-2 h-1 w-full bg-slate-100 dark:bg-primary/10 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[99%]"></div>
+</div>
+</div>
+</div>
+<!-- Comparison Section: Skeleton vs Reality -->
+<div class="mb-8">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Layout Shift Analysis</h3>
+<div class="flex bg-slate-100 dark:bg-primary/10 p-1 rounded-lg">
+<button class="px-3 py-1 text-xs font-bold bg-white dark:bg-primary text-slate-900 dark:text-white rounded shadow-sm">Side-by-Side</button>
+<button class="px-3 py-1 text-xs font-medium text-slate-500 dark:text-slate-400">Heatmap</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Loading State Preview -->
+<div class="border border-slate-200 dark:border-primary/20 rounded-xl overflow-hidden bg-white dark:bg-background-dark/50">
+<div class="p-3 border-b border-slate-200 dark:border-primary/10 flex items-center gap-2">
+<span class="size-2 rounded-full bg-slate-300 dark:bg-slate-600"></span>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Skeleton Loading Preview (0ms)</span>
+</div>
+<div class="p-6 space-y-4">
+<div class="skeleton h-8 w-3/4 rounded-lg"></div>
+<div class="skeleton h-40 w-full rounded-xl"></div>
+<div class="grid grid-cols-3 gap-3">
+<div class="skeleton h-20 rounded-lg"></div>
+<div class="skeleton h-20 rounded-lg"></div>
+<div class="skeleton h-20 rounded-lg"></div>
+</div>
+<div class="skeleton h-4 w-1/2 rounded-lg"></div>
+</div>
+</div>
+<!-- Final Render Preview -->
+<div class="border border-slate-200 dark:border-primary/20 rounded-xl overflow-hidden bg-white dark:bg-background-dark/50">
+<div class="p-3 border-b border-slate-200 dark:border-primary/10 flex items-center gap-2">
+<span class="size-2 rounded-full bg-primary"></span>
+<span class="text-xs font-medium text-primary uppercase tracking-wider">Final Content Hydration (1.2s)</span>
+</div>
+<div class="p-6 space-y-4">
+<div class="h-8 w-3/4 bg-slate-100 dark:bg-primary/5 rounded-lg flex items-center px-3">
+<span class="text-slate-400 font-bold text-sm">Main Sales Dashboard</span>
+</div>
+<div class="h-40 w-full rounded-xl relative overflow-hidden">
+<img class="w-full h-full object-cover grayscale opacity-80" data-alt="Clean corporate data visualization chart" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMkGzoJCzM7h8CIWzBPL6Rw0wlm6u9MdygtA9KxIAn1P45mWfW9gjkuje_QBopvu_LJ0Z_bzoHIBJwxBr4aAPjKGuTzkPGTYtSB0Qtfgm0hJy_Dhj1krJOysuANaDEi14asuMCKZ4P2OLYHBpy1BNX-Fo5WNebG2QN4WwdxoiyvdMI0lm7Dfx6aRKutQoms2MdNC3_dHL8RUAb0aO7-lVfaN7pzzhxg3-4lq9iFwo0k0WP8_SlkC-9LkhvcsN75Z1bhV6wk7m8DQ"/>
+<div class="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
+</div>
+<div class="grid grid-cols-3 gap-3">
+<div class="h-20 bg-slate-100 dark:bg-primary/5 rounded-lg border border-slate-200 dark:border-primary/10 flex flex-col items-center justify-center">
+<span class="text-primary font-bold text-lg">2.4k</span>
+<span class="text-[10px] text-slate-400">USERS</span>
+</div>
+<div class="h-20 bg-slate-100 dark:bg-primary/5 rounded-lg border border-slate-200 dark:border-primary/10 flex flex-col items-center justify-center">
+<span class="text-primary font-bold text-lg">89%</span>
+<span class="text-[10px] text-slate-400">RETENTION</span>
+</div>
+<div class="h-20 bg-slate-100 dark:bg-primary/5 rounded-lg border border-slate-200 dark:border-primary/10 flex flex-col items-center justify-center">
+<span class="text-primary font-bold text-lg">12m</span>
+<span class="text-[10px] text-slate-400">UPTIME</span>
+</div>
+</div>
+<div class="h-4 w-1/2 bg-slate-100 dark:bg-primary/5 rounded-lg"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Trends Table -->
+<div class="rounded-xl border border-slate-200 dark:border-primary/20 overflow-hidden bg-white dark:bg-background-dark/50">
+<div class="p-4 border-b border-slate-200 dark:border-primary/10">
+<h3 class="font-bold text-slate-900 dark:text-slate-100">Regional Performance Shift</h3>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-sm">
+<thead class="bg-slate-50 dark:bg-primary/5 text-slate-500 dark:text-slate-400 uppercase text-[10px] font-bold tracking-widest">
+<tr>
+<th class="px-4 py-3">Region</th>
+<th class="px-4 py-3">CLS (Avg)</th>
+<th class="px-4 py-3">Hydration Delay</th>
+<th class="px-4 py-3 text-right">Health Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-primary/10">
+<tr>
+<td class="px-4 py-3 font-medium">North America (East)</td>
+<td class="px-4 py-3 text-slate-600 dark:text-slate-300">0.012</td>
+<td class="px-4 py-3 text-slate-600 dark:text-slate-300">140ms</td>
+<td class="px-4 py-3 text-right"><span class="inline-flex size-2 rounded-full bg-primary mr-2"></span><span class="text-xs">Optimal</span></td>
+</tr>
+<tr>
+<td class="px-4 py-3 font-medium">Europe (Frankfurt)</td>
+<td class="px-4 py-3 text-slate-600 dark:text-slate-300">0.018</td>
+<td class="px-4 py-3 text-slate-600 dark:text-slate-300">185ms</td>
+<td class="px-4 py-3 text-right"><span class="inline-flex size-2 rounded-full bg-primary mr-2"></span><span class="text-xs">Optimal</span></td>
+</tr>
+<tr>
+<td class="px-4 py-3 font-medium">Asia Pacific (Tokyo)</td>
+<td class="px-4 py-3 text-slate-600 dark:text-slate-300">0.031</td>
+<td class="px-4 py-3 text-slate-600 dark:text-slate-300">240ms</td>
+<td class="px-4 py-3 text-right"><span class="inline-flex size-2 rounded-full bg-amber-500 mr-2"></span><span class="text-xs">Nominal</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<div class="flex gap-2 border-t border-slate-200 dark:border-primary/20 bg-white dark:bg-background-dark px-4 pb-3 pt-2 sticky bottom-0">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Reports</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">shield</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Stability</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Config</p>
+</a>
+</div>
+</div>
+</body></html>

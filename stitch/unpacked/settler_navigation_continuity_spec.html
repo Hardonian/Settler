@@ -1,0 +1,29 @@
+# Settler: Navigation & Continuity Specification
+
+## 1. Core Navigation Philosophy
+Settler is a complex operational environment. Navigation must be **non-destructive**. Users should be able to explore data deeply without losing their current working context (filters, scroll position, selections).
+
+## 2. Transition Rules
+
+### A. Context Preservation (The "Sticky" Rule)
+*   **Filters:** Active filters must persist when navigating between views within the same module (e.g., switching from Queue to Investigation).
+*   **Selections:** Item selections must remain active during side-panel interactions.
+*   **Scroll Position:** When returning to a list view via 'Back', the exact scroll position must be restored.
+
+### B. Navigation Modalities
+*   **Overlay Drawers (Preferred):** Use for 1:1 detail views (Transaction Detail, Audit Logs, Evidence). This keeps the primary list visible and preserves context.
+*   **Full-Page Jumps:** Use only for module-level changes (e.g., moving from Workspace to Settings).
+*   **Breadcrumbs:** Mandatory on all full-page views. Format: `Module > Sub-view > Entity ID`.
+
+### C. The "Back" Contract
+*   The 'Back' action must always return the user to the exact prior state, including open filters, active tabs, and temporary UI states (like an open search bar).
+
+## 3. Visual Continuity Signals
+*   **Hero Motion:** When a card expands into a drawer, the title/ID should maintain visual continuity.
+*   **Active States:** Clear, persistent highlighting of the "source" item when a detail view is open.
+*   **Skeleton Sync:** Loading states for detail views should match the layout of the loaded content to prevent layout shift.
+
+## 4. Mobile Continuity Standards
+*   **Bottom Sheets:** Use for quick actions and small detail views.
+*   **Full-Screen Sheets:** Use for deep investigations, with a clear 'Close' action that returns to the list.
+*   **Tab Persistence:** The bottom navigation bar must remain visible during standard flow navigation.
