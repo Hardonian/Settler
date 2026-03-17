@@ -1,72 +1,61 @@
 # Settler
 
-Settler is a deterministic reconciliation and operations platform for teams that need reproducible runs, replayable outcomes, and operator-visible evidence. Built for financial-grade precision, Settler integrates **TigerBeetle** for its immutable ledger core while maintaining **PostgreSQL** for projection and operational metadata.
+Settler is a deterministic reconciliation platform for teams that need reproducible runs, replayable outcomes, and operator-visible evidence.
 
-## Core Capabilities
+## Architecture
 
-- **Deterministic Pipeline** — Every reconciliation run is reproducible.
-- **TigerBeetle Ledger** — Financial transactions are recorded in an immutable, high-performance ledger.
-- **Operator Console** — Visual drill-down into runs, proofs, and exceptions.
-- **Foundry CLI** — Tooling for engineers to simulate scenarios and replay historical runs.
-- **Tenant Isolation** — Native multi-tenancy with strict data boundaries.
+Settler's architecture is composed of five primary layers, ensuring a separation of concerns between deterministic computation, policy enforcement, and operator interfaces.
 
-## Architecture Snapshot
+1.  **Rust Kernel**: Provides deterministic primitives for computation, hashing, and proofs.
+2.  **TypeScript Control Plane**: The `packages/api` service, which handles orchestration, tenancy, API routes, and persistence policies.
+3.  **CLI Surface**: `packages/cli` provides the primary interface for operators, automation, and local development verification (e.g., `foundry`).
+4.  **Console Surface**: The `packages/web` Next.js application, which serves as the visualization and control surface for operators.
+5.  **Enterprise Integration Layer**: Connectors and policies for managed environments.
 
-Settler uses a hybrid storage model to balance financial safety with operational flexibility:
-
-- **TigerBeetle** (Ledger Core): Immutable source of truth for all double-entry postings and account balances.
-- **PostgreSQL/Supabase** (Projection Layer): Searchable projections, tenant configurations, audit logs, and operational state.
-- **Redis** (Coordination): Real-time synchronization and idempotency guarding.
+For persistence, the platform uses a hybrid model:
+- **TigerBeetle**: Acts as the immutable, high-performance ledger core for all financial-grade transactions.
+- **PostgreSQL (Supabase)**: Stores projections, operational metadata, audit logs, and tenant configurations.
 
 ## Repository Structure
 
 - `packages/api` — Node.js Control Plane (Express, TypeScript).
 - `packages/web` — Next.js Operator Console.
 - `packages/cli` — Engineering and Foundry tooling.
-- `packages/types` — Shared domain models and ledger protocols.
+- `crates` — Rust Kernel and related utilities.
+- `docs` — Canonical documentation.
 - `scripts` — Verification, repo hygiene, and automation.
 
-## Quick Start
+## Getting Started
 
-### 1. Prerequisites
+### Prerequisites
 
 - Node.js >= 22.0
 - pnpm >= 10.13
-- Docker (for local TigerBeetle and Postgres)
+- Docker
 
-### 2. Setup
+### Setup & Verification
 
-```bash
-pnpm install
-cp .env.local.example .env.local
-# Initialize infrastructure
-pnpm tb:start
-# Verify readiness
-pnpm settler:doctor -- --first-run
-```
+For the complete local setup guide, see **[Getting Started: Local Development](docs/getting-started/README.md)**.
 
-### 3. Verification
+The canonical verification command to ensure your environment is correctly configured and the codebase is healthy is:
 
 ```bash
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm build
+# Run the full linting, typechecking, and testing suite
+pnpm verify
 ```
 
 ## TigerBeetle Management
 
-Settler provides global helper scripts for managing the TigerBeetle ledger:
+Global helper scripts are available for managing the local TigerBeetle container:
 
-- `pnpm tb:start` — Start TigerBeetle container.
-- `pnpm tb:status` — Check ledger health.
+- `pnpm tb:start` — Start the TigerBeetle container.
+- `pnpm tb:status` — Check the ledger's health.
 - `pnpm tb:logs` — Follow ledger logs.
-- `pnpm tb:reset` — Wipe and reformat the ledger (Dev only).
+- `pnpm tb:reset` — Wipe and reformat the ledger (for development use only).
 
 ## Documentation Hub
 
-- [Architecture Overview](docs/ARCHITECTURE.md)
-- [TigerBeetle Integration Design](docs/TIGERBEETLE_INTEGRATION_DESIGN.md)
+- [Architecture (Canonical)](docs/architecture/platform-architecture.md)
 - [Local Development Guide](docs/getting-started/README.md)
 - [Security Policy](SECURITY.md)
 
@@ -76,4 +65,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow and quality
 
 ## License
 
-Settler is licensed under the terms found in [LICENSE](LICENSE). See [LICENSING_OVERVIEW.md](docs/LICENSING_OVERVIEW.md) for component-level licensing details.
+Settler is licensed under the terms found in [LICENSE](LICENSE).

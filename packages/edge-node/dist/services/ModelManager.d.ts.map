@@ -1,1 +1,0 @@
-{"version":3,"file":"ModelManager.d.ts","sourceRoot":"","sources":["../../src/services/ModelManager.ts"],"names":[],"mappings":"AAAA;;;GAGG;AAMH,qBAAa,YAAY;IACvB,OAAO,CAAC,MAAM,CAAmC;IACjD,OAAO,CAAC,QAAQ,CAAS;gBAEb,OAAO,EAAE,MAAM;IAS3B,UAAU,IAAI,IAAI;IAYlB,QAAQ,CAAC,SAAS,EAAE,MAAM,GAAG,OAAO;IAIpC,YAAY,CAAC,SAAS,EAAE,MAAM,EAAE,MAAM,EAAE,OAAO,GAAG,OAAO;CAW1D"}

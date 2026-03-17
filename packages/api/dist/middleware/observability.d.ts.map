@@ -1,1 +1,0 @@
-{"version":3,"file":"observability.d.ts","sourceRoot":"","sources":["../../src/middleware/observability.ts"],"names":[],"mappings":"AAAA;;;GAGG;AAEH,OAAO,EAAE,OAAO,EAAE,QAAQ,EAAE,YAAY,EAAE,MAAM,SAAS,CAAC;AAQ1D,wBAAgB,uBAAuB,CACrC,GAAG,EAAE,OAAO,EACZ,GAAG,EAAE,QAAQ,EACb,IAAI,EAAE,YAAY,GACjB,IAAI,CAsHN"}

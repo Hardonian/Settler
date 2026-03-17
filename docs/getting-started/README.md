@@ -1,74 +1,101 @@
-# Getting Started
+# Getting Started: Local Development Setup
 
-## Canonical onboarding path
+This is the canonical guide for setting up Settler for local development.
 
-```bash
-pnpm install
-cp .env.local.example .env.local
-doppler run -- pnpm run verify:setup
-doppler run -- pnpm run verify:launch:readiness
-pnpm demo:settler
-```
+## 1. Prerequisites
 
-This path is optimized for first-time contributors and operators.
+- **Node.js:** Version `22.0` or higher. We recommend using a version manager like `nvm`.
+- **pnpm:** Version `10.13` or higher.
+- **Docker:** Required for running local instances of TigerBeetle and Postgres.
+- **Doppler (Recommended):** For secret management.
 
-After setting real env values, run `pnpm run settler:doctor -- --first-run` to verify startup readiness before smoke/build workflows.
+## 2. Initial Setup
 
-## Environment setup essentials
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/settler/settler.git
+    cd settler
+    ```
 
-Use these minimum variables before running migrations or API/server workflows:
+2.  **Install dependencies:**
+    ```bash
+    pnpm install
+    ```
 
-- `DATABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY` (server-only)
+3.  **Set up environment variables:**
+    Copy the example `.env` file. For a first run, the defaults are sufficient.
+    ```bash
+    cp .env.local.example .env.local
+    ```
+    For production or advanced configurations, refer to the [Environment Variable Matrix](docs/setup/env-matrix.md).
 
-Recommended local placement:
+## 3. Start Local Infrastructure
 
-- root `.env.local` for canonical values used by root verification and stack scripts
-- `packages/web/.env.local` and `packages/api/.env.local` only for package-specific overrides
-
-For Doppler-managed local development, launch commands through Doppler so secrets are injected into the process:
-
-```bash
-doppler run -- pnpm run verify:setup
-doppler run -- pnpm run doctor -- --skip-pipeline --first-run
-```
-
-Vercel dashboard env does not populate local shell processes.
-
-## Environment entrypoint
-
-For env-file placement, variable scope, and safety rules, use:
-
-- [`env-files.md`](./env-files.md)
-
-## Remote database quick setup
+This command uses Docker to start local instances of TigerBeetle and a Postgres database.
 
 ```bash
-export DATABASE_URL="postgresql://user:pass@host:port/db?sslmode=require"
-pnpm tsx scripts/run-migrations-remote.ts
-pnpm tsx scripts/test-setup.ts
+pnpm tb:start
 ```
 
-If you need super-admin bootstrapping, run:
+- **PostgreSQL** will be available on port `5432`.
+- **TigerBeetle** will be available on its default port.
+
+To check the status of the local ledger: `pnpm tb:status`
+To follow ledger logs: `pnpm tb:logs`
+
+## 4. Verify Setup
+
+Run the `settler:doctor` command to check that your environment, database connections, and configurations are correct.
 
 ```bash
-export USER_EMAIL="admin@settler.dev"
-pnpm tsx scripts/configure-super-admin.ts
+pnpm settler:doctor -- --first-run
 ```
 
-## Inputs and outputs
+The doctor script will guide you through resolving any detected issues.
 
-- **Inputs:** reconciliation feeds, connector payloads, rules, and policy configuration.
-- **Outputs:** run results, mismatch queues, and evidence artifacts (`run.json`, `results.json`, `evidence.json`).
+## 5. Running the Application
 
-## Next docs
+### Development Mode (Hot-Reload)
 
-- Developer API + SDK: [`docs/api/README.md`](../api/README.md)
-- Architecture overview: [`docs/architecture/README.md`](../architecture/README.md)
-- Demo walkthrough: [`docs/demo/demo-walkthrough.md`](../demo/demo-walkthrough.md)
-- Security and tenant boundaries: [`docs/security/README.md`](../security/README.md)
-- CLI quickstart: [`docs/quickstart-cli.md`](../quickstart-cli.md)
+To run the entire stack (Next.js web app and Node.js API) with hot-reloading:
+
+```bash
+pnpm dev
+```
+
+- The Web Console will be available at `http://localhost:3000`.
+- The API will be available at `http://localhost:4000`.
+
+### Production Mode (Local)
+
+To build and run the application in a production-like mode:
+
+```bash
+pnpm build
+pnpm start
+```
+
+## 6. Verification and Testing
+
+After setup, run the comprehensive verification suite to ensure everything is working correctly.
+
+```bash
+pnpm verify
+```
+
+This command will:
+- Lint the codebase
+- Run the TypeScript compiler
+- Execute the full test suite (unit, integration)
+- Verify repository integrity and boundaries
+
+For a faster, iterative check during development:
+```bash
+pnpm check
+```
+
+## Next Steps
+
+- **Architecture Overview:** [`docs/architecture/platform-architecture.md`](../architecture/platform-architecture.md)
+- **Using the CLI:** [`packages/cli/README.md`](../../packages/cli/README.md)
+- **API Reference:** [`docs/api/README.md`](../api/README.md)
