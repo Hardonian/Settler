@@ -142,7 +142,9 @@ async function runStage(stageName, runDir) {
   const definition = stageCatalog[stageName];
   let [bin, args] = definition.command;
   if (process.platform === "win32" && bin === "pnpm") {
-    bin = "pnpm.cmd";
+    // Some systems report pnpm.CMD while others report pnpm.cmd.
+    // Also ensures we use shell resolution properly.
+    bin = "pnpm.cmd"; 
   }
   const startedAt = Date.now();
   const logLines = [];
