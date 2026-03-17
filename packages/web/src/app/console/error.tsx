@@ -47,7 +47,7 @@ export default function ConsoleError({
       {...(isAuthError
         ? routeStateFromVariant("auth-required", {
             actions: [
-              { label: "Sign In", href: `/signup?next=${encodeURIComponent("/console")}` },
+              { label: "Sign In", href: `/login?next=${encodeURIComponent("/console")}` },
               { label: "Go Home", href: "/", variant: "outline" },
             ],
             detail:

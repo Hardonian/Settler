@@ -112,3 +112,4 @@ docs/business/api-rate-limit-strategy.md
 qa/link-registry.json
 security/route-registry.json
 security/dependency-triage.json
+.github/pull_request_template.md

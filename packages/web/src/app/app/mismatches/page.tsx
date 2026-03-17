@@ -20,32 +20,32 @@ export default async function MismatchesPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold">Detected Mismatches</h1>
-      <div className="mt-4 overflow-hidden rounded border border-slate-200 bg-white">
+      <h1 className="text-2xl font-semibold text-foreground">Detected Mismatches</h1>
+      <div className="mt-4 overflow-hidden rounded border border-border bg-card">
         <table className="min-w-full text-sm">
-          <thead className="bg-slate-50 text-left">
+          <thead className="bg-muted/50 text-left">
             <tr>
-              <th className="px-3 py-2">Run ID</th>
-              <th className="px-3 py-2">Created</th>
-              <th className="px-3 py-2">Status</th>
-              <th className="px-3 py-2">Action</th>
+              <th className="px-3 py-2 text-foreground">Run ID</th>
+              <th className="px-3 py-2 text-foreground">Created</th>
+              <th className="px-3 py-2 text-foreground">Status</th>
+              <th className="px-3 py-2 text-foreground">Action</th>
             </tr>
           </thead>
           <tbody>
             {mismatches.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-3 py-6 text-center text-slate-500">
+                <td colSpan={4} className="px-3 py-6 text-center text-muted-foreground">
                   No mismatches detected yet. Run a reconciliation workflow to surface differences.
                 </td>
               </tr>
             ) : (
               mismatches.map((row: { run_id: string; created_at: string; status: string }) => (
-                <tr key={row.run_id} className="border-t border-slate-100">
+                <tr key={row.run_id} className="border-t border-border">
                   <td className="px-3 py-2 font-mono text-xs">{row.run_id}</td>
-                  <td className="px-3 py-2">{row.created_at}</td>
+                  <td className="px-3 py-2 text-muted-foreground">{row.created_at}</td>
                   <td className="px-3 py-2">{row.status}</td>
                   <td className="px-3 py-2">
-                    <Link href={`/app/runs/${row.run_id}`} className="text-blue-600 hover:underline">
+                    <Link href={`/app/runs/${row.run_id}`} className="text-primary hover:underline">
                       Review run
                     </Link>
                   </td>

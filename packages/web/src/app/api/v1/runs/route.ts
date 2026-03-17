@@ -19,6 +19,24 @@ export const runtime = "nodejs";
 export async function GET(request: NextRequest) {
   const ctx = await buildContext(request);
   if (ctx instanceof NextResponse) return ctx;
+
+  // TENANT ISOLATION HARDENING: Strictly enforce tenant boundary before any DB access.
+  // Prevents Prisma from stripping `undefined` and executing a cross-tenant read.
+  if (
+    !ctx.tenantId ||
+    typeof ctx.tenantId !== "string" ||
+    ctx.tenantId.trim() === "" ||
+    ctx.tenantId === "—"
+  ) {
+    return NextResponse.json(
+      {
+        error: "Unauthorized: Valid tenant workspace context is strictly required.",
+        code: "SETTLER_UNAUTHORIZED",
+      },
+      { status: 401 }
+    );
+  }
+
   const started = Date.now();
   const limited = applyRateLimit(ctx, "read");
   if (limited) {
@@ -83,6 +101,23 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const ctx = await buildContext(request);
   if (ctx instanceof NextResponse) return ctx;
+
+  // TENANT ISOLATION HARDENING: Strictly enforce tenant boundary before any mutation.
+  if (
+    !ctx.tenantId ||
+    typeof ctx.tenantId !== "string" ||
+    ctx.tenantId.trim() === "" ||
+    ctx.tenantId === "—"
+  ) {
+    return NextResponse.json(
+      {
+        error: "Unauthorized: Valid tenant workspace context is strictly required.",
+        code: "SETTLER_UNAUTHORIZED",
+      },
+      { status: 401 }
+    );
+  }
+
   const started = Date.now();
   const limited = applyRateLimit(ctx, "write");
   if (limited) {

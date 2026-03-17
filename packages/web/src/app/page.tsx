@@ -64,8 +64,8 @@ export default function HomePage() {
           actions={
             <>
               <Button asChild>
-                <UiLink href="/platform">
-                  Explore platform <ArrowRight className="ml-1 h-4 w-4" />
+                <UiLink href="/app/runs">
+                  Open Console <ArrowRight className="ml-1 h-4 w-4" />
                 </UiLink>
               </Button>
               <Button variant="outline" asChild>
@@ -93,17 +93,17 @@ export default function HomePage() {
             {[
               {
                 role: "Developer",
-                href: "/capabilities",
+                href: "/docs/api",
                 desc: "SDK, CLI, and deterministic run model.",
               },
               {
                 role: "Operator",
-                href: "/product",
+                href: "/app/runs",
                 desc: "Exception handling, controls, and run operations.",
               },
               {
                 role: "Architecture reviewer",
-                href: "/architecture",
+                href: "/docs/architecture/platform-architecture",
                 desc: "System boundaries, data flow, and execution model.",
               },
               {
@@ -127,10 +127,10 @@ export default function HomePage() {
         <CTASection
           title="Start with product truth"
           description="Explore the platform, capabilities, and architecture to evaluate what exists now and what is planned next."
-          primaryHref="/platform"
-          primaryLabel="View platform overview"
-          secondaryHref="/changelog"
-          secondaryLabel="View changelog"
+          primaryHref="/docs/architecture/platform-architecture"
+          primaryLabel="Read architecture overview"
+          secondaryHref="/docs/launch/README"
+          secondaryLabel="View launch status"
         />
       </main>
       <Footer />

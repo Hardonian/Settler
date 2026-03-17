@@ -109,12 +109,21 @@ function getEtag(payload: unknown) {
 export async function buildContext(request: NextRequest): Promise<ApiContext | NextResponse> {
   const requestId = request.headers.get("x-request-id") || randomUUID();
   const auth = await authenticateApiKey(request);
-  if (!auth?.tenantId || !auth.userId) {
+
+  // TENANT ISOLATION HARDENING: Strictly enforce tenant boundary before returning context.
+  // Prevents "—", empty strings, or undefined from leaking into downstream Prisma queries.
+  if (
+    !auth?.tenantId ||
+    typeof auth.tenantId !== "string" ||
+    auth.tenantId.trim() === "" ||
+    auth.tenantId === "—" ||
+    !auth.userId
+  ) {
     return problem(
       401,
       "SETTLER_AUTH_REQUIRED",
       "Authentication required",
-      "Provide a valid API key with tenant scope.",
+      "Provide a valid API key with a strict tenant scope.",
       requestId,
       request.nextUrl.pathname
     );

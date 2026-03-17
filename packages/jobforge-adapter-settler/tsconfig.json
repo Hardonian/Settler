@@ -1,5 +1,5 @@
 {
-  "extends": "@jobforge/typescript-config/base.json",
+  "extends": "../jobforge-typescript-config/base.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src"

@@ -81,6 +81,8 @@
     "UI_CREDIBILITY_AUDIT.md",
     "WINDOWS_DEVELOPMENT.md",
     "WINDOWS_SYMLINK_FIX.md",
+    "plans",
+    "UI_CREDIBILITY_AUDIT.md",
     "_import",
     "agents",
     "archive",
@@ -174,6 +176,10 @@
     "^coverage$",
     "^\\.nyc_output$",
     "^.*\\.log$",
-    "^.*\\.swp$"
+    "^.*\\.swp$",
+    "^\\.env$",
+    "^\\.mypy_cache$",
+    "^\\.ruff_cache$",
+    "^tsconfig\\.tsbuildinfo$"
   ]
 }

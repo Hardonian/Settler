@@ -5,10 +5,13 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 
 function run(cmd, args, options = {}) {
-  const result = spawnSync(cmd, args, {
+  const binary =
+    process.platform === "win32" && (cmd === "pnpm" || cmd === "pnpm.cmd") ? "pnpm.cmd" : cmd;
+  const result = spawnSync(binary, args, {
     stdio: "inherit",
     env: { ...process.env, ...options.env },
     cwd: options.cwd ?? process.cwd(),
+    shell: process.platform === "win32",
   });
 
   if (result.status !== 0) {

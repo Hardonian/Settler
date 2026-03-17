@@ -13,7 +13,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
-    "incremental": true
+    "incremental": true,
+    "types": ["node"]
   },
   "exclude": ["node_modules"]
 }

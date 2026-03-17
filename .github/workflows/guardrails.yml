@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Check for broken pricing links
         run: |
           # Check that pricing page exists and is accessible
@@ -20,23 +20,27 @@ jobs:
             echo "❌ Pricing page not found"
             exit 1
           fi
-          
+
           # Check for hardcoded pricing that doesn't match config
           echo "✅ Pricing page exists"
-      
+
       - name: Check pricing consistency
         run: |
-          # Verify pricing in README matches pricing page
           echo "Checking pricing consistency..."
-          # This would be more sophisticated in production
-          echo "✅ Pricing consistency check passed"
+          if grep -q "\$[0-9]" README.md; then
+            if [ ! -f "packages/web/src/config/pricing.ts" ] && [ ! -d "packages/web/src/app/pricing" ]; then
+              echo "❌ README mentions pricing but pricing config/routes are missing"
+              exit 1
+            fi
+          fi
+          echo "✅ Pricing consistency check verified structurally"
 
   check-env-vars:
     name: Check Required Env Vars
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Check .env.example exists
         run: |
           if [ ! -f ".env.example" ]; then
@@ -44,7 +48,7 @@ jobs:
             exit 1
           fi
           echo "✅ .env.example exists"
-      
+
       - name: Check env schema
         run: |
           if [ ! -f "config/env.schema.ts" ]; then
@@ -58,15 +62,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Check API routes for hard 500s
         run: |
           # Check for routes that return 500 without proper error handling
           echo "Checking API routes for hard 500s..."
-          
+
           # Find all API route files
           ROUTES=$(find packages/web/src/app/api -name "route.ts" -o -name "route.tsx")
-          
+
           HARD_500S=0
           for route in $ROUTES; do
             # Check for patterns that indicate hard 500s (no try-catch, direct 500 returns)
@@ -75,13 +79,13 @@ jobs:
               HARD_500S=$((HARD_500S + 1))
             fi
           done
-          
+
           if [ $HARD_500S -gt 0 ]; then
             echo "❌ Found $HARD_500S routes with potential hard 500s"
             echo "All error responses should be wrapped in try-catch blocks"
             exit 1
           fi
-          
+
           echo "✅ No hard 500 routes found"
 
   check-unverified-claims:
@@ -89,11 +93,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Check for unverified claims
         run: |
           echo "Checking for unverified claims..."
-          
+
           # Check for common unverified claim patterns
           PATTERNS=(
             "500\+ companies"
@@ -104,7 +108,7 @@ jobs:
             "10\+ adapters"
             "50\+ adapters"
           )
-          
+
           VIOLATIONS=0
           for pattern in "${PATTERNS[@]}"; do
             if grep -r -i --include="*.tsx" --include="*.ts" --include="*.md" "$pattern" packages/web/src/ | grep -v "Planned\|planned\|target\|TODO"; then
@@ -112,13 +116,13 @@ jobs:
               VIOLATIONS=$((VIOLATIONS + 1))
             fi
           done
-          
+
           if [ $VIOLATIONS -gt 0 ]; then
             echo "❌ Found $VIOLATIONS potential unverified claims"
             echo "Please verify all claims or mark them as 'planned' or 'target'"
             exit 1
           fi
-          
+
           echo "✅ No unverified claims found"
 
   check-docs-alignment:
@@ -126,7 +130,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Check investor docs exist
         run: |
           REQUIRED_DOCS=(
@@ -135,7 +139,7 @@ jobs:
             "OPERATIONS_RUNBOOK.md"
             "GTM_STRATEGY.md"
           )
-          
+
           MISSING=0
           for doc in "${REQUIRED_DOCS[@]}"; do
             if [ ! -f "$doc" ]; then
@@ -143,12 +147,12 @@ jobs:
               MISSING=$((MISSING + 1))
             fi
           done
-          
+
           if [ $MISSING -gt 0 ]; then
             echo "❌ Missing $MISSING required documents"
             exit 1
           fi
-          
+
           echo "✅ All required documents present"
 
   lint-and-typecheck:
@@ -156,18 +160,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
+
+      - name: Setup Node.js & pnpm
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-      
+          node-version-file: .nvmrc
+          cache: "pnpm"
+
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
+
       - name: Install dependencies
-        run: npm ci
-      
-      - name: Run lint
-        run: npm run lint || echo "⚠️  Lint check skipped (turbo not available in CI)"
-      
-      - name: Run typecheck
-        run: npm run typecheck || echo "⚠️  Typecheck skipped (turbo not available in CI)"
+        run: pnpm install --frozen-lockfile
+
+      - name: Run lint (Strict)
+        run: pnpm run lint
+
+      - name: Run typecheck (Strict)
+        run: pnpm run typecheck

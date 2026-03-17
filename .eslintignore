@@ -1,9 +1,0 @@
-node_modules/
-.next/
-dist/
-build/
-out/
-coverage/
-scaffold-repro/
-tmp/
-test-results/

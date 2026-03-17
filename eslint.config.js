@@ -9,7 +9,18 @@ const eventTaxonomyRule = require("./tools/eslint-rules/event-taxonomy-rule");
 
 module.exports = [
   {
-    ignores: ["node_modules", "dist", "build", ".next", "coverage", "**/*.d.ts"],
+    ignores: [
+      "node_modules",
+      "dist",
+      "build",
+      ".next",
+      "out",
+      "coverage",
+      "scaffold-repro",
+      "tmp",
+      "test-results",
+      "**/*.d.ts",
+    ],
   },
   {
     files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],

@@ -42,6 +42,20 @@ export {
   type LogContext,
 } from "./logging";
 
+// Ledger domain types
+export {
+  type AccountType,
+  type TransferStatus,
+  type LedgerAccount,
+  type LedgerTransfer,
+  type LedgerBalance,
+  type TransferFilters,
+  type CreateLedgerAccountInput,
+  type CreateLedgerTransferInput,
+  type ReverseLedgerTransferInput,
+  type LedgerQueryResult,
+} from "./ledger";
+
 export type PaymentStatus =
   | "pending"
   | "authorized"

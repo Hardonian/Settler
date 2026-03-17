@@ -97,13 +97,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
     if (!isAdmin) {
       // Redirect to sign-in if not authenticated, or show access denied
-      redirect("/signup?next=" + encodeURIComponent("/admin"));
+      redirect("/login?next=" + encodeURIComponent("/admin"));
     }
   } catch {
     // Log error but don't expose internal details
     // Error handling is done in isSuperAdmin function
     // Redirect to sign-in on error - fail secure
-    redirect("/signup?next=" + encodeURIComponent("/admin"));
+    redirect("/login?next=" + encodeURIComponent("/admin"));
   }
 
   return (

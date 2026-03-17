@@ -97,7 +97,7 @@ async function WebhookInboxContent() {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      redirect("/signup");
+      redirect("/login");
     }
 
     // Use proper super admin check
@@ -105,11 +105,11 @@ async function WebhookInboxContent() {
     const isAdmin = await isSuperAdmin();
 
     if (!isAdmin) {
-      redirect("/signup?next=" + encodeURIComponent("/admin/webhooks"));
+      redirect("/login?next=" + encodeURIComponent("/admin/webhooks"));
     }
   } catch (error) {
     adminLogger.error("Auth check error in webhooks page", error);
-    redirect("/signup");
+    redirect("/login");
   }
 
   let events: WebhookEvent[] = [];
@@ -275,7 +275,7 @@ export default function AdminWebhooksPage() {
         fallback={
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
               <p className="text-slate-600 dark:text-slate-400">Loading webhook events...</p>
             </div>
           </div>

@@ -37,6 +37,34 @@ function SignedOutScreen() {
   );
 }
 
+function NoTenantScreen() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background p-6">
+      <div className="w-full max-w-md rounded-xl border border-border bg-card p-6 text-center shadow-sm">
+        <h2 className="text-xl font-semibold text-foreground mb-2">No workspace assigned</h2>
+        <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+          Your account has not been assigned to a Settler tenant workspace. A strict tenant boundary
+          is required to access the operational control plane.
+        </p>
+        <div className="flex flex-col gap-3">
+          <Link
+            href="/docs/getting-started"
+            className="inline-flex items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          >
+            Read setup documentation
+          </Link>
+          <Link
+            href="/"
+            className="inline-flex items-center justify-center whitespace-nowrap rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          >
+            Return to homepage
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const env = getAppEnvStatus();
   if (!env.ok) return <EnvErrorPanel missingVars={env.missing} />;
@@ -48,8 +76,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   if (!user) return <SignedOutScreen />;
 
-  const tenantId = user.user_metadata?.tenant_id ?? "—";
-  const envLabel = process.env.NODE_ENV === "production" ? "prod" : (process.env.NODE_ENV ?? "dev");
+  const tenantId = user.user_metadata?.tenant_id;
+  if (!tenantId) return <NoTenantScreen />;
 
   return (
     <div className="flex h-screen bg-background">
@@ -62,9 +90,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               Tenant: <span className="font-medium text-foreground">{tenantId}</span>
             </span>
           </div>
-          <span className="rounded bg-muted/40 px-2 py-1 font-mono text-xs text-muted-foreground">
-            {envLabel}
-          </span>
         </header>
         <main className="min-h-0 flex-1 overflow-auto p-4 md:p-6" id="main-content">
           <OperationalRouteNotice />

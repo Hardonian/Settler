@@ -34,7 +34,7 @@ function UserDashboardContent() {
 
   // Redirect to signup if not authenticated
   if (!data) {
-    redirect("/signup");
+    redirect("/login");
     return null;
   }
 

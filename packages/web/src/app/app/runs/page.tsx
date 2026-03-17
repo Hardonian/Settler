@@ -19,70 +19,86 @@ function formatDate(iso: string): string {
   }
 }
 
-async function getRuns(): Promise<Run[]> {
+async function getRuns(): Promise<{ runs: Run[]; error?: string }> {
   const h = await headers();
   const host = h.get("host") || "localhost:3000";
   const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
-  const res = await fetch(`${protocol}://${host}/api/v1/runs?limit=20`, {
-    headers: { authorization: h.get("authorization") || "" },
-    cache: "no-store",
-  });
-  if (!res.ok) return [];
-  const data = await res.json();
-  return (data.rows ?? []) as Run[];
+
+  try {
+    const res = await fetch(`${protocol}://${host}/api/v1/runs?limit=20`, {
+      headers: { authorization: h.get("authorization") || "" },
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      return { runs: [], error: `Backend API failed with status ${res.status}.` };
+    }
+    const data = await res.json();
+    return { runs: (data.rows ?? []) as Run[] };
+  } catch {
+    return { runs: [], error: "Network error connecting to internal API." };
+  }
 }
 
 export default async function RunsPage() {
-  const rows = await getRuns();
+  const { runs, error } = await getRuns();
 
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           Execution Infrastructure
         </p>
-        <h1 className="text-2xl font-semibold text-slate-900">Run Explorer</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Run Explorer</h1>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+      {error && (
+        <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">{error}</div>
+      )}
+
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
         <table className="min-w-full text-sm">
-          <thead className="bg-slate-50 text-left">
+          <thead className="bg-muted/50 text-left">
             <tr>
-              <th scope="col" className="px-3 py-2 font-semibold text-slate-700">Run ID</th>
-              <th scope="col" className="px-3 py-2 font-semibold text-slate-700">Created</th>
-              <th scope="col" className="px-3 py-2 font-semibold text-slate-700">Status</th>
-              <th scope="col" className="px-3 py-2 font-semibold text-slate-700">Policy</th>
+              <th scope="col" className="px-3 py-2 font-semibold text-foreground">
+                Run ID
+              </th>
+              <th scope="col" className="px-3 py-2 font-semibold text-foreground">
+                Created
+              </th>
+              <th scope="col" className="px-3 py-2 font-semibold text-foreground">
+                Status
+              </th>
+              <th scope="col" className="px-3 py-2 font-semibold text-foreground">
+                Policy
+              </th>
             </tr>
           </thead>
           <tbody>
-            {rows.length === 0 ? (
+            {runs.length === 0 ? (
               <tr>
                 <td colSpan={4} className="px-3 py-8 text-center">
-                  <p className="text-sm text-slate-500">No runs found.</p>
-                  <p className="mt-1 text-xs text-slate-400">
+                  <p className="text-sm text-muted-foreground">No runs found.</p>
+                  <p className="mt-1 text-xs text-muted-foreground/70">
                     Start a reconciliation workflow to populate this list. If you expect data,
                     verify API connectivity.
                   </p>
                 </td>
               </tr>
             ) : (
-              rows.map((row) => (
-                <tr key={row.run_id} className="border-t border-slate-100 hover:bg-slate-50">
+              runs.map((row) => (
+                <tr key={row.run_id} className="border-t border-border hover:bg-muted/30">
                   <td className="px-3 py-2 font-mono text-xs">
-                    <Link
-                      href={`/app/runs/${row.run_id}`}
-                      className="text-primary hover:underline"
-                    >
+                    <Link href={`/app/runs/${row.run_id}`} className="text-primary hover:underline">
                       {row.run_id}
                     </Link>
                   </td>
-                  <td className="px-3 py-2 text-slate-600">
+                  <td className="px-3 py-2 text-muted-foreground">
                     <time dateTime={row.created_at}>{formatDate(row.created_at)}</time>
                   </td>
                   <td className="px-3 py-2">
-                    <span className="capitalize text-slate-700">{row.status}</span>
+                    <span className="capitalize text-foreground">{row.status}</span>
                   </td>
-                  <td className="px-3 py-2 text-slate-600">{row.policy ?? '—'}</td>
+                  <td className="px-3 py-2 text-muted-foreground">{row.policy ?? "—"}</td>
                 </tr>
               ))
             )}

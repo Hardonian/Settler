@@ -87,7 +87,12 @@
     "clean": "rm -rf dist",
     "operator-mode:daily": "tsx src/jobs/operator-mode-daily.ts",
     "test:tenant-safety": "jest src/__tests__/application/job-service-invocation-order.test.ts src/__tests__/application/user-service-invocation-order.test.ts src/__tests__/application/webhook-ingestion-invocation-order.test.ts src/__tests__/repositories/job-repository-tenant-contract.test.ts src/__tests__/repositories/user-repository-tenant-contract.test.ts src/__tests__/repositories/tenant-repository-tenant-contract.test.ts src/__tests__/eventsourcing/event-store-tenant-contract.test.ts",
-    "test:resilience": "jest src/__tests__/resilience/api-resilience.test.ts --runInBand --forceExit"
+    "test:resilience": "jest src/__tests__/resilience/api-resilience.test.ts --runInBand --forceExit",
+    "tb:start": "docker-compose up -d tigerbeetle",
+    "tb:stop": "docker-compose stop tigerbeetle",
+    "tb:logs": "docker-compose logs -f tigerbeetle",
+    "tb:reset": "docker-compose down -v && docker-compose up -d tigerbeetle",
+    "tb:status": "docker-compose ps tigerbeetle && docker-compose exec -T tigerbeetle nc -z localhost 4300 && echo 'TigerBeetle is healthy' || echo 'TigerBeetle is not responding'"
   },
   "dependencies": {
     "@opentelemetry/api": "^1.9.0",
@@ -133,6 +138,7 @@
     "resend": "^3.2.0",
     "socket.io": "^4.7.2",
     "stripe": "^14.25.0",
+    "tigerbeetle-node": "0.16.77",
     "uuid": "^9.0.1",
     "winston": "^3.11.0",
     "xml2js": "^0.6.2",

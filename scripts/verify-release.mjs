@@ -140,7 +140,10 @@ function resolveStages({ profile, stage }) {
 
 async function runStage(stageName, runDir) {
   const definition = stageCatalog[stageName];
-  const [bin, args] = definition.command;
+  let [bin, args] = definition.command;
+  if (process.platform === "win32" && bin === "pnpm") {
+    bin = "pnpm.cmd";
+  }
   const startedAt = Date.now();
   const logLines = [];
 
@@ -151,6 +154,7 @@ async function runStage(stageName, runDir) {
       cwd: repoRoot,
       env: process.env,
       stdio: ["ignore", "pipe", "pipe"],
+      shell: process.platform === "win32",
     });
     let timedOut = false;
 

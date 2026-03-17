@@ -23,7 +23,7 @@ async function TenantsObservabilityContent() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/signup?next=/console/admin/tenants");
+    redirect("/login?next=/console/admin/tenants");
   }
 
   const hasAdminScope = await isSuperAdmin();

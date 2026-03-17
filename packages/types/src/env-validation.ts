@@ -37,6 +37,30 @@ export const serverEnvSchema = z.object({
   // Stripe
   STRIPE_SECRET_KEY: z.string().startsWith("sk_").optional(),
   STRIPE_WEBHOOK_SECRET: z.string().startsWith("whsec_").optional(),
+
+  // TigerBeetle (Financial Ledger)
+  // Optional - graceful fallback to Postgres if not configured
+  TIGERBEETLE_ENABLED: z
+    .string()
+    .transform((val) => val === "true")
+    .default("false")
+    .pipe(z.boolean()),
+  TIGERBEETLE_ADDRESS: z.string().default("localhost:4300"),
+  TIGERBEETLE_CLUSTER_ID: z
+    .string()
+    .transform((val) => parseInt(val, 10))
+    .default("0")
+    .pipe(z.number().int().min(0)),
+  TIGERBEETLE_TIMEOUT_MS: z
+    .string()
+    .transform((val) => parseInt(val, 10))
+    .default("5000")
+    .pipe(z.number().int().positive()),
+  TIGERBEETLE_MAX_RETRIES: z
+    .string()
+    .transform((val) => parseInt(val, 10))
+    .default("3")
+    .pipe(z.number().int().min(0).max(10)),
 });
 
 /**

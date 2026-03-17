@@ -72,6 +72,14 @@ import { initializeWebSocket } from "./infrastructure/websocket";
 import { createServer } from "http";
 import { scanJsonDepth } from "./utils/json-depth";
 import { emitOperatorRuntimeEvent } from "./services/ops-intelligence/runtime-events";
+import {
+  LedgerService,
+  getLedgerService,
+  isLedgerEnabled,
+  isLedgerUsingFallback,
+  getLedgerDisabledReason,
+} from "./domain/services/LedgerService";
+import { logInfo as logLedgerInfo, logWarn } from "./utils/logger";
 
 const app: Express = express();
 const PORT = config.port;
@@ -416,6 +424,18 @@ async function startServer() {
 
     await initDatabase();
     logInfo("Database initialized");
+
+    // Initialize Ledger Service (with graceful fallback)
+    // This allows the app to boot even if TigerBeetle is not available
+    const ledgerService = getLedgerService();
+    if (isLedgerEnabled()) {
+      logInfo("Ledger: TigerBeetle is enabled");
+    } else if (isLedgerUsingFallback()) {
+      logWarn(`Ledger: Using disabled fallback - ${getLedgerDisabledReason()}`);
+    } else {
+      logInfo("Ledger: Using disabled fallback (not configured)");
+    }
+
     await logDistributedGuardStartupSummary();
 
     // Start background jobs

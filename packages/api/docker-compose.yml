@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   api:
@@ -17,6 +17,7 @@ services:
       - DB_PASSWORD=postgres
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - TIGERBEETLE_ADDRESS=tigerbeetle:4300
       - JWT_SECRET=dev-secret-change-in-production
       - JWT_REFRESH_SECRET=dev-refresh-secret-change-in-production
       - ENCRYPTION_KEY=dev-encryption-key-32-bytes-long!!
@@ -64,9 +65,44 @@ services:
     networks:
       - settler-network
 
+  tigerbeetle:
+    image: tigerbeetle/tigerbeetle:latest
+    ports:
+      - "4300:4300"
+    volumes:
+      - tigerbeetle-data:/var/lib/tigerbeetle
+    command: >
+      start
+      --addresses=0.0.0.0:4300
+      /var/lib/tigerbeetle/data.tigerbeetle
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 4300 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - settler-network
+    depends_on:
+      tigerbeetle-init:
+        condition: service_completed_successfully
+
+  tigerbeetle-init:
+    image: tigerbeetle/tigerbeetle:latest
+    volumes:
+      - tigerbeetle-data:/var/lib/tigerbeetle
+    command: >
+      format
+      --cluster=0
+      --replica=0
+      /var/lib/tigerbeetle/data.tigerbeetle
+    networks:
+      - settler-network
+
 volumes:
   postgres-data:
   redis-data:
+  tigerbeetle-data:
 
 networks:
   settler-network:

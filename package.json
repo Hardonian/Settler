@@ -109,6 +109,7 @@
     "validate:lint-config": "npx tsx scripts/validate-lint-config.ts",
     "validate:comprehensive": "npx tsx scripts/validate-comprehensive-build.ts",
     "prepare": "husky install 2>/dev/null || true",
+    "lint-staged": "lint-staged",
     "db:new": "bash scripts/new-migration.sh",
     "db:verify": "tsx scripts/verify-backend-contract.ts",
     "db:verify:migrations": "bash scripts/verify-migrations.sh",
@@ -299,15 +300,6 @@
     "verify:console-route-maturity": "pnpm --filter @settler/web exec tsx scripts/verify-console-route-maturity.ts",
     "verify:operational-route-truth": "pnpm --filter @settler/web exec tsx scripts/verify-operational-route-truth.ts",
     "verify:styles": "node scripts/verify-styles.mjs"
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,md}": [
-      "prettier --write"
-    ]
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",

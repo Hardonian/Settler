@@ -192,7 +192,9 @@ jobs:
       - name: Start production server
         run: |
           cd packages/web
-          npm start &
+          pnpm start &
+          pnpm start &
+          pnpm start &
           sleep 10
           curl -f http://localhost:3000 || (sleep 5 && curl -f http://localhost:3000)
         env:

@@ -29,6 +29,12 @@ export const SERVER_ENV_KEYS = [
   "STRIPE_WEBHOOK_SECRET",
   "RESEND_API_KEY",
   "RESEND_FROM_EMAIL",
+  // TigerBeetle (Financial Ledger)
+  "TIGERBEETLE_ENABLED",
+  "TIGERBEETLE_ADDRESS",
+  "TIGERBEETLE_CLUSTER_ID",
+  "TIGERBEETLE_TIMEOUT_MS",
+  "TIGERBEETLE_MAX_RETRIES",
 ] as const;
 
 export const BUILD_REQUIRED_SERVER_KEYS = ["SUPABASE_URL", "SUPABASE_ANON_KEY"] as const;
@@ -71,9 +77,32 @@ const serverEnvSchema = z
     STRIPE_WEBHOOK_SECRET: z.string().optional(),
     RESEND_API_KEY: z.string().optional(),
     RESEND_FROM_EMAIL: z.string().email().optional(),
+    // TigerBeetle (Financial Ledger)
+    // Optional - graceful fallback to Postgres if not configured
+    TIGERBEETLE_ENABLED: z
+      .string()
+      .transform((val) => val === "true")
+      .default("false")
+      .pipe(z.boolean()),
+    TIGERBEETLE_ADDRESS: z.string().default("localhost:4300"),
+    TIGERBEETLE_CLUSTER_ID: z
+      .string()
+      .transform((val) => parseInt(val, 10))
+      .default("0")
+      .pipe(z.number().int().min(0)),
+    TIGERBEETLE_TIMEOUT_MS: z
+      .string()
+      .transform((val) => parseInt(val, 10))
+      .default("5000")
+      .pipe(z.number().int().positive()),
+    TIGERBEETLE_MAX_RETRIES: z
+      .string()
+      .transform((val) => parseInt(val, 10))
+      .default("3")
+      .pipe(z.number().int().min(0).max(10)),
   })
   .strict()
-  .superRefine((value: Record<string, string | undefined>, context: z.RefinementCtx) => {
+  .superRefine((value, context) => {
     if (!value.DATABASE_URL && !value.SUPABASE_DATABASE_URL && !value.DIRECT_URL) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
