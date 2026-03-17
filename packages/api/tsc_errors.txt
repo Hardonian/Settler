@@ -1,0 +1,75 @@
+src/domain/repositories/ILedgerRepository.ts(18,3): error TS2305: Module '"@settler/types"' has no exported member 'LedgerAccount'.
+src/domain/repositories/ILedgerRepository.ts(19,3): error TS2305: Module '"@settler/types"' has no exported member 'LedgerTransfer'.
+src/domain/repositories/ILedgerRepository.ts(20,3): error TS2305: Module '"@settler/types"' has no exported member 'LedgerBalance'.
+src/domain/repositories/ILedgerRepository.ts(21,3): error TS2305: Module '"@settler/types"' has no exported member 'TransferFilters'.
+src/domain/repositories/ILedgerRepository.ts(22,3): error TS2305: Module '"@settler/types"' has no exported member 'CreateLedgerAccountInput'.
+src/domain/repositories/ILedgerRepository.ts(23,3): error TS2305: Module '"@settler/types"' has no exported member 'CreateLedgerTransferInput'.
+src/domain/repositories/ILedgerRepository.ts(24,3): error TS2305: Module '"@settler/types"' has no exported member 'ReverseLedgerTransferInput'.
+src/domain/repositories/ILedgerRepository.ts(25,3): error TS2305: Module '"@settler/types"' has no exported member 'LedgerQueryResult'.
+src/index.ts(42,29): error TS2300: Duplicate identifier 'logWarn'.
+src/index.ts(82,36): error TS2300: Duplicate identifier 'logWarn'.
+src/infrastructure/repositories/DisabledLedgerRepository.ts(16,3): error TS2305: Module '"@settler/types"' has no exported member 'LedgerAccount'.
+src/infrastructure/repositories/DisabledLedgerRepository.ts(17,3): error TS2305: Module '"@settler/types"' has no exported member 'LedgerTransfer'.
+src/infrastructure/repositories/DisabledLedgerRepository.ts(18,3): error TS2305: Module '"@settler/types"' has no exported member 'LedgerBalance'.
+src/infrastructure/repositories/DisabledLedgerRepository.ts(19,3): error TS2305: Module '"@settler/types"' has no exported member 'TransferFilters'.
+src/infrastructure/repositories/DisabledLedgerRepository.ts(20,3): error TS2305: Module '"@settler/types"' has no exported member 'CreateLedgerAccountInput'.
+src/infrastructure/repositories/DisabledLedgerRepository.ts(21,3): error TS2305: Module '"@settler/types"' has no exported member 'CreateLedgerTransferInput'.
+src/infrastructure/repositories/DisabledLedgerRepository.ts(22,3): error TS2305: Module '"@settler/types"' has no exported member 'ReverseLedgerTransferInput'.
+src/infrastructure/repositories/DisabledLedgerRepository.ts(23,3): error TS2305: Module '"@settler/types"' has no exported member 'LedgerQueryResult'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(24,3): error TS2305: Module '"@settler/types"' has no exported member 'LedgerAccount'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(25,3): error TS2305: Module '"@settler/types"' has no exported member 'LedgerTransfer'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(26,3): error TS2305: Module '"@settler/types"' has no exported member 'LedgerBalance'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(27,3): error TS2305: Module '"@settler/types"' has no exported member 'TransferFilters'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(28,3): error TS2305: Module '"@settler/types"' has no exported member 'CreateLedgerAccountInput'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(29,3): error TS2305: Module '"@settler/types"' has no exported member 'CreateLedgerTransferInput'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(30,3): error TS2305: Module '"@settler/types"' has no exported member 'ReverseLedgerTransferInput'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(31,3): error TS2305: Module '"@settler/types"' has no exported member 'LedgerQueryResult'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(32,3): error TS2305: Module '"@settler/types"' has no exported member 'AccountType'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(33,3): error TS2305: Module '"@settler/types"' has no exported member 'TransferStatus'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(202,9): error TS2561: Object literal may only specify known properties, but 'clusterId' does not exist in type 'ClientInitArgs'. Did you mean to write 'cluster_id'?
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(222,27): error TS2339: Property 'close' does not exist on type 'Client'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(275,9): error TS2561: Object literal may only specify known properties, but 'debitsPosted' does not exist in type 'Account'. Did you mean to write 'debits_posted'?
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(281,62): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(281,65): error TS7006: Parameter 'c' implicitly has an 'any' type.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(288,35): error TS2345: Argument of type 'Account' is not assignable to parameter of type 'Account[]'.
+  Type 'Account' is missing the following properties from type 'Account[]': length, pop, push, concat, and 29 more.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(317,37): error TS2339: Property 'getAccounts' does not exist on type 'Client'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(333,40): error TS2345: Argument of type 'number' is not assignable to parameter of type 'bigint'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(338,40): error TS2345: Argument of type 'number' is not assignable to parameter of type 'bigint'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(427,9): error TS2322: Type 'bigint' is not assignable to type 'number'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(429,34): error TS1361: 'TransferFlags' cannot be used as a value because it was imported using 'import type'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(429,48): error TS2339: Property 'posted' does not exist on type 'typeof TransferFlags'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(429,57): error TS1361: 'TransferFlags' cannot be used as a value because it was imported using 'import type'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(438,36): error TS2345: Argument of type 'Transfer' is not assignable to parameter of type 'Transfer[]'.
+  Type 'Transfer' is missing the following properties from type 'Transfer[]': length, pop, push, concat, and 29 more.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(474,38): error TS2339: Property 'getTransfers' does not exist on type 'Client'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(483,49): error TS1361: 'TransferFlags' cannot be used as a value because it was imported using 'import type'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(490,16): error TS1361: 'TransferFlags' cannot be used as a value because it was imported using 'import type'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(490,30): error TS2339: Property 'posted' does not exist on type 'typeof TransferFlags'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(494,36): error TS2345: Argument of type 'Transfer' is not assignable to parameter of type 'Transfer[]'.
+  Type 'Transfer' is missing the following properties from type 'Transfer[]': length, pop, push, concat, and 29 more.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(523,38): error TS2339: Property 'getTransfers' does not exist on type 'Client'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(550,28): error TS1361: 'TransferFlags' cannot be used as a value because it was imported using 'import type'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(550,42): error TS2339: Property 'posted' does not exist on type 'typeof TransferFlags'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(552,35): error TS1361: 'TransferFlags' cannot be used as a value because it was imported using 'import type'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(554,35): error TS1361: 'TransferFlags' cannot be used as a value because it was imported using 'import type'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(554,49): error TS2551: Property 'voidPendingTransfer' does not exist on type 'typeof TransferFlags'. Did you mean 'void_pending_transfer'?
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(564,47): error TS2551: Property 'debitAccountId' does not exist on type 'Transfer'. Did you mean 'debit_account_id'?
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(565,48): error TS2551: Property 'creditAccountId' does not exist on type 'Transfer'. Did you mean 'credit_account_id'?
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(601,37): error TS2339: Property 'getAccounts' does not exist on type 'Client'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(616,11): error TS2345: Argument of type 'number' is not assignable to parameter of type 'bigint'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(622,48): error TS2345: Argument of type 'number' is not assignable to parameter of type 'bigint'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(624,11): error TS2345: Argument of type 'number' is not assignable to parameter of type 'bigint'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(629,11): error TS2345: Argument of type 'number' is not assignable to parameter of type 'bigint'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(635,48): error TS2345: Argument of type 'number' is not assignable to parameter of type 'bigint'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(637,11): error TS2345: Argument of type 'number' is not assignable to parameter of type 'bigint'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(664,37): error TS2339: Property 'getAccounts' does not exist on type 'Client'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(669,40): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(676,45): error TS2345: Argument of type 'number' is not assignable to parameter of type 'bigint'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(678,45): error TS2345: Argument of type 'number' is not assignable to parameter of type 'bigint'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(718,46): error TS2339: Property 'getTransfers' does not exist on type 'Client'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(736,9): error TS2322: Type 'bigint' is not assignable to type 'number'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(738,16): error TS1361: 'TransferFlags' cannot be used as a value because it was imported using 'import type'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(738,30): error TS2339: Property 'posted' does not exist on type 'typeof TransferFlags'.
+src/infrastructure/repositories/TigerBeetleLedgerRepository.ts(745,36): error TS2345: Argument of type 'Transfer' is not assignable to parameter of type 'Transfer[]'.
+  Type 'Transfer' is missing the following properties from type 'Transfer[]': length, pop, push, concat, and 29 more.

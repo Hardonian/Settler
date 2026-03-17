@@ -11,10 +11,7 @@
  */
 
 import { ILedgerRepository } from "../repositories/ILedgerRepository";
-import {
-  TigerBeetleLedgerRepository,
-  createTigerBeetleLedgerRepository,
-} from "../../infrastructure/repositories/TigerBeetleLedgerRepository";
+import { createTigerBeetleLedgerRepository } from "../../infrastructure/repositories/TigerBeetleLedgerRepository";
 import {
   DisabledLedgerRepository,
   createDisabledLedgerRepository,
