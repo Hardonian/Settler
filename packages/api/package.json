@@ -88,6 +88,7 @@
     "operator-mode:daily": "tsx src/jobs/operator-mode-daily.ts",
     "test:tenant-safety": "jest src/__tests__/application/job-service-invocation-order.test.ts src/__tests__/application/user-service-invocation-order.test.ts src/__tests__/application/webhook-ingestion-invocation-order.test.ts src/__tests__/repositories/job-repository-tenant-contract.test.ts src/__tests__/repositories/user-repository-tenant-contract.test.ts src/__tests__/repositories/tenant-repository-tenant-contract.test.ts src/__tests__/eventsourcing/event-store-tenant-contract.test.ts",
     "test:resilience": "jest src/__tests__/resilience/api-resilience.test.ts --runInBand --forceExit",
+    "test:tb": "jest src/__tests__/integration/tigerbeetle.test.ts --runInBand --forceExit",
     "tb:start": "docker-compose up -d tigerbeetle",
     "tb:stop": "docker-compose stop tigerbeetle",
     "tb:logs": "docker-compose logs -f tigerbeetle",

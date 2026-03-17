@@ -1,62 +1,79 @@
 # Settler
 
-Settler is a deterministic reconciliation and operations platform for teams that need reproducible runs, replayable outcomes, and operator-visible evidence.
+Settler is a deterministic reconciliation and operations platform for teams that need reproducible runs, replayable outcomes, and operator-visible evidence. Built for financial-grade precision, Settler integrates **TigerBeetle** for its immutable ledger core while maintaining **PostgreSQL** for projection and operational metadata.
 
-## What this repository contains
+## Core Capabilities
 
-- `packages/api` — API/control plane and route surfaces.
-- `packages/web` — operator console (Run Explorer, replay/proof/operator workflows).
-- `packages/cli` — deterministic foundry, replay, and scenario tooling.
-- `scripts` — verification, bootstrap, simulation, and operational automation.
-- `docs` — canonical documentation hub.
+- **Deterministic Pipeline** — Every reconciliation run is reproducible.
+- **TigerBeetle Ledger** — Financial transactions are recorded in an immutable, high-performance ledger.
+- **Operator Console** — Visual drill-down into runs, proofs, and exceptions.
+- **Foundry CLI** — Tooling for engineers to simulate scenarios and replay historical runs.
+- **Tenant Isolation** — Native multi-tenancy with strict data boundaries.
 
-## Quick start
+## Architecture Snapshot
+
+Settler uses a hybrid storage model to balance financial safety with operational flexibility:
+
+- **TigerBeetle** (Ledger Core): Immutable source of truth for all double-entry postings and account balances.
+- **PostgreSQL/Supabase** (Projection Layer): Searchable projections, tenant configurations, audit logs, and operational state.
+- **Redis** (Coordination): Real-time synchronization and idempotency guarding.
+
+## Repository Structure
+
+- `packages/api` — Node.js Control Plane (Express, TypeScript).
+- `packages/web` — Next.js Operator Console.
+- `packages/cli` — Engineering and Foundry tooling.
+- `packages/types` — Shared domain models and ledger protocols.
+- `scripts` — Verification, repo hygiene, and automation.
+
+## Quick Start
+
+### 1. Prerequisites
+
+- Node.js >= 22.0
+- pnpm >= 10.13
+- Docker (for local TigerBeetle and Postgres)
+
+### 2. Setup
 
 ```bash
 pnpm install
 cp .env.local.example .env.local
-doppler run -- pnpm run verify:setup
-doppler run -- pnpm run verify:launch:readiness
-pnpm demo:settler
-pnpm dev:stack
+# Initialize infrastructure
+pnpm tb:start
+# Verify readiness
+pnpm settler:doctor -- --first-run
 ```
 
-For first-time setup and troubleshooting, start with `docs/getting-started/README.md`.
-Run `doppler run -- pnpm run settler:doctor -- --first-run` after filling env values to confirm actionable startup readiness.
-
-## Core verification commands
+### 3. Verification
 
 ```bash
 pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
-pnpm verify
 ```
 
-Use `pnpm demo:settler` to run a deterministic end-to-end demo pipeline.
+## TigerBeetle Management
 
-## Documentation map
+Settler provides global helper scripts for managing the TigerBeetle ledger:
 
-- Platform truth index: `docs/platform-index.md`
-- Documentation hub: `docs/README.md`
-- Architecture: `docs/architecture/`
-- Operations/runbooks: `docs/operations/`
-- Security and privacy: `docs/security/`
-- API and references: `docs/reference/`, `docs/api/`
-- Console route maturity/source of truth: `packages/web/src/lib/console/route-maturity.ts` (validated by `pnpm verify:console-route-maturity`)
-- Authenticated route operational truth/source of truth: `packages/web/src/lib/routes/operational-truth.ts` (validated by `pnpm verify:operational-route-truth`)
-- Governance + inventory artifacts: `docs/_meta/`
-- Historical docs archive: `docs/archive/`
+- `pnpm tb:start` — Start TigerBeetle container.
+- `pnpm tb:status` — Check ledger health.
+- `pnpm tb:logs` — Follow ledger logs.
+- `pnpm tb:reset` — Wipe and reformat the ledger (Dev only).
+
+## Documentation Hub
+
+- [Architecture Overview](docs/ARCHITECTURE.md)
+- [TigerBeetle Integration Design](docs/TIGERBEETLE_INTEGRATION_DESIGN.md)
+- [Local Development Guide](docs/getting-started/README.md)
+- [Security Policy](SECURITY.md)
 
 ## Contributing
 
-See `CONTRIBUTING.md` for contribution workflow and quality gates.
-
-## Security
-
-See `SECURITY.md` for vulnerability reporting instructions and security policy scope.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow and quality gates. All pull requests must pass the `pnpm verify` suite.
 
 ## License
 
-See `LICENSE` for repository licensing terms and `docs/LICENSING_OVERVIEW.md` for component-level licensing details.
+Settler is licensed under the terms found in [LICENSE](LICENSE). See [LICENSING_OVERVIEW.md](docs/LICENSING_OVERVIEW.md) for component-level licensing details.
