@@ -1,6 +1,6 @@
 import Link from "next/link";
-import RoleMatrix from "@/components/stitch-import/RoleMatrix";
-import FreezeToggle from "@/components/stitch-import/FreezeToggle";
+import RoleMatrix from "@/components/RoleMatrix";
+import FreezeToggle from "@/components/FreezeToggle";
 
 export default function SettingsPage() {
   return (

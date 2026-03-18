@@ -1,6 +1,37 @@
-import ControlPlaneOverview from "@/components/stitch-import/ControlPlaneOverview";
+import { headers } from "next/headers";
+import ControlPlaneOverview from "@/components/ControlPlaneOverview";
 
-export default function SystemHealthPage() {
+async function getSystemHealth() {
+  const h = await headers();
+  const host = h.get("host") || "localhost:3000";
+  const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
+
+  try {
+    const res = await fetch(`${protocol}://${host}/api/v1/system-health`, {
+      headers: { authorization: h.get("authorization") || "" },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      return {
+        error: `Failed to fetch system health (${res.status})`,
+        health: null,
+      };
+    }
+
+    const data = await res.json();
+    return { health: data.data, error: null };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : "Network error",
+      health: null,
+    };
+  }
+}
+
+export default async function SystemHealthPage() {
+  const { health, error } = await getSystemHealth();
+
   return (
     <div className="space-y-6">
       <div>
@@ -13,8 +44,13 @@ export default function SystemHealthPage() {
           from live system checks and may reflect transient conditions.
         </p>
       </div>
+
+      {error && (
+        <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">{error}</div>
+      )}
+
       <div className="rounded-xl border border-border bg-card p-4">
-        <ControlPlaneOverview />
+        <ControlPlaneOverview health={health} />
       </div>
     </div>
   );

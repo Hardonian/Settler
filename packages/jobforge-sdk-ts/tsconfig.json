@@ -2,7 +2,6 @@
   "extends": "../jobforge-typescript-config/base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
     "declaration": true,
     "declarationMap": true,
     "noEmit": false
