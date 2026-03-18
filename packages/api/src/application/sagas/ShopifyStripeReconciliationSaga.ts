@@ -11,6 +11,7 @@ import { ReconciliationEvents } from "../../domain/eventsourcing/reconciliation/
 import { createCircuitBreaker } from "../../infrastructure/resilience/circuit-breaker";
 import type { CircuitBreaker } from "opossum";
 import { logError } from "../../utils/logger";
+import { getMatchingRulesForJob, DEFAULT_TOLERANCES } from "../../services/matching-rules-loader";
 
 export class ShopifyStripeReconciliationSaga {
   private shopifyCircuitBreaker: CircuitBreaker<any>;
@@ -262,9 +263,21 @@ export class ShopifyStripeReconciliationSaga {
           }
           const orders = state.data.shopify_orders as Order[];
           const payments = state.data.stripe_payments as Payment[];
-          // Matching rules reserved for future use
-          const _matchingRules = state.data.matching_rules as Record<string, unknown>;
-          void _matchingRules;
+
+          // Load matching rules from canonical loader
+          let matchingConfig;
+          try {
+            matchingConfig = await getMatchingRulesForJob(state.tenantId, reconciliationId);
+          } catch (error) {
+            // Fall back to defaults
+            matchingConfig = {
+              amountTolerance: DEFAULT_TOLERANCES.amount,
+              dateToleranceDays: DEFAULT_TOLERANCES.dateDays,
+            };
+          }
+
+          const amountTolerance = matchingConfig.amountTolerance;
+          const dateToleranceMs = matchingConfig.dateToleranceDays * 24 * 60 * 60 * 1000; // Convert days to ms
 
           const matched: Match[] = [];
           const unmatched: Unmatched[] = [];
@@ -272,12 +285,12 @@ export class ShopifyStripeReconciliationSaga {
           // Simple matching logic (in production, use more sophisticated algorithm)
           for (const order of orders) {
             const match = payments.find((payment) => {
-              // Match by amount and date proximity
-              const amountMatch = Math.abs(order.amount - payment.amount) < 0.01;
+              // Match by amount and date proximity using canonical loader values
+              const amountMatch = Math.abs(order.amount - payment.amount) < amountTolerance;
               const dateDiff = Math.abs(
                 new Date(order.date).getTime() - new Date(payment.date).getTime()
               );
-              const dateMatch = dateDiff < 24 * 60 * 60 * 1000; // Within 24 hours
+              const dateMatch = dateDiff < dateToleranceMs; // Use configured date window
 
               // Also check metadata for order_id match
               const metadataMatch =
@@ -287,12 +300,28 @@ export class ShopifyStripeReconciliationSaga {
             });
 
             if (match) {
+              // Calculate confidence based on how well the match aligns with rules
+              const amountDiff = Math.abs(order.amount - match.amount);
+              const dateDiffMs = Math.abs(
+                new Date(order.date).getTime() - new Date(match.date).getTime()
+              );
+
+              // Confidence based on proximity to tolerance thresholds
+              let confidence = 1.0;
+              if (amountDiff > 0 || dateDiffMs > 0) {
+                const amountScore =
+                  amountDiff < amountTolerance ? 1 - amountDiff / amountTolerance : 0;
+                const dateScore =
+                  dateDiffMs < dateToleranceMs ? 1 - dateDiffMs / dateToleranceMs : 0;
+                confidence = Math.min(1.0, (amountScore + dateScore) / 2 + 0.5);
+              }
+
               matched.push({
                 source_id: order.id,
                 target_id: match.id,
                 amount: order.amount,
                 currency: order.currency,
-                confidence: 1.0,
+                confidence,
                 matched_fields: ["amount", "date", "metadata"],
               });
 
@@ -306,7 +335,7 @@ export class ShopifyStripeReconciliationSaga {
                   target_id: match.id,
                   amount: order.amount,
                   currency: order.currency,
-                  confidence: 1.0,
+                  confidence,
                   matched_fields: ["amount", "date", "metadata"],
                   matched_at: new Date().toISOString(),
                 },

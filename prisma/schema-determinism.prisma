@@ -41,6 +41,7 @@ model RunSnapshot {
 
 model ExecutionProvenance {
   id                    String    @id @default(uuid())
+  tenantId              String    @db.Uuid
   runResultId           String    @db.Uuid
   snapshotId            String    @db.Uuid
   sequence              Int
@@ -59,6 +60,7 @@ model ExecutionProvenance {
   runResult             ReconResult @relation(fields: [runResultId], references: [id], onDelete: Cascade)
 
   @@unique([runResultId, sequence])
+  @@index([tenantId])
   @@index([runResultId])
   @@index([snapshotId])
   @@index([operation])
