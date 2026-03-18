@@ -26,6 +26,19 @@ def run_stale_run_reaper():
 
     with psycopg2.connect(db_url) as conn:
         with conn.cursor() as cur:
+            # Control Plane Enforcement: Fetch and apply dynamic operator timeouts
+            cur.execute(
+                "SELECT max_statement_timeout_ms FROM public.operator_infrastructure_settings WHERE id = 'global'"
+            )
+            infra_settings = cur.fetchone()
+            if infra_settings:
+                timeout_ms = infra_settings[0]
+                # Explicitly constrain this session to the operator's threshold
+                cur.execute(f"SET statement_timeout = {timeout_ms}")
+                logger.info(
+                    f"Enforcing operator control plane statement timeout: {timeout_ms}ms"
+                )
+
             # Highly optimized query using the idx_runs_stale_reaper partial index
             cur.execute(
                 """

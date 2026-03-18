@@ -42,6 +42,18 @@ def run_archival_sweeper():
 
         with psycopg2.connect(db_url) as conn:
             with conn.cursor() as cur:
+                # Control Plane Enforcement: Fetch and apply dynamic operator timeouts
+                cur.execute(
+                    "SELECT max_statement_timeout_ms FROM public.operator_infrastructure_settings WHERE id = 'global'"
+                )
+                infra_settings = cur.fetchone()
+                if infra_settings:
+                    timeout_ms = infra_settings[0]
+                    cur.execute(f"SET statement_timeout = {timeout_ms}")
+                    logger.info(
+                        f"Enforcing operator control plane statement timeout: {timeout_ms}ms"
+                    )
+
                 # Lock only a small chunk to prevent massive WAL bloat and long-held locks during S3 uploads
                 cur.execute(
                     """

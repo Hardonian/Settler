@@ -166,8 +166,7 @@
     "stitch_integrations_data_sources.zip",
     ".vscode",
     "stitch",
-    "dlq-tools.ts",
-    "page.tsx"
+    "dlq-tools.ts"
   ],
   "blockedExtensions": [".tar", ".tgz", ".bak", ".tmp", ".old"],
   "localClutterPatterns": [
