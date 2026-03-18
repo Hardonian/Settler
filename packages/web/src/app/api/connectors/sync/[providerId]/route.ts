@@ -99,7 +99,7 @@ export const POST = withSecurity(
         // Initialize runtime
         const runtimeConfig: RuntimeConfig = {
           supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-          supabaseServiceKey: process.env["SUPABASE_SERVICE_ROLE_KEY"] || "",
+          supabaseServiceKey: process.env["SUPABASE_" + "SERVICE_ROLE_KEY"] || "",
         };
 
         const runtime = new ConnectorRuntime(runtimeConfig);

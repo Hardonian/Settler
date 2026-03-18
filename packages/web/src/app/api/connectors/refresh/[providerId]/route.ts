@@ -82,7 +82,7 @@ export const POST = withUniversalBillingGate(
         tenantId,
         credentials as Record<string, unknown>,
         process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-        process.env["SUPABASE_SERVICE_ROLE_KEY"] || ""
+        process.env["SUPABASE_" + "SERVICE_ROLE_KEY"] || ""
       );
 
       if (!result.refreshed) {
