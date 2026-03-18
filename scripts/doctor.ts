@@ -851,7 +851,7 @@ async function main() {
   checkGitStatus();
   
   // Build (skip in fast mode or if explicitly first-run)
-  if (!FAST_MODE && !FIRST_RUN) {
+  if (!FAST_MODE && !FIRST_RUN && !args.fast) {
     checkBuild();
   }
   

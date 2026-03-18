@@ -419,6 +419,24 @@ export async function runReconciliation(
     requireExactAmount: config.requireExactAmount ?? false,
   };
 
+  const runMetadata = {
+    traceId,
+    ingestionId,
+    jobId: jobId ?? null,
+    templateId: templateId ?? null,
+    requestedConfig: config,
+    effectiveConfig,
+    matchingConfig: {
+      amountTolerance: matchingConfig.amountTolerance,
+      dateToleranceDays: matchingConfig.dateToleranceDays,
+      matchingRulesCount: matchingConfig.matchingRules.length,
+      configVersion: matchingConfig.configVersion,
+      configSource: matchingConfig.configSource,
+      templateId: matchingConfig.templateId ?? null,
+      jobId: matchingConfig.jobId ?? null,
+    },
+  };
+
   try {
     // Create reconciliation run
     await query(
@@ -426,7 +444,7 @@ export async function runReconciliation(
         id, ingestion_id, tenant_id, user_id, status, started_at,
         trace_id, metadata, created_at, updated_at
       ) VALUES ($1, $2, $3, $4, $5, NOW(), $6, $7, NOW(), NOW())`,
-      [runId, ingestionId, tenantId, userId, "running", traceId, JSON.stringify(config)]
+      [runId, ingestionId, tenantId, userId, "running", traceId, JSON.stringify(runMetadata)]
     );
 
     await emitOperatorRuntimeEvent({
@@ -455,6 +473,7 @@ export async function runReconciliation(
 
     const sourceIds = (sourceTransactions as Array<{ id: string }>).map((t) => t.id);
     const targetIds = (targetTransactions as Array<{ id: string }>).map((t) => t.id);
+    const remainingTargetIds = new Set(targetIds);
 
     logInfo("Starting reconciliation", {
       runId,
@@ -470,8 +489,12 @@ export async function runReconciliation(
     let totalConfidence = 0;
 
     for (const sourceId of sourceIds) {
-      const match = await matchTransaction(sourceId, targetIds, tenantId, effectiveConfig);
+      const candidateTargetIds = Array.from(remainingTargetIds);
+      const match = await matchTransaction(sourceId, candidateTargetIds, tenantId, effectiveConfig);
       if (match) {
+        if (match.targetTransactionId) {
+          remainingTargetIds.delete(match.targetTransactionId);
+        }
         matches.push(match);
         if (match.targetTransactionId) {
           matchedCount++;
@@ -511,6 +534,17 @@ export async function runReconciliation(
 
     // Update reconciliation run
     const avgConfidence = matchedCount > 0 ? totalConfidence / matchedCount : 0;
+    const unmatchedTargetCount = remainingTargetIds.size;
+
+    const completedMetadata = {
+      ...runMetadata,
+      completion: {
+        matchedCount,
+        unmatchedSourceCount: unmatchedCount,
+        unmatchedTargetCount,
+        avgConfidence,
+      },
+    };
 
     await query(
       `UPDATE reconciliation_runs SET
@@ -522,15 +556,17 @@ export async function runReconciliation(
         unmatched_source_count = $4,
         unmatched_target_count = $5,
         confidence_avg = $6,
+        metadata = $7,
         updated_at = NOW()
-      WHERE id = $7`,
+      WHERE id = $8`,
       [
         sourceIds.length,
         targetIds.length,
         matchedCount,
         unmatchedCount,
-        targetIds.length - matchedCount, // Unmatched targets
+        unmatchedTargetCount,
         avgConfidence,
+        JSON.stringify(completedMetadata),
         runId,
       ]
     );
@@ -552,7 +588,11 @@ export async function runReconciliation(
       runId,
       matchedCount,
       unmatchedCount,
+      unmatchedTargetCount,
       avgConfidence,
+      effectiveAmountTolerance: effectiveConfig.amountTolerance,
+      effectiveDateWindowDays: effectiveConfig.dateWindowDays,
+      configSource: matchingConfig.configSource,
       traceId,
     });
 
