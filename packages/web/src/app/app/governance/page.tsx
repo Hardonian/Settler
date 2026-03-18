@@ -10,12 +10,18 @@ export default function GovernancePage() {
     <div className="bg-background-light dark:bg-background-dark font-display text-text-main-light dark:text-text-main-dark min-h-screen flex flex-col antialiased">
       <header className="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-border-light dark:border-border-dark px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button className="flex items-center justify-center p-2 -ml-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+          <button
+            aria-label="Go back"
+            className="flex items-center justify-center p-2 -ml-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+          >
             <ArrowLeft className="h-5 w-5 text-text-main-light dark:text-text-main-dark" />
           </button>
           <h1 className="text-lg font-bold">Governance</h1>
         </div>
-        <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark">
+        <button
+          aria-label="Change environment"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark"
+        >
           <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
           <span className="text-xs font-semibold text-text-main-light dark:text-text-main-dark">
             Finance Prod

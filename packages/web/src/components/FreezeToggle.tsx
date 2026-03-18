@@ -144,7 +144,6 @@ const FreezeToggle: React.FC = () => {
               className="peer sr-only"
               id="freeze-toggle"
               type="checkbox"
-              role="switch"
               aria-label="Freeze system (enables read-only mode)"
               checked={frozen}
               onChange={handleToggleIntent}
