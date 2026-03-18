@@ -8,7 +8,7 @@
 
 import request from "supertest";
 import express from "express";
-import { approvalsRouter } from "../v1/approvals";
+import approvalsRouter from "../v1/approvals";
 import { query } from "../../db";
 import { authMiddleware, AuthRequest } from "../../middleware/auth";
 

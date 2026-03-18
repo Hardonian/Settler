@@ -254,6 +254,7 @@ export default function OperatorControlPlanePage() {
             placeholder="Filter tenant"
           />
           <select
+            title="Filter by run status"
             value={statusFilter}
             onChange={(e) => {
               setRunPage(1);
