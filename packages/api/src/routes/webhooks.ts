@@ -430,9 +430,9 @@ router.delete(
 
 // E2E Mock Endpoints for Ingestion Boundary Tests
 router.post("/queue", async (req: Request, res: Response) => {
-  const apiKey = req.headers["x-api-key"] as string;
+  const apiKey = req.headers["x-api-key"] as string | undefined;
   const tenantId = apiKey ? apiKey.replace("test-key-", "") : "unknown-tenant";
-  const idempotencyKey = req.headers["x-idempotency-key"] as string;
+  const idempotencyKey = req.headers["x-idempotency-key"] as string | undefined;
 
   try {
     await ingestionBoundary.enforceRateLimit(tenantId);
