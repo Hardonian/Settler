@@ -12,6 +12,7 @@ import { Permission } from "../../infrastructure/security/Permissions";
 import { handleRouteError } from "../../utils/error-handler";
 import { validateRequest } from "../../middleware/validation";
 import { query } from "../../db";
+import { invalidateTenantFreezeCache } from "../../utils/governance-cache";
 
 const router: Router = Router();
 
@@ -167,6 +168,9 @@ router.post(
       }
 
       const state = result[0];
+
+      // Invalidate cache immediately after state change
+      invalidateTenantFreezeCache(tenantId);
 
       // Log the governance action in audit trail
       await query(

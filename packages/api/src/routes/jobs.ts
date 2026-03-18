@@ -3,6 +3,7 @@ import { z } from "zod";
 import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
 import { requirePermission, requireResourceOwnership } from "../middleware/authorization";
+import { enforceFreezeState } from "../middleware/governance";
 import { Permission } from "../infrastructure/security/Permissions";
 import { query } from "../db";
 import { logInfo, logError } from "../utils/logger";
@@ -101,6 +102,7 @@ const paginationSchema = z.object({
 router.post(
   "/",
   requirePermission(Permission.JOBS_WRITE),
+  enforceFreezeState(),
   validateRequest(createJobSchema),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -245,6 +247,7 @@ router.get(
 router.post(
   "/:id/run",
   requirePermission(Permission.JOBS_WRITE),
+  enforceFreezeState(),
   validateRequest(getJobSchema),
   async (req: AuthRequest, res: Response) => {
     const { id } = req.params;
@@ -389,6 +392,7 @@ router.post(
 router.delete(
   "/:id",
   requirePermission(Permission.JOBS_DELETE),
+  enforceFreezeState(),
   validateRequest(getJobSchema),
   async (req: AuthRequest, res: Response) => {
     try {
