@@ -1,39 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Copy,
-  ExternalLink,
-  Filter,
-  Search,
-  TrendingUp,
-  X,
-  CheckCircle2,
-  AlertTriangle,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChevronLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useWorkspaceInvestigationDetail } from "@/hooks/use-workspace-investigation-detail";
-import { appLogger } from "@/lib/utils/logger";
 import { SkeletonCard } from "@/components/shared/loading-state";
 
 interface WorkspaceInvestigationDetailClientProps {
@@ -43,15 +16,8 @@ interface WorkspaceInvestigationDetailClientProps {
 export function WorkspaceInvestigationDetailClient({
   ingestionId,
 }: WorkspaceInvestigationDetailClientProps) {
-  const { investigation, filters, setFilters, isLoading, error, refresh } =
+  const { investigation, setFilters, isLoading, error, refresh } =
     useWorkspaceInvestigationDetail(ingestionId);
-
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setFilters((prev: any) => ({ ...prev, search: e.target.value }));
-  };
 
   if (isLoading) {
     return (

@@ -1,43 +1,15 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Copy,
-  ExternalLink,
-  Filter,
-  Search,
-  TrendingUp,
-  X,
-  CheckCircle2,
-  AlertTriangle,
-} from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChevronLeft, TrendingUp, CheckCircle2, AlertTriangle, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useWorkspaceInvestigation } from "@/hooks/use-workspace-investigation";
-import { appLogger } from "@/lib/utils/logger";
-import { ButtonLoading } from "@/components/shared/button-loading";
 import { SkeletonCard } from "@/components/shared/loading-state";
 
 export function WorkspaceInvestigationClient() {
-  const { investigation, filters, setFilters, isLoading, error, refresh } =
-    useWorkspaceInvestigation();
+  const { investigation, setFilters, isLoading, error, refresh } = useWorkspaceInvestigation();
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -45,10 +17,6 @@ export function WorkspaceInvestigationClient() {
     setSearchTerm(e.target.value);
     // In a real implementation, we would debounce and update filters
     setFilters((prev: any) => ({ ...prev, search: e.target.value }));
-  };
-
-  const handleFilterChange = (value: string) => {
-    setFilters((prev: any) => ({ ...prev, status: value === "all" ? undefined : value }));
   };
 
   if (isLoading) {
@@ -168,7 +136,7 @@ export function WorkspaceInvestigationClient() {
       </Card>
 
       {/* Tabs for different investigation views */}
-      <Tabs defaultValue="details" value="details" onValueChange={(v) => {}} className="w-full">
+      <Tabs defaultValue="details" value="details" onValueChange={() => {}} className="w-full">
         <TabsList className="grid w-full grid-cols-[80px_1fr]">
           <TabsTrigger value="details">Details</TabsTrigger>
           <TabsTrigger value="transactions">Transactions</TabsTrigger>

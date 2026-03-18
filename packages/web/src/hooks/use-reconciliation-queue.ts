@@ -6,7 +6,7 @@ export function useReconciliationQueue() {
     search: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, _setError] = useState<Error | null>(null);
 
   const queue = {
     totalRuns: 42,
@@ -52,6 +52,7 @@ export function useReconciliationQueue() {
     setFilters,
     isLoading,
     error,
+    _setError,
     refresh,
     startReconciliation,
   };

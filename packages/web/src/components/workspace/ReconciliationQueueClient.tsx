@@ -2,15 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Play, RotateCcw, Search, Filter, ChevronRight, Activity } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Play, RotateCcw, Search, ChevronRight } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -23,7 +16,7 @@ import { useReconciliationQueue } from "@/hooks/use-reconciliation-queue";
 import { SkeletonTableRow } from "@/components/shared/loading-state";
 
 export function ReconciliationQueueClient() {
-  const { queue, filters, setFilters, isLoading, error, refresh, startReconciliation } =
+  const { queue, setFilters, isLoading, error, refresh, startReconciliation } =
     useReconciliationQueue();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -37,7 +30,7 @@ export function ReconciliationQueueClient() {
     try {
       await startReconciliation();
       await refresh();
-    } catch (err) {
+    } catch (_err) {
       // Handle error
     }
   };

@@ -8,7 +8,18 @@ import { EmptyState } from "@/components/EmptyState";
 import { ErrorState } from "@/components/ErrorState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { safeFetch } from "@/lib/safe-fetch";
-import { RefreshCw, Play, CheckCircle2, XCircle, Clock, AlertCircle, Trash2, Edit2, Copy, Zap } from "lucide-react";
+import {
+  RefreshCw,
+  Play,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  AlertCircle,
+  Trash2,
+  Edit2,
+  Copy,
+  Zap,
+} from "lucide-react";
 import Link from "next/link";
 
 interface ExceptionDetail {
@@ -95,7 +106,11 @@ export default function ExceptionDetailPage() {
   };
 
   const handleIgnore = async () => {
-    if (window.confirm("Are you sure you want to ignore this exception? This action cannot be undone.")) {
+    if (
+      window.confirm(
+        "Are you sure you want to ignore this exception? This action cannot be undone."
+      )
+    ) {
       const result = await safeFetch(`/api/exceptions/${exceptionId}/ignore`, {
         method: "POST",
       });
@@ -183,7 +198,11 @@ export default function ExceptionDetailPage() {
   if (error && !exception) {
     return (
       <div className="p-6">
-        <ErrorState title="Failed to load exception" message={error} onRetry={loadExceptionDetail} />
+        <ErrorState
+          title="Failed to load exception"
+          message={error}
+          onRetry={loadExceptionDetail}
+        />
       </div>
     );
   }
@@ -209,11 +228,10 @@ export default function ExceptionDetailPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-            Exception Detail
-          </h1>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Exception Detail</h1>
           <p className="text-slate-600 dark:text-slate-400 mt-1">
-            Exception ID: <code className="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">{exception.id}</code>
+            Exception ID:{" "}
+            <code className="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">{exception.id}</code>
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -221,7 +239,10 @@ export default function ExceptionDetailPage() {
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </Button>
-          <Link href="/console/exceptions" className="text-sm text-slate-600 dark:text-slate-400 hover:underline">
+          <Link
+            href="/console/exceptions"
+            className="text-sm text-slate-600 dark:text-slate-400 hover:underline"
+          >
             ← Back to List
           </Link>
         </div>
@@ -254,14 +275,12 @@ export default function ExceptionDetailPage() {
               <div>
                 <h3 className="font-medium text-slate-900 dark:text-white">Type</h3>
                 <p className="text-slate-600 dark:text-slate-400">
-                  {exception.type.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}
+                  {exception.type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                 </p>
               </div>
               <div>
                 <h3 className="font-medium text-slate-900 dark:text-white">Description</h3>
-                <p className="text-slate-600 dark:text-slate-400">
-                  {exception.description}
-                </p>
+                <p className="text-slate-600 dark:text-slate-400">{exception.description}</p>
               </div>
               <div>
                 <h3 className="font-medium text-slate-900 dark:text-white">Detected</h3>
@@ -284,8 +303,10 @@ export default function ExceptionDetailPage() {
                     {exception.sourceTransactionId}
                     <Button
                       variant="ghost"
-                      size="xs"
-                      onClick={() => navigator.clipboard.writeText(exception.sourceTransactionId)}
+                      size="sm"
+                      onClick={() =>
+                        navigator.clipboard.writeText(exception.sourceTransactionId || "")
+                      }
                       title="Copy to clipboard"
                     >
                       <Copy className="w-3 h-3 ml-1" />
@@ -300,8 +321,10 @@ export default function ExceptionDetailPage() {
                     {exception.targetTransactionId}
                     <Button
                       variant="ghost"
-                      size="xs"
-                      onClick={() => navigator.clipboard.writeText(exception.targetTransactionId)}
+                      size="sm"
+                      onClick={() =>
+                        navigator.clipboard.writeText(exception.targetTransactionId || "")
+                      }
                       title="Copy to clipboard"
                     >
                       <Copy className="w-3 h-3 ml-1" />
@@ -312,17 +335,13 @@ export default function ExceptionDetailPage() {
               {exception.sourceSystem && (
                 <div>
                   <h3 className="font-medium text-slate-900 dark:text-white">Source System</h3>
-                  <p className="text-slate-600 dark:text-slate-400">
-                    {exception.sourceSystem}
-                  </p>
+                  <p className="text-slate-600 dark:text-slate-400">{exception.sourceSystem}</p>
                 </div>
               )}
               {exception.targetSystem && (
                 <div>
                   <h3 className="font-medium text-slate-900 dark:text-white">Target System</h3>
-                  <p className="text-slate-600 dark:text-slate-400">
-                    {exception.targetSystem}
-                  </p>
+                  <p className="text-slate-600 dark:text-slate-400">{exception.targetSystem}</p>
                 </div>
               )}
             </div>
@@ -331,53 +350,55 @@ export default function ExceptionDetailPage() {
       </Card>
 
       {/* Root Cause and Resolution */}
-      {exception.rootCause || exception.resolution || exception.suggestedActions?.length && (
-        <>
-          {exception.rootCause && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Root Cause Analysis</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-slate-600 dark:text-slate-400 whitespace-pre-line">
-                  {exception.rootCause}
-                </p>
-              </CardContent>
-            </Card>
-          )}
-          {exception.resolution && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Resolution</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-slate-600 dark:text-slate-400 whitespace-pre-line">
-                  {exception.resolution}
-                </p>
-                {exception.resolvedAt && (
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
-                    Resolved {new Date(exception.resolvedAt).toLocaleString()}
+      {exception.rootCause ||
+        exception.resolution ||
+        (exception.suggestedActions?.length && (
+          <>
+            {exception.rootCause && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Root Cause Analysis</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-600 dark:text-slate-400 whitespace-pre-line">
+                    {exception.rootCause}
                   </p>
-                )}
-              </CardContent>
-            </Card>
-          )}
-          {exception.suggestedActions?.length && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Suggested Actions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="list-disc list-inside space-y-2 text-slate-600 dark:text-slate-400">
-                  {exception.suggestedActions.map((action, index) => (
-                    <li key={index}>{action}</li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          )}
-        </>
-      )}
+                </CardContent>
+              </Card>
+            )}
+            {exception.resolution && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Resolution</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-600 dark:text-slate-400 whitespace-pre-line">
+                    {exception.resolution}
+                  </p>
+                  {exception.resolvedAt && (
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                      Resolved {new Date(exception.resolvedAt).toLocaleString()}
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+            {exception.suggestedActions?.length && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Suggested Actions</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="list-disc list-inside space-y-2 text-slate-600 dark:text-slate-400">
+                    {exception.suggestedActions.map((action, index) => (
+                      <li key={index}>{action}</li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            )}
+          </>
+        ))}
 
       {/* Playbook Applied */}
       {exception.playbookApplied && (
@@ -386,15 +407,13 @@ export default function ExceptionDetailPage() {
             <CardTitle>Applied Playbook</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-slate-600 dark:text-slate-400">
-              {exception.playbookApplied}
-            </p>
+            <p className="text-slate-600 dark:text-slate-400">{exception.playbookApplied}</p>
           </CardContent>
         </Card>
       )}
 
       {/* Action Buttons */}
-      {exception.status === "pending" || exception.status === "investigating" && (
+      {(exception.status === "pending" || exception.status === "investigating") && (
         <div className="flex flex-wrap gap-4">
           {exception.status === "pending" && (
             <>
@@ -439,13 +458,15 @@ export default function ExceptionDetailPage() {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-start gap-2">
-                        <span className="font-medium text-slate-900 dark:text-white">{entry.action}</span>
-                        <span className="text-xs text-slate-500 dark:text-slate-400">by {entry.user}</span>
+                        <span className="font-medium text-slate-900 dark:text-white">
+                          {entry.action}
+                        </span>
+                        <span className="text-xs text-slate-500 dark:text-slate-400">
+                          by {entry.user}
+                        </span>
                       </div>
                       {entry.details && (
-                        <p className="text-slate-600 dark:text-slate-400 mt-1">
-                          {entry.details}
-                        </p>
+                        <p className="text-slate-600 dark:text-slate-400 mt-1">{entry.details}</p>
                       )}
                     </div>
                   </div>

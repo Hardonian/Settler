@@ -5,6 +5,7 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { enforceFreezeState } from "../../middleware/governance";
 import { logError, logInfo } from "../../utils/logger";
 import {
   createApprovalRequest,
@@ -46,21 +47,15 @@ router.post("/requests", async (req: AuthRequest, res: Response) => {
       });
     }
 
-    const approvalId = await createApprovalRequest(
-      tenantId,
-      userId,
-      requestType,
-      requestDetails,
-      {
-        reconciliationRunId,
-        reconJobId,
-        reconResultId,
-        approverId,
-        approverRole,
-        expiresInHours,
-        comments,
-      }
-    );
+    const approvalId = await createApprovalRequest(tenantId, userId, requestType, requestDetails, {
+      reconciliationRunId,
+      reconJobId,
+      reconResultId,
+      approverId,
+      approverRole,
+      expiresInHours,
+      comments,
+    });
 
     logInfo("Approval request created", { approvalId, tenantId, userId, traceId: req.traceId });
 
@@ -85,13 +80,7 @@ router.post("/requests", async (req: AuthRequest, res: Response) => {
 router.get("/requests", async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
-    const {
-      status,
-      approverId,
-      requestedBy,
-      limit = 100,
-      offset = 0,
-    } = req.query;
+    const { status, approverId, requestedBy, limit = 100, offset = 0 } = req.query;
 
     const requests = await listApprovalRequests(tenantId, {
       status: status as ApprovalStatus | undefined,
@@ -165,76 +154,84 @@ router.get("/requests/:approvalId", async (req: AuthRequest, res: Response) => {
  * POST /api/v1/approvals/requests/:approvalId/approve
  * Approve a request
  */
-router.post("/requests/:approvalId/approve", async (req: AuthRequest, res: Response) => {
-  try {
-    const { approvalId } = req.params;
-    const tenantId = req.tenantId!;
-    const userId = req.userId!;
+router.post(
+  "/requests/:approvalId/approve",
+  enforceFreezeState(),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const { approvalId } = req.params;
+      const tenantId = req.tenantId!;
+      const userId = req.userId!;
 
-    if (!approvalId) {
-      return res.status(400).json({
-        error: "Bad Request",
-        message: "approvalId is required",
+      if (!approvalId) {
+        return res.status(400).json({
+          error: "Bad Request",
+          message: "approvalId is required",
+          traceId: req.traceId,
+        });
+      }
+
+      await approveRequest(tenantId, approvalId, userId);
+
+      logInfo("Approval request approved", { approvalId, tenantId, userId, traceId: req.traceId });
+
+      return res.status(200).json({
+        message: "Request approved",
+        traceId: req.traceId,
+      });
+    } catch (error) {
+      logError("Failed to approve request", error, { traceId: req.traceId });
+      const statusCode = (error as Error).message.includes("not found") ? 404 : 500;
+      return res.status(statusCode).json({
+        error: statusCode === 404 ? "Not Found" : "Internal Server Error",
+        message: (error as Error).message || "Failed to approve request",
         traceId: req.traceId,
       });
     }
-
-    await approveRequest(tenantId, approvalId, userId);
-
-    logInfo("Approval request approved", { approvalId, tenantId, userId, traceId: req.traceId });
-
-    return res.status(200).json({
-      message: "Request approved",
-      traceId: req.traceId,
-    });
-  } catch (error) {
-    logError("Failed to approve request", error, { traceId: req.traceId });
-    const statusCode = (error as Error).message.includes("not found") ? 404 : 500;
-    return res.status(statusCode).json({
-      error: statusCode === 404 ? "Not Found" : "Internal Server Error",
-      message: (error as Error).message || "Failed to approve request",
-      traceId: req.traceId,
-    });
   }
-});
+);
 
 /**
  * POST /api/v1/approvals/requests/:approvalId/reject
  * Reject a request
  */
-router.post("/requests/:approvalId/reject", async (req: AuthRequest, res: Response) => {
-  try {
-    const { approvalId } = req.params;
-    const { comments } = req.body;
-    const tenantId = req.tenantId!;
-    const userId = req.userId!;
+router.post(
+  "/requests/:approvalId/reject",
+  enforceFreezeState(),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const { approvalId } = req.params;
+      const { comments } = req.body;
+      const tenantId = req.tenantId!;
+      const userId = req.userId!;
 
-    if (!approvalId) {
-      return res.status(400).json({
-        error: "Bad Request",
-        message: "approvalId is required",
+      if (!approvalId) {
+        return res.status(400).json({
+          error: "Bad Request",
+          message: "approvalId is required",
+          traceId: req.traceId,
+        });
+      }
+
+      await rejectRequest(tenantId, approvalId, userId, comments);
+
+      logInfo("Approval request rejected", { approvalId, tenantId, userId, traceId: req.traceId });
+
+      return res.status(200).json({
+        message: "Request rejected",
+        traceId: req.traceId,
+      });
+    } catch (error) {
+      logError("Failed to reject request", error, { traceId: req.traceId });
+      const statusCode = (error as Error).message.includes("not found") ? 404 : 500;
+      return res.status(statusCode).json({
+        error: statusCode === 404 ? "Not Found" : "Internal Server Error",
+        message: (error as Error).message || "Failed to reject request",
         traceId: req.traceId,
       });
     }
-
-    await rejectRequest(tenantId, approvalId, userId, comments);
-
-    logInfo("Approval request rejected", { approvalId, tenantId, userId, traceId: req.traceId });
-
-    return res.status(200).json({
-      message: "Request rejected",
-      traceId: req.traceId,
-    });
-  } catch (error) {
-    logError("Failed to reject request", error, { traceId: req.traceId });
-    const statusCode = (error as Error).message.includes("not found") ? 404 : 500;
-    return res.status(statusCode).json({
-      error: statusCode === 404 ? "Not Found" : "Internal Server Error",
-      message: (error as Error).message || "Failed to reject request",
-      traceId: req.traceId,
-    });
   }
-});
+);
 
 /**
  * POST /api/v1/approvals/approvers

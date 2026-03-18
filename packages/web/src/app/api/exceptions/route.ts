@@ -126,7 +126,7 @@ export const GET = withSecurity(
         ]);
 
         // Transform to frontend format
-        const items = exceptions.map((ex) => {
+        const items = exceptions.map((ex: any) => {
           const status = ex.acknowledged ? "resolved" : "pending";
 
           return {

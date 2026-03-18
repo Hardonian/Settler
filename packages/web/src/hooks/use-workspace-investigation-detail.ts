@@ -6,7 +6,7 @@ export function useWorkspaceInvestigationDetail(ingestionId?: string) {
     search: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, _setError] = useState<Error | null>(null);
 
   const investigation = {
     id: ingestionId || "tx_123",
@@ -33,6 +33,7 @@ export function useWorkspaceInvestigationDetail(ingestionId?: string) {
     setFilters,
     isLoading,
     error,
+    _setError,
     refresh,
   };
 }

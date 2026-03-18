@@ -7,7 +7,7 @@ export function useBulkTriage() {
   });
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, _setError] = useState<Error | null>(null);
 
   const items = {
     selectedCount: 0,
@@ -50,6 +50,7 @@ export function useBulkTriage() {
     setSelectedAction,
     isLoading,
     error,
+    _setError,
     refresh,
     applyAction,
   };

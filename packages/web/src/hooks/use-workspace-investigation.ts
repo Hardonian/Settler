@@ -6,7 +6,7 @@ export function useWorkspaceInvestigation() {
     search: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, _setError] = useState<Error | null>(null);
 
   const investigation = {
     id: "123",
@@ -34,6 +34,7 @@ export function useWorkspaceInvestigation() {
     setFilters,
     isLoading,
     error,
+    _setError,
     refresh,
   };
 }
