@@ -1039,6 +1039,15 @@ model AuditLog {
   ipAddress         String?
   userAgent         String?   @db.Text
   metadata          Json      @default("{}")
+  
+  // Enhanced mutation traceability fields
+  traceId           String?   @db.Uuid // For distributed tracing correlation
+  requestId         String?   // Request ID for correlation
+  sessionId         String?   @db.Uuid // Session tracking
+  actorType         String?   // 'user', 'system', 'worker', 'scheduler', 'api_key'
+  actorId           String?   @db.Uuid // ID of the actor performing the action
+  reason            String?   @maxLength(500) // Reason for the action (for governance)
+  
   createdAt         DateTime  @default(now())
 
   @@index([userId])
@@ -1048,6 +1057,8 @@ model AuditLog {
   @@index([action])
   @@index([createdAt(sort: Desc)])
   @@index([userId, createdAt(sort: Desc)])
+  @@index([actorType, action])
+  @@index([tenantId, action, createdAt(sort: Desc)])
   @@map("audit_logs")
 }
 

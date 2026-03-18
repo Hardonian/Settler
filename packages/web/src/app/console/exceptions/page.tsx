@@ -75,10 +75,12 @@ export default function ExceptionsPage() {
       }
     });
 
-    const result = await safeFetch<Exception[]>(`/api/exceptions?${queryParams.toString()}`);
+    const result = await safeFetch<{ data: Exception[]; pagination: unknown }>(
+      `/api/exceptions?${queryParams.toString()}`
+    );
 
     if (result.success && result.data) {
-      setExceptions(result.data);
+      setExceptions(result.data.data);
       setError(null);
     } else {
       setError(result.error?.message || "Failed to load exceptions");

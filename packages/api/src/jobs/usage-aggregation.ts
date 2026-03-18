@@ -7,6 +7,7 @@
 
 import { supabase } from "../infrastructure/supabase/client";
 import { logInfo, logError } from "../utils/logger";
+import { checkTenantFrozen } from "../middleware/governance";
 
 /**
  * Aggregate usage events for a date range
@@ -60,7 +61,7 @@ export async function syncUsageToStripe(
     // Get all billing accounts with active subscriptions
     const { data: billingAccounts, error: accountsError } = await supabase
       .from("billing_accounts")
-      .select("id, stripe_customer_id")
+      .select("id, tenant_id, stripe_customer_id")
       .eq("status", "active")
       .not("stripe_customer_id", "is", null);
 
@@ -74,11 +75,25 @@ export async function syncUsageToStripe(
       return;
     }
 
-    // Call edge function for each account
+    // Call edge function for each account (respecting freeze state)
     const dateStr = date.toISOString().split("T")[0];
     let syncedCount = 0;
+    let skippedCount = 0;
 
     for (const account of billingAccounts) {
+      // Check governance freeze state before syncing
+      if (account.tenant_id) {
+        const freezeState = await checkTenantFrozen(account.tenant_id);
+        if (freezeState.frozen) {
+          logInfo("Skipping Stripe sync for frozen tenant", {
+            tenantId: account.tenant_id,
+            billingAccountId: account.id,
+          });
+          skippedCount++;
+          continue;
+        }
+      }
+
       try {
         const response = await fetch(
           `${process.env.SUPABASE_URL}/functions/v1/sync-usage-to-stripe`,
@@ -110,6 +125,7 @@ export async function syncUsageToStripe(
     logInfo("Stripe usage sync completed", {
       totalAccounts: billingAccounts.length,
       syncedCount,
+      skippedCount,
       date: dateStr,
     });
   } catch (error) {

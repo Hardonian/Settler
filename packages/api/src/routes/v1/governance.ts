@@ -217,9 +217,11 @@ export async function isTenantFrozen(tenantId: string): Promise<boolean> {
       [tenantId]
     );
     return result.length > 0 && result[0] ? result[0].frozen : false;
-  } catch {
-    // Default to unfrozen on error to avoid breaking legitimate operations
-    return false;
+  } catch (error) {
+    // On any error, default to FROZEN. This is a "fail-closed" security posture.
+    // We cannot risk allowing writes if the governance state is indeterminable.
+    console.error(`Governance check failed for tenant ${tenantId}. Defaulting to frozen.`, error);
+    return true;
   }
 }
 

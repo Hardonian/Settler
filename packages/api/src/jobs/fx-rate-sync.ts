@@ -6,6 +6,7 @@
 import { logInfo, logError } from "../utils/logger";
 import { query } from "../db";
 import { FXService } from "../application/currency/FXService";
+import { checkTenantFrozen } from "../middleware/governance";
 
 const fxService = new FXService();
 
@@ -31,8 +32,17 @@ export async function syncFXRatesJob(): Promise<void> {
 
     let syncedCount = 0;
     let errorCount = 0;
+    let skippedCount = 0;
 
     for (const tenant of tenants) {
+      // Check governance freeze state before syncing FX rates
+      const freezeState = await checkTenantFrozen(tenant.id);
+      if (freezeState.frozen) {
+        logInfo("Skipping FX rate sync for frozen tenant", { tenantId: tenant.id });
+        skippedCount++;
+        continue;
+      }
+
       try {
         const baseCurrency = tenant.base_currency || "USD";
         const count = await fxService.syncFXRates(tenant.id, baseCurrency);
@@ -57,6 +67,7 @@ export async function syncFXRatesJob(): Promise<void> {
     logInfo("FX rate sync job completed", {
       totalTenants: tenants.length,
       syncedCount,
+      skippedCount,
       errorCount,
     });
   } catch (error) {

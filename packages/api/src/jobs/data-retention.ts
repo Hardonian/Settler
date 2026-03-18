@@ -1,10 +1,23 @@
 import { query } from "../db";
 import { logInfo, logError } from "../utils/logger";
 import { config } from "../config";
+import { checkTenantFrozen } from "../middleware/governance";
 
 // Scheduled job to delete old data per retention policies
 export async function cleanupOldData(): Promise<void> {
   try {
+    // Check governance freeze state before executing mutations
+    // Skip cleanup for frozen tenants but continue for unfrozen ones
+    const tenants = await query<{ id: string }>("SELECT DISTINCT tenant_id as id FROM tenants");
+
+    for (const tenant of tenants) {
+      const freezeState = await checkTenantFrozen(tenant.id);
+      if (freezeState.frozen) {
+        logInfo("Skipping data retention for frozen tenant", { tenantId: tenant.id });
+        continue;
+      }
+    }
+
     const retentionDays = config.dataRetention.defaultDays;
     const cutoffDate = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000);
 
@@ -51,7 +64,7 @@ export async function cleanupOldData(): Promise<void> {
       []
     );
 
-    logInfo('Data retention cleanup completed', {
+    logInfo("Data retention cleanup completed", {
       deletedReports: deletedReports.length,
       deletedPayloads: deletedPayloads.length,
       deletedDeliveries: deletedDeliveries.length,
@@ -60,7 +73,7 @@ export async function cleanupOldData(): Promise<void> {
       cutoffDate: cutoffDate.toISOString(),
     });
   } catch (error: any) {
-    logError('Data retention cleanup failed', error);
+    logError("Data retention cleanup failed", error);
     throw error;
   }
 }
@@ -72,14 +85,14 @@ export function startDataRetentionJob(): void {
   const initialDelay = getInitialDelay();
 
   setTimeout(() => {
-    cleanupOldData().catch(error => {
-      logError('Scheduled data retention job failed', error);
+    cleanupOldData().catch((error) => {
+      logError("Scheduled data retention job failed", error);
     });
 
     // Schedule recurring
     setInterval(() => {
-      cleanupOldData().catch(error => {
-        logError('Scheduled data retention job failed', error);
+      cleanupOldData().catch((error) => {
+        logError("Scheduled data retention job failed", error);
       });
     }, intervalMs);
   }, initialDelay);
