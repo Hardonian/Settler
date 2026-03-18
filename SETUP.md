@@ -6,7 +6,7 @@ This document defines the single source of truth for setting up Settler for loca
 
 ### 1. Prerequisites
 Ensure these are installed before beginning:
-- **Node.js:** Version `22.0` or higher (use nvm or similar version manager)
+- **Node.js:** Version `24.x` (24.12.0 recommended). Use nvm to install.
 - **pnpm:** Version `10.13` or higher (corepack enabled)
 - **Docker:** Required for running local instances of TigerBeetle and Postgres
 - **Doppler (Recommended):** For secret management (optional but recommended)
@@ -40,8 +40,9 @@ pnpm tb:start
 ```
 
 This starts:
-- **PostgreSQL** on port `5432`
-- **TigerBeetle** on its default port (`4300`)
+- **PostgreSQL** on port `5432` - Main relational database
+- **TigerBeetle** on port `4300` - Financial ledger for double-entry accounting
+- **Redis** on port `6379` - Caching and queue backend (optional for basic dev)
 
 Verify services are healthy:
 - `pnpm tb:status` - Check ledger health
