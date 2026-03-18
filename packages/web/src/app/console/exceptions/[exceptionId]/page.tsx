@@ -97,7 +97,7 @@ export default function ExceptionDetailPage() {
   };
 
   const handleResolve = async () => {
-    const result = await safeFetch(`/api/exceptions/${exceptionId}/resolve`, {
+    const result = await safeFetch(`/api/exceptions/${exceptionId}?action=resolve`, {
       method: "POST",
     });
 
@@ -114,7 +114,7 @@ export default function ExceptionDetailPage() {
         "Are you sure you want to ignore this exception? This action cannot be undone."
       )
     ) {
-      const result = await safeFetch(`/api/exceptions/${exceptionId}/ignore`, {
+      const result = await safeFetch(`/api/exceptions/${exceptionId}?action=ignore`, {
         method: "POST",
       });
 
@@ -127,7 +127,7 @@ export default function ExceptionDetailPage() {
   };
 
   const handleRetry = async () => {
-    const result = await safeFetch(`/api/exceptions/${exceptionId}/retry`, {
+    const result = await safeFetch(`/api/exceptions/${exceptionId}?action=retry`, {
       method: "POST",
     });
 
@@ -139,7 +139,7 @@ export default function ExceptionDetailPage() {
   };
 
   const handleReopen = async () => {
-    const result = await safeFetch(`/api/exceptions/${exceptionId}/reopen`, {
+    const result = await safeFetch(`/api/exceptions/${exceptionId}?action=reopen`, {
       method: "POST",
     });
 

@@ -1,4 +1,5 @@
 # UI Credibility Audit — Settler
+
 **Audit date:** 2026-03-14
 **Auditor mindset:** Senior staff engineer / skeptical open-source evaluator / Stripe-level product designer / investor diligence
 **Branch audited:** `claude/ui-credibility-audit-greOi` (post–frontend-polish-pass)
@@ -9,7 +10,7 @@
 
 **Verdict: Structurally intentional, operationally hollow.**
 
-Opening the app cold produces a dashboard that is a clean, well-organized link list — and nothing else. There are no live metrics, no system state, no signals that anything is actually running. For an infrastructure product that sells "deterministic reconciliation," the first screen communicates nothing about the system's current state. A skeptical engineer opens this and thinks: *"This is a navigation page, not a control plane."*
+Opening the app cold produces a dashboard that is a clean, well-organized link list — and nothing else. There are no live metrics, no system state, no signals that anything is actually running. For an infrastructure product that sells "deterministic reconciliation," the first screen communicates nothing about the system's current state. A skeptical engineer opens this and thinks: _"This is a navigation page, not a control plane."_
 
 **Specific issues:**
 
@@ -29,13 +30,13 @@ The app layout and most core pages use clean, consistent Tailwind: `bg-white`, `
 
 **Token system fragmentation — four competing naming conventions found in production pages:**
 
-| Location | Token style used |
-|---|---|
-| `app/page.tsx` (main dashboard) | `bg-white border-slate-200 text-blue-600` (raw Tailwind) |
-| `app/layout.tsx` (sidebar) | `bg-background-light dark:bg-background border-border` (custom semantic) |
-| `alerts/page.tsx` | `bg-background-light dark:bg-background-dark text-neutral-dark` (different custom) |
-| `stitch-import/ControlPlaneOverview.tsx` | `bg-surface-card border-border-subtle shadow-card` (third custom vocabulary) |
-| `stitch-import/PolicyViewer.tsx` | `bg-surface-light dark:bg-surface-dark border-border-light dark:border-border-dark text-text-main-light` (fourth) |
+| Location                                 | Token style used                                                                                                  |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `app/page.tsx` (main dashboard)          | `bg-white border-slate-200 text-blue-600` (raw Tailwind)                                                          |
+| `app/layout.tsx` (sidebar)               | `bg-background-light dark:bg-background border-border` (custom semantic)                                          |
+| `alerts/page.tsx`                        | `bg-background-light dark:bg-background-dark text-neutral-dark` (different custom)                                |
+| `stitch-import/ControlPlaneOverview.tsx` | `bg-surface-card border-border-subtle shadow-card` (third custom vocabulary)                                      |
+| `stitch-import/PolicyViewer.tsx`         | `bg-surface-light dark:bg-surface-dark border-border-light dark:border-border-dark text-text-main-light` (fourth) |
 
 A staff engineer reading this code cannot determine which token set is authoritative. The design system exists (`/design-system/css-tokens.css`) but pages don't use it uniformly.
 
@@ -105,27 +106,31 @@ No page with hardcoded data contains any "Demo" or "Sample data" label. A first-
 
 ### Buttons that do nothing
 
-| Button | Location | Effect |
-|---|---|---|
-| `Ack` | alerts/page.tsx:123 | None |
-| `Escalate` | alerts/page.tsx:189 | None |
-| `Resolve` | alerts/page.tsx:191 | None |
-| `BellOff` (silence) | alerts/page.tsx:121 | None |
-| `Abort` | ControlPlaneOverview.tsx:196 | None |
-| `Details` | ControlPlaneOverview.tsx:201 | None |
-| `View Log` | ControlPlaneOverview.tsx:140 | None |
-| Copy trace IDs | ControlPlaneOverview.tsx:188 | None |
-| `ArrowLeft` back | SecurityOverview.tsx:23 | None — no href or handler |
-| `Whitepaper` download | SecurityOverview.tsx:59 | None |
-| `Filter` icon | PolicyViewer.tsx:14 | None |
-| `+ Add Policy` | PolicyViewer.tsx:15 | None |
+| Button                | Location                     | Effect                    |
+| --------------------- | ---------------------------- | ------------------------- |
+| `Ack`                 | alerts/page.tsx:123          | None                      |
+| `Escalate`            | alerts/page.tsx:189          | None                      |
+| `Resolve`             | alerts/page.tsx:191          | None                      |
+| `BellOff` (silence)   | alerts/page.tsx:121          | None                      |
+| `Abort`               | ControlPlaneOverview.tsx:196 | None                      |
+| `Details`             | ControlPlaneOverview.tsx:201 | None                      |
+| `View Log`            | ControlPlaneOverview.tsx:140 | None                      |
+| Copy trace IDs        | ControlPlaneOverview.tsx:188 | None                      |
+| `ArrowLeft` back      | SecurityOverview.tsx:23      | None — no href or handler |
+| `Whitepaper` download | SecurityOverview.tsx:59      | None                      |
+| `Filter` icon         | PolicyViewer.tsx:14          | None                      |
+| `+ Add Policy`        | PolicyViewer.tsx:15          | None                      |
 
 ### "All cylinders firing: false" exposed to users
 
 `capability-status/page.tsx` line 75:
+
 ```tsx
-<p className="text-sm text-slate-600">All cylinders firing: {String(health?.allCylindersFiring ?? false)}</p>
+<p className="text-sm text-slate-600">
+  All cylinders firing: {String(health?.allCylindersFiring ?? false)}
+</p>
 ```
+
 This is an internal API field name rendered literally in the UI. An investor or customer sees "All cylinders firing: false." It reads as a system failure even when it's just a null/default value. This is a trust leak and a developer-speak exposure.
 
 ### Raw `created_at` in the Runs table
@@ -135,11 +140,13 @@ This is an internal API field name rendered literally in the UI. An investor or 
 ### Hardcoded timestamps that are over a year stale
 
 `IntegrationList.tsx` lines 104-118 show activity logs timestamped:
+
 ```
 2023-10-24 14:32:01
 2023-10-24 12:15:44
 2023-10-23 09:10:12
 ```
+
 These timestamps are from October 2023. In March 2026, they are 29 months old. Any evaluator who notices this immediately understands the component is not connected to anything real.
 
 ### "View Full Audit Log" links to `#`
@@ -153,9 +160,11 @@ These timestamps are from October 2023. In March 2026, they are 29 months old. A
 ### Compliance logos are grey rectangles
 
 `SecurityOverview.tsx` lines 213-222:
+
 ```tsx
 <div className="h-6 w-full bg-slate-300 dark:bg-slate-600 rounded"></div>
 ```
+
 Three grey rectangles labeled "Standards we meet" stand in place of SOC 2, GDPR, HIPAA, and ISO 27001 logos. The code comment says `/* Using simple SVGs for logos representation */`. These are bare placeholder divs — not SVGs, not images, not even placeholder text.
 
 ### External Google user content URL hardcoded in SecurityOverview
@@ -176,12 +185,12 @@ Three grey rectangles labeled "Standards we meet" stand in place of SOC 2, GDPR,
 
 ### Page titles do not match navigation labels
 
-| Navigation label | Page `<h1>` |
-|---|---|
-| Policy Lab | Policies |
-| Runtime Event Signals | Runtime Event Signals |
-| System Telemetry | System Telemetry |
-| Evidence Query Surface | Evidence Query Surface |
+| Navigation label          | Page `<h1>`               |
+| ------------------------- | ------------------------- |
+| Policy Lab                | Policies                  |
+| Runtime Event Signals     | Runtime Event Signals     |
+| System Telemetry          | System Telemetry          |
+| Evidence Query Surface    | Evidence Query Surface    |
 | Tenant Isolation Controls | Tenant Isolation Controls |
 
 "Policy Lab" → page says "Policies." No other mismatch is as jarring, but the "Policy Lab" vs "Policies" inconsistency breaks the mental model. The nav promises a lab environment; the page delivers a viewer.
@@ -231,13 +240,13 @@ Not a hard requirement, but for an app with deeply nested surfaces (runs → run
 
 ### Timestamp consistency: none
 
-| Surface | Format | Source |
-|---|---|---|
-| Alerts page | "2m ago", "15m ago", "1h ago" | Hardcoded relative strings |
-| IntegrationList | "2023-10-24 14:32:01" | Hardcoded absolute ISO |
-| Runs table | Raw ISO from API | Unformatted |
-| Capability Status | Raw `timestamp` field from API | Unformatted |
-| ControlPlaneOverview | "2m 14s", "0m 45s", "--:--" | Hardcoded |
+| Surface              | Format                         | Source                     |
+| -------------------- | ------------------------------ | -------------------------- |
+| Alerts page          | "2m ago", "15m ago", "1h ago"  | Hardcoded relative strings |
+| IntegrationList      | "2023-10-24 14:32:01"          | Hardcoded absolute ISO     |
+| Runs table           | Raw ISO from API               | Unformatted                |
+| Capability Status    | Raw `timestamp` field from API | Unformatted                |
+| ControlPlaneOverview | "2m 14s", "0m 45s", "--:--"    | Hardcoded                  |
 
 There is no shared timestamp formatting utility applied consistently across the product.
 
@@ -265,7 +274,7 @@ No shared `StatusBadge` component normalizes these. Each surface invents its own
 
 All pages that call real APIs use the pattern `if (!res.ok) return []`. Users see an empty table or no content with no explanation of whether the data is loading, failed, unauthorized, or genuinely empty. There is no visual distinction between "no runs exist" and "the API returned 500."
 
-The empty state in the runs table (line 36-39) says: *"No runs yet. Start a reconciliation workflow to populate this list."* — this text appears identically whether the system has zero runs or whether the API call failed silently.
+The empty state in the runs table (line 36-39) says: _"No runs yet. Start a reconciliation workflow to populate this list."_ — this text appears identically whether the system has zero runs or whether the API call failed silently.
 
 ---
 
@@ -347,6 +356,6 @@ The foundation infrastructure (component library, design tokens, routing archite
 
 > **"This still feels like a startup prototype."**
 
-A skeptical engineer opening this product would say: *"The chrome is good. The component library is solid. But every surface that's supposed to show me live operational data is fake. The dashboard shows me links, not state. The alerts page has hardcoded timestamps and non-functional buttons. The security audit page is a mobile marketing screen. I can't evaluate this product from this UI because this UI isn't connected to the product."*
+A skeptical engineer opening this product would say: _"The chrome is good. The component library is solid. But every surface that's supposed to show me live operational data is fake. The dashboard shows me links, not state. The alerts page has hardcoded timestamps and non-functional buttons. The security audit page is a mobile marketing screen. I can't evaluate this product from this UI because this UI isn't connected to the product."_
 
 The path to "This is real software" requires one thing above all else: replace the hardcoded content in `alerts/page.tsx`, `ControlPlaneOverview.tsx`, `SecurityOverview.tsx`, `PolicyViewer.tsx`, and `IntegrationList.tsx` with either real API-connected data or an explicit, clearly labeled demo mode. The design foundation to support this already exists. The data layer does not.

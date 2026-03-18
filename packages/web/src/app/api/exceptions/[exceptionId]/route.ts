@@ -2,6 +2,7 @@
  * Exception Detail API Route (Workspace-scoped)
  *
  * GET /api/exceptions/[exceptionId] - Get a single exception by ID
+ * POST /api/exceptions/[exceptionId] - Handle exception actions via query param (?action=resolve|ignore|retry|reopen)
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -19,6 +20,16 @@ export const runtime = "nodejs";
 // Route params schema
 const paramsSchema = z.object({
   exceptionId: z.string().uuid("Invalid exception ID format"),
+});
+
+// Action query param schema
+const actionQuerySchema = z.object({
+  action: z.enum(["resolve", "ignore", "retry", "reopen"]),
+});
+
+// Request body schema for exception actions
+const ExceptionActionSchema = z.object({
+  notes: z.string().optional(),
 });
 
 /**
@@ -142,3 +153,283 @@ export const GET = withSecurity(
   ),
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
 );
+
+/**
+ * POST /api/exceptions/[exceptionId] - Handle exception actions
+ * Accepts action via query param: ?action=resolve|ignore|retry|reopen
+ */
+export const POST = withSecurity(
+  withUniversalBillingGate(
+    async function POST(
+      request: NextRequest,
+      { params }: { params: Promise<{ exceptionId: string }> }
+    ) {
+      const traceId = await getTraceId(request);
+
+      try {
+        // Validate route params
+        const parsedParams = paramsSchema.safeParse(await params);
+        if (!parsedParams.success) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: "Invalid exception ID",
+              details: parsedParams.error.issues,
+              trace_id: traceId,
+            },
+            { status: 400 }
+          );
+        }
+
+        const { exceptionId } = parsedParams.data;
+
+        // Get action from query param
+        const action = request.nextUrl.searchParams.get("action");
+        const parsedAction = actionQuerySchema.safeParse({ action });
+        if (!parsedAction.success) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: "Invalid action. Use ?action=resolve|ignore|retry|reopen",
+              trace_id: traceId,
+            },
+            { status: 400 }
+          );
+        }
+
+        const actionName = parsedAction.data.action;
+
+        // Authenticate and get workspace context
+        const auth = await requireAuth(request);
+        const tenantId = auth.tenantId;
+        const userId = auth.userId;
+
+        if (!tenantId) {
+          return NextResponse.json(
+            { success: false, error: "No workspace found", trace_id: traceId },
+            { status: 401 }
+          );
+        }
+
+        if (!userId) {
+          return NextResponse.json(
+            { success: false, error: "No user found", trace_id: traceId },
+            { status: 401 }
+          );
+        }
+
+        // Parse optional notes from body
+        let notes: string | undefined;
+        try {
+          const body = await request.json();
+          const parsed = ExceptionActionSchema.safeParse(body);
+          if (parsed.success) {
+            notes = parsed.data.notes;
+          }
+        } catch {
+          // Ignore parse errors for body - notes are optional
+        }
+
+        // Execute the appropriate action
+        let result: { success: boolean; error?: string };
+
+        switch (actionName) {
+          case "resolve":
+            result = await handleResolve(exceptionId, tenantId, userId, notes);
+            break;
+          case "ignore":
+            result = await handleIgnore(exceptionId, tenantId, userId, notes);
+            break;
+          case "retry":
+            result = await handleRetry(exceptionId, tenantId, userId, notes);
+            break;
+          case "reopen":
+            result = await handleReopen(exceptionId, tenantId, userId, notes);
+            break;
+          default:
+            result = { success: false, error: "Unknown action" };
+        }
+
+        if (!result.success) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: result.error || `Failed to ${actionName} exception`,
+              trace_id: traceId,
+            },
+            { status: 200 }
+          );
+        }
+
+        appLogger.info(`[Exception API] Exception ${actionName}ed`, {
+          exceptionId,
+          tenantId,
+          userId,
+          action: actionName,
+        });
+
+        return NextResponse.json({
+          success: true,
+          message: `Exception ${actionName}ed successfully`,
+          trace_id: traceId,
+        });
+      } catch (error) {
+        appLogger.error("[Exception API] Error performing exception action", error);
+
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Failed to perform exception action",
+            message: "Please try again later or contact support if the issue persists",
+            trace_id: traceId,
+          },
+          { status: 200 }
+        );
+      }
+    },
+    { feature: "POST Exception Action" }
+  ),
+  { rateLimit: { windowMs: 60000, maxRequests: 50 }, requireAuth: true }
+);
+
+// Action handlers
+async function handleResolve(
+  exceptionId: string,
+  tenantId: string,
+  userId: string,
+  notes?: string
+): Promise<{ success: boolean; error?: string }> {
+  const exception = await prisma.driftEvent.findFirst({
+    where: { id: exceptionId, tenantId },
+  });
+
+  if (!exception) {
+    return { success: false, error: "Exception not found" };
+  }
+
+  await prisma.driftEvent.update({
+    where: { id: exceptionId },
+    data: {
+      acknowledged: true,
+      acknowledgedBy: userId,
+      acknowledgedAt: new Date(),
+      metadata: {
+        ...((exception.metadata as Record<string, unknown>) || {}),
+        resolution: {
+          status: "resolved",
+          resolvedBy: userId,
+          resolvedAt: new Date().toISOString(),
+          notes,
+        },
+      },
+    },
+  });
+
+  return { success: true };
+}
+
+async function handleIgnore(
+  exceptionId: string,
+  tenantId: string,
+  userId: string,
+  notes?: string
+): Promise<{ success: boolean; error?: string }> {
+  const exception = await prisma.driftEvent.findFirst({
+    where: { id: exceptionId, tenantId },
+  });
+
+  if (!exception) {
+    return { success: false, error: "Exception not found" };
+  }
+
+  await prisma.driftEvent.update({
+    where: { id: exceptionId },
+    data: {
+      acknowledged: true,
+      acknowledgedBy: userId,
+      acknowledgedAt: new Date(),
+      metadata: {
+        ...((exception.metadata as Record<string, unknown>) || {}),
+        resolution: {
+          status: "ignored",
+          ignoredBy: userId,
+          ignoredAt: new Date().toISOString(),
+          notes,
+        },
+      },
+    },
+  });
+
+  return { success: true };
+}
+
+async function handleRetry(
+  exceptionId: string,
+  tenantId: string,
+  userId: string,
+  notes?: string
+): Promise<{ success: boolean; error?: string }> {
+  const exception = await prisma.driftEvent.findFirst({
+    where: { id: exceptionId, tenantId },
+  });
+
+  if (!exception) {
+    return { success: false, error: "Exception not found" };
+  }
+
+  // Reset acknowledgment state for retry
+  await prisma.driftEvent.update({
+    where: { id: exceptionId },
+    data: {
+      acknowledged: false,
+      acknowledgedBy: null,
+      acknowledgedAt: null,
+      metadata: {
+        ...((exception.metadata as Record<string, unknown>) || {}),
+        retry: {
+          retriedBy: userId,
+          retriedAt: new Date().toISOString(),
+          notes,
+          previousAcknowledged: exception.acknowledged,
+        },
+      },
+    },
+  });
+
+  return { success: true };
+}
+
+async function handleReopen(
+  exceptionId: string,
+  tenantId: string,
+  userId: string,
+  notes?: string
+): Promise<{ success: boolean; error?: string }> {
+  const exception = await prisma.driftEvent.findFirst({
+    where: { id: exceptionId, tenantId },
+  });
+
+  if (!exception) {
+    return { success: false, error: "Exception not found" };
+  }
+
+  // Reopen the exception - reset acknowledgment
+  await prisma.driftEvent.update({
+    where: { id: exceptionId },
+    data: {
+      acknowledged: false,
+      acknowledgedBy: null,
+      acknowledgedAt: null,
+      metadata: {
+        ...((exception.metadata as Record<string, unknown>) || {}),
+        reopen: {
+          reopenedBy: userId,
+          reopenedAt: new Date().toISOString(),
+          notes,
+        },
+      },
+    },
+  });
+
+  return { success: true };
+}

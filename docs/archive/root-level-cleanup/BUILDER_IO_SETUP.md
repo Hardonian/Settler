@@ -40,6 +40,7 @@ NEXT_PUBLIC_BUILDER_PREVIEW_URL=http://localhost:3000
 ```
 
 **Important**:
+
 - `NEXT_PUBLIC_BUILDER_API_KEY` - Used by client-side components
 - `BUILDER_API_KEY` - Used by server-side components
 - `BUILDER_WEBHOOK_SECRET` - Used to verify webhooks (optional but recommended)
@@ -133,6 +134,7 @@ The following Settler components are registered and available in Builder.io visu
 ### Local Development Workflow
 
 1. **Start Dev Server**:
+
    ```bash
    cd packages/web
    npm run dev
@@ -194,6 +196,7 @@ NEXT_PUBLIC_BUILDER_PREVIEW_URL=url     # Dev preview URL
 ### 2. SEO Optimization
 
 Always fill in custom fields:
+
 - **Title**: Concise, keyword-rich (50-60 characters)
 - **Description**: Compelling summary (150-160 characters)
 - **Keywords**: Relevant keywords (comma-separated)
@@ -218,6 +221,7 @@ Always fill in custom fields:
 **Issue**: Page shows "Content Not Found"
 
 **Solutions**:
+
 1. Verify API key is correct in `.env.local`
 2. Check page URL matches Builder.io model URL
 3. Ensure page is published (not draft)
@@ -228,6 +232,7 @@ Always fill in custom fields:
 **Issue**: Custom components don't show in Builder.io
 
 **Solutions**:
+
 1. Verify `component-registry.ts` is imported
 2. Check component registration code
 3. Clear Builder.io cache (refresh editor)
@@ -238,6 +243,7 @@ Always fill in custom fields:
 **Issue**: Live preview not updating
 
 **Solutions**:
+
 1. Verify `NEXT_PUBLIC_BUILDER_PREVIEW_URL` is correct
 2. Ensure dev server is running
 3. Check CORS settings in Builder.io
@@ -248,6 +254,7 @@ Always fill in custom fields:
 **Issue**: Pages not revalidating on publish
 
 **Solutions**:
+
 1. Verify webhook URL is accessible
 2. Check `BUILDER_WEBHOOK_SECRET` matches Builder.io
 3. Review webhook logs in Builder.io dashboard

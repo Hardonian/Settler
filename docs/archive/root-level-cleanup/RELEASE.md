@@ -10,6 +10,7 @@ Settler Console v1.0.0 represents the first official release of the enhanced Dev
 ## What's Included
 
 ### Core Features
+
 - ✅ API call logging system with PII sanitization
 - ✅ Tenant observability dashboard (super admin)
 - ✅ Server-side authentication and subscription gating
@@ -20,12 +21,14 @@ Settler Console v1.0.0 represents the first official release of the enhanced Dev
 - ✅ Enhanced RLS policies
 
 ### Developer Tools
+
 - API logs viewer with filtering and statistics
 - CSV export functionality
 - Real-time log viewing
 - Usage analytics
 
 ### Super Admin Tools
+
 - Multi-tenant dashboard
 - Aggregate metrics
 - Individual tenant health monitoring
@@ -34,12 +37,14 @@ Settler Console v1.0.0 represents the first official release of the enhanced Dev
 ## Technical Highlights
 
 ### Database
+
 - New `api_call_logs` table with 16 columns
 - 12 optimized indexes for performance
 - 4 RLS policies for security
 - Automated log retention (90 days)
 
 ### Security
+
 - Server-side auth enforcement
 - Subscription-based access control
 - Automatic PII sanitization
@@ -47,6 +52,7 @@ Settler Console v1.0.0 represents the first official release of the enhanced Dev
 - Tenant isolation via RLS
 
 ### Performance
+
 - Response caching with TTLs
 - Database query optimization
 - Efficient pagination
@@ -57,17 +63,20 @@ Settler Console v1.0.0 represents the first official release of the enhanced Dev
 ### For New Installations
 
 1. **Install Dependencies**:
+
    ```bash
    npm install
    ```
 
 2. **Run Migrations**:
+
    ```bash
    export DATABASE_URL="your-connection-string"
    npx tsx scripts/run-migrations-remote.ts
    ```
 
 3. **Configure Super Admin** (optional):
+
    ```bash
    export DATABASE_URL="your-connection-string"
    export USER_EMAIL="admin@settler.dev"
@@ -117,6 +126,7 @@ None - This is a feature release with backward compatibility.
 ## Acknowledgments
 
 Built with:
+
 - Next.js App Router
 - Supabase
 - TypeScript
