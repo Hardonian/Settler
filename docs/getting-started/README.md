@@ -8,7 +8,7 @@ For the fastest path to a working screen, follow the [Canonical Install/Run Orde
 
 ## 1. Prerequisites
 
-- **Node.js:** Version `22.0` or higher. We recommend using a version manager like `nvm`.
+- **Node.js:** Version `24.x` (24.12.0 recommended). We recommend using a version manager like `nvm`.
 - **pnpm:** Version `10.13` or higher.
 - **Docker:** Required for running local instances of TigerBeetle and Postgres.
 - **Doppler (Recommended):** For secret management.
