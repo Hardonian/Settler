@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +9,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { ErrorState } from "@/components/ErrorState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { safeFetch } from "@/lib/safe-fetch";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 interface Exception {
@@ -32,11 +33,22 @@ interface ExceptionFilters {
 }
 
 export default function ExceptionsPage() {
+  const searchParams = useSearchParams();
+  const runId = searchParams.get("runId");
+  const typeFilter = searchParams.get("type");
+
   const [exceptions, setExceptions] = useState<Exception[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<ExceptionFilters>({});
   const [autoRefresh, setAutoRefresh] = useState(true);
+
+  useEffect(() => {
+    // Initialize filters from URL params
+    if (typeFilter && !filters.type) {
+      setFilters((prev) => ({ ...prev, type: typeFilter }));
+    }
+  }, [typeFilter]);
 
   useEffect(() => {
     loadExceptions();
@@ -46,11 +58,17 @@ export default function ExceptionsPage() {
       return () => clearInterval(interval);
     }
     return undefined;
-  }, [autoRefresh]);
+  }, [autoRefresh, filters]);
 
   const loadExceptions = async () => {
     setLoading(true);
     const queryParams = new URLSearchParams();
+
+    // Add runId if present (workflow continuity from run detail)
+    if (runId) {
+      queryParams.append("runId", runId);
+    }
+
     Object.entries(filters).forEach(([key, value]) => {
       if (value) {
         queryParams.append(key, value as string);
@@ -135,11 +153,25 @@ export default function ExceptionsPage() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Back navigation when coming from run detail */}
+      {runId && (
+        <div className="mb-4">
+          <Link href={`/console/runs/${runId}`}>
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Run Detail
+            </Button>
+          </Link>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Exceptions</h1>
           <p className="text-slate-600 dark:text-slate-400 mt-1">
-            Monitoring and managing reconciliation discrepancies
+            {runId
+              ? "Exceptions from this reconciliation run"
+              : "Monitoring and managing reconciliation discrepancies"}
           </p>
         </div>
         <div className="flex items-center gap-4">

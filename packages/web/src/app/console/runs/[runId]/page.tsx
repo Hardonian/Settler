@@ -264,7 +264,7 @@ export default function RunPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Link href={`/console/results?runId=${run.id}`}>
+              <Link href={`/console/reconciliation-view?runId=${run.id}`}>
                 <Button
                   variant="outline"
                   className="w-full h-20 flex flex-col items-start justify-center"
