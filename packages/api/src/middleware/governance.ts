@@ -6,6 +6,7 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "./auth";
 import { query } from "../db";
+import { getCachedTenantFreezeState, invalidateTenantFreezeCache } from "../utils/governance-cache";
 
 export interface GovernanceError extends Error {
   code: string;
@@ -66,6 +67,8 @@ export function enforceFreezeState(options?: {
   allowWhenFrozen?: boolean;
   /** Custom error message */
   errorMessage?: string;
+  /** Use cached freeze state (default: true) */
+  useCache?: boolean;
 }) {
   return async (req: AuthRequest, res: Response, next: NextFunction) => {
     // Skip check if explicitly allowed
@@ -84,7 +87,11 @@ export function enforceFreezeState(options?: {
       return;
     }
 
-    const freezeState = await checkTenantFrozen(tenantId);
+    // Use cached state by default for performance
+    const freezeState =
+      options?.useCache === false
+        ? await checkTenantFrozen(tenantId)
+        : await getCachedTenantFreezeState(tenantId);
 
     if (freezeState.frozen) {
       const error: GovernanceError = new Error(

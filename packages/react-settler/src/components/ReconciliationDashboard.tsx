@@ -3,11 +3,14 @@
  * Main wrapper component for reconciliation workflows
  */
 
-import { ReactNode } from 'react';
-import { CompilationProvider, CompilationProviderProps } from '../context';
+import { ReactNode } from "react";
+import { CompilationProvider } from "../context";
+import { CompilationMode, ReconciliationConfig } from "@settler/protocol";
 
-export interface ReconciliationDashboardProps extends Omit<CompilationProviderProps, 'children'> {
+export interface ReconciliationDashboardProps {
   children: ReactNode;
+  mode?: CompilationMode;
+  config?: Partial<ReconciliationConfig>;
   className?: string;
 }
 
@@ -15,10 +18,10 @@ export function ReconciliationDashboard({
   children,
   mode,
   config,
-  className
+  className,
 }: ReconciliationDashboardProps) {
   return (
-    <CompilationProvider 
+    <CompilationProvider
       {...(mode !== undefined ? { mode } : {})}
       {...(config !== undefined ? { config } : {})}
     >

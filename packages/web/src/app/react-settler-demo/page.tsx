@@ -78,7 +78,6 @@ export default function ReactSettlerDemoPage() {
     const workflow = (
       <ReconciliationDashboard>
         <RuleSet id="demo-rules" name="Demo Rules" priority="exact-first">
-          {/* @ts-expect-error Valid config format but TS expects element */}
           <MatchRule
             id="rule-1"
             name="Exact Amount Match"

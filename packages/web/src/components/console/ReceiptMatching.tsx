@@ -3,23 +3,32 @@
  * Shows receipt-to-transaction matches and allows verification
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { CheckCircle2, AlertTriangle, RefreshCw, Upload } from 'lucide-react';
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { CheckCircle2, AlertTriangle, RefreshCw, Upload } from "lucide-react";
+import { useGovernanceState } from "@/hooks/use-governance-state";
+import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
 
 interface ReceiptMatch {
   id: string;
   receiptId: string;
   transactionId: string;
-  confidence: 'high' | 'medium' | 'low' | 'manual';
+  confidence: "high" | "medium" | "low" | "manual";
   confidenceScore: number;
   verified: boolean;
 }
@@ -28,8 +37,9 @@ export function ReceiptMatching() {
   const [matches, setMatches] = useState<ReceiptMatch[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [reconciliationRunId, setReconciliationRunId] = useState<string>('');
+  const [reconciliationRunId, setReconciliationRunId] = useState<string>("");
   const [matching, setMatching] = useState(false);
+  const { isFrozen, governanceState } = useGovernanceState();
 
   const fetchMatches = async () => {
     if (!reconciliationRunId) return;
@@ -39,12 +49,12 @@ export function ReceiptMatching() {
       setError(null);
 
       const res = await fetch(`/api/v1/receipt-matching/matches/${reconciliationRunId}`);
-      if (!res.ok) throw new Error('Failed to fetch matches');
+      if (!res.ok) throw new Error("Failed to fetch matches");
 
       const data = await res.json();
       setMatches(data.data || []);
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Failed to load matches');
+      setError(error instanceof Error ? error.message : "Failed to load matches");
     } finally {
       setLoading(false);
     }
@@ -52,7 +62,7 @@ export function ReceiptMatching() {
 
   const handleMatchReceipts = async () => {
     if (!reconciliationRunId) {
-      setError('Reconciliation run ID is required');
+      setError("Reconciliation run ID is required");
       return;
     }
 
@@ -62,9 +72,9 @@ export function ReceiptMatching() {
 
       // In a real implementation, you'd fetch receipts and transactions first
       // For now, this is a placeholder
-      const res = await fetch('/api/v1/receipt-matching/match', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/v1/receipt-matching/match", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           reconciliationRunId,
           receipts: [], // Would come from actual receipt data
@@ -74,12 +84,12 @@ export function ReceiptMatching() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message || 'Failed to match receipts');
+        throw new Error(data.message || "Failed to match receipts");
       }
 
       await fetchMatches();
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Failed to match receipts');
+      setError(error instanceof Error ? error.message : "Failed to match receipts");
     } finally {
       setMatching(false);
     }
@@ -88,25 +98,25 @@ export function ReceiptMatching() {
   const handleVerify = async (linkId: string) => {
     try {
       const res = await fetch(`/api/v1/receipt-matching/links/${linkId}/verify`, {
-        method: 'POST',
+        method: "POST",
       });
 
-      if (!res.ok) throw new Error('Failed to verify link');
+      if (!res.ok) throw new Error("Failed to verify link");
       await fetchMatches();
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Failed to verify link');
+      setError(error instanceof Error ? error.message : "Failed to verify link");
     }
   };
 
   const getConfidenceBadge = (confidence: string, score: number) => {
     const color =
-      confidence === 'high'
-        ? 'bg-green-500'
-        : confidence === 'medium'
-          ? 'bg-yellow-500'
-          : confidence === 'low'
-            ? 'bg-orange-500'
-            : 'bg-blue-500';
+      confidence === "high"
+        ? "bg-green-500"
+        : confidence === "medium"
+          ? "bg-yellow-500"
+          : confidence === "low"
+            ? "bg-orange-500"
+            : "bg-blue-500";
 
     return (
       <Badge className={color}>
@@ -140,25 +150,33 @@ export function ReceiptMatching() {
               />
             </div>
             <div className="flex items-end gap-2">
-              <Button onClick={handleMatchReceipts} disabled={matching || !reconciliationRunId}>
+              <FreezeBlockedButton
+                onClick={handleMatchReceipts}
+                disabled={matching || !reconciliationRunId}
+                isFrozen={isFrozen}
+                freezeReason={governanceState?.freeze_reason}
+                frozenMessage="Receipt matching blocked by tenant freeze"
+              >
                 {matching ? (
                   <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                 ) : (
                   <Upload className="h-4 w-4 mr-2" />
                 )}
                 Match Receipts
-              </Button>
-              <Button variant="outline" onClick={fetchMatches} disabled={loading || !reconciliationRunId}>
-                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              </FreezeBlockedButton>
+              <Button
+                variant="outline"
+                onClick={fetchMatches}
+                disabled={loading || !reconciliationRunId}
+              >
+                <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
               </Button>
             </div>
           </div>
 
           {matches.length > 0 && (
             <div>
-              <h3 className="text-lg font-semibold mb-2">
-                Matches ({matches.length})
-              </h3>
+              <h3 className="text-lg font-semibold mb-2">Matches ({matches.length})</h3>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -172,9 +190,15 @@ export function ReceiptMatching() {
                 <TableBody>
                   {matches.map((match) => (
                     <TableRow key={match.id}>
-                      <TableCell className="font-mono text-xs">{match.receiptId.slice(0, 8)}...</TableCell>
-                      <TableCell className="font-mono text-xs">{match.transactionId.slice(0, 8)}...</TableCell>
-                      <TableCell>{getConfidenceBadge(match.confidence, match.confidenceScore)}</TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {match.receiptId.slice(0, 8)}...
+                      </TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {match.transactionId.slice(0, 8)}...
+                      </TableCell>
+                      <TableCell>
+                        {getConfidenceBadge(match.confidence, match.confidenceScore)}
+                      </TableCell>
                       <TableCell>
                         {match.verified ? (
                           <Badge variant="default" className="bg-green-500">
@@ -187,13 +211,16 @@ export function ReceiptMatching() {
                       </TableCell>
                       <TableCell>
                         {!match.verified && (
-                          <Button
+                          <FreezeBlockedButton
                             size="sm"
                             variant="outline"
                             onClick={() => handleVerify(match.id)}
+                            isFrozen={isFrozen}
+                            freezeReason={governanceState?.freeze_reason}
+                            frozenMessage="Match verification blocked by tenant freeze"
                           >
                             Verify
-                          </Button>
+                          </FreezeBlockedButton>
                         )}
                       </TableCell>
                     </TableRow>
