@@ -76,7 +76,6 @@ const isBuildPhase = prismaGlobals.__PRISMA_BUILD_PHASE__ ?? false;
 const nodeEnv =
   typeof process !== "undefined" && process.env ? process.env["NODE_ENV"] : "production";
 
-
 // Let Prisma handle reading the DATABASE_URL from the environment automatically.
 // This avoids complex and brittle configuration logic that was causing failures.
 let prismaInstance: PrismaClient;
@@ -93,21 +92,24 @@ try {
   prismaInstance = new Proxy({} as PrismaClient, {
     get(_target, prop) {
       const propName = String(prop);
-      if (propName.startsWith('$')) {
+      if (propName.startsWith("$")) {
         return async () => {
-          console.warn(`[Prisma Stub] Prisma not initialized. Call to ${propName} returning empty result.`);
+          console.warn(
+            `[Prisma Stub] Prisma not initialized. Call to ${propName} returning empty result.`
+          );
           return [];
         };
       }
       return async () => {
-        console.warn(`[Prisma Stub] Prisma not initialized. Call to model via ${propName} returning null.`);
+        console.warn(
+          `[Prisma Stub] Prisma not initialized. Call to model via ${propName} returning null.`
+        );
         return null;
       };
     },
   }) as PrismaClient;
   (prismaInstance as PrismaClientWithError).__prismaInitError = error;
 }
-
 
 // Add connection health check
 let lastHealthCheck = 0;
@@ -116,7 +118,7 @@ const HEALTH_CHECK_INTERVAL = 60000; // 1 minute
 async function checkConnectionHealth(): Promise<boolean> {
   try {
     // Cannot check health if the client is a stub
-    if ('__prismaInitError' in prismaInstance) {
+    if ("__prismaInitError" in prismaInstance) {
       return false;
     }
     await prismaInstance.$queryRaw`SELECT 1`;

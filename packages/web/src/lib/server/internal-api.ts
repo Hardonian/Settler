@@ -20,8 +20,10 @@ export async function triggerInternalReconciliationRun(
   const internalServiceKey = process.env.INTERNAL_SERVICE_TO_SERVICE_KEY;
 
   if (!internalServiceKey) {
-    safeLogger.error('[InternalApiClient] INTERNAL_SERVICE_TO_SERVICE_KEY is not set. Cannot make internal API call.');
-    throw new Error('Internal service communication is not configured.');
+    safeLogger.error(
+      "[InternalApiClient] INTERNAL_SERVICE_TO_SERVICE_KEY is not set. Cannot make internal API call."
+    );
+    throw new Error("Internal service communication is not configured.");
   }
 
   try {
@@ -32,7 +34,7 @@ export async function triggerInternalReconciliationRun(
         // Pass tenant and user context securely
         "X-Tenant-Id": tenantId,
         "X-User-Id": userId,
-        "Authorization": `Bearer ${internalServiceKey}`, // Service-to-service auth
+        Authorization: `Bearer ${internalServiceKey}`, // Service-to-service auth
       },
       body: JSON.stringify(payload),
     });
@@ -56,7 +58,6 @@ export async function triggerInternalReconciliationRun(
     // Let's just return the runId for now, which is truthful.
     // The UI will need to poll or the GET route will need to be robust.
     return { runId };
-
   } catch (error) {
     safeLogger.error("[InternalApiClient] Internal API call threw an exception", {
       url,

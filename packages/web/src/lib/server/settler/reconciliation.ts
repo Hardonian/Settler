@@ -18,8 +18,6 @@ import { seal } from "@/lib/reconciliation/trust-envelope";
 
 const SETTLER_VERSION = "1.0.0";
 
-
-
 /**
  * Get reconciliation summary by ID
  */

@@ -196,7 +196,7 @@ async function testBackgroundJobs(): Promise<void> {
     ...process.env,
     // Set 0 thresholds to trigger immediately on any test data
     REAPER_TIMEOUT_MINUTES: "0",
-    ARCHIVE_RETENTION_DAYS: "0"
+    ARCHIVE_RETENTION_DAYS: "0",
   };
 
   console.log("  1. Running Stale Run Reaper...");
@@ -244,7 +244,9 @@ async function main(): Promise<void> {
   results.push(await runSmokeFlow("Flow 1: Enqueue + Process + Result", testEnqueueProcessResult));
   results.push(await runSmokeFlow("Flow 2: Retry on Forced Failure", testRetryOnFailure));
   results.push(await runSmokeFlow("Flow 3: Cross-Tenant RLS Isolation", testCrossTenantIsolation));
-  results.push(await runSmokeFlow("Flow 4: Background Jobs (Reaper & Archiver)", testBackgroundJobs));
+  results.push(
+    await runSmokeFlow("Flow 4: Background Jobs (Reaper & Archiver)", testBackgroundJobs)
+  );
 
   // Summary
   console.log(cyan("\n" + "=".repeat(60)));

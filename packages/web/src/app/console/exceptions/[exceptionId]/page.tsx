@@ -8,15 +8,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { ErrorState } from "@/components/ErrorState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { safeFetch } from "@/lib/safe-fetch";
-import {
-  RefreshCw,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  AlertCircle,
-  Copy,
-  Zap,
-} from "lucide-react";
+import { RefreshCw, CheckCircle2, XCircle, Clock, AlertCircle, Copy, Zap } from "lucide-react";
 import Link from "next/link";
 import { useGovernanceState } from "@/hooks/use-governance-state";
 import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";

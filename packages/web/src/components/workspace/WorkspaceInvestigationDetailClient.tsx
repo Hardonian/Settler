@@ -15,8 +15,7 @@ interface WorkspaceInvestigationDetailClientProps {
 export function WorkspaceInvestigationDetailClient({
   ingestionId,
 }: WorkspaceInvestigationDetailClientProps) {
-  const { investigation, isLoading, error, refresh } =
-    useWorkspaceInvestigationDetail(ingestionId);
+  const { investigation, isLoading, error, refresh } = useWorkspaceInvestigationDetail(ingestionId);
 
   if (isLoading) {
     return (
