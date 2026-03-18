@@ -160,15 +160,16 @@ export default function RunsPage() {
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+          <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 cursor-pointer">
             <input
               type="checkbox"
+              id="auto-refresh-checkbox"
               checked={autoRefresh}
               onChange={(e) => setAutoRefresh(e.target.checked)}
               className="rounded"
             />
             Auto-refresh
-          </div>
+          </label>
           <Button variant="outline" size="sm" onClick={handleRefresh}>
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
             Refresh
@@ -184,10 +185,14 @@ export default function RunsPage() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label
+                htmlFor="status-filter"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+              >
                 Status
               </label>
               <select
+                id="status-filter"
                 value={filters.status || ""}
                 onChange={(e) =>
                   setFilters((prev) => ({ ...prev, status: e.target.value || undefined }))
@@ -202,10 +207,14 @@ export default function RunsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label
+                htmlFor="search-filter"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+              >
                 Search
               </label>
               <input
+                id="search-filter"
                 type="text"
                 placeholder="Search runs..."
                 value={filters.search || ""}

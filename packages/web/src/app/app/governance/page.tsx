@@ -1,9 +1,9 @@
 "use client";
 
 import { ArrowLeft, ChevronDown } from "lucide-react";
-import RoleMatrix from "@/components/stitch-import/RoleMatrix";
+import RoleMatrix from "@/components/RoleMatrix";
 import PolicyViewer from "@/components/stitch-import/PolicyViewer";
-import FreezeToggle from "@/components/stitch-import/FreezeToggle";
+import FreezeToggle from "@/components/FreezeToggle";
 
 export default function GovernancePage() {
   return (
