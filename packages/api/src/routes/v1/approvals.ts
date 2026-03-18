@@ -271,4 +271,5 @@ router.post("/approvers", enforceFreezeState(), async (req: AuthRequest, res: Re
   }
 });
 
+export const approvalsRouter = router;
 export default router;

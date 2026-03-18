@@ -1,23 +1,23 @@
 /**
  * Recon Jobs API Routes
- * 
+ *
  * REST API for managing reconciliation jobs
  * Part of Phase I: Recon Core Foundation
  */
 
-import { Router, Response } from 'express';
-import { ReconCoreEngine } from '../../../services/recon-core';
- 
- 
-import type { PrismaClient } from '@prisma/client';
-import { handleRouteError } from '../../../utils/error-handler';
-import { authMiddleware } from '../../../middleware/auth';
-import { tenantMiddleware } from '../../../middleware/tenant';
-import type { TenantRequest } from '../../../middleware/tenant';
+import { Router, Response } from "express";
+import { ReconCoreEngine } from "../../../services/recon-core";
+
+import type { PrismaClient } from "@prisma/client";
+import { handleRouteError } from "../../../utils/error-handler";
+import { authMiddleware } from "../../../middleware/auth";
+import { tenantMiddleware } from "../../../middleware/tenant";
+import { enforceFreezeState } from "../../../middleware/governance";
+import type { TenantRequest } from "../../../middleware/tenant";
 
 const router: Router = Router();
 // Prisma client will be initialized at runtime
- 
+
 const prisma = {} as PrismaClient;
 const reconEngine = new ReconCoreEngine(prisma);
 
@@ -26,9 +26,10 @@ const reconEngine = new ReconCoreEngine(prisma);
  * Create a new reconciliation job
  */
 router.post(
-  '/',
+  "/",
   authMiddleware,
   tenantMiddleware,
+  enforceFreezeState(),
   async (req: TenantRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
@@ -53,10 +54,10 @@ router.post(
 
       res.status(201).json({
         data: reconJob,
-        message: 'Reconciliation job created successfully',
+        message: "Reconciliation job created successfully",
       });
     } catch (error) {
-      handleRouteError(res, error, 'Failed to create reconciliation job', 400);
+      handleRouteError(res, error, "Failed to create reconciliation job", 400);
     }
   }
 );
@@ -65,43 +66,38 @@ router.post(
  * GET /api/v1/recon/jobs
  * List reconciliation jobs
  */
-router.get(
-  '/',
-  authMiddleware,
-  tenantMiddleware,
-  async (req: TenantRequest, res: Response) => {
-    try {
-      const tenantId = req.tenantId!;
-      const status = req.query.status as string | undefined;
-      const limit = req.query.limit ? parseInt(req.query.limit as string) : 100;
-      const offset = req.query.offset ? parseInt(req.query.offset as string) : 0;
+router.get("/", authMiddleware, tenantMiddleware, async (req: TenantRequest, res: Response) => {
+  try {
+    const tenantId = req.tenantId!;
+    const status = req.query.status as string | undefined;
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 100;
+    const offset = req.query.offset ? parseInt(req.query.offset as string) : 0;
 
-      const jobs = await reconEngine.listReconJobs(tenantId, {
-        ...(status ? { status } : {}),
+    const jobs = await reconEngine.listReconJobs(tenantId, {
+      ...(status ? { status } : {}),
+      limit,
+      offset,
+    });
+
+    res.json({
+      data: jobs,
+      pagination: {
         limit,
         offset,
-      });
-
-      res.json({
-        data: jobs,
-        pagination: {
-          limit,
-          offset,
-          total: jobs.length,
-        },
-      });
-    } catch (error) {
-      handleRouteError(res, error, 'Failed to list reconciliation jobs', 400);
-    }
+        total: jobs.length,
+      },
+    });
+  } catch (error) {
+    handleRouteError(res, error, "Failed to list reconciliation jobs", 400);
   }
-);
+});
 
 /**
  * GET /api/v1/recon/jobs/:jobId
  * Get a specific reconciliation job
  */
 router.get(
-  '/:jobId',
+  "/:jobId",
   authMiddleware,
   tenantMiddleware,
   async (req: TenantRequest, res: Response) => {
@@ -111,8 +107,8 @@ router.get(
 
       if (!jobId) {
         return res.status(400).json({
-          error: 'Bad request',
-          message: 'Job ID is required',
+          error: "Bad request",
+          message: "Job ID is required",
         });
       }
 
@@ -120,14 +116,14 @@ router.get(
 
       if (!job) {
         return res.status(404).json({
-          error: 'Not found',
+          error: "Not found",
           message: `Reconciliation job ${jobId} not found`,
         });
       }
 
       return res.json({ data: job });
     } catch (error) {
-      return handleRouteError(res, error, 'Failed to get reconciliation job', 400);
+      return handleRouteError(res, error, "Failed to get reconciliation job", 400);
     }
   }
 );
@@ -137,9 +133,10 @@ router.get(
  * Execute a reconciliation job
  */
 router.post(
-  '/:jobId/execute',
+  "/:jobId/execute",
   authMiddleware,
   tenantMiddleware,
+  enforceFreezeState(),
   async (req: TenantRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
@@ -147,8 +144,8 @@ router.post(
 
       if (!jobId) {
         return res.status(400).json({
-          error: 'Bad request',
-          message: 'Job ID is required',
+          error: "Bad request",
+          message: "Job ID is required",
         });
       }
 
@@ -161,10 +158,10 @@ router.post(
 
       return res.status(201).json({
         data: result,
-        message: 'Reconciliation job executed successfully',
+        message: "Reconciliation job executed successfully",
       });
     } catch (error) {
-      return handleRouteError(res, error, 'Failed to execute reconciliation job', 400);
+      return handleRouteError(res, error, "Failed to execute reconciliation job", 400);
     }
   }
 );
