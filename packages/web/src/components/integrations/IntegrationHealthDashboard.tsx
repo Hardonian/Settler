@@ -20,6 +20,7 @@ interface IntegrationHealth {
 
 export function IntegrationHealthDashboard() {
   const [integrations, setIntegrations] = useState<IntegrationHealth[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -36,9 +37,16 @@ export function IntegrationHealthDashboard() {
       if (response.ok) {
         const data = await response.json();
         setIntegrations(data.integrations || []);
+        setError(null);
+      } else {
+        const payload = (await response.json().catch(() => ({}))) as { error?: string };
+        setIntegrations([]);
+        setError(payload.error || "Failed to fetch integration health");
       }
     } catch (error: unknown) {
       console.error("Failed to fetch integration health:", error);
+      setIntegrations([]);
+      setError(error instanceof Error ? error.message : "Failed to fetch integration health");
     } finally {
       setLoading(false);
     }
@@ -71,6 +79,18 @@ export function IntegrationHealthDashboard() {
           <div className="animate-pulse space-y-4">
             <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
             <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <div className="text-center py-8 text-red-600 dark:text-red-400">
+            Integration health is unavailable: {error}
           </div>
         </CardContent>
       </Card>

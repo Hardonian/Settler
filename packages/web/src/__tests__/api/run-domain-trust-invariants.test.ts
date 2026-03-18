@@ -4,12 +4,16 @@ import { GET as getRunDetail } from "@/app/api/runs/[runId]/route";
 import { POST as createRun } from "@/app/api/runs/create/route";
 import { POST as runReconciliation } from "@/app/api/console/reconciliation/route";
 import { POST as postExceptionAction } from "@/app/api/exceptions/[exceptionId]/route";
+import { GET as getJobProgress } from "@/app/api/jobs/[id]/progress/route";
 
 const resolveTenantMembershipScopeMock = jest.fn();
 const resolveTenantForMutationMock = jest.fn();
 const assertTenantMembershipMock = jest.fn();
 const triggerInternalReconciliationRunMock = jest.fn();
 const requireAuthMock = jest.fn();
+const authenticateApiKeyMock = jest.fn();
+const reconJobFindFirstMock = jest.fn();
+const reconResultFindFirstMock = jest.fn();
 
 jest.mock("@/lib/middleware/api-security", () => ({
   withSecurity: (handler: unknown) => handler,
@@ -42,7 +46,17 @@ jest.mock("@/shared/db/prismaClient", () => ({
     reconciliationRun: {
       count: jest.fn(async () => 0),
     },
+    reconJob: {
+      findFirst: (...args: unknown[]) => reconJobFindFirstMock(...args),
+    },
+    reconResult: {
+      findFirst: (...args: unknown[]) => reconResultFindFirstMock(...args),
+    },
   },
+}));
+
+jest.mock("@/shared/auth/apiKey", () => ({
+  authenticateApiKey: (...args: unknown[]) => authenticateApiKeyMock(...args),
 }));
 
 jest.mock("@/lib/supabase/tenant-membership", () => {
@@ -100,6 +114,9 @@ describe("run domain trust invariants", () => {
     assertTenantMembershipMock.mockReset();
     triggerInternalReconciliationRunMock.mockReset();
     requireAuthMock.mockReset();
+    authenticateApiKeyMock.mockReset();
+    reconJobFindFirstMock.mockReset();
+    reconResultFindFirstMock.mockReset();
   });
 
   test("run detail read blocks cross-tenant access", async () => {
@@ -267,5 +284,22 @@ describe("run domain trust invariants", () => {
     expect(response.status).toBe(400);
     const payload = await response.json();
     expect(payload.error).toContain("resolve|ignore|reopen");
+  });
+
+  test("job progress route returns 500 for server failures (not false-success 200)", async () => {
+    authenticateApiKeyMock.mockResolvedValue({
+      tenantId: "tenant-a",
+      userId: "user-a",
+    });
+    reconJobFindFirstMock.mockRejectedValue(new Error("database offline"));
+
+    const response = await getJobProgress(
+      req("http://localhost/api/jobs/11111111-1111-4111-8111-111111111111/progress"),
+      { params: Promise.resolve({ id: "11111111-1111-4111-8111-111111111111" }) }
+    );
+
+    expect(response.status).toBe(500);
+    const payload = await response.json();
+    expect(payload.error).toBe("Failed to fetch job progress");
   });
 });

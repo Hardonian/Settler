@@ -27,15 +27,7 @@ For persistence, the platform uses a hybrid model:
 
 ## Getting Started
 
-### Prerequisites
-
-- Node.js >= 22.0
-- pnpm >= 10.13
-- Docker
-
-### Setup & Verification
-
-For the complete local setup guide, see **[Getting Started: Local Development](docs/getting-started/README.md)**.
+For the complete local setup guide, see **[Canonical Local Setup](../SETUP.md)**.
 
 The canonical verification command to ensure your environment is correctly configured and the codebase is healthy is:
 
@@ -56,7 +48,7 @@ Global helper scripts are available for managing the local TigerBeetle container
 ## Documentation Hub
 
 - [Architecture (Canonical)](docs/architecture/platform-architecture.md)
-- [Local Development Guide](docs/getting-started/README.md)
+- [Canonical Local Setup](../SETUP.md)
 - [Security Policy](SECURITY.md)
 
 ## Contributing

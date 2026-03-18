@@ -86,10 +86,13 @@ export const POST = withUniversalBillingGate(
       );
 
       if (!result.refreshed) {
-        return NextResponse.json({
-          success: false,
-          message: result.error || "Token refresh not needed or not supported",
-        });
+        return NextResponse.json(
+          {
+            success: false,
+            error: result.error || "Token refresh not needed or not supported",
+          },
+          { status: 409 }
+        );
       }
 
       return NextResponse.json({
@@ -99,7 +102,6 @@ export const POST = withUniversalBillingGate(
       });
     } catch (error) {
       appLogger.error("Error in refresh route", error);
-      // Never return 500 - return graceful error response
       return NextResponse.json(
         {
           success: false,
@@ -107,7 +109,7 @@ export const POST = withUniversalBillingGate(
           message: error instanceof Error ? error.message : "Unknown error",
           result: null,
         },
-        { status: 200 }
+        { status: 500 }
       );
     }
   },

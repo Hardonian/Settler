@@ -1,6 +1,10 @@
 # Getting Started: Local Development Setup
 
-This is the canonical guide for setting up Settler for local development.
+This is the canonical guide for setting up Settler for local development. For the definitive setup sequence, see [SETUP.md](../SETUP.md).
+
+## Quick Reference
+
+For the fastest path to a working screen, follow the [Canonical Install/Run Order](#canonical-installrun-order) below.
 
 ## 1. Prerequisites
 
@@ -11,23 +15,7 @@ This is the canonical guide for setting up Settler for local development.
 
 ## 2. Initial Setup
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/settler/settler.git
-    cd settler
-    ```
-
-2.  **Install dependencies:**
-    ```bash
-    pnpm install
-    ```
-
-3.  **Set up environment variables:**
-    Copy the example `.env` file. For a first run, the defaults are sufficient.
-    ```bash
-    cp .env.local.example .env.local
-    ```
-    For production or advanced configurations, refer to the [Environment Variable Matrix](docs/setup/env-matrix.md).
+Follow the [Canonical Install/Run Order](#canonical-installrun-order) detailed in [SETUP.md](../SETUP.md).
 
 ## 3. Start Local Infrastructure
 

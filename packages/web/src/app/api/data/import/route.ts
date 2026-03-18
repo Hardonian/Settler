@@ -58,7 +58,7 @@ export const POST = withUniversalBillingGate(
           error: "An error occurred",
           message: "Please try again later or contact support if the issue persists",
         },
-        { status: 200 }
+        { status: 500 }
       );
     }
   },

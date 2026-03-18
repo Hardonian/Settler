@@ -167,19 +167,19 @@ export const POST = withSecurity(
           // Ignore errors marking idempotency as failed
         }
 
-        // Never return 500 - return graceful error response
         const errorMessage = errorObj.message || String(error);
+        const isTimeout = errorMessage.toLowerCase().includes("timeout");
         return NextResponse.json(
           {
             success: false,
             error: "Sync operation failed",
-            message: errorMessage.includes("timeout")
+            message: isTimeout
               ? "Sync operation timed out. Please try again with a smaller date range."
               : "Unable to complete sync operation. Please try again.",
             correlationId,
             retryable: true,
           },
-          { status: 200 }
+          { status: isTimeout ? 504 : 500 }
         );
       }
     },

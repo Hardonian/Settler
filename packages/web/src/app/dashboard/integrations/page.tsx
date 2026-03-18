@@ -191,6 +191,10 @@ export default function IntegrationsPage() {
       });
 
       const data = await response.json();
+      if (!response.ok || data?.success === false) {
+        alert(`Connection failed: ${data?.error || data?.message || "Unknown error"}`);
+        return;
+      }
 
       if (data.authUrl) {
         // Redirect to OAuth flow

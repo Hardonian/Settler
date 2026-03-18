@@ -448,7 +448,6 @@ export const GET = withSecurity(
           duration,
         });
 
-        // Never return 500 - return empty exceptions array with graceful error message
         return NextResponse.json(
           {
             exceptions: [],
@@ -456,7 +455,7 @@ export const GET = withSecurity(
             message: "Please try again later or contact support if the issue persists",
             details: process.env.NODE_ENV === "development" ? errorMessage : undefined,
           },
-          { status: 200 }
+          { status: 500 }
         );
       }
     },

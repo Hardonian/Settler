@@ -15,6 +15,10 @@ import { calculateConfidenceScore } from "../services/confidence-scoring";
 import { MatchingRule } from "../domain/entities/Job";
 import { ReconCoreEngine } from "../services/recon-core/recon-core-engine";
 import { NormalizedRecord } from "../services/recon-core/normalized-types";
+import {
+  DEFAULT_TOLERANCES,
+  type ReconciliationConfig,
+} from "../services/matching-rules-loader";
 
 const router: Router = Router();
 let prisma: PrismaClient | null = null;
@@ -181,11 +185,43 @@ router.post("/playground/demo-run", (async (_req: Request, res: Response): Promi
 
     // 4. Run Matching Logic directly
     // We cast source/target to ReconDataRecord (Record<string, unknown>) as expected by the engine
+    const matchingConfig: ReconciliationConfig = {
+      amountTolerance: DEFAULT_TOLERANCES.amount,
+      dateToleranceDays: DEFAULT_TOLERANCES.dateDays,
+      matchingRules: [
+        {
+          field: "externalId",
+          type: "exact",
+          weight: 2,
+          enabled: true,
+        },
+        {
+          field: "amount",
+          type: "range",
+          tolerance: DEFAULT_TOLERANCES.amount,
+          weight: 1,
+          enabled: true,
+        },
+        {
+          field: "occurredAt",
+          type: "date_range",
+          days: DEFAULT_TOLERANCES.dateDays,
+          weight: 0.5,
+          enabled: true,
+        },
+      ],
+      configVersion: "playground-default",
+      configSource: "default",
+      jobId: dummyJob.id,
+      tenantId: dummyJob.tenantId,
+    };
+
     const matches = await engine.performReconciliation(
       sourceData as unknown as Record<string, unknown>[],
       targetData as unknown as Record<string, unknown>[],
       "deterministic",
-      dummyJob
+      dummyJob,
+      matchingConfig
     );
 
     // 5. Calculate Stats

@@ -75,12 +75,11 @@ export const GET = withSecurity(
     return NextResponse.json({ integrations });
   } catch (error) {
     appLogger.error("Error in integrations/health GET", error);
-    // Return empty array instead of 500 - graceful degradation
     return NextResponse.json({ 
       integrations: [],
       error: error instanceof Error ? error.message : "Failed to fetch integrations",
       degraded: true,
-    }, { status: 200 });
+    }, { status: 503 });
   }
 }),
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }

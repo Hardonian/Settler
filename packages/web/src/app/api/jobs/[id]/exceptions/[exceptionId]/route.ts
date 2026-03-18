@@ -432,7 +432,6 @@ export const PATCH = withSecurity(
           duration,
         });
 
-        // Never return 500 - return graceful error response
         return NextResponse.json(
           {
             success: false,
@@ -440,7 +439,7 @@ export const PATCH = withSecurity(
             message: "Please try again later or contact support if the issue persists",
             details: process.env.NODE_ENV === "development" ? errorMessage : undefined,
           },
-          { status: 200 }
+          { status: 500 }
         );
       }
     },

@@ -164,7 +164,6 @@ export const GET = withSecurity(
           );
         }
 
-        // Never return 500 - return graceful error response
         return NextResponse.json(
           {
             items: [],
@@ -173,7 +172,7 @@ export const GET = withSecurity(
             message: "Please try again later or contact support if the issue persists",
             trace_id: traceId,
           },
-          { status: 200 }
+          { status: 500 }
         );
       }
     },

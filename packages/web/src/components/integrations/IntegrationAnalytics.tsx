@@ -17,6 +17,7 @@ interface IntegrationRevenue {
 
 export function IntegrationAnalytics() {
   const [revenue, setRevenue] = useState<IntegrationRevenue[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<"7d" | "30d" | "90d" | "all">("30d");
 
@@ -30,9 +31,16 @@ export function IntegrationAnalytics() {
       if (response.ok) {
         const data = await response.json();
         setRevenue(data.revenue || []);
+        setError(null);
+      } else {
+        const payload = (await response.json().catch(() => ({}))) as { error?: string };
+        setRevenue([]);
+        setError(payload.error || "Failed to fetch integration analytics");
       }
     } catch (error: unknown) {
       console.error("Failed to fetch analytics:", error);
+      setRevenue([]);
+      setError(error instanceof Error ? error.message : "Failed to fetch integration analytics");
     } finally {
       setLoading(false);
     }
@@ -122,6 +130,8 @@ export function IntegrationAnalytics() {
         <CardContent>
           {loading ? (
             <div className="text-center py-8 text-slate-500 dark:text-slate-400">Loading...</div>
+          ) : error ? (
+            <div className="text-center py-8 text-red-600 dark:text-red-400">{error}</div>
           ) : (
             <div className="space-y-4">
               {revenue.map((item) => (

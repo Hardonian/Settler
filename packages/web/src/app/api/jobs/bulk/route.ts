@@ -227,7 +227,6 @@ export const POST = withSecurity(
           duration,
         });
 
-        // Never return 500 - return graceful error response
         return NextResponse.json(
           {
             success: false,
@@ -238,7 +237,7 @@ export const POST = withSecurity(
             successCount: 0,
             failureCount: 0,
           },
-          { status: 200 }
+          { status: 500 }
         );
       }
     },
