@@ -3,27 +3,42 @@
  * Handles approval requests and approver management
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { AlertTriangle, CheckCircle2, XCircle, Clock, UserPlus } from 'lucide-react';
-import { format } from 'date-fns';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { AlertTriangle, CheckCircle2, XCircle, Clock, UserPlus } from "lucide-react";
+import { format } from "date-fns";
+import { useGovernanceState } from "@/hooks/use-governance-state";
+import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
 
 interface ApprovalRequest {
   id: string;
   requestedBy: string;
   approverId?: string;
   approverRole?: string;
-  status: 'pending' | 'approved' | 'rejected' | 'cancelled';
+  status: "pending" | "approved" | "rejected" | "cancelled";
   requestType: string;
   requestDetails: Record<string, unknown>;
   comments?: string;
@@ -34,15 +49,16 @@ interface ApprovalRequest {
 }
 
 export function ApprovalWorkflows() {
+  const { isFrozen, governanceState } = useGovernanceState();
   const [requests, setRequests] = useState<ApprovalRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newRequest, setNewRequest] = useState({
-    requestType: '',
-    reconciliationRunId: '',
-    approverId: '',
-    comments: '',
+    requestType: "",
+    reconciliationRunId: "",
+    approverId: "",
+    comments: "",
   });
 
   useEffect(() => {
@@ -52,12 +68,12 @@ export function ApprovalWorkflows() {
   const fetchRequests = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/v1/approvals/requests');
-      if (!res.ok) throw new Error('Failed to fetch requests');
+      const res = await fetch("/api/v1/approvals/requests");
+      if (!res.ok) throw new Error("Failed to fetch requests");
       const data = await res.json();
       setRequests(data.data || []);
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Failed to load requests');
+      setError(error instanceof Error ? error.message : "Failed to load requests");
     } finally {
       setLoading(false);
     }
@@ -68,9 +84,9 @@ export function ApprovalWorkflows() {
       setLoading(true);
       setError(null);
 
-      const res = await fetch('/api/v1/approvals/requests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/v1/approvals/requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           requestType: newRequest.requestType,
           requestDetails: {
@@ -84,14 +100,14 @@ export function ApprovalWorkflows() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message || 'Failed to create request');
+        throw new Error(data.message || "Failed to create request");
       }
 
       setShowCreateForm(false);
-      setNewRequest({ requestType: '', reconciliationRunId: '', approverId: '', comments: '' });
+      setNewRequest({ requestType: "", reconciliationRunId: "", approverId: "", comments: "" });
       await fetchRequests();
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Failed to create request');
+      setError(error instanceof Error ? error.message : "Failed to create request");
     } finally {
       setLoading(false);
     }
@@ -100,43 +116,58 @@ export function ApprovalWorkflows() {
   const handleApprove = async (requestId: string) => {
     try {
       const res = await fetch(`/api/v1/approvals/requests/${requestId}/approve`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({}),
       });
 
-      if (!res.ok) throw new Error('Failed to approve');
+      if (!res.ok) throw new Error("Failed to approve");
       await fetchRequests();
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Failed to approve');
+      setError(error instanceof Error ? error.message : "Failed to approve");
     }
   };
 
   const handleReject = async (requestId: string) => {
     try {
       const res = await fetch(`/api/v1/approvals/requests/${requestId}/reject`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ comments: 'Rejected' }),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ comments: "Rejected" }),
       });
 
-      if (!res.ok) throw new Error('Failed to reject');
+      if (!res.ok) throw new Error("Failed to reject");
       await fetchRequests();
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Failed to reject');
+      setError(error instanceof Error ? error.message : "Failed to reject");
     }
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'approved':
-        return <Badge variant="default" className="bg-green-500"><CheckCircle2 className="h-3 w-3 mr-1" />Approved</Badge>;
-      case 'rejected':
-        return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" />Rejected</Badge>;
-      case 'cancelled':
+      case "approved":
+        return (
+          <Badge variant="default" className="bg-green-500">
+            <CheckCircle2 className="h-3 w-3 mr-1" />
+            Approved
+          </Badge>
+        );
+      case "rejected":
+        return (
+          <Badge variant="destructive">
+            <XCircle className="h-3 w-3 mr-1" />
+            Rejected
+          </Badge>
+        );
+      case "cancelled":
         return <Badge variant="secondary">Cancelled</Badge>;
       default:
-        return <Badge variant="outline"><Clock className="h-3 w-3 mr-1" />Pending</Badge>;
+        return (
+          <Badge variant="outline">
+            <Clock className="h-3 w-3 mr-1" />
+            Pending
+          </Badge>
+        );
     }
   };
 
@@ -179,7 +210,9 @@ export function ApprovalWorkflows() {
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="reconciliation_finalize">Finalize Reconciliation</SelectItem>
+                      <SelectItem value="reconciliation_finalize">
+                        Finalize Reconciliation
+                      </SelectItem>
                       <SelectItem value="bulk_correction">Bulk Correction</SelectItem>
                       <SelectItem value="export">Export Data</SelectItem>
                     </SelectContent>
@@ -249,29 +282,43 @@ export function ApprovalWorkflows() {
                 <TableBody>
                   {requests.map((request) => (
                     <TableRow key={request.id}>
-                      <TableCell className="font-mono text-xs">{request.id.slice(0, 8)}...</TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {request.id.slice(0, 8)}...
+                      </TableCell>
                       <TableCell>{request.requestType}</TableCell>
                       <TableCell>{getStatusBadge(request.status)}</TableCell>
                       <TableCell>{request.requestedBy.slice(0, 8)}...</TableCell>
-                      <TableCell>{request.approverId ? request.approverId.slice(0, 8) + '...' : 'Auto-assign'}</TableCell>
-                      <TableCell>{format(new Date(request.requestedAt), 'MMM d, yyyy HH:mm')}</TableCell>
                       <TableCell>
-                        {request.status === 'pending' && (
+                        {request.approverId
+                          ? request.approverId.slice(0, 8) + "..."
+                          : "Auto-assign"}
+                      </TableCell>
+                      <TableCell>
+                        {format(new Date(request.requestedAt), "MMM d, yyyy HH:mm")}
+                      </TableCell>
+                      <TableCell>
+                        {request.status === "pending" && (
                           <div className="flex gap-2">
-                            <Button
+                            <FreezeBlockedButton
                               size="sm"
                               variant="default"
                               onClick={() => handleApprove(request.id)}
+                              isFrozen={isFrozen}
+                              freezeReason={governanceState?.freeze_reason}
+                              frozenMessage="Approvals blocked by tenant freeze"
                             >
                               Approve
-                            </Button>
-                            <Button
+                            </FreezeBlockedButton>
+                            <FreezeBlockedButton
                               size="sm"
                               variant="destructive"
                               onClick={() => handleReject(request.id)}
+                              isFrozen={isFrozen}
+                              freezeReason={governanceState?.freeze_reason}
+                              frozenMessage="Approvals blocked by tenant freeze"
                             >
                               Reject
-                            </Button>
+                            </FreezeBlockedButton>
                           </div>
                         )}
                       </TableCell>

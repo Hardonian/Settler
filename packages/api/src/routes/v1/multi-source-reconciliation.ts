@@ -26,7 +26,7 @@ function isValidUserId(userId: string | undefined): boolean {
  * POST /api/v1/multi-source-reconciliation/jobs
  * Create a multi-source reconciliation job
  */
-router.post("/jobs", async (req: AuthRequest, res: Response) => {
+router.post("/jobs", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const userId = req.userId!;

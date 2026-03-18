@@ -1,31 +1,44 @@
 /**
  * Reconciliation View Component
- * 
+ *
  * Displays reconciliation summary and items ranked by impact.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { AlertTriangle, CheckCircle2, RefreshCw, Play } from 'lucide-react';
-import type { ReconciliationSummary, ReconciliationItem } from '@/lib/domain/types';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { AlertTriangle, CheckCircle2, RefreshCw, Play } from "lucide-react";
+import { useGovernanceState } from "@/hooks/use-governance-state";
+import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
+import type { ReconciliationSummary, ReconciliationItem } from "@/lib/domain/types";
 
 interface ReconciliationViewProps {
   reconciliationId?: string;
   onRunReconciliation?: () => void;
 }
 
-export function ReconciliationView({ reconciliationId, onRunReconciliation }: ReconciliationViewProps) {
+export function ReconciliationView({
+  reconciliationId,
+  onRunReconciliation,
+}: ReconciliationViewProps) {
   const [summary, setSummary] = useState<ReconciliationSummary | null>(null);
   const [items, setItems] = useState<ReconciliationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
+  const { isFrozen, governanceState } = useGovernanceState();
 
   useEffect(() => {
     if (reconciliationId) {
@@ -52,8 +65,8 @@ export function ReconciliationView({ reconciliationId, onRunReconciliation }: Re
       setSummary(data.reconciliation);
       setItems(data.items || []);
     } catch (error: unknown) {
-      console.error('Failed to fetch reconciliation:', error);
-      setError(error instanceof Error ? error.message : 'Failed to load reconciliation');
+      console.error("Failed to fetch reconciliation:", error);
+      setError(error instanceof Error ? error.message : "Failed to load reconciliation");
     } finally {
       setLoading(false);
     }
@@ -64,12 +77,12 @@ export function ReconciliationView({ reconciliationId, onRunReconciliation }: Re
       setRunning(true);
       setError(null);
 
-      const res = await fetch('/api/console/reconciliation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/console/reconciliation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          sourceId: 'stripe',
-          targetAdapter: 'shopify',
+          sourceId: "stripe",
+          targetAdapter: "shopify",
         }),
       });
 
@@ -79,7 +92,7 @@ export function ReconciliationView({ reconciliationId, onRunReconciliation }: Re
 
       const data = await res.json();
       setSummary(data.reconciliation);
-      
+
       // Fetch items
       if (data.reconciliation?.id) {
         await fetchReconciliation();
@@ -89,43 +102,43 @@ export function ReconciliationView({ reconciliationId, onRunReconciliation }: Re
         onRunReconciliation();
       }
     } catch (error: unknown) {
-      console.error('Failed to run reconciliation:', error);
-      setError(error instanceof Error ? error.message : 'Failed to run reconciliation');
+      console.error("Failed to run reconciliation:", error);
+      setError(error instanceof Error ? error.message : "Failed to run reconciliation");
     } finally {
       setRunning(false);
     }
   };
 
   const formatCurrency = (amount: number, currency: string) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency || "USD",
     }).format(amount);
   };
 
-  const getStatusColor = (status: ReconciliationItem['status']) => {
+  const getStatusColor = (status: ReconciliationItem["status"]) => {
     switch (status) {
-      case 'matched':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
-      case 'unmatched':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
-      case 'conflict':
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400';
-      case 'reviewed':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
+      case "matched":
+        return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
+      case "unmatched":
+        return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
+      case "conflict":
+        return "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400";
+      case "reviewed":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
     }
   };
 
-  const getUrgencyColor = (urgency: ReconciliationItem['urgency']) => {
+  const getUrgencyColor = (urgency: ReconciliationItem["urgency"]) => {
     switch (urgency) {
-      case 'critical':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
-      case 'high':
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400';
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
-      case 'low':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
+      case "critical":
+        return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
+      case "high":
+        return "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400";
+      case "medium":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400";
+      case "low":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
     }
   };
 
@@ -161,7 +174,13 @@ export function ReconciliationView({ reconciliationId, onRunReconciliation }: Re
           <p className="text-slate-600 dark:text-slate-400 mb-4">
             Run a reconciliation to see results here.
           </p>
-          <Button onClick={handleRunReconciliation} disabled={running}>
+          <FreezeBlockedButton
+            onClick={handleRunReconciliation}
+            disabled={running}
+            isFrozen={isFrozen}
+            freezeReason={governanceState?.freeze_reason}
+            frozenMessage="Reconciliation run blocked by tenant freeze"
+          >
             {running ? (
               <>
                 <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
@@ -173,7 +192,7 @@ export function ReconciliationView({ reconciliationId, onRunReconciliation }: Re
                 Run Reconciliation
               </>
             )}
-          </Button>
+          </FreezeBlockedButton>
         </CardContent>
       </Card>
     );
@@ -188,7 +207,10 @@ export function ReconciliationView({ reconciliationId, onRunReconciliation }: Re
             <div>
               <CardTitle>Reconciliation Summary</CardTitle>
               <CardDescription>
-                Status: <Badge className={summary.status === 'completed' ? 'bg-green-100 text-green-800' : ''}>
+                Status:{" "}
+                <Badge
+                  className={summary.status === "completed" ? "bg-green-100 text-green-800" : ""}
+                >
                   {summary.status}
                 </Badge>
               </CardDescription>
@@ -213,16 +235,14 @@ export function ReconciliationView({ reconciliationId, onRunReconciliation }: Re
             </div>
             <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Started</p>
-              <p className="text-sm font-medium">
-                {new Date(summary.startedAt).toLocaleString()}
-              </p>
+              <p className="text-sm font-medium">{new Date(summary.startedAt).toLocaleString()}</p>
             </div>
             <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Completed</p>
               <p className="text-sm font-medium">
                 {summary.completedAt
                   ? new Date(summary.completedAt).toLocaleString()
-                  : 'In progress'}
+                  : "In progress"}
               </p>
             </div>
           </div>
@@ -237,10 +257,12 @@ export function ReconciliationView({ reconciliationId, onRunReconciliation }: Re
                     Highest Risk Item
                   </p>
                   <p className="text-sm text-red-800 dark:text-red-400">
-                    Delta: {formatCurrency(
+                    Delta:{" "}
+                    {formatCurrency(
                       summary.highestRiskItem.delta,
                       summary.highestRiskItem.sourceCurrency
-                    )} | Risk: {Math.round(summary.highestRiskItem.impact.riskScore * 100)}%
+                    )}{" "}
+                    | Risk: {Math.round(summary.highestRiskItem.impact.riskScore * 100)}%
                   </p>
                 </div>
               </div>
@@ -254,7 +276,7 @@ export function ReconciliationView({ reconciliationId, onRunReconciliation }: Re
         <CardHeader>
           <CardTitle>Reconciliation Items</CardTitle>
           <CardDescription>
-            Ranked by impact (risk score). {items.length} item{items.length !== 1 ? 's' : ''} total.
+            Ranked by impact (risk score). {items.length} item{items.length !== 1 ? "s" : ""} total.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -280,17 +302,11 @@ export function ReconciliationView({ reconciliationId, onRunReconciliation }: Re
                 {items.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell>
-                      <Badge className={getStatusColor(item.status)}>
-                        {item.status}
-                      </Badge>
+                      <Badge className={getStatusColor(item.status)}>{item.status}</Badge>
                     </TableCell>
-                    <TableCell>
-                      {formatCurrency(item.sourceAmount, item.sourceCurrency)}
-                    </TableCell>
-                    <TableCell>
-                      {formatCurrency(item.targetAmount, item.targetCurrency)}
-                    </TableCell>
-                    <TableCell className={item.delta >= 0 ? 'text-green-600' : 'text-red-600'}>
+                    <TableCell>{formatCurrency(item.sourceAmount, item.sourceCurrency)}</TableCell>
+                    <TableCell>{formatCurrency(item.targetAmount, item.targetCurrency)}</TableCell>
+                    <TableCell className={item.delta >= 0 ? "text-green-600" : "text-red-600"}>
                       {formatCurrency(item.delta, item.sourceCurrency)}
                     </TableCell>
                     <TableCell>
@@ -300,13 +316,9 @@ export function ReconciliationView({ reconciliationId, onRunReconciliation }: Re
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge className={getUrgencyColor(item.urgency)}>
-                        {item.urgency}
-                      </Badge>
+                      <Badge className={getUrgencyColor(item.urgency)}>{item.urgency}</Badge>
                     </TableCell>
-                    <TableCell>
-                      {Math.round(item.impact.confidence * 100)}%
-                    </TableCell>
+                    <TableCell>{Math.round(item.impact.confidence * 100)}%</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

@@ -21,6 +21,8 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
+import { useGovernanceState } from "@/hooks/use-governance-state";
+import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
 
 interface ExceptionDetail {
   id: string;
@@ -63,6 +65,7 @@ export default function ExceptionDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<ExceptionFilters>({});
+  const { isFrozen, governanceState } = useGovernanceState();
 
   // In a real app, we'd get the exceptionId from useParams()
   // For now, we'll simulate it or leave it as a placeholder
@@ -417,10 +420,16 @@ export default function ExceptionDetailPage() {
         <div className="flex flex-wrap gap-4">
           {exception.status === "pending" && (
             <>
-              <Button onClick={handleResolve} className="bg-green-600 hover:bg-green-700">
+              <FreezeBlockedButton
+                onClick={handleResolve}
+                className="bg-green-600 hover:bg-green-700"
+                isFrozen={isFrozen}
+                freezeReason={governanceState?.freeze_reason}
+                frozenMessage="Exception resolution blocked by tenant freeze"
+              >
                 <CheckCircle2 className="mr-2" />
                 Resolve Exception
-              </Button>
+              </FreezeBlockedButton>
               <Button onClick={handleIgnore} className="bg-slate-600 hover:bg-slate-700">
                 <XCircle className="mr-2" />
                 Ignore Exception

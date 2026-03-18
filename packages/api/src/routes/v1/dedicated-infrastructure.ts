@@ -4,6 +4,7 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { enforceFreezeState } from "../../middleware/governance";
 import { logError } from "../../utils/logger";
 import {
   provisionDedicatedInfrastructure,
@@ -14,11 +15,16 @@ import {
 
 const router: Router = Router();
 
-router.post("/", async (req: AuthRequest, res: Response) => {
+router.post("/", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
-    const { infrastructureType, resourceConfig, isolationLevel, dataRetentionDays, securityConfig } =
-      req.body;
+    const {
+      infrastructureType,
+      resourceConfig,
+      isolationLevel,
+      dataRetentionDays,
+      securityConfig,
+    } = req.body;
 
     if (!infrastructureType || !resourceConfig) {
       return res.status(400).json({
@@ -105,30 +111,34 @@ router.get("/:infrastructureId", async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.delete("/:infrastructureId", async (req: AuthRequest, res: Response) => {
-  try {
-    const { infrastructureId } = req.params;
-    const tenantId = req.tenantId!;
+router.delete(
+  "/:infrastructureId",
+  enforceFreezeState(),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const { infrastructureId } = req.params;
+      const tenantId = req.tenantId!;
 
-    if (!infrastructureId) {
-      return res.status(400).json({
-        error: "Bad Request",
-        message: "infrastructureId is required",
+      if (!infrastructureId) {
+        return res.status(400).json({
+          error: "Bad Request",
+          message: "infrastructureId is required",
+          traceId: req.traceId,
+        });
+      }
+
+      await deprovisionDedicatedInfrastructure(tenantId, infrastructureId);
+
+      return res.json({ message: "Infrastructure deprovisioned", traceId: req.traceId });
+    } catch (error) {
+      logError("Failed to deprovision dedicated infrastructure", error, { traceId: req.traceId });
+      return res.status(500).json({
+        error: "Internal Server Error",
+        message: "Failed to deprovision dedicated infrastructure",
         traceId: req.traceId,
       });
     }
-
-    await deprovisionDedicatedInfrastructure(tenantId, infrastructureId);
-
-    return res.json({ message: "Infrastructure deprovisioned", traceId: req.traceId });
-  } catch (error) {
-    logError("Failed to deprovision dedicated infrastructure", error, { traceId: req.traceId });
-    return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to deprovision dedicated infrastructure",
-      traceId: req.traceId,
-    });
   }
-});
+);
 
 export default router;

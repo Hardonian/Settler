@@ -5,6 +5,7 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { enforceFreezeState } from "../../middleware/governance";
 import { logError, logInfo } from "../../utils/logger";
 import {
   matchReceiptsToTransactions,
@@ -18,7 +19,7 @@ const router: Router = Router();
  * POST /api/v1/receipt-matching/match
  * Match receipts to transactions
  */
-router.post("/match", async (req: AuthRequest, res: Response) => {
+router.post("/match", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const { reconciliationRunId, receipts, transactions } = req.body;
@@ -96,36 +97,40 @@ router.get("/matches/:reconciliationRunId", async (req: AuthRequest, res: Respon
  * POST /api/v1/receipt-matching/links/:linkId/verify
  * Verify a receipt-transaction link
  */
-router.post("/links/:linkId/verify", async (req: AuthRequest, res: Response) => {
-  try {
-    const { linkId } = req.params;
-    const tenantId = req.tenantId!;
-    const userId = req.userId!;
+router.post(
+  "/links/:linkId/verify",
+  enforceFreezeState(),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const { linkId } = req.params;
+      const tenantId = req.tenantId!;
+      const userId = req.userId!;
 
-    if (!linkId) {
-      return res.status(400).json({
-        error: "Bad Request",
-        message: "linkId is required",
+      if (!linkId) {
+        return res.status(400).json({
+          error: "Bad Request",
+          message: "linkId is required",
+          traceId: req.traceId,
+        });
+      }
+
+      await verifyReceiptLink(tenantId, linkId, userId);
+
+      logInfo("Receipt link verified", { linkId, tenantId, userId, traceId: req.traceId });
+
+      return res.status(200).json({
+        message: "Link verified",
+        traceId: req.traceId,
+      });
+    } catch (error) {
+      logError("Failed to verify receipt link", error, { traceId: req.traceId });
+      return res.status(500).json({
+        error: "Internal Server Error",
+        message: "Failed to verify receipt link",
         traceId: req.traceId,
       });
     }
-
-    await verifyReceiptLink(tenantId, linkId, userId);
-
-    logInfo("Receipt link verified", { linkId, tenantId, userId, traceId: req.traceId });
-
-    return res.status(200).json({
-      message: "Link verified",
-      traceId: req.traceId,
-    });
-  } catch (error) {
-    logError("Failed to verify receipt link", error, { traceId: req.traceId });
-    return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to verify receipt link",
-      traceId: req.traceId,
-    });
   }
-});
+);
 
 export default router;

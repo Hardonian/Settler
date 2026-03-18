@@ -1,7 +1,7 @@
 /**
  * Tenant Data Management Routes
  * Enterprise-ready data export and deletion endpoints
- * 
+ *
  * Provides GDPR/CCPA compliant data export and deletion for entire tenant accounts.
  * All operations are tenant-scoped and logged in audit trail.
  */
@@ -11,6 +11,7 @@ import { z } from "zod";
 import { validateRequest } from "../middleware/validation";
 import { TenantRequest } from "../middleware/tenant";
 import { requirePermission } from "../middleware/authorization";
+import { enforceFreezeState } from "../middleware/governance";
 import { Permission } from "../infrastructure/security/Permissions";
 import { query, transaction } from "../db";
 import { logInfo, logError } from "../utils/logger";
@@ -37,7 +38,7 @@ const deleteTenantDataSchema = z.object({
 /**
  * GET /tenant/data-export
  * Export all tenant data (full account export)
- * 
+ *
  * Requires: TENANT_READ permission
  * Returns: Complete tenant data including users, jobs, webhooks, audit logs, etc.
  */
@@ -49,7 +50,7 @@ router.get(
     try {
       const tenantId = req.tenantId!;
       const userId = req.userId!;
-      const format = req.query.format as string || "json";
+      const format = (req.query.format as string) || "json";
 
       // Verify user has permission to export tenant data
       const userCheck = await query<{ role: UserRole }>(
@@ -58,18 +59,18 @@ router.get(
       );
 
       if (userCheck.length === 0 || !userCheck[0]) {
-        return res.status(403).json({ error: 'Forbidden', message: 'User not found in tenant' });
+        return res.status(403).json({ error: "Forbidden", message: "User not found in tenant" });
       }
 
       const userRole = userCheck[0].role;
       if (userRole !== UserRole.OWNER && userRole !== UserRole.ADMIN) {
-        return res.status(403).json({ 
-          error: 'Forbidden', 
-          message: 'Only tenant owners and admins can export tenant data' 
+        return res.status(403).json({
+          error: "Forbidden",
+          message: "Only tenant owners and admins can export tenant data",
         });
       }
 
-      logInfo('Starting tenant data export', { tenantId, userId });
+      logInfo("Starting tenant data export", { tenantId, userId });
 
       // Export all tenant data
       const [
@@ -99,7 +100,7 @@ router.get(
         ),
         // Recon jobs
         query(
-          `SELECT id, name, description, source_adapter, target_adapter, status, schedule_cron, 
+          `SELECT id, name, description, source_adapter, target_adapter, status, schedule_cron,
                   created_at, updated_at, deleted_at, metadata
            FROM recon_jobs WHERE tenant_id = $1`,
           [tenantId]
@@ -128,7 +129,7 @@ router.get(
         ),
         // Audit logs (last 10000)
         query(
-          `SELECT event, user_id, resource_type, resource_id, changes, ip_address, user_agent, 
+          `SELECT event, user_id, resource_type, resource_id, changes, ip_address, user_agent,
                   timestamp, metadata
            FROM audit_logs
            WHERE tenant_id = $1
@@ -187,22 +188,25 @@ router.get(
         `INSERT INTO audit_logs (event, user_id, tenant_id, resource_type, metadata, ip_address, user_agent)
          VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         [
-          'tenant_data_exported',
+          "tenant_data_exported",
           userId,
           tenantId,
-          'tenant',
+          "tenant",
           JSON.stringify({ format, exportedAt: new Date() }),
           req.ip || null,
-          req.headers['user-agent'] || null,
+          req.headers["user-agent"] || null,
         ]
       );
 
-      logInfo('Tenant data exported successfully', { tenantId, userId, format });
+      logInfo("Tenant data exported successfully", { tenantId, userId, format });
 
       if (format === "csv") {
         // Simple CSV export (can be enhanced)
         res.setHeader("Content-Type", "text/csv");
-        res.setHeader("Content-Disposition", `attachment; filename="tenant-export-${tenantId}.csv"`);
+        res.setHeader(
+          "Content-Disposition",
+          `attachment; filename="tenant-export-${tenantId}.csv"`
+        );
         res.send(JSON.stringify(exportData));
         return;
       }
@@ -210,28 +214,32 @@ router.get(
       res.json({ data: exportData });
       return;
     } catch (error: unknown) {
-      logError('Failed to export tenant data', error, { tenantId: req.tenantId, userId: req.userId });
-      handleRouteError(res, error, "Failed to export tenant data", 500, { 
-        tenantId: req.tenantId, 
-        userId: req.userId 
+      logError("Failed to export tenant data", error, {
+        tenantId: req.tenantId,
+        userId: req.userId,
+      });
+      handleRouteError(res, error, "Failed to export tenant data", 500, {
+        tenantId: req.tenantId,
+        userId: req.userId,
       });
       return;
     }
   }
 );
 
-
-
 async function tableExists(tableName: string): Promise<boolean> {
-  const rows = await query<{ exists: string | null }>(
-    `SELECT to_regclass($1) as exists`,
-    [`public.${tableName}`]
-  );
+  const rows = await query<{ exists: string | null }>(`SELECT to_regclass($1) as exists`, [
+    `public.${tableName}`,
+  ]);
 
   return Boolean(rows[0]?.exists);
 }
 
-async function countIfTableExists(tableName: string, sql: string, params: (string | number)[]): Promise<number> {
+async function countIfTableExists(
+  tableName: string,
+  sql: string,
+  params: (string | number)[]
+): Promise<number> {
   if (!(await tableExists(tableName))) {
     return 0;
   }
@@ -248,7 +256,11 @@ router.get(
       const tenantId = req.tenantId!;
       validateTenantId(tenantId, "tenant-data integrity-check");
 
-      const rlsRows = await query<{ table_name: string; relrowsecurity: boolean; policy_count: string }>(
+      const rlsRows = await query<{
+        table_name: string;
+        relrowsecurity: boolean;
+        policy_count: string;
+      }>(
         `SELECT c.relname as table_name,
                 c.relrowsecurity,
                 COUNT(p.polname)::text as policy_count
@@ -257,7 +269,7 @@ router.get(
          LEFT JOIN pg_policy p ON p.polrelid = c.oid
          WHERE n.nspname = 'public'
            AND c.relname IN ('users', 'jobs', 'reconciliation_runs', 'reconciliation_matches', 'audit_logs')
-         GROUP BY c.relname, c.relrowsecurity`,
+         GROUP BY c.relname, c.relrowsecurity`
       );
 
       const allTablesProtected =
@@ -330,8 +342,11 @@ router.get(
         },
       });
     } catch (error: unknown) {
-      logError('Failed to run tenant integrity check', error, { tenantId: req.tenantId, userId: req.userId });
-      return handleRouteError(res, error, 'Failed to run tenant integrity check', 500, {
+      logError("Failed to run tenant integrity check", error, {
+        tenantId: req.tenantId,
+        userId: req.userId,
+      });
+      return handleRouteError(res, error, "Failed to run tenant integrity check", 500, {
         tenantId: req.tenantId,
         userId: req.userId,
       });
@@ -342,9 +357,9 @@ router.get(
 /**
  * DELETE /tenant/data
  * Delete all tenant data (soft delete + scheduled hard delete)
- * 
+ *
  * Requires: TENANT_DELETE permission (owner only)
- * Process: 
+ * Process:
  *   1. Soft delete all tenant data (mark as deleted)
  *   2. Schedule hard deletion in 30 days
  *   3. Log all operations in audit trail
@@ -352,6 +367,7 @@ router.get(
 router.delete(
   "/data",
   requirePermission(Permission.TENANT_DELETE),
+  enforceFreezeState(),
   validateRequest(deleteTenantDataSchema),
   async (req: TenantRequest, res: Response) => {
     try {
@@ -360,9 +376,9 @@ router.delete(
       const { confirmation, password } = req.body;
 
       if (confirmation !== "DELETE") {
-        return res.status(400).json({ 
-          error: 'Invalid confirmation', 
-          message: 'Must include confirmation: "DELETE"' 
+        return res.status(400).json({
+          error: "Invalid confirmation",
+          message: 'Must include confirmation: "DELETE"',
         });
       }
 
@@ -373,14 +389,14 @@ router.delete(
       );
 
       if (userCheck.length === 0 || !userCheck[0]) {
-        return res.status(403).json({ error: 'Forbidden', message: 'User not found in tenant' });
+        return res.status(403).json({ error: "Forbidden", message: "User not found in tenant" });
       }
 
       const userRecord = userCheck[0];
       if (userRecord.role !== UserRole.OWNER) {
-        return res.status(403).json({ 
-          error: 'Forbidden', 
-          message: 'Only tenant owners can delete tenant data' 
+        return res.status(403).json({
+          error: "Forbidden",
+          message: "Only tenant owners can delete tenant data",
         });
       }
 
@@ -388,18 +404,18 @@ router.delete(
       const { verifyPassword } = await import("../utils/hash");
       const isValid = await verifyPassword(password, userRecord.password_hash);
       if (!isValid) {
-        return res.status(401).json({ error: 'Invalid password' });
+        return res.status(401).json({ error: "Invalid password" });
       }
 
       const deletionDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
 
-      logInfo('Starting tenant data deletion', { tenantId, userId, deletionDate });
+      logInfo("Starting tenant data deletion", { tenantId, userId, deletionDate });
 
       // Soft delete tenant and all related data
       await transaction(async (client) => {
         // Mark tenant as deleted
         await client.query(
-          `UPDATE tenants 
+          `UPDATE tenants
            SET is_active = false, metadata = jsonb_set(COALESCE(metadata, '{}'::jsonb), '{deleted_at}', to_jsonb(NOW()::text))
            WHERE id = $1`,
           [tenantId]
@@ -407,8 +423,8 @@ router.delete(
 
         // Soft delete all users
         await client.query(
-          `UPDATE users 
-           SET deleted_at = NOW(), 
+          `UPDATE users
+           SET deleted_at = NOW(),
                email = 'deleted-' || id || '@settler.io',
                name = 'Deleted User'
            WHERE tenant_id = $1`,
@@ -416,33 +432,30 @@ router.delete(
         );
 
         // Soft delete recon jobs
-        await client.query(
-          `UPDATE recon_jobs SET deleted_at = NOW() WHERE tenant_id = $1`,
-          [tenantId]
-        );
+        await client.query(`UPDATE recon_jobs SET deleted_at = NOW() WHERE tenant_id = $1`, [
+          tenantId,
+        ]);
 
         // Soft delete webhooks
-        await client.query(
-          `UPDATE webhooks SET deleted_at = NOW() WHERE tenant_id = $1`,
-          [tenantId]
-        );
+        await client.query(`UPDATE webhooks SET deleted_at = NOW() WHERE tenant_id = $1`, [
+          tenantId,
+        ]);
 
         // Soft delete ingestion sources
-        await client.query(
-          `UPDATE ingestion_sources SET deleted_at = NOW() WHERE tenant_id = $1`,
-          [tenantId]
-        );
+        await client.query(`UPDATE ingestion_sources SET deleted_at = NOW() WHERE tenant_id = $1`, [
+          tenantId,
+        ]);
 
         // Schedule hard deletion
         await client.query(
           `INSERT INTO audit_logs (event, user_id, tenant_id, resource_type, metadata)
            VALUES ($1, $2, $3, $4, $5)`,
           [
-            'tenant_deletion_scheduled',
+            "tenant_deletion_scheduled",
             userId,
             tenantId,
-            'tenant',
-            JSON.stringify({ 
+            "tenant",
+            JSON.stringify({
               scheduledAt: deletionDate.toISOString(),
               hardDeleteScheduled: true,
             }),
@@ -455,29 +468,32 @@ router.delete(
         `INSERT INTO audit_logs (event, user_id, tenant_id, resource_type, metadata, ip_address, user_agent)
          VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         [
-          'tenant_data_deletion_requested',
+          "tenant_data_deletion_requested",
           userId,
           tenantId,
-          'tenant',
+          "tenant",
           JSON.stringify({ requestedAt: new Date(), deletionDate: deletionDate.toISOString() }),
           req.ip || null,
-          req.headers['user-agent'] || null,
+          req.headers["user-agent"] || null,
         ]
       );
 
-      logInfo('Tenant data deletion scheduled', { tenantId, userId, deletionDate });
+      logInfo("Tenant data deletion scheduled", { tenantId, userId, deletionDate });
 
       res.json({
-        message: 'Tenant deletion scheduled. All data will be permanently deleted in 30 days.',
+        message: "Tenant deletion scheduled. All data will be permanently deleted in 30 days.",
         deletionDate: deletionDate.toISOString(),
         tenantId: tenantId,
       });
       return;
     } catch (error: unknown) {
-      logError('Failed to delete tenant data', error, { tenantId: req.tenantId, userId: req.userId });
-      handleRouteError(res, error, "Failed to delete tenant data", 500, { 
-        tenantId: req.tenantId, 
-        userId: req.userId 
+      logError("Failed to delete tenant data", error, {
+        tenantId: req.tenantId,
+        userId: req.userId,
+      });
+      handleRouteError(res, error, "Failed to delete tenant data", 500, {
+        tenantId: req.tenantId,
+        userId: req.userId,
       });
       return;
     }

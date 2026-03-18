@@ -8,6 +8,7 @@ import { z } from "zod";
 import { validateRequest } from "../../middleware/validation";
 import { AuthRequest } from "../../middleware/auth";
 import { requirePermission } from "../../middleware/authorization";
+import { enforceFreezeState } from "../../middleware/governance";
 import { Permission } from "../../infrastructure/security/Permissions";
 import { handleRouteError } from "../../utils/error-handler";
 import {
@@ -243,6 +244,7 @@ const createAlertThresholdSchema = z.object({
 router.post(
   "/operator/alerts/thresholds",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
   validateRequest(createAlertThresholdSchema),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -302,6 +304,7 @@ const setUsageCeilingSchema = z.object({
 router.post(
   "/operator/cost-controls/usage-ceilings",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
   validateRequest(setUsageCeilingSchema),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -386,6 +389,7 @@ const setJobLimitSchema = z.object({
 router.post(
   "/operator/cost-controls/job-limits",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
   validateRequest(setJobLimitSchema),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -441,6 +445,7 @@ const setKillSwitchSchema = z.object({
 router.post(
   "/operator/kill-switches",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
   validateRequest(setKillSwitchSchema),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -471,6 +476,7 @@ router.post(
 router.post(
   "/operator/kill-switches/connectors/:connectorType/disable",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const { connectorType } = req.params;
@@ -507,6 +513,7 @@ router.post(
 router.post(
   "/operator/kill-switches/connectors/:connectorType/enable",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const { connectorType } = req.params;
@@ -534,6 +541,7 @@ router.post(
 router.post(
   "/operator/kill-switches/jobs/:jobType/pause",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const { jobType } = req.params;
@@ -570,6 +578,7 @@ router.post(
 router.post(
   "/operator/kill-switches/jobs/:jobType/resume",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const { jobType } = req.params;
@@ -601,6 +610,7 @@ router.post(
 router.post(
   "/operator/backups/create",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const backup = await createBackup();
@@ -620,6 +630,7 @@ router.post(
 router.post(
   "/operator/backups/:backupId/verify",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const { backupId } = req.params;

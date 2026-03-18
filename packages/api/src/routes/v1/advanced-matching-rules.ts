@@ -5,6 +5,7 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { enforceFreezeState } from "../../middleware/governance";
 import { logError, logInfo } from "../../utils/logger";
 import {
   createCustomMatchingRule,
@@ -20,7 +21,7 @@ const router: Router = Router();
  * POST /api/v1/advanced-matching-rules
  * Create a custom matching rule
  */
-router.post("/", async (req: AuthRequest, res: Response) => {
+router.post("/", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const userId = req.userId!;
@@ -132,7 +133,7 @@ router.get("/:ruleId", async (req: AuthRequest, res: Response) => {
  * POST /api/v1/advanced-matching-rules/:ruleId/test
  * Test a matching rule
  */
-router.post("/:ruleId/test", async (req: AuthRequest, res: Response) => {
+router.post("/:ruleId/test", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
     const { ruleId } = req.params;
     const tenantId = req.tenantId!;

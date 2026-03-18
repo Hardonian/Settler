@@ -12,6 +12,7 @@ import { z } from "zod";
 import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
+import { enforceFreezeState } from "../middleware/governance";
 import { Permission } from "../infrastructure/security/Permissions";
 import { query } from "../db";
 import { logInfo } from "../utils/logger";
@@ -154,7 +155,7 @@ async function authenticateEdgeNode(
   const nodeKeyHash = hashNodeKey(nodeKey);
 
   const result = await query<{ id: string; tenant_id: string }>(
-    `SELECT id, tenant_id FROM edge_nodes 
+    `SELECT id, tenant_id FROM edge_nodes
      WHERE node_key_hash = $1 AND status = 'active' AND deleted_at IS NULL`,
     [nodeKeyHash]
   );
@@ -191,6 +192,7 @@ router.post(
   "/nodes",
   validateRequest(createEdgeNodeSchema),
   requirePermission(Permission.EDGE_NODES_WRITE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const { name, device_type, device_os, device_arch, capabilities, location, metadata } =
@@ -267,8 +269,8 @@ router.post(
         enrollment_key_hash: string;
         status: string;
       }>(
-        `SELECT id, tenant_id, enrollment_key_hash, status 
-       FROM edge_nodes 
+        `SELECT id, tenant_id, enrollment_key_hash, status
+       FROM edge_nodes
        WHERE status = 'pending' AND deleted_at IS NULL`
       );
 
@@ -293,8 +295,8 @@ router.post(
 
       // Activate the node
       await query(
-        `UPDATE edge_nodes 
-       SET node_key = $1, node_key_hash = $2, name = $3, 
+        `UPDATE edge_nodes
+       SET node_key = $1, node_key_hash = $2, name = $3,
            device_type = $4, device_os = $5, device_arch = $6,
            capabilities = $7, version = $8, status = 'active',
            enrollment_key_hash = NULL, last_heartbeat_at = NOW()
@@ -359,7 +361,7 @@ router.get(
       );
 
       const countResult = await query<{ count: string }>(
-        `SELECT COUNT(*) as count FROM edge_nodes 
+        `SELECT COUNT(*) as count FROM edge_nodes
        WHERE tenant_id = $1 AND deleted_at IS NULL`,
         [tenantId]
       );
@@ -448,6 +450,7 @@ router.patch(
   "/nodes/:id",
   validateRequest(updateEdgeNodeSchema),
   requirePermission(Permission.EDGE_NODES_WRITE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
@@ -487,7 +490,7 @@ router.patch(
       values.push(id || "", tenantId || "");
 
       await query(
-        `UPDATE edge_nodes 
+        `UPDATE edge_nodes
        SET ${updates.join(", ")}, updated_at = NOW()
        WHERE id = $${paramIndex++} AND tenant_id = $${paramIndex++}`,
         values
@@ -514,13 +517,14 @@ router.delete(
     })
   ),
   requirePermission(Permission.EDGE_NODES_WRITE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
       const tenantId = req.tenantId!;
 
       await query(
-        `UPDATE edge_nodes 
+        `UPDATE edge_nodes
        SET deleted_at = NOW(), status = 'revoked', updated_at = NOW()
        WHERE id = $1 AND tenant_id = $2`,
         [id || "", tenantId || ""]
@@ -587,6 +591,7 @@ router.post(
 router.post(
   "/batch-ingestion",
   validateRequest(batchIngestionSchema),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const { node_key, job_id, data, schema_hints, metadata } = req.body;
@@ -616,8 +621,8 @@ router.post(
       // TODO: Process ingestion (schema inference, PII detection, etc.)
       // For now, mark as completed
       await query(
-        `UPDATE edge_jobs 
-       SET status = 'completed', completed_at = NOW(), 
+        `UPDATE edge_jobs
+       SET status = 'completed', completed_at = NOW(),
            output_data = $1, duration_ms = EXTRACT(EPOCH FROM (NOW() - started_at)) * 1000
        WHERE id = $2`,
         [JSON.stringify({ records_processed: data.length }), edgeJobId]
@@ -778,7 +783,7 @@ router.post(
         tenant_id, edge_node_id, profile_name, device_specs,
         benchmark_results, optimization_settings
       ) VALUES ($1, $2, $3, $4, $5, $6)
-      ON CONFLICT (edge_node_id, profile_name) 
+      ON CONFLICT (edge_node_id, profile_name)
       DO UPDATE SET device_specs = EXCLUDED.device_specs,
                     benchmark_results = EXCLUDED.benchmark_results,
                     optimization_settings = EXCLUDED.optimization_settings,

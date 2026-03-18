@@ -51,7 +51,7 @@ export function createAdminRouter(adminService: AdminService): Router {
   // Resume saga
   router.post("/sagas/:sagaType/:sagaId/resume", enforceFreezeState(), async (req, res) => {
     try {
-      const { sagaType, sagaId } = req.params;
+      const { sagaType, sagaId } = req.params as { sagaType: string; sagaId: string };
       await adminService.resumeSaga(sagaId, sagaType);
       res.json({ message: "Saga resumed" });
     } catch (error: unknown) {
@@ -63,10 +63,13 @@ export function createAdminRouter(adminService: AdminService): Router {
   router.post("/sagas/:sagaType/:sagaId/retry", enforceFreezeState(), async (req, res) => {
     try {
       const { sagaType, sagaId } = req.params;
+      if (!sagaId || !sagaType) {
+        return res.status(400).json({ error: "Missing required path parameters" });
+      }
       await adminService.retrySaga(sagaId, sagaType);
-      res.json({ message: "Saga retry initiated" });
+      return res.json({ message: "Saga retry initiated" });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get saga status", 500);
+      return handleRouteError(res, error, "Failed to get saga status", 500);
     }
   });
 
@@ -74,10 +77,13 @@ export function createAdminRouter(adminService: AdminService): Router {
   router.post("/sagas/:sagaType/:sagaId/cancel", enforceFreezeState(), async (req, res) => {
     try {
       const { sagaType, sagaId } = req.params;
+      if (!sagaId || !sagaType) {
+        return res.status(400).json({ error: "Missing required path parameters" });
+      }
       await adminService.cancelSaga(sagaId, sagaType);
-      res.json({ message: "Saga cancelled" });
+      return res.json({ message: "Saga cancelled" });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get saga status", 500);
+      return handleRouteError(res, error, "Failed to get saga status", 500);
     }
   });
 
@@ -97,11 +103,14 @@ export function createAdminRouter(adminService: AdminService): Router {
   router.post("/dead-letter-queue/:id/resolve", enforceFreezeState(), async (req, res) => {
     try {
       const { id } = req.params;
-      const { notes } = req.body;
+      const { notes } = req.body as { notes?: string };
+      if (!id) {
+        return res.status(400).json({ error: "Missing required path parameter: id" });
+      }
       await adminService.resolveDeadLetterEntry(id, notes);
-      res.json({ message: "Entry resolved" });
+      return res.json({ message: "Entry resolved" });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get saga status", 500);
+      return handleRouteError(res, error, "Failed to get saga status", 500);
     }
   });
 

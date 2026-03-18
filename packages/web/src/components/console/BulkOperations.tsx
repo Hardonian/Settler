@@ -3,18 +3,27 @@
  * Handles bulk operations on transactions, matches, etc.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { RefreshCw, Play, CheckCircle2, XCircle } from 'lucide-react';
-import { format } from 'date-fns';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { RefreshCw, Play, CheckCircle2, XCircle } from "lucide-react";
+import { format } from "date-fns";
+import { useGovernanceState } from "@/hooks/use-governance-state";
+import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
+import { FreezeAwareSection } from "@/components/shared/FreezeAwareSection";
 
 interface BulkOperation {
   id: string;
@@ -36,8 +45,9 @@ export function BulkOperations() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [operationType, setOperationType] = useState<string>('');
-  const [targetType, setTargetType] = useState<string>('');
+  const [operationType, setOperationType] = useState<string>("");
+  const [targetType, setTargetType] = useState<string>("");
+  const { isFrozen, governanceState } = useGovernanceState();
 
   useEffect(() => {
     // In a real implementation, you'd fetch operations here
@@ -45,12 +55,12 @@ export function BulkOperations() {
 
   const handleCreateOperation = async () => {
     if (selectedItems.length === 0) {
-      setError('Please select at least one item');
+      setError("Please select at least one item");
       return;
     }
 
     if (!operationType || !targetType) {
-      setError('Operation type and target type are required');
+      setError("Operation type and target type are required");
       return;
     }
 
@@ -58,9 +68,9 @@ export function BulkOperations() {
       setLoading(true);
       setError(null);
 
-      const res = await fetch('/api/v1/bulk-operations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/v1/bulk-operations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           operationType,
           targetType,
@@ -71,14 +81,14 @@ export function BulkOperations() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message || 'Failed to create operation');
+        throw new Error(data.message || "Failed to create operation");
       }
 
       const data = await res.json();
       setOperations([...operations, data]);
       setSelectedItems([]);
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Failed to create operation');
+      setError(error instanceof Error ? error.message : "Failed to create operation");
     } finally {
       setLoading(false);
     }
@@ -87,34 +97,32 @@ export function BulkOperations() {
   const fetchOperationStatus = async (operationId: string) => {
     try {
       const res = await fetch(`/api/v1/bulk-operations/${operationId}`);
-      if (!res.ok) throw new Error('Failed to fetch status');
+      if (!res.ok) throw new Error("Failed to fetch status");
 
       const data = await res.json();
-      setOperations(
-        operations.map((op) => (op.id === operationId ? { ...op, ...data } : op))
-      );
+      setOperations(operations.map((op) => (op.id === operationId ? { ...op, ...data } : op)));
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Failed to fetch status');
+      setError(error instanceof Error ? error.message : "Failed to fetch status");
     }
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'completed':
+      case "completed":
         return (
           <Badge variant="default" className="bg-green-500">
             <CheckCircle2 className="h-3 w-3 mr-1" />
             Completed
           </Badge>
         );
-      case 'failed':
+      case "failed":
         return (
           <Badge variant="destructive">
             <XCircle className="h-3 w-3 mr-1" />
             Failed
           </Badge>
         );
-      case 'running':
+      case "running":
         return (
           <Badge variant="outline">
             <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
@@ -187,7 +195,9 @@ export function BulkOperations() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => setSelectedItems(selectedItems.filter((id) => id !== itemId))}
+                          onClick={() =>
+                            setSelectedItems(selectedItems.filter((id) => id !== itemId))
+                          }
                         >
                           Remove
                         </Button>
@@ -198,14 +208,20 @@ export function BulkOperations() {
               </div>
             </div>
 
-            <Button onClick={handleCreateOperation} disabled={loading || selectedItems.length === 0}>
+            <FreezeBlockedButton
+              onClick={handleCreateOperation}
+              disabled={loading || selectedItems.length === 0}
+              isFrozen={isFrozen}
+              freezeReason={governanceState?.freeze_reason}
+              frozenMessage="Bulk operations blocked by tenant freeze"
+            >
               {loading ? (
                 <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
               ) : (
                 <Play className="h-4 w-4 mr-2" />
               )}
               Execute Bulk Operation
-            </Button>
+            </FreezeBlockedButton>
           </div>
         </CardContent>
       </Card>
@@ -226,13 +242,13 @@ export function BulkOperations() {
                           {operation.operationType} - {operation.targetType}
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          Created {format(new Date(operation.createdAt), 'MMM d, yyyy HH:mm')}
+                          Created {format(new Date(operation.createdAt), "MMM d, yyyy HH:mm")}
                         </div>
                       </div>
                       {getStatusBadge(operation.status)}
                     </div>
 
-                    {operation.status === 'running' && (
+                    {operation.status === "running" && (
                       <div className="space-y-2">
                         <div className="flex items-center justify-between text-sm">
                           <span>Progress</span>
@@ -279,7 +295,7 @@ export function BulkOperations() {
                       </div>
                     )}
 
-                    {operation.status === 'running' && (
+                    {operation.status === "running" && (
                       <Button
                         variant="outline"
                         size="sm"

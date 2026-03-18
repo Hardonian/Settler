@@ -4,6 +4,7 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { enforceFreezeState } from "../../middleware/governance";
 import { logError } from "../../utils/logger";
 import {
   createCustomIntegration,
@@ -14,7 +15,7 @@ import {
 
 const router: Router = Router();
 
-router.post("/", async (req: AuthRequest, res: Response) => {
+router.post("/", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const { integrationName, integrationType, adapterConfig, whiteLabelConfig } = req.body;
@@ -101,7 +102,7 @@ router.get("/:integrationId", async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.patch("/:integrationId", async (req: AuthRequest, res: Response) => {
+router.patch("/:integrationId", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
     const { integrationId } = req.params;
     const tenantId = req.tenantId!;
