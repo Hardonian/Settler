@@ -1,5 +1,4 @@
 import { Redis } from "@upstash/redis";
-import { Pool } from "pg";
 
 /**
  * Core Ingestion Boundary Defense.
@@ -8,7 +7,7 @@ import { Pool } from "pg";
 export class IngestionBoundary {
   private redis: Redis | null;
 
-  constructor(private db: Pool) {
+  constructor(private db: { query: any }) {
     const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
     const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
     this.redis = redisUrl && redisToken ? new Redis({ url: redisUrl, token: redisToken }) : null;

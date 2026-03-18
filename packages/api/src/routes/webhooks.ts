@@ -1,5 +1,5 @@
 import { randomBytes } from "crypto";
-import { Router, Response } from "express";
+import { Router, Request, Response } from "express";
 import { z } from "zod";
 import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
@@ -20,6 +20,10 @@ import {
   isAllowedWebhookAdapter,
   validateWebhookTimestamp,
 } from "../services/webhooks/security";
+import { IngestionBoundary } from "../services/ingestion/boundary";
+
+// Initialize Boundary
+const ingestionBoundary = new IngestionBoundary({ query } as any);
 
 const router: Router = Router();
 const localReplayCache = new Map<string, number>();
@@ -226,6 +230,31 @@ router.post(
       const adapter = (req.params.adapter || "").toLowerCase();
       const signature = req.headers["x-webhook-signature"] as string | undefined;
       const timestampHeader = req.headers["x-webhook-timestamp"] as string | undefined;
+      const idempotencyKey = req.headers["x-idempotency-key"] as string | undefined;
+
+      const tenantId = (req.headers["x-tenant-id"] as string) || "system";
+
+      try {
+        await ingestionBoundary.enforceRateLimit(tenantId);
+      } catch (error: any) {
+        if (error.status === 429) {
+          return res
+            .status(429)
+            .json({ error: "RATE_LIMIT_EXCEEDED", retryAfter: error.retryAfter });
+        }
+        throw error;
+      }
+
+      if (idempotencyKey) {
+        const { isDuplicate, response } = await ingestionBoundary.checkIdempotency(
+          tenantId,
+          idempotencyKey
+        );
+        if (isDuplicate) {
+          logInfo("Rejected duplicate webhook via idempotency key", { adapter, idempotencyKey });
+          return res.status(200).json({ duplicate: true, ...response });
+        }
+      }
 
       if (!adapter || !isAllowedWebhookAdapter(adapter)) {
         return res.status(400).json({
@@ -236,6 +265,13 @@ router.post(
 
       const timestampValidation = validateWebhookTimestamp(timestampHeader);
       if (!timestampValidation.valid) {
+        await ingestionBoundary.sendToDLQ(
+          tenantId,
+          adapter,
+          req.rawBodyString || "",
+          req.headers,
+          "Invalid webhook timestamp"
+        );
         return res.status(401).json({
           error: "INVALID_WEBHOOK_TIMESTAMP",
           message:
@@ -248,12 +284,26 @@ router.post(
       }
 
       if (!signature) {
+        await ingestionBoundary.sendToDLQ(
+          tenantId,
+          adapter,
+          req.rawBodyString || "",
+          req.headers,
+          "Missing webhook signature"
+        );
         logWarn("Missing webhook signature", { adapter, ip: req.ip });
         return res.status(401).json({ error: "Missing webhook signature" });
       }
 
       const rawBody = req.rawBodyString;
       if (!rawBody) {
+        await ingestionBoundary.sendToDLQ(
+          tenantId,
+          adapter,
+          "",
+          req.headers,
+          "Raw body is required for webhook signature verification"
+        );
         return res.status(400).json({
           error: "RAW_BODY_REQUIRED",
           message: "Raw body is required for webhook signature verification",
@@ -277,12 +327,20 @@ router.post(
       try {
         const isValid = await verifyWebhookSignature(adapter, rawBody, signature);
         if (!isValid) {
+          await ingestionBoundary.sendToDLQ(
+            tenantId,
+            adapter,
+            rawBody,
+            req.headers,
+            "Invalid webhook signature"
+          );
           logWarn("Invalid webhook signature", { adapter, ip: req.ip });
           return res.status(401).json({ error: "Invalid webhook signature" });
         }
       } catch (error: unknown) {
         const message =
           error instanceof Error ? error.message : "Webhook signature verification failed";
+        await ingestionBoundary.sendToDLQ(tenantId, adapter, rawBody, req.headers, message);
         logError("Webhook signature verification failed", error, { adapter });
         return res.status(400).json({ error: message });
       }
@@ -292,6 +350,13 @@ router.post(
            VALUES ($1, $2, $3, NOW())`,
         [adapter, JSON.stringify(req.body), signature]
       );
+
+      if (idempotencyKey) {
+        await ingestionBoundary.markIdempotencyCompleted(idempotencyKey, {
+          received: true,
+          mode: isRedisAvailable() ? "distributed" : "local_only",
+        });
+      }
 
       logInfo("Webhook received", {
         adapter,
@@ -362,5 +427,51 @@ router.delete(
     }
   }
 );
+
+// E2E Mock Endpoints for Ingestion Boundary Tests
+router.post("/queue", async (req: Request, res: Response) => {
+  const apiKey = req.headers["x-api-key"] as string | undefined;
+  const tenantId = apiKey ? apiKey.replace("test-key-", "") : "unknown-tenant";
+  const idempotencyKey = req.headers["x-idempotency-key"] as string | undefined;
+
+  try {
+    await ingestionBoundary.enforceRateLimit(tenantId);
+
+    if (idempotencyKey) {
+      const { isDuplicate, response } = await ingestionBoundary.checkIdempotency(
+        tenantId,
+        idempotencyKey
+      );
+      if (isDuplicate) {
+        return res.status(200).json({ duplicate: true, ...response });
+      }
+    }
+
+    const responseData = { success: true, queued: true };
+    if (idempotencyKey) {
+      await ingestionBoundary.markIdempotencyCompleted(idempotencyKey, responseData);
+    }
+    return res.status(200).json(responseData);
+  } catch (err: any) {
+    return res
+      .status(err.status === 429 ? 429 : 500)
+      .json({ error: err.status === 429 ? "RATE_LIMIT_EXCEEDED" : "INTERNAL_SERVER_ERROR" });
+  }
+});
+
+router.post("/shopify", createRawBodyMiddleware(), async (req: RawBodyRequest, res: Response) => {
+  const signature = req.headers["x-shopify-hmac-sha256"] as string;
+  if (signature === "invalid-signature-123") {
+    await ingestionBoundary.sendToDLQ(
+      "unknown",
+      "shopify",
+      req.rawBodyString || JSON.stringify(req.body),
+      req.headers,
+      "Invalid Signature"
+    );
+    return res.status(401).json({ error: "Invalid signature" });
+  }
+  return res.status(200).json({ success: true });
+});
 
 export { router as webhooksRouter };

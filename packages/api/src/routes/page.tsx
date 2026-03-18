@@ -8,34 +8,39 @@ export default function DLQReviewPage() {
   const [selectedItem, setSelectedItem] = useState<any | null>(null);
 
   useEffect(() => {
-    // Mocking real initial data load.
-    // Next step would be to hook this into `GET /api/operator/dlq`
-    setDlqItems([
-      {
-        id: "dlq-123",
-        tenant_id: "tenant-noisy-123",
-        source: "shopify",
-        error_reason: "Invalid webhook signature",
-        created_at: new Date().toISOString(),
-        payload: '{"order_id": "123", "total": "50.00"}',
-        headers: { "x-shopify-hmac-sha256": "invalid-signature-123" },
-      },
-      {
-        id: "dlq-124",
-        tenant_id: "tenant-abc-456",
-        source: "stripe",
-        error_reason: "Malformed JSON payload",
-        created_at: new Date(Date.now() - 3600000).toISOString(),
-        payload: '{"charge_id": "ch_123", "amount": 1000',
-        headers: { "stripe-signature": "t=123,v1=abc" },
-      },
-    ]);
-    setLoading(false);
+    const fetchDLQ = async () => {
+      try {
+        const res = await fetch("/api/v1/operator/dlq");
+        if (res.ok) {
+          const { data } = await res.json();
+          setDlqItems(data || []);
+        } else {
+          console.error("Failed to load DLQ data");
+        }
+      } catch (err) {
+        console.error("Network error while fetching DLQ", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDLQ();
   }, []);
 
   const handleReplay = async (item: any) => {
-    alert(`Replaying webhook from ${item.source} for tenant ${item.tenant_id}`);
-    // In reality: POST /api/operator/dlq/${item.id}/replay
+    try {
+      const res = await fetch(`/api/v1/operator/dlq/${item.id}/replay`, {
+        method: "POST",
+      });
+
+      if (res.ok) {
+        setDlqItems((prev) => prev.filter((i) => i.id !== item.id));
+        alert(`Successfully replayed webhook from ${item.source}`);
+      } else {
+        alert("Failed to replay webhook.");
+      }
+    } catch (err) {
+      console.error("Failed to replay", err);
+    }
   };
 
   return (
