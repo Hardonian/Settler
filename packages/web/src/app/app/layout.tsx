@@ -38,24 +38,40 @@ function SignedOutScreen() {
 }
 
 function NoTenantScreen() {
+  const isLocalDev = process.env.NODE_ENV === "development";
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-6">
       <div className="w-full max-w-md rounded-xl border border-border bg-card p-6 text-center shadow-sm">
         <h2 className="text-xl font-semibold text-foreground mb-2">No workspace assigned</h2>
-        <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-          Your account has not been assigned to a Settler tenant workspace. A strict tenant boundary
-          is required to access the operational control plane.
+        <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+          Your account has not been assigned to a Settler workspace. Complete setup to access the operational control plane.
         </p>
+        
+        {isLocalDev && (
+          <div className="mb-4 rounded-lg bg-blue-50 dark:bg-blue-950 p-3 text-left">
+            <p className="text-xs font-medium text-blue-900 dark:text-blue-200">
+              💡 Running locally? Create a workspace to get started:
+            </p>
+          </div>
+        )}
+        
         <div className="flex flex-col gap-3">
           <Link
-            href="/docs/getting-started"
+            href="/console/onboarding"
             className="inline-flex items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          >
+            {isLocalDev ? "Create your workspace" : "Complete workspace setup"}
+          </Link>
+          <Link
+            href="/docs/getting-started"
+            className="inline-flex items-center justify-center whitespace-nowrap rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
             Read setup documentation
           </Link>
           <Link
             href="/"
-            className="inline-flex items-center justify-center whitespace-nowrap rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             Return to homepage
           </Link>

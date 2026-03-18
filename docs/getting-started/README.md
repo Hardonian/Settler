@@ -84,6 +84,11 @@ pnpm check
 
 ## Next Steps
 
+- **What Works Today:** [WHAT_WORKS.md](./WHAT_WORKS.md) - Core functional workflows
+- **Demo Walkthrough:** [DEMO_WALKTHROUGH.md](./DEMO_WALKTHROUGH.md) - Step-by-step demo
+- **Verification:** [VERIFICATION_COMMANDS.md](../VERIFICATION_COMMANDS.md) - All verification commands
+- **Setup Traps:** [SETUP_TRAPS.md](../troubleshooting/SETUP_TRAPS.md) - Avoid common issues
+- **Intentional Boundaries:** [INTENTIONAL_BOUNDARIES.md](./INTENTIONAL_BOUNDARIES.md) - What's not production-ready
 - **Architecture Overview:** [`docs/architecture/platform-architecture.md`](../architecture/platform-architecture.md)
 - **Using the CLI:** [`packages/cli/README.md`](../../packages/cli/README.md)
 - **API Reference:** [`docs/api/README.md`](../api/README.md)

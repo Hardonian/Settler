@@ -70,15 +70,21 @@ export default function ExceptionsPage() {
       }
     });
 
-    // Consequence Truth: Intelligently switch to the isolated, run-scoped endpoint if navigating from a specific run
-    const endpoint = runId
-      ? `/api/v1/runs/${runId}/exceptions?${queryParams.toString()}`
-      : `/api/exceptions?${queryParams.toString()}`;
+    if (runId) {
+      queryParams.set("runId", runId);
+    }
 
-    const result = await safeFetch<{ data: Exception[]; pagination: unknown }>(endpoint);
+    const endpoint = `/api/exceptions?${queryParams.toString()}`;
+    const result = await safeFetch<{
+      items?: Exception[];
+      data?: Exception[];
+      exceptions?: Exception[];
+      pagination?: unknown;
+    }>(endpoint);
 
     if (result.success && result.data) {
-      setExceptions(result.data.data);
+      const items = result.data.items ?? result.data.data ?? result.data.exceptions ?? [];
+      setExceptions(items);
       setError(null);
     } else {
       setError(result.error?.message || "Failed to load exceptions");

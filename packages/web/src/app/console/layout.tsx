@@ -12,6 +12,7 @@
 import { ConsoleLayout } from "@/components/console/ConsoleLayout";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { LocalDevBanner } from "@/components/env/LocalDevBanner";
 import { getConsoleAccessStatus } from "@/lib/auth/console-gate";
 import { validateSupabaseEnv } from "@/lib/env/validator";
 import { EnvErrorPanel } from "@/components/env/EnvErrorPanel";
@@ -75,6 +76,7 @@ export default async function ConsoleRootLayout({ children }: { children: React.
     return (
       <ErrorBoundary context="Console Layout">
         <Navigation />
+        {process.env.NODE_ENV === "development" && <LocalDevBanner />}
         <ConsoleLayout>{children}</ConsoleLayout>
         <Footer />
       </ErrorBoundary>

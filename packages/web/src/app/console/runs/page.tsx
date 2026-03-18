@@ -160,9 +160,9 @@ export default function RunsPage() {
           title="No reconciliation runs yet"
           description="Reconciliation runs will appear here once jobs are executed. Create a job and run it to see execution history."
           action={{
-            label: "Go to Jobs",
+            label: "Open Reconciliations",
             onClick: () => {
-              window.location.href = "/console/jobs";
+              window.location.href = "/console/reconciliations";
             },
           }}
         />

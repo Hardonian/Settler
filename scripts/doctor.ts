@@ -181,13 +181,13 @@ function checkNodeVersion() {
   const requiredMajor = parseInt(requiredVersion.split('.')[0]);
   
   if (majorVersion >= requiredMajor) {
-    addCheck('toolchain', 'Node.js', 'pass', `v${currentVersion} (required: >=${requiredMajor}.x)`);
+    addCheck('toolchain', 'Node.js', 'pass', `${currentVersion} (required: >=${requiredMajor}.x)`);
   } else {
     addCheck(
       'toolchain',
       'Node.js',
       'fail',
-      `v${currentVersion} (required: >=${requiredMajor}.x)`,
+      `${currentVersion} (required: >=${requiredMajor}.x)`,
       `Run 'nvm install ${requiredVersion}' or 'nvm use' to switch Node versions`
     );
   }
@@ -707,8 +707,9 @@ function checkGitStatus() {
 }
 
 function checkBuild() {
-  if (FAST_MODE) {
-    addCheck('workspace', 'Build', 'warn', 'Skipped in fast mode');
+  // Skip build check in fast mode or first-run mode
+  if (FAST_MODE || FIRST_RUN) {
+    addCheck('workspace', 'Build', 'warn', 'Skipped in fast/first-run mode');
     return;
   }
   
@@ -850,10 +851,8 @@ async function main() {
   checkWorkspaceFiles();
   checkGitStatus();
   
-  // Build (skip in fast mode or if explicitly first-run)
-  if (!FAST_MODE && !FIRST_RUN && !args.fast) {
-    checkBuild();
-  }
+  // Run build check
+  checkBuild();
   
   // Output results
   if (JSON_OUTPUT) {

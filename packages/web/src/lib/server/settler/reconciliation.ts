@@ -10,13 +10,20 @@ import type {
   ReconciliationSummary,
   ReconciliationItem,
   TenantId,
-  SourceId,
 } from "@/lib/domain/types";
 import { calculateImpact, generateExplanation } from "@/lib/judgment/rules";
 import { safeLogger } from "@/lib/observability/safe-logger";
-import { seal } from "@/lib/reconciliation/trust-envelope";
 
-const SETTLER_VERSION = "1.0.0";
+function mapStatus(raw: string | null | undefined): "running" | "completed" | "failed" {
+  const value = (raw || "").toLowerCase();
+  if (value === "completed" || value === "succeeded" || value === "success") {
+    return "completed";
+  }
+  if (value === "failed" || value === "error" || value === "dead" || value === "canceled") {
+    return "failed";
+  }
+  return "running";
+}
 
 /**
  * Get reconciliation summary by ID
@@ -40,35 +47,80 @@ export async function getReconciliationSummary(
       return null;
     }
 
-    // Get reconciliation run using Prisma
-    const result = await prisma.reconciliationRun.findFirst({
+    // Prefer direct reconciliation_run lookup first
+    const run = await prisma.reconciliationRun.findFirst({
       where: {
         id: reconciliationId,
         tenantId,
       },
     });
 
-    if (!result) {
-      await safeLogger.warn("[getReconciliationSummary] Reconciliation run not found", {
+    if (run) {
+      return {
+        id: run.id,
+        tenantId,
+        sourceId: run.ingestionId ?? "unknown",
+        status: mapStatus(run.status),
+        totalDelta: 0,
+        currency: "USD",
+        mismatchCount: run.unmatchedSourceCount + run.unmatchedTargetCount,
+        startedAt: run.startedAt,
+        completedAt: run.completedAt || undefined,
+      };
+    }
+
+    // Fallback: treat the ID as a recon_job and summarize from latest recon_result.
+    const job = await prisma.reconJob.findFirst({
+      where: {
+        id: reconciliationId,
+        tenantId,
+        deletedAt: null,
+      },
+      select: {
+        id: true,
+        createdAt: true,
+      },
+    });
+
+    if (!job) {
+      await safeLogger.warn("[getReconciliationSummary] Reconciliation subject not found", {
         tenantId,
         reconciliationId,
       });
       return null;
     }
 
-    // Calculate totalDelta from matches (if needed)
-    const totalDelta = 0; // Can be calculated from matches if needed
+    const latestResult = await prisma.reconResult.findFirst({
+      where: {
+        reconJobId: job.id,
+        tenantId,
+      },
+      orderBy: {
+        startedAt: "desc",
+      },
+      select: {
+        status: true,
+        startedAt: true,
+        completedAt: true,
+        unmatchedSourceCount: true,
+        unmatchedTargetCount: true,
+        conflictCount: true,
+      },
+    });
 
     return {
-      id: result.id,
+      id: job.id,
       tenantId,
-      sourceId: result.ingestionId ?? "unknown",
-      status: result.status as "running" | "completed" | "failed",
-      totalDelta,
-      currency: "USD", // Default currency
-      mismatchCount: result.unmatchedSourceCount,
-      startedAt: result.startedAt,
-      completedAt: result.completedAt || undefined,
+      sourceId: job.id,
+      status: mapStatus(latestResult?.status),
+      totalDelta: 0,
+      currency: "USD",
+      mismatchCount:
+        (latestResult?.unmatchedSourceCount || 0) +
+        (latestResult?.unmatchedTargetCount || 0) +
+        (latestResult?.conflictCount || 0),
+      startedAt: latestResult?.startedAt || job.createdAt,
+      completedAt: latestResult?.completedAt || undefined,
     };
   } catch (error) {
     await safeLogger.error("[getReconciliationSummary] Unexpected error", {
@@ -103,14 +155,44 @@ export async function listReconciliationItems(
       return [];
     }
 
-    // Get reconciliation matches using Prisma
-    const matches = await prisma.reconciliationMatch.findMany({
+    // Prefer direct run-id match lookup.
+    let matches = await prisma.reconciliationMatch.findMany({
       where: {
         runId: reconciliationId,
         tenantId,
       },
       orderBy: { createdAt: "desc" },
     });
+
+    // Fallback: if this is a recon_job ID, map to run IDs via metadata provenance.
+    if (matches.length === 0) {
+      const relatedRuns = await prisma.reconciliationRun.findMany({
+        where: {
+          tenantId,
+          OR: [
+            { metadata: { path: ["jobId"], equals: reconciliationId } },
+            { metadata: { path: ["job_id"], equals: reconciliationId } },
+            { metadata: { path: ["reconJobId"], equals: reconciliationId } },
+            { metadata: { path: ["recon_job_id"], equals: reconciliationId } },
+            { metadata: { path: ["matchingConfig", "jobId"], equals: reconciliationId } },
+          ],
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      const relatedRunIds = relatedRuns.map((entry: { id: string }) => entry.id);
+      if (relatedRunIds.length > 0) {
+        matches = await prisma.reconciliationMatch.findMany({
+          where: {
+            tenantId,
+            runId: { in: relatedRunIds },
+          },
+          orderBy: { createdAt: "desc" },
+        });
+      }
+    }
 
     // Get source transactions for matches
     const sourceTransactionIds = matches.map(

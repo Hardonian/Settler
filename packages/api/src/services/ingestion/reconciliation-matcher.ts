@@ -123,6 +123,69 @@ function daysDifference(date1: Date, date2: Date): number {
   return Math.round(diffMs / (1000 * 60 * 60 * 24));
 }
 
+export interface OneToOneMatchingResult {
+  matches: MatchResult[];
+  matchedCount: number;
+  unmatchedSourceCount: number;
+  unmatchedTargetCount: number;
+  totalConfidence: number;
+}
+
+/**
+ * Enforce one-to-one source->target matching.
+ * A target transaction can be consumed by at most one source transaction.
+ */
+export async function executeOneToOneMatching(
+  sourceIds: string[],
+  targetIds: string[],
+  matcher: (sourceId: string, candidateTargetIds: string[]) => Promise<MatchResult | null>
+): Promise<OneToOneMatchingResult> {
+  const remainingTargetIds = new Set(targetIds);
+  const matches: MatchResult[] = [];
+  let matchedCount = 0;
+  let unmatchedSourceCount = 0;
+  let totalConfidence = 0;
+
+  for (const sourceId of sourceIds) {
+    const candidateTargetIds = Array.from(remainingTargetIds);
+    const match = await matcher(sourceId, candidateTargetIds);
+
+    if (!match) {
+      unmatchedSourceCount += 1;
+      continue;
+    }
+
+    if (match.targetTransactionId) {
+      if (!remainingTargetIds.has(match.targetTransactionId)) {
+        matches.push({
+          sourceTransactionId: match.sourceTransactionId,
+          matchType: "unmatched",
+          confidence: 0,
+          matchReason: "Target already consumed by another source transaction",
+        });
+        unmatchedSourceCount += 1;
+        continue;
+      }
+
+      remainingTargetIds.delete(match.targetTransactionId);
+      matchedCount += 1;
+      totalConfidence += match.confidence;
+    } else {
+      unmatchedSourceCount += 1;
+    }
+
+    matches.push(match);
+  }
+
+  return {
+    matches,
+    matchedCount,
+    unmatchedSourceCount,
+    unmatchedTargetCount: remainingTargetIds.size,
+    totalConfidence,
+  };
+}
+
 /**
  * Match source transaction to target transactions
  *
@@ -473,7 +536,6 @@ export async function runReconciliation(
 
     const sourceIds = (sourceTransactions as Array<{ id: string }>).map((t) => t.id);
     const targetIds = (targetTransactions as Array<{ id: string }>).map((t) => t.id);
-    const remainingTargetIds = new Set(targetIds);
 
     logInfo("Starting reconciliation", {
       runId,
@@ -482,28 +544,13 @@ export async function runReconciliation(
       traceId,
     });
 
-    // Match each source transaction
-    const matches: MatchResult[] = [];
-    let matchedCount = 0;
-    let unmatchedCount = 0;
-    let totalConfidence = 0;
-
-    for (const sourceId of sourceIds) {
-      const candidateTargetIds = Array.from(remainingTargetIds);
-      const match = await matchTransaction(sourceId, candidateTargetIds, tenantId, effectiveConfig);
-      if (match) {
-        if (match.targetTransactionId) {
-          remainingTargetIds.delete(match.targetTransactionId);
-        }
-        matches.push(match);
-        if (match.targetTransactionId) {
-          matchedCount++;
-          totalConfidence += match.confidence;
-        } else {
-          unmatchedCount++;
-        }
-      }
-    }
+    const oneToOneResult = await executeOneToOneMatching(sourceIds, targetIds, (sourceId, candidates) =>
+      matchTransaction(sourceId, candidates, tenantId, effectiveConfig)
+    );
+    const matches = oneToOneResult.matches;
+    const matchedCount = oneToOneResult.matchedCount;
+    const unmatchedCount = oneToOneResult.unmatchedSourceCount;
+    const totalConfidence = oneToOneResult.totalConfidence;
 
     // Store matches
     await transaction(async (client) => {
@@ -534,7 +581,7 @@ export async function runReconciliation(
 
     // Update reconciliation run
     const avgConfidence = matchedCount > 0 ? totalConfidence / matchedCount : 0;
-    const unmatchedTargetCount = remainingTargetIds.size;
+    const unmatchedTargetCount = oneToOneResult.unmatchedTargetCount;
 
     const completedMetadata = {
       ...runMetadata,

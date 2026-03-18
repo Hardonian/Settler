@@ -29,6 +29,10 @@ export const maxDuration = 60;
 const RunReconciliationSchema = z.object({
   sourceId: z.string().min(1),
   targetAdapter: z.string().optional(),
+  amountTolerance: z.number().min(0).optional(),
+  dateWindowDays: z.number().min(0).optional(),
+  fuzzyDescriptionThreshold: z.number().min(0).max(1).optional(),
+  requireExactAmount: z.boolean().optional(),
   rules: z
     .array(
       z.object({
@@ -60,12 +64,53 @@ export const POST = withSecurity(
         const body = await request.json();
         const params = RunReconciliationSchema.parse(body);
 
+        const normalizedConfig: Record<string, unknown> = {};
+        if (typeof params.amountTolerance === "number") {
+          normalizedConfig.amountTolerance = params.amountTolerance;
+        }
+        if (typeof params.dateWindowDays === "number") {
+          normalizedConfig.dateWindowDays = params.dateWindowDays;
+        }
+        if (typeof params.fuzzyDescriptionThreshold === "number") {
+          normalizedConfig.fuzzyDescriptionThreshold = params.fuzzyDescriptionThreshold;
+        }
+        if (typeof params.requireExactAmount === "boolean") {
+          normalizedConfig.requireExactAmount = params.requireExactAmount;
+        }
+
+        // Backward compatibility for callers still sending tolerance/window in rules[] payload.
+        if (Array.isArray(params.rules) && params.rules.length > 0) {
+          const amountRule = params.rules.find(
+            (rule) =>
+              rule.field.toLowerCase().includes("amount") && typeof rule.tolerance === "number"
+          );
+          if (
+            amountRule &&
+            typeof normalizedConfig.amountTolerance !== "number" &&
+            typeof amountRule.tolerance === "number"
+          ) {
+            normalizedConfig.amountTolerance = amountRule.tolerance;
+          }
+
+          const dateRule = params.rules.find(
+            (rule) =>
+              rule.field.toLowerCase().includes("date") &&
+              typeof rule.tolerance === "number" &&
+              Number.isFinite(rule.tolerance)
+          );
+          if (
+            dateRule &&
+            typeof normalizedConfig.dateWindowDays !== "number" &&
+            typeof dateRule.tolerance === "number"
+          ) {
+            normalizedConfig.dateWindowDays = dateRule.tolerance;
+          }
+        }
+
         // Run reconciliation via the authoritative internal API
         const result = await triggerInternalReconciliationRun(tenantId, userId, {
           ingestionId: params.sourceId,
-          config: {
-            rules: params.rules,
-          },
+          config: normalizedConfig,
         });
 
         if (!result || !result.runId) {

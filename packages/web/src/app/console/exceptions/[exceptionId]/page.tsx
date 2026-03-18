@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -43,16 +44,21 @@ interface ExceptionDetail {
 }
 
 export default function ExceptionDetailPage() {
+  const params = useParams();
+  const exceptionId =
+    params && typeof params.exceptionId === "string" ? params.exceptionId : undefined;
   const [exception, setException] = useState<ExceptionDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { isFrozen, governanceState } = useGovernanceState();
 
-  // In a real app, we'd get the exceptionId from useParams()
-  // For now, we'll simulate it or leave it as a placeholder
-  const exceptionId = "EXC-12345"; // This would come from useParams()
-
   useEffect(() => {
+    if (!exceptionId) {
+      setError("Missing exception ID");
+      setLoading(false);
+      return;
+    }
+
     loadExceptionDetail();
 
     // Poll for updates if exception is still active
@@ -64,11 +70,22 @@ export default function ExceptionDetailPage() {
   }, [exceptionId, exception?.status]);
 
   const loadExceptionDetail = async () => {
+    if (!exceptionId) {
+      return;
+    }
+
     setLoading(true);
-    const result = await safeFetch<ExceptionDetail>(`/api/exceptions/${exceptionId}`);
+    const result = await safeFetch<{ exception?: ExceptionDetail } | ExceptionDetail>(
+      `/api/exceptions/${exceptionId}`
+    );
 
     if (result.success && result.data) {
-      setException(result.data);
+      const payload = result.data;
+      const nextException: ExceptionDetail | null =
+        payload && typeof payload === "object" && "exception" in payload
+          ? (payload.exception ?? null)
+          : (payload as ExceptionDetail);
+      setException(nextException);
       setError(null);
     } else {
       setError(result.error?.message || "Failed to load exception detail");

@@ -7,7 +7,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/shared/db/prismaClient";
 import { getTraceId } from "@/lib/observability/trace";
-import { requireAuth } from "@/lib/api/unified-auth";
+import {
+  resolveTenantForMutation,
+  resolveTenantMembershipScope,
+  TenantMembershipError,
+} from "@/lib/supabase/tenant-membership";
 import { withSecurity } from "@/lib/middleware/api-security";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
@@ -18,6 +22,7 @@ export const runtime = "nodejs";
 
 // Query parameters schema
 const queryParamsSchema = z.object({
+  runId: z.string().uuid().optional(),
   status: z.enum(["pending", "investigating", "resolved", "ignored"]).optional(),
   severity: z.enum(["low", "medium", "high", "critical"]).optional(),
   type: z.string().optional(),
@@ -37,20 +42,15 @@ export const GET = withSecurity(
       const traceId = await getTraceId(request);
 
       try {
-        // Authenticate and get workspace context
-        const auth = await requireAuth(request);
-        const tenantId = auth.tenantId;
-
-        if (!tenantId) {
-          return NextResponse.json(
-            { error: "No workspace found", trace_id: traceId },
-            { status: 401 }
-          );
-        }
+        const { tenantIds } = await resolveTenantMembershipScope();
 
         // Parse and validate query params
         const { searchParams } = new URL(request.url);
+        const requestedTenantId =
+          searchParams.get("workspace_id")?.trim() || searchParams.get("tenant_id")?.trim() || null;
+        const tenantId = resolveTenantForMutation(tenantIds, requestedTenantId);
         const rawParams: QueryParams = {
+          runId: searchParams.get("runId") || undefined,
           status: (searchParams.get("status") as QueryParams["status"]) || undefined,
           severity: (searchParams.get("severity") as QueryParams["severity"]) || undefined,
           type: searchParams.get("type") || undefined,
@@ -64,6 +64,7 @@ export const GET = withSecurity(
         // Build where clause - workspace scoped
         const whereClause: {
           tenantId: string;
+          reconJobId?: string;
           severity?: string;
           driftType?: string;
           acknowledged?: boolean;
@@ -82,9 +83,17 @@ export const GET = withSecurity(
           whereClause.driftType = params.type;
         }
 
+        if (params.runId) {
+          whereClause.reconJobId = params.runId;
+        }
+
         // Map status to acknowledged
         if (params.status) {
-          whereClause.acknowledged = params.status === "resolved" || params.status === "ignored";
+          if (params.status === "resolved" || params.status === "ignored") {
+            whereClause.acknowledged = true;
+          } else {
+            whereClause.acknowledged = false;
+          }
         }
 
         // Search in fieldPath, expectedValue, actualValue
@@ -127,7 +136,15 @@ export const GET = withSecurity(
 
         // Transform to frontend format
         const items = exceptions.map((ex: any) => {
-          const status = ex.acknowledged ? "resolved" : "pending";
+          const metadata = (ex.metadata as Record<string, unknown>) || {};
+          const resolution = metadata.resolution as Record<string, unknown> | undefined;
+          const resolutionStatus = typeof resolution?.status === "string" ? resolution.status : null;
+          const status =
+            resolutionStatus === "ignored"
+              ? "ignored"
+              : ex.acknowledged
+                ? "resolved"
+                : "pending";
 
           return {
             id: ex.id,
@@ -149,12 +166,20 @@ export const GET = withSecurity(
 
         return NextResponse.json({
           items,
+          data: items,
           total,
           limit,
           offset,
           trace_id: traceId,
         });
       } catch (error) {
+        if (error instanceof TenantMembershipError) {
+          return NextResponse.json(
+            { error: error.message, code: error.code, trace_id: traceId },
+            { status: error.status }
+          );
+        }
+
         appLogger.error("[Exceptions API] Error fetching exceptions", error);
 
         if (error instanceof z.ZodError) {

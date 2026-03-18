@@ -16,6 +16,8 @@ import { POST as postIntegrationTest } from "@/app/api/integrations/[integration
 const authenticateApiKeyMock = jest.fn();
 const requireAuthMock = jest.fn();
 const requireAdminMock = jest.fn();
+const resolveTenantMembershipScopeMock = jest.fn();
+const resolveTenantForMutationMock = jest.fn();
 const createClientMock = jest.fn();
 const getTraceIdMock = jest.fn();
 const logAuditEventMock = jest.fn();
@@ -54,6 +56,25 @@ jest.mock("@/lib/api/unified-auth", () => ({
 jest.mock("@/lib/api/auth-gate", () => ({
   requireAdmin: (...args: unknown[]) => requireAdminMock(...args),
 }));
+
+jest.mock("@/lib/supabase/tenant-membership", () => {
+  class TenantMembershipError extends Error {
+    status: number;
+    code: string;
+
+    constructor(status: number, code: string, message: string) {
+      super(message);
+      this.status = status;
+      this.code = code;
+    }
+  }
+
+  return {
+    resolveTenantMembershipScope: (...args: unknown[]) => resolveTenantMembershipScopeMock(...args),
+    resolveTenantForMutation: (...args: unknown[]) => resolveTenantForMutationMock(...args),
+    TenantMembershipError,
+  };
+});
 
 jest.mock("@/lib/supabase/server", () => ({
   createClient: (...args: unknown[]) => createClientMock(...args),
@@ -119,6 +140,8 @@ describe("non-run false-success invariants", () => {
     authenticateApiKeyMock.mockReset();
     requireAuthMock.mockReset();
     requireAdminMock.mockReset();
+    resolveTenantMembershipScopeMock.mockReset();
+    resolveTenantForMutationMock.mockReset();
     createClientMock.mockReset();
     getTraceIdMock.mockReset();
     logAuditEventMock.mockReset();
@@ -140,6 +163,12 @@ describe("non-run false-success invariants", () => {
     authenticateApiKeyMock.mockResolvedValue(null);
     requireAuthMock.mockResolvedValue({ userId: "user-a", tenantId: "tenant-a" });
     requireAdminMock.mockResolvedValue({ isAdmin: true, user: { id: "admin-a" } });
+    resolveTenantMembershipScopeMock.mockResolvedValue({
+      tenantIds: ["tenant-a"],
+      userId: "user-a",
+      supabase: {},
+    });
+    resolveTenantForMutationMock.mockReturnValue("tenant-a");
     getTraceIdMock.mockResolvedValue("trace-test");
     logAuditEventMock.mockResolvedValue(undefined);
 

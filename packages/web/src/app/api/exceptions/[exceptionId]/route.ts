@@ -8,7 +8,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/shared/db/prismaClient";
 import { getTraceId } from "@/lib/observability/trace";
-import { requireAuth } from "@/lib/api/unified-auth";
+import {
+  resolveTenantForMutation,
+  resolveTenantMembershipScope,
+  TenantMembershipError,
+} from "@/lib/supabase/tenant-membership";
 import { withSecurity } from "@/lib/middleware/api-security";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
@@ -59,16 +63,12 @@ export const GET = withSecurity(
 
         const { exceptionId } = parsedParams.data;
 
-        // Authenticate and get workspace context
-        const auth = await requireAuth(request);
-        const tenantId = auth.tenantId;
-
-        if (!tenantId) {
-          return NextResponse.json(
-            { error: "No workspace found", trace_id: traceId },
-            { status: 401 }
-          );
-        }
+        const { tenantIds } = await resolveTenantMembershipScope();
+        const requestedTenantId =
+          request.nextUrl.searchParams.get("workspace_id")?.trim() ||
+          request.nextUrl.searchParams.get("tenant_id")?.trim() ||
+          null;
+        const tenantId = resolveTenantForMutation(tenantIds, requestedTenantId);
 
         // Fetch exception - workspace scoped
         const exception = await prisma.driftEvent.findFirst({
@@ -102,7 +102,15 @@ export const GET = withSecurity(
         }
 
         // Transform to frontend format
-        const status = exception.acknowledged ? "resolved" : "pending";
+        const metadata = (exception.metadata as Record<string, unknown>) || {};
+        const resolution = metadata.resolution as Record<string, unknown> | undefined;
+        const resolutionStatus = typeof resolution?.status === "string" ? resolution.status : null;
+        const status =
+          resolutionStatus === "ignored"
+            ? "ignored"
+            : exception.acknowledged
+              ? "resolved"
+              : "pending";
 
         const result = {
           id: exception.id,
@@ -113,12 +121,10 @@ export const GET = withSecurity(
           description: exception.fieldPath
             ? `Field mismatch: ${exception.fieldPath}`
             : "Drift detected",
-          amount: (exception.metadata as Record<string, unknown>)?.amount as number | undefined,
-          currency: (exception.metadata as Record<string, unknown>)?.currency as string | undefined,
-          sourceTransactionId: (exception.metadata as Record<string, unknown>)
-            ?.sourceTransactionId as string | undefined,
-          targetTransactionId: (exception.metadata as Record<string, unknown>)
-            ?.targetTransactionId as string | undefined,
+          amount: metadata.amount as number | undefined,
+          currency: metadata.currency as string | undefined,
+          sourceTransactionId: metadata.sourceTransactionId as string | undefined,
+          targetTransactionId: metadata.targetTransactionId as string | undefined,
           // Additional details
           runId: exception.reconJobId,
           expectedValue: exception.expectedValue,
@@ -131,10 +137,18 @@ export const GET = withSecurity(
         };
 
         return NextResponse.json({
+          ...result,
           exception: result,
           trace_id: traceId,
         });
       } catch (error) {
+        if (error instanceof TenantMembershipError) {
+          return NextResponse.json(
+            { error: error.message, code: error.code, trace_id: traceId },
+            { status: error.status }
+          );
+        }
+
         appLogger.error("[Exception Detail API] Error fetching exception", error);
 
         return NextResponse.json(
@@ -198,24 +212,13 @@ export const POST = withSecurity(
 
         const actionName = parsedAction.data.action;
 
-        // Authenticate and get workspace context
-        const auth = await requireAuth(request);
-        const tenantId = auth.tenantId;
-        const userId = auth.userId;
-
-        if (!tenantId) {
-          return NextResponse.json(
-            { success: false, error: "No workspace found", trace_id: traceId },
-            { status: 401 }
-          );
-        }
-
-        if (!userId) {
-          return NextResponse.json(
-            { success: false, error: "No user found", trace_id: traceId },
-            { status: 401 }
-          );
-        }
+        const scope = await resolveTenantMembershipScope();
+        const requestedTenantId =
+          request.nextUrl.searchParams.get("workspace_id")?.trim() ||
+          request.nextUrl.searchParams.get("tenant_id")?.trim() ||
+          null;
+        const tenantId = resolveTenantForMutation(scope.tenantIds, requestedTenantId);
+        const userId = scope.userId;
 
         // Parse optional notes from body
         let notes: string | undefined;
@@ -271,6 +274,18 @@ export const POST = withSecurity(
           trace_id: traceId,
         });
       } catch (error) {
+        if (error instanceof TenantMembershipError) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: error.message,
+              code: error.code,
+              trace_id: traceId,
+            },
+            { status: error.status }
+          );
+        }
+
         appLogger.error("[Exception API] Error performing exception action", error);
 
         return NextResponse.json(

@@ -36,12 +36,66 @@ router.post("/run", enforceFreezeState(), async (req: AuthRequest, res: Response
       });
     }
 
-    const reconciliationConfig: ReconciliationConfig = {
-      dateWindowDays: config?.dateWindowDays || 7,
-      amountTolerance: config?.amountTolerance || 0.01,
-      fuzzyDescriptionThreshold: config?.fuzzyDescriptionThreshold || 0.8,
-      requireExactAmount: config?.requireExactAmount || false,
-    };
+    const rawConfig = (config ?? {}) as Record<string, unknown>;
+    const reconciliationConfig: ReconciliationConfig = {};
+    const invalidConfigFields: string[] = [];
+
+    const dateWindowDays = rawConfig.dateWindowDays;
+    if (dateWindowDays !== undefined) {
+      if (
+        typeof dateWindowDays === "number" &&
+        Number.isFinite(dateWindowDays) &&
+        dateWindowDays >= 0
+      ) {
+        reconciliationConfig.dateWindowDays = dateWindowDays;
+      } else {
+        invalidConfigFields.push("config.dateWindowDays");
+      }
+    }
+
+    const amountTolerance = rawConfig.amountTolerance;
+    if (amountTolerance !== undefined) {
+      if (
+        typeof amountTolerance === "number" &&
+        Number.isFinite(amountTolerance) &&
+        amountTolerance >= 0
+      ) {
+        reconciliationConfig.amountTolerance = amountTolerance;
+      } else {
+        invalidConfigFields.push("config.amountTolerance");
+      }
+    }
+
+    const fuzzyDescriptionThreshold = rawConfig.fuzzyDescriptionThreshold;
+    if (fuzzyDescriptionThreshold !== undefined) {
+      if (
+        typeof fuzzyDescriptionThreshold === "number" &&
+        Number.isFinite(fuzzyDescriptionThreshold) &&
+        fuzzyDescriptionThreshold >= 0 &&
+        fuzzyDescriptionThreshold <= 1
+      ) {
+        reconciliationConfig.fuzzyDescriptionThreshold = fuzzyDescriptionThreshold;
+      } else {
+        invalidConfigFields.push("config.fuzzyDescriptionThreshold");
+      }
+    }
+
+    const requireExactAmount = rawConfig.requireExactAmount;
+    if (requireExactAmount !== undefined) {
+      if (typeof requireExactAmount === "boolean") {
+        reconciliationConfig.requireExactAmount = requireExactAmount;
+      } else {
+        invalidConfigFields.push("config.requireExactAmount");
+      }
+    }
+
+    if (invalidConfigFields.length > 0) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: `Invalid config fields: ${invalidConfigFields.join(", ")}`,
+        traceId: req.traceId,
+      });
+    }
 
     // Extract jobId and templateId from request if available
     const jobId = (req.body as any)?.jobId;
@@ -62,7 +116,7 @@ router.post("/run", enforceFreezeState(), async (req: AuthRequest, res: Response
       runId,
       ingestionId,
       status: "running",
-      config: reconciliationConfig,
+      config: Object.keys(reconciliationConfig).length > 0 ? reconciliationConfig : null,
       traceId: req.traceId,
     });
   } catch (error) {

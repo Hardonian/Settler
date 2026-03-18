@@ -2,6 +2,26 @@
 
 Settler is a deterministic reconciliation platform for teams that need reproducible runs, replayable outcomes, and operator-visible evidence.
 
+## What is Settler?
+
+Settler is an open-source reconciliation engine that matches financial transactions across data sources (e.g., Stripe payments vs. bank deposits) with full audit trails and evidence generation.
+
+## Who is this for?
+
+- **Finance operations teams** who need automated, audit-ready reconciliation
+- **Engineering teams** building financial products that require transaction matching
+- **Compliance teams** needing deterministic evidence for every reconciliation decision
+
+## Core Workflows That Work Today
+
+- Stripe ↔ Bank transaction matching with configurable tolerances
+- Manual review queue with audit trails
+- Deterministic evidence generation for every decision
+- CSV/API ingestion pipelines
+- Multi-workspace tenant isolation
+
+See [What Works Today](docs/getting-started/WHAT_WORKS.md) for full details.
+
 ## Architecture
 
 Settler's architecture is composed of five primary layers, ensuring a separation of concerns between deterministic computation, policy enforcement, and operator interfaces.
@@ -47,8 +67,14 @@ Global helper scripts are available for managing the local TigerBeetle container
 
 ## Documentation Hub
 
+- [What Works Today](docs/getting-started/WHAT_WORKS.md) — Core functional workflows
+- [Quickstart](docs/getting-started/quickstart.md) — Fastest path to running locally
+- [Demo Walkthrough](docs/getting-started/DEMO_WALKTHROUGH.md) — Step-by-step demo guide
+- [Verification Commands](docs/VERIFICATION_COMMANDS.md) — All verification commands
+- [Common Setup Traps](docs/troubleshooting/SETUP_TRAPS.md) — Avoid setup issues
+- [Intentional Boundaries](docs/getting-started/INTENTIONAL_BOUNDARIES.md) — What's not production-ready
 - [Architecture (Canonical)](docs/architecture/platform-architecture.md)
-- [Canonical Local Setup](../SETUP.md)
+- [Canonical Local Setup](SETUP.md)
 - [Security Policy](SECURITY.md)
 
 ## Contributing

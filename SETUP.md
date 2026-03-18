@@ -139,6 +139,10 @@ For service-specific issues:
 ## Related Documentation
 
 - [Environment Variable Matrix](docs/setup/env-matrix.md) - Complete reference
-- [Getting Started Guide](docs/getting-started/README.md) - Detailed walkthrough
+- [What Works Today](docs/getting-started/WHAT_WORKS.md) - Core functional workflows
+- [Intentional Boundaries](docs/getting-started/INTENTIONAL_BOUNDARIES.md) - Production readiness
+- [Demo Walkthrough](docs/getting-started/DEMO_WALKTHROUGH.md) - Step-by-step demo guide
+- [Verification Commands](docs/VERIFICATION_COMMANDS.md) - All verification commands
+- [Common Setup Traps](docs/troubleshooting/SETUP_TRAPS.md) - Avoid setup issues
 - [Quickstart Guide](docs/getting-started/quickstart.md) - Fastest path to demo
 - [Doctor Script Reference](docs/getting-started/doctor.md) - Diagnostic tool details
