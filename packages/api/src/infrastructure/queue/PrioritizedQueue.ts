@@ -3,12 +3,12 @@
  * Queue with priority levels and enterprise bypass
  */
 
-import { Queue, Worker, Job } from 'bullmq';
-import Redis from 'ioredis';
-import { config } from '../../config';
-import { TenantTier } from '../../domain/entities/Tenant';
-import { traceQueue } from '../observability/tracing';
-import { queueDepth } from '../observability/metrics';
+import { Queue, Worker, Job } from "bullmq";
+import Redis from "ioredis";
+import { config } from "../../config";
+import { TenantTier } from "../../domain/entities/Tenant";
+import { traceQueue } from "../observability/tracing";
+import { queueDepth } from "../observability/metrics";
 
 export enum QueuePriority {
   LOW = 1,
@@ -46,7 +46,7 @@ export class PrioritizedQueue {
         host: string;
         port: number;
         password?: string;
-         
+
         tls?: any;
       } = {
         host: config.redis.host,
@@ -55,14 +55,14 @@ export class PrioritizedQueue {
       if (config.redis.password) {
         redisOptions.password = config.redis.password;
       }
-      if (process.env.REDIS_TLS === 'true') {
+      if (process.env.REDIS_TLS === "true") {
         redisOptions.tls = {}; // TLS options object, not boolean
       }
       this.redis = new Redis(redisOptions);
     }
 
     this.queue = new Queue(queueName, {
-      connection: this.redis,
+      connection: this.redis as any,
       defaultJobOptions: {
         removeOnComplete: { age: 3600 }, // Keep completed jobs for 1 hour
         removeOnFail: { age: 86400 }, // Keep failed jobs for 24 hours
@@ -91,10 +91,10 @@ export class PrioritizedQueue {
     if (data.tenantTier === TenantTier.ENTERPRISE) {
       return await traceQueue(
         this.queueName,
-        'execute_immediate',
+        "execute_immediate",
         async () => {
           // Execute immediately without queuing
-          const job = new Job(this.queue, 'immediate', data, {
+          const job = new Job(this.queue, "immediate", data, {
             jobId: `immediate-${Date.now()}`,
           });
           await this.processor(job);
@@ -110,10 +110,10 @@ export class PrioritizedQueue {
 
     return await traceQueue(
       this.queueName,
-      'add',
+      "add",
       async () => {
         return await this.queue.add(
-          'job',
+          "job",
           data,
           (() => {
             const jobOptions: { priority: number; delay?: number; jobId?: string } = {
@@ -162,7 +162,7 @@ export class PrioritizedQueue {
       async (job: Job<QueueJobData>) => {
         return await traceQueue(
           this.queueName,
-          'process',
+          "process",
           async () => {
             return await this.processor(job);
           },
@@ -171,7 +171,7 @@ export class PrioritizedQueue {
         );
       },
       {
-        connection: this.redis,
+        connection: this.redis as any,
         concurrency,
         limiter: {
           max: 100,
@@ -180,24 +180,34 @@ export class PrioritizedQueue {
       }
     );
 
-    this.worker.on('completed', (job) => {
-      import('../../utils/logger').then(({ logInfo }) => {
-        logInfo(`Job ${job.id} completed in queue ${this.queueName}`);
-      }).catch(() => {
-        // Fallback if logger fails
-        // eslint-disable-next-line no-console
-        console.log(`Job ${job.id} completed in queue ${this.queueName}`, { jobId: job.id, queueName: this.queueName });
-      });
+    this.worker.on("completed", (job) => {
+      import("../../utils/logger")
+        .then(({ logInfo }) => {
+          logInfo(`Job ${job.id} completed in queue ${this.queueName}`);
+        })
+        .catch(() => {
+          // Fallback if logger fails
+          // eslint-disable-next-line no-console
+          console.log(`Job ${job.id} completed in queue ${this.queueName}`, {
+            jobId: job.id,
+            queueName: this.queueName,
+          });
+        });
     });
 
-    this.worker.on('failed', (job, err) => {
-      import('../../utils/logger').then(({ logError }) => {
-        logError(`Job ${job?.id} failed in queue ${this.queueName}`, err);
-      }).catch(() => {
-        // Fallback if logger fails
-         
-        console.error(`Job ${job?.id} failed in queue ${this.queueName}`, err, { jobId: job?.id, queueName: this.queueName });
-      });
+    this.worker.on("failed", (job, err) => {
+      import("../../utils/logger")
+        .then(({ logError }) => {
+          logError(`Job ${job?.id} failed in queue ${this.queueName}`, err);
+        })
+        .catch(() => {
+          // Fallback if logger fails
+
+          console.error(`Job ${job?.id} failed in queue ${this.queueName}`, err, {
+            jobId: job?.id,
+            queueName: this.queueName,
+          });
+        });
     });
   }
 

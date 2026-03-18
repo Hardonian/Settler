@@ -100,6 +100,8 @@ export interface LedgerBalance {
 export interface TransferFilters {
     /** Filter by tenant ID (required for isolation) */
     tenantId: string;
+    /** Filter by account ID (either debit or credit) */
+    accountId?: string;
     /** Filter by debit account ID */
     debitAccountId?: string;
     /** Filter by credit account ID */

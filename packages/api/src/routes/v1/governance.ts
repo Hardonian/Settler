@@ -7,6 +7,7 @@ import { Router, Response } from "express";
 import { z } from "zod";
 import { AuthRequest } from "../../middleware/auth";
 import { requirePermission } from "../../middleware/authorization";
+import { bypassFreeze } from "../../middleware/governance";
 import { Permission } from "../../infrastructure/security/Permissions";
 import { handleRouteError } from "../../utils/error-handler";
 import { validateRequest } from "../../middleware/validation";
@@ -100,10 +101,12 @@ router.get(
 /**
  * POST /api/v1/governance/freeze
  * Sets freeze state for the tenant
+ * Bypasses freeze check to allow unfreezing
  */
 router.post(
   "/governance/freeze",
   requirePermission(Permission.ADMIN_WRITE),
+  bypassFreeze,
   validateRequest(setFreezeSchema),
   async (req: AuthRequest, res: Response) => {
     try {

@@ -5,6 +5,7 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { enforceFreezeState } from "../../middleware/governance";
 import { logError, logInfo } from "../../utils/logger";
 import { runReconciliation } from "../../services/ingestion/reconciliation-matcher";
 import { query } from "../../db";
@@ -21,7 +22,7 @@ const router: Router = Router();
  * POST /api/v1/reconciliation/run
  * Run reconciliation for an ingestion
  */
-router.post("/run", async (req: AuthRequest, res: Response) => {
+router.post("/run", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
     const { ingestionId, config } = req.body;
     const tenantId = req.tenantId!;
@@ -73,7 +74,7 @@ router.get("/runs/:runId", async (req: AuthRequest, res: Response) => {
     const tenantId = req.tenantId!;
 
     const results = await query(
-      `SELECT 
+      `SELECT
         id, ingestion_id, status, started_at, completed_at,
         source_count, target_count, matched_count,
         unmatched_source_count, unmatched_target_count,
@@ -134,7 +135,7 @@ router.get("/runs/:runId/matches", async (req: AuthRequest, res: Response) => {
     const matchType = req.query.matchType as string | undefined;
     const reviewed = req.query.reviewed as string | undefined;
 
-    let queryStr = `SELECT 
+    let queryStr = `SELECT
       rm.id, rm.match_type, rm.confidence, rm.match_reason,
       rm.amount_diff, rm.date_diff, rm.reviewed, rm.reviewed_at,
       st.id as source_id, st.amount as source_amount, st.currency as source_currency,
@@ -407,7 +408,7 @@ router.get("/runs/:runId/workbench/export", async (req: AuthRequest, res: Respon
  * PATCH /api/v1/reconciliation/matches/:matchId
  * Update match (e.g., mark as reviewed)
  */
-router.patch("/matches/:matchId", async (req: AuthRequest, res: Response) => {
+router.patch("/matches/:matchId", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
     const { matchId } = req.params;
     const { reviewed, reviewState } = req.body as { reviewed?: boolean; reviewState?: ReviewState };

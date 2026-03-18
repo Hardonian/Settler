@@ -20,6 +20,7 @@ import { handleRouteError } from "../utils/error-handler";
 import { trackEventAsync } from "../utils/event-tracker";
 import bcrypt from "bcrypt";
 // Import shared edge-ai-core utilities (brand-neutral)
+// @ts-expect-error - No declaration file for @settler/edge-ai-core
 import { generateNodeKey, hashNodeKey, generateEnrollmentKey } from "@settler/edge-ai-core";
 
 const router: Router = Router();

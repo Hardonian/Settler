@@ -5,6 +5,7 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { enforceFreezeState } from "../../middleware/governance";
 import { logError, logInfo } from "../../utils/logger";
 import {
   createBulkOperation,
@@ -19,7 +20,7 @@ const router: Router = Router();
  * POST /api/v1/bulk-operations
  * Create a bulk operation
  */
-router.post("/", async (req: AuthRequest, res: Response) => {
+router.post("/", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const userId = req.userId!;

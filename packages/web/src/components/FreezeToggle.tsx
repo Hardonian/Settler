@@ -182,8 +182,15 @@ const FreezeToggle: React.FC = () => {
         <div className="mt-3 text-xs text-slate-500">
           <p className="font-semibold">Enforcement Scope:</p>
           <p className="mt-1">
-            Freeze state is persisted and visible across sessions. Limited enforcement on high-risk
-            mutation paths. Full enforcement requires additional implementation.
+            <strong>Enforced:</strong> Ingestion uploads, reconciliation runs, bulk operations,
+            match reviews
+          </p>
+          <p className="mt-1">
+            <strong>Not Enforced:</strong> Read operations, health checks, governance controls,
+            connector reads
+          </p>
+          <p className="mt-1 text-amber-700 font-medium">
+            This is a scoped operational freeze, not a universal system lock.
           </p>
         </div>
       </div>

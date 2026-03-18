@@ -6,6 +6,7 @@
 import { Router, Response } from "express";
 import multer from "multer";
 import { AuthRequest } from "../../middleware/auth";
+import { enforceFreezeState } from "../../middleware/governance";
 import { logError, logInfo } from "../../utils/logger";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -117,7 +118,16 @@ async function loadSchemaDriftBaseline(
         hasDrift,
       };
     })
-    .filter((item): item is { ingestionId: string; capturedAt: string; headers: string[]; hasDrift: boolean } => Boolean(item));
+    .filter(
+      (
+        item
+      ): item is {
+        ingestionId: string;
+        capturedAt: string;
+        headers: string[];
+        hasDrift: boolean;
+      } => Boolean(item)
+    );
 
   if (parsed.length === 0) {
     return undefined;
@@ -140,7 +150,7 @@ async function loadSchemaDriftBaseline(
  * POST /api/v1/ingestion/sources
  * Create a new ingestion source (connector or CSV)
  */
-router.post("/sources", async (req: AuthRequest, res: Response) => {
+router.post("/sources", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
     const { name, type, connectorType, config, configMetadata } = req.body;
     const tenantId = req.tenantId!;
@@ -216,7 +226,7 @@ router.get("/sources", async (req: AuthRequest, res: Response) => {
     const tenantId = req.tenantId!;
 
     const sources = await query(
-      `SELECT 
+      `SELECT
         id, name, type, connector_type, status, last_sync_at,
         last_sync_status, created_at, updated_at
       FROM ingestion_sources
@@ -344,6 +354,7 @@ router.post("/preview", upload.single("file"), async (req: AuthRequest, res: Res
 router.post(
   "/upload",
   upload.single("file"),
+  enforceFreezeState(),
   checkIngestionLimit(),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -412,7 +423,7 @@ router.post(
         rows,
         providedMapping: mappingParse.mapping,
         schemaDriftBaseline: schemaDriftBaselineData?.baseline,
-      schemaDriftHistory: schemaDriftBaselineData?.history,
+        schemaDriftHistory: schemaDriftBaselineData?.history,
         sourceProfile:
           typeof req.body.sourceProfile === "string" ? req.body.sourceProfile : undefined,
       });
@@ -625,7 +636,7 @@ router.get("/:ingestionId", async (req: AuthRequest, res: Response) => {
     const tenantId = req.tenantId!;
 
     const results = await query(
-      `SELECT 
+      `SELECT
         id, source_id, status, raw_record_count, normalized_count,
         failed_count, retry_count, trace_id, started_at, completed_at,
         error_message, metadata
@@ -683,7 +694,7 @@ router.get("/:ingestionId/transactions", async (req: AuthRequest, res: Response)
     const offset = parseInt(req.query.offset as string) || 0;
 
     const transactions = await query(
-      `SELECT 
+      `SELECT
           id, external_id, amount, currency, date, description,
           category, payment_method, reference, metadata, created_at
         FROM normalized_transactions
@@ -799,170 +810,174 @@ router.get("/workbench/recent", async (req: AuthRequest, res: Response) => {
  * POST /api/v1/ingestion/:ingestionId/retry
  * Retry ingestion with remapped fields using original raw records
  */
-router.post("/:ingestionId/retry", async (req: AuthRequest, res: Response) => {
-  try {
-    const tenantId = req.tenantId;
-    const userId = req.userId;
-    if (!tenantId || !userId) {
-      return res.status(400).json({
-        error: "Bad Request",
-        code: "TENANT_CONTEXT_REQUIRED",
-        message: "Tenant and user context are required",
-        traceId: req.traceId,
-      });
-    }
+router.post(
+  "/:ingestionId/retry",
+  enforceFreezeState(),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = req.tenantId;
+      const userId = req.userId;
+      if (!tenantId || !userId) {
+        return res.status(400).json({
+          error: "Bad Request",
+          code: "TENANT_CONTEXT_REQUIRED",
+          message: "Tenant and user context are required",
+          traceId: req.traceId,
+        });
+      }
 
-    const { ingestionId } = req.params;
-    const mappingParse = parseColumnMappingOverride(req.body.columnMapping);
-    if (mappingParse.error) {
-      return res.status(400).json({
-        error: "Bad Request",
-        code: "INGESTION_INVALID_COLUMN_MAPPING",
-        message: mappingParse.error,
-        traceId: req.traceId,
-      });
-    }
+      const { ingestionId } = req.params;
+      const mappingParse = parseColumnMappingOverride(req.body.columnMapping);
+      if (mappingParse.error) {
+        return res.status(400).json({
+          error: "Bad Request",
+          code: "INGESTION_INVALID_COLUMN_MAPPING",
+          message: mappingParse.error,
+          traceId: req.traceId,
+        });
+      }
 
-    const dryRun = req.body.dryRun !== false;
-    const originalRows = await query(
-      `SELECT i.source_id, r.row_number, r.raw_data
+      const dryRun = req.body.dryRun !== false;
+      const originalRows = await query(
+        `SELECT i.source_id, r.row_number, r.raw_data
          FROM ingestions i
          JOIN raw_records r ON r.ingestion_id = i.id
         WHERE i.id = $1 AND i.tenant_id = $2
         ORDER BY r.row_number ASC`,
-      [ingestionId || "", tenantId]
-    );
+        [ingestionId || "", tenantId]
+      );
 
-    if (originalRows.length === 0) {
-      return res.status(404).json({
-        error: "Not Found",
-        code: "INGESTION_RETRY_SOURCE_NOT_FOUND",
-        message: "No raw records found for ingestion retry",
-        traceId: req.traceId,
+      if (originalRows.length === 0) {
+        return res.status(404).json({
+          error: "Not Found",
+          code: "INGESTION_RETRY_SOURCE_NOT_FOUND",
+          message: "No raw records found for ingestion retry",
+          traceId: req.traceId,
+        });
+      }
+
+      const first = originalRows[0] as Record<string, unknown>;
+      const sourceId = first.source_id as string;
+      const rows = originalRows.map((row: Record<string, unknown>) => {
+        const value = row.raw_data;
+        return typeof value === "string"
+          ? (JSON.parse(value) as Record<string, string | number | null | undefined>)
+          : (value as Record<string, string | number | null | undefined>);
       });
-    }
+      const headers = Object.keys(rows[0] || {});
 
-    const first = originalRows[0] as Record<string, unknown>;
-    const sourceId = first.source_id as string;
-    const rows = originalRows.map((row: Record<string, unknown>) => {
-      const value = row.raw_data;
-      return typeof value === "string"
-        ? (JSON.parse(value) as Record<string, string | number | null | undefined>)
-        : (value as Record<string, string | number | null | undefined>);
-    });
-    const headers = Object.keys(rows[0] || {});
-
-    const schemaDriftBaselineData = await loadSchemaDriftBaseline(tenantId, sourceId);
-    const preview = buildImportWorkbenchPreview({
-      fileName: `retry-${ingestionId}.csv`,
-      fileSizeBytes: 0,
-      headers,
-      rows,
-      providedMapping: mappingParse.mapping,
-      schemaDriftBaseline: schemaDriftBaselineData?.baseline,
-      schemaDriftHistory: schemaDriftBaselineData?.history,
-    });
-
-    if (dryRun) {
-      return res.status(200).json({
-        mode: "dry_run",
-        preview,
-        traceId: req.traceId,
+      const schemaDriftBaselineData = await loadSchemaDriftBaseline(tenantId, sourceId);
+      const preview = buildImportWorkbenchPreview({
+        fileName: `retry-${ingestionId}.csv`,
+        fileSizeBytes: 0,
+        headers,
+        rows,
+        providedMapping: mappingParse.mapping,
+        schemaDriftBaseline: schemaDriftBaselineData?.baseline,
+        schemaDriftHistory: schemaDriftBaselineData?.history,
       });
-    }
 
-    if (!preview.canProceed) {
-      return res.status(400).json({
-        error: "Bad Request",
-        code: "INGESTION_RETRY_BLOCKED",
-        message: "Retry blocked by import workbench diagnostics",
-        preview,
+      if (dryRun) {
+        return res.status(200).json({
+          mode: "dry_run",
+          preview,
+          traceId: req.traceId,
+        });
+      }
+
+      if (!preview.canProceed) {
+        return res.status(400).json({
+          error: "Bad Request",
+          code: "INGESTION_RETRY_BLOCKED",
+          message: "Retry blocked by import workbench diagnostics",
+          preview,
+          traceId: req.traceId,
+        });
+      }
+
+      const retryIngestionId = await createIngestion({
+        sourceId,
+        tenantId,
+        userId,
+        idempotencyKey: req.headers["idempotency-key"] as string | undefined,
         traceId: req.traceId,
-      });
-    }
-
-    const retryIngestionId = await createIngestion({
-      sourceId,
-      tenantId,
-      userId,
-      idempotencyKey: req.headers["idempotency-key"] as string | undefined,
-      traceId: req.traceId,
-      metadata: {
-        retryOfIngestionId: ingestionId,
-        importWorkbench: {
-          sourceSummary: preview.sourceSummary,
-          mapping: preview.mapping,
-          normalization: preview.normalization,
-          qualityGates: preview.qualityGates,
-          schemaDrift: preview.schemaDrift,
-          diagnosticsSample: preview.diagnostics.slice(0, 25),
-          contract: preview.contract,
+        metadata: {
+          retryOfIngestionId: ingestionId,
+          importWorkbench: {
+            sourceSummary: preview.sourceSummary,
+            mapping: preview.mapping,
+            normalization: preview.normalization,
+            qualityGates: preview.qualityGates,
+            schemaDrift: preview.schemaDrift,
+            diagnosticsSample: preview.diagnostics.slice(0, 25),
+            contract: preview.contract,
+          },
         },
-      },
-    });
-
-    const normalizedTransactions: Array<{
-      transaction: ReturnType<typeof normalizeCSVRow>;
-      rawRecordId?: string;
-    }> = [];
-    let failedCount = 0;
-
-    const columnMapping = mappingParse.mapping || autoDetectColumnMapping(headers);
-    for (let index = 0; index < rows.length; index++) {
-      const row = rows[index];
-      if (!row) {
-        failedCount += 1;
-        continue;
-      }
-
-      const rowNumber = index + 1;
-      const rawRecordId = await createRawRecord(retryIngestionId, sourceId, tenantId, row, {
-        rowNumber,
       });
 
-      try {
-        const normalized = normalizeCSVRow(row, columnMapping);
-        normalizedTransactions.push({ transaction: normalized, rawRecordId });
-      } catch {
-        failedCount += 1;
-        await query(
-          `UPDATE raw_records SET status = 'failed', updated_at = NOW() WHERE id = $1 AND tenant_id = $2`,
-          [rawRecordId, tenantId]
-        );
+      const normalizedTransactions: Array<{
+        transaction: ReturnType<typeof normalizeCSVRow>;
+        rawRecordId?: string;
+      }> = [];
+      let failedCount = 0;
+
+      const columnMapping = mappingParse.mapping || autoDetectColumnMapping(headers);
+      for (let index = 0; index < rows.length; index++) {
+        const row = rows[index];
+        if (!row) {
+          failedCount += 1;
+          continue;
+        }
+
+        const rowNumber = index + 1;
+        const rawRecordId = await createRawRecord(retryIngestionId, sourceId, tenantId, row, {
+          rowNumber,
+        });
+
+        try {
+          const normalized = normalizeCSVRow(row, columnMapping);
+          normalizedTransactions.push({ transaction: normalized, rawRecordId });
+        } catch {
+          failedCount += 1;
+          await query(
+            `UPDATE raw_records SET status = 'failed', updated_at = NOW() WHERE id = $1 AND tenant_id = $2`,
+            [rawRecordId, tenantId]
+          );
+        }
       }
+
+      const created = await batchCreateNormalizedTransactions(
+        retryIngestionId,
+        sourceId,
+        tenantId,
+        normalizedTransactions
+      );
+
+      await updateIngestionStatus(retryIngestionId, "completed", {
+        rawRecordCount: rows.length,
+        normalizedCount: created.length,
+        failedCount,
+        completedAt: new Date(),
+      });
+
+      return res.status(201).json({
+        retryIngestionId,
+        sourceIngestionId: ingestionId,
+        normalizedCount: created.length,
+        failedCount,
+        preview,
+        traceId: req.traceId,
+      });
+    } catch (error) {
+      logError("Failed ingestion retry", error, { traceId: req.traceId });
+      return res.status(500).json({
+        error: "Internal Server Error",
+        code: "INGESTION_RETRY_FAILED",
+        message: "Failed to retry ingestion",
+        traceId: req.traceId,
+      });
     }
-
-    const created = await batchCreateNormalizedTransactions(
-      retryIngestionId,
-      sourceId,
-      tenantId,
-      normalizedTransactions
-    );
-
-    await updateIngestionStatus(retryIngestionId, "completed", {
-      rawRecordCount: rows.length,
-      normalizedCount: created.length,
-      failedCount,
-      completedAt: new Date(),
-    });
-
-    return res.status(201).json({
-      retryIngestionId,
-      sourceIngestionId: ingestionId,
-      normalizedCount: created.length,
-      failedCount,
-      preview,
-      traceId: req.traceId,
-    });
-  } catch (error) {
-    logError("Failed ingestion retry", error, { traceId: req.traceId });
-    return res.status(500).json({
-      error: "Internal Server Error",
-      code: "INGESTION_RETRY_FAILED",
-      message: "Failed to retry ingestion",
-      traceId: req.traceId,
-    });
   }
-});
+);
 
 export default router;
