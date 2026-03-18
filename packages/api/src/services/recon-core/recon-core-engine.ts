@@ -933,6 +933,18 @@ export class ReconCoreEngine {
   }
 
   /**
+   * Count recon results for a job (for pagination)
+   */
+  async countReconResults(reconJobId: string, tenantId: string): Promise<number> {
+    return this.prisma.reconResult.count({
+      where: {
+        reconJobId,
+        tenantId,
+      },
+    });
+  }
+
+  /**
    * Get billing account for tenant
    */
   private async getBillingAccount(tenantId: string) {

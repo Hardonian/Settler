@@ -237,7 +237,7 @@ router.post(
  * POST /api/v1/approvals/approvers
  * Add an approver
  */
-router.post("/approvers", async (req: AuthRequest, res: Response) => {
+router.post("/approvers", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const { userId, role, approvalThreshold, canApproveFinal } = req.body;

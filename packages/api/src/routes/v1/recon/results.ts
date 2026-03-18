@@ -40,6 +40,9 @@ router.get("/", authMiddleware, tenantMiddleware, async (req: TenantRequest, res
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 100;
     const offset = req.query.offset ? parseInt(req.query.offset as string) : 0;
 
+    // Get total count for accurate pagination
+    const totalCount = await reconEngine.countReconResults(jobId, tenantId);
+
     const results = await reconEngine.listReconResults(jobId, tenantId, {
       limit,
       offset,
@@ -51,7 +54,7 @@ router.get("/", authMiddleware, tenantMiddleware, async (req: TenantRequest, res
       pagination: {
         limit,
         offset,
-        total: serializedResults.length,
+        total: totalCount,
       },
     });
   } catch (error) {
