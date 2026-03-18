@@ -249,9 +249,14 @@ export function ApprovalWorkflows() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button onClick={handleCreateRequest} disabled={loading}>
+                  <FreezeBlockedButton
+                    onClick={handleCreateRequest}
+                    disabled={loading}
+                    isFrozen={isFrozen}
+                    frozenMessage="Creating approval requests is blocked by tenant freeze"
+                  >
                     Create Request
-                  </Button>
+                  </FreezeBlockedButton>
                   <Button variant="outline" onClick={() => setShowCreateForm(false)}>
                     Cancel
                   </Button>

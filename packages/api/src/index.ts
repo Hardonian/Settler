@@ -21,6 +21,7 @@ import { reportsEnhancedRouter } from "./routes/reports-enhanced";
 import { confidenceRouter } from "./routes/confidence";
 import { reconciliationStatusRouter } from "./routes/reconciliation-status";
 import { rulesEditorRouter } from "./routes/rules-editor";
+import { runsRouter } from "./routes/runs";
 import { playgroundRouter } from "./routes/playground";
 import { cliWizardRouter } from "./routes/cli-wizard";
 import { exportEnhancedRouter } from "./routes/export-enhanced";
@@ -328,6 +329,10 @@ v2ProtectedRouter.use(reconciliationStatusRouter);
 // Rules editor routes (requires auth)
 v1ProtectedRouter.use(rulesEditorRouter);
 v2ProtectedRouter.use(rulesEditorRouter);
+
+// Runs routes (requires auth) - operator-facing run history
+v1ProtectedRouter.use("/runs", runsRouter);
+v2ProtectedRouter.use("/runs", runsRouter);
 
 // Playground routes (no auth, rate-limited)
 app.use("/api/v1/playground", playgroundRouter);

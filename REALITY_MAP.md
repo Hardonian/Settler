@@ -220,6 +220,7 @@ RLS Policy Check:
 ## BLOCKERS IDENTIFIED
 
 ### PHASE 1: STOP THE BLEEDING (500 ERRORS) ✅ COMPLETE
+
 - [x] Fixed billing enforcement 500 errors → now return 403
 - [x] Fixed entitlement checks 500 errors → now return 403
 - [x] Fixed auth gate 500 errors → now return 401/403
@@ -229,52 +230,98 @@ RLS Policy Check:
 - [x] Not-found pages exist
 
 ### PHASE 2: AUTH + TENANT ISOLATION ✅ COMPLETE
+
 - [x] RLS policies exist and are comprehensive
 - [x] Created server-side tenant assertion helpers (tenant-assertion.ts)
 - [x] Created tenant isolation test script (validate-tenant-isolation.ts)
 - [x] Verified RLS coverage on all critical tables
 
 ### PHASE 3: BILLING REALITY ✅ COMPLETE
+
 - [x] Stripe webhook handler verified (Node runtime, raw body, idempotency)
 - [x] Fixed entitlements fail-open → now fails closed for paid plans
 - [x] Verified syncSubscriptionFromWebhook() updates DB
 - [ ] Need to run webhook verification test (Stripe CLI)
 
 ### PHASE 4: AUTO-RECONCILIATION
+
 - [ ] Reconciliation service exists but may not be fully wired
 - [ ] Need to verify matching logic is deterministic
 - [ ] Need fixture dataset + one-command seed
 
 ### PHASE 5: INTEGRATIONS
+
 - [ ] Need to audit all "Connect X" buttons
 - [ ] Remove fake integrations or mark as "Coming Soon"
 
 ### PHASE 6: MIDDLEWARE/RUNTIME
+
 - [ ] Stripe webhook uses nodejs runtime ✓
 - [ ] Need to verify all routes have correct runtime
 - [ ] Need to check for unused imports
 
 ### PHASE 7: OBSERVABILITY
-- [ ] Trace IDs exist ✓
-- [ ] Structured logging exists ✓
+
+- [x] Trace IDs exist ✓
+- [x] Structured logging exists ✓
 - [ ] Need diagnostics page
 
 ### PHASE 8: QA TEST SUITE
+
 - [ ] Need unit tests for matcher
 - [ ] Need integration test for entitlements
 - [ ] Need smoke test for auth
+
+### PHASE 9: GOVERNANCE & FREEZE ENFORCEMENT ✅ COMPLETE (2026-03-18)
+
+- [x] Governance middleware (`enforceFreezeState`) implemented
+- [x] Governance API routes (`/api/v1/governance/freeze`) implemented
+- [x] Freeze state persistence (`tenant_governance` table)
+- [x] Freeze state caching (30s TTL)
+- [x] Audit logging for freeze/unfreeze events
+- [x] 42+ high-risk routes protected by freeze enforcement
+- [x] Frontend governance components (FreezeToggle, GovernanceBanner, FreezeBlockedButton)
+- [x] Frontend governance hook (`useGovernanceState`)
+- [x] Proactive freeze-aware UI on key operator surfaces
+- [x] Consistent 423 Locked error responses
+- [x] Carve-outs preserved (reads, governance, auth, health, webhooks, exports)
+
+**Protected Operations:**
+
+- Reconciliation runs and match modifications
+- Data ingestion (sources, uploads, retries)
+- Approval workflows (approve/reject)
+- Bulk operations
+- Job management (create, execute, delete)
+- Exception resolution (single and bulk)
+- Operator controls (kill-switches, backups, cost controls)
+- Administrative operations (sagas, dead letter queue)
+- Advanced matching rules (create, test)
+- Edge AI node management and batch ingestion
+- Custom integrations (create, update)
+- Dedicated infrastructure (provision, deprovision)
+- Tenant data deletion (GDPR)
+
+**Documentation:**
+
+- Implementation complete: `docs/CORE_OPERATOR_WORKFLOW_IMPLEMENTATION.md`
+- Milestone summary: `docs/MILESTONE_COMPLETE_CORE_OPERATOR_WORKFLOW.md`
+- Detailed specifications: `plans/core-operator-workflow-closure.md` (Part 1 & 2)
+- Executive summary: `plans/IMPLEMENTATION_SUMMARY.md`
 
 ---
 
 ## VERIFICATION CHECKLIST
 
+- [x] `pnpm typecheck` clean (API ✅ Web ✅)
 - [ ] `pnpm lint` clean
-- [ ] `pnpm typecheck` clean
 - [ ] `pnpm build` succeeds
 - [ ] No unused imports
 - [ ] No hard 500s on user routes
-- [ ] Tenant isolation proven
-- [ ] Billing gates enforced server-side
+- [x] Tenant isolation proven
+- [x] Billing gates enforced server-side
+- [x] **Governance freeze enforced on 42+ high-risk routes**
+- [x] **Freeze-aware UI on mutation surfaces**
 - [ ] Auto-reconciliation works with fixtures
 - [ ] Stripe webhook verified
 - [ ] All integrations are real or explicitly marked

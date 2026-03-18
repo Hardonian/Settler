@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +10,17 @@ import { EmptyState } from "@/components/EmptyState";
 import { ErrorState } from "@/components/ErrorState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { safeFetch } from "@/lib/safe-fetch";
-import { RefreshCw, Play, CheckCircle2, XCircle, Clock, AlertCircle } from "lucide-react";
+import {
+  RefreshCw,
+  Play,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  AlertCircle,
+  ArrowLeft,
+  Eye,
+  AlertTriangle,
+} from "lucide-react";
 
 interface RunStage {
   id: string;
@@ -143,13 +154,34 @@ export default function RunPage() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Breadcrumb navigation */}
+      <nav className="flex items-center text-sm text-slate-600 dark:text-slate-400 mb-4">
+        <Link href="/console" className="hover:text-slate-900 dark:hover:text-white">
+          Console
+        </Link>
+        <span className="mx-2">/</span>
+        <Link href="/console/runs" className="hover:text-slate-900 dark:hover:text-white">
+          Runs
+        </Link>
+        <span className="mx-2">/</span>
+        <span className="text-slate-900 dark:text-white">{run.name}</span>
+      </nav>
+
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{run.name}</h1>
-          <p className="text-slate-600 dark:text-slate-400 mt-1">
-            Run ID:{" "}
-            <code className="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">{run.id}</code>
-          </p>
+        <div className="flex items-center gap-4">
+          <Link href="/console/runs">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Runs
+            </Button>
+          </Link>
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{run.name}</h1>
+            <p className="text-slate-600 dark:text-slate-400 mt-1">
+              Run ID:{" "}
+              <code className="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">{run.id}</code>
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
@@ -222,6 +254,104 @@ export default function RunPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Workflow Continuity - Next Actions */}
+      {run.status === "completed" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Next Steps</CardTitle>
+            <CardDescription>Review results and investigate any exceptions</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Link href={`/console/results?runId=${run.id}`}>
+                <Button
+                  variant="outline"
+                  className="w-full h-20 flex flex-col items-start justify-center"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <Eye className="w-4 h-4" />
+                    <span className="font-semibold">View Results</span>
+                  </div>
+                  <span className="text-xs text-slate-600 dark:text-slate-400">
+                    See detailed reconciliation outcomes
+                  </span>
+                </Button>
+              </Link>
+              {run.summary && run.summary.unmatched > 0 && (
+                <Link href={`/console/exceptions?runId=${run.id}`}>
+                  <Button
+                    variant="outline"
+                    className="w-full h-20 flex flex-col items-start justify-center border-orange-200 dark:border-orange-800"
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <AlertTriangle className="w-4 h-4 text-orange-600" />
+                      <span className="font-semibold">View Exceptions</span>
+                      <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                        {run.summary.unmatched}
+                      </Badge>
+                    </div>
+                    <span className="text-xs text-slate-600 dark:text-slate-400">
+                      Investigate unmatched records
+                    </span>
+                  </Button>
+                </Link>
+              )}
+              {run.summary && run.summary.conflicts > 0 && (
+                <Link href={`/console/exceptions?runId=${run.id}&type=conflicts`}>
+                  <Button
+                    variant="outline"
+                    className="w-full h-20 flex flex-col items-start justify-center border-red-200 dark:border-red-800"
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <AlertTriangle className="w-4 h-4 text-red-600" />
+                      <span className="font-semibold">View Conflicts</span>
+                      <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                        {run.summary.conflicts}
+                      </Badge>
+                    </div>
+                    <span className="text-xs text-slate-600 dark:text-slate-400">
+                      Resolve conflicting matches
+                    </span>
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {run.status === "running" && (
+        <Card className="border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/10">
+          <CardContent className="pt-6">
+            <div className="flex items-start gap-3">
+              <RefreshCw className="w-5 h-5 text-blue-600 dark:text-blue-400 animate-spin flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium text-blue-900 dark:text-blue-100 mb-1">Run in progress</p>
+                <p className="text-sm text-blue-800 dark:text-blue-200">
+                  Results will appear here when the run completes. Progress: {run.progress}%
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {run.status === "pending" && (
+        <Card className="border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/10">
+          <CardContent className="pt-6">
+            <div className="flex items-start gap-3">
+              <Clock className="w-5 h-5 text-slate-600 dark:text-slate-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium text-slate-900 dark:text-white mb-1">Run pending</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  This run is queued and will start shortly.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Stages */}
       <Card>

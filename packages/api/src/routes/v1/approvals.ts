@@ -23,7 +23,7 @@ const router: Router = Router();
  * POST /api/v1/approvals/requests
  * Create an approval request
  */
-router.post("/requests", async (req: AuthRequest, res: Response) => {
+router.post("/requests", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const userId = req.userId!;

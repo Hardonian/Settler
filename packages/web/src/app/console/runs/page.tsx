@@ -133,12 +133,29 @@ export default function RunsPage() {
     );
   }
 
+  if (runs.length === 0 && !filters.status && !filters.search) {
+    return (
+      <div className="p-6">
+        <EmptyState
+          title="No reconciliation runs yet"
+          description="Reconciliation runs will appear here once jobs are executed. Create a job and run it to see execution history."
+          action={{
+            label: "Go to Jobs",
+            onClick: () => {
+              window.location.href = "/console/jobs";
+            },
+          }}
+        />
+      </div>
+    );
+  }
+
   if (runs.length === 0) {
     return (
       <div className="p-6">
         <EmptyState
-          title="No runs found"
-          description="There are currently no reconciliation runs matching your filters"
+          title="No runs match your filters"
+          description="Try adjusting your search criteria or clearing filters to see all runs"
           action={{
             label: "Clear Filters",
             onClick: () => {
