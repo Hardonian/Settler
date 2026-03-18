@@ -8,6 +8,8 @@ import { EmptyState } from "@/components/EmptyState";
 import { ErrorState } from "@/components/ErrorState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { safeFetch } from "@/lib/safe-fetch";
+import { useGovernanceState } from "@/hooks/use-governance-state";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
 import { RefreshCw, CheckCircle2, XCircle, Clock, AlertCircle } from "lucide-react";
 import Link from "next/link";
 
@@ -38,6 +40,7 @@ export default function RunsPage() {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<RunFilters>({});
   const [autoRefresh, setAutoRefresh] = useState(true);
+  const { isFrozen, governanceState } = useGovernanceState();
 
   useEffect(() => {
     loadRuns();
@@ -135,7 +138,19 @@ export default function RunsPage() {
 
   if (runs.length === 0 && !filters.status && !filters.search) {
     return (
-      <div className="p-6">
+      <div className="p-6 space-y-6">
+        {/* Governance Freeze Banner */}
+        {isFrozen && governanceState && (
+          <FreezeErrorAlert
+            reason={governanceState.freeze_reason}
+            scope={governanceState.frozen_by || "tenant"}
+            frozenAt={governanceState.frozen_at || undefined}
+            recoveryAction={{
+              label: "View Governance Settings",
+              href: "/console/settings?tab=governance",
+            }}
+          />
+        )}
         <EmptyState
           title="No reconciliation runs yet"
           description="Reconciliation runs will appear here once jobs are executed. Create a job and run it to see execution history."
@@ -152,7 +167,19 @@ export default function RunsPage() {
 
   if (runs.length === 0) {
     return (
-      <div className="p-6">
+      <div className="p-6 space-y-6">
+        {/* Governance Freeze Banner */}
+        {isFrozen && governanceState && (
+          <FreezeErrorAlert
+            reason={governanceState.freeze_reason}
+            scope={governanceState.frozen_by || "tenant"}
+            frozenAt={governanceState.frozen_at || undefined}
+            recoveryAction={{
+              label: "View Governance Settings",
+              href: "/console/settings?tab=governance",
+            }}
+          />
+        )}
         <EmptyState
           title="No runs match your filters"
           description="Try adjusting your search criteria or clearing filters to see all runs"
@@ -169,6 +196,19 @@ export default function RunsPage() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Governance Freeze Banner */}
+      {isFrozen && governanceState && (
+        <FreezeErrorAlert
+          reason={governanceState.freeze_reason}
+          scope={governanceState.frozen_by || "tenant"}
+          frozenAt={governanceState.frozen_at || undefined}
+          recoveryAction={{
+            label: "View Governance Settings",
+            href: "/console/settings?tab=governance",
+          }}
+        />
+      )}
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Runs</h1>

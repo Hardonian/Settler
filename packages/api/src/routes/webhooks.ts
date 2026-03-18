@@ -5,6 +5,7 @@ import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
 import { requirePermission, requireResourceOwnership } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
+import { enforceFreezeState } from "../middleware/governance";
 import { query } from "../db";
 import { verifyWebhookSignature } from "../utils/webhook-signature";
 import { validateExternalUrl } from "../infrastructure/security/SSRFProtection";
@@ -82,6 +83,7 @@ async function hasSeenWebhookReplayKey(replayKey: string): Promise<"distributed"
 router.post(
   "/",
   requirePermission(Permission.WEBHOOKS_WRITE),
+  enforceFreezeState(),
   validateRequest(createWebhookSchema),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -314,6 +316,7 @@ router.post(
 router.delete(
   "/:id",
   requirePermission(Permission.WEBHOOKS_DELETE),
+  enforceFreezeState(),
   validateRequest(getWebhookSchema),
   async (req: AuthRequest, res: Response) => {
     try {

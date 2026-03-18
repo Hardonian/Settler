@@ -14,9 +14,11 @@ import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
+import { enforceFreezeState } from "../middleware/governance";
 import { query } from "../db";
 import { handleRouteError } from "../utils/error-handler";
-import { NotFoundError } from "../utils/typed-errors";
+import { NotFoundError, ValidationError } from "../utils/typed-errors";
+import { trackEventAsync } from "../utils/event-tracker";
 
 const router: Router = Router();
 
@@ -279,6 +281,111 @@ router.get(
       });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to fetch run detail", 500, {
+        userId: req.userId,
+        runId: req.params.runId,
+      });
+    }
+  }
+);
+
+/**
+ * POST /api/runs/:runId/retry
+ * Retry a failed run by creating a new execution for the same job
+ */
+router.post(
+  "/:runId/retry",
+  requirePermission(Permission.JOBS_WRITE),
+  enforceFreezeState(),
+  validateRequest(getRunSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const { runId } = req.params;
+      const tenantId = req.tenantId!;
+      const userId = req.userId!;
+
+      // Get the original execution to find the job
+      const executions = await query<{
+        id: string;
+        job_id: string;
+        job_name: string;
+        status: string;
+      }>(
+        `SELECT e.id, e.job_id, j.name as job_name, e.status
+         FROM executions e
+         JOIN jobs j ON e.job_id = j.id
+         WHERE e.id = $1 AND j.tenant_id = $2`,
+        [runId, tenantId] as (string | number)[]
+      );
+
+      if (executions.length === 0 || !executions[0]) {
+        throw new NotFoundError("Run not found or access denied", "run", runId);
+      }
+
+      const originalRun = executions[0];
+
+      // Only allow retry for failed runs
+      if (originalRun.status !== "failed") {
+        throw new ValidationError("Can only retry failed runs", "status", [
+          {
+            field: "status",
+            message: `Run is ${originalRun.status}, not failed`,
+            code: "INVALID_STATUS",
+          },
+        ]);
+      }
+
+      const jobId = originalRun.job_id;
+
+      // Use atomic update to prevent race conditions - only create if not already running
+      const updated = await query<{ id: string; execution_id: string }>(
+        `WITH job_update AS (
+          UPDATE jobs
+          SET status = 'running', updated_at = NOW()
+          WHERE id = $1 AND status != 'running'
+          RETURNING id
+        )
+        INSERT INTO executions (job_id, status, triggered_by, triggered_at)
+        SELECT $1, 'running', $2, NOW()
+        WHERE EXISTS (SELECT 1 FROM job_update)
+        RETURNING id as execution_id`,
+        [jobId, userId] as (string | number)[]
+      );
+
+      if (updated.length === 0 || !updated[0]) {
+        // Check if job is already running
+        const jobCheck = await query<{ status: string }>(`SELECT status FROM jobs WHERE id = $1`, [
+          jobId,
+        ]);
+
+        if (jobCheck.length > 0 && jobCheck[0]?.status === "running") {
+          throw new ValidationError("Job is already running", "status", [
+            { field: "status", message: "Job is currently running", code: "CONFLICT" },
+          ]);
+        }
+        throw new Error("Failed to create execution - please retry");
+      }
+
+      const newExecutionId = updated[0].execution_id;
+
+      // Track event
+      trackEventAsync(userId, "RunRetried", {
+        originalRunId: runId,
+        newExecutionId,
+        jobId,
+      });
+
+      res.status(201).json({
+        message: "Run retry initiated successfully",
+        data: {
+          id: newExecutionId,
+          name: originalRun.job_name,
+          status: "running",
+          triggeredBy: userId,
+          triggeredAt: new Date().toISOString(),
+        },
+      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to retry run", 500, {
         userId: req.userId,
         runId: req.params.runId,
       });
