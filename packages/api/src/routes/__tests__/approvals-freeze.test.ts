@@ -10,11 +10,9 @@ import request from "supertest";
 import express from "express";
 import approvalsRouter from "../v1/approvals";
 import { query } from "../../db";
-import { authMiddleware, AuthRequest } from "../../middleware/auth";
 
 // Mock dependencies
 jest.mock("../../db");
-jest.mock("../../middleware/auth");
 
 const mockQuery = query as jest.MockedFunction<typeof query>;
 
@@ -42,10 +40,10 @@ describe("Approvals Freeze Protection", () => {
     app.use(express.json());
 
     // Mock auth middleware to set tenant and user
-    app.use((req, res, next) => {
-      (req as AuthRequest).tenantId = "tenant-123";
-      (req as AuthRequest).userId = "user-456";
-      (req as AuthRequest).traceId = "test-trace-123";
+    app.use((req: any, res: any, next: any) => {
+      req.tenantId = "tenant-123";
+      req.userId = "user-456";
+      req.traceId = "test-trace-123";
       next();
     });
 
