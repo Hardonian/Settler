@@ -165,7 +165,8 @@
     "verify_patch.py",
     "stitch_integrations_data_sources.zip",
     ".vscode",
-    "stitch"
+    "stitch",
+    "dlq-tools.ts"
   ],
   "blockedExtensions": [".tar", ".tgz", ".bak", ".tmp", ".old"],
   "localClutterPatterns": [
