@@ -1,4 +1,5 @@
 import { Redis } from "@upstash/redis";
+import { AlertNotifier } from "../alerts/notifier";
 
 /**
  * Core Ingestion Boundary Defense.
@@ -35,6 +36,13 @@ export class IngestionBoundary {
       const error = new Error("RATE_LIMIT_EXCEEDED");
       (error as any).retryAfter = ttl;
       (error as any).status = 429;
+
+      await AlertNotifier.dispatch({
+        severity: "WARNING",
+        category: "RATE_LIMIT_BREACH",
+        message: `Tenant ${tenantId} exceeded strict webhook rate limits.`,
+      });
+
       throw error;
     }
   }
@@ -85,5 +93,12 @@ export class IngestionBoundary {
        VALUES ($1, $2, $3, $4, $5)`,
       [tenantId, source, payload, JSON.stringify(headers), errorReason]
     );
+
+    await AlertNotifier.dispatch({
+      severity: "CRITICAL",
+      category: "INGESTION_DLQ",
+      message: `Webhook from source '${source}' routed to Dead Letter Queue.`,
+      context: { tenantId, errorReason, headersSnippet: headers },
+    });
   }
 }

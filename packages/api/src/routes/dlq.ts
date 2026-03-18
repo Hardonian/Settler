@@ -19,9 +19,9 @@ router.get(
        ORDER BY created_at DESC
        LIMIT 100`
       );
-      res.json({ data: result });
+      return res.json({ data: result });
     } catch (error) {
-      handleRouteError(res, error, "Failed to fetch DLQ items");
+      return handleRouteError(res, error, "Failed to fetch DLQ items");
     }
   }
 );
@@ -36,7 +36,7 @@ router.post(
       const dlqId = id || "";
       const userId = req.userId!;
 
-      const dlqItem = await query<{ tenant_id: string }[]>(
+      const dlqItem = await query<{ tenant_id: string }>(
         `SELECT tenant_id FROM public.ingestion_dlq WHERE id = $1`,
         [dlqId]
       );
@@ -44,21 +44,23 @@ router.post(
         return res.status(404).json({ error: "DLQ item not found" });
       }
 
+      const tenantId = dlqItem[0]?.tenant_id || "system";
+
       // Enterprise AAA Requirement: Audit the operator's replay action
       await query(
         `INSERT INTO public.audit_logs (tenant_id, actor_id, action, target_id, details)
        VALUES ($1, $2, 'DLQ_WEBHOOK_REPLAY', $3, 'Operator manually triggered webhook replay from DLQ')`,
-        [dlqItem[0].tenant_id || "system", userId, dlqId]
+        [tenantId, userId, dlqId]
       );
 
       // Move payload back into queue (Mocked processing state for this scope)
       await query(`DELETE FROM public.ingestion_dlq WHERE id = $1`, [dlqId]);
 
-      res
+      return res
         .status(200)
         .json({ success: true, message: "Webhook replay initiated and audited successfully" });
     } catch (error) {
-      handleRouteError(res, error, "Failed to replay DLQ item");
+      return handleRouteError(res, error, "Failed to replay DLQ item");
     }
   }
 );

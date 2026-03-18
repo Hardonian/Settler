@@ -2,6 +2,8 @@ import os
 import logging
 import psycopg2
 from psycopg2.extras import execute_values
+import urllib.request
+import json
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -77,6 +79,28 @@ def run_stale_run_reaper():
 
             conn.commit()
             logger.info(f"Successfully recovered {len(stale_runs)} orphaned runs.")
+
+            # Dispatch Critical Operations Alert
+            slack_url = os.environ.get("SLACK_WEBHOOK_URL") or os.environ.get(
+                "OPS_ALERT_WEBHOOK_URL"
+            )
+            if slack_url:
+                try:
+                    alert_payload = {
+                        "text": f"*🚨 [CRITICAL] SYSTEM_RECOVERY*\nStale Run Reaper caught and forced timeout on {len(stale_runs)} zombie processing runs.\n```Trace IDs: {run_ids}```"
+                    }
+                    req = urllib.request.Request(
+                        slack_url,
+                        data=json.dumps(alert_payload).encode("utf-8"),
+                        headers={"Content-Type": "application/json"},
+                    )
+                    # Fire and forget with 5s timeout
+                    urllib.request.urlopen(req, timeout=5)
+                    logger.info(
+                        "Successfully dispatched Slack alert for system recovery."
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to dispatch external alert: {e}")
 
 
 if __name__ == "__main__":
