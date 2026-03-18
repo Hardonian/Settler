@@ -117,8 +117,12 @@ export class TenantService {
         ]);
         logInfo("TigerBeetle accounts provisioned", { tenantId: tenant.id });
       } catch (error: unknown) {
-        // We log but don't fail the whole tenant creation, following graceful degradation
-        logError("Failed to provision TigerBeetle accounts", {
+        // Mark tenant as TB unprovisioned for graceful degradation
+        // This allows tenant to function but ledger operations will fail gracefully
+        tenant.markTigerBeetleUnprovisioned();
+        await this.tenantRepo.save(tenant);
+
+        logError("Failed to provision TigerBeetle accounts - tenant marked as unprovisioned", {
           tenantId: tenant.id,
           error: error instanceof Error ? error.message : String(error),
         });

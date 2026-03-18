@@ -4,18 +4,18 @@
  */
 
 export enum TenantTier {
-  FREE = 'free',
-  STARTER = 'starter',
-  GROWTH = 'growth',
-  SCALE = 'scale',
-  ENTERPRISE = 'enterprise',
+  FREE = "free",
+  STARTER = "starter",
+  GROWTH = "growth",
+  SCALE = "scale",
+  ENTERPRISE = "enterprise",
 }
 
 export enum TenantStatus {
-  ACTIVE = 'active',
-  SUSPENDED = 'suspended',
-  TRIAL = 'trial',
-  CANCELLED = 'cancelled',
+  ACTIVE = "active",
+  SUSPENDED = "suspended",
+  TRIAL = "trial",
+  CANCELLED = "cancelled",
 }
 
 export interface TenantQuotas {
@@ -34,7 +34,7 @@ export interface TenantConfig {
   enableMLFeatures: boolean;
   webhookTimeout: number; // milliseconds
   maxRetries: number;
-   
+
   [key: string]: any; // Allow extensible config
 }
 
@@ -47,7 +47,7 @@ export interface TenantProps {
   status: TenantStatus;
   quotas: TenantQuotas;
   config: TenantConfig;
-   
+
   metadata: Record<string, any>;
   createdAt: Date;
   updatedAt: Date;
@@ -57,7 +57,7 @@ export interface TenantProps {
 export class Tenant {
   private constructor(private props: TenantProps) {}
 
-  static create(props: Omit<TenantProps, 'id' | 'createdAt' | 'updatedAt'>): Tenant {
+  static create(props: Omit<TenantProps, "id" | "createdAt" | "updatedAt">): Tenant {
     return new Tenant({
       ...props,
       id: crypto.randomUUID(),
@@ -130,6 +130,24 @@ export class Tenant {
     return !!this.props.parentTenantId;
   }
 
+  /**
+   * Check if TigerBeetle ledger accounts are provisioned for this tenant
+   */
+  isTigerBeetleProvisioned(): boolean {
+    return this.props.metadata.tigerBeetleProvisioned !== false;
+  }
+
+  /**
+   * Mark the tenant as having TigerBeetle provisioning failed
+   */
+  markTigerBeetleUnprovisioned(): void {
+    this.props.metadata = {
+      ...this.props.metadata,
+      tigerBeetleProvisioned: false,
+    };
+    this.props.updatedAt = new Date();
+  }
+
   updateTier(tier: TenantTier): void {
     this.props.tier = tier;
     this.props.updatedAt = new Date();
@@ -150,7 +168,6 @@ export class Tenant {
     this.props.updatedAt = new Date();
   }
 
-   
   updateMetadata(metadata: Record<string, any>): void {
     this.props.metadata = { ...this.props.metadata, ...metadata };
     this.props.updatedAt = new Date();
