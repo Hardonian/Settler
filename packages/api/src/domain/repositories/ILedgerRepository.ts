@@ -169,6 +169,19 @@ export interface ILedgerRepository {
    * @returns Reason string explaining ledger state
    */
   getReason(): string;
+
+  /**
+   * Perform an active health check/ping on the ledger
+   * @returns true if ledger responds, false otherwise
+   */
+  ping(): Promise<boolean>;
+
+  /**
+   * Close and cleanup ledger connections
+   * Should be called during application shutdown for graceful disconnection
+   * @returns Promise that resolves when cleanup is complete
+   */
+  close(): Promise<void>;
 }
 
 /**

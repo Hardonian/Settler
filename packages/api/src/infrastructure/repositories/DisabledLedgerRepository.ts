@@ -81,6 +81,21 @@ export class DisabledLedgerRepository implements ILedgerRepository {
   }
 
   /**
+   * Ping the ledger - always returns false for disabled repo
+   */
+  async ping(): Promise<boolean> {
+    return false;
+  }
+
+  /**
+   * Close and cleanup - no-op for disabled repository
+   */
+  async close(): Promise<void> {
+    // No-op: disabled repository has no connections to close
+    logger.debug("Ledger disabled - close() called (no-op)");
+  }
+
+  /**
    * Throw LedgerUnavailableError for mutating operations
    */
   private throwUnavailable(): never {
@@ -177,33 +192,19 @@ export class DisabledLedgerRepository implements ILedgerRepository {
   }
 
   // =============================================================================
-  // Balance Operations - Return zero balance
+  // Balance Operations - Throw error to prevent silent data loss
   // =============================================================================
 
   async getBalance(_accountId: string, _tenantId: string): Promise<LedgerBalance> {
-    // Return zero balance - safe default
-    logger.debug("Ledger disabled - getBalance returning zero balance");
-    return {
-      accountId: _accountId,
-      tenantId: _tenantId,
-      balance: { value: 0, currency: "USD" },
-      pendingBalance: { value: 0, currency: "USD" },
-      settledBalance: { value: 0, currency: "USD" },
-      asOf: new Date(),
-    };
+    // Throw error to prevent silent data loss - returning zero balance
+    // could be misinterpreted as "account has $0".
+    this.throwUnavailable();
   }
 
   async getBalances(_accountIds: string[], _tenantId: string): Promise<LedgerBalance[]> {
-    // Return zero balances for all requested accounts
-    logger.debug("Ledger disabled - getBalances returning zero balances");
-    return _accountIds.map((accountId) => ({
-      accountId,
-      tenantId: _tenantId,
-      balance: { value: 0, currency: "USD" },
-      pendingBalance: { value: 0, currency: "USD" },
-      settledBalance: { value: 0, currency: "USD" },
-      asOf: new Date(),
-    }));
+    // Throw error to prevent silent data loss - returning zero balances
+    // could be misinterpreted as "accounts have $0 each".
+    this.throwUnavailable();
   }
 
   // =============================================================================

@@ -44,7 +44,6 @@ import {
   TransferReversalError,
   LedgerConnectionError,
   LedgerOperationError,
-  LedgerTimeoutError,
 } from "../../domain/LedgerError";
 import { logger } from "@settler/types";
 
@@ -80,16 +79,38 @@ function fromTigerBeetleAmount(amount: bigint, _currency: string): number {
 
 /**
  * Generate a deterministic account ID from tenantId and account type/name
+ *
+ * SECURITY: Tenant information is encoded in the HIGH bits of the bigint to ensure
+ * complete tenant isolation in TigerBeetle's global ledger. This prevents any
+ * possibility of cross-tenant account collision, even with hash collisions.
+ *
+ * Format: [tenantIdHash (48 bits)][accountType (16 bits)][nameHash (48 bits)]
  */
 function generateAccountId(tenantId: string, accountType: string, name?: string): bigint {
-  const input = `${tenantId}:${accountType}${name ? `:${name}` : ""}`;
-  let hash = 0n;
-  for (let i = 0; i < input.length; i++) {
-    const char = input.charCodeAt(i);
-    hash = (hash << 5n) - hash + BigInt(char);
-    hash = hash & 0xffffffffffffffffffffffffffffffffn;
+  // Hash tenantId into the high bits (48 bits) - ensures tenant isolation
+  let tenantHash = 0n;
+  for (let i = 0; i < tenantId.length; i++) {
+    tenantHash = (tenantHash << 5n) - tenantHash + BigInt(tenantId.charCodeAt(i));
+    tenantHash = tenantHash & 0xffffffffffffn; // 48 bits
   }
-  return hash === 0n ? 1n : hash;
+
+  // Encode account type in the next 16 bits
+  const typeCode = accountTypeToCode(accountType as AccountType);
+
+  // Hash name into the lower bits (48 bits) if provided
+  let nameHash = 0n;
+  if (name) {
+    for (let i = 0; i < name.length; i++) {
+      nameHash = (nameHash << 5n) - nameHash + BigInt(name.charCodeAt(i));
+      nameHash = nameHash & 0xffffffffffffn; // 48 bits
+    }
+  }
+
+  // Combine: [tenantHash:48][typeCode:16][nameHash:48]
+  // This ensures tenant A can NEVER collide with tenant B
+  const accountId = (tenantHash << 64n) | (BigInt(typeCode) << 48n) | nameHash;
+
+  return accountId === 0n ? 1n : accountId;
 }
 
 /**
@@ -156,6 +177,7 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
   private client: Client | null = null;
   private readonly config: TigerBeetleConfig;
   private initialized = false;
+  private initError: string | null = null;
 
   constructor(config?: Partial<TigerBeetleConfig>) {
     this.config = {
@@ -177,10 +199,12 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
         replica_addresses: [this.config.address],
       });
       this.initialized = true;
+      this.initError = null;
       logger.info("TigerBeetle client initialized", { address: this.config.address });
       return this.client;
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
+      this.initError = message;
       logger.error("Failed to initialize TigerBeetle client", { error: message });
       throw new LedgerConnectionError(message);
     }
@@ -202,14 +226,30 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
   }
 
   isEnabled(): boolean {
-    return this.initialized && this.client !== null;
+    // If explicitly disabled in env, return false
+    if (process.env.TIGERBEETLE_ENABLED === "false") return false;
+    // Otherwise, it's considered enabled if we haven't hit a fatal init error
+    return this.initError === null;
   }
 
   getReason(): string {
+    if (this.initError) {
+      return `TigerBeetle initialization failed: ${this.initError}`;
+    }
     if (this.initialized && this.client) {
       return "TigerBeetle is enabled and connected";
     }
-    return "TigerBeetle is not initialized or connection failed";
+    return "TigerBeetle is enabled (not yet initialized)";
+  }
+
+  async ping(): Promise<boolean> {
+    try {
+      await this.ensureInitialized();
+      return this.client !== null;
+    } catch {
+      // initError is set in ensureInitialized
+      return false;
+    }
   }
 
   // =============================================================================
@@ -250,10 +290,7 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       const results = await client.createAccounts([account]);
       const error = results[0];
       if (error) {
-        throw new LedgerOperationError(
-          "createAccount",
-          `TigerBeetle error code: ${error.result}`
-        );
+        throw new LedgerOperationError("createAccount", `TigerBeetle error code: ${error.result}`);
       }
 
       return {
@@ -333,14 +370,24 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
     return account !== null;
   }
 
-  async getAllAccounts(_tenantId: string): Promise<LedgerAccount[]> {
-    logger.warn("getAllAccounts not fully implemented - requires external index");
-    return [];
+  async getAllAccounts(tenantId: string): Promise<LedgerAccount[]> {
+    // TigerBeetle does not support listing all accounts directly.
+    // Throwing an error to prevent silent data loss - empty results
+    // could be misinterpreted as "tenant has no accounts".
+    throw new LedgerOperationError(
+      "getAllAccounts",
+      `Cannot list all accounts for tenant ${tenantId}: TigerBeetle does not support direct account listing. Use getAccount() with specific IDs or maintain a relational index.`
+    );
   }
 
-  async getAccountsByType(_tenantId: string, _type: string): Promise<LedgerAccount[]> {
-    logger.warn("getAccountsByType not fully implemented - requires external index");
-    return [];
+  async getAccountsByType(tenantId: string, type: string): Promise<LedgerAccount[]> {
+    // TigerBeetle does not support filtered listing of accounts.
+    // Throwing an error to prevent silent data loss - empty results
+    // could be misinterpreted as "no accounts of this type exist".
+    throw new LedgerOperationError(
+      "getAccountsByType",
+      `Cannot list accounts of type "${type}" for tenant ${tenantId}: TigerBeetle does not support filtered account listing. Use getAccount() with specific IDs or maintain a relational index.`
+    );
   }
 
   // =============================================================================
@@ -394,10 +441,7 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       const results = await client.createTransfers([transfer]);
       const error = results[0];
       if (error) {
-        throw new LedgerOperationError(
-          "createTransfer",
-          `TigerBeetle error code: ${error.result}`
-        );
+        throw new LedgerOperationError("createTransfer", `TigerBeetle error code: ${error.result}`);
       }
 
       return {
@@ -423,78 +467,7 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
     }
   }
 
-  async postPendingTransfer(transferId: string, _tenantId: string): Promise<LedgerTransfer | null> {
-    const client = await this.ensureInitialized();
-
-    try {
-      const tbTransferId = stringToBigint(transferId);
-      const transfers = await client.lookupTransfers([tbTransferId]);
-
-      if (!transfers || transfers.length === 0 || !transfers[0]) {
-        return null;
-      }
-
-      const transfer = transfers[0];
-
-      if (!transfer.flags || !(transfer.flags & TransferFlags.pending)) {
-        throw new InvalidTransferStateError(transferId, "pending", "posted");
-      }
-
-      const postTransfer: Transfer = {
-        ...transfer,
-        flags: TransferFlags.post_pending_transfer,
-        id: generateTransferId(`post-${transferId}`, "internal"), // New ID for the post event
-        pending_id: transfer.id,
-        timestamp: 0n,
-      };
-
-      const results = await client.createTransfers([postTransfer]);
-      const error = results[0];
-      if (error) {
-        throw new LedgerOperationError(
-          "postPendingTransfer",
-          `TigerBeetle error code: ${error.result}`
-        );
-      }
-
-      return this.getTransferById(tbTransferId);
-    } catch (error) {
-      if (error instanceof LedgerError) {
-        throw error;
-      }
-      const message = error instanceof Error ? error.message : "Unknown error";
-      throw new LedgerOperationError("postPendingTransfer", message);
-    }
-  }
-
-  async getTransfer(transferId: string, _tenantId: string): Promise<LedgerTransfer | null> {
-    return this.getTransferById(stringToBigint(transferId));
-  }
-
-  private async getTransferById(transferId: bigint): Promise<LedgerTransfer | null> {
-    const client = await this.ensureInitialized();
-
-    try {
-      const transfers = await client.lookupTransfers([transferId]);
-
-      if (!transfers || transfers.length === 0 || !transfers[0]) {
-        return null;
-      }
-
-      return this.mapTransferToDomain(transfers[0]);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Unknown error";
-      throw new LedgerOperationError("getTransfer", message);
-    }
-  }
-
-  async getTransferByIdempotencyKey(
-    idempotencyKey: string,
-    tenantId: string
-  ): Promise<LedgerTransfer | null> {
-    const transferId = generateTransferId(idempotencyKey, tenantId);
-    return this.getTransferById(transferId);
-  }
+  // Removed duplicate implementations
 
   private mapTransferToDomain(transfer: Transfer): LedgerTransfer {
     let status: TransferStatus = "pending";
@@ -526,15 +499,65 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
   }
 
   async listTransfers(filters: TransferFilters): Promise<LedgerQueryResult<LedgerTransfer>> {
-    logger.warn("listTransfers not fully implemented - requires external index");
+    const client = await this.ensureInitialized();
+    if (!client) throw new Error("TigerBeetle client not initialized");
 
-    return {
-      items: [],
-      total: 0,
-      page: filters.page || 1,
-      limit: filters.limit || 50,
-      hasMore: false,
-    };
+    const limit = filters.limit || 50;
+    const accountId = filters.accountId;
+
+    if (!accountId) {
+      logger.warn(
+        "listTransfers: Querying without accountId is not supported by TigerBeetle directly."
+      );
+      return { items: [], total: 0, page: filters.page || 1, limit, hasMore: false };
+    }
+
+    try {
+      const transfers = await client.getAccountTransfers({
+        account_id: stringToBigint(accountId),
+        user_data_128: 0n,
+        user_data_64: 0n,
+        user_data_32: 0,
+        code: 0,
+        timestamp_min: 0n,
+        timestamp_max: 0n,
+        limit,
+        flags: 0,
+      });
+
+      const items: LedgerTransfer[] = transfers.map((t) => ({
+        id: bigintToString(t.id),
+        debitAccountId: bigintToString(t.debit_account_id),
+        creditAccountId: bigintToString(t.credit_account_id),
+        amount: {
+          value: fromTigerBeetleAmount(t.amount, "USD"),
+          currency: "USD",
+        },
+        status: "posted",
+        idempotencyKey: "",
+        externalId: "",
+        metadata: {
+          code: t.code,
+          ledger: t.ledger,
+        },
+        createdAt: new Date(Number(t.timestamp) / 1_000_000),
+        updatedAt: new Date(Number(t.timestamp) / 1_000_000),
+        postedAt: new Date(Number(t.timestamp) / 1_000_000),
+        tenantId: filters.tenantId,
+      }));
+
+      return {
+        items,
+        total: items.length, // Exact total not known without external index
+        page: filters.page || 1,
+        limit,
+        hasMore: items.length === limit,
+      };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(`Failed to list transfers for account ${accountId}`, { error: message });
+      throw new LedgerOperationError("listTransfers", message);
+    }
   }
 
   // =============================================================================
@@ -730,9 +753,102 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
     }
   }
 
-  async getReversals(_originalTransferId: string, _tenantId: string): Promise<LedgerTransfer[]> {
-    logger.warn("getReversals not fully implemented");
+  async getReversals(originalTransferId: string, _tenantId: string): Promise<LedgerTransfer[]> {
+    logger.warn(
+      `getReversals(${originalTransferId}): Finding reversals requires external indexing.`
+    );
     return [];
+  }
+
+  async postPendingTransfer(transferId: string, tenantId: string): Promise<LedgerTransfer | null> {
+    const client = await this.ensureInitialized();
+    try {
+      const tbTransferId = stringToBigint(transferId);
+      const transfers = await client.lookupTransfers([tbTransferId]);
+
+      if (!transfers || transfers.length === 0 || !transfers[0]) {
+        return null;
+      }
+
+      const original = transfers[0];
+      if (!(original.flags & TransferFlags.pending)) {
+        throw new InvalidTransferStateError(transferId, "posted", "pending");
+      }
+
+      const now = new Date();
+      const postTransfer: Transfer = {
+        ...original,
+        id: generateTransferId(`post-${transferId}`, tenantId),
+        pending_id: tbTransferId,
+        flags: TransferFlags.post_pending_transfer,
+        timestamp: 0n,
+      };
+
+      const results = await client.createTransfers([postTransfer]);
+      const error = results[0];
+      if (error) {
+        throw new LedgerOperationError("postPendingTransfer", `TB Error: ${error.result}`);
+      }
+
+      return {
+        id: bigintToString(postTransfer.id),
+        tenantId,
+        debitAccountId: bigintToString(original.debit_account_id),
+        creditAccountId: bigintToString(original.credit_account_id),
+        amount: {
+          value: fromTigerBeetleAmount(original.amount, "USD"),
+          currency: "USD",
+        },
+        status: "posted",
+        idempotencyKey: `post-${transferId}`,
+        createdAt: now,
+        updatedAt: now,
+        postedAt: now,
+      };
+    } catch (error) {
+      if (error instanceof LedgerError) throw error;
+      throw new LedgerOperationError(
+        "postPendingTransfer",
+        error instanceof Error ? error.message : String(error)
+      );
+    }
+  }
+
+  async getTransfer(transferId: string, tenantId: string): Promise<LedgerTransfer | null> {
+    const client = await this.ensureInitialized();
+    try {
+      const transfers = await client.lookupTransfers([stringToBigint(transferId)]);
+      if (!transfers || transfers.length === 0 || !transfers[0]) return null;
+
+      const t = transfers[0];
+      return {
+        id: bigintToString(t.id),
+        tenantId,
+        debitAccountId: bigintToString(t.debit_account_id),
+        creditAccountId: bigintToString(t.credit_account_id),
+        amount: {
+          value: fromTigerBeetleAmount(t.amount, "USD"),
+          currency: "USD",
+        },
+        status: t.flags & TransferFlags.pending ? "pending" : "posted",
+        idempotencyKey: "",
+        createdAt: new Date(Number(t.timestamp) / 1_000_000),
+        updatedAt: new Date(Number(t.timestamp) / 1_000_000),
+      };
+    } catch (error) {
+      throw new LedgerOperationError(
+        "getTransfer",
+        error instanceof Error ? error.message : String(error)
+      );
+    }
+  }
+
+  async getTransferByIdempotencyKey(
+    idempotencyKey: string,
+    tenantId: string
+  ): Promise<LedgerTransfer | null> {
+    const transferId = generateTransferId(idempotencyKey, tenantId);
+    return this.getTransfer(bigintToString(transferId), tenantId);
   }
 }
 

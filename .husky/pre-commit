@@ -28,7 +28,7 @@ pnpm verify:conflict-markers || {
 
 # Stage-scoped lint/format, sequential to reduce memory spikes on constrained machines.
 echo "🔍 Running lint-staged (sequential, low-memory mode)..."
-pnpm lint-staged --concurrent false || {
+pnpm exec lint-staged --concurrent false || {
   echo "❌ lint-staged failed. Please fix errors before committing."
   exit 1
 }

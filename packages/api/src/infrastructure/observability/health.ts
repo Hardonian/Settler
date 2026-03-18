@@ -111,7 +111,7 @@ export class HealthCheckService {
       }
 
       const repository = ledgerService.getRepository();
-      const healthy = repository.isEnabled();
+      const healthy = await repository.ping();
       const latency = Date.now() - start;
 
       return {
