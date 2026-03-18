@@ -1,15 +1,24 @@
 /**
  * Automated Review API Routes
- * 
+ *
  * Endpoints for automated reconciliation review process.
  * Implements industry-standard automated review according to best practices.
  */
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { enforceFreezeState } from "../../middleware/governance";
 import { logError, logInfo } from "../../utils/logger";
-import { autoReviewMatch, autoReviewRun, getReviewStatistics } from "../../services/reconciliation/automated-review";
-import { calculateQualityMetrics, checkQualityThresholds, generateQualityReport } from "../../services/reconciliation/quality-monitor";
+import {
+  autoReviewMatch,
+  autoReviewRun,
+  getReviewStatistics,
+} from "../../services/reconciliation/automated-review";
+import {
+  calculateQualityMetrics,
+  checkQualityThresholds,
+  generateQualityReport,
+} from "../../services/reconciliation/quality-monitor";
 
 const router: Router = Router();
 
@@ -17,7 +26,7 @@ const router: Router = Router();
  * POST /api/v1/automated-review/run/:runId
  * Trigger automated review for a reconciliation run
  */
-router.post("/run/:runId", async (req: AuthRequest, res: Response) => {
+router.post("/run/:runId", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
     const { runId } = req.params;
     const tenantId = req.tenantId!;
@@ -64,7 +73,7 @@ router.post("/run/:runId", async (req: AuthRequest, res: Response) => {
  * POST /api/v1/automated-review/match/:matchId
  * Trigger automated review for a single match
  */
-router.post("/match/:matchId", async (req: AuthRequest, res: Response) => {
+router.post("/match/:matchId", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
     const { matchId } = req.params;
     const tenantId = req.tenantId!;
