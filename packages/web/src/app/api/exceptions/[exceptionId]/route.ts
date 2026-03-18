@@ -2,7 +2,7 @@
  * Exception Detail API Route (Workspace-scoped)
  *
  * GET /api/exceptions/[exceptionId] - Get a single exception by ID
- * POST /api/exceptions/[exceptionId] - Handle exception actions via query param (?action=resolve|ignore|retry|reopen)
+ * POST /api/exceptions/[exceptionId] - Handle exception actions via query param (?action=resolve|ignore|reopen)
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -24,7 +24,7 @@ const paramsSchema = z.object({
 
 // Action query param schema
 const actionQuerySchema = z.object({
-  action: z.enum(["resolve", "ignore", "retry", "reopen"]),
+  action: z.enum(["resolve", "ignore", "reopen"]),
 });
 
 // Request body schema for exception actions
@@ -137,7 +137,6 @@ export const GET = withSecurity(
       } catch (error) {
         appLogger.error("[Exception Detail API] Error fetching exception", error);
 
-        // Never return 500 - return graceful error response
         return NextResponse.json(
           {
             exception: null,
@@ -145,7 +144,7 @@ export const GET = withSecurity(
             message: "Please try again later or contact support if the issue persists",
             trace_id: traceId,
           },
-          { status: 200 }
+          { status: 500 }
         );
       }
     },
@@ -156,7 +155,7 @@ export const GET = withSecurity(
 
 /**
  * POST /api/exceptions/[exceptionId] - Handle exception actions
- * Accepts action via query param: ?action=resolve|ignore|retry|reopen
+ * Accepts action via query param: ?action=resolve|ignore|reopen
  */
 export const POST = withSecurity(
   withUniversalBillingGate(
@@ -190,7 +189,7 @@ export const POST = withSecurity(
           return NextResponse.json(
             {
               success: false,
-              error: "Invalid action. Use ?action=resolve|ignore|retry|reopen",
+              error: "Invalid action. Use ?action=resolve|ignore|reopen",
               trace_id: traceId,
             },
             { status: 400 }
@@ -240,9 +239,6 @@ export const POST = withSecurity(
           case "ignore":
             result = await handleIgnore(exceptionId, tenantId, userId, notes);
             break;
-          case "retry":
-            result = await handleRetry(exceptionId, tenantId, userId, notes);
-            break;
           case "reopen":
             result = await handleReopen(exceptionId, tenantId, userId, notes);
             break;
@@ -251,13 +247,14 @@ export const POST = withSecurity(
         }
 
         if (!result.success) {
+          const status = result.error === "Exception not found" ? 404 : 422;
           return NextResponse.json(
             {
               success: false,
               error: result.error || `Failed to ${actionName} exception`,
               trace_id: traceId,
             },
-            { status: 200 }
+            { status }
           );
         }
 
@@ -283,7 +280,7 @@ export const POST = withSecurity(
             message: "Please try again later or contact support if the issue persists",
             trace_id: traceId,
           },
-          { status: 200 }
+          { status: 500 }
         );
       }
     },
@@ -355,42 +352,6 @@ async function handleIgnore(
           ignoredBy: userId,
           ignoredAt: new Date().toISOString(),
           notes,
-        },
-      },
-    },
-  });
-
-  return { success: true };
-}
-
-async function handleRetry(
-  exceptionId: string,
-  tenantId: string,
-  userId: string,
-  notes?: string
-): Promise<{ success: boolean; error?: string }> {
-  const exception = await prisma.driftEvent.findFirst({
-    where: { id: exceptionId, tenantId },
-  });
-
-  if (!exception) {
-    return { success: false, error: "Exception not found" };
-  }
-
-  // Reset acknowledgment state for retry
-  await prisma.driftEvent.update({
-    where: { id: exceptionId },
-    data: {
-      acknowledged: false,
-      acknowledgedBy: null,
-      acknowledgedAt: null,
-      metadata: {
-        ...((exception.metadata as Record<string, unknown>) || {}),
-        retry: {
-          retriedBy: userId,
-          retriedAt: new Date().toISOString(),
-          notes,
-          previousAcknowledged: exception.acknowledged,
         },
       },
     },

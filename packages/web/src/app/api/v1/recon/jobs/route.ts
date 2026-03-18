@@ -111,7 +111,8 @@ export const POST = withSecurity(
           sourceConfigEncrypted: JSON.stringify(body.sourceConfig || {}),
           targetAdapter: body.targetAdapter,
           targetConfigEncrypted: JSON.stringify(body.targetConfig || {}),
-          status: "queued",
+          // ReconCoreEngine only executes jobs in active status.
+          status: "active",
           validationRules: body.rules || [],
           scheduleCron: body.scheduleCron || null,
           scheduleTimezone: body.scheduleTimezone || "UTC",
@@ -153,18 +154,16 @@ export const POST = withSecurity(
 
       return NextResponse.json(jobResponse, { status: 201 });
     } catch (error) {
-      // Never return 500 - always return 200 with error info for playground
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       appLogger.error("[Recon Jobs API] Error", error, { errorMessage });
 
-      // Return 200 with error info instead of 500 to prevent playground crashes
       return NextResponse.json(
         {
           error: "Failed to create reconciliation job",
           message: errorMessage,
-          demo: true,
+          demo: false,
         },
-        { status: 200 }
+        { status: 500 }
       );
     }
   },

@@ -4,6 +4,11 @@ import { headers } from "next/headers";
 type RunRecord = {
   id: string;
   status?: string;
+  status_label?: string;
+  summary_state?: string;
+  progress_state?: string;
+  is_terminal?: boolean;
+  progress_percent?: number;
   created_at?: string;
   policy_hash?: string;
   policy?: string;
@@ -63,6 +68,16 @@ export default async function RunDetail({ params }: { params: Promise<{ id: stri
           <h2 className="font-semibold text-foreground">Execution metadata</h2>
           <div className="mt-2 space-y-1 text-muted-foreground">
             <div>Status: {run.status ?? "unknown"}</div>
+            <div>Status label: {run.status_label ?? run.status ?? "unknown"}</div>
+            <div>Summary state: {run.summary_state ?? "unknown"}</div>
+            <div>Progress state: {run.progress_state ?? "unknown"}</div>
+            <div>
+              Progress:{" "}
+              {typeof run.progress_percent === "number" ? `${run.progress_percent}%` : "n/a"}
+            </div>
+            <div>
+              Terminal: {typeof run.is_terminal === "boolean" ? String(run.is_terminal) : "n/a"}
+            </div>
             <div>Created: {run.created_at ?? "n/a"}</div>
             <div>Tenant: {run.tenant_id ?? "n/a"}</div>
             <div>Policy: {run.policy ?? run.policy_hash ?? "n/a"}</div>

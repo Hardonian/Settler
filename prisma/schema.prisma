@@ -407,6 +407,33 @@ model ValidationRule {
   @@map("validation_rules")
 }
 
+model CustomMatchingRule {
+  id                String    @id @default(uuid())
+  tenantId          String?   @db.Uuid
+  name              String
+  description       String?
+  matchConditions   Json      @default("{}") // JSON object defining matching criteria
+  matchStrategy     String    @default("exact") // exact, fuzzy, regex, custom
+  priority          Int       @default(0) // Lower values = higher priority
+  isActive          Boolean   @default(true)
+  isPublic          Boolean   @default(false)
+  isSystem          Boolean   @default(false)
+  applicableSources Json      @default("[]") // Array of source adapter types this rule applies to
+  applicableTargets Json      @default("[]") // Array of target adapter types this rule applies to
+  usageCount        Int       @default(0)
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  @@index([tenantId])
+  @@index([matchStrategy])
+  @@index([priority])
+  @@index([isActive])
+  @@index([isPublic])
+  @@map("custom_matching_rules")
+}
+
 model TransformRecipe {
   id                String    @id @default(uuid())
   tenantId          String?   @db.Uuid

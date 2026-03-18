@@ -24,9 +24,14 @@ interface Run {
   id: string;
   name: string;
   status: "pending" | "running" | "completed" | "failed" | "unknown";
+  statusLabel?: string;
   startedAt: string;
   completedAt: string | null;
   summary?: RunSummary;
+  summaryState?: "success" | "review_needed" | "in_progress" | "failed" | "empty" | "unknown";
+  progress?: number;
+  progressState?: "not_started" | "in_progress" | "completed" | "failed" | "unknown";
+  isTerminal?: boolean;
 }
 
 interface RunFilters {
@@ -50,7 +55,7 @@ export default function RunsPage() {
       return () => clearInterval(interval);
     }
     return undefined;
-  }, [autoRefresh]);
+  }, [autoRefresh, filters]);
 
   const loadRuns = async () => {
     setLoading(true);
@@ -344,7 +349,7 @@ export default function RunsPage() {
                       <td className="py-3 px-4">
                         <Badge className={getStatusColor(run.status)}>
                           <StatusIcon className="w-3 h-3 mr-1" />
-                          {run.status}
+                          {run.statusLabel || run.status}
                         </Badge>
                       </td>
                       <td className="py-3 px-4 text-sm text-slate-600 dark:text-slate-400">

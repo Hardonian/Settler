@@ -2,6 +2,7 @@
  * Site Designer Main Page
  *
  * Lists all pages and provides navigation to editors.
+ * Marked as runtime-degraded-without-tenant in route maturity registry.
  */
 
 "use client";

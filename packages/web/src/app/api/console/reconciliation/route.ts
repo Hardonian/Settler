@@ -11,7 +11,12 @@ import {
   getReconciliationSummary,
   listReconciliationItems,
 } from "@/lib/server/settler/reconciliation";
-import { getPrimaryTenant } from "@/lib/supabase/tenant-helpers";
+import {
+  assertTenantMembership,
+  resolveTenantForMutation,
+  resolveTenantMembershipScope,
+  TenantMembershipError,
+} from "@/lib/supabase/tenant-membership";
 import { z } from "zod";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
@@ -40,15 +45,16 @@ export const POST = withSecurity(
     async function POST(request: NextRequest) {
       try {
         const authContext: UnifiedAuthContext = await requireAuth(request);
+        const { userId, tenantIds } = await resolveTenantMembershipScope();
 
         // Get tenant ID
-        const tenantId = authContext.tenantId;
-        if (!tenantId) {
-          return NextResponse.json({ error: "No tenant found" }, { status: 400 });
+        let tenantId: string;
+        if (authContext.tenantId) {
+          assertTenantMembership(tenantIds, authContext.tenantId);
+          tenantId = authContext.tenantId;
+        } else {
+          tenantId = resolveTenantForMutation(tenantIds);
         }
-
-        // Get user ID
-        const userId = authContext.userId;
 
         // Parse and validate body
         const body = await request.json();
@@ -83,6 +89,13 @@ export const POST = withSecurity(
           );
         }
 
+        if (error instanceof TenantMembershipError) {
+          return NextResponse.json(
+            { error: error.message, code: error.code },
+            { status: error.status }
+          );
+        }
+
         appLogger.error("[Reconciliation API] Error", error);
         return NextResponse.json(
           {
@@ -90,7 +103,7 @@ export const POST = withSecurity(
             error: "Failed to run reconciliation",
             message: "Please try again later or contact support if the issue persists",
           },
-          { status: 200 }
+          { status: 500 }
         );
       }
     },
@@ -104,12 +117,14 @@ export const GET = withSecurity(
     async function GET(request: NextRequest) {
       try {
         // Authenticate
-        await requireAuth(request);
-
-        // Get tenant ID
-        const tenantId = await getPrimaryTenant();
-        if (!tenantId) {
-          return NextResponse.json({ reconciliations: [] }, { status: 200 });
+        const authContext = await requireAuth(request);
+        const { tenantIds } = await resolveTenantMembershipScope();
+        let tenantId: string;
+        if (authContext.tenantId) {
+          assertTenantMembership(tenantIds, authContext.tenantId);
+          tenantId = authContext.tenantId;
+        } else {
+          tenantId = resolveTenantForMutation(tenantIds);
         }
 
         // Get reconciliation ID from query params
@@ -135,8 +150,20 @@ export const GET = withSecurity(
         // List all reconciliations (placeholder - would need list function)
         return NextResponse.json({ reconciliations: [] }, { status: 200 });
       } catch (error) {
+        if (error instanceof TenantMembershipError) {
+          return NextResponse.json(
+            { error: error.message, code: error.code },
+            { status: error.status }
+          );
+        }
         appLogger.error("[Reconciliation API] Error", error);
-        return NextResponse.json({ reconciliations: [] }, { status: 200 });
+        return NextResponse.json(
+          {
+            error: "Failed to load reconciliations",
+            message: "Please try again later or contact support if the issue persists",
+          },
+          { status: 500 }
+        );
       }
     },
     { feature: "GET API" }

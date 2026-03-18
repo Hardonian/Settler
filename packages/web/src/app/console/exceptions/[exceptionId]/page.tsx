@@ -8,7 +8,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { safeFetch } from "@/lib/safe-fetch";
-import { RefreshCw, CheckCircle2, XCircle, Clock, AlertCircle, Copy, Zap } from "lucide-react";
+import { RefreshCw, CheckCircle2, XCircle, Clock, AlertCircle, Copy } from "lucide-react";
 import Link from "next/link";
 import { useGovernanceState } from "@/hooks/use-governance-state";
 import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
@@ -104,18 +104,6 @@ export default function ExceptionDetailPage() {
       } else {
         alert(result.error?.message || "Failed to ignore exception");
       }
-    }
-  };
-
-  const handleRetry = async () => {
-    const result = await safeFetch(`/api/exceptions/${exceptionId}?action=retry`, {
-      method: "POST",
-    });
-
-    if (result.success) {
-      await loadExceptionDetail();
-    } else {
-      alert(result.error?.message || "Failed to retry exception");
     }
   };
 
@@ -422,10 +410,6 @@ export default function ExceptionDetailPage() {
               <Button onClick={handleReopen} className="bg-yellow-600 hover:bg-yellow-700">
                 <AlertCircle className="mr-2" />
                 Reopen Investigation
-              </Button>
-              <Button onClick={handleRetry} className="bg-blue-600 hover:bg-blue-700">
-                <Zap className="mr-2" />
-                Retry Processing
               </Button>
             </>
           )}

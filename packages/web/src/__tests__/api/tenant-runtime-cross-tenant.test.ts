@@ -88,6 +88,32 @@ jest.mock("@/shared/db/prismaClient", () => ({
       ),
     },
     reconResult: {
+      findMany: jest.fn(
+        async ({ where }: { where: { tenantId: string; reconJobId?: { in: string[] } } }) =>
+          fixtureResults
+            .filter(
+              (result) =>
+                result.tenantId === where.tenantId &&
+                (!where.reconJobId?.in || where.reconJobId.in.includes(result.reconJobId))
+            )
+            .map((result) => ({
+              id: `${result.reconJobId}-latest`,
+              reconJobId: result.reconJobId,
+              tenantId: result.tenantId,
+              status: result.status,
+              startedAt: result.startedAt,
+              completedAt: result.startedAt,
+              sourceCount: 0,
+              targetCount: 0,
+              matchedCount: result.matchedCount,
+              unmatchedSourceCount: result.unmatchedSourceCount,
+              unmatchedTargetCount: result.unmatchedTargetCount,
+              conflictCount: 0,
+              errorMessage: null,
+              metadata: result.metadata,
+              summary: result.summary,
+            }))
+      ),
       findFirst: jest.fn(
         async ({ where }: { where: { reconJobId: string; tenantId: string } }) =>
           fixtureResults.find(

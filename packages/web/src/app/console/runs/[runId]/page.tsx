@@ -12,7 +12,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { safeFetch } from "@/lib/safe-fetch";
 import {
   RefreshCw,
-  Play,
   CheckCircle2,
   XCircle,
   Clock,
@@ -26,19 +25,22 @@ interface RunStage {
   id: string;
   name: string;
   status: "pending" | "running" | "completed" | "failed";
-  startedAt?: Date;
-  completedAt?: Date;
+  startedAt?: string;
+  completedAt?: string;
   error?: string;
 }
 
 interface Run {
   id: string;
   name: string;
-  status: "pending" | "running" | "completed" | "failed";
+  status: "pending" | "running" | "completed" | "failed" | "unknown";
+  statusLabel?: string;
+  isTerminal?: boolean;
   stages: RunStage[];
   progress: number;
-  startedAt: Date;
-  completedAt?: Date;
+  progressState?: "not_started" | "in_progress" | "completed" | "failed" | "unknown";
+  startedAt: string;
+  completedAt?: string;
   error?: string;
   summary?: {
     total: number;
@@ -46,6 +48,7 @@ interface Run {
     unmatched: number;
     conflicts: number;
   };
+  summaryState?: "success" | "review_needed" | "in_progress" | "failed" | "empty" | "unknown";
 }
 
 export default function RunPage() {
@@ -59,12 +62,12 @@ export default function RunPage() {
   useEffect(() => {
     loadRun();
 
-    if (autoRefresh && run?.status === "running") {
+    if (autoRefresh && run && !run.isTerminal) {
       const interval = setInterval(loadRun, 2000); // Poll every 2 seconds for running jobs
       return () => clearInterval(interval);
     }
     return undefined;
-  }, [runId, autoRefresh, run?.status]);
+  }, [runId, autoRefresh, run?.isTerminal]);
 
   const loadRun = async () => {
     setLoading(true);
@@ -80,18 +83,6 @@ export default function RunPage() {
     setLoading(false);
   };
 
-  const handleRetry = async () => {
-    const result = await safeFetch(`/api/runs/${runId}/retry`, {
-      method: "POST",
-    });
-
-    if (result.success) {
-      loadRun();
-    } else {
-      alert(result.error?.message || "Failed to retry");
-    }
-  };
-
   const getStatusIcon = (status: Run["status"]) => {
     switch (status) {
       case "completed":
@@ -100,6 +91,8 @@ export default function RunPage() {
         return XCircle;
       case "running":
         return RefreshCw;
+      case "unknown":
+        return AlertCircle;
       default:
         return Clock;
     }
@@ -113,6 +106,8 @@ export default function RunPage() {
         return "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300";
       case "running":
         return "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300";
+      case "unknown":
+        return "bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300";
       default:
         return "bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300";
     }
@@ -197,12 +192,6 @@ export default function RunPage() {
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </Button>
-          {run.status === "failed" && (
-            <Button variant="outline" size="sm" onClick={handleRetry}>
-              <Play className="w-4 h-4 mr-2" />
-              Retry
-            </Button>
-          )}
         </div>
       </div>
 
@@ -213,7 +202,7 @@ export default function RunPage() {
             <CardTitle>Status</CardTitle>
             <Badge className={getStatusColor(run.status)}>
               <StatusIcon className="w-4 h-4 mr-1" />
-              {run.status}
+              {run.statusLabel || run.status}
             </Badge>
           </div>
         </CardHeader>
@@ -422,10 +411,6 @@ export default function RunPage() {
           </CardHeader>
           <CardContent>
             <p className="text-red-800 dark:text-red-300">{run.error}</p>
-            <Button onClick={handleRetry} className="mt-4">
-              <Play className="w-4 h-4 mr-2" />
-              Retry Run
-            </Button>
           </CardContent>
         </Card>
       )}

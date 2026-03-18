@@ -8,7 +8,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { enqueueJob } from "@/lib/jobs";
-import { createClient } from "@/lib/supabase/server";
+import {
+  resolveTenantForMutation,
+  resolveTenantMembershipScope,
+  TenantMembershipError,
+} from "@/lib/supabase/tenant-membership";
 import { appLogger } from "@/lib/utils/logger";
 import { v4 as uuidv4 } from "uuid";
 
@@ -16,7 +20,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 // Validation schema - simplified for Zod v4 compatibility
 const enqueueSchema = z.object({
-  tenant_id: z.string(),
+  tenant_id: z.string().optional(),
   type: z.string(),
   payload: z.record(z.string(), z.unknown()),
   idempotency_key: z.string().optional(),
@@ -28,22 +32,7 @@ export async function POST(request: NextRequest) {
   const traceId = uuidv4();
 
   try {
-    // Authenticate user
-    const client = await createClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await client.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json(
-        {
-          error: "Unauthorized",
-          traceId,
-        },
-        { status: 401 }
-      );
-    }
+    const { tenantIds } = await resolveTenantMembershipScope();
 
     // Parse and validate request body
     const body = await request.json();
@@ -61,28 +50,11 @@ export async function POST(request: NextRequest) {
     }
 
     const { tenant_id, type, payload, idempotency_key, max_attempts, run_at } = validation.data;
-
-    // Verify tenant membership
-    const { data: membership } = await client
-      .from("memberships")
-      .select("role")
-      .eq("tenant_id", tenant_id)
-      .eq("user_id", user.id)
-      .single();
-
-    if (!membership) {
-      return NextResponse.json(
-        {
-          error: "Forbidden: Not a member of this tenant",
-          traceId,
-        },
-        { status: 403 }
-      );
-    }
+    const tenantId = resolveTenantForMutation(tenantIds, tenant_id || null);
 
     // Enqueue the job
     const result = await enqueueJob({
-      tenantId: tenant_id,
+      tenantId,
       type,
       payload: payload || {},
       idempotencyKey: idempotency_key,
@@ -110,6 +82,17 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
+    if (error instanceof TenantMembershipError) {
+      return NextResponse.json(
+        {
+          error: error.message,
+          code: error.code,
+          traceId,
+        },
+        { status: error.status }
+      );
+    }
+
     appLogger.error("Error in POST /api/jobs", { error, traceId });
 
     return NextResponse.json(

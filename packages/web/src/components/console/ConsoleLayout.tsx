@@ -32,6 +32,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Tooltip } from "@/components/ui/Tooltip";
 import { BackendHealthBadge } from "./BackendHealthBadge";
 import { CONSOLE_ROUTE_REGISTRY, type ConsoleRouteEntry } from "@/lib/console/route-maturity";
 import { OperationalRouteNotice } from "@/components/shared/OperationalRouteNotice";
@@ -71,7 +72,11 @@ function maturityBadge(entry: ConsoleRouteEntry) {
   if (entry.maturity === "thin") return <Badge variant="outline">Thin</Badge>;
   if (entry.maturity === "admin-only") return <Badge variant="secondary">Admin</Badge>;
   if (entry.maturity.startsWith("runtime-degraded"))
-    return <Badge variant="outline">Partial</Badge>;
+    return (
+      <Tooltip content="Partial coverage - some routes have degraded status due to missing environment, tenant, or provider configuration">
+        <Badge variant="outline">Partial</Badge>
+      </Tooltip>
+    );
   return null;
 }
 

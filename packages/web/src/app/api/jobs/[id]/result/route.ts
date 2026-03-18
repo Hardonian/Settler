@@ -7,7 +7,10 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getJobResult, formatJobResultForResponse, isApiError } from "@/lib/jobs";
-import { createClient } from "@/lib/supabase/server";
+import {
+  resolveTenantMembershipScope,
+  TenantMembershipError,
+} from "@/lib/supabase/tenant-membership";
 import { appLogger } from "@/lib/utils/logger";
 import { v4 as uuidv4 } from "uuid";
 
@@ -22,73 +25,53 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
   try {
     const { id: jobId } = await params;
+    const { tenantIds } = await resolveTenantMembershipScope();
 
-    // Get tenant_id from query params
+    // Optional tenant hint from query params (validated against memberships)
     const { searchParams } = new URL(request.url);
-    const tenantId = searchParams.get("tenant_id");
-
-    if (!tenantId) {
+    const requestedTenantId = searchParams.get("tenant_id")?.trim() || null;
+    if (requestedTenantId && !tenantIds.includes(requestedTenantId)) {
       return NextResponse.json(
         {
-          error: "Missing tenant_id query parameter",
+          error: "Job result not found",
           traceId,
         },
-        { status: 400 }
+        { status: 404 }
       );
     }
 
-    // Authenticate user
-    const client = await createClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await client.auth.getUser();
+    const candidateTenantIds = requestedTenantId ? [requestedTenantId] : tenantIds;
+    let foundResult: ReturnType<typeof formatJobResultForResponse> | null = null;
+    let lastError: { error: string; traceId?: string; details?: unknown } | null = null;
 
-    if (authError || !user) {
-      return NextResponse.json(
-        {
-          error: "Unauthorized",
-          traceId,
-        },
-        { status: 401 }
-      );
+    for (const tenantId of candidateTenantIds) {
+      const result = await getJobResult(jobId, tenantId);
+
+      if (!isApiError(result)) {
+        foundResult = formatJobResultForResponse(result);
+        break;
+      }
+
+      if (!result.error.includes("not found")) {
+        lastError = result;
+        break;
+      }
     }
 
-    // Verify tenant membership
-    const { data: membership } = await client
-      .from("memberships")
-      .select("role")
-      .eq("tenant_id", tenantId)
-      .eq("user_id", user.id)
-      .single();
-
-    if (!membership) {
-      return NextResponse.json(
-        {
-          error: "Forbidden: Not a member of this tenant",
-          traceId,
-        },
-        { status: 403 }
-      );
-    }
-
-    // Get job result
-    const result = await getJobResult(jobId, tenantId);
-
-    if (isApiError(result)) {
+    if (!foundResult) {
       // Determine appropriate status code
-      let status = 500;
-      if (result.error.includes("not found")) {
-        status = 404;
-      } else if (result.error.includes("not yet available")) {
-        status = 202; // Accepted but not ready
+      let status = 404;
+      if (lastError?.error.includes("not yet available")) {
+        status = 202;
+      } else if (lastError) {
+        status = 500;
       }
 
       return NextResponse.json(
         {
-          error: result.error,
-          traceId: result.traceId || traceId,
-          details: result.details,
+          error: lastError?.error || "Job result not found",
+          traceId: lastError?.traceId || traceId,
+          details: lastError?.details,
         },
         { status }
       );
@@ -96,12 +79,23 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json(
       {
-        result: formatJobResultForResponse(result),
+        result: foundResult,
         traceId,
       },
       { status: 200 }
     );
   } catch (error) {
+    if (error instanceof TenantMembershipError) {
+      return NextResponse.json(
+        {
+          error: error.message,
+          code: error.code,
+          traceId,
+        },
+        { status: error.status }
+      );
+    }
+
     appLogger.error("Error in GET /api/jobs/[id]/result", { error, traceId });
 
     return NextResponse.json(

@@ -5,6 +5,7 @@ type Run = {
   run_id: string;
   created_at: string;
   status: string;
+  status_label?: string;
   policy?: string;
 };
 
@@ -96,7 +97,9 @@ export default async function RunsPage() {
                     <time dateTime={row.created_at}>{formatDate(row.created_at)}</time>
                   </td>
                   <td className="px-3 py-2">
-                    <span className="capitalize text-foreground">{row.status}</span>
+                    <span className="capitalize text-foreground">
+                      {row.status_label ?? row.status}
+                    </span>
                   </td>
                   <td className="px-3 py-2 text-muted-foreground">{row.policy ?? "—"}</td>
                 </tr>
