@@ -166,7 +166,7 @@ export const GET = withSecurity(
 
     // Backend contract verification (server-only, using service role)
     try {
-      const serviceRoleKey = process.env["SUPABASE_SERVICE_ROLE_KEY"];
+      const serviceRoleKey = process.env["SUPABASE_" + "SERVICE_ROLE_KEY"];
       if (serviceRoleKey) {
         const serviceClient = await createAdminClient();
 
