@@ -43,7 +43,18 @@ router.post("/run", enforceFreezeState(), async (req: AuthRequest, res: Response
       requireExactAmount: config?.requireExactAmount || false,
     };
 
-    const runId = await runReconciliation(ingestionId, tenantId, userId, reconciliationConfig);
+    // Extract jobId and templateId from request if available
+    const jobId = (req.body as any)?.jobId;
+    const templateId = (req.body as any)?.templateId;
+
+    const runId = await runReconciliation(
+      ingestionId,
+      tenantId,
+      userId,
+      jobId,
+      templateId,
+      reconciliationConfig
+    );
 
     logInfo("Reconciliation run started", { runId, ingestionId, traceId: req.traceId });
 

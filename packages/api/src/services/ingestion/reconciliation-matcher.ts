@@ -6,19 +6,34 @@
 
 import { v4 as uuidv4 } from "uuid";
 import { query, transaction } from "../../db";
-import { logError, logInfo } from "../../utils/logger";
+import { logError, logInfo, logWarn } from "../../utils/logger";
 import { MatchResult, ReconciliationConfig } from "./types";
 import { mlMatchingEngine } from "../matching/ml-matching-engine";
 import { enhancedCrossCustomerIntelligence } from "../matching/enhanced-cross-customer-intelligence";
 import { appendRunIntegrityEntry } from "../reconciliation/integrity";
 import { emitOperatorRuntimeEvent } from "../ops-intelligence/runtime-events";
+import {
+  getMatchingRulesForJob,
+  ReconciliationConfig as LoaderReconciliationConfig,
+} from "../matching-rules-loader";
 
+/**
+ * Default tolerance values (fallback when config loading fails)
+ */
 const DEFAULT_CONFIG: Required<ReconciliationConfig> = {
   dateWindowDays: 7,
   amountTolerance: 0.01,
   fuzzyDescriptionThreshold: 0.8,
   requireExactAmount: false,
 };
+
+/**
+ * Default tolerances from canonical loader
+ */
+const DEFAULT_TOLERANCES = {
+  amount: 0.01,
+  dateDays: 7,
+} as const;
 
 /**
  * Calculate Levenshtein distance (edit distance) between two strings
@@ -351,10 +366,58 @@ export async function runReconciliation(
   ingestionId: string,
   tenantId: string,
   userId: string,
+  jobId?: string,
+  templateId?: string,
   config: ReconciliationConfig = {}
 ): Promise<string> {
   const runId = uuidv4();
   const traceId = uuidv4();
+
+  // Load matching rules config from canonical loader
+  let matchingConfig: LoaderReconciliationConfig;
+  try {
+    matchingConfig = await getMatchingRulesForJob(
+      tenantId,
+      jobId ?? `reconciliation-${runId}`,
+      templateId
+    );
+    logInfo("Loaded matching rules from canonical loader", {
+      runId,
+      tenantId,
+      jobId,
+      templateId,
+      configSource: matchingConfig.configSource,
+      amountTolerance: matchingConfig.amountTolerance,
+      dateToleranceDays: matchingConfig.dateToleranceDays,
+    });
+  } catch (error) {
+    logWarn("Failed to load matching rules from canonical loader, using defaults", {
+      runId,
+      tenantId,
+      jobId,
+      templateId,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    // Use defaults - matchingConfig will have default tolerances
+    matchingConfig = {
+      amountTolerance: DEFAULT_TOLERANCES.amount,
+      dateToleranceDays: DEFAULT_TOLERANCES.dateDays,
+      matchingRules: [],
+      configVersion: `fallback-${Date.now()}`,
+      configSource: "default",
+      tenantId,
+      jobId: jobId ?? `reconciliation-${runId}`,
+    };
+  }
+
+  // Merge user-provided config with loader config (user config takes precedence)
+  const effectiveConfig: Required<ReconciliationConfig> = {
+    ...DEFAULT_CONFIG,
+    amountTolerance: config.amountTolerance ?? matchingConfig.amountTolerance,
+    dateWindowDays: config.dateWindowDays ?? matchingConfig.dateToleranceDays,
+    fuzzyDescriptionThreshold: config.fuzzyDescriptionThreshold ?? 0.8,
+    requireExactAmount: config.requireExactAmount ?? false,
+  };
 
   try {
     // Create reconciliation run
@@ -407,7 +470,7 @@ export async function runReconciliation(
     let totalConfidence = 0;
 
     for (const sourceId of sourceIds) {
-      const match = await matchTransaction(sourceId, targetIds, tenantId, config);
+      const match = await matchTransaction(sourceId, targetIds, tenantId, effectiveConfig);
       if (match) {
         matches.push(match);
         if (match.targetTransactionId) {

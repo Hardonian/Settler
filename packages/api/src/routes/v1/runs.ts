@@ -150,7 +150,7 @@ router.get(
 
 /**
  * GET /api/v1/runs/:id
- * Returns detailed information about a specific run
+ * Returns detailed information about a specific run, including provenance from recon_results
  */
 router.get(
   "/runs/:id",
@@ -175,7 +175,7 @@ router.get(
         return;
       }
 
-      // Query specific run with tenant scoping
+      // Query specific run with tenant scoping and LEFT JOIN to recon_results for provenance
       const runs = await query<{
         id: string;
         tenant_id: string;
@@ -187,20 +187,34 @@ router.get(
         matched_count: number | null;
         mismatched_count: number | null;
         error_message: string | null;
+        // Provenance fields from recon_results.summary->_provenance
+        provenance_amount_tolerance: string | null;
+        provenance_date_tolerance_days: string | null;
+        provenance_config_version: string | null;
+        provenance_config_source: string | null;
+        provenance_template_id: string | null;
+        provenance_matching_rule_ids: string | null;
       }>(
         `SELECT
-          id,
-          tenant_id,
-          created_at,
-          updated_at,
-          status,
-          policy_name,
-          total_records,
-          matched_count,
-          mismatched_count,
-          error_message
-         FROM reconciliation_runs
-         WHERE id = $1 AND tenant_id = $2`,
+          rr.id,
+          rr.tenant_id,
+          rr.created_at,
+          rr.updated_at,
+          rr.status,
+          rr.policy_name,
+          rr.total_records,
+          rr.matched_count,
+          rr.mismatched_count,
+          rr.error_message,
+          recon_results.summary -> 'provenance' ->> 'amountTolerance' as provenance_amount_tolerance,
+          recon_results.summary -> 'provenance' ->> 'dateToleranceDays' as provenance_date_tolerance_days,
+          recon_results.summary -> 'provenance' ->> 'configVersion' as provenance_config_version,
+          recon_results.summary -> 'provenance' ->> 'configSource' as provenance_config_source,
+          recon_results.summary -> 'provenance' ->> 'templateId' as provenance_template_id,
+          recon_results.summary -> 'provenance' ->> 'matchingRuleIds' as provenance_matching_rule_ids
+         FROM reconciliation_runs rr
+         LEFT JOIN recon_results ON recon_results.recon_job_id = rr.id AND recon_results.tenant_id = rr.tenant_id
+         WHERE rr.id = $1 AND rr.tenant_id = $2`,
         [runId, tenantId]
       );
 
@@ -221,6 +235,29 @@ router.get(
         return;
       }
 
+      // Build provenance object if provenance data exists
+      const provenance =
+        run.provenance_amount_tolerance !== null ||
+        run.provenance_date_tolerance_days !== null ||
+        run.provenance_config_version !== null
+          ? {
+              amountTolerance:
+                run.provenance_amount_tolerance !== null
+                  ? Number(run.provenance_amount_tolerance)
+                  : null,
+              dateToleranceDays:
+                run.provenance_date_tolerance_days !== null
+                  ? Number(run.provenance_date_tolerance_days)
+                  : null,
+              configVersion: run.provenance_config_version,
+              configSource: run.provenance_config_source,
+              templateId: run.provenance_template_id,
+              matchingRuleIds: run.provenance_matching_rule_ids
+                ? JSON.parse(run.provenance_matching_rule_ids)
+                : null,
+            }
+          : null;
+
       res.json({
         data: {
           run_id: run.id,
@@ -232,6 +269,7 @@ router.get(
           matched: run.matched_count,
           mismatched: run.mismatched_count,
           error_message: run.error_message,
+          provenance,
         },
         timestamp: new Date().toISOString(),
       });
@@ -372,12 +410,10 @@ router.post(
       }
 
       if (["pending", "running"].includes(runs[0]?.status ?? "")) {
-        res
-          .status(400)
-          .json({
-            error: "INVALID_STATE",
-            message: "Cannot retry a run that is currently in progress",
-          });
+        res.status(400).json({
+          error: "INVALID_STATE",
+          message: "Cannot retry a run that is currently in progress",
+        });
         return;
       }
 
