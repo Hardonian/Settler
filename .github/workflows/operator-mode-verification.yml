@@ -149,6 +149,7 @@ jobs:
           OPERATOR_USER_ID: ${{ secrets.OPERATOR_USER_ID || '00000000-0000-0000-0000-000000000000' }}
           NODE_ENV: test
           BASE_URL: http://localhost:3000
+          SLACK_WEBHOOK_URL: "https://httpbin.org/post" # Mock URL to ensure fetch logic executes in E2E
         run: |
           echo "🧪 Running full end-to-end operational lifecycle provenance verification..."
           # Start the web server in the background for Playwright
@@ -184,6 +185,10 @@ jobs:
           echo "- ✅ Rate Limiting prevents Noisy Neighbor (HTTP 429)" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Idempotency Keys prevent duplicate processing" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Invalid payloads route durably to Dead Letter Queue (DLQ)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Observability & Alerts:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Active Webhook alerts configured for DLQ Ingestion Failures" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Active Webhook alerts configured for Reaper System Recoveries" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Verification:" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Simulated failure produces alert + trace_id" >> $GITHUB_STEP_SUMMARY

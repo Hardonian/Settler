@@ -3,45 +3,49 @@
  * Implements least privilege principle
  */
 
-import { UserRole } from '../../domain/entities/User';
+import { UserRole } from "../../domain/entities/User";
 
 export enum Permission {
   // Jobs
-  JOBS_READ = 'jobs:read',
-  JOBS_WRITE = 'jobs:write',
-  JOBS_DELETE = 'jobs:delete',
-  JOBS_EXECUTE = 'jobs:execute',
+  JOBS_READ = "jobs:read",
+  JOBS_WRITE = "jobs:write",
+  JOBS_DELETE = "jobs:delete",
+  JOBS_EXECUTE = "jobs:execute",
 
   // Reports
-  REPORTS_READ = 'reports:read',
-  REPORTS_EXPORT = 'reports:export',
+  REPORTS_READ = "reports:read",
+  REPORTS_EXPORT = "reports:export",
 
   // Webhooks
-  WEBHOOKS_READ = 'webhooks:read',
-  WEBHOOKS_WRITE = 'webhooks:write',
-  WEBHOOKS_DELETE = 'webhooks:delete',
+  WEBHOOKS_READ = "webhooks:read",
+  WEBHOOKS_WRITE = "webhooks:write",
+  WEBHOOKS_DELETE = "webhooks:delete",
 
   // Users
-  USERS_READ = 'users:read',
-  USERS_WRITE = 'users:write',
-  USERS_DELETE = 'users:delete',
+  USERS_READ = "users:read",
+  USERS_WRITE = "users:write",
+  USERS_DELETE = "users:delete",
 
   // Tenants
-  TENANT_READ = 'tenant:read',
-  TENANT_WRITE = 'tenant:write',
-  TENANT_DELETE = 'tenant:delete',
-  TENANT_BILLING = 'tenant:billing',
+  TENANT_READ = "tenant:read",
+  TENANT_WRITE = "tenant:write",
+  TENANT_DELETE = "tenant:delete",
+  TENANT_BILLING = "tenant:billing",
 
   // Admin
-  ADMIN_READ = 'admin:read',
-  ADMIN_WRITE = 'admin:write',
-  ADMIN_AUDIT = 'admin:audit',
+  ADMIN_READ = "admin:read",
+  ADMIN_WRITE = "admin:write",
+  ADMIN_AUDIT = "admin:audit",
 
   // Edge AI
-  EDGE_AIAS_ACCESS = 'edge:aias:access',
-  EDGE_MODELS_READ = 'edge:models:read',
-  EDGE_NODES_READ = 'edge:nodes:read',
-  EDGE_NODES_WRITE = 'edge:nodes:write',
+  EDGE_AIAS_ACCESS = "edge:aias:access",
+  EDGE_MODELS_READ = "edge:models:read",
+  EDGE_NODES_READ = "edge:nodes:read",
+  EDGE_NODES_WRITE = "edge:nodes:write",
+
+  // Operator/Ingestion
+  OPERATOR_READ = "operator:read",
+  OPERATOR_WRITE = "operator:write",
 }
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
@@ -101,13 +105,9 @@ export class PermissionChecker {
   /**
    * Check if user/API key has permission
    */
-  static hasPermission(
-    role: UserRole,
-    scopes: string[],
-    requiredPermission: Permission
-  ): boolean {
+  static hasPermission(role: UserRole, scopes: string[], requiredPermission: Permission): boolean {
     // Check explicit scopes first (API keys)
-    if (scopes.includes('*') || scopes.includes(requiredPermission)) {
+    if (scopes.includes("*") || scopes.includes(requiredPermission)) {
       return true;
     }
 
@@ -124,9 +124,7 @@ export class PermissionChecker {
     scopes: string[],
     requiredPermissions: Permission[]
   ): boolean {
-    return requiredPermissions.some((perm) =>
-      this.hasPermission(role, scopes, perm)
-    );
+    return requiredPermissions.some((perm) => this.hasPermission(role, scopes, perm));
   }
 
   /**
@@ -137,9 +135,7 @@ export class PermissionChecker {
     scopes: string[],
     requiredPermissions: Permission[]
   ): boolean {
-    return requiredPermissions.every((perm) =>
-      this.hasPermission(role, scopes, perm)
-    );
+    return requiredPermissions.every((perm) => this.hasPermission(role, scopes, perm));
   }
 
   /**

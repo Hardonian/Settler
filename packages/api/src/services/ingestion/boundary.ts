@@ -50,26 +50,26 @@ export class IngestionBoundary {
     const query = `
       INSERT INTO public.idempotency_keys (key, tenant_id, status, expires_at)
       VALUES ($1, $2, 'pending', NOW() + INTERVAL '24 hours')
-      ON CONFLICT (key) DO NOTHING
+      ON CONFLICT (tenant_id, key) DO NOTHING
       RETURNING *;
     `;
     const result = await this.db.query(query, [key, tenantId]);
 
-    if (result.rows.length === 0) {
+    if (!result.rows || result.rows.length === 0) {
       // Row already existed -> duplicate detected
       const existing = await this.db.query(
-        `SELECT status, response FROM public.idempotency_keys WHERE key = $1`,
-        [key]
+        `SELECT status, response FROM public.idempotency_keys WHERE tenant_id = $1 AND key = $2`,
+        [tenantId, key]
       );
-      return { isDuplicate: true, response: existing.rows[0]?.response };
+      return { isDuplicate: true, response: existing.rows?.[0]?.response };
     }
     return { isDuplicate: false };
   }
 
-  async markIdempotencyCompleted(key: string, response: any): Promise<void> {
+  async markIdempotencyCompleted(tenantId: string, key: string, response: any): Promise<void> {
     await this.db.query(
-      `UPDATE public.idempotency_keys SET status = 'completed', response = $2 WHERE key = $1`,
-      [key, JSON.stringify(response)]
+      `UPDATE public.idempotency_keys SET status = 'completed', response = $3 WHERE tenant_id = $1 AND key = $2`,
+      [tenantId, key, JSON.stringify(response)]
     );
   }
 

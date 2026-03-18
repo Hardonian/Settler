@@ -1,5 +1,5 @@
 import { randomBytes } from "crypto";
-import { Router, Request, Response } from "express";
+import { Router, Response } from "express";
 import { z } from "zod";
 import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
@@ -352,7 +352,7 @@ router.post(
       );
 
       if (idempotencyKey) {
-        await ingestionBoundary.markIdempotencyCompleted(idempotencyKey, {
+        await ingestionBoundary.markIdempotencyCompleted(tenantId, idempotencyKey, {
           received: true,
           mode: isRedisAvailable() ? "distributed" : "local_only",
         });
@@ -430,9 +430,9 @@ router.delete(
 
 // E2E Mock Endpoints for Ingestion Boundary Tests
 router.post("/queue", async (req: Request, res: Response) => {
-  const apiKey = req.headers["x-api-key"] as string | undefined;
+  const apiKey = req.headers["x-api-key"] as string;
   const tenantId = apiKey ? apiKey.replace("test-key-", "") : "unknown-tenant";
-  const idempotencyKey = req.headers["x-idempotency-key"] as string | undefined;
+  const idempotencyKey = req.headers["x-idempotency-key"] as string;
 
   try {
     await ingestionBoundary.enforceRateLimit(tenantId);
@@ -449,7 +449,7 @@ router.post("/queue", async (req: Request, res: Response) => {
 
     const responseData = { success: true, queued: true };
     if (idempotencyKey) {
-      await ingestionBoundary.markIdempotencyCompleted(idempotencyKey, responseData);
+      await ingestionBoundary.markIdempotencyCompleted(tenantId, idempotencyKey, responseData);
     }
     return res.status(200).json(responseData);
   } catch (err: any) {
