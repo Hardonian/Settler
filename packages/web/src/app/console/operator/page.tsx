@@ -235,6 +235,12 @@ export default function OperatorControlPlanePage() {
         </a>
       </section>
 
+      <section>
+        <a className="text-sm underline" href="/console/settings">
+          Governance controls (/console/settings)
+        </a>
+      </section>
+
       <section className="rounded border p-4">
         <h2 className="font-semibold mb-2">Run explorer</h2>
         <div className="flex flex-wrap gap-2 mb-3">
