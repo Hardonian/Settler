@@ -1,4 +1,7 @@
+"use client";
+
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,6 +20,9 @@ import {
   Search,
   TrendingUp,
   X,
+  ChevronDown,
+  ChevronRight,
+  Flag,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -36,7 +42,6 @@ import {
 } from "@/components/ui/table";
 import { useBulkTriage } from "@/hooks/use-bulk-triage";
 import { appLogger } from "@/lib/utils/logger";
-import { ButtonLoading } from "@/components/shared/button-loading";
 import { SkeletonTableRow } from "@/components/shared/loading-state";
 
 export function BulkTriageClient() {
@@ -56,12 +61,11 @@ export function BulkTriageClient() {
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
-    // In a real implementation, we would debounce and update filters
-    setFilters((prev) => ({ ...prev, search: e.target.value }));
+    setFilters((prev: any) => ({ ...prev, search: e.target.value }));
   };
 
   const handleFilterChange = (value: string) => {
-    setFilters((prev) => ({ ...prev, status: value === "all" ? undefined : value }));
+    setFilters((prev: any) => ({ ...prev, status: value === "all" ? undefined : value }));
   };
 
   const handleActionChange = (value: string) => {
@@ -72,11 +76,9 @@ export function BulkTriageClient() {
     if (!selectedAction) return;
     try {
       await applyAction(selectedAction);
-      // In a real implementation, we would show a success message and refresh
       await refresh();
     } catch (err) {
       appLogger.error("Failed to apply bulk action", err);
-      // Show error message
     }
   };
 
@@ -163,10 +165,6 @@ export function BulkTriageClient() {
               <DropdownMenuItem onClick={() => handleActionChange("escalate")}>
                 Escalate to Team
               </DropdownMenuItem>
-              <Separator className="my-2" />
-              <DropdownMenuItem onClick={() => handleActionChange("export")}>
-                Export Selection
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <Button onClick={handleApplyAction} className="h-10 px-4">
@@ -182,61 +180,24 @@ export function BulkTriageClient() {
         </div>
       </div>
 
-      {/* Selection controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <label className="text-sm text-muted-foreground flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="select-all"
-              className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-            />
-            Select All ({items.selectedCount} of {items.totalCount})
-          </label>
-        </div>
-        <div className="text-sm text-muted-foreground">
-          Showing {items.displayedCount} of {items.totalCount} transactions
-        </div>
-      </div>
-
       {/* Items table */}
       <div className="overflow-x-auto">
         <Table className="w-full">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-4">
-                <input
-                  type="checkbox"
-                  id="select-all-header"
-                  className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-                />
-              </TableHead>
               <TableHead className="w-20">Transaction ID</TableHead>
-              <TableHead className="w-24">Amount</TableHead>
+              <TableHead className="w-24 text-right">Amount</TableHead>
               <TableHead className="w-20">Date</TableHead>
               <TableHead className="w-24">Source System</TableHead>
               <TableHead className="w-20">Status</TableHead>
-              <TableHead className="w-12">Actions</TableHead>
+              <TableHead className="w-12 text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {items.data.map((item) => (
               <TableRow key={item.id}>
-                <TableCell className="w-4">
-                  <input
-                    type="checkbox"
-                    checked={item.selected}
-                    onChange={() => {
-                      // In a real implementation, we would update selection state
-                    }}
-                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-                  />
-                </TableCell>
                 <TableCell className="whitespace-nowrap">
                   <div className="flex items-center space-x-3">
-                    <div className="h-8 w-8 bg-muted rounded flex items-center justify-center text-sm text-muted-foreground">
-                      {item.sourceSystem.substring(0, 2).toUpperCase()}
-                    </div>
                     <div>
                       <p className="text-sm font-medium text-foreground">{item.transactionId}</p>
                       <p className="text-xs text-muted-foreground">{item.externalId}</p>
@@ -268,10 +229,10 @@ export function BulkTriageClient() {
                   </span>
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-right space-x-2">
-                  <Button variant="ghost" size="icon" aria-label="View details">
+                  <Button variant="ghost" size="icon">
                     <ChevronRight className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" aria-label="Flag for review">
+                  <Button variant="ghost" size="icon">
                     <Flag className="h-4 w-4" />
                   </Button>
                 </TableCell>
@@ -279,21 +240,6 @@ export function BulkTriageClient() {
             ))}
           </TableBody>
         </Table>
-      </div>
-
-      {/* Pagination controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-4 border-t border-border">
-        <div className="text-sm text-muted-foreground">
-          Showing {items.displayedCount} of {items.totalCount} transactions
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" disabled={items.page === 1}>
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="icon" disabled={items.page >= items.totalPages}>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
       </div>
     </div>
   );
