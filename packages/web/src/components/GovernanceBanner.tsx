@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Lock, AlertTriangle, X } from "lucide-react";
+import { Lock, X } from "lucide-react";
 
 interface FreezeState {
   frozen: boolean;
