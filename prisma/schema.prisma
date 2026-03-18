@@ -1046,7 +1046,7 @@ model AuditLog {
   sessionId         String?   @db.Uuid // Session tracking
   actorType         String?   // 'user', 'system', 'worker', 'scheduler', 'api_key'
   actorId           String?   @db.Uuid // ID of the actor performing the action
-  reason            String?   @maxLength(500) // Reason for the action (for governance)
+  reason            String?   @db.VarChar(500) // Reason for the action (for governance)
   
   createdAt         DateTime  @default(now())
 

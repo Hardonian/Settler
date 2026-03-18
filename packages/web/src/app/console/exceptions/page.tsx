@@ -64,20 +64,18 @@ export default function ExceptionsPage() {
     setLoading(true);
     const queryParams = new URLSearchParams();
 
-    // Add runId if present (workflow continuity from run detail)
-    if (runId) {
-      queryParams.append("runId", runId);
-    }
-
     Object.entries(filters).forEach(([key, value]) => {
       if (value) {
         queryParams.append(key, value as string);
       }
     });
 
-    const result = await safeFetch<{ data: Exception[]; pagination: unknown }>(
-      `/api/exceptions?${queryParams.toString()}`
-    );
+    // Consequence Truth: Intelligently switch to the isolated, run-scoped endpoint if navigating from a specific run
+    const endpoint = runId
+      ? `/api/v1/runs/${runId}/exceptions?${queryParams.toString()}`
+      : `/api/exceptions?${queryParams.toString()}`;
+
+    const result = await safeFetch<{ data: Exception[]; pagination: unknown }>(endpoint);
 
     if (result.success && result.data) {
       setExceptions(result.data.data);
