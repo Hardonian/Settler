@@ -35,6 +35,7 @@ import dedicatedInfrastructureRouter from "./dedicated-infrastructure";
 import automatedReviewRouter from "./automated-review";
 import capabilitiesRouter from "./capabilities";
 import supportRouter from "./support";
+import toleranceSettingsRouter from "../tolerance-settings";
 
 export const v1Router: Router = Router();
 
@@ -69,6 +70,7 @@ v1Router.use("/audit-trail", auditTrailRouter);
 v1Router.use("/receipt-matching", receiptMatchingRouter);
 v1Router.use("/bulk-operations", bulkOperationsRouter);
 v1Router.use("/advanced-matching-rules", advancedMatchingRulesRouter);
+v1Router.use("/tolerance", toleranceSettingsRouter);
 // Currency routes already exist at /currency
 
 // Phase 3: Enterprise Features

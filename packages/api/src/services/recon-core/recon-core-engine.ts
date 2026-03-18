@@ -14,7 +14,13 @@ import { PrismaClient, Prisma } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 import { createObjectCsvStringifier } from "csv-writer";
-import { logError, logWarn } from "../../utils/logger";
+import { logError, logWarn, logInfo } from "../../utils/logger";
+import {
+  getMatchingRulesForJob,
+  serializeConfigForProvenance,
+  DEFAULT_TOLERANCES,
+  type ReconciliationConfig,
+} from "../matching-rules-loader";
 import { WebhookService } from "../webhooks/webhook-service";
 import { ReconUsageTracker } from "../usage/recon-usage-tracker";
 import { eventBus } from "../events/event-bus";
@@ -174,12 +180,28 @@ export class ReconCoreEngine {
         message: `Matching ${mappedSource.length} source transactions against ${mappedTarget.length} target transactions...`,
       });
 
-      // Step 5: Perform reconciliation
+      // Step 5: Load matching rules and perform reconciliation
+      const matchingConfig = await getMatchingRulesForJob(
+        tenantId,
+        reconJob.id,
+        reconJob.templateId
+      );
+
+      logInfo("Loaded matching config for job", {
+        jobId: reconJob.id,
+        templateId: reconJob.templateId,
+        amountTolerance: matchingConfig.amountTolerance,
+        ruleCount: matchingConfig.matchingRules.length,
+        configSource: matchingConfig.configSource,
+      });
+
+      // Perform reconciliation with loaded config
       const reconMatches = await this.performReconciliation(
         mappedSource,
         mappedTarget,
         reconJob.reconStrategy as ReconStrategy,
-        reconJob
+        reconJob,
+        matchingConfig
       );
 
       // Update progress: Reconciliation complete
@@ -192,8 +214,18 @@ export class ReconCoreEngine {
       // Step 6: Calculate results
       const results = this.calculateResults(reconMatches, mappedSource, mappedTarget);
 
-      // Step 7: Update recon result
+      // Step 7: Update recon result with provenance
       const durationMs = Date.now() - startTime;
+
+      // Build provenance data to track which config was used
+      const provenanceData = serializeConfigForProvenance(matchingConfig);
+
+      // Extend summary with provenance
+      const enrichedSummary = {
+        ...results.summary,
+        _provenance: provenanceData,
+      };
+
       const updatedResult = await this.prisma.reconResult.update({
         where: { id: reconResult.id },
         data: {
@@ -214,8 +246,18 @@ export class ReconCoreEngine {
           confidenceMin: results.confidenceMin,
           confidenceMax: results.confidenceMax,
           durationMs: BigInt(durationMs),
-          summary: results.summary as unknown as Prisma.InputJsonValue,
+          summary: enrichedSummary as unknown as Prisma.InputJsonValue,
         },
+      });
+
+      // Log the config that was used for this run
+      logInfo("Run completed with matching config", {
+        resultId: updatedResult.id,
+        jobId: reconJobId,
+        amountTolerance: matchingConfig.amountTolerance,
+        dateToleranceDays: matchingConfig.dateToleranceDays,
+        configSource: matchingConfig.configSource,
+        configVersion: matchingConfig.configVersion,
       });
 
       // Step 8: Log audit
@@ -563,16 +605,34 @@ export class ReconCoreEngine {
   /**
    * Perform reconciliation matching
    * Integrates rules engine for improved match rates over time
+   *
+   * @param sourceData - Source records to match
+   * @param targetData - Target records to match against
+   * @param _strategy - Reconciliation strategy (deterministic, fuzzy, etc.)
+   * @param _reconJob - The recon job metadata
+   * @param matchingConfig - Matching rules configuration loaded from template/custom rules
    */
   public async performReconciliation(
     sourceData: ReconDataRecord[],
     targetData: ReconDataRecord[],
     _strategy: ReconStrategy,
-    _reconJob: ReconJob
+    _reconJob: ReconJob,
+    matchingConfig: ReconciliationConfig
   ): Promise<ReconMatch[]> {
-    // Get billing account to fetch rules (currently unused, but may be needed for rule fetching)
-    // TODO: Use billingAccount to fetch reconciliation rules
-    // const _billingAccount = await this.getBillingAccount(_reconJob.tenantId);
+    // Use config tolerances or fall back to defaults
+    const amountTolerance = matchingConfig?.amountTolerance ?? DEFAULT_TOLERANCES.amount;
+    const dateToleranceMs =
+      (matchingConfig?.dateToleranceDays ?? DEFAULT_TOLERANCES.dateDays) * 24 * 60 * 60 * 1000;
+
+    // Log the tolerances being used for transparency
+    logInfo("Performing reconciliation with config", {
+      jobId: _reconJob.id,
+      amountTolerance,
+      dateToleranceDays: matchingConfig?.dateToleranceDays ?? DEFAULT_TOLERANCES.dateDays,
+      ruleCount: matchingConfig?.matchingRules?.length ?? 0,
+      configSource: matchingConfig?.configSource ?? "default",
+      configVersion: matchingConfig?.configVersion,
+    });
 
     const matches: ReconMatch[] = [];
     const matchedTargetIds = new Set<string>();
@@ -599,13 +659,13 @@ export class ReconCoreEngine {
             target.description?.includes(source.externalId) ||
             source.description?.includes(target.externalId);
 
-          const amountMatch = Math.abs(source.amount - target.amount) < 0.01;
+          const amountMatch = Math.abs(source.amount - target.amount) < amountTolerance;
 
-          // Date within 48h
+          // Date within configurable tolerance
           const dateDiff = Math.abs(
             new Date(source.occurredAt).getTime() - new Date(target.occurredAt).getTime()
           );
-          const dateMatch = dateDiff < 48 * 60 * 60 * 1000;
+          const dateMatch = dateDiff < dateToleranceMs;
 
           if (descriptionMatch && amountMatch && dateMatch) {
             matches.push({
@@ -639,11 +699,11 @@ export class ReconCoreEngine {
       for (const target of targets) {
         if (matchedTargetIds.has(target.id)) continue;
 
-        const amountMatch = Math.abs(source.amount - target.amount) < 0.01;
+        const amountMatch = Math.abs(source.amount - target.amount) < amountTolerance;
         const dateDiff = Math.abs(
           new Date(source.occurredAt).getTime() - new Date(target.occurredAt).getTime()
         );
-        const dateMatch = dateDiff < 24 * 60 * 60 * 1000;
+        const dateMatch = dateDiff < dateToleranceMs;
 
         if (amountMatch && dateMatch) {
           matches.push({
@@ -675,11 +735,11 @@ export class ReconCoreEngine {
       for (const target of targets) {
         if (matchedTargetIds.has(target.id)) continue;
 
-        const amountMatch = Math.abs(source.amount - target.amount) < 0.01;
+        const amountMatch = Math.abs(source.amount - target.amount) < amountTolerance;
         const dateDiff = Math.abs(
           new Date(source.occurredAt).getTime() - new Date(target.occurredAt).getTime()
         );
-        const dateMatch = dateDiff < 72 * 60 * 60 * 1000;
+        const dateMatch = dateDiff < dateToleranceMs * 3; // 3x tolerance for fuzzy
 
         if (amountMatch && dateMatch) {
           matches.push({
