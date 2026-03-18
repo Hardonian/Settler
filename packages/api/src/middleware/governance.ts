@@ -53,8 +53,9 @@ export async function checkTenantFrozen(tenantId: string): Promise<{
       freeze_reason: state.freeze_reason || undefined,
     };
   } catch (error) {
-    // Default to unfrozen on error to avoid breaking legitimate operations
-    return { frozen: false };
+    // On any error, default to FROZEN. This is a "fail-closed" security posture.
+    console.error(`Governance check failed for tenant ${tenantId}. Defaulting to frozen.`, error);
+    return { frozen: true };
   }
 }
 

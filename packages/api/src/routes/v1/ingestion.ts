@@ -264,88 +264,93 @@ router.get("/sources", async (req: AuthRequest, res: Response) => {
  * POST /api/v1/ingestion/preview
  * Build truthful ingestion preview without persisting records
  */
-router.post("/preview", upload.single("file"), async (req: AuthRequest, res: Response) => {
-  try {
-    const tenantId = req.tenantId;
-    if (!tenantId) {
-      return res.status(400).json({
-        error: "Bad Request",
-        code: "TENANT_CONTEXT_REQUIRED",
-        message: "Tenant context is required",
-        traceId: req.traceId,
-      });
-    }
-
-    const file = req.file;
-    if (!file) {
-      return res.status(400).json({
-        error: "Bad Request",
-        code: "INGESTION_CSV_REQUIRED",
-        message: "CSV file is required",
-        traceId: req.traceId,
-      });
-    }
-
-    const traceId = req.traceId || uuidv4();
-    const columnMappingOverride = req.body.columnMapping;
-
-    let headers: string[] = [];
-    let rows: Array<Record<string, string | number | null | undefined>> = [];
-
+router.post(
+  "/preview",
+  upload.single("file"),
+  enforceFreezeState(),
+  async (req: AuthRequest, res: Response) => {
     try {
-      const parsed = parseCSV(file.buffer);
-      headers = parsed.headers;
-      rows = parsed.rows;
+      const tenantId = req.tenantId;
+      if (!tenantId) {
+        return res.status(400).json({
+          error: "Bad Request",
+          code: "TENANT_CONTEXT_REQUIRED",
+          message: "Tenant context is required",
+          traceId: req.traceId,
+        });
+      }
+
+      const file = req.file;
+      if (!file) {
+        return res.status(400).json({
+          error: "Bad Request",
+          code: "INGESTION_CSV_REQUIRED",
+          message: "CSV file is required",
+          traceId: req.traceId,
+        });
+      }
+
+      const traceId = req.traceId || uuidv4();
+      const columnMappingOverride = req.body.columnMapping;
+
+      let headers: string[] = [];
+      let rows: Array<Record<string, string | number | null | undefined>> = [];
+
+      try {
+        const parsed = parseCSV(file.buffer);
+        headers = parsed.headers;
+        rows = parsed.rows;
+      } catch (error) {
+        return res.status(400).json({
+          error: "Bad Request",
+          code: "INGESTION_CSV_PARSE_FAILED",
+          message: error instanceof Error ? error.message : "Invalid CSV payload",
+          traceId,
+        });
+      }
+
+      const mappingParse = parseColumnMappingOverride(columnMappingOverride);
+      if (mappingParse.error) {
+        return res.status(400).json({
+          error: "Bad Request",
+          code: "INGESTION_INVALID_COLUMN_MAPPING",
+          message: mappingParse.error,
+          traceId,
+        });
+      }
+
+      const sourceId = typeof req.body.sourceId === "string" ? req.body.sourceId : undefined;
+      const schemaDriftBaselineData = sourceId
+        ? await loadSchemaDriftBaseline(tenantId, sourceId)
+        : undefined;
+
+      const preview = buildImportWorkbenchPreview({
+        fileName: file.originalname,
+        fileSizeBytes: file.size,
+        headers,
+        rows,
+        providedMapping: mappingParse.mapping,
+        schemaDriftBaseline: schemaDriftBaselineData?.baseline,
+        schemaDriftHistory: schemaDriftBaselineData?.history,
+        sourceProfile:
+          typeof req.body.sourceProfile === "string" ? req.body.sourceProfile : undefined,
+      });
+
+      return res.status(200).json({
+        preview,
+        traceId,
+      });
     } catch (error) {
-      return res.status(400).json({
-        error: "Bad Request",
-        code: "INGESTION_CSV_PARSE_FAILED",
-        message: error instanceof Error ? error.message : "Invalid CSV payload",
-        traceId,
+      logError("Failed to build ingestion preview", error, { traceId: req.traceId });
+      return res.status(500).json({
+        error: "Internal Server Error",
+        code: "INGESTION_PREVIEW_FAILED",
+        message: "Failed to build ingestion preview",
+        traceId: req.traceId,
       });
     }
-
-    const mappingParse = parseColumnMappingOverride(columnMappingOverride);
-    if (mappingParse.error) {
-      return res.status(400).json({
-        error: "Bad Request",
-        code: "INGESTION_INVALID_COLUMN_MAPPING",
-        message: mappingParse.error,
-        traceId,
-      });
-    }
-
-    const sourceId = typeof req.body.sourceId === "string" ? req.body.sourceId : undefined;
-    const schemaDriftBaselineData = sourceId
-      ? await loadSchemaDriftBaseline(tenantId, sourceId)
-      : undefined;
-
-    const preview = buildImportWorkbenchPreview({
-      fileName: file.originalname,
-      fileSizeBytes: file.size,
-      headers,
-      rows,
-      providedMapping: mappingParse.mapping,
-      schemaDriftBaseline: schemaDriftBaselineData?.baseline,
-      schemaDriftHistory: schemaDriftBaselineData?.history,
-      sourceProfile:
-        typeof req.body.sourceProfile === "string" ? req.body.sourceProfile : undefined,
-    });
-
-    return res.status(200).json({
-      preview,
-      traceId,
-    });
-  } catch (error) {
-    logError("Failed to build ingestion preview", error, { traceId: req.traceId });
-    return res.status(500).json({
-      error: "Internal Server Error",
-      code: "INGESTION_PREVIEW_FAILED",
-      message: "Failed to build ingestion preview",
-      traceId: req.traceId,
-    });
   }
-});
+);
 
 /**
  * POST /api/v1/ingestion/upload

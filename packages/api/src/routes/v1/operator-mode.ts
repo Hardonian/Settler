@@ -195,6 +195,7 @@ router.get(
 router.post(
   "/operator/alerts/check",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const provider = getAlertRoutingProvider();
