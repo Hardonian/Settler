@@ -70,9 +70,9 @@ model ExecutionProvenance {
 }
 
 // ============================================================================
-// MIGRATION SQL
+// MIGRATION SQL (Commented out for Prisma validation)
 // ============================================================================
-
+/*
 -- Add determinism fields to recon_results
 ALTER TABLE recon_results ADD COLUMN IF NOT EXISTS snapshot_id UUID;
 ALTER TABLE recon_results ADD COLUMN IF NOT EXISTS input_hash VARCHAR(64);
@@ -129,3 +129,4 @@ CREATE INDEX IF NOT EXISTS idx_execution_provenance_timestamp ON execution_prove
 -- Add foreign key constraint
 ALTER TABLE recon_results ADD CONSTRAINT fk_recon_results_snapshot 
   FOREIGN KEY (snapshot_id) REFERENCES run_snapshots(id) ON DELETE SET NULL;
+*/

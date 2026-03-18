@@ -206,12 +206,30 @@ async function ConsoleOverviewContent() {
                 <CardTitle className="label-muted">System Status</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center gap-2.5">
-                  <span className="status-dot-ok" aria-hidden="true" />
-                  <span className="text-sm font-medium text-foreground">
-                    All systems operational
-                  </span>
-                </div>
+                {envValidation.isValid ? (
+                  <div className="flex items-center gap-2.5">
+                    <span className="status-dot-ok" aria-hidden="true" />
+                    <span className="text-sm font-medium text-foreground">
+                      All systems operational
+                    </span>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2.5">
+                      <span className="status-dot-degraded" aria-hidden="true" />
+                      <span className="text-sm font-medium text-foreground">
+                        Configuration required
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Missing: {envValidation.missing.join(", ")}. Some features may be unavailable
+                      until environment is configured.
+                    </p>
+                    <Button asChild variant="outline" size="sm" className="w-full">
+                      <Link href="/console/diagnostics">View Setup Guide</Link>
+                    </Button>
+                  </div>
+                )}
                 <div className="mt-4 pt-4 border-t border-border">
                   <Button asChild variant="outline" size="sm" className="w-full">
                     <Link href="/status">View Status Page</Link>
