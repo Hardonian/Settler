@@ -23,7 +23,6 @@ import { RefreshCw, Play, CheckCircle2, XCircle } from "lucide-react";
 import { format } from "date-fns";
 import { useGovernanceState } from "@/hooks/use-governance-state";
 import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
-import { FreezeAwareSection } from "@/components/shared/FreezeAwareSection";
 
 interface BulkOperation {
   id: string;

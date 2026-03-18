@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +15,7 @@ interface WorkspaceInvestigationDetailClientProps {
 export function WorkspaceInvestigationDetailClient({
   ingestionId,
 }: WorkspaceInvestigationDetailClientProps) {
-  const { investigation, setFilters, isLoading, error, refresh } =
+  const { investigation, isLoading, error, refresh } =
     useWorkspaceInvestigationDetail(ingestionId);
 
   if (isLoading) {

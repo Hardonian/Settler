@@ -12,7 +12,7 @@
 
 "use client";
 
-import { AlertCircle, Lock, Info } from "lucide-react";
+import { Lock, Info } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";

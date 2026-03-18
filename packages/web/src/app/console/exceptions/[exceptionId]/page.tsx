@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/EmptyState";
@@ -10,13 +10,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { safeFetch } from "@/lib/safe-fetch";
 import {
   RefreshCw,
-  Play,
   CheckCircle2,
   XCircle,
   Clock,
   AlertCircle,
-  Trash2,
-  Edit2,
   Copy,
   Zap,
 } from "lucide-react";
@@ -53,18 +50,10 @@ interface ExceptionDetail {
   }[];
 }
 
-interface ExceptionFilters {
-  status?: string;
-  severity?: string;
-  type?: string;
-  search?: string;
-}
-
 export default function ExceptionDetailPage() {
   const [exception, setException] = useState<ExceptionDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState<ExceptionFilters>({});
   const { isFrozen, governanceState } = useGovernanceState();
 
   // In a real app, we'd get the exceptionId from useParams()

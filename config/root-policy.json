@@ -140,6 +140,8 @@
     "release",
     "replay-artifacts",
     "reports",
+    "archiver.py",
+    "reaper.py",
     "run_validation.py",
     "runner",
     "scaffold-repro",

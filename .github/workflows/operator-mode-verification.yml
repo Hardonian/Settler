@@ -143,6 +143,25 @@ jobs:
             });
           "
 
+      - name: Verify End-to-End Operational Lifecycle
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          OPERATOR_USER_ID: ${{ secrets.OPERATOR_USER_ID || '00000000-0000-0000-0000-000000000000' }}
+          NODE_ENV: test
+          BASE_URL: http://localhost:3000
+        run: |
+          echo "🧪 Running full end-to-end operational lifecycle provenance verification..."
+          # Start the web server in the background for Playwright
+          cd packages/web
+          npm run start &
+          SERVER_PID=$!
+          sleep 10
+          cd ../..
+          npx playwright test tests/e2e/operational-lifecycle.spec.ts --project=chromium
+          npx playwright test tests/e2e/ingestion-boundary.spec.ts --project=chromium
+          kill $SERVER_PID
+          wait $SERVER_PID 2>/dev/null || true
+
       - name: Verification summary
         if: success()
         run: |
@@ -155,6 +174,16 @@ jobs:
           echo "- ✅ Daily intelligence generation" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Kill switches (disable/enable)" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Alert threshold checking" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ End-to-End Operational Lifecycle Execution" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Operational Provenance:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Runs emit traceable results and exceptions" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Resolutions generate verifiable audit trails" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Ingestion Hardening:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Rate Limiting prevents Noisy Neighbor (HTTP 429)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Idempotency Keys prevent duplicate processing" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Invalid payloads route durably to Dead Letter Queue (DLQ)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Verification:" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Simulated failure produces alert + trace_id" >> $GITHUB_STEP_SUMMARY

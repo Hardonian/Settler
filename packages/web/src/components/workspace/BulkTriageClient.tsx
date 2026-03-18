@@ -1,25 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   CheckCircle2,
-  ClipboardList,
-  Copy,
-  ExternalLink,
   Filter,
   Search,
-  TrendingUp,
-  X,
   ChevronDown,
   ChevronRight,
   Flag,
@@ -31,7 +17,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -47,7 +32,6 @@ import { SkeletonTableRow } from "@/components/shared/loading-state";
 export function BulkTriageClient() {
   const {
     items,
-    filters,
     setFilters,
     selectedAction,
     setSelectedAction,

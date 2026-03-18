@@ -35,7 +35,7 @@ export function useBulkTriage() {
     setIsLoading(false);
   };
 
-  const applyAction = async (action: string) => {
+  const applyAction = async (_action: string) => {
     setIsLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsLoading(false);

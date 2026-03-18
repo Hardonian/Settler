@@ -30,7 +30,7 @@ export function ReconciliationQueueClient() {
     try {
       await startReconciliation();
       await refresh();
-    } catch (_err) {
+    } catch {
       // Handle error
     }
   };

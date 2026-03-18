@@ -76,6 +76,8 @@ export function ReconciliationView({
     try {
       setRunning(true);
       setError(null);
+      setSummary(null);
+      setItems([]);
 
       const res = await fetch("/api/console/reconciliation", {
         method: "POST",
@@ -86,25 +88,55 @@ export function ReconciliationView({
         }),
       });
 
-      if (!res.ok) {
-        throw new Error(`Failed to run reconciliation: ${res.status}`);
+      if (res.status !== 202) {
+        const errorData = await res.json().catch(() => ({ message: "Failed to start reconciliation" }));
+        throw new Error(errorData.message || `Failed to start reconciliation: ${res.status}`);
       }
 
-      const data = await res.json();
-      setSummary(data.reconciliation);
-
-      // Fetch items
-      if (data.reconciliation?.id) {
-        await fetchReconciliation();
+      const { runId } = await res.json();
+      if (!runId) {
+        throw new Error("API did not return a runId.");
       }
 
-      if (onRunReconciliation) {
-        onRunReconciliation();
-      }
+      // --- Polling Logic ---
+      const poll = async (attemptsLeft = 20) => { // Timeout after 60 seconds (20 * 3s)
+        if (attemptsLeft === 0) {
+          setError("Reconciliation timed out. Please check the run history.");
+          setRunning(false);
+          return;
+        }
+
+        try {
+          const pollRes = await fetch(`/api/console/reconciliation?id=${runId}`);
+          if (pollRes.ok) {
+            const data = await pollRes.json();
+            if (data.reconciliation?.status === 'completed' || data.reconciliation?.status === 'failed') {
+              setSummary(data.reconciliation);
+              setItems(data.items || []);
+              setRunning(false);
+              if (onRunReconciliation) {
+                onRunReconciliation();
+              }
+            } else {
+              // If still running, poll again after a delay
+              setTimeout(() => poll(attemptsLeft - 1), 3000);
+            }
+          } else {
+             // If poll fails, retry after a delay
+            setTimeout(() => poll(attemptsLeft - 1), 3000);
+          }
+        } catch (pollError) {
+            // If poll throws an error, retry after a delay
+            setTimeout(() => poll(attemptsLeft - 1), 3000);
+        }
+      };
+
+      // Start the first poll
+      setTimeout(() => poll(), 1000); // Wait 1s before first poll
+
     } catch (error: unknown) {
       console.error("Failed to run reconciliation:", error);
       setError(error instanceof Error ? error.message : "Failed to run reconciliation");
-    } finally {
       setRunning(false);
     }
   };

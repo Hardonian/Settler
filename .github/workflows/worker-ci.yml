@@ -110,7 +110,7 @@ jobs:
         continue-on-error: true
 
       - name: Run full smoke test suite
-        run: pnpm jobs:smoke
+        run: pnpm jobs:smoke && pnpm jobs:verify-consequence && pnpm jobs:test-reaper
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
           NODE_ENV: test

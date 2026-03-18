@@ -5,8 +5,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/api/unified-auth';
-import { runReconciliation, getReconciliationSummary, listReconciliationItems } from '@/lib/server/settler/reconciliation';
+import { requireAuth, UnifiedAuthContext } from '@/lib/api/unified-auth';
+import { triggerInternalReconciliationRun } from '@/lib/server/internal-api';
+import { getReconciliationSummary, listReconciliationItems } from '@/lib/server/settler/reconciliation';
 import { getPrimaryTenant } from '@/lib/supabase/tenant-helpers';
 import { z } from 'zod';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
@@ -30,37 +31,44 @@ const RunReconciliationSchema = z.object({
 export const POST = withSecurity(
   withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
-    // Authenticate
-    await requireAuth(request);
+    const authContext: UnifiedAuthContext = await requireAuth(request);
     
     // Get tenant ID
-    const tenantId = await getPrimaryTenant();
+    const tenantId = authContext.tenantId;
     if (!tenantId) {
       return NextResponse.json(
         { error: 'No tenant found' },
         { status: 400 }
       );
     }
+
+    // Get user ID
+    const userId = authContext.userId;
     
     // Parse and validate body
     const body = await request.json();
     const params = RunReconciliationSchema.parse(body);
     
-    // Run reconciliation
-    const summary = await runReconciliation(tenantId, params);
+    // Run reconciliation via the authoritative internal API
+    const result = await triggerInternalReconciliationRun(tenantId, userId, {
+      ingestionId: params.sourceId,
+      config: {
+        rules: params.rules,
+      }
+    });
     
-    if (!summary) {
+    if (!result || !result.runId) {
       return NextResponse.json(
       {
         success: false,
         error: 'Failed to create reconciliation',
         message: 'Please try again later or contact support if the issue persists',
       },
-      { status: 200 }
+      { status: 500 } // Use a 500 status for a failed internal process
     );
     }
     
-    return NextResponse.json({ reconciliation: summary }, { status: 201 });
+    return NextResponse.json({ runId: result.runId }, { status: 202 }); // 202 Accepted is more appropriate for an async job start
   } catch (error) {
     // Return typed error, not 500
     if (error instanceof z.ZodError) {
