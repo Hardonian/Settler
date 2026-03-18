@@ -35,7 +35,7 @@ describe("Runs Routes", () => {
       next();
     });
 
-    app.use("/api/runs", runsRouter);
+    app.use("/api", runsRouter);
   });
 
   afterEach(() => {
@@ -314,6 +314,91 @@ describe("Runs Routes", () => {
         unmatched: 0,
         conflicts: 0,
       });
+    });
+  });
+
+  describe("POST /api/runs/:id/exceptions/:exceptionId/resolve", () => {
+    it("should fail with 423 Locked during system freeze", async () => {
+      // Mock governance freeze check to return frozen
+      mockQuery.mockResolvedValueOnce([{ frozen: true }]);
+
+      const res = await request(app)
+        .post("/api/runs/run-1/exceptions/exc-1/resolve")
+        .send({ status: "resolved", notes: "Test resolution" });
+
+      expect(res.status).toBe(423);
+      expect(res.body.error).toBe("GOVERNANCE_FREEZE_ACTIVE");
+    });
+
+    it("should resolve exception and fully audit the change", async () => {
+      // 1. Mock freeze check -> unfrozen
+      mockQuery.mockResolvedValueOnce([{ frozen: false }]);
+      // 2. Mock exception existence check
+      mockQuery.mockResolvedValueOnce([{ id: "exc-1", status: "pending" }]);
+      // 3. Mock UPDATE exceptions
+      mockQuery.mockResolvedValueOnce([]);
+      // 4. Mock INSERT audit_logs
+      mockQuery.mockResolvedValueOnce([]);
+
+      const res = await request(app)
+        .post("/api/runs/run-1/exceptions/exc-1/resolve")
+        .send({ status: "resolved", notes: "Matched manually" });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.status).toBe("resolved");
+
+      // Verify consequence/audit invariant: the mutation MUST leave an audit trail
+      const auditCall = mockQuery.mock.calls.find(
+        (call) => typeof call[0] === "string" && call[0].includes("INSERT INTO audit_logs")
+      );
+
+      expect(auditCall).toBeDefined();
+      expect(auditCall![1]).toEqual(
+        expect.arrayContaining([
+          "tenant-123",
+          "user-456",
+          "resolve_exception",
+          "exception",
+          "exc-1",
+          expect.stringContaining('"new_status":"resolved"'),
+        ])
+      );
+    });
+
+    it("should return 404 if exception not found or unauthorized", async () => {
+      mockQuery.mockResolvedValueOnce([{ frozen: false }]);
+      mockQuery.mockResolvedValueOnce([]); // No exception found
+
+      const res = await request(app)
+        .post("/api/runs/run-1/exceptions/nonexistent/resolve")
+        .send({ status: "resolved" });
+
+      expect(res.status).toBe(404);
+    });
+  });
+
+  describe("POST /api/runs/:id/retry", () => {
+    it("should queue run for retry and log audit action", async () => {
+      mockQuery.mockResolvedValueOnce([{ frozen: false }]);
+      mockQuery.mockResolvedValueOnce([{ id: "run-1", status: "failed" }]);
+      mockQuery.mockResolvedValueOnce([]); // UPDATE run
+      mockQuery.mockResolvedValueOnce([]); // INSERT audit
+
+      const res = await request(app).post("/api/runs/run-1/retry");
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+    });
+
+    it("should block retry if run is already in progress", async () => {
+      mockQuery.mockResolvedValueOnce([{ frozen: false }]);
+      mockQuery.mockResolvedValueOnce([{ id: "run-1", status: "running" }]);
+
+      const res = await request(app).post("/api/runs/run-1/retry");
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe("INVALID_STATE");
     });
   });
 });

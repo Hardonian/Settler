@@ -146,14 +146,3 @@ async function getWebhookSecret(adapter: string, _tenantId: string): Promise<str
 }
 
 export default router;
-
-async function getWebhookSecret(adapter: string, _tenantId: string): Promise<string | null> {
-  const { query } = await import("../../../db");
-  const result = await query<{ secret: string }>(
-    `SELECT secret FROM webhook_configs WHERE adapter = $1 LIMIT 1`,
-    [adapter]
-  );
-  return result.length > 0 && result[0] ? result[0].secret : null;
-}
-
-export default router;
