@@ -24,34 +24,19 @@ def run_archival_sweeper():
         return
 
     archive_days = int(os.environ.get("ARCHIVE_RETENTION_DAYS", 30))
-    batch_size = int(os.environ.get("ARCHIVE_BATCH_SIZE", 500))
     max_batch_size = int(os.environ.get("ARCHIVE_BATCH_SIZE", 500))
-    chunk_size = int(os.environ.get("ARCHIVE_CHUNK_SIZE", 50)) # Process in chunks to release DB locks during S3 network I/O
+    chunk_size = int(
+        os.environ.get("ARCHIVE_CHUNK_SIZE", 50)
+    )  # Process in chunks to release DB locks during S3 network I/O
 
     # Initialize S3 client for cold storage
     s3_client = boto3.client("s3")
     logger.info(
-        f"Starting Archival Sweeper. Retention: {archive_days} days. Batch size: {batch_size}"
         f"Starting Archival Sweeper. Retention: {archive_days} days. Max batch: {max_batch_size}, Chunk size: {chunk_size}"
     )
 
-    with psycopg2.connect(db_url) as conn:
-        with conn.cursor() as cur:
-            # Utilize the idx_runs_completed_archival index
-            cur.execute(
-                """
-                SELECT id, tenant_id, created_at
-                FROM public.runs
-                WHERE status IN ('Completed', 'Completed with Exceptions', 'Failed', 'Failed - Timed Out')
-                  AND created_at < NOW() - INTERVAL '%s days'
-                LIMIT %s
-                FOR UPDATE SKIP LOCKED;
-            """,
-                (archive_days, batch_size),
-            )
     total_archived = 0
 
-            runs_to_archive = cur.fetchall()
     while total_archived < max_batch_size:
         current_chunk_limit = min(chunk_size, max_batch_size - total_archived)
 
@@ -70,67 +55,38 @@ def run_archival_sweeper():
                     (archive_days, current_chunk_limit),
                 )
 
-            if not runs_to_archive:
-                logger.info("No runs require archiving at this time.")
-                return
                 runs_to_archive = cur.fetchall()
 
-            logger.info(
-                f"Archiving {len(runs_to_archive)} runs to S3 bucket: {s3_bucket}..."
-            )
-            archived_run_ids = []
                 if not runs_to_archive:
                     if total_archived == 0:
                         logger.info("No runs require archiving at this time.")
                     break
 
-            for run_id, tenant_id, created_at in runs_to_archive:
-                # Fetch the full run JSON and aggregate its exceptions into a single payload
-                cur.execute(
-                    "SELECT row_to_json(r) FROM public.runs r WHERE id = %s", (run_id,)
                 logger.info(
                     f"Archiving chunk of {len(runs_to_archive)} runs to S3 bucket: {s3_bucket}..."
                 )
-                run_data = cur.fetchone()[0]
                 archived_run_ids = []
 
-                cur.execute(
-                    "SELECT COALESCE(json_agg(e), '[]'::json) FROM public.exceptions e WHERE run_id = %s",
-                    (run_id,),
-                )
-                exceptions_data = cur.fetchone()[0]
                 for run_id, tenant_id, created_at in runs_to_archive:
                     # Fetch the full run JSON and aggregate its exceptions into a single payload
                     cur.execute(
-                        "SELECT row_to_json(r) FROM public.runs r WHERE id = %s", (run_id,)
+                        "SELECT row_to_json(r) FROM public.runs r WHERE id = %s",
+                        (run_id,),
                     )
                     run_data = cur.fetchone()[0]
 
-                archive_payload = {
-                    "archived_at": datetime.now(timezone.utc).isoformat(),
-                    "run": run_data,
-                    "exceptions": exceptions_data,
-                }
                     cur.execute(
                         "SELECT COALESCE(json_agg(e), '[]'::json) FROM public.exceptions e WHERE run_id = %s",
                         (run_id,),
                     )
                     exceptions_data = cur.fetchone()[0]
 
-                # Construct the tenant-isolated S3 object key (e.g. tenants/uuid/runs/2025/11/run_uuid.json)
-                object_key = f"tenants/{tenant_id}/runs/{created_at.strftime('%Y/%m')}/{run_id}.json"
                     archive_payload = {
                         "archived_at": datetime.now(timezone.utc).isoformat(),
                         "run": run_data,
                         "exceptions": exceptions_data,
                     }
 
-                # Stream to Cold Storage
-                s3_client.put_object(
-                    Bucket=s3_bucket,
-                    Key=object_key,
-                    Body=json.dumps(archive_payload, default=str),
-                    ContentType="application/json",
                     # Construct the tenant-isolated S3 object key
                     object_key = f"tenants/{tenant_id}/runs/{created_at.strftime('%Y/%m')}/{run_id}.json"
 
@@ -153,7 +109,6 @@ def run_archival_sweeper():
                     "DELETE FROM public.runs WHERE id = ANY(%s)", (archived_run_ids,)
                 )
 
-                archived_run_ids.append(run_id)
                 # 2. Mint a chunked bulk audit record using the newly added batch_entity_ids array
                 cur.execute(
                     """
@@ -163,35 +118,14 @@ def run_archival_sweeper():
                     (archived_run_ids,),
                 )
 
-            # 1. Prune the hot database tables
-            cur.execute(
-                "DELETE FROM public.exceptions WHERE run_id = ANY(%s)",
-                (archived_run_ids,),
-            )
-            cur.execute(
-                "DELETE FROM public.runs WHERE id = ANY(%s)", (archived_run_ids,)
-            )
                 conn.commit()
                 total_archived += len(archived_run_ids)
                 logger.info(
                     f"Successfully archived and purged chunk of {len(archived_run_ids)} runs. Total this run: {total_archived}"
                 )
 
-            # 2. Mint a single bulk audit record using the newly added batch_entity_ids array
-            cur.execute(
-                """
-                INSERT INTO public.audit_logs (tenant_id, action, details, batch_entity_ids, created_at)
-                VALUES ('system', 'RUNS_ARCHIVED_TO_COLD_STORAGE', 'Automated 30-day archival sweep completed', %s, NOW())
-            """,
-                (archived_run_ids,),
-            )
     if total_archived > 0:
         logger.info(f"Archival Sweeper finished. Total archived: {total_archived}")
-
-            conn.commit()
-            logger.info(
-                f"Successfully archived and purged {len(archived_run_ids)} runs."
-            )
 
 
 if __name__ == "__main__":
