@@ -90,7 +90,7 @@ router.get(
 
       // Transform to operator-friendly format
       const data: Run[] = runs.map((run) => {
-        const summary = run.summary as RunSummary | null;
+        const summary = (run.summary as RunSummary | null) || undefined;
 
         return {
           id: run.id,
@@ -202,7 +202,7 @@ router.get(
         },
       ];
 
-      const summary = run.summary as RunSummary | null;
+      const summary = (run.summary as RunSummary | null) || undefined;
 
       res.json({
         data: {

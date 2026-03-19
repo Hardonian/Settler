@@ -34,6 +34,7 @@ import { usageRouter } from "./routes/usage";
 import { platformControlPlaneRouter } from "./routes/platform-control-plane";
 import { batchRouter } from "./routes/batch";
 import { exportsRouter } from "./routes/exports";
+import { retentionRouter } from "./routes/retention";
 import { testModeMiddleware, validateTestMode } from "./middleware/test-mode";
 import { featureFlagsMiddleware } from "./middleware/feature-flags";
 import { usageTrackingMiddleware } from "./middleware/usage-tracking";
@@ -301,6 +302,7 @@ function configureProtectedRouter(router: Router, options: ProtectedRouterOption
   router.use("/usage", usageRouter);
   router.use("/batch", batchRouter);
   router.use("/exports", exportsRouter);
+  router.use("/retention", retentionRouter);
   router.use("/tenant", tenantMiddleware, platformControlPlaneRouter);
 
   // Version-specific routes

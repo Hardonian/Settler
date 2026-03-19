@@ -5,9 +5,8 @@
  * Supports configurable retention periods per artifact type and tenant.
  */
 
-import { query, queryOne } from "../../db";
-import { logInfo, logError, logWarn } from "../../utils/logger";
-import { config } from "../../config";
+import { prisma } from "../../infrastructure/db/prisma";
+import { logInfo, logError } from "../../utils/logger";
 
 export type RetentionPeriodUnit = "days" | "weeks" | "months" | "forever";
 
@@ -97,32 +96,30 @@ export class RetentionPolicyService {
   async getTenantRetentionPolicy(tenantId: string): Promise<TenantRetentionPolicy> {
     try {
       // Check if tenant has custom policy stored in metadata
-      const tenantResult = await queryOne<{
-        id: string;
-        metadata: Record<string, unknown>;
-        created_at: Date;
-        updated_at: Date;
-      }>(
-        `SELECT id, metadata, created_at, updated_at 
-         FROM tenants 
-         WHERE id = $1`,
-        [tenantId]
-      );
+      const tenant = await prisma.tenant.findUnique({
+        where: { id: tenantId },
+        select: {
+          id: true,
+          metadata: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
 
-      if (!tenantResult) {
+      if (!tenant) {
         // Return default policy if tenant not found
         return this.getDefaultPolicy(tenantId);
       }
 
-      const metadata = tenantResult.metadata || {};
+      const metadata = (tenant.metadata as Record<string, unknown>) || {};
       const retentionConfig = metadata.retentionPolicy as TenantRetentionPolicy | undefined;
 
       if (retentionConfig) {
         return {
           ...retentionConfig,
           tenantId,
-          createdAt: tenantResult.created_at,
-          updatedAt: tenantResult.updated_at,
+          createdAt: tenant.createdAt,
+          updatedAt: tenant.updatedAt,
         };
       }
 
@@ -139,18 +136,27 @@ export class RetentionPolicyService {
    */
   private async getSubscriptionBasedPolicy(tenantId: string): Promise<TenantRetentionPolicy> {
     try {
-      const result = await queryOne<{ plan_id: string }>(
-        `SELECT s.plan_id
-         FROM subscriptions s
-         JOIN billing_accounts ba ON ba.id = s.billing_account_id
-         WHERE ba.tenant_id = $1
-         AND s.status = 'active'
-         ORDER BY s.created_at DESC
-         LIMIT 1`,
-        [tenantId]
-      );
+      // Find billing account for tenant
+      const billingAccount = await prisma.billingAccount.findFirst({
+        where: { tenantId },
+        select: { id: true },
+      });
 
-      const planId = result?.plan_id;
+      if (!billingAccount) {
+        return this.getDefaultPolicy(tenantId);
+      }
+
+      // Get active subscription
+      const subscription = await prisma.subscription.findFirst({
+        where: {
+          billingAccountId: billingAccount.id,
+          status: "active",
+        },
+        orderBy: { createdAt: "desc" },
+        select: { planId: true },
+      });
+
+      const planId = subscription?.planId;
       const isEnterprise = planId === "enterprise" || planId === "scale";
 
       return {
@@ -206,17 +212,17 @@ export class RetentionPolicyService {
     artifactRetention: Partial<ArtifactTypeRetention>
   ): Promise<TenantRetentionPolicy> {
     try {
-      // Get current metadata
-      const tenant = await queryOne<{ metadata: Record<string, unknown> }>(
-        `SELECT metadata FROM tenants WHERE id = $1`,
-        [tenantId]
-      );
+      // Get current tenant
+      const tenant = await prisma.tenant.findUnique({
+        where: { id: tenantId },
+        select: { metadata: true, createdAt: true },
+      });
 
       if (!tenant) {
         throw new Error(`Tenant ${tenantId} not found`);
       }
 
-      const currentMetadata = tenant.metadata || {};
+      const currentMetadata = (tenant.metadata as Record<string, unknown>) || {};
       const currentPolicy =
         (currentMetadata.retentionPolicy as TenantRetentionPolicy) ||
         this.getDefaultPolicy(tenantId);
@@ -238,13 +244,18 @@ export class RetentionPolicyService {
       };
 
       // Update tenant metadata
-      await query(
-        `UPDATE tenants 
-         SET metadata = jsonb_set(metadata, '{retentionPolicy}', $1::jsonb), 
-             updated_at = NOW()
-         WHERE id = $2`,
-        [JSON.stringify(newPolicy), tenantId]
-      );
+      const updatedMetadata = {
+        ...currentMetadata,
+        retentionPolicy: newPolicy,
+      };
+
+      await prisma.tenant.update({
+        where: { id: tenantId },
+        data: {
+          metadata: updatedMetadata as any,
+          updatedAt: new Date(),
+        },
+      });
 
       logInfo("Set tenant retention policy", {
         tenantId,
@@ -263,29 +274,29 @@ export class RetentionPolicyService {
    */
   async resetTenantRetentionPolicy(tenantId: string): Promise<TenantRetentionPolicy> {
     try {
-      // Get current metadata
-      const tenant = await queryOne<{ metadata: Record<string, unknown> }>(
-        `SELECT metadata FROM tenants WHERE id = $1`,
-        [tenantId]
-      );
+      // Get current tenant metadata
+      const tenant = await prisma.tenant.findUnique({
+        where: { id: tenantId },
+        select: { metadata: true },
+      });
 
       if (!tenant) {
         throw new Error(`Tenant ${tenantId} not found`);
       }
 
-      const currentMetadata = tenant.metadata || {};
+      const currentMetadata = (tenant.metadata as Record<string, unknown>) || {};
 
       // Remove retention policy from metadata
       const newMetadata = { ...currentMetadata };
       delete newMetadata.retentionPolicy;
 
-      await query(
-        `UPDATE tenants 
-         SET metadata = $1::jsonb, 
-             updated_at = NOW()
-         WHERE id = $2`,
-        [JSON.stringify(newMetadata), tenantId]
-      );
+      await prisma.tenant.update({
+        where: { id: tenantId },
+        data: {
+          metadata: newMetadata as any,
+          updatedAt: new Date(),
+        },
+      });
 
       logInfo("Reset tenant retention policy to default", { tenantId });
 
@@ -337,9 +348,10 @@ export class RetentionPolicyService {
    */
   async getAllTenantRetentionPolicies(): Promise<TenantRetentionPolicy[]> {
     try {
-      const tenants = await query<{ id: string; metadata: Record<string, unknown> }>(
-        `SELECT id, metadata FROM tenants WHERE is_active = true`
-      );
+      const tenants = await prisma.tenant.findMany({
+        where: { isActive: true },
+        select: { id: true },
+      });
 
       const policies: TenantRetentionPolicy[] = [];
 

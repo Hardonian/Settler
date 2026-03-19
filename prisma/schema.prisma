@@ -1454,3 +1454,23 @@ model Export {
   @@index([expiresAt])
   @@map("exports")
 }
+
+// ============================================================================
+// RETENTION AUTOMATION MODELS
+// ============================================================================
+
+model RetentionMetric {
+  id              String    @id @default(uuid())
+  tenantId        String?   @db.Uuid
+  prunedCount     Int       @default(0)
+  storageBytes    BigInt    @default(0)
+  violations      Int       @default(0)
+  latencyMs       BigInt    @default(0)
+  runDate         DateTime  @db.Date @default(now())
+  createdAt       DateTime  @default(now())
+
+  @@unique([tenantId, runDate])
+  @@index([tenantId])
+  @@index([runDate(sort: Desc)])
+  @@map("retention_metrics")
+}

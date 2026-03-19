@@ -5,10 +5,8 @@
  * Includes: pruned artifact counts, storage reclaimed, violations, latency.
  */
 
-import { query, queryOne } from "../../db";
+import { prisma } from "../../infrastructure/db/prisma";
 import { logInfo, logError } from "../../utils/logger";
-import { Pool } from "pg";
-import { config } from "../../config";
 
 export interface RetentionMetrics {
   prunedArtifactCount: number;
@@ -36,55 +34,6 @@ export interface TenantRetentionMetrics extends RetentionMetrics {
  * Retention Metrics Service
  */
 export class RetentionMetricsService {
-  private pool: Pool;
-
-  constructor() {
-    this.pool = new Pool({
-      host: config.database.host,
-      port: config.database.port,
-      database: config.database.name,
-      user: config.database.user,
-      password: config.database.password,
-    });
-  }
-
-  /**
-   * Initialize metrics storage (create table if not exists)
-   */
-  async initializeMetricsStorage(): Promise<void> {
-    try {
-      await query(`
-        CREATE TABLE IF NOT EXISTS retention_metrics (
-          id              SERIAL PRIMARY KEY,
-          tenant_id       UUID,
-          pruned_count    INTEGER DEFAULT 0,
-          storage_bytes   BIGINT DEFAULT 0,
-          violations      INTEGER DEFAULT 0,
-          latency_ms      BIGINT DEFAULT 0,
-          run_date        DATE DEFAULT CURRENT_DATE,
-          created_at      TIMESTAMP DEFAULT NOW(),
-          
-          UNIQUE(tenant_id, run_date)
-        )
-      `);
-
-      await query(`
-        CREATE INDEX IF NOT EXISTS idx_retention_metrics_date 
-        ON retention_metrics(run_date DESC)
-      `);
-
-      await query(`
-        CREATE INDEX IF NOT EXISTS idx_retention_metrics_tenant 
-        ON retention_metrics(tenant_id, run_date DESC)
-      `);
-
-      logInfo("Retention metrics storage initialized");
-    } catch (error) {
-      logError("Failed to initialize retention metrics storage", error);
-      throw error;
-    }
-  }
-
   /**
    * Record metrics from a retention run
    */
@@ -96,17 +45,39 @@ export class RetentionMetricsService {
     latencyMs: number
   ): Promise<void> {
     try {
-      await query(
-        `INSERT INTO retention_metrics (tenant_id, pruned_count, storage_bytes, violations, latency_ms, run_date)
-         VALUES ($1, $2, $3, $4, $5, CURRENT_DATE)
-         ON CONFLICT (tenant_id, run_date)
-         DO UPDATE SET 
-            pruned_count = retention_metrics.pruned_count + EXCLUDED.pruned_count,
-            storage_bytes = retention_metrics.storage_bytes + EXCLUDED.storage_bytes,
-            violations = retention_metrics.violations + EXCLUDED.violations,
-            latency_ms = GREATEST(retention_metrics.latency_ms, EXCLUDED.latency_ms)`,
-        [tenantId, prunedCount, storageBytes, violations, latencyMs]
-      );
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Try to update existing record first
+      const existing = await prisma.retentionMetric.findFirst({
+        where: {
+          tenantId: tenantId || undefined,
+          runDate: today,
+        },
+      });
+
+      if (existing) {
+        await prisma.retentionMetric.update({
+          where: { id: existing.id },
+          data: {
+            prunedCount: { increment: prunedCount },
+            storageBytes: { increment: BigInt(storageBytes) },
+            violations: { increment: violations },
+            latencyMs: { increment: BigInt(latencyMs) },
+          },
+        });
+      } else {
+        await prisma.retentionMetric.create({
+          data: {
+            tenantId: tenantId || undefined,
+            prunedCount,
+            storageBytes: BigInt(storageBytes),
+            violations,
+            latencyMs: BigInt(latencyMs),
+            runDate: today,
+          },
+        });
+      }
 
       logInfo("Recorded retention metrics", {
         tenantId,
@@ -126,26 +97,28 @@ export class RetentionMetricsService {
    */
   async getMetricsSummary(): Promise<RetentionMetrics> {
     try {
-      const result = await queryOne<{
-        pruned_count: string;
-        storage_bytes: string;
-        violations: string;
-        latency_ms: string;
-      }>(
-        `SELECT 
-           COALESCE(SUM(pruned_count), 0) as pruned_count,
-           COALESCE(SUM(storage_bytes), 0) as storage_bytes,
-           COALESCE(SUM(violations), 0) as violations,
-           COALESCE(AVG(latency_ms), 0) as latency_ms
-         FROM retention_metrics
-         WHERE run_date >= CURRENT_DATE - INTERVAL '30 days'`
-      );
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const result = await prisma.retentionMetric.aggregate({
+        where: {
+          runDate: { gte: thirtyDaysAgo },
+        },
+        _sum: {
+          prunedCount: true,
+          storageBytes: true,
+          violations: true,
+        },
+        _avg: {
+          latencyMs: true,
+        },
+      });
 
       return {
-        prunedArtifactCount: parseInt(result?.pruned_count || "0", 10),
-        storageReclaimedBytes: parseInt(result?.storage_bytes || "0", 10),
-        retentionPolicyViolations: parseInt(result?.violations || "0", 10),
-        workerProcessingLatencyMs: parseInt(result?.latency_ms || "0", 10),
+        prunedArtifactCount: result._sum.prunedCount || 0,
+        storageReclaimedBytes: Number(result._sum.storageBytes || 0n),
+        retentionPolicyViolations: result._sum.violations || 0,
+        workerProcessingLatencyMs: Number(result._avg.latencyMs || 0n),
         lastUpdated: new Date(),
       };
     } catch (error) {
@@ -165,50 +138,36 @@ export class RetentionMetricsService {
    */
   async getMetricsByTenant(tenantId: string): Promise<TenantRetentionMetrics> {
     try {
-      const result = await queryOne<{
-        tenant_id: string;
-        tenant_name: string;
-        pruned_count: string;
-        storage_bytes: string;
-        violations: string;
-        latency_ms: string;
-      }>(
-        `SELECT 
-           rm.tenant_id,
-           t.name as tenant_name,
-           COALESCE(SUM(rm.pruned_count), 0) as pruned_count,
-           COALESCE(SUM(rm.storage_bytes), 0) as storage_bytes,
-           COALESCE(SUM(rm.violations), 0) as violations,
-           COALESCE(AVG(rm.latency_ms), 0) as latency_ms
-         FROM retention_metrics rm
-         JOIN tenants t ON t.id = rm.tenant_id
-         WHERE rm.tenant_id = $1
-           AND rm.run_date >= CURRENT_DATE - INTERVAL '30 days'
-         GROUP BY rm.tenant_id, t.name`,
-        [tenantId]
-      );
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-      if (!result) {
-        // Return default metrics for tenant with no history
-        const tenantName = await this.getTenantName(tenantId);
-        return {
+      const result = await prisma.retentionMetric.aggregate({
+        where: {
           tenantId,
-          tenantName,
-          prunedArtifactCount: 0,
-          storageReclaimedBytes: 0,
-          retentionPolicyViolations: 0,
-          workerProcessingLatencyMs: 0,
-          lastUpdated: new Date(),
-        };
-      }
+          runDate: { gte: thirtyDaysAgo },
+        },
+        _sum: {
+          prunedCount: true,
+          storageBytes: true,
+          violations: true,
+        },
+        _avg: {
+          latencyMs: true,
+        },
+      });
+
+      const tenant = await prisma.tenant.findUnique({
+        where: { id: tenantId },
+        select: { name: true },
+      });
 
       return {
-        tenantId: result.tenant_id,
-        tenantName: result.tenant_name,
-        prunedArtifactCount: parseInt(result.pruned_count, 10),
-        storageReclaimedBytes: parseInt(result.storage_bytes, 10),
-        retentionPolicyViolations: parseInt(result.violations, 10),
-        workerProcessingLatencyMs: parseInt(result.latency_ms, 10),
+        tenantId,
+        tenantName: tenant?.name || "Unknown",
+        prunedArtifactCount: result._sum.prunedCount || 0,
+        storageReclaimedBytes: Number(result._sum.storageBytes || 0n),
+        retentionPolicyViolations: result._sum.violations || 0,
+        workerProcessingLatencyMs: Number(result._avg.latencyMs || 0n),
         lastUpdated: new Date(),
       };
     } catch (error) {
@@ -226,46 +185,37 @@ export class RetentionMetricsService {
   }
 
   /**
-   * Get tenant name by ID
-   */
-  private async getTenantName(tenantId: string): Promise<string> {
-    const result = await queryOne<{ name: string }>(`SELECT name FROM tenants WHERE id = $1`, [
-      tenantId,
-    ]);
-    return result?.name || "Unknown";
-  }
-
-  /**
    * Get daily metrics for dashboard
    */
   async getDailyMetrics(days: number = 30): Promise<DailyRetentionMetrics[]> {
     try {
-      const results = await query<{
-        run_date: string;
-        pruned_count: string;
-        storage_bytes: string;
-        violations: string;
-        latency_ms: string;
-      }>(
-        `SELECT 
-           run_date::text as run_date,
-           SUM(pruned_count) as pruned_count,
-           SUM(storage_bytes) as storage_bytes,
-           SUM(violations) as violations,
-           AVG(latency_ms) as latency_ms
-         FROM retention_metrics
-         WHERE run_date >= CURRENT_DATE - INTERVAL '1 day' * $1
-         GROUP BY run_date
-         ORDER BY run_date DESC`,
-        [days]
-      );
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+
+      const results = await prisma.retentionMetric.groupBy({
+        by: ["runDate"],
+        where: {
+          runDate: { gte: startDate },
+        },
+        _sum: {
+          prunedCount: true,
+          storageBytes: true,
+          violations: true,
+        },
+        _avg: {
+          latencyMs: true,
+        },
+        orderBy: {
+          runDate: "desc",
+        },
+      });
 
       return results.map((row) => ({
-        date: row.run_date,
-        prunedArtifactCount: parseInt(row.pruned_count, 10),
-        storageReclaimedBytes: parseInt(row.storage_bytes, 10),
-        violationsCount: parseInt(row.violations, 10),
-        avgLatencyMs: parseInt(row.latency_ms, 10),
+        date: row.runDate.toISOString().split("T")[0],
+        prunedArtifactCount: row._sum.prunedCount || 0,
+        storageReclaimedBytes: Number(row._sum.storageBytes || 0n),
+        violationsCount: row._sum.violations || 0,
+        avgLatencyMs: Number(row._avg.latencyMs || 0n),
       }));
     } catch (error) {
       logError("Failed to get daily metrics", error);
@@ -278,37 +228,47 @@ export class RetentionMetricsService {
    */
   async getAllTenantMetrics(): Promise<TenantRetentionMetrics[]> {
     try {
-      const results = await query<{
-        tenant_id: string;
-        tenant_name: string;
-        pruned_count: string;
-        storage_bytes: string;
-        violations: string;
-        latency_ms: string;
-      }>(
-        `SELECT 
-           rm.tenant_id,
-           t.name as tenant_name,
-           COALESCE(SUM(rm.pruned_count), 0) as pruned_count,
-           COALESCE(SUM(rm.storage_bytes), 0) as storage_bytes,
-           COALESCE(SUM(rm.violations), 0) as violations,
-           COALESCE(AVG(rm.latency_ms), 0) as latency_ms
-         FROM retention_metrics rm
-         JOIN tenants t ON t.id = rm.tenant_id
-         WHERE rm.run_date >= CURRENT_DATE - INTERVAL '30 days'
-         GROUP BY rm.tenant_id, t.name
-         ORDER BY pruned_count DESC`
-      );
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-      return results.map((row) => ({
-        tenantId: row.tenant_id,
-        tenantName: row.tenant_name,
-        prunedArtifactCount: parseInt(row.pruned_count, 10),
-        storageReclaimedBytes: parseInt(row.storage_bytes, 10),
-        retentionPolicyViolations: parseInt(row.violations, 10),
-        workerProcessingLatencyMs: parseInt(row.latency_ms, 10),
-        lastUpdated: new Date(),
-      }));
+      const results = await prisma.retentionMetric.groupBy({
+        by: ["tenantId"],
+        where: {
+          runDate: { gte: thirtyDaysAgo },
+          tenantId: { not: null },
+        },
+        _sum: {
+          prunedCount: true,
+          storageBytes: true,
+          violations: true,
+        },
+        _avg: {
+          latencyMs: true,
+        },
+      });
+
+      const metrics: TenantRetentionMetrics[] = [];
+
+      for (const row of results) {
+        if (!row.tenantId) continue;
+
+        const tenant = await prisma.tenant.findUnique({
+          where: { id: row.tenantId },
+          select: { name: true },
+        });
+
+        metrics.push({
+          tenantId: row.tenantId,
+          tenantName: tenant?.name || "Unknown",
+          prunedArtifactCount: row._sum.prunedCount || 0,
+          storageReclaimedBytes: Number(row._sum.storageBytes || 0n),
+          retentionPolicyViolations: row._sum.violations || 0,
+          workerProcessingLatencyMs: Number(row._avg.latencyMs || 0n),
+          lastUpdated: new Date(),
+        });
+      }
+
+      return metrics.sort((a, b) => b.prunedArtifactCount - a.prunedArtifactCount);
     } catch (error) {
       logError("Failed to get all tenant metrics", error);
       return [];
@@ -320,26 +280,25 @@ export class RetentionMetricsService {
    */
   async clearOldMetrics(daysToKeep: number = 90): Promise<number> {
     try {
-      const result = await query(
-        `DELETE FROM retention_metrics 
-         WHERE run_date < CURRENT_DATE - INTERVAL '1 day' * $1`,
-        [daysToKeep]
-      );
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
 
-      const deletedCount = (result as any)?.rowCount || 0;
-      logInfo("Cleared old retention metrics", { deletedCount, daysToKeep });
-      return deletedCount;
+      const result = await prisma.retentionMetric.deleteMany({
+        where: {
+          runDate: { lt: cutoffDate },
+        },
+      });
+
+      logInfo("Cleared old retention metrics", {
+        deletedCount: result.count,
+        daysToKeep,
+      });
+
+      return result.count;
     } catch (error) {
       logError("Failed to clear old metrics", error);
       throw error;
     }
-  }
-
-  /**
-   * Close database pool
-   */
-  async close(): Promise<void> {
-    await this.pool.end();
   }
 }
 

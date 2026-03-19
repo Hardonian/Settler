@@ -10,13 +10,13 @@ import { AuthRequest } from "../middleware/auth";
 import { enforceFreezeState } from "../middleware/governance";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
-import { PrismaClient } from "@prisma/client";
+
 import { handleRouteError } from "../utils/error-handler";
-import { NotFoundError, ValidationError } from "../utils/typed-errors";
+import { NotFoundError } from "../utils/typed-errors";
 import { trackEventAsync } from "../utils/event-tracker";
 
 const router: Router = Router();
-const prisma = new PrismaClient();
+import { prisma } from "../infrastructure/db/prisma";
 
 const listExceptionsSchema = z.object({
   query: z.object({
@@ -58,8 +58,8 @@ router.get(
       const tenantId = req.tenantId!;
       const {
         jobId,
-        resolution_status = "open",
-        category,
+        _resolution_status = "open",
+        _category,
         startDate,
         endDate,
         limit,
