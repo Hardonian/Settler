@@ -8,7 +8,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -86,23 +86,16 @@ function maturityBadge(entry: ConsoleRouteEntry) {
 
 interface ConsoleLayoutProps {
   children: React.ReactNode;
+  isSuperAdmin?: boolean;
 }
 
-export function ConsoleLayout({ children }: ConsoleLayoutProps) {
+export function ConsoleLayout({
+  children,
+  isSuperAdmin: initialIsSuperAdmin = false,
+}: ConsoleLayoutProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
-
-  useEffect(() => {
-    fetch("/api/console/user-role")
-      .then((res) => res.json())
-      .then((data) => {
-        setIsSuperAdmin(data.role === "SUPER_ADMIN" || data.isSuperAdmin === true);
-      })
-      .catch(() => {
-        setIsSuperAdmin(false);
-      });
-  }, []);
+  const isSuperAdmin = initialIsSuperAdmin;
 
   const navSections = navSectionOrder
     .map((section) => {
