@@ -158,3 +158,143 @@ export async function getMatchAccuracy(jobId?: string, _options: QueryOptions = 
     avg_confidence_score: avgConfidence._avg.confidenceAvg,
   };
 }
+
+// ============================================================================
+// Materialized View Integration
+// ============================================================================
+// Re-export materialized view infrastructure for convenient access
+export * from "./MaterializedViewIndex";
+
+// Lazy initialization helper for materialized view infrastructure
+export async function initializeMaterializedViewInfrastructure(tenantId: string): Promise<{
+  enabled: boolean;
+  views: number;
+}> {
+  const { initializeTenantMaterializedViews } = await import("./MaterializedViewManager");
+  const { startScheduler } = await import("./MaterializedViewScheduler");
+
+  // Initialize tenant configuration
+  await initializeTenantMaterializedViews(tenantId);
+
+  // Start scheduler if not already running
+  startScheduler(60000); // Check every minute
+
+  const config = (await import("./MaterializedViewManager")).getTenantConfig(tenantId);
+
+  return {
+    enabled: config?.enabled ?? false,
+    views: config?.views.length ?? 0,
+  };
+}
+
+/**
+ * Refresh all materialized views across all tenants
+ * Used by the background job scheduler
+ */
+export async function refreshAllMaterializedViews(): Promise<{
+  success: boolean;
+  refreshedViews: number;
+  failedViews: number;
+  errors: string[];
+}> {
+  const { tenantConfigs } = await import("./MaterializedViewManager");
+  const { refreshAllTenantViews } = await import("./MaterializedViewScheduler");
+
+  // Get all tenants with materialized views enabled
+  const configs = Array.from(tenantConfigs.values()).filter((c: any) => c.enabled);
+
+  const results = {
+    success: true,
+    refreshedViews: 0,
+    failedViews: 0,
+    errors: [] as string[],
+  };
+
+  for (const config of configs) {
+    const tenantResult = await refreshAllTenantViews(config.tenantId, true);
+
+    for (const viewResult of tenantResult.results) {
+      if (viewResult.success) {
+        results.refreshedViews++;
+      } else {
+        results.failedViews++;
+        results.errors.push(`${config.tenantId}/${viewResult.viewId}: ${viewResult.error}`);
+      }
+    }
+  }
+
+  results.success = results.failedViews === 0;
+
+  return results;
+}
+
+/**
+ * Execute a query with automatic materialized view optimization
+ * This is the main entry point for using materialized views with queries
+ */
+export async function executeOptimizedQuery(
+  tenantId: string,
+  query: string,
+  options: {
+    /** Force use of materialized view */
+    forceMaterializedView?: boolean;
+    /** Allow stale data */
+    allowStale?: boolean;
+    /** Force refresh before query */
+    forceRefresh?: boolean;
+  } = {}
+): Promise<{
+  /** Whether a materialized view was used */
+  usedMaterializedView: boolean;
+  /** The query that was executed */
+  executedQuery: string;
+  /** Performance metrics */
+  metrics: {
+    startTime: number;
+    endTime: number;
+    durationMs: number;
+  };
+  /** Results from the query */
+  results: any[];
+}> {
+  const startTime = Date.now();
+
+  // Try to rewrite query to use materialized view
+  const { rewriteQuery } = await import("./MaterializedViewQueryRewriter");
+  const { getTenantConfig } = await import("./MaterializedViewManager");
+
+  const tenantConfig = getTenantConfig(tenantId);
+  let useMaterializedView =
+    options.forceMaterializedView ||
+    (tenantConfig?.enabled && tenantConfig.settings.enableQueryRewriting);
+
+  let executedQuery = query;
+  let usedMv = false;
+
+  if (useMaterializedView) {
+    const rewriteResult = await rewriteQuery(tenantId, query, {
+      allowStale: options.allowStale,
+      forceRefresh: options.forceRefresh,
+    });
+
+    if (rewriteResult.rewritten) {
+      executedQuery = rewriteResult.query;
+      usedMv = true;
+    }
+  }
+
+  // Execute the query (this would use the actual database query function)
+  // For now, return the query that would be executed
+  const endTime = Date.now();
+
+  return {
+    usedMaterializedView: usedMv,
+    executedQuery,
+    metrics: {
+      startTime,
+      endTime,
+      durationMs: endTime - startTime,
+    },
+    results: [], // Would contain actual query results
+  };
+}
