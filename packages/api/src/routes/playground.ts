@@ -32,55 +32,30 @@ const ensureDemoData = async (): Promise<{ exists: boolean; error?: string }> =>
     "demo_expected_matches.json"
   ];
 
-  // Check if demo data directory and all required files exist
-  if (fs.existsSync(demoDir)) {
-    const allFilesExist = requiredFiles.every(file => 
-      fs.existsSync(path.join(demoDir, file))
-    );
-    if (allFilesExist) {
-      return { exists: true };
-    }
+  // Check if demo data directory exists
+  if (!fs.existsSync(demoDir)) {
+    return { exists: false, error: "Demo data directory does not exist" };
   }
 
-  // Auto-generate demo data by spawning the seed script
+  // Check if required files exist
+  const allFilesExist = requiredFiles.every(file =>
+    fs.existsSync(path.join(demoDir, file))
+  );
+  
+  if (!allFilesExist) {
+    return { exists: false, error: "Some required demo data files are missing" };
+  }
+
+  // Validate JSON files
   try {
-    const { spawn } = await import("child_process");
-    
-    return new Promise((resolve) => {
-      const seedProcess = spawn("npx", ["tsx", "scripts/seed-demo.ts"], {
-        cwd: process.cwd(),
-        stdio: "pipe",
-        shell: true
-      });
-
-      let stderr = "";
-      seedProcess.stderr?.on("data", (data) => {
-        stderr += data.toString();
-      });
-
-      seedProcess.on("close", (code) => {
-        if (code === 0) {
-          resolve({ exists: true });
-        } else {
-          resolve({ 
-            exists: false, 
-            error: `Auto-generation failed: ${stderr || "Unknown error"}. Run 'pnpm demo:seed' manually.` 
-          });
-        }
-      });
-
-      seedProcess.on("error", (err) => {
-        resolve({ 
-          exists: false, 
-          error: `Failed to run seed script: ${err.message}. Run 'pnpm demo:seed' manually.` 
-        });
-      });
-    });
+    JSON.parse(fs.readFileSync(path.join(demoDir, "demo_stripe_transactions.json"), "utf-8"));
+    JSON.parse(fs.readFileSync(path.join(demoDir, "demo_bank_transactions.json"), "utf-8"));
+    JSON.parse(fs.readFileSync(path.join(demoDir, "demo_expected_matches.json"), "utf-8"));
+    return { exists: true };
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : "Unknown error";
-    return { 
-      exists: false, 
-      error: `Failed to import child_process: ${errorMessage}. Run 'pnpm demo:seed' manually.` 
+    return {
+      exists: false,
+      error: `Demo data files exist but contain invalid JSON: ${err.message}`
     };
   }
 };

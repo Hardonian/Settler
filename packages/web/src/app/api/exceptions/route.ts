@@ -22,7 +22,6 @@ import {
   getExceptionWorkflowState,
 } from "@/lib/exceptions/presentation";
 import { z } from "zod";
-import type { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -41,9 +40,9 @@ const queryParamsSchema = z.object({
 type QueryParams = z.infer<typeof queryParamsSchema>;
 
 function withWorkflowStatusFilter(
-  baseWhere: Prisma.DriftEventWhereInput,
+  baseWhere: Record<string, unknown>,
   status?: QueryParams["status"]
-): Prisma.DriftEventWhereInput {
+): Record<string, unknown> {
   if (!status) {
     return baseWhere;
   }
@@ -122,7 +121,7 @@ export const GET = withSecurity(
         const params = queryParamsSchema.parse(rawParams);
 
         // Build where clause - workspace scoped
-        let whereClause: Prisma.DriftEventWhereInput = { tenantId };
+        let whereClause: Record<string, unknown> = { tenantId };
 
         if (params.severity) {
           whereClause.severity = params.severity;
@@ -142,8 +141,7 @@ export const GET = withSecurity(
         if (params.search) {
           (whereClause as { OR?: unknown }).OR = [
             { fieldPath: { contains: params.search, mode: "insensitive" } },
-            { expectedValue: { contains: params.search, mode: "insensitive" } },
-            { actualValue: { contains: params.search, mode: "insensitive" } },
+            { driftType: { contains: params.search, mode: "insensitive" } },
           ];
         }
 
