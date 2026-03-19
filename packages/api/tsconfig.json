@@ -8,7 +8,7 @@
     "exactOptionalPropertyTypes": false,
     "skipLibCheck": true,
     "paths": {},
-    "types": ["node"]
+    "types": ["node", "jest"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
