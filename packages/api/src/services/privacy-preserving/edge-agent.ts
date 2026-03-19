@@ -7,6 +7,7 @@
 
 import { EventEmitter } from 'events';
 import { logError } from '../../utils/logger';
+import { levenshteinDistance } from '../../lib/levenshtein';
 
 export interface EdgeAgentConfig {
   customerId: string;
@@ -190,54 +191,8 @@ export class EdgeAgent extends EventEmitter {
     
     if (longer.length === 0) return 1.0;
     
-    const distance = this.levenshteinDistance(longer, shorter);
+    const distance = levenshteinDistance(longer, shorter);
     return (longer.length - distance) / longer.length;
-  }
-
-  /**
-   * Calculate Levenshtein distance
-   */
-  private levenshteinDistance(str1: string, str2: string): number {
-    const matrix: number[][] = [];
-    
-    for (let i = 0; i <= str2.length; i++) {
-      matrix[i] = [i];
-    }
-    
-    for (let j = 0; j <= str1.length; j++) {
-      if (!matrix[0]) {
-        matrix[0] = [];
-      }
-      matrix[0][j] = j;
-    }
-    
-    for (let i = 1; i <= str2.length; i++) {
-      for (let j = 1; j <= str1.length; j++) {
-        if (!matrix[i]) {
-          matrix[i] = [];
-        }
-        const prevRow = matrix[i - 1];
-        const currRow = matrix[i];
-        if (!prevRow || !currRow) {
-          continue;
-        }
-        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-          currRow[j] = prevRow[j - 1] ?? 0;
-        } else {
-          currRow[j] = Math.min(
-            (prevRow[j - 1] ?? 0) + 1,
-            (currRow[j - 1] ?? 0) + 1,
-            (prevRow[j] ?? 0) + 1
-          );
-        }
-      }
-    }
-    
-    const lastRow = matrix[str2.length];
-    if (!lastRow) {
-      return str1.length;
-    }
-    return lastRow[str1.length] ?? str1.length;
   }
 
   /**

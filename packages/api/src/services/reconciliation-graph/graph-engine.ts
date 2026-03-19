@@ -15,6 +15,7 @@ import {
 import { EventEmitter } from "events";
 import { logError } from "../../utils/logger";
 import { DEFAULT_TOLERANCES } from "../matching-rules-loader";
+import { levenshteinDistance } from "../../lib/levenshtein";
 
 export class ReconciliationGraphEngine extends EventEmitter {
   private graphs: Map<string, ReconciliationGraph> = new Map();
@@ -219,42 +220,8 @@ export class ReconciliationGraphEngine extends EventEmitter {
 
     if (longer.length === 0) return 1.0;
 
-    const distance = this.levenshteinDistance(longer, shorter);
+    const distance = levenshteinDistance(longer, shorter);
     return (longer.length - distance) / longer.length;
-  }
-
-  /**
-   * Calculate Levenshtein distance
-   */
-  private levenshteinDistance(str1: string, str2: string): number {
-    const matrix: number[][] = [];
-
-    for (let i = 0; i <= str2.length; i++) {
-      matrix[i] = [i];
-    }
-
-    for (let j = 0; j <= str1.length; j++) {
-      if (!matrix[0]) {
-        matrix[0] = [];
-      }
-      matrix[0][j] = j;
-    }
-
-    for (let i = 1; i <= str2.length; i++) {
-      for (let j = 1; j <= str1.length; j++) {
-        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-          matrix[i]![j] = matrix[i - 1]![j - 1]!;
-        } else {
-          matrix[i]![j] = Math.min(
-            matrix[i - 1]![j - 1]! + 1,
-            matrix[i]![j - 1]! + 1,
-            matrix[i - 1]![j]! + 1
-          );
-        }
-      }
-    }
-
-    return matrix[str2.length]![str1.length]!;
   }
 
   /**

@@ -12,7 +12,11 @@ import {
   recordRequestMetrics,
   storeIdempotent,
 } from "@/lib/api/v1/recon/core";
-import { buildCanonicalRunTruth, type ReconResultRow } from "@/lib/reconciliation/run-status";
+import {
+  buildCanonicalRunResultContract,
+  type ReconJobRecordLike,
+  type ReconResultRecordLike,
+} from "@/lib/reconciliation/canonical-run-result";
 import { prisma } from "@/shared/db/prismaClient";
 
 export const runtime = "nodejs";
@@ -21,14 +25,20 @@ type RunListRow = {
   id: string;
   createdAt: Date;
   status: string;
+  tenantId?: string;
+  sourceAdapter?: string | null;
+  targetAdapter?: string | null;
+  reconStrategy?: string | null;
+  templateId?: string | null;
+  validationRules?: unknown;
+  sourceConfigEncrypted?: string | null;
+  targetConfigEncrypted?: string | null;
 };
 
 export async function GET(request: NextRequest) {
   const ctx = await buildContext(request);
   if (ctx instanceof NextResponse) return ctx;
 
-  // TENANT ISOLATION HARDENING: Strictly enforce tenant boundary before any DB access.
-  // Prevents Prisma from stripping `undefined` and executing a cross-tenant read.
   if (
     !ctx.tenantId ||
     typeof ctx.tenantId !== "string" ||
@@ -93,12 +103,15 @@ export async function GET(request: NextRequest) {
             unmatchedTargetCount: true,
             conflictCount: true,
             errorMessage: true,
+            inputHash: true,
+            snapshotId: true,
+            summary: true,
             metadata: true,
           },
         })
       : [];
 
-    const latestResultByRunId = new Map<string, ReconResultRow>();
+    const latestResultByRunId = new Map<string, ReconResultRecordLike>();
     for (const result of latestResults) {
       if (latestResultByRunId.has(result.reconJobId)) {
         continue;
@@ -116,22 +129,60 @@ export async function GET(request: NextRequest) {
         unmatched_target_count: result.unmatchedTargetCount,
         conflict_count: result.conflictCount,
         error_message: result.errorMessage,
+        input_hash: result.inputHash,
+        snapshot_id: result.snapshotId,
+        summary: result.summary,
         metadata: (result.metadata as Record<string, unknown> | null) || null,
       });
     }
 
     const rows = runs
       .map((run: RunListRow) => {
-        const truth = buildCanonicalRunTruth(run.status, latestResultByRunId.get(run.id) ?? null);
+        const contract = buildCanonicalRunResultContract({
+          job: {
+            id: run.id,
+            status: run.status,
+            tenantId: ctx.tenantId,
+            sourceAdapter: run.sourceAdapter,
+            targetAdapter: run.targetAdapter,
+            reconStrategy: run.reconStrategy,
+            templateId: run.templateId,
+            validationRules: run.validationRules,
+            sourceConfigEncrypted: run.sourceConfigEncrypted,
+            targetConfigEncrypted: run.targetConfigEncrypted,
+          } as ReconJobRecordLike,
+          result: latestResultByRunId.get(run.id) ?? null,
+        });
+
         return {
           run_id: run.id,
           created_at: run.createdAt.toISOString(),
-          status: truth.status,
-          status_label: truth.statusLabel,
-          summary_state: truth.summaryState,
-          progress_state: truth.progressState,
-          is_terminal: truth.isTerminal,
+          status: contract.lifecycle.status,
+          status_label: contract.lifecycle.statusLabel,
+          summary_state: contract.summaryState,
+          progress_state: contract.lifecycle.progressState,
+          progress_percent: contract.lifecycle.progressPercent,
+          is_terminal: contract.lifecycle.isTerminal,
           policy: "default",
+          summary: {
+            total: contract.summary.total,
+            matched: contract.summary.matched,
+            unmatched: contract.summary.unmatched,
+            conflicts: contract.summary.conflicts,
+          },
+          summary_semantics: {
+            processed: contract.summary.processed,
+            matched_with_tolerance: contract.summary.matchedWithTolerance,
+            exceptioned: contract.summary.exceptioned,
+            unresolved: contract.summary.unresolved,
+            ignored: contract.summary.ignored,
+            resolved: contract.summary.resolved,
+          },
+          provenance: contract.provenance,
+          config_drift: {
+            status: contract.configDrift.status,
+            adapter: contract.configDrift.adapter,
+          },
         };
       })
       .filter((run) => (status ? run.status === status : true));
@@ -167,7 +218,6 @@ export async function POST(request: NextRequest) {
   const ctx = await buildContext(request);
   if (ctx instanceof NextResponse) return ctx;
 
-  // TENANT ISOLATION HARDENING: Strictly enforce tenant boundary before any mutation.
   if (
     !ctx.tenantId ||
     typeof ctx.tenantId !== "string" ||
