@@ -1,14 +1,12 @@
 /**
  * Billing Ops Hardening
- * 
+ *
  * Implements dunning state, usage-based gating, and entitlement checks.
  */
 
-import { PrismaClient } from '@prisma/client';
+import { prisma } from "../infrastructure/db/prisma";
 
-const prisma = new PrismaClient();
-
-export type BillingStatus = 'active' | 'past_due' | 'unpaid' | 'canceled' | 'trialing' | 'free';
+export type BillingStatus = "active" | "past_due" | "unpaid" | "canceled" | "trialing" | "free";
 
 export interface EntitlementCheck {
   canRunRecon: boolean;
@@ -23,20 +21,18 @@ export interface EntitlementCheck {
 /**
  * Derive billing status from subscription and billing account
  */
-export async function getBillingStatus(
-  billingAccountId: string
-): Promise<BillingStatus> {
+export async function getBillingStatus(billingAccountId: string): Promise<BillingStatus> {
   const account = await prisma.billingAccount.findUnique({
     where: { id: billingAccountId },
     include: {
       subscriptions: {
         where: {
           status: {
-            in: ['active', 'past_due', 'trialing', 'canceled'],
+            in: ["active", "past_due", "trialing", "canceled"],
           },
         },
         orderBy: {
-          createdAt: 'desc',
+          createdAt: "desc",
         },
         take: 1,
       },
@@ -44,21 +40,21 @@ export async function getBillingStatus(
   });
 
   if (!account) {
-    return 'free';
+    return "free";
   }
 
   const subscription = account.subscriptions[0];
   if (!subscription) {
-    return 'free';
+    return "free";
   }
 
   // Check if subscription is past due
-  if (subscription.status === 'past_due') {
+  if (subscription.status === "past_due") {
     // Check if past due date has passed
     if (subscription.currentPeriodEnd < new Date()) {
-      return 'unpaid';
+      return "unpaid";
     }
-    return 'past_due';
+    return "past_due";
   }
 
   return subscription.status as BillingStatus;
@@ -79,46 +75,46 @@ export async function checkEntitlements(
   const status = await getBillingStatus(billingAccountId);
 
   // Free tier: read-only access
-  if (status === 'free') {
+  if (status === "free") {
     return {
       canRunRecon: false,
       canCreateRecon: false,
       canExport: true, // Allow export for free users
       canViewReports: true,
       canUseAPI: false,
-      message: 'Upgrade to run reconciliations',
-      upgradeUrl: '/pricing',
+      message: "Upgrade to run reconciliations",
+      upgradeUrl: "/pricing",
     };
   }
 
   // Past due: allow read-only, block new operations
-  if (status === 'past_due' || status === 'unpaid') {
+  if (status === "past_due" || status === "unpaid") {
     return {
       canRunRecon: false,
       canCreateRecon: false,
       canExport: true,
       canViewReports: true,
       canUseAPI: false,
-      message: 'Payment required. Please update your payment method.',
-      upgradeUrl: '/console/billing',
+      message: "Payment required. Please update your payment method.",
+      upgradeUrl: "/console/billing",
     };
   }
 
   // Canceled: read-only
-  if (status === 'canceled') {
+  if (status === "canceled") {
     return {
       canRunRecon: false,
       canCreateRecon: false,
       canExport: true,
       canViewReports: true,
       canUseAPI: false,
-      message: 'Subscription canceled. Reactivate to continue using the service.',
-      upgradeUrl: '/console/billing',
+      message: "Subscription canceled. Reactivate to continue using the service.",
+      upgradeUrl: "/console/billing",
     };
   }
 
   // Active/trialing: check usage limits
-  if (status === 'active' || status === 'trialing') {
+  if (status === "active" || status === "trialing") {
     if (options.requestedUsage) {
       const { service, quantity } = options.requestedUsage;
 
@@ -131,7 +127,7 @@ export async function checkEntitlements(
           billingAccountId_service_period_periodStart: {
             billingAccountId,
             service,
-            period: 'monthly',
+            period: "monthly",
             periodStart,
           },
         },
@@ -147,7 +143,7 @@ export async function checkEntitlements(
             canViewReports: true,
             canUseAPI: false,
             message: `Usage limit exceeded for ${service}. Upgrade to increase limits.`,
-            upgradeUrl: '/console/billing',
+            upgradeUrl: "/console/billing",
           };
         }
       }
@@ -176,9 +172,7 @@ export async function checkEntitlements(
 /**
  * Get Stripe customer portal URL for billing management
  */
-export async function getBillingPortalUrl(
-  billingAccountId: string
-): Promise<string | null> {
+export async function getBillingPortalUrl(billingAccountId: string): Promise<string | null> {
   const account = await prisma.billingAccount.findUnique({
     where: { id: billingAccountId },
     select: { stripeCustomerId: true },

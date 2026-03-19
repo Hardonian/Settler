@@ -15,14 +15,14 @@ import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
 import { enforceFreezeState } from "../middleware/governance";
-import { PrismaClient } from "@prisma/client";
+
 import { Run, RunSummary } from "@settler/types";
 import { handleRouteError } from "../utils/error-handler";
 import { NotFoundError, ValidationError } from "../utils/typed-errors";
 import { trackEventAsync } from "../utils/event-tracker";
 
 const router: Router = Router();
-const prisma = new PrismaClient();
+import { prisma } from "../infrastructure/db/prisma";
 
 const getRunSchema = z.object({
   params: z.object({
@@ -50,14 +50,14 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
-      const userId = req.userId!;
+      const _userId = req.userId!;
       const status = req.query.status as string | undefined;
       const search = req.query.search as string | undefined;
       const page = parseInt((req.query.page as string) || "1");
       const limit = Math.min(parseInt((req.query.limit as string) || "50"), 100);
       const offset = (page - 1) * limit;
 
-      const where = {
+      const where: any = {
         tenantId,
         ...(status && { status }),
         ...(search && {
@@ -129,7 +129,7 @@ router.get(
     try {
       const { runId } = req.params;
       const tenantId = req.tenantId!;
-      const userId = req.userId!;
+      const _userId = req.userId!;
 
       // Get run with job context - tenant-scoped
       const run = await prisma.reconResult.findFirst({
@@ -272,14 +272,8 @@ router.post(
               id: originalRun.reconJobId,
             },
           },
-          tenant: {
-            connect: {
-              id: tenantId,
-            },
-          },
+          tenantId,
           status: "running",
-          // TODO: This is not the right way to do this. We need a proper way to trigger a new run.
-          // This is just a placeholder to make the code compile.
         },
       });
 
