@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { TrendingUp, DollarSign, Users, Activity } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { TrendingUp, DollarSign, Users, Activity, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 
 interface IntegrationRevenue {
   integrationId: string;
@@ -21,11 +22,8 @@ export function IntegrationAnalytics() {
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<"7d" | "30d" | "90d" | "all">("30d");
 
-  useEffect(() => {
-    void fetchAnalytics();
-  }, [timeRange]);
-
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await fetch(`/api/integrations/analytics?range=${timeRange}`);
       if (response.ok) {
@@ -33,18 +31,34 @@ export function IntegrationAnalytics() {
         setRevenue(data.revenue || []);
         setError(null);
       } else {
-        const payload = (await response.json().catch(() => ({}))) as { error?: string };
+        const payload = (await response.json().catch(() => ({}))) as {
+          error?: string;
+          code?: string;
+          details?: unknown;
+        };
         setRevenue([]);
+        // Standardized error format: { error: string, code?: string, details?: unknown }
         setError(payload.error || "Failed to fetch integration analytics");
       }
     } catch (error: unknown) {
       console.error("Failed to fetch analytics:", error);
       setRevenue([]);
-      setError(error instanceof Error ? error.message : "Failed to fetch integration analytics");
+      // Standardized error format: { error: string, code?: string, details?: unknown }
+      let errorMessage = "Failed to fetch integration analytics";
+      if (typeof error === "object" && error !== null && "message" in error) {
+        errorMessage = String((error as { message: unknown }).message);
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
-  };
+  }, [timeRange]);
+
+  useEffect(() => {
+    void fetchAnalytics();
+  }, [fetchAnalytics]);
 
   const totalRevenue = revenue.reduce((sum: number, r: any) => sum + r.totalRevenue, 0);
   const totalMRR = revenue.reduce((sum: number, r: any) => sum + r.monthlyRecurringRevenue, 0);
@@ -129,9 +143,33 @@ export function IntegrationAnalytics() {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="text-center py-8 text-slate-500 dark:text-slate-400">Loading...</div>
+            <div className="space-y-3">
+              <div className="animate-pulse">
+                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/4 mb-2"></div>
+                <div className="h-20 bg-slate-200 dark:bg-slate-700 rounded"></div>
+              </div>
+              <div className="animate-pulse">
+                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/4 mb-2"></div>
+                <div className="h-20 bg-slate-200 dark:bg-slate-700 rounded"></div>
+              </div>
+              <div className="animate-pulse">
+                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/4 mb-2"></div>
+                <div className="h-20 bg-slate-200 dark:bg-slate-700 rounded"></div>
+              </div>
+            </div>
           ) : error ? (
-            <div className="text-center py-8 text-red-600 dark:text-red-400">{error}</div>
+            <div className="text-center py-8">
+              <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fetchAnalytics()}
+                className="inline-flex items-center gap-2"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Try again
+              </Button>
+            </div>
           ) : (
             <div className="space-y-4">
               {revenue.map((item) => (

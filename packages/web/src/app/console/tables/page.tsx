@@ -112,7 +112,15 @@ export default function TablesPage() {
   if (loading) {
     return (
       <div className="container mx-auto p-6">
-        <div className="animate-pulse">Loading tables...</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="animate-pulse">
+              <div className="h-32 bg-slate-200 dark:bg-slate-700 rounded-lg mb-4"></div>
+              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4 mb-2"></div>
+              <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
