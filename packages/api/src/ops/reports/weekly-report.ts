@@ -1,13 +1,14 @@
 /**
  * Founder Weekly Report Generator
- * 
+ *
  * Generates comprehensive weekly operational reports aggregating daily metrics.
  */
 
-import { PrismaClient, Prisma } from '@prisma/client';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
-import { COST_BASELINES as BASELINE_CONFIG } from '../../../../../ops/cost_baselines';
+import { Prisma } from "@prisma/client";
+import { prisma } from "../../infrastructure/db/prisma";
+import { writeFile, mkdir } from "fs/promises";
+import { join } from "path";
+import { COST_BASELINES as BASELINE_CONFIG } from "../../../../../ops/cost_baselines";
 
 const COST_BASELINES = BASELINE_CONFIG ?? {
   vercel: {
@@ -20,8 +21,6 @@ const COST_BASELINES = BASELINE_CONFIG ?? {
     artifactGb: { costPerUnit: 0.023 },
   },
 };
-
-const prisma = new PrismaClient();
 
 interface WeeklyReport {
   weekStart: string; // Format: YYYY-MM-DD
@@ -81,8 +80,8 @@ interface WeeklyReport {
     reconciliationMismatchRate: number;
     exceptionRate: number;
     trends: {
-      errorsTrending: 'up' | 'down' | 'stable';
-      mismatchTrending: 'up' | 'down' | 'stable';
+      errorsTrending: "up" | "down" | "stable";
+      mismatchTrending: "up" | "down" | "stable";
     };
   };
   support: {
@@ -147,7 +146,7 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
 
   const connectedProviderEvents = await prisma.usageEvent.count({
     where: {
-      eventType: 'provider.connected',
+      eventType: "provider.connected",
       timestamp: {
         gte: weekStart,
         lt: weekEnd,
@@ -157,7 +156,7 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
 
   const firstReconEvents = await prisma.usageEvent.count({
     where: {
-      eventType: 'recon.first_run',
+      eventType: "recon.first_run",
       timestamp: {
         gte: weekStart,
         lt: weekEnd,
@@ -173,7 +172,7 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
         gte: weekStart,
         lt: weekEnd,
       },
-      status: 'active',
+      status: "active",
     },
   });
   const firstReconciliationCount = await prisma.reconciliationRun.count({
@@ -182,7 +181,7 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
         gte: weekStart,
         lt: weekEnd,
       },
-      status: 'completed',
+      status: "completed",
     },
   });
   const firstExceptionResolvedCount = await prisma.reconciliationMatch.count({
@@ -193,7 +192,7 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
         lt: weekEnd,
       },
       matchType: {
-        not: 'unmatched',
+        not: "unmatched",
       },
     },
   });
@@ -201,7 +200,10 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
   const conversionRates = {
     signupToConnect: signupCount > 0 ? (connectCount / signupCount) * 100 : 0,
     connectToRecon: connectCount > 0 ? (firstReconciliationCount / connectCount) * 100 : 0,
-    reconToResolved: firstReconciliationCount > 0 ? (firstExceptionResolvedCount / firstReconciliationCount) * 100 : 0,
+    reconToResolved:
+      firstReconciliationCount > 0
+        ? (firstExceptionResolvedCount / firstReconciliationCount) * 100
+        : 0,
   };
 
   // Usage metrics
@@ -230,7 +232,7 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
         lt: weekEnd,
       },
       eventType: {
-        in: ['api_request', 'webhook_event', 'db_query'],
+        in: ["api_request", "webhook_event", "db_query"],
       },
     },
   });
@@ -238,7 +240,7 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
   // Revenue metrics
   const activeSubscriptions = await prisma.subscription.findMany({
     where: {
-      status: 'active',
+      status: "active",
     },
   });
 
@@ -257,7 +259,8 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
   });
 
   const usageRevenue: number = usageAggregates.reduce(
-    (sum: number, agg: { estimatedCost: Prisma.Decimal | null }) => sum + Number(agg.estimatedCost || 0),
+    (sum: number, agg: { estimatedCost: Prisma.Decimal | null }) =>
+      sum + Number(agg.estimatedCost || 0),
     0
   );
 
@@ -274,14 +277,15 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
   });
 
   const previousWeekRevenue: number = previousWeekUsageRevenue.reduce(
-    (sum: number, agg: { estimatedCost: Prisma.Decimal | null }) => sum + Number(agg.estimatedCost || 0),
+    (sum: number, agg: { estimatedCost: Prisma.Decimal | null }) =>
+      sum + Number(agg.estimatedCost || 0),
     0
   );
 
   const weekOverWeekRevenue = usageRevenue - previousWeekRevenue;
 
   const tenantUsage = await prisma.usageAggregateDaily.groupBy({
-    by: ['tenantId'],
+    by: ["tenantId"],
     where: {
       date: {
         gte: weekStart,
@@ -293,7 +297,7 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
     },
     orderBy: {
       _sum: {
-        totalQuantity: 'desc',
+        totalQuantity: "desc",
       },
     },
     take: 10,
@@ -302,7 +306,7 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
   const failedPayments = await prisma.stripeEvent.count({
     where: {
       type: {
-        in: ['payment_intent.payment_failed', 'invoice.payment_failed'],
+        in: ["payment_intent.payment_failed", "invoice.payment_failed"],
       },
       receivedAt: {
         gte: weekStart,
@@ -314,21 +318,21 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
   // Billing health
   const pastDue = await prisma.subscription.count({
     where: {
-      status: 'past_due',
+      status: "past_due",
     },
   });
 
   const unpaid = await prisma.subscription.count({
     where: {
       status: {
-        in: ['past_due', 'unpaid'],
+        in: ["past_due", "unpaid"],
       },
     },
   });
 
   const webhookFailures = await prisma.stripeEvent.count({
     where: {
-      status: 'failed',
+      status: "failed",
       receivedAt: {
         gte: weekStart,
         lt: weekEnd,
@@ -338,7 +342,7 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
 
   const chargebacks = await prisma.stripeEvent.count({
     where: {
-      type: 'charge.dispute.created',
+      type: "charge.dispute.created",
       receivedAt: {
         gte: weekStart,
         lt: weekEnd,
@@ -356,12 +360,13 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
     },
   });
 
-  const churnRate = activeSubscriptions.length > 0 ? (cancelledThisWeek / activeSubscriptions.length) * 100 : 0;
+  const churnRate =
+    activeSubscriptions.length > 0 ? (cancelledThisWeek / activeSubscriptions.length) * 100 : 0;
 
   // Risk metrics
   const errorSpikes = await prisma.reconResult.count({
     where: {
-      status: 'failed',
+      status: "failed",
       startedAt: {
         gte: weekStart,
         lt: weekEnd,
@@ -371,7 +376,7 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
 
   const previousWeekErrors = await prisma.reconResult.count({
     where: {
-      status: 'failed',
+      status: "failed",
       startedAt: {
         gte: previousWeekStart,
         lt: previousWeekEnd,
@@ -379,11 +384,16 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
     },
   });
 
-  const errorsTrending = errorSpikes > previousWeekErrors * 1.1 ? 'up' : errorSpikes < previousWeekErrors * 0.9 ? 'down' : 'stable';
+  const errorsTrending =
+    errorSpikes > previousWeekErrors * 1.1
+      ? "up"
+      : errorSpikes < previousWeekErrors * 0.9
+        ? "down"
+        : "stable";
 
   const reconciliationMismatches = await prisma.reconciliationMatch.count({
     where: {
-      matchType: 'unmatched',
+      matchType: "unmatched",
       createdAt: {
         gte: weekStart,
         lt: weekEnd,
@@ -404,7 +414,7 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
 
   const previousWeekMismatches = await prisma.reconciliationMatch.count({
     where: {
-      matchType: 'unmatched',
+      matchType: "unmatched",
       createdAt: {
         gte: previousWeekStart,
         lt: previousWeekEnd,
@@ -421,9 +431,15 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
     },
   });
 
-  const previousWeekMismatchRate = previousWeekTotalMatches > 0 ? previousWeekMismatches / previousWeekTotalMatches : 0;
+  const previousWeekMismatchRate =
+    previousWeekTotalMatches > 0 ? previousWeekMismatches / previousWeekTotalMatches : 0;
 
-  const mismatchTrending = reconciliationMismatchRate > previousWeekMismatchRate * 1.1 ? 'up' : reconciliationMismatchRate < previousWeekMismatchRate * 0.9 ? 'down' : 'stable';
+  const mismatchTrending =
+    reconciliationMismatchRate > previousWeekMismatchRate * 1.1
+      ? "up"
+      : reconciliationMismatchRate < previousWeekMismatchRate * 0.9
+        ? "down"
+        : "stable";
 
   const exceptions = await prisma.driftEvent.count({
     where: {
@@ -448,7 +464,7 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
   // Support metrics
   const errorQueueCount = await prisma.reconResult.count({
     where: {
-      status: 'failed',
+      status: "failed",
       errorMessage: {
         not: null,
       },
@@ -460,39 +476,43 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
 
   // Cost proxy
   const estimatedInfraBaseline =
-    (apiCalls * COST_BASELINES.vercel.serverlessRequest.costPerUnit) +
-    (transactionsProcessed * COST_BASELINES.supabase.query.costPerUnit) +
-    (receiptsProcessed * COST_BASELINES.storage.artifactGb.costPerUnit * 0.001);
+    apiCalls * COST_BASELINES.vercel.serverlessRequest.costPerUnit +
+    transactionsProcessed * COST_BASELINES.supabase.query.costPerUnit +
+    receiptsProcessed * COST_BASELINES.storage.artifactGb.costPerUnit * 0.001;
 
-  const revenue = (mrr / 4) + usageRevenue; // Weekly revenue estimate
+  const revenue = mrr / 4 + usageRevenue; // Weekly revenue estimate
   const margin = revenue - estimatedInfraBaseline;
   const marginPercentage = revenue > 0 ? (margin / revenue) * 100 : 0;
 
   // Generate recommendations
   const recommendations: string[] = [];
   if (churnRate > 5) {
-    recommendations.push('High churn rate detected - investigate cancellation reasons and improve retention');
+    recommendations.push(
+      "High churn rate detected - investigate cancellation reasons and improve retention"
+    );
   }
   if (reconciliationMismatchRate > 0.1) {
-    recommendations.push('High reconciliation mismatch rate - review matching algorithms and data quality');
+    recommendations.push(
+      "High reconciliation mismatch rate - review matching algorithms and data quality"
+    );
   }
   if (errorSpikes > 50) {
-    recommendations.push('High error rate - investigate root causes and improve error handling');
+    recommendations.push("High error rate - investigate root causes and improve error handling");
   }
   if (marginPercentage < 20) {
-    recommendations.push('Low margin - optimize infrastructure costs or increase pricing');
+    recommendations.push("Low margin - optimize infrastructure costs or increase pricing");
   }
   if (conversionRates.signupToConnect < 30) {
-    recommendations.push('Low signup-to-connect conversion - improve onboarding flow');
+    recommendations.push("Low signup-to-connect conversion - improve onboarding flow");
   }
   if (failedPayments > 10) {
-    recommendations.push('High failed payment rate - review payment processing and retry logic');
+    recommendations.push("High failed payment rate - review payment processing and retry logic");
   }
 
-  const weekStartStr = weekStart.toISOString().split('T')[0];
-  const weekEndStr = weekEnd.toISOString().split('T')[0];
+  const weekStartStr = weekStart.toISOString().split("T")[0];
+  const weekEndStr = weekEnd.toISOString().split("T")[0];
   if (!weekStartStr || !weekEndStr) {
-    throw new Error('Failed to format dates');
+    throw new Error("Failed to format dates");
   }
 
   const report: WeeklyReport = {
@@ -533,7 +553,10 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
       usageRevenue,
       topTenantsByRevenue: [], // Simplified for now
       topTenantsByUsage: tenantUsage
-        .filter((t: { tenantId: string | null; _sum: { totalQuantity: Prisma.Decimal | null } }) => t.tenantId)
+        .filter(
+          (t: { tenantId: string | null; _sum: { totalQuantity: Prisma.Decimal | null } }) =>
+            t.tenantId
+        )
         .map((t: { tenantId: string | null; _sum: { totalQuantity: Prisma.Decimal | null } }) => ({
           tenantId: t.tenantId as string,
           usage: Number(t._sum.totalQuantity || 0),
@@ -585,8 +608,8 @@ export async function formatWeeklyReportMarkdown(report: WeeklyReport): Promise<
 
 ## 📈 Growth Metrics
 
-- **New Signups:** ${report.growth.newSignups} (${report.growth.weekOverWeekGrowth.signups >= 0 ? '+' : ''}${report.growth.weekOverWeekGrowth.signups} WoW)
-- **New Tenants:** ${report.growth.newTenants} (${report.growth.weekOverWeekGrowth.tenants >= 0 ? '+' : ''}${report.growth.weekOverWeekGrowth.tenants} WoW)
+- **New Signups:** ${report.growth.newSignups} (${report.growth.weekOverWeekGrowth.signups >= 0 ? "+" : ""}${report.growth.weekOverWeekGrowth.signups} WoW)
+- **New Tenants:** ${report.growth.newTenants} (${report.growth.weekOverWeekGrowth.tenants >= 0 ? "+" : ""}${report.growth.weekOverWeekGrowth.tenants} WoW)
 - **Provider Connections:** ${report.growth.activations.connectedProvider}
 - **First Reconciliations:** ${report.growth.activations.firstRecon}
 
@@ -618,11 +641,11 @@ export async function formatWeeklyReportMarkdown(report: WeeklyReport): Promise<
 
 - **MRR:** $${report.revenue.mrr.toLocaleString()}
 - **Usage Revenue (Weekly):** $${report.revenue.usageRevenue.toFixed(2)}
-- **Week-over-Week Revenue Change:** ${report.revenue.weekOverWeekRevenue >= 0 ? '+' : ''}$${report.revenue.weekOverWeekRevenue.toFixed(2)}
+- **Week-over-Week Revenue Change:** ${report.revenue.weekOverWeekRevenue >= 0 ? "+" : ""}$${report.revenue.weekOverWeekRevenue.toFixed(2)}
 - **Failed Payments:** ${report.revenue.failedPayments}
 
 ### Top Tenants by Usage
-${report.revenue.topTenantsByUsage.length > 0 ? report.revenue.topTenantsByUsage.map((t, i) => `${i + 1}. Tenant ${t.tenantId}: ${t.usage.toLocaleString()} units`).join('\n') : 'No data available'}
+${report.revenue.topTenantsByUsage.length > 0 ? report.revenue.topTenantsByUsage.map((t, i) => `${i + 1}. Tenant ${t.tenantId}: ${t.usage.toLocaleString()} units`).join("\n") : "No data available"}
 
 ## 💳 Billing Health
 
@@ -632,7 +655,7 @@ ${report.revenue.topTenantsByUsage.length > 0 ? report.revenue.topTenantsByUsage
 - **Chargebacks:** ${report.billingHealth.chargebacks}
 - **Churn Rate:** ${report.billingHealth.churnRate.toFixed(2)}%
 
-${report.billingHealth.churnRate > 5 ? '🚨 **High Churn:** Investigate cancellation reasons' : report.billingHealth.churnRate > 2 ? '⚠️ **Moderate Churn:** Monitor closely' : '✅ Churn rate within acceptable range'}
+${report.billingHealth.churnRate > 5 ? "🚨 **High Churn:** Investigate cancellation reasons" : report.billingHealth.churnRate > 2 ? "⚠️ **Moderate Churn:** Monitor closely" : "✅ Churn rate within acceptable range"}
 
 ## ⚠️ Risk Indicators
 
@@ -641,15 +664,15 @@ ${report.billingHealth.churnRate > 5 ? '🚨 **High Churn:** Investigate cancell
 - **Reconciliation Mismatch Rate:** ${(report.risk.reconciliationMismatchRate * 100).toFixed(2)}% (trending ${report.risk.trends.mismatchTrending})
 - **Exception Rate:** ${(report.risk.exceptionRate * 100).toFixed(2)}%
 
-${report.risk.errorSpikes > 50 || report.risk.reconciliationMismatchRate > 0.1 ? '🚨 **High Risk:** Investigate issues immediately' : report.risk.errorSpikes > 20 || report.risk.reconciliationMismatchRate > 0.05 ? '⚠️ **Moderate Risk:** Monitor closely' : '✅ Risk levels within acceptable range'}
+${report.risk.errorSpikes > 50 || report.risk.reconciliationMismatchRate > 0.1 ? "🚨 **High Risk:** Investigate issues immediately" : report.risk.errorSpikes > 20 || report.risk.reconciliationMismatchRate > 0.05 ? "⚠️ **Moderate Risk:** Monitor closely" : "✅ Risk levels within acceptable range"}
 
 ## 🎧 Support Signals
 
 - **Open Incidents:** ${report.support.openIncidents}
 - **Error Queue Count:** ${report.support.errorQueueCount}
-- **Average Resolution Time:** ${report.support.averageResolutionTime > 0 ? `${report.support.averageResolutionTime} hours` : 'N/A'}
+- **Average Resolution Time:** ${report.support.averageResolutionTime > 0 ? `${report.support.averageResolutionTime} hours` : "N/A"}
 
-${report.support.errorQueueCount > 100 ? '🚨 **High Support Load:** Prioritize error resolution' : report.support.errorQueueCount > 50 ? '⚠️ **Moderate Support Load:** Monitor queue' : '✅ Support queue manageable'}
+${report.support.errorQueueCount > 100 ? "🚨 **High Support Load:** Prioritize error resolution" : report.support.errorQueueCount > 50 ? "⚠️ **Moderate Support Load:** Monitor queue" : "✅ Support queue manageable"}
 
 ## 💵 Cost Proxy
 
@@ -657,11 +680,11 @@ ${report.support.errorQueueCount > 100 ? '🚨 **High Support Load:** Prioritize
 - **Revenue (Weekly):** $${report.costProxy.revenue.toFixed(2)}
 - **Margin:** $${report.costProxy.margin.toFixed(2)} (${report.costProxy.marginPercentage.toFixed(1)}%)
 
-${report.costProxy.marginPercentage < 0 ? '🚨 **Negative Margin:** Revenue below infrastructure costs' : report.costProxy.marginPercentage < 20 ? '⚠️ **Low Margin:** Consider cost optimization' : '✅ Healthy margin'}
+${report.costProxy.marginPercentage < 0 ? "🚨 **Negative Margin:** Revenue below infrastructure costs" : report.costProxy.marginPercentage < 20 ? "⚠️ **Low Margin:** Consider cost optimization" : "✅ Healthy margin"}
 
 ## 💡 Recommendations
 
-${report.recommendations.length > 0 ? report.recommendations.map((rec, i) => `${i + 1}. ${rec}`).join('\n') : 'No urgent recommendations. System operating normally.'}
+${report.recommendations.length > 0 ? report.recommendations.map((rec, i) => `${i + 1}. ${rec}`).join("\n") : "No urgent recommendations. System operating normally."}
 
 ---
 
@@ -672,15 +695,15 @@ ${report.recommendations.length > 0 ? report.recommendations.map((rec, i) => `${
 }
 
 export async function saveWeeklyReport(report: WeeklyReport, markdown: string): Promise<string> {
-  const reportsDir = join(process.cwd(), 'ops', 'reports');
+  const reportsDir = join(process.cwd(), "ops", "reports");
   await mkdir(reportsDir, { recursive: true });
 
-  const reportPath = join(reportsDir, 'FOUNDERS_WEEKLY_REPORT.md');
-  await writeFile(reportPath, markdown, 'utf-8');
+  const reportPath = join(reportsDir, "FOUNDERS_WEEKLY_REPORT.md");
+  await writeFile(reportPath, markdown, "utf-8");
 
   // Also save JSON for programmatic access
-  const jsonPath = join(reportsDir, 'FOUNDERS_WEEKLY_REPORT.json');
-  await writeFile(jsonPath, JSON.stringify(report, null, 2), 'utf-8');
+  const jsonPath = join(reportsDir, "FOUNDERS_WEEKLY_REPORT.json");
+  await writeFile(jsonPath, JSON.stringify(report, null, 2), "utf-8");
 
   return reportPath;
 }

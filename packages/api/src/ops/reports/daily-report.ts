@@ -1,14 +1,15 @@
 /**
  * Founder Daily Report Generator
- * 
+ *
  * Generates comprehensive daily operational reports for solo operators.
  * Includes growth, activation funnel, usage, revenue, billing health, risk, and support metrics.
  */
 
-import { PrismaClient, Prisma } from '@prisma/client';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
-import { COST_BASELINES as BASELINE_CONFIG } from '../../../../../ops/cost_baselines';
+import { Prisma } from "@prisma/client";
+import { prisma } from "../../infrastructure/db/prisma";
+import { writeFile, mkdir } from "fs/promises";
+import { join } from "path";
+import { COST_BASELINES as BASELINE_CONFIG } from "../../../../../ops/cost_baselines";
 
 const COST_BASELINES = BASELINE_CONFIG ?? {
   vercel: {
@@ -21,8 +22,6 @@ const COST_BASELINES = BASELINE_CONFIG ?? {
     artifactGb: { costPerUnit: 0.023 },
   },
 };
-
-const prisma = new PrismaClient();
 
 interface DailyReport {
   date: string; // Format: YYYY-MM-DD
@@ -116,7 +115,7 @@ export async function generateDailyReport(): Promise<DailyReport> {
   // Activation metrics (using UsageEvent if eventType exists, otherwise estimate from other tables)
   const connectedProviderEvents = await prisma.usageEvent.count({
     where: {
-      eventType: 'provider.connected',
+      eventType: "provider.connected",
       timestamp: {
         gte: yesterdayStart,
         lt: todayStart,
@@ -126,7 +125,7 @@ export async function generateDailyReport(): Promise<DailyReport> {
 
   const firstReconEvents = await prisma.usageEvent.count({
     where: {
-      eventType: 'recon.first_run',
+      eventType: "recon.first_run",
       timestamp: {
         gte: yesterdayStart,
         lt: todayStart,
@@ -142,7 +141,7 @@ export async function generateDailyReport(): Promise<DailyReport> {
         gte: yesterdayStart,
         lt: todayStart,
       },
-      status: 'active',
+      status: "active",
     },
   });
   const firstReconciliationCount = await prisma.reconciliationRun.count({
@@ -151,7 +150,7 @@ export async function generateDailyReport(): Promise<DailyReport> {
         gte: yesterdayStart,
         lt: todayStart,
       },
-      status: 'completed',
+      status: "completed",
     },
   });
   const firstExceptionResolvedCount = await prisma.reconciliationMatch.count({
@@ -162,7 +161,7 @@ export async function generateDailyReport(): Promise<DailyReport> {
         lt: todayStart,
       },
       matchType: {
-        not: 'unmatched',
+        not: "unmatched",
       },
     },
   });
@@ -193,7 +192,7 @@ export async function generateDailyReport(): Promise<DailyReport> {
         lt: todayStart,
       },
       eventType: {
-        in: ['api_request', 'webhook_event', 'db_query'],
+        in: ["api_request", "webhook_event", "db_query"],
       },
     },
   });
@@ -223,7 +222,7 @@ export async function generateDailyReport(): Promise<DailyReport> {
         lt: todayStart,
       },
       eventType: {
-        in: ['api_request', 'webhook_event', 'db_query'],
+        in: ["api_request", "webhook_event", "db_query"],
       },
     },
   });
@@ -231,7 +230,7 @@ export async function generateDailyReport(): Promise<DailyReport> {
   // Revenue metrics
   const activeSubscriptions = await prisma.subscription.findMany({
     where: {
-      status: 'active',
+      status: "active",
     },
     include: {
       billingAccount: {
@@ -259,7 +258,8 @@ export async function generateDailyReport(): Promise<DailyReport> {
   });
 
   const usageRevenue: number = usageAggregates.reduce(
-    (sum: number, agg: { estimatedCost: Prisma.Decimal | null }) => sum + Number(agg.estimatedCost || 0),
+    (sum: number, agg: { estimatedCost: Prisma.Decimal | null }) =>
+      sum + Number(agg.estimatedCost || 0),
     0
   );
 
@@ -268,7 +268,7 @@ export async function generateDailyReport(): Promise<DailyReport> {
     where: {
       subscriptions: {
         some: {
-          status: 'active',
+          status: "active",
         },
       },
     },
@@ -278,13 +278,13 @@ export async function generateDailyReport(): Promise<DailyReport> {
     },
     take: 10,
     orderBy: {
-      createdAt: 'desc',
+      createdAt: "desc",
     },
   });
 
   // Top tenants by usage
   const tenantUsage = await prisma.usageAggregateDaily.groupBy({
-    by: ['tenantId'],
+    by: ["tenantId"],
     where: {
       date: {
         gte: sevenDaysAgo,
@@ -296,7 +296,7 @@ export async function generateDailyReport(): Promise<DailyReport> {
     },
     orderBy: {
       _sum: {
-        totalQuantity: 'desc',
+        totalQuantity: "desc",
       },
     },
     take: 10,
@@ -305,34 +305,34 @@ export async function generateDailyReport(): Promise<DailyReport> {
   const failedPayments = await prisma.stripeEvent.count({
     where: {
       type: {
-        in: ['payment_intent.payment_failed', 'invoice.payment_failed'],
+        in: ["payment_intent.payment_failed", "invoice.payment_failed"],
       },
       receivedAt: {
         gte: yesterdayStart,
         lt: todayStart,
       },
-      status: 'processed',
+      status: "processed",
     },
   });
 
   // Billing health
   const pastDue = await prisma.subscription.count({
     where: {
-      status: 'past_due',
+      status: "past_due",
     },
   });
 
   const unpaid = await prisma.subscription.count({
     where: {
       status: {
-        in: ['past_due', 'unpaid'],
+        in: ["past_due", "unpaid"],
       },
     },
   });
 
   const webhookFailures = await prisma.stripeEvent.count({
     where: {
-      status: 'failed',
+      status: "failed",
       receivedAt: {
         gte: yesterdayStart,
         lt: todayStart,
@@ -342,7 +342,7 @@ export async function generateDailyReport(): Promise<DailyReport> {
 
   const chargebacks = await prisma.stripeEvent.count({
     where: {
-      type: 'charge.dispute.created',
+      type: "charge.dispute.created",
       receivedAt: {
         gte: yesterdayStart,
         lt: todayStart,
@@ -353,7 +353,7 @@ export async function generateDailyReport(): Promise<DailyReport> {
   // Risk metrics
   const errorSpikes = await prisma.reconResult.count({
     where: {
-      status: 'failed',
+      status: "failed",
       startedAt: {
         gte: yesterdayStart,
         lt: todayStart,
@@ -363,7 +363,7 @@ export async function generateDailyReport(): Promise<DailyReport> {
 
   const reconciliationMismatches = await prisma.reconciliationMatch.count({
     where: {
-      matchType: 'unmatched',
+      matchType: "unmatched",
       createdAt: {
         gte: yesterdayStart,
         lt: todayStart,
@@ -380,8 +380,7 @@ export async function generateDailyReport(): Promise<DailyReport> {
     },
   });
 
-  const reconciliationMismatchRate =
-    totalMatches > 0 ? reconciliationMismatches / totalMatches : 0;
+  const reconciliationMismatchRate = totalMatches > 0 ? reconciliationMismatches / totalMatches : 0;
 
   const exceptions = await prisma.driftEvent.count({
     where: {
@@ -406,7 +405,7 @@ export async function generateDailyReport(): Promise<DailyReport> {
   // Support metrics (using error queue as proxy)
   const errorQueueCount = await prisma.reconResult.count({
     where: {
-      status: 'failed',
+      status: "failed",
       errorMessage: {
         not: null,
       },
@@ -418,15 +417,15 @@ export async function generateDailyReport(): Promise<DailyReport> {
 
   // Cost proxy
   const estimatedInfraBaseline =
-    (dailyApiCalls * COST_BASELINES.vercel.serverlessRequest.costPerUnit) +
-    (dailyTransactions * COST_BASELINES.supabase.query.costPerUnit) +
-    (dailyReceipts * COST_BASELINES.storage.artifactGb.costPerUnit * 0.001); // Rough estimate
+    dailyApiCalls * COST_BASELINES.vercel.serverlessRequest.costPerUnit +
+    dailyTransactions * COST_BASELINES.supabase.query.costPerUnit +
+    dailyReceipts * COST_BASELINES.storage.artifactGb.costPerUnit * 0.001; // Rough estimate
 
   const revenue = mrr / 30 + usageRevenue; // Daily revenue estimate
 
-  const dateStr = yesterdayStart.toISOString().split('T')[0];
+  const dateStr = yesterdayStart.toISOString().split("T")[0];
   if (!dateStr) {
-    throw new Error('Failed to format date');
+    throw new Error("Failed to format date");
   }
 
   const report: DailyReport = {
@@ -471,7 +470,10 @@ export async function generateDailyReport(): Promise<DailyReport> {
           revenue: mrr / activeSubscriptions.length, // Simplified
         })),
       topTenantsByUsage: tenantUsage
-        .filter((t: { tenantId: string | null; _sum: { totalQuantity: Prisma.Decimal | null } }) => t.tenantId)
+        .filter(
+          (t: { tenantId: string | null; _sum: { totalQuantity: Prisma.Decimal | null } }) =>
+            t.tenantId
+        )
         .map((t: { tenantId: string | null; _sum: { totalQuantity: Prisma.Decimal | null } }) => ({
           tenantId: t.tenantId as string,
           usage: Number(t._sum.totalQuantity || 0),
@@ -551,10 +553,10 @@ export async function formatDailyReportMarkdown(report: DailyReport): Promise<st
 - **Failed Payments:** ${report.revenue.failedPayments}
 
 ### Top Tenants by Revenue
-${report.revenue.topTenantsByRevenue.length > 0 ? report.revenue.topTenantsByRevenue.map((t, i) => `${i + 1}. Tenant ${t.tenantId}: $${t.revenue.toFixed(2)}`).join('\n') : 'No data available'}
+${report.revenue.topTenantsByRevenue.length > 0 ? report.revenue.topTenantsByRevenue.map((t, i) => `${i + 1}. Tenant ${t.tenantId}: $${t.revenue.toFixed(2)}`).join("\n") : "No data available"}
 
 ### Top Tenants by Usage
-${report.revenue.topTenantsByUsage.length > 0 ? report.revenue.topTenantsByUsage.map((t, i) => `${i + 1}. Tenant ${t.tenantId}: ${t.usage.toLocaleString()} units`).join('\n') : 'No data available'}
+${report.revenue.topTenantsByUsage.length > 0 ? report.revenue.topTenantsByUsage.map((t, i) => `${i + 1}. Tenant ${t.tenantId}: ${t.usage.toLocaleString()} units`).join("\n") : "No data available"}
 
 ## 💳 Billing Health
 
@@ -563,7 +565,7 @@ ${report.revenue.topTenantsByUsage.length > 0 ? report.revenue.topTenantsByUsage
 - **Webhook Failures:** ${report.billingHealth.webhookFailures}
 - **Chargebacks:** ${report.billingHealth.chargebacks}
 
-${report.billingHealth.pastDue > 0 || report.billingHealth.unpaid > 0 ? '⚠️ **Action Required:** Review past due/unpaid subscriptions' : '✅ All subscriptions in good standing'}
+${report.billingHealth.pastDue > 0 || report.billingHealth.unpaid > 0 ? "⚠️ **Action Required:** Review past due/unpaid subscriptions" : "✅ All subscriptions in good standing"}
 
 ## ⚠️ Risk Indicators
 
@@ -572,14 +574,14 @@ ${report.billingHealth.pastDue > 0 || report.billingHealth.unpaid > 0 ? '⚠️ 
 - **Reconciliation Mismatch Rate:** ${(report.risk.reconciliationMismatchRate * 100).toFixed(2)}%
 - **Exception Rate:** ${(report.risk.exceptionRate * 100).toFixed(2)}%
 
-${report.risk.errorSpikes > 10 || report.risk.reconciliationMismatchRate > 0.1 ? '🚨 **High Risk:** Investigate error spikes and reconciliation issues' : '✅ Risk levels within acceptable range'}
+${report.risk.errorSpikes > 10 || report.risk.reconciliationMismatchRate > 0.1 ? "🚨 **High Risk:** Investigate error spikes and reconciliation issues" : "✅ Risk levels within acceptable range"}
 
 ## 🎧 Support Signals
 
 - **Open Incidents:** ${report.support.openIncidents}
 - **Error Queue Count:** ${report.support.errorQueueCount}
 
-${report.support.errorQueueCount > 50 ? '⚠️ **Action Required:** High error queue - review failed reconciliations' : '✅ Support queue manageable'}
+${report.support.errorQueueCount > 50 ? "⚠️ **Action Required:** High error queue - review failed reconciliations" : "✅ Support queue manageable"}
 
 ## 💵 Cost Proxy
 
@@ -587,7 +589,7 @@ ${report.support.errorQueueCount > 50 ? '⚠️ **Action Required:** High error 
 - **Revenue (Daily):** $${report.costProxy.revenue.toFixed(2)}
 - **Margin:** $${report.costProxy.margin.toFixed(2)} (${report.costProxy.revenue > 0 ? ((report.costProxy.margin / report.costProxy.revenue) * 100).toFixed(1) : 0}%)
 
-${report.costProxy.margin < 0 ? '🚨 **Negative Margin:** Revenue below infrastructure costs' : report.costProxy.margin < report.costProxy.revenue * 0.2 ? '⚠️ **Low Margin:** Consider cost optimization' : '✅ Healthy margin'}
+${report.costProxy.margin < 0 ? "🚨 **Negative Margin:** Revenue below infrastructure costs" : report.costProxy.margin < report.costProxy.revenue * 0.2 ? "⚠️ **Low Margin:** Consider cost optimization" : "✅ Healthy margin"}
 
 ---
 
@@ -598,15 +600,15 @@ ${report.costProxy.margin < 0 ? '🚨 **Negative Margin:** Revenue below infrast
 }
 
 export async function saveDailyReport(report: DailyReport, markdown: string): Promise<string> {
-  const reportsDir = join(process.cwd(), 'ops', 'reports');
+  const reportsDir = join(process.cwd(), "ops", "reports");
   await mkdir(reportsDir, { recursive: true });
 
-  const reportPath = join(reportsDir, 'FOUNDERS_DAILY_REPORT.md');
-  await writeFile(reportPath, markdown, 'utf-8');
+  const reportPath = join(reportsDir, "FOUNDERS_DAILY_REPORT.md");
+  await writeFile(reportPath, markdown, "utf-8");
 
   // Also save JSON for programmatic access
-  const jsonPath = join(reportsDir, 'FOUNDERS_DAILY_REPORT.json');
-  await writeFile(jsonPath, JSON.stringify(report, null, 2), 'utf-8');
+  const jsonPath = join(reportsDir, "FOUNDERS_DAILY_REPORT.json");
+  await writeFile(jsonPath, JSON.stringify(report, null, 2), "utf-8");
 
   return reportPath;
 }

@@ -1,24 +1,18 @@
 /**
  * Scheduler Service Entry Point
- * 
+ *
  * Initializes and starts the job scheduler service.
  * Run this as a separate process or integrate into main application.
- * 
+ *
  * Usage:
  *   tsx src/index-scheduler.ts
  *   or
  *   node dist/index-scheduler.js
  */
 
- 
-import { PrismaClient } from '@prisma/client';
-import { getJobSchedulerService } from './infrastructure/jobs/scheduler-service';
-import { logInfo, logError } from './utils/logger';
-
-// Initialize Prisma client
-const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
-});
+import { prisma } from "./infrastructure/db/prisma";
+import { getJobSchedulerService } from "./infrastructure/jobs/scheduler-service";
+import { logInfo, logError } from "./utils/logger";
 
 // Initialize scheduler
 const scheduler = getJobSchedulerService(prisma);
@@ -28,11 +22,13 @@ const scheduler = getJobSchedulerService(prisma);
  */
 async function start() {
   try {
-    logInfo('[Scheduler] Starting job scheduler service...');
+    logInfo("[Scheduler] Starting job scheduler service...");
     await scheduler.start();
-    logInfo('[Scheduler] Job scheduler service started successfully', { status: scheduler.getStatus() });
+    logInfo("[Scheduler] Job scheduler service started successfully", {
+      status: scheduler.getStatus(),
+    });
   } catch (error) {
-    logError('[Scheduler] Failed to start', error);
+    logError("[Scheduler] Failed to start", error);
     process.exit(1);
   }
 }
@@ -41,23 +37,24 @@ async function start() {
  * Graceful shutdown
  */
 async function shutdown() {
-  logInfo('[Scheduler] Shutting down...');
+  logInfo("[Scheduler] Shutting down...");
   await scheduler.stop();
-  await prisma.$disconnect();
-  logInfo('[Scheduler] Shutdown complete');
+  // Singleton handles persistence - skip $disconnect here to allow reuse if needed
+  // await prisma.$disconnect();
+  logInfo("[Scheduler] Shutdown complete");
   process.exit(0);
 }
 
 // Handle shutdown signals
-process.on('SIGTERM', shutdown);
-process.on('SIGINT', shutdown);
-process.on('uncaughtException', (error) => {
-  logError('[Scheduler] Uncaught exception', error);
+process.on("SIGTERM", shutdown);
+process.on("SIGINT", shutdown);
+process.on("uncaughtException", (error) => {
+  logError("[Scheduler] Uncaught exception", error);
   shutdown();
 });
 
 // Start scheduler
 start().catch((error) => {
-  logError('[Scheduler] Fatal error', error);
+  logError("[Scheduler] Fatal error", error);
   process.exit(1);
 });

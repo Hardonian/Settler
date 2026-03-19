@@ -50,7 +50,7 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
-      const _userId = req.userId!;
+
       const status = req.query.status as string | undefined;
       const search = req.query.search as string | undefined;
       const page = parseInt((req.query.page as string) || "1");
@@ -129,7 +129,6 @@ router.get(
     try {
       const { runId } = req.params;
       const tenantId = req.tenantId!;
-      const _userId = req.userId!;
 
       // Get run with job context - tenant-scoped
       const run = await prisma.reconResult.findFirst({

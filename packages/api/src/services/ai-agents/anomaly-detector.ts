@@ -166,9 +166,8 @@ export class AnomalyDetectorAgent extends BaseAgent {
 
       // Query recent API logs for suspicious patterns
       // Note: UsageEvent table may not have all API logs - this is a simplified check
-      // Import PrismaClient dynamically to avoid circular dependencies
-      const { PrismaClient } = await import("@prisma/client");
-      const prisma = new PrismaClient();
+      // Use the shared prisma singleton
+      const { prisma } = await import("../../infrastructure/db/prisma");
 
       const recentLogs = await prisma.usageEvent.findMany({
         where: {

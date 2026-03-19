@@ -28,6 +28,7 @@ import notificationsRouter from "./notifications";
 import receiptMatchingRouter from "./receipt-matching";
 import bulkOperationsRouter from "./bulk-operations";
 import slaRouter from "./sla";
+import { sloAlertingRouter } from "../slo";
 import auditTrailRouter from "./audit-trail";
 import advancedMatchingRulesRouter from "./advanced-matching-rules";
 import customIntegrationsRouter from "./custom-integrations";
@@ -75,6 +76,7 @@ v1Router.use("/tolerance", toleranceSettingsRouter);
 
 // Phase 3: Enterprise Features
 v1Router.use("/sla", slaRouter);
+v1Router.use("/slo", sloAlertingRouter);
 v1Router.use("/custom-integrations", customIntegrationsRouter);
 v1Router.use("/dedicated-infrastructure", dedicatedInfrastructureRouter);
 

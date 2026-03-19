@@ -9,19 +9,16 @@ import { z } from "zod";
 import fs from "fs";
 import path from "path";
 import { PrismaClient } from "@prisma/client";
+import { prisma as sharedPrisma } from "../infrastructure/db/prisma";
 import { validateRequest } from "../middleware/validation";
 import { handleRouteError } from "../utils/error-handler";
 import { calculateConfidenceScore } from "../services/confidence-scoring";
 import { MatchingRule } from "../domain/entities/Job";
 import { ReconCoreEngine } from "../services/recon-core/recon-core-engine";
 import { NormalizedRecord } from "../services/recon-core/normalized-types";
-import {
-  DEFAULT_TOLERANCES,
-  type ReconciliationConfig,
-} from "../services/matching-rules-loader";
+import { DEFAULT_TOLERANCES, type ReconciliationConfig } from "../services/matching-rules-loader";
 
 const router: Router = Router();
-let prisma: PrismaClient | null = null;
 
 // Helper function to ensure demo data exists, auto-generating if missing
 const ensureDemoData = async (): Promise<{ exists: boolean; error?: string }> => {
@@ -29,7 +26,7 @@ const ensureDemoData = async (): Promise<{ exists: boolean; error?: string }> =>
   const requiredFiles = [
     "demo_stripe_transactions.json",
     "demo_bank_transactions.json",
-    "demo_expected_matches.json"
+    "demo_expected_matches.json",
   ];
 
   // Check if demo data directory exists
@@ -38,10 +35,8 @@ const ensureDemoData = async (): Promise<{ exists: boolean; error?: string }> =>
   }
 
   // Check if required files exist
-  const allFilesExist = requiredFiles.every(file =>
-    fs.existsSync(path.join(demoDir, file))
-  );
-  
+  const allFilesExist = requiredFiles.every((file) => fs.existsSync(path.join(demoDir, file)));
+
   if (!allFilesExist) {
     return { exists: false, error: "Some required demo data files are missing" };
   }
@@ -53,24 +48,19 @@ const ensureDemoData = async (): Promise<{ exists: boolean; error?: string }> =>
     JSON.parse(fs.readFileSync(path.join(demoDir, "demo_expected_matches.json"), "utf-8"));
     return { exists: true };
   } catch (err) {
+    const errorMsg = (err as any).message || String(err);
     return {
       exists: false,
-      error: `Demo data files exist but contain invalid JSON: ${err.message}`
+      error: `Demo data files exist but contain invalid JSON: ${errorMsg}`,
     };
   }
 };
 
 const getPrismaClient = (): PrismaClient | null => {
-  if (prisma) {
-    return prisma;
-  }
-
   if (!process.env.DATABASE_URL) {
     return null;
   }
-
-  prisma = new PrismaClient();
-  return prisma;
+  return sharedPrisma;
 };
 
 // No auth required for playground (rate-limited)
@@ -163,10 +153,12 @@ router.get("/playground/demo-dataset", (async (_req: Request, res: Response): Pr
     const demoCheck = await ensureDemoData();
     if (!demoCheck.exists) {
       // Return 503 with helpful message instead of 404
-      res.status(503).json({ 
+      res.status(503).json({
         error: "Demo data not available",
-        message: demoCheck.error || "Demo data could not be generated. Please run 'pnpm demo:seed' to create demo data.",
-        workaround: "Run: pnpm demo:seed"
+        message:
+          demoCheck.error ||
+          "Demo data could not be generated. Please run 'pnpm demo:seed' to create demo data.",
+        workaround: "Run: pnpm demo:seed",
       });
       return;
     }
@@ -199,10 +191,12 @@ router.post("/playground/demo-run", (async (_req: Request, res: Response): Promi
     // Check/generate demo data
     const demoCheck = await ensureDemoData();
     if (!demoCheck.exists) {
-      res.status(503).json({ 
+      res.status(503).json({
         error: "Demo data not available",
-        message: demoCheck.error || "Demo data could not be generated. Please run 'pnpm demo:seed' to create demo data.",
-        workaround: "Run: pnpm demo:seed"
+        message:
+          demoCheck.error ||
+          "Demo data could not be generated. Please run 'pnpm demo:seed' to create demo data.",
+        workaround: "Run: pnpm demo:seed",
       });
       return;
     }

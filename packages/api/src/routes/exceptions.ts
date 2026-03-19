@@ -56,21 +56,15 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
-      const {
-        jobId,
-        _resolution_status = "open",
-        _category,
-        startDate,
-        endDate,
-        limit,
-        offset,
-      } = listExceptionsSchema.parse({ query: req.query }).query;
+      const { jobId, startDate, endDate, limit, offset } = listExceptionsSchema.parse({
+        query: req.query,
+      }).query;
 
-      const where = {
+      const where: any = {
         tenantId,
         matchType: "unmatched",
         run: {
-          ...(jobId && { reconJobId: jobId }),
+          is: jobId ? { reconJobId: jobId } : {},
         },
         ...(startDate && { createdAt: { gte: new Date(startDate) } }),
         ...(endDate && { createdAt: { lte: new Date(endDate) } }),
@@ -97,13 +91,13 @@ router.get(
       const total = await prisma.reconciliationMatch.count({ where });
 
       res.json({
-        data: exceptions.map((e) => ({
+        data: (exceptions as any[]).map((e) => ({
           id: e.id,
-          jobId: e.run.id,
-          executionId: e.run.id,
-          category: e.sourceTransaction.category,
+          jobId: e.run?.id,
+          executionId: e.run?.id,
+          category: e.sourceTransaction?.category,
           severity: "error",
-          description: e.sourceTransaction.description,
+          description: e.sourceTransaction?.description,
           status: e.reviewed ? "resolved" : "open",
           resolvedAt: e.reviewedAt?.toISOString() || null,
           resolvedBy: e.reviewedBy || null,
@@ -151,11 +145,11 @@ router.get(
       res.json({
         data: {
           id: exception.id,
-          jobId: exception.run.id,
-          executionId: exception.run.id,
-          category: exception.sourceTransaction.category,
+          jobId: (exception as any).run?.id,
+          executionId: (exception as any).run?.id,
+          category: (exception as any).sourceTransaction?.category,
           severity: "error",
-          description: exception.sourceTransaction.description,
+          description: (exception as any).sourceTransaction?.description,
           status: exception.reviewed ? "resolved" : "open",
           resolvedAt: exception.reviewedAt?.toISOString() || null,
           resolvedBy: exception.reviewedBy || null,
@@ -270,11 +264,11 @@ router.get(
       const tenantId = req.tenantId!;
       const { jobId } = req.query as { jobId?: string };
 
-      const where = {
+      const where: any = {
         tenantId,
         matchType: "unmatched",
         run: {
-          ...(jobId && { reconJobId: jobId }),
+          is: jobId ? { reconJobId: jobId } : {},
         },
       };
 
