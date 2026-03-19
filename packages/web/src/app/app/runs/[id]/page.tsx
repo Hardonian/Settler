@@ -157,16 +157,16 @@ export default async function RunDetail({ params }: { params: Promise<{ id: stri
               <>
                 <div
                   className={
-                    replay.match ? "text-green-600 dark:text-green-400" : "text-destructive"
+                    replay.deterministic ? "text-green-600 dark:text-green-400" : "text-destructive"
                   }
                 >
                   <p className="font-semibold flex items-center gap-2">
-                    {replay.match ? "✓ Hash Matched" : "⚠ Drift Detected"}
+                    {replay.deterministic ? "✓ Hash Matched" : "⚠ Drift Detected"}
                   </p>
                   <p className="text-xs mt-1 text-muted-foreground/80 leading-relaxed">
                     Deterministic replay{" "}
-                    {replay.match ? "confirmed the integrity" : "flagged a shift"} in processing
-                    logic compared to baseline.
+                    {replay.deterministic ? "confirmed the integrity" : "flagged a shift"} in
+                    processing logic compared to baseline.
                   </p>
                 </div>
                 <div className="space-y-2 pt-2 border-t border-border/40">
@@ -175,7 +175,7 @@ export default async function RunDetail({ params }: { params: Promise<{ id: stri
                       Baseline Hash
                     </span>
                     <span className="font-mono text-[10px] bg-muted/50 p-1 rounded truncate">
-                      {replay.baseline_hash ?? "N/A"}
+                      {String(replay.diff?.originalFingerprint || "N/A")}
                     </span>
                   </div>
                   <div className="flex flex-col gap-1">
@@ -183,7 +183,7 @@ export default async function RunDetail({ params }: { params: Promise<{ id: stri
                       Replay Hash
                     </span>
                     <span className="font-mono text-[10px] bg-muted/50 p-1 rounded truncate">
-                      {replay.replay_hash ?? "N/A"}
+                      {String(replay.diff?.replayFingerprint || "N/A")}
                     </span>
                   </div>
                 </div>
@@ -220,7 +220,7 @@ export default async function RunDetail({ params }: { params: Promise<{ id: stri
                   Cryptographic Fingerprint
                 </span>
                 <p className="text-sm font-mono truncate bg-muted/20 p-1.5 rounded border border-border/30">
-                  {run.fingerprint ?? "None"}
+                  {typeof run.fingerprint === "string" ? run.fingerprint : "None"}
                 </p>
               </div>
               <div className="space-y-1">
@@ -228,7 +228,7 @@ export default async function RunDetail({ params }: { params: Promise<{ id: stri
                   Artifact Lineage Path
                 </span>
                 <p className="text-sm text-muted-foreground truncate">
-                  {evidence.evidence.artifact_path}
+                  {String(evidence.evidence.artifact_path)}
                 </p>
               </div>
             </div>

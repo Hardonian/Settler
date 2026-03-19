@@ -1,4 +1,5 @@
 import { prisma } from "@/shared/db/prismaClient";
+import { getActiveTenantId } from "@/lib/auth/tenant";
 import {
   buildCanonicalRunResultContract,
   ReconJobRecordLike,
@@ -44,7 +45,7 @@ export async function getRunsList(tenantId: string, limit: number = 20): Promise
 
   if (runs.length === 0) return [];
 
-  const runIds = runs.map((run) => run.id);
+  const runIds = runs.map((run: any) => run.id);
 
   // 2. Fetch latest results for these jobs
   const latestResults = await prisma.reconResult.findMany({
@@ -76,7 +77,7 @@ export async function getRunsList(tenantId: string, limit: number = 20): Promise
   }
 
   // 3. Transform to standard List Item contract
-  return runs.map((run) => {
+  return runs.map((run: any) => {
     const result = latestResultByRunId.get(run.id);
 
     const contract = buildCanonicalRunResultContract({
@@ -153,6 +154,68 @@ export async function getRunDetail(tenantId: string, runId: string) {
   };
 }
 
+/**
+ * Aggregates high-level stats for the operator dashboard.
+ * Optimizes for a single sequential read to avoid multiple round-trips if possible,
+ * but Promise.all is sufficient for standard connection pooling.
+ */
+export async function getDashboardStats() {
+  const { prisma } = await import("@/shared/db/prismaClient");
+  const tenantId = await getActiveTenantId();
+  if (!tenantId) return null;
+
+  try {
+    const [totalJobs, totalMismatches, driftEvents, recentActivity] = await Promise.all([
+      prisma.reconJob.count({ where: { tenantId, deletedAt: null } }),
+      prisma.reconResult.count({
+        where: { tenantId, status: { in: ["completed_mismatch", "error"] } },
+      }),
+      prisma.driftEvent.count({ where: { tenantId } }),
+      prisma.reconJob.findMany({
+        where: { tenantId, deletedAt: null },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        select: {
+          id: true,
+          status: true,
+          createdAt: true,
+          name: true,
+          metadata: true,
+          results: {
+            orderBy: { startedAt: "desc" },
+            take: 1,
+            select: {
+              status: true,
+            },
+          },
+        },
+      }),
+    ]);
+
+    return {
+      metrics: {
+        total_runs: totalJobs,
+        mismatched_runs: totalMismatches,
+        drift_events_detected: driftEvents,
+        integrity_score:
+          totalJobs > 0 ? Math.round(((totalJobs - totalMismatches) / totalJobs) * 100) : 100,
+      },
+      recent: recentActivity.map((run: any) => ({
+        id: run.id,
+        status: run.results?.[0]?.status || run.status,
+        timestamp: run.createdAt.toISOString(),
+        description:
+          (run.metadata as Record<string, unknown> | null)?.description ||
+          run.name ||
+          `Run ${run.id.slice(0, 8)}`,
+      })),
+    };
+  } catch (error) {
+    console.error("Failed to fetch dashboard stats:", error);
+    return null;
+  }
+}
+
 export async function getRunReplay(tenantId: string, runId: string) {
   if (!tenantId || tenantId === "—" || !runId) return null;
   // Use the existing Replay Lab engine directly
@@ -205,5 +268,55 @@ export async function getRunEvidence(tenantId: string, runId: string) {
   } catch (err) {
     console.error(`[RunsReader] Error building evidence for ${runId}:`, err);
     return null;
+  }
+}
+
+/**
+ * Fetches real drift events for the active tenant.
+ * Maps Prisma fields to UI-friendly common alert schema.
+ */
+export async function getAlertsList(limit: number = 30) {
+  const { prisma } = await import("@/shared/db/prismaClient");
+  const tenantId = await getActiveTenantId();
+  if (!tenantId) return [];
+
+  try {
+    const alerts = await prisma.driftEvent.findMany({
+      where: { tenantId },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      select: {
+        id: true,
+        driftType: true,
+        severity: true,
+        fieldPath: true,
+        acknowledged: true,
+        createdAt: true,
+        metadata: true,
+        reconJobId: true,
+      },
+    });
+
+    return alerts.map((alert: any) => ({
+      id: alert.id,
+      type: alert.driftType,
+      severity: (alert.severity === "critical"
+        ? "critical"
+        : alert.severity === "error"
+          ? "critical"
+          : "warning") as "critical" | "warning" | "info",
+      message:
+        (alert.metadata as Record<string, unknown> | null)?.message ||
+        `Drift detected in ${alert.fieldPath || "contract"}`,
+      component:
+        (alert.metadata as Record<string, unknown> | null)?.component ||
+        (alert.reconJobId ? "reconciliation" : "system"),
+      timestamp: alert.createdAt.toISOString(),
+      acknowledged: alert.acknowledged,
+      run_id: alert.reconJobId,
+    }));
+  } catch (error) {
+    console.error("Failed to fetch alerts:", error);
+    return [];
   }
 }
