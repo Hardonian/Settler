@@ -1,12 +1,21 @@
-export type CanonicalRunStatus = "pending" | "running" | "completed" | "failed" | "unknown";
-export type RunSummaryState =
-  | "success"
-  | "review_needed"
-  | "in_progress"
-  | "failed"
-  | "empty"
-  | "unknown";
-export type RunProgressState = "not_started" | "in_progress" | "completed" | "failed" | "unknown";
+import {
+  buildCanonicalRunResultContract,
+  buildLegacyRunSummary,
+  deriveRunStatus,
+  extractProgressPercent,
+  getRunProgressState,
+  getRunStatusLabel,
+  getRunSummaryState,
+  isTerminalRunState,
+  normalizeRunStatus,
+  toLegacyRunTruth,
+  type CanonicalRunStatus,
+  type CanonicalRunTruth,
+  type RunProgressState,
+  type RunSummaryState,
+} from "@/lib/reconciliation/canonical-run-result";
+
+export type { CanonicalRunStatus, RunSummaryState, RunProgressState, CanonicalRunTruth };
 
 export interface RunSummary {
   total: number;
@@ -17,16 +26,6 @@ export interface RunSummary {
   unmatchedSourceCount: number;
   unmatchedTargetCount: number;
   conflicts: number;
-}
-
-export interface CanonicalRunTruth {
-  status: CanonicalRunStatus;
-  statusLabel: string;
-  summary: RunSummary;
-  summaryState: RunSummaryState;
-  progressPercent: number;
-  progressState: RunProgressState;
-  isTerminal: boolean;
 }
 
 export interface ReconJobRow {
@@ -50,7 +49,10 @@ export interface ReconResultRow {
   unmatched_target_count: number | null;
   conflict_count: number | null;
   error_message?: string | null;
+  summary?: unknown;
   metadata?: Record<string, unknown> | null;
+  input_hash?: string | null;
+  snapshot_id?: string | null;
 }
 
 export interface ReconAuditRow {
@@ -61,194 +63,40 @@ export interface ReconAuditRow {
   created_at: string;
 }
 
-const STATUS_ALIAS_TO_CANONICAL: Record<string, CanonicalRunStatus> = {
-  pending: "pending",
-  queued: "pending",
-  created: "pending",
-  active: "pending",
-  running: "running",
-  processing: "running",
-  ingesting: "running",
-  validating: "running",
-  reconciling: "running",
-  in_progress: "running",
-  completed: "completed",
-  succeeded: "completed",
-  success: "completed",
-  approved: "completed",
-  failed: "failed",
-  error: "failed",
-  dead: "failed",
-  cancelled: "failed",
-  canceled: "failed",
+export {
+  normalizeRunStatus,
+  deriveRunStatus,
+  extractProgressPercent,
+  getRunStatusLabel,
+  isTerminalRunState,
+  getRunSummaryState,
+  getRunProgressState,
 };
-
-export function normalizeRunStatus(raw: string | null | undefined): CanonicalRunStatus {
-  if (!raw) return "unknown";
-  const value = raw.trim().toLowerCase();
-  return STATUS_ALIAS_TO_CANONICAL[value] || "unknown";
-}
-
-export function deriveRunStatus(
-  jobStatus: string | null,
-  resultStatus: string | null
-): CanonicalRunStatus {
-  const normalizedResult = normalizeRunStatus(resultStatus);
-  if (normalizedResult !== "unknown") {
-    return normalizedResult;
-  }
-  return normalizeRunStatus(jobStatus);
-}
-
-function asNumber(value: number | null | undefined): number {
-  return typeof value === "number" && Number.isFinite(value) ? value : 0;
-}
-
-export function buildRunSummary(result: ReconResultRow | null): {
-  total: number;
-  sourceCount: number;
-  targetCount: number;
-  matched: number;
-  unmatched: number;
-  unmatchedSourceCount: number;
-  unmatchedTargetCount: number;
-  conflicts: number;
-} {
-  const source = asNumber(result?.source_count);
-  const target = asNumber(result?.target_count);
-  const matched = asNumber(result?.matched_count);
-  const unmatchedSource = asNumber(result?.unmatched_source_count);
-  const unmatchedTarget = asNumber(result?.unmatched_target_count);
-  const conflicts = asNumber(result?.conflict_count);
-
-  return {
-    total: source + target,
-    sourceCount: source,
-    targetCount: target,
-    matched,
-    unmatched: unmatchedSource + unmatchedTarget,
-    unmatchedSourceCount: unmatchedSource,
-    unmatchedTargetCount: unmatchedTarget,
-    conflicts,
-  };
-}
-
-export function extractProgressPercent(result: ReconResultRow | null): number {
-  const metadata = result?.metadata;
-  const progress = metadata && typeof metadata === "object" ? metadata.progress : null;
-  if (progress && typeof progress === "object") {
-    const rawPercentage = (progress as { percentage?: unknown }).percentage;
-    if (typeof rawPercentage === "number" && Number.isFinite(rawPercentage)) {
-      return Math.min(100, Math.max(0, rawPercentage));
-    }
-  }
-
-  const status = normalizeRunStatus(result?.status);
-  const source = asNumber(result?.source_count);
-  const target = asNumber(result?.target_count);
-  const matched = asNumber(result?.matched_count);
-  const unmatchedSource = asNumber(result?.unmatched_source_count);
-  const unmatchedTarget = asNumber(result?.unmatched_target_count);
-  const conflicts = asNumber(result?.conflict_count);
-  const total = source + target;
-  const resolved = matched + unmatchedSource + unmatchedTarget + conflicts;
-
-  if (total > 0 && (status === "running" || status === "pending")) {
-    return Math.min(100, Math.max(0, Math.round((resolved / total) * 100)));
-  }
-
-  if (status === "completed") return 100;
-  if (status === "failed") return 100;
-  if (status === "running") return 50;
-  return 0;
-}
 
 export function getCanonicalRunStatus(
   jobStatus: string | null | undefined,
   resultStatus: string | null | undefined
 ): CanonicalRunStatus {
-  return deriveRunStatus(jobStatus ?? null, resultStatus ?? null);
+  return deriveRunStatus(jobStatus, resultStatus);
 }
 
-export function getRunStatusLabel(status: CanonicalRunStatus): string {
-  switch (status) {
-    case "pending":
-      return "Pending";
-    case "running":
-      return "Running";
-    case "completed":
-      return "Completed";
-    case "failed":
-      return "Failed";
-    default:
-      return "Unknown";
-  }
-}
-
-export function isTerminalRunState(status: CanonicalRunStatus): boolean {
-  return status === "completed" || status === "failed";
-}
-
-export function getRunSummaryState(
-  status: CanonicalRunStatus,
-  summary: RunSummary
-): RunSummaryState {
-  if (status === "failed") {
-    return "failed";
-  }
-
-  if (status === "pending" || status === "running") {
-    return "in_progress";
-  }
-
-  if (status === "completed") {
-    if (summary.total <= 0) {
-      return "empty";
-    }
-    if (summary.unmatched > 0 || summary.conflicts > 0) {
-      return "review_needed";
-    }
-    return "success";
-  }
-
-  return "unknown";
-}
-
-export function getRunProgressState(
-  status: CanonicalRunStatus,
-  progressPercent: number
-): RunProgressState {
-  if (status === "failed") {
-    return "failed";
-  }
-  if (status === "completed") {
-    return "completed";
-  }
-  if ((status === "pending" || status === "running") && progressPercent <= 0) {
-    return "not_started";
-  }
-  if (status === "pending" || status === "running") {
-    return "in_progress";
-  }
-  return "unknown";
+export function buildRunSummary(result: ReconResultRow | null): RunSummary {
+  return buildLegacyRunSummary(result);
 }
 
 export function buildCanonicalRunTruth(
   jobStatus: string | null | undefined,
   result: ReconResultRow | null
 ): CanonicalRunTruth {
-  const status = getCanonicalRunStatus(jobStatus, result?.status);
-  const summary = buildRunSummary(result);
-  const progressPercent = extractProgressPercent(result);
-  return {
-    status,
-    statusLabel: getRunStatusLabel(status),
-    summary,
-    summaryState: getRunSummaryState(status, summary),
-    progressPercent,
-    progressState: getRunProgressState(status, progressPercent),
-    isTerminal: isTerminalRunState(status),
-  };
+  return toLegacyRunTruth(
+    buildCanonicalRunResultContract({
+      job: {
+        id: result?.recon_job_id || "run",
+        status: jobStatus ?? null,
+      },
+      result,
+    })
+  );
 }
 
 export function toStageRows(audits: ReconAuditRow[]): Array<{

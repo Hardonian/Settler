@@ -1,3 +1,8 @@
+import {
+  buildCanonicalRunResultContract,
+  type ConfigDriftStatus,
+} from "@/lib/reconciliation/canonical-run-result";
+
 export interface RunConfigurationSummary {
   sourceAdapter: string | null;
   targetAdapter: string | null;
@@ -14,6 +19,15 @@ export interface RunConfigurationSummary {
   definitionDriftDetected: boolean;
   definitionDriftNotes: string[];
   summaryBasis: string;
+  driftStatus: ConfigDriftStatus;
+  adapterDrift: {
+    status: ConfigDriftStatus;
+    comparisonMode: "safe_fingerprint" | "unavailable";
+    sourceChanged: boolean | null;
+    targetChanged: boolean | null;
+    sourceHashPresent: boolean;
+    targetHashPresent: boolean;
+  };
 }
 
 interface RunSnapshotRecord {
@@ -22,6 +36,7 @@ interface RunSnapshotRecord {
   createdAt?: string | null;
   jobConfig?: unknown;
   ruleVersions?: unknown;
+  adapterConfigHashes?: unknown;
 }
 
 function asObject(value: unknown): Record<string, unknown> | null {
@@ -85,14 +100,6 @@ function summarizeRuleVersions(ruleVersions: unknown): string[] {
     .slice(0, 6);
 }
 
-function stableSerialize(value: unknown): string | null {
-  try {
-    return JSON.stringify(value);
-  } catch {
-    return null;
-  }
-}
-
 export function buildRunConfigurationSummary(input: {
   sourceAdapter?: string | null;
   targetAdapter?: string | null;
@@ -103,6 +110,8 @@ export function buildRunConfigurationSummary(input: {
   inputHash?: string | null;
   snapshot?: RunSnapshotRecord | null;
   resultStartedAt?: string | null;
+  sourceConfigEncrypted?: string | null;
+  targetConfigEncrypted?: string | null;
 }): RunConfigurationSummary {
   const snapshot = input.snapshot ?? null;
   const snapshotJobConfig = asObject(snapshot?.jobConfig);
@@ -124,37 +133,39 @@ export function buildRunConfigurationSummary(input: {
   const inputHash = input.inputHash ?? snapshot?.inputHash ?? null;
   const configSource = snapshotId ? "snapshot" : "job_definition";
   const configCapturedAt = snapshot?.createdAt ?? input.resultStartedAt ?? null;
-  const driftNotes: string[] = [];
 
-  if (configSource === "snapshot") {
-    if (
-      input.reconStrategy &&
-      effectiveReconStrategy &&
-      input.reconStrategy.toLowerCase() !== effectiveReconStrategy.toLowerCase()
-    ) {
-      driftNotes.push("Reconciliation strategy changed since this result was captured.");
-    }
-
-    if (input.templateId && effectiveTemplateId && input.templateId !== effectiveTemplateId) {
-      driftNotes.push("Template reference changed since this result was captured.");
-    }
-
-    if (Array.isArray(snapshotValidationRules) && Array.isArray(input.validationRules)) {
-      if (snapshotValidationRules.length !== input.validationRules.length) {
-        driftNotes.push("Validation rule count changed since this result was captured.");
-      } else {
-        const snapshotSerialized = stableSerialize(snapshotValidationRules);
-        const currentSerialized = stableSerialize(input.validationRules);
-        if (
-          snapshotSerialized &&
-          currentSerialized &&
-          snapshotSerialized !== currentSerialized
-        ) {
-          driftNotes.push("Validation rule definitions changed since this result was captured.");
+  const contract = buildCanonicalRunResultContract({
+    job: {
+      id: "config-view",
+      source_adapter: input.sourceAdapter ?? null,
+      target_adapter: input.targetAdapter ?? null,
+      source_config_encrypted: input.sourceConfigEncrypted ?? null,
+      target_config_encrypted: input.targetConfigEncrypted ?? null,
+      recon_strategy: input.reconStrategy ?? null,
+      template_id: input.templateId ?? null,
+      validation_rules: input.validationRules,
+    },
+    result: {
+      id: "config-result",
+      status: "completed",
+      input_hash: inputHash,
+      snapshot_id: snapshotId,
+    },
+    snapshot: snapshot
+      ? {
+          id: snapshot.id,
+          input_hash: snapshot.inputHash,
+          created_at: snapshot.createdAt,
+          job_config: snapshot.jobConfig,
+          rule_versions: snapshot.ruleVersions,
+          adapter_config_hashes: snapshot.adapterConfigHashes,
         }
-      }
-    }
-  }
+      : null,
+  });
+
+  const definitionDriftNotes = contract.configDrift.notes.filter(
+    (note) => !note.toLowerCase().includes("adapter") || contract.configDrift.adapter.status !== "none"
+  );
 
   const summaryBasis =
     configSource === "snapshot"
@@ -174,8 +185,10 @@ export function buildRunConfigurationSummary(input: {
     inputHash,
     configSource,
     configCapturedAt,
-    definitionDriftDetected: driftNotes.length > 0,
-    definitionDriftNotes: driftNotes,
+    definitionDriftDetected: contract.configDrift.status === "detected",
+    definitionDriftNotes,
     summaryBasis,
+    driftStatus: contract.configDrift.status,
+    adapterDrift: contract.configDrift.adapter,
   };
 }

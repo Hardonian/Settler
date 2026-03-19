@@ -116,31 +116,36 @@ export async function getIntegrationCredential(
   integrationId: string,
   credentialType: "oauth_token" | "api_key" | "webhook_secret" | "api_secret"
 ): Promise<IntegrationCredential | null> {
-  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  try {
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-  const { data, error } = await supabase
-    .from("integration_credentials")
-    .select("*")
-    .eq("tenant_id", tenantId)
-    .eq("integration_id", integrationId)
-    .eq("credential_type", credentialType)
-    .eq("status", "active")
-    .single();
+    const { data, error } = await supabase
+      .from("integration_credentials")
+      .select("*")
+      .eq("tenant_id", tenantId)
+      .eq("integration_id", integrationId)
+      .eq("credential_type", credentialType)
+      .eq("status", "active")
+      .single();
 
-  if (error || !data) {
+    if (error || !data) {
+      return null;
+    }
+
+    return {
+      id: data.id,
+      tenantId: data.tenant_id,
+      integrationId: data.integration_id,
+      credentialType: data.credential_type,
+      encryptedCredential: data.encrypted_credential,
+      scopes: data.scopes,
+      ...(data.expires_at && { expiresAt: new Date(data.expires_at) }),
+      status: data.status,
+    };
+  } catch (error: unknown) {
+    logError("Error getting integration credential", error);
     return null;
   }
-
-  return {
-    id: data.id,
-    tenantId: data.tenant_id,
-    integrationId: data.integration_id,
-    credentialType: data.credential_type,
-    encryptedCredential: data.encrypted_credential,
-    scopes: data.scopes,
-    ...(data.expires_at && { expiresAt: new Date(data.expires_at) }),
-    status: data.status,
-  };
 }
 
 /**
@@ -154,38 +159,43 @@ export async function checkIntegrationQuota(
   quotaType: "api_calls" | "webhook_events" | "data_synced_mb",
   limit: number
 ): Promise<{ allowed: boolean; current: number; limit: number }> {
-  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  try {
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-  const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toISOString().split("T")[0];
 
-  const { data, error } = await supabase
-    .from("integration_quota_usage")
-    .select("*")
-    .eq("tenant_id", tenantId)
-    .eq("integration_id", integrationId)
-    .eq("date", today)
-    .single();
+    const { data, error } = await supabase
+      .from("integration_quota_usage")
+      .select("*")
+      .eq("tenant_id", tenantId)
+      .eq("integration_id", integrationId)
+      .eq("date", today)
+      .single();
 
-  if (error && error.code !== "PGRST116") {
-    // Error other than "not found"
-    logError("Error checking quota", error);
+    if (error && error.code !== "PGRST116") {
+      // Error other than "not found"
+      logError("Error checking quota", error);
+      return { allowed: false, current: 0, limit };
+    }
+
+    const current =
+      data?.[
+        quotaType === "api_calls"
+          ? "api_calls"
+          : quotaType === "webhook_events"
+            ? "webhook_events"
+            : "data_synced_mb"
+      ] || 0;
+
+    return {
+      allowed: current < limit,
+      current,
+      limit,
+    };
+  } catch (error: unknown) {
+    logError("Error checking integration quota", error);
     return { allowed: false, current: 0, limit };
   }
-
-  const current =
-    data?.[
-      quotaType === "api_calls"
-        ? "api_calls"
-        : quotaType === "webhook_events"
-          ? "webhook_events"
-          : "data_synced_mb"
-    ] || 0;
-
-  return {
-    allowed: current < limit,
-    current,
-    limit,
-  };
 }
 
 /**
@@ -199,44 +209,48 @@ export async function recordIntegrationQuotaUsage(
   quotaType: "api_calls" | "webhook_events" | "data_synced_mb",
   amount: number
 ): Promise<void> {
-  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  try {
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-  const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toISOString().split("T")[0];
 
-  const updateField =
-    quotaType === "api_calls"
-      ? "api_calls"
-      : quotaType === "webhook_events"
-        ? "webhook_events"
-        : "data_synced_mb";
+    const updateField =
+      quotaType === "api_calls"
+        ? "api_calls"
+        : quotaType === "webhook_events"
+          ? "webhook_events"
+          : "data_synced_mb";
 
-  // Get existing record to increment, or create new
-  const { data: existing } = await supabase
-    .from("integration_quota_usage")
-    .select("*")
-    .eq("tenant_id", tenantId)
-    .eq("integration_id", integrationId)
-    .eq("date", today)
-    .single();
+    // Get existing record to increment, or create new
+    const { data: existing } = await supabase
+      .from("integration_quota_usage")
+      .select("*")
+      .eq("tenant_id", tenantId)
+      .eq("integration_id", integrationId)
+      .eq("date", today)
+      .single();
 
-  const currentValue = (existing?.[updateField as keyof typeof existing] as number) || 0;
-  const newValue = currentValue + amount;
+    const currentValue = (existing?.[updateField as keyof typeof existing] as number) || 0;
+    const newValue = currentValue + amount;
 
-  // Use upsert to create or update quota usage
-  const updateData: Record<string, unknown> = {
-    tenant_id: tenantId,
-    integration_id: integrationId,
-    date: today,
-    updated_at: new Date().toISOString(),
-  };
-  updateData[updateField] = newValue;
+    // Use upsert to create or update quota usage
+    const updateData: Record<string, unknown> = {
+      tenant_id: tenantId,
+      integration_id: integrationId,
+      date: today,
+      updated_at: new Date().toISOString(),
+    };
+    updateData[updateField] = newValue;
 
-  const { error } = await supabase.from("integration_quota_usage").upsert(updateData, {
-    onConflict: "tenant_id,integration_id,date",
-  });
+    const { error } = await supabase.from("integration_quota_usage").upsert(updateData, {
+      onConflict: "tenant_id,integration_id,date",
+    });
 
-  if (error) {
-    logError("Error recording quota usage", error);
+    if (error) {
+      logError("Error recording quota usage", error);
+    }
+  } catch (error: unknown) {
+    logError("Error recording integration quota usage", error);
   }
 }
 
@@ -251,67 +265,71 @@ export async function updateIntegrationHealth(
   success: boolean,
   errorMessage?: string
 ): Promise<void> {
-  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  try {
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-  const { data: existing } = await supabase
-    .from("integration_health")
-    .select("*")
-    .eq("tenant_id", tenantId)
-    .eq("integration_id", integrationId)
-    .single();
+    const { data: existing } = await supabase
+      .from("integration_health")
+      .select("*")
+      .eq("tenant_id", tenantId)
+      .eq("integration_id", integrationId)
+      .single();
 
-  const consecutiveFailures = success ? 0 : (existing?.consecutive_failures || 0) + 1;
+    const consecutiveFailures = success ? 0 : (existing?.consecutive_failures || 0) + 1;
 
-  const healthScore = Math.max(
-    0,
-    100 - consecutiveFailures * 10 - (existing?.error_count || 0) * 5
-  );
+    const healthScore = Math.max(
+      0,
+      100 - consecutiveFailures * 10 - (existing?.error_count || 0) * 5
+    );
 
-  const status =
-    consecutiveFailures >= 5 ? "error" : consecutiveFailures >= 3 ? "degraded" : "healthy";
+    const status =
+      consecutiveFailures >= 5 ? "error" : consecutiveFailures >= 3 ? "degraded" : "healthy";
 
-  const updateData: {
-    health_score: number;
-    status: string;
-    consecutive_failures: number;
-    updated_at: string;
-    last_successful_sync?: string;
-    last_failed_sync?: string;
-    error_message?: string | null | undefined;
-    error_count?: number;
-    auto_disabled?: boolean;
-  } = {
-    health_score: healthScore,
-    status,
-    consecutive_failures: consecutiveFailures,
-    updated_at: new Date().toISOString(),
-  };
+    const updateData: {
+      health_score: number;
+      status: string;
+      consecutive_failures: number;
+      updated_at: string;
+      last_successful_sync?: string;
+      last_failed_sync?: string;
+      error_message?: string | null | undefined;
+      error_count?: number;
+      auto_disabled?: boolean;
+    } = {
+      health_score: healthScore,
+      status,
+      consecutive_failures: consecutiveFailures,
+      updated_at: new Date().toISOString(),
+    };
 
-  if (success) {
-    updateData.last_successful_sync = new Date().toISOString();
-    updateData.error_message = null;
-  } else {
-    updateData.last_failed_sync = new Date().toISOString();
-    updateData.error_message = errorMessage || null;
-    updateData.error_count = (existing?.error_count || 0) + 1;
-  }
-
-  if (consecutiveFailures >= 5) {
-    updateData.auto_disabled = true;
-  }
-
-  const { error } = await supabase.from("integration_health").upsert(
-    {
-      tenant_id: tenantId,
-      integration_id: integrationId,
-      ...updateData,
-    },
-    {
-      onConflict: "tenant_id,integration_id",
+    if (success) {
+      updateData.last_successful_sync = new Date().toISOString();
+      updateData.error_message = null;
+    } else {
+      updateData.last_failed_sync = new Date().toISOString();
+      updateData.error_message = errorMessage || null;
+      updateData.error_count = (existing?.error_count || 0) + 1;
     }
-  );
 
-  if (error) {
+    if (consecutiveFailures >= 5) {
+      updateData.auto_disabled = true;
+    }
+
+    const { error } = await supabase.from("integration_health").upsert(
+      {
+        tenant_id: tenantId,
+        integration_id: integrationId,
+        ...updateData,
+      },
+      {
+        onConflict: "tenant_id,integration_id",
+      }
+    );
+
+    if (error) {
+      logError("Error updating integration health", error);
+    }
+  } catch (error: unknown) {
     logError("Error updating integration health", error);
   }
 }

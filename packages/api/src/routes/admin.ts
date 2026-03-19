@@ -1,18 +1,24 @@
 /**
  * Admin Routes
  * Admin/debug endpoints for inspecting sagas and events
+ * All routes require authentication and admin permissions
  */
 
-import { Router } from "express";
+import { Router, Response } from "express";
 import { AdminService } from "../application/admin/AdminService";
 import { handleRouteError } from "../utils/error-handler";
 import { enforceFreezeState } from "../middleware/governance";
+import { AuthRequest } from "../middleware/auth";
+import { requirePermission } from "../middleware/authorization";
+import { Permission } from "../infrastructure/security/Permissions";
 
 export function createAdminRouter(adminService: AdminService): Router {
   const router: Router = Router();
 
   // Get saga status
-  router.get("/sagas/:sagaType/:sagaId", async (req, res) => {
+  router.get("/sagas/:sagaType/:sagaId", 
+    requirePermission(Permission.ADMIN_READ),
+    async (req: AuthRequest, res: Response) => {
     try {
       const { sagaType, sagaId } = req.params;
       const status = await adminService.getSagaStatus(sagaId, sagaType);
@@ -27,7 +33,9 @@ export function createAdminRouter(adminService: AdminService): Router {
   });
 
   // List events for aggregate
-  router.get("/events/:aggregateType/:aggregateId", async (req, res) => {
+  router.get("/events/:aggregateType/:aggregateId", 
+    requirePermission(Permission.ADMIN_READ),
+    async (req: AuthRequest, res: Response) => {
     try {
       const { aggregateType, aggregateId } = req.params;
       const events = await adminService.listEventsForAggregate(aggregateId, aggregateType);
@@ -38,7 +46,9 @@ export function createAdminRouter(adminService: AdminService): Router {
   });
 
   // List events by correlation ID
-  router.get("/events/correlation/:correlationId", async (req, res) => {
+  router.get("/events/correlation/:correlationId", 
+    requirePermission(Permission.ADMIN_READ),
+    async (req: AuthRequest, res: Response) => {
     try {
       const { correlationId } = req.params;
       const events = await adminService.listEventsByCorrelationId(correlationId);
@@ -49,7 +59,10 @@ export function createAdminRouter(adminService: AdminService): Router {
   });
 
   // Resume saga
-  router.post("/sagas/:sagaType/:sagaId/resume", enforceFreezeState(), async (req, res) => {
+  router.post("/sagas/:sagaType/:sagaId/resume", 
+    requirePermission(Permission.ADMIN_WRITE),
+    enforceFreezeState(), 
+    async (req: AuthRequest, res: Response) => {
     try {
       const { sagaType, sagaId } = req.params as { sagaType: string; sagaId: string };
       await adminService.resumeSaga(sagaId, sagaType);
@@ -60,7 +73,10 @@ export function createAdminRouter(adminService: AdminService): Router {
   });
 
   // Retry saga
-  router.post("/sagas/:sagaType/:sagaId/retry", enforceFreezeState(), async (req, res) => {
+  router.post("/sagas/:sagaType/:sagaId/retry", 
+    requirePermission(Permission.ADMIN_WRITE),
+    enforceFreezeState(), 
+    async (req: AuthRequest, res: Response) => {
     try {
       const { sagaType, sagaId } = req.params;
       if (!sagaId || !sagaType) {
@@ -74,7 +90,10 @@ export function createAdminRouter(adminService: AdminService): Router {
   });
 
   // Cancel saga
-  router.post("/sagas/:sagaType/:sagaId/cancel", enforceFreezeState(), async (req, res) => {
+  router.post("/sagas/:sagaType/:sagaId/cancel", 
+    requirePermission(Permission.ADMIN_WRITE),
+    enforceFreezeState(), 
+    async (req: AuthRequest, res: Response) => {
     try {
       const { sagaType, sagaId } = req.params;
       if (!sagaId || !sagaType) {
@@ -88,7 +107,9 @@ export function createAdminRouter(adminService: AdminService): Router {
   });
 
   // Get dead letter queue
-  router.get("/dead-letter-queue", async (req, res) => {
+  router.get("/dead-letter-queue", 
+    requirePermission(Permission.ADMIN_READ),
+    async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.query.tenant_id as string | undefined;
       const limit = parseInt(req.query.limit as string) || 100;
@@ -100,7 +121,10 @@ export function createAdminRouter(adminService: AdminService): Router {
   });
 
   // Resolve dead letter entry
-  router.post("/dead-letter-queue/:id/resolve", enforceFreezeState(), async (req, res) => {
+  router.post("/dead-letter-queue/:id/resolve", 
+    requirePermission(Permission.ADMIN_WRITE),
+    enforceFreezeState(), 
+    async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
       const { notes } = req.body as { notes?: string };
@@ -115,7 +139,10 @@ export function createAdminRouter(adminService: AdminService): Router {
   });
 
   // Dry-run reconciliation
-  router.post("/dry-run", enforceFreezeState(), async (req, res) => {
+  router.post("/dry-run", 
+    requirePermission(Permission.ADMIN_WRITE),
+    enforceFreezeState(), 
+    async (req: AuthRequest, res: Response) => {
     try {
       const { reconciliation_id, events } = req.body;
       const result = await adminService.dryRunReconciliation(reconciliation_id, events);

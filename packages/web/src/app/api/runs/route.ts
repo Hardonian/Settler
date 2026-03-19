@@ -3,7 +3,7 @@
  *
  * GET /api/runs
  *
- * Returns a list of reconciliation runs with their latest execution results.
+ * Returns canonical run results using one shared run-result contract.
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -15,12 +15,32 @@ import {
   TenantMembershipError,
 } from "@/lib/supabase/tenant-membership";
 import {
-  buildCanonicalRunTruth,
-  type ReconJobRow,
-  type ReconResultRow,
-} from "@/lib/reconciliation/run-status";
+  buildCanonicalRunResultContract,
+  type ReconJobRecordLike,
+  type ReconResultRecordLike,
+} from "@/lib/reconciliation/canonical-run-result";
 
 export const runtime = "nodejs";
+
+type RunListJobRow = {
+  id: string;
+  name: string | null;
+  status: string | null;
+  tenant_id: string;
+  created_at: string;
+  updated_at?: string | null;
+  source_adapter?: string | null;
+  target_adapter?: string | null;
+  recon_strategy?: string | null;
+  template_id?: string | null;
+  validation_rules?: unknown;
+  source_config_encrypted?: string | null;
+  target_config_encrypted?: string | null;
+};
+
+type RunListResultRow = ReconResultRecordLike & {
+  recon_job_id: string;
+};
 
 export const GET = withSecurity(
   withUniversalBillingGate(
@@ -34,34 +54,31 @@ export const GET = withSecurity(
 
         const { supabase, tenantIds } = await resolveTenantMembershipScope();
 
-        // Get runs with their latest result
         const { data: latestResults, error: resultsError } = (await supabase
           .from("recon_results" as any)
           .select(
-            "id, recon_job_id, status, started_at, completed_at, source_count, target_count, matched_count, unmatched_source_count, unmatched_target_count, conflict_count, error_message, metadata"
+            "id, recon_job_id, status, started_at, completed_at, source_count, target_count, matched_count, unmatched_source_count, unmatched_target_count, conflict_count, error_message, input_hash, snapshot_id, summary, metadata"
           )
           .in("tenant_id", tenantIds)
           .order("started_at", { ascending: false })) as {
-          data: ReconResultRow[] | null;
+          data: RunListResultRow[] | null;
           error: { message?: string } | null;
         };
 
         if (resultsError) {
-          logger.error(
-            "Error fetching results",
-            new Error(resultsError.message || "Unknown error")
-          );
+          logger.error("Error fetching results", new Error(resultsError.message || "Unknown error"));
           return NextResponse.json({ error: "Failed to fetch run results" }, { status: 500 });
         }
 
-        // Get runs
         const { data: runs, error: runsError } = (await supabase
           .from("recon_jobs" as any)
-          .select("id, name, status, created_at, updated_at")
+          .select(
+            "id, name, status, tenant_id, created_at, updated_at, source_adapter, target_adapter, recon_strategy, template_id, validation_rules, source_config_encrypted, target_config_encrypted"
+          )
           .in("tenant_id", tenantIds)
           .order("created_at", { ascending: false })
           .limit(200)) as {
-          data: ReconJobRow[] | null;
+          data: RunListJobRow[] | null;
           error: { message?: string } | null;
         };
 
@@ -70,7 +87,7 @@ export const GET = withSecurity(
           return NextResponse.json({ error: "Failed to fetch runs" }, { status: 500 });
         }
 
-        const latestResultByJobId = new Map<string, ReconResultRow>();
+        const latestResultByJobId = new Map<string, RunListResultRow>();
         for (const result of latestResults || []) {
           if (!latestResultByJobId.has(result.recon_job_id)) {
             latestResultByJobId.set(result.recon_job_id, result);
@@ -80,19 +97,46 @@ export const GET = withSecurity(
         const filteredRuns = (runs || [])
           .map((run) => {
             const latestResult = latestResultByJobId.get(run.id) ?? null;
-            const truth = buildCanonicalRunTruth(run.status, latestResult);
+            const contract = buildCanonicalRunResultContract({
+              job: run as ReconJobRecordLike,
+              result: latestResult,
+            });
+
             return {
               id: run.id,
-              name: run.name || "Reconciliation Run",
-              status: truth.status,
-              statusLabel: truth.statusLabel,
-              startedAt: latestResult?.started_at || run.created_at,
-              completedAt: latestResult?.completed_at || null,
-              summary: truth.summary,
-              summaryState: truth.summaryState,
-              progress: truth.progressPercent,
-              progressState: truth.progressState,
-              isTerminal: truth.isTerminal,
+              name: contract.name,
+              status: contract.lifecycle.status,
+              statusLabel: contract.lifecycle.statusLabel,
+              startedAt:
+                contract.provenance.executedAt || run.created_at || new Date().toISOString(),
+              completedAt: contract.provenance.completedAt,
+              summary: {
+                total: contract.summary.total,
+                sourceCount: contract.summary.sourceCount,
+                targetCount: contract.summary.targetCount,
+                matched: contract.summary.matched,
+                unmatched: contract.summary.unmatched,
+                unmatchedSourceCount: contract.summary.unmatchedSourceCount,
+                unmatchedTargetCount: contract.summary.unmatchedTargetCount,
+                conflicts: contract.summary.conflicts,
+              },
+              summarySemantics: {
+                processed: contract.summary.processed,
+                matchedWithTolerance: contract.summary.matchedWithTolerance,
+                exceptioned: contract.summary.exceptioned,
+                unresolved: contract.summary.unresolved,
+                ignored: contract.summary.ignored,
+                resolved: contract.summary.resolved,
+              },
+              summaryState: contract.summaryState,
+              progress: contract.lifecycle.progressPercent,
+              progressState: contract.lifecycle.progressState,
+              isTerminal: contract.lifecycle.isTerminal,
+              provenance: contract.provenance,
+              configDrift: {
+                status: contract.configDrift.status,
+                adapter: contract.configDrift.adapter,
+              },
             };
           })
           .filter((run) => {
