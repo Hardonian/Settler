@@ -283,4 +283,19 @@ export interface ReconciliationSummary {
 }
 
 // Run types (for reconciliation runs/executions)
-export { Run, RunSummary } from "./run";
+export {
+  Run,
+  RunSummary,
+  RunStatus,
+  RunSummaryState,
+  RunProgressState,
+  CanonicalRunSummary,
+  RunExceptionCounts,
+  RunProvenance,
+  RunWithLifecycle,
+  RunListItem,
+  RunDetail,
+  RunListResponse,
+  RunListResponseV1,
+  RunV1Item,
+} from "./run";

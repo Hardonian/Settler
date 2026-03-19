@@ -1,14 +1,16 @@
 import { createHash } from "node:crypto";
 
-export type CanonicalRunStatus = "pending" | "running" | "completed" | "failed" | "unknown";
-export type RunSummaryState =
-  | "success"
-  | "review_needed"
-  | "in_progress"
-  | "failed"
-  | "empty"
-  | "unknown";
-export type RunProgressState = "not_started" | "in_progress" | "completed" | "failed" | "unknown";
+// Import canonical types from @settler/types
+import {
+  RunStatus as CanonicalRunStatus,
+  RunSummaryState,
+  RunProgressState,
+  CanonicalRunSummary,
+} from "@settler/types";
+
+// Re-export for backward compatibility
+export { CanonicalRunStatus, RunSummaryState, RunProgressState, CanonicalRunSummary };
+export type { CanonicalRunStatus as CanonicalRunStatusType };
 export type ConfigDriftStatus = "none" | "detected" | "indeterminate";
 
 export type RowRationaleCode =
@@ -20,23 +22,10 @@ export type RowRationaleCode =
   | "VALIDATION_BLOCKED"
   | "MANUAL_REVIEW_REQUIRED";
 
-export interface CanonicalRunSummary {
-  total: number;
-  sourceCount: number;
-  targetCount: number;
-  processed: number;
-  matched: number;
-  matchedWithTolerance: number;
-  unmatched: number;
-  unmatchedSourceCount: number;
-  unmatchedTargetCount: number;
-  conflicts: number;
-  exceptioned: number;
-  unresolved: number;
-  ignored: number;
-  resolved: number;
-}
+// Re-export CanonicalRunSummary from canonical types (imported above)
+export type { CanonicalRunSummary as CanonicalRunSummary };
 
+// Exception counts - still defined here as not in canonical types
 export interface CanonicalExceptionCounts {
   total: number;
   pending: number;
@@ -538,7 +527,12 @@ function runtimeRowToCanonicalRow(
       reasonTag: manualCodes[0] || rationaleBase.reasonTag,
       toleranceApplied: rationaleBase.toleranceApplied,
       ruleReference: firstDefinedString(runtimeMatch.rule_id, runtimeMatch.ruleId),
-      provenanceReference: [runId, runResultId || "result", snapshotId || "snapshot", String(runtimeMatch.source_record_id || "source")].join(":"),
+      provenanceReference: [
+        runId,
+        runResultId || "result",
+        snapshotId || "snapshot",
+        String(runtimeMatch.source_record_id || "source"),
+      ].join(":"),
     },
     isDisputeRelated: Boolean(runtimeMatch.is_dispute_related),
     isReversalRelated: Boolean(runtimeMatch.is_reversal_related),
@@ -586,7 +580,12 @@ function deterministicRowToCanonicalRow(
       reasonTag: warnings[0] || rationaleBase.reasonTag,
       toleranceApplied: rationaleBase.toleranceApplied,
       ruleReference: row.rule_id || null,
-      provenanceReference: [runId, runResultId || "result", snapshotId || "snapshot", row.stable_match_id].join(":"),
+      provenanceReference: [
+        runId,
+        runResultId || "result",
+        snapshotId || "snapshot",
+        row.stable_match_id,
+      ].join(":"),
     },
     isDisputeRelated: false,
     isReversalRelated: false,
@@ -685,7 +684,9 @@ function buildRowResults(input: {
   return asArray(runtimeRaw)
     .map((entry) => normalizeRuntimeMatch(entry))
     .filter((entry): entry is RuntimeMatchLike => Boolean(entry))
-    .map((entry) => runtimeRowToCanonicalRow(entry, input.runId, input.runResultId, input.snapshotId));
+    .map((entry) =>
+      runtimeRowToCanonicalRow(entry, input.runId, input.runResultId, input.snapshotId)
+    );
 }
 
 function buildCanonicalRunSummary(input: {
@@ -699,8 +700,12 @@ function buildCanonicalRunSummary(input: {
   const sourceCount = asNumber(result?.source_count ?? result?.sourceCount);
   const targetCount = asNumber(result?.target_count ?? result?.targetCount);
   const matched = asNumber(result?.matched_count ?? result?.matchedCount);
-  const unmatchedSourceCount = asNumber(result?.unmatched_source_count ?? result?.unmatchedSourceCount);
-  const unmatchedTargetCount = asNumber(result?.unmatched_target_count ?? result?.unmatchedTargetCount);
+  const unmatchedSourceCount = asNumber(
+    result?.unmatched_source_count ?? result?.unmatchedSourceCount
+  );
+  const unmatchedTargetCount = asNumber(
+    result?.unmatched_target_count ?? result?.unmatchedTargetCount
+  );
   const conflicts = asNumber(result?.conflict_count ?? result?.conflictCount);
 
   const matchedWithToleranceFromSummary = pickNumber(summary, [
@@ -719,7 +724,11 @@ function buildCanonicalRunSummary(input: {
     matchedWithToleranceFromRows
   );
 
-  const processedFromSummary = pickNumber(summary, ["processed", "processed_count", "processedCount"]);
+  const processedFromSummary = pickNumber(summary, [
+    "processed",
+    "processed_count",
+    "processedCount",
+  ]);
   const processedFallback = matched + unmatchedSourceCount + unmatchedTargetCount + conflicts;
   const processed = Math.max(processedFromSummary, processedFallback);
 
@@ -850,11 +859,8 @@ function buildProvenance(input: {
   const provenance = extractProvenance(input.result);
 
   const snapshotId =
-    firstDefinedString(
-      input.result?.snapshot_id,
-      input.result?.snapshotId,
-      input.snapshot?.id
-    ) || null;
+    firstDefinedString(input.result?.snapshot_id, input.result?.snapshotId, input.snapshot?.id) ||
+    null;
 
   const matchingRuleIds = pickArray(provenance, ["matchingRuleIds", "matching_rule_ids"]);
 
@@ -934,14 +940,18 @@ function buildConfigDrift(input: {
   );
 
   const currentValidationRules = input.job.validation_rules ?? input.job.validationRules;
-  const snapshotValidationRules = snapshotJobConfig?.validationRules ?? snapshotJobConfig?.validation_rules;
+  const snapshotValidationRules =
+    snapshotJobConfig?.validationRules ?? snapshotJobConfig?.validation_rules;
 
   const strategyChanged =
     Boolean(currentStrategy && snapshotStrategy) &&
     currentStrategy!.toLowerCase() !== snapshotStrategy!.toLowerCase();
   const templateChanged =
     Boolean(currentTemplateId && snapshotTemplateId) && currentTemplateId !== snapshotTemplateId;
-  const validationRulesChanged = compareValidationRules(snapshotValidationRules, currentValidationRules);
+  const validationRulesChanged = compareValidationRules(
+    snapshotValidationRules,
+    currentValidationRules
+  );
 
   const snapshotHashes = normalizeAdapterHashes(
     input.snapshot?.adapter_config_hashes ?? input.snapshot?.adapterConfigHashes
@@ -993,7 +1003,12 @@ function buildConfigDrift(input: {
   }
 
   let status: ConfigDriftStatus = "none";
-  if (strategyChanged || templateChanged || validationRulesChanged || adapterStatus === "detected") {
+  if (
+    strategyChanged ||
+    templateChanged ||
+    validationRulesChanged ||
+    adapterStatus === "detected"
+  ) {
     status = "detected";
   } else if (adapterStatus === "indeterminate") {
     status = "indeterminate";
@@ -1027,11 +1042,8 @@ export function buildCanonicalRunResultContract(input: {
   const tenantId = firstDefinedString(input.job.tenant_id, input.job.tenantId) || "unknown";
   const runResultId = input.result?.id || null;
   const snapshotId =
-    firstDefinedString(
-      input.result?.snapshot_id,
-      input.result?.snapshotId,
-      input.snapshot?.id
-    ) || null;
+    firstDefinedString(input.result?.snapshot_id, input.result?.snapshotId, input.snapshot?.id) ||
+    null;
 
   const exceptionCounts: CanonicalExceptionCounts = {
     total: asNumber(input.exceptionCounts?.total),
@@ -1131,7 +1143,9 @@ export function toLegacyRunTruth(contract: CanonicalRunResultContract): Canonica
   };
 }
 
-export function buildLegacyRunSummary(result: ReconResultRecordLike | null): CanonicalRunTruth["summary"] {
+export function buildLegacyRunSummary(
+  result: ReconResultRecordLike | null
+): CanonicalRunTruth["summary"] {
   const contract = buildCanonicalRunResultContract({
     job: { id: result?.recon_job_id || result?.reconJobId || "unknown", status: result?.status },
     result,

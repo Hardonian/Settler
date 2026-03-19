@@ -12,8 +12,9 @@ import { Json } from "@/types/database.types";
 import { appLogger } from "@/lib/utils/logger";
 import { v4 as uuidv4 } from "uuid";
 
-// Types
-export type JobStatus = "queued" | "running" | "succeeded" | "failed" | "dead" | "canceled";
+// Types - import from canonical jobforge-shared
+import { JobStatus } from "@settler/jobforge-shared";
+export type { JobStatus };
 
 export interface EnqueueJobParams {
   tenantId: string;
