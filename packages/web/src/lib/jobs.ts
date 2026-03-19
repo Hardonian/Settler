@@ -241,7 +241,7 @@ export async function getJobResult(jobId: string, tenantId: string): Promise<Job
 
     const { data: result, error } = await client
       .from("job_results")
-      .select("*")
+      .select("id, job_id, tenant_id, result_data, result_url, created_at")
       .eq("job_id", jobId)
       .single();
 

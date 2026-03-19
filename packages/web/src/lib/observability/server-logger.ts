@@ -51,7 +51,7 @@ function writeLog(level: LogLevel, message: string, context: Record<string, unkn
     return;
   }
 
-  console.log(payload);
+  process.stdout.write(`${payload}\n`);
 }
 
 export const serverLogger = {

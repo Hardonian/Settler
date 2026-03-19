@@ -300,6 +300,7 @@ model ReconResult {
   @@index([reconJobId])
   @@index([tenantId])
   @@index([status])
+  @@index([reconJobId, tenantId, status, startedAt(sort: Desc)])
   @@index([startedAt(sort: Desc)])
   @@index([snapshotId])
   @@index([inputHash])

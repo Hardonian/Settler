@@ -2,64 +2,17 @@
  * Shared Empty State Components
  * 
  * Consistent empty states across the application.
+ * Re-exports from canonical ui/empty-state location.
  */
 
 'use client';
 
+// Re-export canonical EmptyState and RetryButton from ui
+export { EmptyState, RetryButton } from '@/components/ui/empty-state';
+export type { EmptyStateProps, RetryButtonProps } from '@/components/ui/empty-state';
+
 import { Inbox, Search, AlertCircle } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-
-interface EmptyStateProps {
-  icon?: React.ReactNode;
-  title: string;
-  description: string;
-  action?: {
-    label: string;
-    onClick: () => void;
-    href?: string;
-  };
-  className?: string;
-}
-
-export function EmptyState({ 
-  icon, 
-  title, 
-  description, 
-  action,
-  className 
-}: EmptyStateProps) {
-  const actionContent = action?.href ? (
-    <Button asChild size="sm">
-      <a href={action.href}>{action.label}</a>
-    </Button>
-  ) : action ? (
-    <Button onClick={action.onClick} size="sm">
-      {action.label}
-    </Button>
-  ) : null;
-
-  return (
-    <Card className={className}>
-      <CardContent className="pt-12 pb-12">
-        <div className="flex flex-col items-center text-center">
-          {icon && (
-            <div className="mb-4 text-slate-400 dark:text-slate-500" aria-hidden="true">
-              {icon}
-            </div>
-          )}
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-            {title}
-          </h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mb-4">
-            {description}
-          </p>
-          {actionContent}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+import { EmptyState } from '@/components/ui/empty-state';
 
 export function NoResultsEmptyState({ 
   searchQuery,

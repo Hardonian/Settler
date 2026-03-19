@@ -15,7 +15,6 @@ import { prisma } from "@/shared/db/prismaClient";
 import { authenticateApiKey } from "@/shared/auth/apiKey";
 import { createClient } from "@/lib/supabase/server";
 import { z } from "zod";
-import { logAuditEvent, type AuditAction } from "@/lib/audit/logger";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
 import { withSecurity } from "@/lib/middleware/api-security";
@@ -94,6 +93,18 @@ export const POST = withSecurity(
           );
         }
 
+        const contentLengthHeader = request.headers.get("content-length");
+        const contentLength = contentLengthHeader ? Number.parseInt(contentLengthHeader, 10) : 0;
+        if (Number.isFinite(contentLength) && contentLength > 256 * 1024) {
+          return NextResponse.json(
+            {
+              error: "Payload too large",
+              message: "Bulk request body must be <= 256KB",
+            },
+            { status: 413 }
+          );
+        }
+
         // Parse and validate request body
         const body = await request.json();
         const validationResult = BulkActionSchema.safeParse(body);
@@ -136,60 +147,102 @@ export const POST = withSecurity(
         }
 
         // Perform bulk action
-        const results: Array<{ jobId: string; success: boolean; error?: string }> = [];
+        let successfulJobIds: string[] = [];
+        const failedByJob = new Map<string, string>();
 
-        for (const jobId of jobIds) {
-          try {
-            if (action === "pause") {
-              await prisma.reconJob.update({
-                where: { id: jobId },
-                data: { status: "paused" },
-              });
-            } else if (action === "resume") {
-              await prisma.reconJob.update({
-                where: { id: jobId },
-                data: { status: "active" },
-              });
-            } else if (action === "delete") {
-              await prisma.reconJob.update({
-                where: { id: jobId },
-                data: {
-                  status: "deleted",
-                  deletedAt: new Date(),
-                },
-              });
-            } else if (action === "execute") {
-              // Trigger job execution (async)
-              // In production, use job queue
-              const job = jobs.find((j: (typeof jobs)[number]) => j.id === jobId);
-              if (job && job.status === "active") {
-                // Execute job (this would trigger actual execution in production)
-                // For now, just log
-                appLogger.info(`[Bulk Operations] Executing job ${jobId}`);
-              }
+        if (action === "execute") {
+          for (const job of jobs) {
+            if (job.status !== "active") {
+              failedByJob.set(job.id, "Only active jobs can be executed");
+              continue;
             }
 
-            results.push({ jobId, success: true });
-
-            // Log audit event
-            await logAuditEvent({
-              userId: userId,
-              tenantId: tenantId,
-              action: action as AuditAction,
-              resourceType: "reconciliation_job",
-              resourceId: jobId,
-              metadata: {
-                bulkAction: true,
-                totalJobs: jobIds.length,
-              },
-            }).catch(() => {
-              // Don't fail if audit logging fails
+            successfulJobIds.push(job.id);
+            appLogger.info("[Bulk Operations] Executing job", {
+              jobId: job.id,
+              tenantId,
             });
-          } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : "Unknown error";
-            results.push({ jobId, success: false, error: errorMessage });
+          }
+        } else {
+          const now = new Date();
+          const updateData =
+            action === "pause"
+              ? { status: "paused" }
+              : action === "resume"
+                ? { status: "active" }
+                : { status: "deleted", deletedAt: now };
+
+          await prisma.reconJob.updateMany({
+            where: {
+              id: { in: jobIds },
+              tenantId,
+              deletedAt: null,
+            },
+            data: updateData,
+          });
+
+          const verificationWhere =
+            action === "delete"
+              ? {
+                  id: { in: jobIds },
+                  tenantId,
+                  status: "deleted",
+                  deletedAt: { not: null as Date | null },
+                }
+              : {
+                  id: { in: jobIds },
+                  tenantId,
+                  status: action === "pause" ? "paused" : "active",
+                  deletedAt: null,
+                };
+
+          const verifiedJobs = await prisma.reconJob.findMany({
+            where: verificationWhere,
+            select: { id: true },
+          });
+          successfulJobIds = verifiedJobs.map((job: { id: string }) => job.id);
+
+          for (const jobId of jobIds) {
+            if (!successfulJobIds.includes(jobId)) {
+              failedByJob.set(jobId, "Job could not be updated");
+            }
           }
         }
+
+        if (successfulJobIds.length > 0) {
+          const forwardedFor = request.headers.get("x-forwarded-for");
+          const ipAddress = forwardedFor ? forwardedFor.split(",")[0]?.trim() : null;
+          const userAgent = request.headers.get("user-agent");
+          await prisma.auditLog
+            .createMany({
+              data: successfulJobIds.map((jobId) => ({
+                userId,
+                tenantId,
+                action,
+                resourceType: "reconciliation_job",
+                resourceId: jobId,
+                ipAddress: ipAddress || null,
+                userAgent: userAgent || null,
+                metadata: {
+                  bulkAction: true,
+                  totalJobs: jobIds.length,
+                } as never,
+              })),
+            })
+            .catch((auditError: unknown) => {
+              appLogger.warn("[Bulk Operations API] Audit batch insert failed", {
+                tenantId,
+                userId,
+                action,
+                error: auditError instanceof Error ? auditError.message : String(auditError),
+              });
+            });
+        }
+
+        const results: Array<{ jobId: string; success: boolean; error?: string }> = jobIds.map((jobId) => {
+          const error = failedByJob.get(jobId);
+          return error ? { jobId, success: false, error } : { jobId, success: true };
+        });
 
         const successCount = results.filter((r: { success: boolean }) => r.success).length;
         const failureCount = results.filter((r) => !r.success).length;

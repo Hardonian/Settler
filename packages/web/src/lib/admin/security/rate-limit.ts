@@ -39,7 +39,7 @@ class RateLimiter {
 
     if (!currentEntry) {
       if (this.store.size >= this.MAX_TRACKED_KEYS) {
-        this.pruneStore(now);
+        this.pruneStore();
       }
 
       // First request - create entry
@@ -103,7 +103,7 @@ class RateLimiter {
     }
   }
 
-  private pruneStore(now: number): void {
+  private pruneStore(): void {
     this.cleanup();
     if (this.store.size < this.MAX_TRACKED_KEYS) {
       return;

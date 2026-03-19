@@ -60,8 +60,40 @@ export * from "./webhook-verification";
 export * from "./token-refresh";
 export * from "./rate-limiting";
 export * from "./concurrency-protection";
-export * from "./metrics/prometheus";
-export * from "./alerting/alert-manager";
-export * from "./retry-queue/retry-queue";
-export * from "./validation/data-validator";
-export * from "./performance/batch-processor";
+// Metrics - export tracking functions only (infrastructure not part of public API)
+export {
+  type MetricLabels,
+  trackSyncStart,
+  trackSyncComplete,
+  trackSyncFailure,
+  trackApiCall,
+  trackRateLimit,
+  trackWebhook,
+  trackTokenRefresh,
+} from "./metrics/prometheus";
+
+// Alerting - export types only (AlertManager is internal infrastructure)
+export type {
+  AlertSeverity,
+  Alert,
+  AlertRule,
+} from "./alerting/alert-manager";
+
+// Retry Queue - export types only (RetryQueue is internal infrastructure)
+export type {
+  RetryJob,
+  RetryConfig,
+} from "./retry-queue/retry-queue";
+
+// Validation - export types only (DataValidator is internal infrastructure)
+export type {
+  ValidationResult,
+} from "./validation/data-validator";
+
+// Performance - export config type and batch processing function
+export type {
+  BatchConfig,
+} from "./performance/batch-processor";
+export {
+  processInBatches,
+} from "./performance/batch-processor";
