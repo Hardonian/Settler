@@ -15,6 +15,11 @@ import {
 import { withSecurity } from "@/lib/middleware/api-security";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
+import {
+  buildExceptionDescription,
+  buildExceptionStatusDetail,
+  getExceptionWorkflowState,
+} from "@/lib/exceptions/presentation";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
@@ -137,14 +142,10 @@ export const GET = withSecurity(
         // Transform to frontend format
         const items = exceptions.map((ex: any) => {
           const metadata = (ex.metadata as Record<string, unknown>) || {};
-          const resolution = metadata.resolution as Record<string, unknown> | undefined;
-          const resolutionStatus = typeof resolution?.status === "string" ? resolution.status : null;
-          const status =
-            resolutionStatus === "ignored"
-              ? "ignored"
-              : ex.acknowledged
-                ? "resolved"
-                : "pending";
+          const status = getExceptionWorkflowState({
+            acknowledged: ex.acknowledged,
+            metadata,
+          });
 
           return {
             id: ex.id,
@@ -152,7 +153,23 @@ export const GET = withSecurity(
             status: status as "pending" | "investigating" | "resolved" | "ignored",
             severity: (ex.severity || "low") as "low" | "medium" | "high" | "critical",
             detectedAt: ex.createdAt,
-            description: ex.fieldPath ? `Field mismatch: ${ex.fieldPath}` : "Drift detected",
+            description: buildExceptionDescription({
+              driftType: ex.driftType,
+              fieldPath: ex.fieldPath,
+              expectedValue: ex.expectedValue,
+              actualValue: ex.actualValue,
+            }),
+            statusDetail: buildExceptionStatusDetail({
+              driftType: ex.driftType,
+              fieldPath: ex.fieldPath,
+              expectedValue: ex.expectedValue,
+              actualValue: ex.actualValue,
+              metadata,
+              createdAt: ex.createdAt,
+              acknowledged: ex.acknowledged,
+              acknowledgedBy: ex.acknowledgedBy,
+              acknowledgedAt: ex.acknowledgedAt,
+            }),
             amount: (ex.metadata as Record<string, unknown>)?.amount as number | undefined,
             currency: (ex.metadata as Record<string, unknown>)?.currency as string | undefined,
             sourceTransactionId: (ex.metadata as Record<string, unknown>)?.sourceTransactionId as
@@ -161,6 +178,8 @@ export const GET = withSecurity(
             targetTransactionId: (ex.metadata as Record<string, unknown>)?.targetTransactionId as
               | string
               | undefined,
+            runId: ex.reconJobId || undefined,
+            fieldPath: ex.fieldPath || undefined,
           };
         });
 

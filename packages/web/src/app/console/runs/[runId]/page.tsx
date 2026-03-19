@@ -49,6 +49,17 @@ interface Run {
     conflicts: number;
   };
   summaryState?: "success" | "review_needed" | "in_progress" | "failed" | "empty" | "unknown";
+  config?: {
+    sourceAdapter: string | null;
+    targetAdapter: string | null;
+    reconStrategy: string | null;
+    templateId: string | null;
+    validationRuleCount: number;
+    validationRuleLabels: string[];
+    snapshotId: string | null;
+    inputHash: string | null;
+    summaryBasis: string;
+  };
 }
 
 export default function RunPage() {
@@ -253,7 +264,7 @@ export default function RunPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Link href={`/console/reconciliation-view?runId=${run.id}`}>
+              <Link href={`/console/reconciliations?runId=${run.id}`}>
                 <Button
                   variant="outline"
                   className="w-full h-20 flex flex-col items-start justify-center"
@@ -343,6 +354,79 @@ export default function RunPage() {
       )}
 
       {/* Stages */}
+      {run.config && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Effective Configuration</CardTitle>
+            <CardDescription>
+              The latest result is interpreted using the job configuration and persisted result
+              metadata captured for this run.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              <div>
+                <p className="text-sm font-medium text-slate-900 dark:text-white">Adapters</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  {[run.config.sourceAdapter, run.config.targetAdapter]
+                    .filter(Boolean)
+                    .join(" -> ") || "Not recorded"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-900 dark:text-white">Strategy</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  {run.config.reconStrategy || "Not recorded"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-900 dark:text-white">Rules</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  {run.config.validationRuleCount > 0
+                    ? `${run.config.validationRuleCount} rule${
+                        run.config.validationRuleCount === 1 ? "" : "s"
+                      } active`
+                    : "No validation rules recorded"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-900 dark:text-white">Snapshot</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400 font-mono break-all">
+                  {run.config.snapshotId || "Not persisted"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-900 dark:text-white">Input Hash</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400 font-mono break-all">
+                  {run.config.inputHash || "Not recorded"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-900 dark:text-white">Template</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400 font-mono break-all">
+                  {run.config.templateId || "None"}
+                </p>
+              </div>
+            </div>
+            {run.config.validationRuleLabels.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-medium text-slate-900 dark:text-white">
+                  Recorded Rule Coverage
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {run.config.validationRuleLabels.map((label) => (
+                    <Badge key={label} variant="outline">
+                      {label}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+            <p className="text-sm text-slate-500 dark:text-slate-400">{run.config.summaryBasis}</p>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle>Stages</CardTitle>

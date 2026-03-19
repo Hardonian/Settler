@@ -185,9 +185,11 @@ export const GET = withSecurity(
 
           // Get items
           const items = await listReconciliationItems(tenantId, reconciliationId);
+          const enrichedSummary =
+            items.length > 0 ? { ...summary, highestRiskItem: items[0] } : summary;
 
           return NextResponse.json({
-            reconciliation: summary,
+            reconciliation: enrichedSummary,
             items,
           });
         }

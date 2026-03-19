@@ -23,6 +23,68 @@ import {
 const router: Router = Router();
 let prisma: PrismaClient | null = null;
 
+// Helper function to ensure demo data exists, auto-generating if missing
+const ensureDemoData = async (): Promise<{ exists: boolean; error?: string }> => {
+  const demoDir = path.join(process.cwd(), "demo/data");
+  const requiredFiles = [
+    "demo_stripe_transactions.json",
+    "demo_bank_transactions.json",
+    "demo_expected_matches.json"
+  ];
+
+  // Check if demo data directory and all required files exist
+  if (fs.existsSync(demoDir)) {
+    const allFilesExist = requiredFiles.every(file => 
+      fs.existsSync(path.join(demoDir, file))
+    );
+    if (allFilesExist) {
+      return { exists: true };
+    }
+  }
+
+  // Auto-generate demo data by spawning the seed script
+  try {
+    const { spawn } = await import("child_process");
+    
+    return new Promise((resolve) => {
+      const seedProcess = spawn("npx", ["tsx", "scripts/seed-demo.ts"], {
+        cwd: process.cwd(),
+        stdio: "pipe",
+        shell: true
+      });
+
+      let stderr = "";
+      seedProcess.stderr?.on("data", (data) => {
+        stderr += data.toString();
+      });
+
+      seedProcess.on("close", (code) => {
+        if (code === 0) {
+          resolve({ exists: true });
+        } else {
+          resolve({ 
+            exists: false, 
+            error: `Auto-generation failed: ${stderr || "Unknown error"}. Run 'pnpm demo:seed' manually.` 
+          });
+        }
+      });
+
+      seedProcess.on("error", (err) => {
+        resolve({ 
+          exists: false, 
+          error: `Failed to run seed script: ${err.message}. Run 'pnpm demo:seed' manually.` 
+        });
+      });
+    });
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+    return { 
+      exists: false, 
+      error: `Failed to import child_process: ${errorMessage}. Run 'pnpm demo:seed' manually.` 
+    };
+  }
+};
+
 const getPrismaClient = (): PrismaClient | null => {
   if (prisma) {
     return prisma;
@@ -119,14 +181,22 @@ router.get("/playground/examples", (async (_req: Request, res: Response): Promis
 }) as unknown as RequestHandler);
 
 // Get Demo Dataset (Raw JSON)
+// Auto-generates demo data if missing
 router.get("/playground/demo-dataset", (async (_req: Request, res: Response): Promise<void> => {
   try {
-    const demoDir = path.join(process.cwd(), "demo/data");
-    if (!fs.existsSync(demoDir)) {
-      res.status(404).json({ error: "Demo data not generated yet." });
+    // Check/generate demo data
+    const demoCheck = await ensureDemoData();
+    if (!demoCheck.exists) {
+      // Return 503 with helpful message instead of 404
+      res.status(503).json({ 
+        error: "Demo data not available",
+        message: demoCheck.error || "Demo data could not be generated. Please run 'pnpm demo:seed' to create demo data.",
+        workaround: "Run: pnpm demo:seed"
+      });
       return;
     }
 
+    const demoDir = path.join(process.cwd(), "demo/data");
     const stripeData = JSON.parse(
       fs.readFileSync(path.join(demoDir, "demo_stripe_transactions.json"), "utf-8")
     );
@@ -148,13 +218,21 @@ router.get("/playground/demo-dataset", (async (_req: Request, res: Response): Pr
 }) as unknown as RequestHandler);
 
 // Run Demo Simulation (Uses ReconCoreEngine Logic)
+// Auto-generates demo data if missing
 router.post("/playground/demo-run", (async (_req: Request, res: Response): Promise<void> => {
   try {
-    const demoDir = path.join(process.cwd(), "demo/data");
-    if (!fs.existsSync(demoDir)) {
-      res.status(404).json({ error: "Demo data not generated yet." });
+    // Check/generate demo data
+    const demoCheck = await ensureDemoData();
+    if (!demoCheck.exists) {
+      res.status(503).json({ 
+        error: "Demo data not available",
+        message: demoCheck.error || "Demo data could not be generated. Please run 'pnpm demo:seed' to create demo data.",
+        workaround: "Run: pnpm demo:seed"
+      });
       return;
     }
+
+    const demoDir = path.join(process.cwd(), "demo/data");
 
     // 1. Load Data
     const sourceData = JSON.parse(

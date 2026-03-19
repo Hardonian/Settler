@@ -21,6 +21,7 @@ import {
   type ReconJobRow,
   type ReconResultRow,
 } from "@/lib/reconciliation/run-status";
+import { buildRunConfigurationSummary } from "@/lib/reconciliation/run-detail";
 
 export const runtime = "nodejs";
 
@@ -34,11 +35,22 @@ export const GET = withSecurity(
 
         const { data: run, error: runError } = (await supabase
           .from("recon_jobs" as any)
-          .select("id, name, status, created_at, updated_at, tenant_id")
+          .select(
+            "id, name, status, created_at, updated_at, tenant_id, template_id, source_adapter, target_adapter, validation_rules, recon_strategy"
+          )
           .eq("id", params.runId)
           .in("tenant_id", accessibleTenantIds)
           .single()) as {
-          data: (ReconJobRow & { tenant_id: string }) | null;
+          data:
+            | (ReconJobRow & {
+                tenant_id: string;
+                template_id?: string | null;
+                source_adapter?: string | null;
+                target_adapter?: string | null;
+                validation_rules?: unknown;
+                recon_strategy?: string | null;
+              })
+            | null;
           error: { message?: string } | null;
         };
 
@@ -49,14 +61,16 @@ export const GET = withSecurity(
         const { data: latestResult, error: resultError } = (await supabase
           .from("recon_results" as any)
           .select(
-            "id, recon_job_id, status, started_at, completed_at, source_count, target_count, matched_count, unmatched_source_count, unmatched_target_count, conflict_count, error_message, metadata"
+            "id, recon_job_id, status, started_at, completed_at, source_count, target_count, matched_count, unmatched_source_count, unmatched_target_count, conflict_count, error_message, input_hash, snapshot_id, metadata"
           )
           .eq("recon_job_id", params.runId)
           .eq("tenant_id", run.tenant_id)
           .order("started_at", { ascending: false })
           .limit(1)
           .maybeSingle()) as {
-          data: ReconResultRow | null;
+          data:
+            | (ReconResultRow & { input_hash?: string | null; snapshot_id?: string | null })
+            | null;
           error: { message?: string } | null;
         };
 
@@ -85,6 +99,15 @@ export const GET = withSecurity(
         const startedAt = latestResult?.started_at || run.created_at;
         const completedAt = latestResult?.completed_at || null;
         const truth = buildCanonicalRunTruth(run.status, latestResult);
+        const config = buildRunConfigurationSummary({
+          sourceAdapter: run.source_adapter ?? null,
+          targetAdapter: run.target_adapter ?? null,
+          reconStrategy: run.recon_strategy ?? null,
+          templateId: run.template_id ?? null,
+          validationRules: run.validation_rules,
+          snapshotId: latestResult?.snapshot_id ?? null,
+          inputHash: latestResult?.input_hash ?? null,
+        });
 
         return NextResponse.json({
           id: run.id,
@@ -99,6 +122,7 @@ export const GET = withSecurity(
           ...(latestResult?.error_message ? { error: latestResult.error_message } : {}),
           summary: truth.summary,
           summaryState: truth.summaryState,
+          config,
           stages: toStageRows(audits || []),
         });
       } catch (error) {

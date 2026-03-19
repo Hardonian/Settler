@@ -19,10 +19,13 @@ interface Exception {
   severity: "low" | "medium" | "high" | "critical";
   detectedAt: Date;
   description: string;
+  statusDetail?: string;
   amount?: number;
   currency?: string;
   sourceTransactionId?: string;
   targetTransactionId?: string;
+  runId?: string;
+  fieldPath?: string;
 }
 
 interface ExceptionFilters {
@@ -145,7 +148,11 @@ export default function ExceptionsPage() {
       <div className="p-6">
         <EmptyState
           title="No exceptions found"
-          description="There are currently no exceptions matching your filters"
+          description={
+            runId
+              ? "No exceptions were recorded for this run under the current filters."
+              : "There are currently no exceptions matching your filters."
+          }
           action={{
             label: "Clear Filters",
             onClick: () => {
@@ -330,6 +337,11 @@ export default function ExceptionsPage() {
                         <p className="text-sm text-slate-600 dark:text-slate-400 truncate">
                           {exception.description}
                         </p>
+                        {exception.statusDetail && (
+                          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                            {exception.statusDetail}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -359,6 +371,8 @@ export default function ExceptionsPage() {
                     {exception.targetTransactionId && (
                       <span>Target: {exception.targetTransactionId.slice(0, 8)}...</span>
                     )}
+                    {exception.fieldPath && <span>Field: {exception.fieldPath}</span>}
+                    {exception.runId && <span>Run: {exception.runId.slice(0, 8)}...</span>}
                   </div>
                 </div>
               </div>

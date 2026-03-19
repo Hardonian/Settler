@@ -146,7 +146,39 @@ describe("exceptions runtime integrity", () => {
     expect(payload.status).toBe("ignored");
     expect(payload.exception.status).toBe("ignored");
     expect(payload.exception.id).toBe("22222222-2222-4222-8222-222222222222");
+    expect(payload.exception.auditTrail).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ action: "Detected", user: "system" }),
+        expect.objectContaining({ action: "Ignored", user: "user-a" }),
+      ])
+    );
     expect(payload.trace_id).toBe("trace-test");
   });
-});
 
+  test("maps acknowledged exceptions without a resolution record to investigating", async () => {
+    driftEventFindManyMock.mockResolvedValue([
+      {
+        id: "33333333-3333-4333-8333-333333333333",
+        driftType: "missing_transaction",
+        severity: "medium",
+        acknowledged: true,
+        acknowledgedBy: "user-b",
+        acknowledgedAt: new Date("2026-01-02T00:00:00.000Z"),
+        createdAt: new Date("2026-01-01T00:00:00.000Z"),
+        reconJobId: "11111111-1111-4111-8111-111111111111",
+        fieldPath: "external_id",
+        expectedValue: "txn_1",
+        actualValue: null,
+        metadata: {},
+      },
+    ]);
+    driftEventCountMock.mockResolvedValue(1);
+
+    const response = await getExceptions(req("http://localhost/api/exceptions?tenant_id=tenant-a"));
+
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(payload.items[0].status).toBe("investigating");
+    expect(payload.items[0].statusDetail).toContain("Resolution is still pending");
+  });
+});

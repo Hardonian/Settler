@@ -16,6 +16,13 @@ import {
 import { withSecurity } from "@/lib/middleware/api-security";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
+import {
+  buildExceptionAuditTrail,
+  buildExceptionDescription,
+  buildExceptionStatusDetail,
+  buildSuggestedActions,
+  getExceptionWorkflowState,
+} from "@/lib/exceptions/presentation";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
@@ -90,6 +97,7 @@ export const GET = withSecurity(
             fieldPath: true,
             expectedValue: true,
             actualValue: true,
+            driftMetrics: true,
             metadata: true,
           },
         });
@@ -103,14 +111,41 @@ export const GET = withSecurity(
 
         // Transform to frontend format
         const metadata = (exception.metadata as Record<string, unknown>) || {};
-        const resolution = metadata.resolution as Record<string, unknown> | undefined;
-        const resolutionStatus = typeof resolution?.status === "string" ? resolution.status : null;
-        const status =
-          resolutionStatus === "ignored"
-            ? "ignored"
-            : exception.acknowledged
-              ? "resolved"
-              : "pending";
+        const status = getExceptionWorkflowState({
+          acknowledged: exception.acknowledged,
+          metadata,
+        });
+        const statusDetail = buildExceptionStatusDetail({
+          driftType: exception.driftType,
+          fieldPath: exception.fieldPath,
+          expectedValue: exception.expectedValue,
+          actualValue: exception.actualValue,
+          metadata,
+          createdAt: exception.createdAt,
+          acknowledged: exception.acknowledged,
+          acknowledgedBy: exception.acknowledgedBy,
+          acknowledgedAt: exception.acknowledgedAt,
+        });
+        const suggestedActions = buildSuggestedActions({
+          driftType: exception.driftType,
+          fieldPath: exception.fieldPath,
+          status,
+        });
+        const resolution = (metadata.resolution as Record<string, unknown> | undefined) || {};
+        const auditTrail = buildExceptionAuditTrail({
+          driftType: exception.driftType,
+          fieldPath: exception.fieldPath,
+          expectedValue: exception.expectedValue,
+          actualValue: exception.actualValue,
+          metadata,
+          createdAt: exception.createdAt,
+          acknowledged: exception.acknowledged,
+          acknowledgedBy: exception.acknowledgedBy,
+          acknowledgedAt: exception.acknowledgedAt,
+        }).map((entry) => ({
+          ...entry,
+          timestamp: entry.timestamp,
+        }));
 
         const result = {
           id: exception.id,
@@ -118,13 +153,23 @@ export const GET = withSecurity(
           status: status as "pending" | "investigating" | "resolved" | "ignored",
           severity: (exception.severity || "low") as "low" | "medium" | "high" | "critical",
           detectedAt: exception.createdAt,
-          description: exception.fieldPath
-            ? `Field mismatch: ${exception.fieldPath}`
-            : "Drift detected",
+          description: buildExceptionDescription({
+            driftType: exception.driftType,
+            fieldPath: exception.fieldPath,
+            expectedValue: exception.expectedValue,
+            actualValue: exception.actualValue,
+          }),
+          statusDetail,
           amount: metadata.amount as number | undefined,
           currency: metadata.currency as string | undefined,
           sourceTransactionId: metadata.sourceTransactionId as string | undefined,
           targetTransactionId: metadata.targetTransactionId as string | undefined,
+          sourceSystem:
+            (metadata.sourceSystem as string | undefined) ||
+            (metadata.sourceAdapter as string | undefined),
+          targetSystem:
+            (metadata.targetSystem as string | undefined) ||
+            (metadata.targetAdapter as string | undefined),
           // Additional details
           runId: exception.reconJobId,
           expectedValue: exception.expectedValue,
@@ -134,6 +179,39 @@ export const GET = withSecurity(
           acknowledgedAt: exception.acknowledgedAt?.toISOString() || null,
           createdAt: exception.createdAt.toISOString(),
           updatedAt: exception.updatedAt?.toISOString() || exception.createdAt.toISOString(),
+          resolution:
+            typeof resolution.notes === "string"
+              ? resolution.notes
+              : status === "ignored"
+                ? "Ignored by operator"
+                : status === "resolved"
+                  ? "Resolved by operator"
+                  : undefined,
+          resolvedAt:
+            status === "resolved" && typeof resolution.resolvedAt === "string"
+              ? resolution.resolvedAt
+              : undefined,
+          ignoredAt:
+            status === "ignored" && typeof resolution.ignoredAt === "string"
+              ? resolution.ignoredAt
+              : undefined,
+          ignoredBy:
+            status === "ignored" && typeof resolution.ignoredBy === "string"
+              ? resolution.ignoredBy
+              : undefined,
+          confidenceScore:
+            typeof (exception.driftMetrics as Record<string, unknown> | null)?.confidenceScore ===
+            "number"
+              ? ((exception.driftMetrics as Record<string, unknown>).confidenceScore as number)
+              : typeof metadata.confidenceScore === "number"
+                ? (metadata.confidenceScore as number)
+                : undefined,
+          suggestedActions,
+          playbookApplied:
+            typeof metadata.playbookApplied === "string"
+              ? (metadata.playbookApplied as string)
+              : undefined,
+          auditTrail,
         };
 
         return NextResponse.json({
@@ -268,9 +346,12 @@ export const POST = withSecurity(
           action: actionName,
         });
 
+        const actionLabel =
+          actionName === "ignore" ? "ignored" : actionName === "reopen" ? "reopened" : "resolved";
+
         return NextResponse.json({
           success: true,
-          message: `Exception ${actionName}ed successfully`,
+          message: `Exception ${actionLabel} successfully`,
           trace_id: traceId,
         });
       } catch (error) {
@@ -398,6 +479,7 @@ async function handleReopen(
       acknowledgedAt: null,
       metadata: {
         ...((exception.metadata as Record<string, unknown>) || {}),
+        resolution: null,
         reopen: {
           reopenedBy: userId,
           reopenedAt: new Date().toISOString(),

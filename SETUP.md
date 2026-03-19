@@ -90,6 +90,18 @@ This includes:
 - Test suite execution
 - Repository integrity checks
 
+### 6.1 Verify Demo Data (Optional)
+For interactive playground functionality, generate demo data:
+```bash
+pnpm demo:seed
+```
+
+Verify:
+```bash
+ls demo/data/  # Should show JSON files
+curl http://localhost:4000/api/v1/playground/demo-dataset  # Requires running API
+```
+
 ## Time-to-First-Working-Screen
 
 The minimal path to see a working Settler console is:

@@ -171,6 +171,118 @@ describe("run domain trust invariants", () => {
     expect(payload.error).toBe("Run not found");
   });
 
+  test("run detail exposes effective configuration truth for operators", async () => {
+    const runRow = {
+      id: "run-a-1",
+      name: "Tenant A Run",
+      status: "completed",
+      created_at: "2026-01-01T00:00:00.000Z",
+      updated_at: "2026-01-01T01:00:00.000Z",
+      tenant_id: "tenant-a",
+      template_id: "tpl-1",
+      source_adapter: "stripe",
+      target_adapter: "netsuite",
+      validation_rules: [
+        { field: "amount", tolerance: 0.01 },
+        { field: "date", window: "24h" },
+      ],
+      recon_strategy: "deterministic",
+    };
+
+    const latestResult = {
+      id: "result-a-1",
+      recon_job_id: runRow.id,
+      status: "completed",
+      started_at: "2026-01-01T00:10:00.000Z",
+      completed_at: "2026-01-01T00:12:00.000Z",
+      source_count: 10,
+      target_count: 10,
+      matched_count: 8,
+      unmatched_source_count: 1,
+      unmatched_target_count: 1,
+      conflict_count: 0,
+      error_message: null,
+      metadata: { fingerprint: "fp-1" },
+      input_hash: "hash-1",
+      snapshot_id: "snapshot-1",
+    };
+
+    const supabase = {
+      from: jest.fn((table: string) => {
+        if (table === "recon_jobs") {
+          return {
+            select: jest.fn(() => ({
+              eq: jest.fn(() => ({
+                in: jest.fn(() => ({
+                  single: jest.fn(async () => ({ data: runRow, error: null })),
+                })),
+              })),
+            })),
+          };
+        }
+
+        if (table === "recon_results") {
+          return {
+            select: jest.fn(() => ({
+              eq: jest.fn(() => ({
+                eq: jest.fn(() => ({
+                  order: jest.fn(() => ({
+                    limit: jest.fn(() => ({
+                      maybeSingle: jest.fn(async () => ({ data: latestResult, error: null })),
+                    })),
+                  })),
+                })),
+              })),
+            })),
+          };
+        }
+
+        if (table === "recon_audits") {
+          return {
+            select: jest.fn(() => ({
+              eq: jest.fn(() => ({
+                eq: jest.fn(() => ({
+                  order: jest.fn(() => ({
+                    limit: jest.fn(async () => ({ data: [], error: null })),
+                  })),
+                })),
+              })),
+            })),
+          };
+        }
+
+        throw new Error(`Unexpected table access: ${table}`);
+      }),
+    };
+
+    resolveTenantMembershipScopeMock.mockResolvedValue({
+      supabase,
+      userId: "user-a",
+      tenantIds: ["tenant-a"],
+    });
+
+    const response = await getRunDetail(req("http://localhost/api/runs/run-a-1"), {
+      params: { runId: "run-a-1" },
+    } as any);
+
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(payload.config).toEqual(
+      expect.objectContaining({
+        sourceAdapter: "stripe",
+        targetAdapter: "netsuite",
+        reconStrategy: "deterministic",
+        templateId: "tpl-1",
+        validationRuleCount: 2,
+        snapshotId: "snapshot-1",
+        inputHash: "hash-1",
+      })
+    );
+    expect(payload.config.validationRuleLabels).toEqual(
+      expect.arrayContaining(["amount • ±0.01", "date • 24h"])
+    );
+  });
+
   test("run create mutation denies tenant outside authenticated membership", async () => {
     const { TenantMembershipError } = jest.requireMock("@/lib/supabase/tenant-membership");
     resolveTenantMembershipScopeMock.mockResolvedValue({

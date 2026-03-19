@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-export default async function ReconciliationViewLegacyPage({
+export default async function ReconciliationRouteAlias({
   searchParams,
 }: {
   searchParams: Promise<{ runId?: string }>;

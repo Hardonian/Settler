@@ -341,18 +341,20 @@ export default function OnboardingPage() {
                   className="space-y-4"
                 >
                   <p className="text-sm text-slate-600 dark:text-slate-400">
-                    Run your first reconciliation to see Settler in action.
+                    Open the reconciliation workspace to inspect how completed runs appear in the
+                    console. Triggering a real run happens through your connected jobs or API
+                    workflow.
                   </p>
                   <AnimatedButton
                     onClick={() => {
-                      router.push("/console/playground/reconcile");
+                      router.push("/console/reconciliations");
                       send({ type: "COMPLETE_STEP", stepId: "run_first_reconciliation" });
                     }}
                     className="w-full"
                     disabled={isPending}
                   >
                     <Play className="w-4 h-4 mr-2" />
-                    Go to Playground
+                    Open Reconciliations
                   </AnimatedButton>
                   <AnimatedButton
                     variant="outline"
