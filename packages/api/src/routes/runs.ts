@@ -149,17 +149,21 @@ router.get(
         throw new NotFoundError("Run not found or access denied", "run", runId);
       }
 
-      // Calculate progress
-      let progress = 0;
+      // TRUTHFUL STATE: Progress calculation
+      // - completed: 100%
+      // - failed: 0%
+      // - pending: null (not started)
+      // - running: null (no reliable estimate available - hardcoded estimate removed)
+      // Note: Real progress tracking requires job checkpoints or progress percentage stored in DB
+      let progress: number | null = null;
       if (run.status === "completed") {
         progress = 100;
       } else if (run.status === "failed") {
         progress = 0;
-      } else if (run.status === "running") {
-        const elapsed = Date.now() - run.startedAt.getTime();
-        const estimatedDuration = 30000; // 30s estimate
-        progress = Math.min(95, Math.floor((elapsed / estimatedDuration) * 100));
+      } else if (run.status === "pending") {
+        progress = null;
       }
+      // running status returns null - no reliable estimate available
 
       // Build stage information (simplified for now - can be enhanced)
       const stages = [

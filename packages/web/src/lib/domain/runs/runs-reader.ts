@@ -7,6 +7,7 @@ import {
 } from "@/lib/reconciliation/canonical-run-result";
 import { buildReplayLabReport } from "@/lib/replay-lab/engine";
 import { getExecutionGraph, verifyProofChain } from "@/lib/trust-graph/explorer";
+import { RunListItem, RunStatus } from "@settler/types";
 
 /**
  * Domain reader for Reconciliation Runs.
@@ -15,13 +16,7 @@ import { getExecutionGraph, verifyProofChain } from "@/lib/trust-graph/explorer"
  * and minimizing contract overhead where possible.
  */
 
-export interface RunListItem {
-  run_id: string;
-  created_at: string;
-  status: string;
-  status_label: string;
-  policy: string;
-}
+// RunListItem is now imported from @settler/types
 
 export async function getRunsList(tenantId: string, limit: number = 20): Promise<RunListItem[]> {
   if (!tenantId || tenantId === "—") return [];

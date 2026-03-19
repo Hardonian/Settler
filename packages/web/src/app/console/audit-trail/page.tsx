@@ -12,10 +12,14 @@ import { RouteStateCard, routeStateFromVariant } from "@/components/shared/route
 import { appLogger } from "@/lib/utils/logger";
 
 /**
- * Check if user has any organization membership (tenant context)
- * Returns the organization ID if found, null otherwise
+ * Check if user has any tenant membership (tenant context)
+ * Returns the tenant ID if found, null otherwise
+ *
+ * SECURITY: This aligns with the API's tenant filtering approach.
+ * The API uses tenant_id for filtering, so the web layer must also use tenant context.
+ * We query tenant_users (or users table with tenant_id) for consistent tenant resolution.
  */
-async function getUserOrganizationId(): Promise<string | null> {
+async function getUserTenantId(): Promise<string | null> {
   const supabase = await createClient();
 
   const {
@@ -27,32 +31,29 @@ async function getUserOrganizationId(): Promise<string | null> {
     return null;
   }
 
-  // Query organization_members to check for any organization membership
-  const { data: orgMember } = await supabase
-    .from("organization_members")
-    .select("organization_id")
-    .eq("user_id", user.id)
+  // Query users table to get tenant_id - aligns with API tenant resolution
+  // This is consistent with packages/api/src/middleware/tenant.ts
+  // which also queries users.tenant_id
+  const { data: userData, error: userError } = await supabase
+    .from("users")
+    .select("tenant_id")
+    .eq("id", user.id)
     .limit(1)
     .single();
 
-  // Define the expected shape since Supabase types may not include this table
-  type OrgMemberRow = {
-    organization_id?: string | null;
-  };
-  const orgMemberData = orgMember as OrgMemberRow | null;
-
-  if (!orgMemberData?.organization_id) {
+  if (userError || !userData?.tenant_id) {
     return null;
   }
 
-  return orgMemberData.organization_id;
+  return userData.tenant_id;
 }
 
 export default async function AuditTrailPage() {
-  // Check for tenant/organization context - this route requires tenant scope
-  const organizationId = await getUserOrganizationId();
+  // Check for tenant context - this route requires tenant scope
+  // SECURITY: Using tenant_id to align with API filtering (tenant_id in audit_logs)
+  const tenantId = await getUserTenantId();
 
-  if (!organizationId) {
+  if (!tenantId) {
     appLogger.warn("Audit Trail page: No tenant context available", {
       route: "/console/audit-trail",
     });
@@ -64,11 +65,11 @@ export default async function AuditTrailPage() {
         />
         <RouteStateCard
           {...routeStateFromVariant("no-organization", {
-            title: "Organization required",
+            title: "Tenant required",
             description:
-              "Audit Trail is a tenant-scoped resource that requires an active organization context.",
+              "Audit Trail is a tenant-scoped resource that requires an active tenant context.",
             detail:
-              "Create or join an organization to access tenant-scoped audit logs. Without an active organization, audit entries cannot be filtered or displayed.",
+              "Create or join a tenant to access tenant-scoped audit logs. Without an active tenant, audit entries cannot be filtered or displayed.",
           })}
         />
       </div>
@@ -81,7 +82,7 @@ export default async function AuditTrailPage() {
         title="Audit Trail"
         description="Tenant-scoped audit logs for operational actions, policy events, and evidence exports."
       />
-      <AdvancedAuditTrail />
+      <AdvancedAuditTrail tenantId={tenantId} />
     </div>
   );
 }

@@ -1,13 +1,13 @@
 /**
  * Run Snapshot Service
- * 
+ *
  * Creates immutable snapshots of run state before processing begins.
  * Enables replayability and determinism verification.
  */
 
-import { v4 as uuidv4 } from 'uuid';
-import { query } from '../../db';
-import { logError, logInfo } from '../../utils/logger';
+import { v4 as uuidv4 } from "uuid";
+import { query } from "../../db";
+import { logError, logInfo } from "../../utils/logger";
 import {
   computeInputFingerprint,
   computeRulesetHash,
@@ -15,17 +15,17 @@ import {
   ConfigSnapshot,
   InputBatch,
   stableStringify,
-} from './canonical-input';
+} from "./canonical-input";
 
 /**
- * Run status transitions
+ * Internal snapshot status - uses uppercase for database storage
+ * Note: This is different from the canonical RunStatus which uses lowercase.
+ * This type is used internally for snapshot tracking.
  */
-export type RunStatus = 
-  | 'QUEUED'
-  | 'RUNNING'
-  | 'SUCCEEDED'
-  | 'FAILED'
-  | 'CANCELLED';
+export type SnapshotRunStatus = "QUEUED" | "RUNNING" | "SUCCEEDED" | "FAILED" | "CANCELLED";
+
+// Re-export as RunStatus for backward compatibility
+export type RunStatus = SnapshotRunStatus;
 
 /**
  * Status transition with reason
@@ -35,7 +35,7 @@ export interface StatusTransition {
   to: RunStatus;
   reason: string;
   timestamp: Date;
-  actor: 'system' | 'human';
+  actor: "system" | "human";
   actor_user_id?: string;
 }
 
@@ -88,7 +88,7 @@ export interface CreateRunSnapshotRequest {
  */
 export function getEngineVersion(): string {
   // In production, this would be set during build
-  return process.env.ENGINE_VERSION || process.env.GIT_COMMIT_HASH || '1.0.0';
+  return process.env.ENGINE_VERSION || process.env.GIT_COMMIT_HASH || "1.0.0";
 }
 
 /**
@@ -97,7 +97,7 @@ export function getEngineVersion(): string {
 export async function createRunSnapshot(request: CreateRunSnapshotRequest): Promise<RunSnapshot> {
   const snapshotId = uuidv4();
   const engineVersion = request.engine_version || getEngineVersion();
-  
+
   // Compute fingerprints
   const inputFingerprint = computeInputFingerprint(request.input_batch);
   const sourceDataFingerprint = computeInputFingerprint({
@@ -109,7 +109,7 @@ export async function createRunSnapshot(request: CreateRunSnapshotRequest): Prom
     target_records: request.input_batch.target_records,
   });
   const rulesetHash = computeRulesetHash(request.ruleset);
-  
+
   const configSnapshot: ConfigSnapshot = {
     pipeline_id: request.pipeline_id,
     pipeline_version: request.pipeline_version,
@@ -118,20 +118,20 @@ export async function createRunSnapshot(request: CreateRunSnapshotRequest): Prom
     ruleset_hash: rulesetHash,
     adapter_config_hashes: request.adapter_config_hashes || {},
   };
-  
+
   const runFingerprint = computeRunFingerprint(inputFingerprint, configSnapshot, engineVersion);
-  
+
   const now = new Date();
   const statusTransitions: StatusTransition[] = [
     {
       from: null,
-      to: 'QUEUED',
-      reason: 'Run created and queued for processing',
+      to: "QUEUED",
+      reason: "Run created and queued for processing",
       timestamp: now,
-      actor: 'system',
+      actor: "system",
     },
   ];
-  
+
   const snapshot: RunSnapshot = {
     id: snapshotId,
     tenant_id: request.tenant_id,
@@ -147,15 +147,16 @@ export async function createRunSnapshot(request: CreateRunSnapshotRequest): Prom
     ruleset_version: request.ruleset_version,
     ruleset_hash: rulesetHash,
     engine_version: engineVersion,
-    input_record_count: request.input_batch.source_records.length + request.input_batch.target_records.length,
-    status: 'QUEUED',
+    input_record_count:
+      request.input_batch.source_records.length + request.input_batch.target_records.length,
+    status: "QUEUED",
     status_transitions: statusTransitions,
     started_at: now,
     completed_at: null,
     metadata: request.metadata || {},
     created_at: now,
   };
-  
+
   try {
     await query(
       `INSERT INTO run_snapshots (
@@ -189,16 +190,16 @@ export async function createRunSnapshot(request: CreateRunSnapshotRequest): Prom
         snapshot.created_at,
       ]
     );
-    
-    logInfo('Created run snapshot', {
+
+    logInfo("Created run snapshot", {
       snapshotId: snapshot.id,
       runFingerprint: snapshot.run_fingerprint,
       inputRecordCount: snapshot.input_record_count,
     });
-    
+
     return snapshot;
   } catch (error) {
-    logError('Failed to create run snapshot', error, { request });
+    logError("Failed to create run snapshot", error, { request });
     throw error;
   }
 }
@@ -208,11 +209,8 @@ export async function createRunSnapshot(request: CreateRunSnapshotRequest): Prom
  */
 export async function getRunSnapshot(snapshotId: string): Promise<RunSnapshot | null> {
   try {
-    const results = await query(
-      `SELECT * FROM run_snapshots WHERE id = $1`,
-      [snapshotId]
-    );
-    
+    const results = await query(`SELECT * FROM run_snapshots WHERE id = $1`, [snapshotId]);
+
     const row = results[0];
     if (!row) {
       return null;
@@ -220,7 +218,7 @@ export async function getRunSnapshot(snapshotId: string): Promise<RunSnapshot | 
 
     return mapRowToSnapshot(row);
   } catch (error) {
-    logError('Failed to get run snapshot', error, { snapshotId });
+    logError("Failed to get run snapshot", error, { snapshotId });
     throw error;
   }
 }
@@ -240,7 +238,7 @@ export async function getRunSnapshotByFingerprint(
        LIMIT 1`,
       [tenantId, runFingerprint]
     );
-    
+
     const row = results[0];
     if (!row) {
       return null;
@@ -248,7 +246,7 @@ export async function getRunSnapshotByFingerprint(
 
     return mapRowToSnapshot(row);
   } catch (error) {
-    logError('Failed to get run snapshot by fingerprint', error, { tenantId, runFingerprint });
+    logError("Failed to get run snapshot by fingerprint", error, { tenantId, runFingerprint });
     throw error;
   }
 }
@@ -260,7 +258,7 @@ export async function updateRunSnapshotStatus(
   snapshotId: string,
   newStatus: RunStatus,
   reason: string,
-  actor: 'system' | 'human' = 'system',
+  actor: "system" | "human" = "system",
   actorUserId?: string
 ): Promise<void> {
   try {
@@ -269,14 +267,12 @@ export async function updateRunSnapshotStatus(
     if (!snapshot) {
       throw new Error(`Run snapshot not found: ${snapshotId}`);
     }
-    
+
     // Validate status transition
     if (!isValidTransition(snapshot.status, newStatus)) {
-      throw new Error(
-        `Invalid status transition from ${snapshot.status} to ${newStatus}`
-      );
+      throw new Error(`Invalid status transition from ${snapshot.status} to ${newStatus}`);
     }
-    
+
     // Add transition record
     const transition: StatusTransition = {
       from: snapshot.status,
@@ -286,29 +282,30 @@ export async function updateRunSnapshotStatus(
       actor,
       actor_user_id: actorUserId,
     };
-    
+
     const updatedTransitions = [...snapshot.status_transitions, transition];
-    
+
     // Update database
-    const completedAt = newStatus === 'SUCCEEDED' || newStatus === 'FAILED' || newStatus === 'CANCELLED'
-      ? new Date()
-      : null;
-    
+    const completedAt =
+      newStatus === "SUCCEEDED" || newStatus === "FAILED" || newStatus === "CANCELLED"
+        ? new Date()
+        : null;
+
     await query(
       `UPDATE run_snapshots 
        SET status = $1, status_transitions = $2, completed_at = $3, updated_at = NOW()
        WHERE id = $4`,
       [newStatus, stableStringify(updatedTransitions), completedAt, snapshotId]
     );
-    
-    logInfo('Updated run snapshot status', {
+
+    logInfo("Updated run snapshot status", {
       snapshotId,
       from: snapshot.status,
       to: newStatus,
       reason,
     });
   } catch (error) {
-    logError('Failed to update run snapshot status', error, { snapshotId, newStatus });
+    logError("Failed to update run snapshot status", error, { snapshotId, newStatus });
     throw error;
   }
 }
@@ -329,10 +326,10 @@ export async function listRunSnapshotsForJob(
        LIMIT $3`,
       [reconJobId, tenantId, limit]
     );
-    
+
     return results.map(mapRowToSnapshot);
   } catch (error) {
-    logError('Failed to list run snapshots for job', error, { reconJobId, tenantId });
+    logError("Failed to list run snapshots for job", error, { reconJobId, tenantId });
     throw error;
   }
 }
@@ -346,7 +343,7 @@ export async function checkDuplicateRun(
 ): Promise<{ exists: boolean; snapshotId?: string; status?: RunStatus }> {
   try {
     const existing = await getRunSnapshotByFingerprint(tenantId, runFingerprint);
-    
+
     if (existing) {
       return {
         exists: true,
@@ -354,10 +351,10 @@ export async function checkDuplicateRun(
         status: existing.status,
       };
     }
-    
+
     return { exists: false };
   } catch (error) {
-    logError('Failed to check duplicate run', error, { tenantId, runFingerprint });
+    logError("Failed to check duplicate run", error, { tenantId, runFingerprint });
     throw error;
   }
 }
@@ -367,13 +364,13 @@ export async function checkDuplicateRun(
  */
 function isValidTransition(from: RunStatus, to: RunStatus): boolean {
   const validTransitions: Record<RunStatus, RunStatus[]> = {
-    'QUEUED': ['RUNNING', 'CANCELLED'],
-    'RUNNING': ['SUCCEEDED', 'FAILED', 'CANCELLED'],
-    'SUCCEEDED': [], // Terminal state
-    'FAILED': ['QUEUED'], // Can retry
-    'CANCELLED': ['QUEUED'], // Can restart
+    QUEUED: ["RUNNING", "CANCELLED"],
+    RUNNING: ["SUCCEEDED", "FAILED", "CANCELLED"],
+    SUCCEEDED: [], // Terminal state
+    FAILED: ["QUEUED"], // Can retry
+    CANCELLED: ["QUEUED"], // Can restart
   };
-  
+
   return validTransitions[from]?.includes(to) ?? false;
 }
 
@@ -411,7 +408,7 @@ function mapRowToSnapshot(row: Record<string, unknown>): RunSnapshot {
  */
 function parseJsonField<T>(value: unknown, defaultValue: T): T {
   if (!value) return defaultValue;
-  if (typeof value === 'string') {
+  if (typeof value === "string") {
     try {
       return JSON.parse(value) as T;
     } catch {

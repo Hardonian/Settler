@@ -1,9 +1,13 @@
 /**
- * Runs API Route
+ * Runs API Route v1
  * Exposes reconciliation run history and status
+ *
+ * @deprecated This is the v1 API. New code should use /api/runs which uses the
+ * canonical response format with { data, pagination } instead of { rows, pagination }.
  */
 
 import { Router, Response } from "express";
+import { RunListResponseV1 } from "@settler/types";
 import { z } from "zod";
 import { AuthRequest } from "../../middleware/auth";
 import { requirePermission } from "../../middleware/authorization";
