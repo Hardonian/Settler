@@ -13,100 +13,121 @@ import {
 } from "@/lib/supabase/tenant-membership";
 import { appLogger } from "@/lib/utils/logger";
 import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
+import { withSecurity } from "@/lib/middleware/api-security";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+const JobIdSchema = z.string().uuid();
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-export async function GET(request: NextRequest, { params }: RouteParams) {
-  const traceId = uuidv4();
+export const GET = withSecurity(
+  async function GET(request: NextRequest, { params }: RouteParams) {
+    const traceId = uuidv4();
 
-  try {
-    const { id: jobId } = await params;
-
-    const { tenantIds } = await resolveTenantMembershipScope();
-
-    // Optional tenant hint from query params (validated against memberships)
-    const { searchParams } = new URL(request.url);
-    const requestedTenantId = searchParams.get("tenant_id")?.trim() || null;
-    if (requestedTenantId && !tenantIds.includes(requestedTenantId)) {
-      return NextResponse.json(
-        {
-          error: "Job not found",
-          traceId,
-        },
-        { status: 404 }
-      );
-    }
-
-    const candidateTenantIds = requestedTenantId ? [requestedTenantId] : tenantIds;
-    let foundJob: ReturnType<typeof formatJobForResponse> | null = null;
-    let lastError: { error: string; traceId?: string; details?: unknown } | null = null;
-
-    for (const tenantId of candidateTenantIds) {
-      const result = await getJob(jobId, tenantId);
-      if (!isApiError(result)) {
-        foundJob = formatJobForResponse(result);
-        break;
-      }
-
-      if (result.error !== "Job not found") {
-        lastError = result;
-        break;
-      }
-    }
-
-    if (!foundJob) {
-      if (lastError) {
+    try {
+      const { id: jobId } = await params;
+      if (!JobIdSchema.safeParse(jobId).success) {
         return NextResponse.json(
           {
-            error: lastError.error,
-            traceId: lastError.traceId || traceId,
-            details: lastError.details,
+            error: "Invalid job ID",
+            traceId,
           },
-          { status: 500 }
+          { status: 400 }
+        );
+      }
+
+      const { tenantIds } = await resolveTenantMembershipScope();
+
+      // Optional tenant hint from query params (validated against memberships)
+      const { searchParams } = new URL(request.url);
+      const requestedTenantId = searchParams.get("tenant_id")?.trim() || null;
+      if (requestedTenantId && !tenantIds.includes(requestedTenantId)) {
+        return NextResponse.json(
+          {
+            error: "Job not found",
+            traceId,
+          },
+          { status: 404 }
+        );
+      }
+
+      const candidateTenantIds = requestedTenantId ? [requestedTenantId] : tenantIds;
+      let foundJob: ReturnType<typeof formatJobForResponse> | null = null;
+      let lastError: { error: string; traceId?: string; details?: unknown } | null = null;
+
+      for (const tenantId of candidateTenantIds) {
+        const result = await getJob(jobId, tenantId);
+        if (!isApiError(result)) {
+          foundJob = formatJobForResponse(result);
+          break;
+        }
+
+        if (result.error !== "Job not found") {
+          lastError = result;
+          break;
+        }
+      }
+
+      if (!foundJob) {
+        if (lastError) {
+          return NextResponse.json(
+            {
+              error: lastError.error,
+              traceId: lastError.traceId || traceId,
+              details: lastError.details,
+            },
+            { status: 500 }
+          );
+        }
+
+        return NextResponse.json(
+          {
+            error: "Job not found",
+            traceId,
+          },
+          { status: 404 }
         );
       }
 
       return NextResponse.json(
         {
-          error: "Job not found",
+          job: foundJob,
           traceId,
         },
-        { status: 404 }
+        {
+          status: 200,
+          headers: {
+            "Cache-Control": "private, no-store, max-age=0",
+            Vary: "Authorization, Cookie, X-API-Key",
+          },
+        }
       );
-    }
+    } catch (error) {
+      if (error instanceof TenantMembershipError) {
+        return NextResponse.json(
+          {
+            error: error.message,
+            code: error.code,
+            traceId,
+          },
+          { status: error.status }
+        );
+      }
 
-    return NextResponse.json(
-      {
-        job: foundJob,
-        traceId,
-      },
-      { status: 200 }
-    );
-  } catch (error) {
-    if (error instanceof TenantMembershipError) {
+      appLogger.error("Error in GET /api/jobs/[id]", { error, traceId });
+
       return NextResponse.json(
         {
-          error: error.message,
-          code: error.code,
+          error: "Internal server error",
           traceId,
+          details: error instanceof Error ? error.message : "Unknown error",
         },
-        { status: error.status }
+        { status: 500 }
       );
     }
-
-    appLogger.error("Error in GET /api/jobs/[id]", { error, traceId });
-
-    return NextResponse.json(
-      {
-        error: "Internal server error",
-        traceId,
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
-    );
-  }
-}
+  },
+  { rateLimit: { windowMs: 60_000, maxRequests: 120 }, requireAuth: false }
+);

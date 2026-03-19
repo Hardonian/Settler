@@ -142,6 +142,17 @@ export const GET = withSecurity(
             tenantId: job.tenantId,
             status: "running",
           },
+          select: {
+            id: true,
+            status: true,
+            startedAt: true,
+            sourceCount: true,
+            targetCount: true,
+            matchedCount: true,
+            unmatchedSourceCount: true,
+            unmatchedTargetCount: true,
+            metadata: true,
+          },
           orderBy: {
             startedAt: "desc",
           },
@@ -216,7 +227,13 @@ export const GET = withSecurity(
           hasProgress: progress !== null,
         });
 
-        return NextResponse.json(response, { status: 200 });
+        return NextResponse.json(response, {
+          status: 200,
+          headers: {
+            "Cache-Control": "private, no-store, max-age=0",
+            Vary: "Authorization, Cookie, X-API-Key",
+          },
+        });
       } catch (error) {
         if (error instanceof TenantMembershipError) {
           return NextResponse.json(
