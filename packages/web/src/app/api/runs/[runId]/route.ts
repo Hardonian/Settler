@@ -16,12 +16,14 @@ import {
 } from "@/lib/supabase/tenant-membership";
 import {
   buildCanonicalRunTruth,
+  buildRunSummary,
   toStageRows,
   type ReconAuditRow,
   type ReconJobRow,
   type ReconResultRow,
 } from "@/lib/reconciliation/run-status";
 import { buildRunConfigurationSummary } from "@/lib/reconciliation/run-detail";
+import { prisma } from "@/shared/db/prismaClient";
 
 export const runtime = "nodejs";
 
@@ -58,7 +60,7 @@ export const GET = withSecurity(
           return NextResponse.json({ error: "Run not found" }, { status: 404 });
         }
 
-        const { data: latestResult, error: resultError } = (await supabase
+        const { data: recentResults, error: resultError } = (await supabase
           .from("recon_results" as any)
           .select(
             "id, recon_job_id, status, started_at, completed_at, source_count, target_count, matched_count, unmatched_source_count, unmatched_target_count, conflict_count, error_message, input_hash, snapshot_id, metadata"
@@ -66,10 +68,9 @@ export const GET = withSecurity(
           .eq("recon_job_id", params.runId)
           .eq("tenant_id", run.tenant_id)
           .order("started_at", { ascending: false })
-          .limit(1)
-          .maybeSingle()) as {
+          .limit(2)) as {
           data:
-            | (ReconResultRow & { input_hash?: string | null; snapshot_id?: string | null })
+            | Array<ReconResultRow & { input_hash?: string | null; snapshot_id?: string | null }>
             | null;
           error: { message?: string } | null;
         };
@@ -78,6 +79,38 @@ export const GET = withSecurity(
           logger.error("Error fetching latest result", resultError as Error);
           return NextResponse.json({ error: "Failed to load run result" }, { status: 500 });
         }
+
+        const latestResult = recentResults?.[0] ?? null;
+        const previousResult = recentResults?.[1] ?? null;
+
+        const { count: persistedResultCount } = (await supabase
+          .from("recon_results" as any)
+          .select("id", { count: "exact", head: true })
+          .eq("recon_job_id", params.runId)
+          .eq("tenant_id", run.tenant_id)) as {
+          count: number | null;
+          error: { message?: string } | null;
+        };
+
+        const snapshotId = latestResult?.snapshot_id ?? null;
+        const { data: snapshotRecord } = snapshotId
+          ? ((await supabase
+              .from("run_snapshots" as any)
+              .select("id, input_hash, job_config, rule_versions, created_at")
+              .eq("id", snapshotId)
+              .eq("tenant_id", run.tenant_id)
+              .maybeSingle()) as {
+              data:
+                | {
+                    id: string;
+                    input_hash: string | null;
+                    job_config: unknown;
+                    rule_versions: unknown;
+                    created_at: string | null;
+                  }
+                | null;
+            })
+          : { data: null };
 
         const { data: audits, error: auditsError } = (await supabase
           .from("recon_audits" as any)
@@ -99,15 +132,71 @@ export const GET = withSecurity(
         const startedAt = latestResult?.started_at || run.created_at;
         const completedAt = latestResult?.completed_at || null;
         const truth = buildCanonicalRunTruth(run.status, latestResult);
+        const previousSummary = previousResult ? buildRunSummary(previousResult) : null;
+        const comparison =
+          previousResult && previousSummary
+            ? {
+                previousResultId: previousResult.id,
+                previousResultStartedAt: previousResult.started_at,
+                deltaMatched: truth.summary.matched - previousSummary.matched,
+                deltaUnmatched: truth.summary.unmatched - previousSummary.unmatched,
+                deltaConflicts: truth.summary.conflicts - previousSummary.conflicts,
+              }
+            : null;
         const config = buildRunConfigurationSummary({
           sourceAdapter: run.source_adapter ?? null,
           targetAdapter: run.target_adapter ?? null,
           reconStrategy: run.recon_strategy ?? null,
           templateId: run.template_id ?? null,
           validationRules: run.validation_rules,
-          snapshotId: latestResult?.snapshot_id ?? null,
+          snapshotId,
           inputHash: latestResult?.input_hash ?? null,
+          resultStartedAt: latestResult?.started_at ?? null,
+          snapshot: snapshotRecord
+            ? {
+                id: snapshotRecord.id,
+                inputHash: snapshotRecord.input_hash,
+                createdAt: snapshotRecord.created_at,
+                jobConfig: snapshotRecord.job_config,
+                ruleVersions: snapshotRecord.rule_versions,
+              }
+            : null,
         });
+
+        const [exceptionAggregateRow] = await prisma.$queryRaw<
+          Array<{
+            total: number | bigint;
+            pending: number | bigint;
+            investigating: number | bigint;
+            resolved: number | bigint;
+            ignored: number | bigint;
+          }>
+        >`
+          SELECT
+            COUNT(*)::int AS total,
+            COUNT(*) FILTER (WHERE acknowledged = false)::int AS pending,
+            COUNT(*) FILTER (
+              WHERE acknowledged = true
+              AND COALESCE(LOWER(metadata -> 'resolution' ->> 'status'), '') NOT IN ('resolved', 'ignored')
+            )::int AS investigating,
+            COUNT(*) FILTER (
+              WHERE LOWER(metadata -> 'resolution' ->> 'status') = 'resolved'
+            )::int AS resolved,
+            COUNT(*) FILTER (
+              WHERE LOWER(metadata -> 'resolution' ->> 'status') = 'ignored'
+            )::int AS ignored
+          FROM drift_events
+          WHERE recon_job_id = ${params.runId}
+            AND tenant_id = ${run.tenant_id}
+        `;
+
+        const exceptionCounts = {
+          total: Number(exceptionAggregateRow?.total || 0),
+          pending: Number(exceptionAggregateRow?.pending || 0),
+          investigating: Number(exceptionAggregateRow?.investigating || 0),
+          resolved: Number(exceptionAggregateRow?.resolved || 0),
+          ignored: Number(exceptionAggregateRow?.ignored || 0),
+        };
 
         return NextResponse.json({
           id: run.id,
@@ -122,6 +211,27 @@ export const GET = withSecurity(
           ...(latestResult?.error_message ? { error: latestResult.error_message } : {}),
           summary: truth.summary,
           summaryState: truth.summaryState,
+          summaryMath: {
+            sourceCount: truth.summary.sourceCount,
+            targetCount: truth.summary.targetCount,
+            matchedCount: truth.summary.matched,
+            unmatchedSourceCount: truth.summary.unmatchedSourceCount,
+            unmatchedTargetCount: truth.summary.unmatchedTargetCount,
+            conflictCount: truth.summary.conflicts,
+            note: "unmatched = unmatched_source + unmatched_target",
+          },
+          resultContext: {
+            latestResultId: latestResult?.id ?? null,
+            latestResultStatus: latestResult?.status ?? null,
+            latestResultStartedAt: latestResult?.started_at ?? null,
+            latestResultCompletedAt: latestResult?.completed_at ?? null,
+            persistedResultCount: persistedResultCount ?? (latestResult ? 1 : 0),
+            comparison,
+          },
+          exceptions: {
+            ...exceptionCounts,
+            reviewRequired: exceptionCounts.pending + exceptionCounts.investigating,
+          },
           config,
           stages: toStageRows(audits || []),
         });

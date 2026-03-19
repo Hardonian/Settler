@@ -5,9 +5,32 @@ export interface RunConfigurationSummary {
   templateId: string | null;
   validationRuleCount: number;
   validationRuleLabels: string[];
+  ruleVersionCount: number;
+  ruleVersionLabels: string[];
   snapshotId: string | null;
   inputHash: string | null;
+  configSource: "snapshot" | "job_definition";
+  configCapturedAt: string | null;
   summaryBasis: string;
+}
+
+interface RunSnapshotRecord {
+  id?: string | null;
+  inputHash?: string | null;
+  createdAt?: string | null;
+  jobConfig?: unknown;
+  ruleVersions?: unknown;
+}
+
+function asObject(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+  return value as Record<string, unknown>;
+}
+
+function asString(value: unknown): string | null {
+  return typeof value === "string" && value.trim().length > 0 ? value : null;
 }
 
 function labelFromRule(rule: Record<string, unknown>): string | null {
@@ -38,6 +61,28 @@ export function summarizeValidationRules(validationRules: unknown): string[] {
     .slice(0, 4);
 }
 
+function summarizeRuleVersions(ruleVersions: unknown): string[] {
+  if (!Array.isArray(ruleVersions)) {
+    return [];
+  }
+
+  return ruleVersions
+    .map((entry) => {
+      if (!entry || typeof entry !== "object") {
+        return null;
+      }
+      const row = entry as Record<string, unknown>;
+      const ruleId = asString(row.ruleId);
+      const version = typeof row.version === "number" ? row.version : null;
+      if (!ruleId) {
+        return null;
+      }
+      return version !== null ? `${ruleId} v${version}` : ruleId;
+    })
+    .filter((label): label is string => Boolean(label))
+    .slice(0, 6);
+}
+
 export function buildRunConfigurationSummary(input: {
   sourceAdapter?: string | null;
   targetAdapter?: string | null;
@@ -46,19 +91,47 @@ export function buildRunConfigurationSummary(input: {
   validationRules?: unknown;
   snapshotId?: string | null;
   inputHash?: string | null;
+  snapshot?: RunSnapshotRecord | null;
+  resultStartedAt?: string | null;
 }): RunConfigurationSummary {
-  const validationRuleLabels = summarizeValidationRules(input.validationRules);
+  const snapshot = input.snapshot ?? null;
+  const snapshotJobConfig = asObject(snapshot?.jobConfig);
+  const snapshotValidationRules = snapshotJobConfig?.validationRules;
+  const effectiveValidationRules = Array.isArray(snapshotValidationRules)
+    ? snapshotValidationRules
+    : input.validationRules;
+  const validationRuleLabels = summarizeValidationRules(effectiveValidationRules);
+  const ruleVersionLabels = summarizeRuleVersions(snapshot?.ruleVersions);
+
+  const effectiveReconStrategy =
+    asString(snapshotJobConfig?.reconStrategy) || input.reconStrategy || null;
+  const effectiveTemplateId =
+    asString(snapshotJobConfig?.templateId) ||
+    asString(snapshotJobConfig?.mappingTemplateId) ||
+    input.templateId ||
+    null;
+  const snapshotId = input.snapshotId ?? snapshot?.id ?? null;
+  const inputHash = input.inputHash ?? snapshot?.inputHash ?? null;
+  const configSource = snapshotId ? "snapshot" : "job_definition";
+  const configCapturedAt = snapshot?.createdAt ?? input.resultStartedAt ?? null;
+  const summaryBasis =
+    configSource === "snapshot"
+      ? "Configuration was loaded from the run snapshot captured before execution. Current job settings can differ."
+      : "Snapshot data is unavailable. Configuration reflects the current job definition and may differ from historical execution.";
 
   return {
     sourceAdapter: input.sourceAdapter ?? null,
     targetAdapter: input.targetAdapter ?? null,
-    reconStrategy: input.reconStrategy ?? null,
-    templateId: input.templateId ?? null,
-    validationRuleCount: Array.isArray(input.validationRules) ? input.validationRules.length : 0,
+    reconStrategy: effectiveReconStrategy,
+    templateId: effectiveTemplateId,
+    validationRuleCount: Array.isArray(effectiveValidationRules) ? effectiveValidationRules.length : 0,
     validationRuleLabels,
-    snapshotId: input.snapshotId ?? null,
-    inputHash: input.inputHash ?? null,
-    summaryBasis:
-      "Summary counts are derived from the latest persisted reconciliation result for this run.",
+    ruleVersionCount: Array.isArray(snapshot?.ruleVersions) ? snapshot.ruleVersions.length : 0,
+    ruleVersionLabels,
+    snapshotId,
+    inputHash,
+    configSource,
+    configCapturedAt,
+    summaryBasis,
   };
 }

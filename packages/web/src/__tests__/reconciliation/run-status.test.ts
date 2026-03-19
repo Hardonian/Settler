@@ -42,8 +42,12 @@ describe("run-status helpers", () => {
       })
     ).toEqual({
       total: 18,
+      sourceCount: 8,
+      targetCount: 10,
       matched: 7,
       unmatched: 4,
+      unmatchedSourceCount: 1,
+      unmatchedTargetCount: 3,
       conflicts: 2,
     });
   });
@@ -153,13 +157,40 @@ describe("run-status helpers", () => {
     expect(isTerminalRunState("failed")).toBe(true);
 
     expect(
-      getRunSummaryState("completed", { total: 10, matched: 10, unmatched: 0, conflicts: 0 })
+      getRunSummaryState("completed", {
+        total: 10,
+        sourceCount: 5,
+        targetCount: 5,
+        matched: 10,
+        unmatched: 0,
+        unmatchedSourceCount: 0,
+        unmatchedTargetCount: 0,
+        conflicts: 0,
+      })
     ).toBe("success");
     expect(
-      getRunSummaryState("completed", { total: 10, matched: 9, unmatched: 1, conflicts: 0 })
+      getRunSummaryState("completed", {
+        total: 10,
+        sourceCount: 5,
+        targetCount: 5,
+        matched: 9,
+        unmatched: 1,
+        unmatchedSourceCount: 1,
+        unmatchedTargetCount: 0,
+        conflicts: 0,
+      })
     ).toBe("review_needed");
     expect(
-      getRunSummaryState("failed", { total: 10, matched: 0, unmatched: 10, conflicts: 0 })
+      getRunSummaryState("failed", {
+        total: 10,
+        sourceCount: 5,
+        targetCount: 5,
+        matched: 0,
+        unmatched: 10,
+        unmatchedSourceCount: 5,
+        unmatchedTargetCount: 5,
+        conflicts: 0,
+      })
     ).toBe("failed");
 
     expect(getRunProgressState("pending", 0)).toBe("not_started");

@@ -15,8 +15,12 @@ import Link from "next/link";
 
 interface RunSummary {
   total: number;
+  sourceCount: number;
+  targetCount: number;
   matched: number;
   unmatched: number;
+  unmatchedSourceCount: number;
+  unmatchedTargetCount: number;
   conflicts: number;
 }
 
@@ -218,7 +222,7 @@ export default function RunsPage() {
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Runs</h1>
           <p className="text-slate-600 dark:text-slate-400 mt-1">
-            Monitoring and managing reconciliation executions
+            Execution history for tenant-scoped reconciliations and their review outcomes
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -320,10 +324,10 @@ export default function RunsPage() {
                     Duration
                   </th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-400">
-                    Records
+                    Source / Target
                   </th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-400">
-                    Exceptions
+                    Needs Review
                   </th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-400">
                     Actions
@@ -362,16 +366,20 @@ export default function RunsPage() {
                         {run.startedAt ? formatDuration(run.startedAt, run.completedAt) : "-"}
                       </td>
                       <td className="py-3 px-4 text-sm text-slate-600 dark:text-slate-400">
-                        {run.summary?.total.toLocaleString() ?? "-"}
+                        {run.summary
+                          ? `${run.summary.sourceCount.toLocaleString()} / ${run.summary.targetCount.toLocaleString()}`
+                          : "-"}
                       </td>
                       <td className="py-3 px-4">
-                        {run.summary && run.summary.unmatched > 0 ? (
+                        {run.summary && run.summary.unmatched + run.summary.conflicts > 0 ? (
                           <span className="text-red-600 dark:text-red-400 font-medium">
-                            {run.summary.unmatched.toLocaleString()}
+                            {(run.summary.unmatched + run.summary.conflicts).toLocaleString()}
                           </span>
                         ) : (
                           <span className="text-slate-600 dark:text-slate-400">
-                            {run.summary?.unmatched.toLocaleString() ?? "-"}
+                            {run.summary
+                              ? (run.summary.unmatched + run.summary.conflicts).toLocaleString()
+                              : "-"}
                           </span>
                         )}
                       </td>

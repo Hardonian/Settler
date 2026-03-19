@@ -1,132 +1,94 @@
 # What Works Today
 
-**Last Updated:** 2026-03-18  
-**Purpose:** Clear reference for operators on which workflows are functional and ready for use.
+**Last Updated:** 2026-03-19  
+**Purpose:** Operator-facing reference for workflows that are live in the current console.
 
 ---
 
-## Overview
+## Core Operating Model
 
-This document describes the core workflows that are functional in the current release. These represent the "real today" capabilities of Settler — not promised future features.
+Settler currently operates as a tenant-scoped reconciliation control plane with three primary entities:
 
----
+- **Run definition (`recon_job`)**: Configuration for source/target adapters, strategy, and rules.
+- **Persisted result (`recon_result`)**: Latest evaluated outcome for that run definition.
+- **Exception (`drift_event`)**: Operator decision item derived from reconciliation outcomes.
 
-## Core Functional Workflows
+Additional provenance fields are available when captured:
 
-### 1. Stripe ↔ Bank Reconciliation
-
-**Status:** ✅ Functional
-
-The primary reconciliation workflow matches Stripe transactions against bank deposits.
-
-**What's supported:**
-- Stripe charge events → normalized transaction records
-- Bank deposit detection and matching
-- Fee reconciliation (Stripe fees vs bank fees)
-- Payout-to-deposit matching
-- Tolerance-based matching (configurable thresholds)
-
-**Verification:**
-```bash
-pnpm demo:seed          # Load demo data
-# Navigate to console → Reconciliation → Run
-```
-
-**Expected outcome:** Demo data produces matches, mismatches, and unmatched transactions.
+- **Run snapshot (`run_snapshot`)**: Snapshot-backed configuration and rule-version context.
 
 ---
 
-### 2. Manual Review Queue
+## Functional Workflows
 
-**Status:** ✅ Functional
+### 1. Run Monitoring and Execution History
 
-The review queue displays all transactions that require human resolution.
+**Status:** ✅ Functional  
+**Primary route:** `/console/runs`
 
-**What's supported:**
-- View all mismatched transactions
-- Manual override with justification
-- Bulk resolution actions
-- Audit trail for all manual decisions
+Supported today:
 
-**Verification:**
-```bash
-pnpm dev
-# Navigate to http://localhost:3000/console/review
-```
+- Tenant-scoped run list with canonical execution states
+- Run detail view with progress, summary counts, and stage timeline
+- Result provenance context (latest result + prior-result comparison)
 
 ---
 
-### 3. Evidence Generation
+### 2. Reconciliation Result Inspection
 
-**Status:** ✅ Functional
+**Status:** ✅ Functional  
+**Primary route:** `/console/reconciliations?runId=<run-id>`
 
-Settler generates deterministic evidence for every reconciliation decision.
+Supported today:
 
-**What's supported:**
-- Per-transaction evidence records
-- Match confidence scores
-- Rule execution traces
-- Export evidence bundles (JSON/PDF)
-
-**Evidence includes:**
-- Input data snapshots
-- Matching rules applied
-- Decision rationale
-- Timestamp and operator ID (for manual overrides)
+- Run-scoped result inspection for completed runs
+- Matched/unmatched/conflict outcome framing
+- Cross-linking back to run detail and exception queue
 
 ---
 
-### 4. Basic Ingestion Pipelines
+### 3. Exception Decision Workflow
 
-**Status:** ✅ Functional
+**Status:** ✅ Functional  
+**Primary routes:** `/console/exceptions`, `/console/exceptions/<exception-id>`
 
-CSV and API-based data ingestion are supported.
+Supported today:
 
-**What's supported:**
-- CSV upload via console
-- Stripe API ingestion
-- Bank CSV import
-- Field mapping configuration
-
-**Limitations:**
-- Max file size: 10MB per upload
-- Supported formats: CSV, JSON
+- Run-scoped exception queues
+- Workflow states: `pending`, `investigating`, `resolved`, `ignored`
+- Operator actions: resolve, ignore, reopen
+- Decision detail and audit trail history
 
 ---
 
-### 5. Tenant Management (Multi-workspace)
+### 4. Effective Configuration Visibility
 
-**Status:** ✅ Functional
+**Status:** ✅ Functional  
+**Primary route:** `/console/runs/<run-id>`
 
-Basic multi-tenancy with workspace isolation.
+Supported today:
 
-**What's supported:**
-- Create/manage workspaces
-- RLS (Row Level Security) enforcement
-- Tenant-scoped data access
-
----
-
-## What is NOT Yet Production-Ready
-
-See [INTENTIONAL_BOUNDARIES.md](./INTENTIONAL_BOUNDARIES.md) for details on features that are intentionally not complete.
+- Snapshot-backed vs live-definition configuration source disclosure
+- Recorded rule coverage and rule-version lock visibility (when snapshot data exists)
+- Explicit note when configuration falls back to current run definition
 
 ---
 
-## Quick Verification Commands
+## Verification Checklist
 
-| Workflow | Verification Command | Expected Result |
-|----------|---------------------|-----------------|
-| Reconciliation | `pnpm demo:seed && pnpm dev` | Demo data loads, console accessible |
-| Evidence | Check `/console/evidence` | Evidence records visible |
-| Review Queue | `pnpm dev` → `/console/review` | Queue page loads |
-| Ingestion | CSV upload via console | Data appears in transactions |
+Use this quick sequence after `pnpm dev`:
+
+1. Open `/console/runs` and confirm run history loads.
+2. Open any run detail and confirm:
+   - `Result Provenance` section is present,
+   - `Effective Configuration` shows snapshot/live source,
+   - `Exception Workflow` counts are visible.
+3. Open `/console/exceptions?runId=<run-id>` and verify status filters (`pending`, `investigating`, `resolved`, `ignored`) return expected records.
+4. Open `/console/reconciliations?runId=<run-id>` and confirm result inspection surface renders for that run.
 
 ---
 
-## Related Documentation
+## Notes on Scope
 
-- [Quickstart](./quickstart.md)
-- [Demo Walkthrough](./DEMO_WALKTHROUGH.md)
-- [Verification Commands](../VERIFICATION_COMMANDS.md)
-- [Troubleshooting](../troubleshooting/SETUP_TRAPS.md)
+- This document lists currently operational console workflows only.
+- See [Intentional Boundaries](./INTENTIONAL_BOUNDARIES.md) for intentionally incomplete areas.

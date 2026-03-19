@@ -22,6 +22,7 @@ interface ExceptionDetail {
   detectedAt: string;
   description: string;
   statusDetail?: string;
+  reasonTags?: string[];
   amount?: number;
   currency?: string;
   sourceTransactionId?: string;
@@ -276,6 +277,18 @@ export default function ExceptionDetailPage() {
                   {exception.type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                 </p>
               </div>
+              {exception.reasonTags && exception.reasonTags.length > 0 && (
+                <div>
+                  <h3 className="font-medium text-slate-900 dark:text-white">Decision Drivers</h3>
+                  <div className="mt-1 flex flex-wrap gap-1.5">
+                    {exception.reasonTags.map((tag) => (
+                      <Badge key={`${exception.id}-${tag}`} variant="outline">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div>
                 <h3 className="font-medium text-slate-900 dark:text-white">Description</h3>
                 <p className="text-slate-600 dark:text-slate-400">{exception.description}</p>

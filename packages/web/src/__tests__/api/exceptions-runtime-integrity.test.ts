@@ -181,4 +181,42 @@ describe("exceptions runtime integrity", () => {
     expect(payload.items[0].status).toBe("investigating");
     expect(payload.items[0].statusDetail).toContain("Resolution is still pending");
   });
+
+  test("applies exact ignored workflow filtering semantics at query time", async () => {
+    driftEventFindManyMock.mockResolvedValue([]);
+    driftEventCountMock.mockResolvedValue(0);
+
+    const response = await getExceptions(
+      req("http://localhost/api/exceptions?status=ignored&tenant_id=tenant-a")
+    );
+
+    expect(response.status).toBe(200);
+    expect(driftEventFindManyMock).toHaveBeenCalled();
+    const call = driftEventFindManyMock.mock.calls[0]?.[0];
+    expect(call.where.acknowledged).toBe(true);
+    expect(call.where.metadata).toEqual({
+      path: ["resolution", "status"],
+      equals: "ignored",
+    });
+  });
+
+  test("applies exact investigating workflow filtering semantics at query time", async () => {
+    driftEventFindManyMock.mockResolvedValue([]);
+    driftEventCountMock.mockResolvedValue(0);
+
+    const response = await getExceptions(
+      req("http://localhost/api/exceptions?status=investigating&tenant_id=tenant-a")
+    );
+
+    expect(response.status).toBe(200);
+    expect(driftEventFindManyMock).toHaveBeenCalled();
+    const call = driftEventFindManyMock.mock.calls[0]?.[0];
+    expect(call.where.acknowledged).toBe(true);
+    expect(call.where.NOT).toEqual(
+      expect.arrayContaining([
+        { metadata: { path: ["resolution", "status"], equals: "resolved" } },
+        { metadata: { path: ["resolution", "status"], equals: "ignored" } },
+      ])
+    );
+  });
 });

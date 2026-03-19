@@ -17,9 +17,10 @@ interface Exception {
   type: string;
   status: "pending" | "investigating" | "resolved" | "ignored";
   severity: "low" | "medium" | "high" | "critical";
-  detectedAt: Date;
+  detectedAt: string;
   description: string;
   statusDetail?: string;
+  reasonTags?: string[];
   amount?: number;
   currency?: string;
   sourceTransactionId?: string;
@@ -184,7 +185,7 @@ export default function ExceptionsPage() {
           <p className="text-slate-600 dark:text-slate-400 mt-1">
             {runId
               ? "Exceptions from this reconciliation run"
-              : "Monitoring and managing reconciliation discrepancies"}
+              : "Action queue for reconciliation outcomes that require operator decisions"}
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -341,6 +342,15 @@ export default function ExceptionsPage() {
                           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                             {exception.statusDetail}
                           </p>
+                        )}
+                        {exception.reasonTags && exception.reasonTags.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            {exception.reasonTags.map((tag) => (
+                              <Badge key={`${exception.id}-${tag}`} variant="outline">
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
                         )}
                       </div>
                     </div>

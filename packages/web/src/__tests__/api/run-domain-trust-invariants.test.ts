@@ -14,6 +14,7 @@ const requireAuthMock = jest.fn();
 const authenticateApiKeyMock = jest.fn();
 const reconJobFindFirstMock = jest.fn();
 const reconResultFindFirstMock = jest.fn();
+const prismaQueryRawMock = jest.fn();
 
 jest.mock("@/lib/middleware/api-security", () => ({
   withSecurity: (handler: unknown) => handler,
@@ -43,6 +44,7 @@ jest.mock("@/lib/ops/lifecycle-events", () => ({
 
 jest.mock("@/shared/db/prismaClient", () => ({
   prisma: {
+    $queryRaw: (...args: unknown[]) => prismaQueryRawMock(...args),
     reconciliationRun: {
       count: jest.fn(async () => 0),
     },
@@ -117,6 +119,16 @@ describe("run domain trust invariants", () => {
     authenticateApiKeyMock.mockReset();
     reconJobFindFirstMock.mockReset();
     reconResultFindFirstMock.mockReset();
+    prismaQueryRawMock.mockReset();
+    prismaQueryRawMock.mockResolvedValue([
+      {
+        total: 0,
+        pending: 0,
+        investigating: 0,
+        resolved: 0,
+        ignored: 0,
+      },
+    ]);
   });
 
   test("run detail read blocks cross-tenant access", async () => {
@@ -223,13 +235,49 @@ describe("run domain trust invariants", () => {
 
         if (table === "recon_results") {
           return {
+            select: jest.fn((_fields: string, options?: { count?: string; head?: boolean }) => {
+              if (options?.head) {
+                return {
+                  eq: jest.fn(() => ({
+                    eq: jest.fn(async () => ({ count: 1, error: null })),
+                  })),
+                };
+              }
+
+              return {
+                eq: jest.fn(() => ({
+                  eq: jest.fn(() => ({
+                    order: jest.fn(() => ({
+                      limit: jest.fn(async () => ({ data: [latestResult], error: null })),
+                    })),
+                  })),
+                })),
+              };
+            }),
+          };
+        }
+
+        if (table === "run_snapshots") {
+          return {
             select: jest.fn(() => ({
               eq: jest.fn(() => ({
                 eq: jest.fn(() => ({
-                  order: jest.fn(() => ({
-                    limit: jest.fn(() => ({
-                      maybeSingle: jest.fn(async () => ({ data: latestResult, error: null })),
-                    })),
+                  maybeSingle: jest.fn(async () => ({
+                    data: {
+                      id: "snapshot-1",
+                      input_hash: "hash-1",
+                      job_config: {
+                        reconStrategy: "deterministic",
+                        validationRules: [
+                          { field: "amount", tolerance: 0.01 },
+                          { field: "date", window: "24h" },
+                        ],
+                        templateId: "tpl-1",
+                      },
+                      rule_versions: [{ ruleId: "rule-amount", version: 2 }],
+                      created_at: "2026-01-01T00:09:00.000Z",
+                    },
+                    error: null,
                   })),
                 })),
               })),
@@ -274,8 +322,10 @@ describe("run domain trust invariants", () => {
         reconStrategy: "deterministic",
         templateId: "tpl-1",
         validationRuleCount: 2,
+        ruleVersionCount: 1,
         snapshotId: "snapshot-1",
         inputHash: "hash-1",
+        configSource: "snapshot",
       })
     );
     expect(payload.config.validationRuleLabels).toEqual(

@@ -17,10 +17,12 @@ import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
 import {
   buildExceptionDescription,
+  buildExceptionReasonTags,
   buildExceptionStatusDetail,
   getExceptionWorkflowState,
 } from "@/lib/exceptions/presentation";
 import { z } from "zod";
+import type { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -37,6 +39,59 @@ const queryParamsSchema = z.object({
 });
 
 type QueryParams = z.infer<typeof queryParamsSchema>;
+
+function withWorkflowStatusFilter(
+  baseWhere: Prisma.DriftEventWhereInput,
+  status?: QueryParams["status"]
+): Prisma.DriftEventWhereInput {
+  if (!status) {
+    return baseWhere;
+  }
+
+  switch (status) {
+    case "pending":
+      return { ...baseWhere, acknowledged: false };
+    case "resolved":
+      return {
+        ...baseWhere,
+        acknowledged: true,
+        metadata: {
+          path: ["resolution", "status"],
+          equals: "resolved",
+        },
+      };
+    case "ignored":
+      return {
+        ...baseWhere,
+        acknowledged: true,
+        metadata: {
+          path: ["resolution", "status"],
+          equals: "ignored",
+        },
+      };
+    case "investigating":
+      return {
+        ...baseWhere,
+        acknowledged: true,
+        NOT: [
+          {
+            metadata: {
+              path: ["resolution", "status"],
+              equals: "resolved",
+            },
+          },
+          {
+            metadata: {
+              path: ["resolution", "status"],
+              equals: "ignored",
+            },
+          },
+        ],
+      };
+    default:
+      return baseWhere;
+  }
+}
 
 /**
  * GET /api/exceptions - List exceptions for the current workspace
@@ -67,18 +122,7 @@ export const GET = withSecurity(
         const params = queryParamsSchema.parse(rawParams);
 
         // Build where clause - workspace scoped
-        const whereClause: {
-          tenantId: string;
-          reconJobId?: string;
-          severity?: string;
-          driftType?: string;
-          acknowledged?: boolean;
-          OR?: Array<{
-            fieldPath?: { contains: string; mode: "insensitive" };
-            expectedValue?: { contains: string; mode: "insensitive" };
-            actualValue?: { contains: string; mode: "insensitive" };
-          }>;
-        } = { tenantId };
+        let whereClause: Prisma.DriftEventWhereInput = { tenantId };
 
         if (params.severity) {
           whereClause.severity = params.severity;
@@ -92,18 +136,11 @@ export const GET = withSecurity(
           whereClause.reconJobId = params.runId;
         }
 
-        // Map status to acknowledged
-        if (params.status) {
-          if (params.status === "resolved" || params.status === "ignored") {
-            whereClause.acknowledged = true;
-          } else {
-            whereClause.acknowledged = false;
-          }
-        }
+        whereClause = withWorkflowStatusFilter(whereClause, params.status);
 
         // Search in fieldPath, expectedValue, actualValue
         if (params.search) {
-          whereClause.OR = [
+          (whereClause as { OR?: unknown }).OR = [
             { fieldPath: { contains: params.search, mode: "insensitive" } },
             { expectedValue: { contains: params.search, mode: "insensitive" } },
             { actualValue: { contains: params.search, mode: "insensitive" } },
@@ -169,6 +206,11 @@ export const GET = withSecurity(
               acknowledged: ex.acknowledged,
               acknowledgedBy: ex.acknowledgedBy,
               acknowledgedAt: ex.acknowledgedAt,
+            }),
+            reasonTags: buildExceptionReasonTags({
+              driftType: ex.driftType,
+              fieldPath: ex.fieldPath,
+              metadata,
             }),
             amount: (ex.metadata as Record<string, unknown>)?.amount as number | undefined,
             currency: (ex.metadata as Record<string, unknown>)?.currency as string | undefined,

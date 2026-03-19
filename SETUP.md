@@ -138,6 +138,20 @@ The bootstrap process creates a starter `.env.local` file. For a first run, the 
 
 ## Troubleshooting
 
+### EACCES Permission Errors
+
+If `pnpm install` fails with EACCES permission errors:
+
+```bash
+# Use the dedicated reinstall command (recommended)
+pnpm reinstall
+
+# If that doesn't work, force clear cache
+pnpm reinstall:force
+```
+
+For more troubleshooting, see [Common Setup Traps](docs/troubleshooting/SETUP_TRAPS.md).
+
 If the bootstrap process fails:
 1. Run `pnpm run doctor` to diagnose issues
 2. Check that Docker is running and accessible

@@ -35,6 +35,46 @@ cp .env.local.example .env.local
 - Ensure required backing runtime services are reachable (local DB/Supabase where configured).
 - Re-run `pnpm install` then `pnpm run repo-integrity`.
 
+## `pnpm install` fails with EACCES permission errors
+
+EACCES errors typically occur when:
+- Files in `node_modules` have incorrect ownership (from switching users or containers)
+- The pnpm store has permission issues
+- Previous interrupted installs left corrupted state
+
+### Solution: Use the reinstall command
+
+```bash
+# Safe reinstall (recommended first attempt)
+pnpm reinstall
+
+# Force clear pnpm cache and reinstall (if above fails)
+pnpm reinstall:force
+```
+
+### Manual fix (if reinstall doesn't work)
+
+```bash
+# On macOS/Linux: Fix ownership
+sudo chown -R $(whoami) .
+
+# Remove all node_modules and try again
+rm -rf node_modules packages/*/node_modules
+pnpm install
+
+# If using a shared pnpm store, try clearing it
+pnpm store prune
+pnpm install
+```
+
+### On Windows
+
+If you encounter permission errors on Windows:
+
+1. Run PowerShell as Administrator, OR
+2. Enable Developer Mode (Settings → Privacy & Security → For Developers)
+3. Then run: `pnpm reinstall`
+
 ## `demo` fails
 
 Run with a clean install and generated env first:

@@ -44,9 +44,22 @@ interface Run {
   error?: string;
   summary?: {
     total: number;
+    sourceCount: number;
+    targetCount: number;
     matched: number;
     unmatched: number;
+    unmatchedSourceCount: number;
+    unmatchedTargetCount: number;
     conflicts: number;
+  };
+  summaryMath?: {
+    sourceCount: number;
+    targetCount: number;
+    matchedCount: number;
+    unmatchedSourceCount: number;
+    unmatchedTargetCount: number;
+    conflictCount: number;
+    note: string;
   };
   summaryState?: "success" | "review_needed" | "in_progress" | "failed" | "empty" | "unknown";
   config?: {
@@ -56,9 +69,35 @@ interface Run {
     templateId: string | null;
     validationRuleCount: number;
     validationRuleLabels: string[];
+    ruleVersionCount: number;
+    ruleVersionLabels: string[];
     snapshotId: string | null;
     inputHash: string | null;
+    configSource: "snapshot" | "job_definition";
+    configCapturedAt: string | null;
     summaryBasis: string;
+  };
+  resultContext?: {
+    latestResultId: string | null;
+    latestResultStatus: string | null;
+    latestResultStartedAt: string | null;
+    latestResultCompletedAt: string | null;
+    persistedResultCount: number;
+    comparison?: {
+      previousResultId: string;
+      previousResultStartedAt: string | null;
+      deltaMatched: number;
+      deltaUnmatched: number;
+      deltaConflicts: number;
+    } | null;
+  };
+  exceptions?: {
+    total: number;
+    pending: number;
+    investigating: number;
+    resolved: number;
+    ignored: number;
+    reviewRequired: number;
   };
 }
 
@@ -122,6 +161,13 @@ export default function RunPage() {
       default:
         return "bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300";
     }
+  };
+
+  const formatSignedDelta = (value: number) => {
+    if (value > 0) {
+      return `+${value}`;
+    }
+    return `${value}`;
   };
 
   if (loading && !run) {
@@ -232,28 +278,161 @@ export default function RunPage() {
               </div>
             </div>
             {run.summary && (
-              <div className="grid grid-cols-4 gap-4 pt-4 border-t">
-                <div>
-                  <div className="text-2xl font-bold">{run.summary.total}</div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">Total</div>
+              <div className="space-y-3 pt-4 border-t">
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
+                  <div>
+                    <div className="text-2xl font-bold">{run.summary.sourceCount}</div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">Source Rows</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">{run.summary.targetCount}</div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">Target Rows</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-green-600">{run.summary.matched}</div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">Matched</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-amber-600">
+                      {run.summary.unmatchedSourceCount}
+                    </div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">
+                      Unmatched Source
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-amber-600">
+                      {run.summary.unmatchedTargetCount}
+                    </div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">
+                      Unmatched Target
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-red-600">{run.summary.conflicts}</div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">Conflicts</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-2xl font-bold text-green-600">{run.summary.matched}</div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">Matched</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-yellow-600">{run.summary.unmatched}</div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">Unmatched</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-red-600">{run.summary.conflicts}</div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">Conflicts</div>
-                </div>
+                {run.summaryMath?.note ? (
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{run.summaryMath.note}</p>
+                ) : null}
               </div>
             )}
           </div>
         </CardContent>
       </Card>
+
+      {run.resultContext && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Result Provenance</CardTitle>
+            <CardDescription>
+              Run detail shows the latest persisted result for this run definition.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+            <p>
+              Persisted results:{" "}
+              <span className="font-medium text-slate-900 dark:text-white">
+                {run.resultContext.persistedResultCount}
+              </span>
+            </p>
+            {run.resultContext.latestResultId ? (
+              <p>
+                Latest result ID:{" "}
+                <code className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded break-all">
+                  {run.resultContext.latestResultId}
+                </code>
+              </p>
+            ) : (
+              <p>No persisted result has been recorded yet.</p>
+            )}
+            {run.resultContext.latestResultStartedAt && (
+              <p>Evaluated at {new Date(run.resultContext.latestResultStartedAt).toLocaleString()}.</p>
+            )}
+            {run.resultContext.comparison && (
+              <div className="rounded-md border border-slate-200 dark:border-slate-700 p-3">
+                <p className="font-medium text-slate-900 dark:text-white">Compared to prior result</p>
+                <p className="mt-1">
+                  Previous result{" "}
+                  <code className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded break-all">
+                    {run.resultContext.comparison.previousResultId}
+                  </code>
+                  {run.resultContext.comparison.previousResultStartedAt
+                    ? ` from ${new Date(run.resultContext.comparison.previousResultStartedAt).toLocaleString()}`
+                    : ""}
+                  .
+                </p>
+                <p className="mt-1">
+                  Matched {formatSignedDelta(run.resultContext.comparison.deltaMatched)} • Unmatched{" "}
+                  {formatSignedDelta(run.resultContext.comparison.deltaUnmatched)} • Conflicts{" "}
+                  {formatSignedDelta(run.resultContext.comparison.deltaConflicts)}
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {run.exceptions && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Exception Workflow</CardTitle>
+            <CardDescription>
+              Exceptions are run-scoped operator decisions, distinct from run execution status.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
+              <div>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                  {run.exceptions.total}
+                </p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Total</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-amber-600">{run.exceptions.pending}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Pending</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-blue-600">{run.exceptions.investigating}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Investigating</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-green-600">{run.exceptions.resolved}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Resolved</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-slate-700 dark:text-slate-200">
+                  {run.exceptions.ignored}
+                </p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Ignored</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-red-600">{run.exceptions.reviewRequired}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Needs Review</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Link href={`/console/exceptions?runId=${run.id}`}>
+                <Button variant="outline" size="sm">
+                  Open All Run Exceptions
+                </Button>
+              </Link>
+              <Link href={`/console/exceptions?runId=${run.id}&status=pending`}>
+                <Button variant="outline" size="sm">
+                  Open Pending
+                </Button>
+              </Link>
+              <Link href={`/console/exceptions?runId=${run.id}&status=investigating`}>
+                <Button variant="outline" size="sm">
+                  Open Investigating
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Workflow Continuity - Next Actions */}
       {run.status === "completed" && (
@@ -359,11 +538,24 @@ export default function RunPage() {
           <CardHeader>
             <CardTitle>Effective Configuration</CardTitle>
             <CardDescription>
-              The latest result is interpreted using the job configuration and persisted result
-              metadata captured for this run.
+              Configuration context used to interpret the latest persisted result.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div
+              className={`rounded-md border p-3 text-sm ${
+                run.config.configSource === "snapshot"
+                  ? "border-green-200 bg-green-50 text-green-900 dark:border-green-800 dark:bg-green-900/20 dark:text-green-200"
+                  : "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200"
+              }`}
+            >
+              {run.config.configSource === "snapshot"
+                ? "Snapshot-backed configuration: run decisions are tied to a captured snapshot."
+                : "Live-definition fallback: snapshot data was not available for this result."}
+              {run.config.configCapturedAt
+                ? ` Captured ${new Date(run.config.configCapturedAt).toLocaleString()}.`
+                : ""}
+            </div>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               <div>
                 <p className="text-sm font-medium text-slate-900 dark:text-white">Adapters</p>
@@ -387,6 +579,16 @@ export default function RunPage() {
                         run.config.validationRuleCount === 1 ? "" : "s"
                       } active`
                     : "No validation rules recorded"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-900 dark:text-white">Rule Versions</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  {run.config.ruleVersionCount > 0
+                    ? `${run.config.ruleVersionCount} locked version${
+                        run.config.ruleVersionCount === 1 ? "" : "s"
+                      }`
+                    : "No rule-version lock recorded"}
                 </p>
               </div>
               <div>
@@ -415,6 +617,20 @@ export default function RunPage() {
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {run.config.validationRuleLabels.map((label) => (
+                    <Badge key={label} variant="outline">
+                      {label}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+            {run.config.ruleVersionLabels.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-medium text-slate-900 dark:text-white">
+                  Snapshot Rule Versions
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {run.config.ruleVersionLabels.map((label) => (
                     <Badge key={label} variant="outline">
                       {label}
                     </Badge>

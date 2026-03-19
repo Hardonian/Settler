@@ -1,4 +1,5 @@
 export type ExceptionWorkflowState = "pending" | "investigating" | "resolved" | "ignored";
+export type ExceptionResolutionState = Extract<ExceptionWorkflowState, "resolved" | "ignored">;
 
 export interface ExceptionAuditEntry {
   timestamp: string;
@@ -34,6 +35,12 @@ export interface ExceptionPresentationInput {
   acknowledged?: boolean;
   acknowledgedBy?: string | null;
   acknowledgedAt?: Date | string | null;
+}
+
+export interface ExceptionReasonTagInput {
+  driftType?: string | null;
+  fieldPath?: string | null;
+  metadata?: unknown;
 }
 
 function asObject(value: unknown): Record<string, unknown> | null {
@@ -92,19 +99,99 @@ function serializeValue(value: unknown): string | null {
   }
 }
 
+function normalizeReasonTag(value: string): string | null {
+  const normalized = value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9:_-]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  return normalized.length > 0 ? normalized : null;
+}
+
+export function getExceptionResolutionState(metadata: unknown): ExceptionResolutionState | null {
+  const parsedMetadata = asObject(metadata);
+  const resolution = asObject(parsedMetadata?.resolution) as ResolutionRecord | null;
+  const resolutionStatus =
+    resolution && typeof resolution.status === "string" ? resolution.status.toLowerCase() : null;
+
+  if (resolutionStatus === "resolved" || resolutionStatus === "ignored") {
+    return resolutionStatus;
+  }
+
+  return null;
+}
+
+export function buildExceptionReasonTags(input: ExceptionReasonTagInput): string[] {
+  const tags = new Set<string>();
+  const metadata = asObject(input.metadata);
+  const driftType = typeof input.driftType === "string" ? input.driftType.toLowerCase() : null;
+
+  if (driftType) {
+    switch (driftType) {
+      case "amount_mismatch":
+        tags.add("amount_out_of_tolerance");
+        break;
+      case "timing_difference":
+        tags.add("timing_window_difference");
+        break;
+      case "missing_transaction":
+        tags.add("missing_counterparty_record");
+        break;
+      case "duplicate_transaction":
+        tags.add("duplicate_record");
+        break;
+      case "currency_mismatch":
+        tags.add("currency_mismatch");
+        break;
+      default: {
+        const normalized = normalizeReasonTag(driftType);
+        if (normalized) {
+          tags.add(normalized);
+        }
+      }
+    }
+  }
+
+  if (input.fieldPath) {
+    const normalizedPath = normalizeReasonTag(input.fieldPath);
+    if (normalizedPath) {
+      tags.add(`field:${normalizedPath}`);
+    }
+  }
+
+  const rationaleCodes = metadata?.rationale_codes;
+  if (Array.isArray(rationaleCodes)) {
+    for (const code of rationaleCodes) {
+      if (typeof code === "string") {
+        const normalized = normalizeReasonTag(code);
+        if (normalized) {
+          tags.add(normalized);
+        }
+      }
+    }
+  }
+
+  if (metadata?.status_conflict === true) {
+    tags.add("status_conflict");
+  }
+  if (metadata?.is_dispute_related === true) {
+    tags.add("dispute_related");
+  }
+  if (metadata?.is_reversal_related === true) {
+    tags.add("reversal_related");
+  }
+
+  return Array.from(tags).slice(0, 6);
+}
+
 export function getExceptionWorkflowState(input: {
   acknowledged?: boolean;
   metadata?: unknown;
 }): ExceptionWorkflowState {
-  const metadata = asObject(input.metadata);
-  const resolution = asObject(metadata?.resolution) as ResolutionRecord | null;
-  const resolutionStatus =
-    resolution && typeof resolution.status === "string" ? resolution.status.toLowerCase() : null;
-
+  const resolutionStatus = getExceptionResolutionState(input.metadata);
   if (resolutionStatus === "ignored") {
     return "ignored";
   }
-
   if (resolutionStatus === "resolved") {
     return "resolved";
   }

@@ -19,6 +19,7 @@ import { appLogger } from "@/lib/utils/logger";
 import {
   buildExceptionAuditTrail,
   buildExceptionDescription,
+  buildExceptionReasonTags,
   buildExceptionStatusDetail,
   buildSuggestedActions,
   getExceptionWorkflowState,
@@ -160,6 +161,11 @@ export const GET = withSecurity(
             actualValue: exception.actualValue,
           }),
           statusDetail,
+          reasonTags: buildExceptionReasonTags({
+            driftType: exception.driftType,
+            fieldPath: exception.fieldPath,
+            metadata,
+          }),
           amount: metadata.amount as number | undefined,
           currency: metadata.currency as string | undefined,
           sourceTransactionId: metadata.sourceTransactionId as string | undefined,

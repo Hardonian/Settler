@@ -27,6 +27,8 @@ import {
   ShieldCheck,
   ClipboardCheck,
   Bot,
+  PlayCircle,
+  AlertTriangle,
   type LucideIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -49,6 +51,8 @@ const navSectionOrder = [
 const labelToIcon: Record<string, LucideIcon> = {
   Dashboard: LayoutDashboard,
   Reconciliations: Scale,
+  Runs: PlayCircle,
+  Exceptions: AlertTriangle,
   Audits: ClipboardCheck,
   "Proof Explorer": ShieldCheck,
   Policies: Shield,
@@ -104,6 +108,9 @@ export function ConsoleLayout({ children }: ConsoleLayoutProps) {
     .map((section) => {
       const items = CONSOLE_ROUTE_REGISTRY.filter((item) => item.section === section).filter(
         (item) => {
+          if (item.navTreatment === "restricted" || item.maturity === "thin") {
+            return false;
+          }
           if (item.roleRestriction === "super-admin") {
             return isSuperAdmin;
           }

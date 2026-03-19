@@ -10,8 +10,12 @@ export type RunProgressState = "not_started" | "in_progress" | "completed" | "fa
 
 export interface RunSummary {
   total: number;
+  sourceCount: number;
+  targetCount: number;
   matched: number;
   unmatched: number;
+  unmatchedSourceCount: number;
+  unmatchedTargetCount: number;
   conflicts: number;
 }
 
@@ -102,8 +106,12 @@ function asNumber(value: number | null | undefined): number {
 
 export function buildRunSummary(result: ReconResultRow | null): {
   total: number;
+  sourceCount: number;
+  targetCount: number;
   matched: number;
   unmatched: number;
+  unmatchedSourceCount: number;
+  unmatchedTargetCount: number;
   conflicts: number;
 } {
   const source = asNumber(result?.source_count);
@@ -115,8 +123,12 @@ export function buildRunSummary(result: ReconResultRow | null): {
 
   return {
     total: source + target,
+    sourceCount: source,
+    targetCount: target,
     matched,
     unmatched: unmatchedSource + unmatchedTarget,
+    unmatchedSourceCount: unmatchedSource,
+    unmatchedTargetCount: unmatchedTarget,
     conflicts,
   };
 }
