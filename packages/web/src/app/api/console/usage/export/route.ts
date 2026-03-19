@@ -67,6 +67,12 @@ export const GET = withSecurity(
             billingAccountId: billingAccount.id,
             timestamp: { gte: startDate, lte: endDate },
           },
+          select: {
+            timestamp: true,
+            eventType: true,
+            quantity: true,
+            metadata: true,
+          },
           orderBy: { timestamp: "desc" },
           take: maxEvents,
         });
@@ -115,6 +121,7 @@ export const GET = withSecurity(
               "X-Settler-Export-Key-Id": signed.keyId,
               "X-Settler-Export-Algorithm": signed.algorithm,
               "X-Settler-Export-Signed": "true",
+              "Cache-Control": "private, no-store, max-age=0",
             },
           });
         } else {
@@ -157,6 +164,7 @@ export const GET = withSecurity(
               "X-Settler-Export-Key-Id": signed.keyId,
               "X-Settler-Export-Algorithm": signed.algorithm,
               "X-Settler-Export-Signed": "true",
+              "Cache-Control": "private, no-store, max-age=0",
             },
           });
         }
@@ -168,7 +176,7 @@ export const GET = withSecurity(
             error: "Failed to export data",
             message: "Please try again later or contact support if the issue persists",
           },
-          { status: 200 }
+          { status: 500 }
         );
       }
     },

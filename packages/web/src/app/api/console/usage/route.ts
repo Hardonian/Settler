@@ -53,14 +53,11 @@ export const GET = withSecurity(
         if (!user) {
           return NextResponse.json(
             {
-              totalCalls: 0,
-              byService: {},
-              byOperation: {},
-              errorRate: 0,
-              period: { start: new Date(), end: new Date() },
-              limits: {},
+              error: "Unauthorized",
+              message: "Authentication required",
+              correlationId,
             },
-            { status: 200 }
+            { status: 401 }
           );
         }
 
@@ -70,20 +67,18 @@ export const GET = withSecurity(
         if (!billingAccount) {
           return NextResponse.json(
             {
-              totalCalls: 0,
-              byService: {},
-              byOperation: {},
-              errorRate: 0,
-              period: { start: new Date(), end: new Date() },
-              limits: {},
+              error: "Billing account not found",
+              message: "No billing account is associated with the authenticated user",
+              correlationId,
             },
-            { status: 200 }
+            { status: 404 }
           );
         }
 
         // Get query parameters
         const { searchParams } = new URL(request.url);
-        const days = parseInt(searchParams.get("days") || "7", 10);
+        const requestedDays = parseInt(searchParams.get("days") || "7", 10);
+        const days = Number.isFinite(requestedDays) ? Math.max(1, Math.min(requestedDays, 90)) : 7;
         const startDate = new Date();
         startDate.setDate(startDate.getDate() - days);
         const endDate = new Date();
@@ -142,18 +137,32 @@ export const GET = withSecurity(
             "playground",
           ];
 
-          for (const service of services) {
-            try {
-              const usage = await getCurrentUsage(billingAccount.id, service, "monthly");
-              limits[service] = {
-                current: usage.current,
-                limit: usage.limit === -1 ? 0 : usage.limit, // -1 means unlimited, show as 0 for UI
-                remaining: usage.remaining === -1 ? -1 : usage.remaining,
-              };
-            } catch (error) {
-              appLogger.error(`[Usage API] Error getting usage for ${service}`, error);
-              // Continue with other services
+          const serviceLimits = await Promise.all(
+            services.map(async (service) => {
+              try {
+                const usage = await getCurrentUsage(billingAccount.id, service, "monthly");
+                return [
+                  service,
+                  {
+                    current: usage.current,
+                    limit: usage.limit === -1 ? 0 : usage.limit,
+                    remaining: usage.remaining === -1 ? -1 : usage.remaining,
+                  },
+                ] as const;
+              } catch (error) {
+                appLogger.error(`[Usage API] Error getting usage for ${service}`, error);
+                return null;
+              }
+            })
+          );
+
+          for (const entry of serviceLimits) {
+            if (!entry) {
+              continue;
             }
+
+            const [service, usage] = entry;
+            limits[service] = usage;
           }
         }
 
@@ -170,8 +179,15 @@ export const GET = withSecurity(
           correlationId,
           totalCalls,
           errorRate,
+          days,
         });
-        const response = NextResponse.json(summary, { status: 200 });
+        const response = NextResponse.json(summary, {
+          status: 200,
+          headers: {
+            "Cache-Control": "private, no-store, max-age=0",
+            Vary: "Authorization, Cookie, X-API-Key",
+          },
+        });
         return addCorrelationHeaders(response, correlationId);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
@@ -180,17 +196,14 @@ export const GET = withSecurity(
           error: errorMessage,
           stack: error instanceof Error ? error.stack : undefined,
         });
-        // Never return 500 - return empty summary
+        // Fail closed so clients do not treat this as authoritative usage truth.
         const response = NextResponse.json(
           {
-            totalCalls: 0,
-            byService: {},
-            byOperation: {},
-            errorRate: 0,
-            period: { start: new Date(), end: new Date() },
-            limits: {},
+            error: "Failed to retrieve usage summary",
+            message: "Please retry or contact support if the issue persists",
+            correlationId,
           },
-          { status: 200 }
+          { status: 500 }
         );
         return addCorrelationHeaders(response, correlationId);
       }
