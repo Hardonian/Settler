@@ -193,13 +193,21 @@ router.get(
         unmatched_source_count: number | null;
         unmatched_target_count: number | null;
         error_message: string | null;
-        // Provenance fields from recon_results.summary->_provenance
-        provenance_amount_tolerance: string | null;
-        provenance_date_tolerance_days: string | null;
+        // Run-level fields
+        source_adapter: string | null;
+        target_adapter: string | null;
+        template_id: string | null;
+        // Provenance fields from recon_results
+        result_id: string | null;
+        snapshot_id: string | null;
+        input_hash: string | null;
+        started_at: string | null;
+        completed_at: string | null;
         provenance_config_version: string | null;
         provenance_config_source: string | null;
         provenance_template_id: string | null;
         provenance_matching_rule_ids: string | null;
+        provenance_rule_version_count: string | null;
       }>(
         `SELECT
           rr.id,
@@ -213,12 +221,19 @@ router.get(
           rr.unmatched_source_count,
           rr.unmatched_target_count,
           rr.error_message,
-          recon_results.summary -> 'provenance' ->> 'amountTolerance' as provenance_amount_tolerance,
-          recon_results.summary -> 'provenance' ->> 'dateToleranceDays' as provenance_date_tolerance_days,
+          rr.source_adapter,
+          rr.target_adapter,
+          rr.template_id,
+          recon_results.id as result_id,
+          recon_results.snapshot_id,
+          recon_results.input_hash,
+          recon_results.started_at,
+          recon_results.completed_at,
           recon_results.summary -> 'provenance' ->> 'configVersion' as provenance_config_version,
           recon_results.summary -> 'provenance' ->> 'configSource' as provenance_config_source,
           recon_results.summary -> 'provenance' ->> 'templateId' as provenance_template_id,
-          recon_results.summary -> 'provenance' ->> 'matchingRuleIds' as provenance_matching_rule_ids
+          recon_results.summary -> 'provenance' ->> 'matchingRuleIds' as provenance_matching_rule_ids,
+          recon_results.summary -> 'provenance' ->> 'ruleVersionCount' as provenance_rule_version_count
          FROM reconciliation_runs rr
          LEFT JOIN recon_results ON recon_results.recon_job_id = rr.id AND recon_results.tenant_id = rr.tenant_id
          WHERE rr.id = $1 AND rr.tenant_id = $2`,
@@ -242,28 +257,43 @@ router.get(
         return;
       }
 
-      // Build provenance object if provenance data exists
-      const provenance =
-        run.provenance_amount_tolerance !== null ||
-        run.provenance_date_tolerance_days !== null ||
-        run.provenance_config_version !== null
-          ? {
-              amountTolerance:
-                run.provenance_amount_tolerance !== null
-                  ? Number(run.provenance_amount_tolerance)
-                  : null,
-              dateToleranceDays:
-                run.provenance_date_tolerance_days !== null
-                  ? Number(run.provenance_date_tolerance_days)
-                  : null,
-              configVersion: run.provenance_config_version,
-              configSource: run.provenance_config_source,
-              templateId: run.provenance_template_id,
-              matchingRuleIds: run.provenance_matching_rule_ids
-                ? JSON.parse(run.provenance_matching_rule_ids)
-                : null,
-            }
-          : null;
+      // Build provenance object matching CanonicalRunProvenance contract
+      const hasProvenanceData =
+        run.provenance_config_version !== null ||
+        run.provenance_config_source !== null ||
+        run.snapshot_id !== null;
+
+      const matchingRuleIds = run.provenance_matching_rule_ids
+        ? JSON.parse(run.provenance_matching_rule_ids)
+        : [];
+
+      const sourceAdapter = run.source_adapter || null;
+      const targetAdapter = run.target_adapter || null;
+
+      const provenance = hasProvenanceData
+        ? {
+            runId: run.id,
+            runResultId: run.result_id,
+            snapshotId: run.snapshot_id,
+            inputHash: run.input_hash,
+            executedAt: run.started_at,
+            completedAt: run.completed_at,
+            configSource: run.provenance_config_source,
+            configVersion: run.provenance_config_version,
+            templateId: run.provenance_template_id,
+            matchingRuleIds,
+            ruleVersionCount: run.provenance_rule_version_count
+              ? Number(run.provenance_rule_version_count)
+              : 0,
+            sourceAdapter,
+            targetAdapter,
+            sourceReference: [
+              sourceAdapter || "source",
+              targetAdapter || "target",
+              run.result_id || "result",
+            ].join(":"),
+          }
+        : null;
 
       res.json({
         data: {
