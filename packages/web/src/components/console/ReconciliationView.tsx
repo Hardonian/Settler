@@ -206,8 +206,8 @@ export function ReconciliationView({
               </p>
             </div>
             <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Mismatches</p>
-              <p className="text-2xl font-bold">{summary.mismatchCount}</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Unmatched</p>
+              <p className="text-2xl font-bold">{summary.unmatched}</p>
             </div>
             <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Started</p>

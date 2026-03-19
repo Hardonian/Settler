@@ -165,10 +165,15 @@ export async function getDashboardStats() {
   if (!tenantId) return null;
 
   try {
-    const [totalJobs, totalMismatches, driftEvents, recentActivity] = await Promise.all([
+    const [totalJobs, totalUnmatchedRuns, driftEvents, recentActivity] = await Promise.all([
       prisma.reconJob.count({ where: { tenantId, deletedAt: null } }),
+      // Count runs with unmatched records (status completed with unmatched or error)
       prisma.reconResult.count({
-        where: { tenantId, status: { in: ["completed_mismatch", "error"] } },
+        where: {
+          tenantId,
+          status: { in: ["completed", "completed_mismatch"] },
+          OR: [{ unmatchedSourceCount: { gt: 0 } }, { unmatchedTargetCount: { gt: 0 } }],
+        },
       }),
       prisma.driftEvent.count({ where: { tenantId } }),
       prisma.reconJob.findMany({
@@ -195,10 +200,11 @@ export async function getDashboardStats() {
     return {
       metrics: {
         total_runs: totalJobs,
-        mismatched_runs: totalMismatches,
+        // Canonical terminology: unmatched runs = runs with unmatched records
+        unmatched_runs: totalUnmatchedRuns,
         drift_events_detected: driftEvents,
         integrity_score:
-          totalJobs > 0 ? Math.round(((totalJobs - totalMismatches) / totalJobs) * 100) : 100,
+          totalJobs > 0 ? Math.round(((totalJobs - totalUnmatchedRuns) / totalJobs) * 100) : 100,
       },
       recent: recentActivity.map((run: any) => ({
         id: run.id,
@@ -340,10 +346,10 @@ export async function getMatchesList(limit: number = 50) {
             id: true,
             amount: true,
             currency: true,
-            transactionDate: true
-          }
-        }
-      }
+            transactionDate: true,
+          },
+        },
+      },
     });
 
     return matches.map((match: any) => ({
@@ -378,9 +384,9 @@ export async function getPoliciesList(limit: number = 20) {
       take: limit,
       include: {
         _count: {
-          select: { driftEvents: true }
-        }
-      }
+          select: { driftEvents: true },
+        },
+      },
     });
 
     return policies.map((p: any) => ({
@@ -390,7 +396,7 @@ export async function getPoliciesList(limit: number = 20) {
       status: p.isActive ? "active" : "deprecated",
       driftCount: p._count.driftEvents,
       updatedAt: p.updatedAt.toISOString(),
-      schema: p.schemaDefinition
+      schema: p.schemaDefinition,
     }));
   } catch (error) {
     console.error("Failed to fetch policies:", error);
@@ -432,7 +438,7 @@ export async function getAuditLogs(limit: number = 50): Promise<AuditLogItem[]> 
         ipAddress: true,
         createdAt: true,
         metadata: true,
-      }
+      },
     });
 
     return logs.map((log: any) => ({
@@ -443,7 +449,9 @@ export async function getAuditLogs(limit: number = 50): Promise<AuditLogItem[]> 
       actor: log.actorType || "system",
       ip: log.ipAddress || "—",
       timestamp: log.createdAt.toISOString(),
-      details: (log.metadata as Record<string, unknown> | null)?.message || `Performed ${log.action} on ${log.resourceType}`,
+      details:
+        (log.metadata as Record<string, unknown> | null)?.message ||
+        `Performed ${log.action} on ${log.resourceType}`,
     }));
   } catch (error) {
     console.error("Failed to fetch audit logs:", error);

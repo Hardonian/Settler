@@ -56,7 +56,7 @@ describe("Runs Routes", () => {
           policy_name: "test-policy",
           total_records: 100,
           matched_count: 95,
-          mismatched_count: 5,
+          unmatched_count: 5,
         },
       ];
 

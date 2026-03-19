@@ -153,9 +153,7 @@ export function ReconciliationQueueClient() {
                 <TableCell className="text-muted-foreground">{run.startTime}</TableCell>
                 <TableCell className="text-right font-mono">{run.records}</TableCell>
                 <TableCell className="text-right text-green-600 font-mono">{run.matches}</TableCell>
-                <TableCell className="text-right text-red-600 font-mono">
-                  {run.mismatches}
-                </TableCell>
+                <TableCell className="text-right text-red-600 font-mono">{run.unmatched}</TableCell>
                 <TableCell className="text-right">
                   <Button variant="ghost" size="icon">
                     <ChevronRight className="h-4 w-4" />

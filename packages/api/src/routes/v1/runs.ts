@@ -92,7 +92,8 @@ router.get(
         policy_name: string | null;
         total_records: number | null;
         matched_count: number | null;
-        mismatched_count: number | null;
+        unmatched_source_count: number | null;
+        unmatched_target_count: number | null;
       }>(
         `SELECT
           id,
@@ -103,7 +104,8 @@ router.get(
           policy_name,
           total_records,
           matched_count,
-          mismatched_count
+          unmatched_source_count,
+          unmatched_target_count
          FROM reconciliation_runs
          WHERE tenant_id = $1
          ORDER BY created_at DESC
@@ -118,7 +120,7 @@ router.get(
       );
       const totalCount = countResult[0] ? parseInt(countResult[0].count, 10) : 0;
 
-      // Transform to frontend-expected format
+      // Transform to frontend-expected format using canonical contract terminology
       const rows = runs.map((run) => ({
         run_id: run.id,
         created_at: run.created_at,
@@ -126,7 +128,10 @@ router.get(
         policy: run.policy_name,
         total_records: run.total_records,
         matched: run.matched_count,
-        mismatched: run.mismatched_count,
+        // Canonical: unmatched = unmatched_source_count + unmatched_target_count
+        unmatched: (run.unmatched_source_count || 0) + (run.unmatched_target_count || 0),
+        unmatchedSourceCount: run.unmatched_source_count,
+        unmatchedTargetCount: run.unmatched_target_count,
       }));
 
       res.json({
@@ -185,7 +190,8 @@ router.get(
         policy_name: string | null;
         total_records: number | null;
         matched_count: number | null;
-        mismatched_count: number | null;
+        unmatched_source_count: number | null;
+        unmatched_target_count: number | null;
         error_message: string | null;
         // Provenance fields from recon_results.summary->_provenance
         provenance_amount_tolerance: string | null;
@@ -204,7 +210,8 @@ router.get(
           rr.policy_name,
           rr.total_records,
           rr.matched_count,
-          rr.mismatched_count,
+          rr.unmatched_source_count,
+          rr.unmatched_target_count,
           rr.error_message,
           recon_results.summary -> 'provenance' ->> 'amountTolerance' as provenance_amount_tolerance,
           recon_results.summary -> 'provenance' ->> 'dateToleranceDays' as provenance_date_tolerance_days,
@@ -266,8 +273,11 @@ router.get(
           status: run.status,
           policy: run.policy_name,
           total_records: run.total_records,
+          // Canonical contract fields
           matched: run.matched_count,
-          mismatched: run.mismatched_count,
+          unmatched: (run.unmatched_source_count || 0) + (run.unmatched_target_count || 0),
+          unmatchedSourceCount: run.unmatched_source_count,
+          unmatchedTargetCount: run.unmatched_target_count,
           error_message: run.error_message,
           provenance,
         },
