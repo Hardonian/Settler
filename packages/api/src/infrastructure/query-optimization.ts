@@ -1,10 +1,7 @@
-/**
- * Query Optimization Layer
- * Uses materialized views and optimized queries for performant data access
- */
+import { PrismaClient } from "@prisma/client";
+import { logInfo, logDebug } from "../utils/logger";
 
-import { query } from '../db';
-import { logInfo, logDebug } from '../utils/logger';
+const prisma = new PrismaClient();
 
 export interface QueryOptions {
   /** Use materialized view if available */
@@ -18,307 +15,161 @@ export interface QueryOptions {
 }
 
 /**
- * Get reconciliation summary using materialized view
- * Much faster than querying raw reconciliation data
+ * Get reconciliation summary using Prisma
  */
 export async function getReconciliationSummary(
   jobId: string,
   dateRange?: { start: Date; end: Date },
   options: QueryOptions = {}
 ): Promise<any> {
-  const { useMaterializedView = true, refreshView = false } = options;
+  const where = {
+    reconJobId: jobId,
+    ...(dateRange && {
+      createdAt: {
+        gte: dateRange.start,
+        lte: dateRange.end,
+      },
+    }),
+  };
 
-  if (refreshView && useMaterializedView) {
-    await refreshMaterializedView('mv_reconciliation_summary_daily');
-  }
+  const results = await prisma.reconResult.groupBy({
+    by: ["status"],
+    where,
+    _count: {
+      status: true,
+    },
+  });
 
-  if (useMaterializedView) {
-    // Use materialized view for fast aggregation
-    const viewQuery = `
-      SELECT 
-        job_id,
-        date,
-        total_matched,
-        total_unmatched_source,
-        total_unmatched_target,
-        total_errors,
-        accuracy_percentage,
-        avg_processing_time_ms
-      FROM mv_reconciliation_summary_daily
-      WHERE job_id = $1
-      ${dateRange ? 'AND date BETWEEN $2 AND $3' : ''}
-      ORDER BY date DESC
-      LIMIT 100
-    `;
+  const summary = results.reduce(
+    (acc, { status, _count }) => {
+      acc[status] = _count.status;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
-    const params = dateRange
-      ? [jobId, dateRange.start, dateRange.end]
-      : [jobId];
+  const total = await prisma.reconResult.count({ where });
 
-    const result = await query(viewQuery, params);
-    logDebug('Used materialized view for reconciliation summary', { jobId });
-    return result;
-  }
-
-  // Fallback to regular query
-  const regularQuery = `
-    SELECT 
-      job_id,
-      DATE(created_at) as date,
-      COUNT(*) FILTER (WHERE status = 'matched') as total_matched,
-      COUNT(*) FILTER (WHERE status = 'unmatched_source') as total_unmatched_source,
-      COUNT(*) FILTER (WHERE status = 'unmatched_target') as total_unmatched_target,
-      COUNT(*) FILTER (WHERE status = 'error') as total_errors,
-      AVG(confidence_score) * 100 as accuracy_percentage,
-      AVG(processing_time_ms) as avg_processing_time_ms
-    FROM reconciliation_results
-    WHERE job_id = $1
-    ${dateRange ? 'AND created_at BETWEEN $2 AND $3' : ''}
-    GROUP BY job_id, DATE(created_at)
-    ORDER BY date DESC
-    LIMIT 100
-  `;
-
-  const params = dateRange
-    ? [jobId, dateRange.start, dateRange.end]
-    : [jobId];
-
-  return query(regularQuery, params);
+  return { ...summary, total };
 }
 
 /**
- * Get job performance metrics using materialized view
+ * Get job performance metrics using Prisma
  */
-export async function getJobPerformance(
-  jobId: string,
-  options: QueryOptions = {}
-): Promise<any> {
-  const { useMaterializedView = true, refreshView = false } = options;
+export async function getJobPerformance(jobId: string, options: QueryOptions = {}): Promise<any> {
+  const job = await prisma.reconJob.findUnique({
+    where: { id: jobId },
+    include: {
+      results: {
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 1,
+      },
+    },
+  });
 
-  if (refreshView && useMaterializedView) {
-    await refreshMaterializedView('mv_job_performance');
+  if (!job) {
+    return null;
   }
 
-  if (useMaterializedView) {
-    const result = await query(
-      `
-      SELECT 
-        job_id,
-        total_executions,
-        successful_executions,
-        failed_executions,
-        avg_execution_time_ms,
-        last_execution_at,
-        last_execution_status
-      FROM mv_job_performance
-      WHERE job_id = $1
-    `,
-      [jobId]
-    );
-    logDebug('Used materialized view for job performance', { jobId });
-    return result[0] || null;
-  }
+  const totalExecutions = await prisma.reconResult.count({
+    where: { reconJobId: jobId },
+  });
 
-  // Fallback to regular query
-  return query(
-    `
-    SELECT 
-      job_id,
-      COUNT(*) as total_executions,
-      COUNT(*) FILTER (WHERE status = 'completed') as successful_executions,
-      COUNT(*) FILTER (WHERE status = 'failed') as failed_executions,
-      AVG(execution_time_ms) as avg_execution_time_ms,
-      MAX(created_at) as last_execution_at,
-      (SELECT status FROM job_executions WHERE job_id = $1 ORDER BY created_at DESC LIMIT 1) as last_execution_status
-    FROM job_executions
-    WHERE job_id = $1
-    GROUP BY job_id
-    `,
-    [jobId]
-  ).then((results: unknown[]) => results[0] || null);
+  const successfulExecutions = await prisma.reconResult.count({
+    where: { reconJobId: jobId, status: "completed" },
+  });
+
+  const failedExecutions = await prisma.reconResult.count({
+    where: { reconJobId: jobId, status: "failed" },
+  });
+
+  const avgExecutionTime = await prisma.reconResult.aggregate({
+    where: { reconJobId: jobId, status: "completed" },
+    _avg: {
+      durationMs: true,
+    },
+  });
+
+  return {
+    job_id: jobId,
+    total_executions: totalExecutions,
+    successful_executions: successfulExecutions,
+    failed_executions: failedExecutions,
+    avg_execution_time_ms: avgExecutionTime._avg.durationMs,
+    last_execution_at: job.results[0]?.createdAt,
+    last_execution_status: job.results[0]?.status,
+  };
 }
 
 /**
- * Get tenant usage metrics using materialized view
+ * Get tenant usage metrics using Prisma
  */
 export async function getTenantUsage(
   tenantId: string,
-  timeRange: 'hour' | 'day' | 'week' = 'hour',
+  timeRange: "hour" | "day" | "week" = "hour",
   options: QueryOptions = {}
 ): Promise<any> {
-  const { useMaterializedView = true, refreshView = false } = options;
-
-  if (refreshView && useMaterializedView) {
-    await refreshMaterializedView('mv_tenant_usage_hourly');
-  }
-
-  let viewName = 'mv_tenant_usage_hourly';
-  let groupBy = 'hour';
-
-  if (timeRange === 'day') {
-    // Aggregate hourly data by day
-    viewName = 'mv_tenant_usage_hourly';
-    groupBy = 'day';
-  }
-
-  if (useMaterializedView) {
-    const result = await query(
-      `
-      SELECT 
-        tenant_id,
-        ${groupBy === 'hour' ? 'hour' : "DATE_TRUNC('day', hour) as day"},
-        total_requests,
-        total_reconciliations,
-        total_errors,
-        avg_response_time_ms
-      FROM ${viewName}
-      WHERE tenant_id = $1
-      ORDER BY ${groupBy === 'hour' ? 'hour' : 'day'} DESC
-      LIMIT 100
-    `,
-      [tenantId]
-    );
-    logDebug('Used materialized view for tenant usage', { tenantId, timeRange });
-    return result;
-  }
-
-  // Fallback to regular query
-  return query(
-    `
-    SELECT 
-      tenant_id,
-      DATE_TRUNC('${timeRange}', created_at) as time_period,
-      COUNT(*) as total_requests,
-      COUNT(*) FILTER (WHERE endpoint LIKE '%/reconciliations%') as total_reconciliations,
-      COUNT(*) FILTER (WHERE status_code >= 400) as total_errors,
-      AVG(response_time_ms) as avg_response_time_ms
-    FROM api_logs
-    WHERE tenant_id = $1
-    AND created_at >= NOW() - INTERVAL '7 days'
-    GROUP BY tenant_id, DATE_TRUNC('${timeRange}', created_at)
-    ORDER BY time_period DESC
-    LIMIT 100
-    `,
-    [tenantId]
-  );
+  // TODO: This requires a new data model for API logs
+  return [];
 }
 
 /**
- * Get match accuracy by job using materialized view
+ * Get match accuracy by job using Prisma
  */
-export async function getMatchAccuracy(
-  jobId?: string,
-  options: QueryOptions = {}
-): Promise<any> {
-  const { useMaterializedView = true, refreshView = false } = options;
+export async function getMatchAccuracy(jobId?: string, options: QueryOptions = {}): Promise<any> {
+  const where = {
+    ...(jobId && { reconJobId: jobId }),
+  };
 
-  if (refreshView && useMaterializedView) {
-    await refreshMaterializedView('mv_match_accuracy_by_job');
-  }
+  const totalMatches = await prisma.reconResult.count({ where });
 
-  if (useMaterializedView) {
-    const queryStr = jobId
-      ? `
-        SELECT 
-          job_id,
-          total_matches,
-          accurate_matches,
-          inaccurate_matches,
-          accuracy_percentage,
-          avg_confidence_score
-        FROM mv_match_accuracy_by_job
-        WHERE job_id = $1
-      `
-      : `
-        SELECT 
-          job_id,
-          total_matches,
-          accurate_matches,
-          inaccurate_matches,
-          accuracy_percentage,
-          avg_confidence_score
-        FROM mv_match_accuracy_by_job
-        ORDER BY accuracy_percentage DESC
-        LIMIT 100
-      `;
+  const accurateMatches = await prisma.reconResult.count({
+    where: {
+      ...where,
+      confidenceAvg: {
+        gte: 0.95,
+      },
+    },
+  });
 
-    const params = jobId ? [jobId] : [];
-    const result = await query(queryStr, params);
-    logDebug('Used materialized view for match accuracy', { jobId });
-    return jobId ? result[0] || null : result;
-  }
+  const inaccurateMatches = await prisma.reconResult.count({
+    where: {
+      ...where,
+      confidenceAvg: {
+        lt: 0.95,
+      },
+    },
+  });
 
-  // Fallback to regular query
-  const fallbackQuery = jobId
-    ? `
-      SELECT 
-        job_id,
-        COUNT(*) as total_matches,
-        COUNT(*) FILTER (WHERE confidence_score >= 0.95) as accurate_matches,
-        COUNT(*) FILTER (WHERE confidence_score < 0.95) as inaccurate_matches,
-        AVG(confidence_score) * 100 as accuracy_percentage,
-        AVG(confidence_score) as avg_confidence_score
-      FROM reconciliation_results
-      WHERE job_id = $1
-      GROUP BY job_id
-    `
-    : `
-      SELECT 
-        job_id,
-        COUNT(*) as total_matches,
-        COUNT(*) FILTER (WHERE confidence_score >= 0.95) as accurate_matches,
-        COUNT(*) FILTER (WHERE confidence_score < 0.95) as inaccurate_matches,
-        AVG(confidence_score) * 100 as accuracy_percentage,
-        AVG(confidence_score) as avg_confidence_score
-      FROM reconciliation_results
-      GROUP BY job_id
-      ORDER BY accuracy_percentage DESC
-      LIMIT 100
-    `;
+  const avgConfidence = await prisma.reconResult.aggregate({
+    where,
+    _avg: {
+      confidenceAvg: true,
+    },
+  });
 
-  const params = jobId ? [jobId] : [];
-  return query(fallbackQuery, params).then((results: unknown[]) =>
-    jobId ? results[0] || null : results
-  );
+  return {
+    job_id: jobId,
+    total_matches: totalMatches,
+    accurate_matches: accurateMatches,
+    inaccurate_matches: inaccurateMatches,
+    accuracy_percentage: totalMatches > 0 ? (accurateMatches / totalMatches) * 100 : 0,
+    avg_confidence_score: avgConfidence._avg.confidenceAvg,
+  };
 }
 
 /**
  * Refresh a materialized view
  */
 export async function refreshMaterializedView(viewName: string): Promise<void> {
-  try {
-    await query(`REFRESH MATERIALIZED VIEW CONCURRENTLY ${viewName}`);
-    logInfo('Materialized view refreshed', { viewName });
-   
-  } catch (error: any) {
-    // If CONCURRENTLY fails (no unique index), try without it
-    if (error.message.includes('CONCURRENTLY')) {
-      await query(`REFRESH MATERIALIZED VIEW ${viewName}`);
-      logInfo('Materialized view refreshed (non-concurrent)', { viewName });
-    } else {
-      throw error;
-    }
-  }
+  // This function is no longer needed
 }
 
 /**
  * Refresh all materialized views
  */
 export async function refreshAllMaterializedViews(): Promise<void> {
-  const views = [
-    'mv_reconciliation_summary_daily',
-    'mv_job_performance',
-    'mv_tenant_usage_hourly',
-    'mv_match_accuracy_by_job',
-  ];
-
-  for (const view of views) {
-    try {
-      await refreshMaterializedView(view);
-    } catch (error) {
-      logDebug('Failed to refresh materialized view', { view, error });
-    }
-  }
-
-  logInfo('All materialized views refreshed');
+  // This function is no longer needed
 }

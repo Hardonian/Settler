@@ -1,11 +1,11 @@
 /**
  * Receipt Auto-Matching Service
- * 
+ *
  * Automatically matches receipts to transactions based on:
  * - Amount (within tolerance)
  * - Date (within window)
  * - Merchant name (fuzzy matching)
- * 
+ *
  * Enterprise-ready with:
  * - Type-safe Prisma queries
  * - Comprehensive error handling
@@ -13,9 +13,9 @@
  * - Confidence scoring
  */
 
-import { PrismaClient } from '@prisma/client';
-import { logError } from '../utils/logger';
-import { levenshteinDistance } from '../lib/levenshtein';
+import { PrismaClient } from "@prisma/client";
+import { logError } from "../utils/logger";
+import { levenshteinDistance } from "../lib/levenshtein";
 
 interface MatchResult {
   receiptId: string;
@@ -84,7 +84,7 @@ export async function matchReceiptToTransaction(
           gte: receipt.total ? Number(receipt.total) - matchingConfig.amountTolerance : undefined,
           lte: receipt.total ? Number(receipt.total) + matchingConfig.amountTolerance : undefined,
         },
-        currency: receipt.currency || 'USD',
+        currency: receipt.currency || "USD",
       },
       take: 100, // Limit for performance
     });
@@ -128,7 +128,7 @@ export async function matchReceiptToTransaction(
       }
 
       // Combined confidence score
-      const confidence = (amountScore * 0.5 + dateScore * 0.3 + merchantScore * 0.2);
+      const confidence = amountScore * 0.5 + dateScore * 0.3 + merchantScore * 0.2;
 
       return {
         transactionId: transaction.id,
@@ -186,6 +186,8 @@ function stringSimilarity(str1: string, str2: string): number {
 
   // Calculate Levenshtein distance (simplified)
   const distance = levenshteinDistance(str1, str2);
+  return 1 - distance / longer.length;
+}
 
 /**
  * Batch match receipts to transactions
@@ -222,7 +224,7 @@ export async function matchReceiptsToTransactions(
   // This is a simplified version for the existing route
   // In production, use the full matchReceiptToTransaction function with PrismaClient
   const matches: Array<{ receiptId: string; transactionId: string; confidence: number }> = [];
-  
+
   // Basic matching logic (simplified)
   for (const receipt of receipts) {
     // Find best matching transaction
@@ -231,7 +233,7 @@ export async function matchReceiptsToTransactions(
       // Simple matching logic
       return true; // Placeholder
     });
-    
+
     if (bestMatch) {
       matches.push({
         receiptId: receipt.id,
@@ -240,7 +242,7 @@ export async function matchReceiptsToTransactions(
       });
     }
   }
-  
+
   return matches;
 }
 

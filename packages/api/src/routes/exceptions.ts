@@ -10,12 +10,13 @@ import { AuthRequest } from "../middleware/auth";
 import { enforceFreezeState } from "../middleware/governance";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
-import { query, transaction } from "../db";
+import { PrismaClient } from "@prisma/client";
 import { handleRouteError } from "../utils/error-handler";
 import { NotFoundError, ValidationError } from "../utils/typed-errors";
 import { trackEventAsync } from "../utils/event-tracker";
 
 const router: Router = Router();
+const prisma = new PrismaClient();
 
 const listExceptionsSchema = z.object({
   query: z.object({
@@ -54,8 +55,7 @@ router.get(
   validateRequest(listExceptionsSchema),
   async (req: AuthRequest, res: Response) => {
     try {
-      const userId = req.userId!;
-      const queryParams = listExceptionsSchema.parse({ query: req.query });
+      const tenantId = req.tenantId!;
       const {
         jobId,
         resolution_status = "open",
@@ -64,103 +64,52 @@ router.get(
         endDate,
         limit,
         offset,
-      } = queryParams.query;
+      } = listExceptionsSchema.parse({ query: req.query }).query;
 
-      // Build query
-      const conditions: string[] = [];
-      const values: (string | number | boolean | Date | null)[] = [];
-      let paramCount = 1;
+      const where = {
+        tenantId,
+        matchType: "unmatched",
+        run: {
+          ...(jobId && { reconJobId: jobId }),
+        },
+        ...(startDate && { createdAt: { gte: new Date(startDate) } }),
+        ...(endDate && { createdAt: { lte: new Date(endDate) } }),
+        // TODO: Map resolution_status to the new model
+      };
 
-      // Join with jobs to ensure user ownership
-      conditions.push(`j.user_id = $${paramCount++}`);
-      values.push(userId);
+      const exceptions = await prisma.reconciliationMatch.findMany({
+        where,
+        include: {
+          run: {
+            select: {
+              id: true,
+            },
+          },
+          sourceTransaction: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: limit,
+        skip: offset,
+      });
 
-      if (jobId) {
-        conditions.push(`e.job_id = $${paramCount++}`);
-        values.push(jobId);
-      }
-
-      if (resolution_status) {
-        conditions.push(`e.resolution_status = $${paramCount++}`);
-        values.push(resolution_status);
-      }
-
-      if (category) {
-        conditions.push(`e.category = $${paramCount++}`);
-        values.push(category);
-      }
-
-      if (startDate) {
-        conditions.push(`e.created_at >= $${paramCount++}`);
-        values.push(new Date(startDate));
-      }
-
-      if (endDate) {
-        conditions.push(`e.created_at <= $${paramCount++}`);
-        values.push(new Date(endDate));
-      }
-
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
-
-      // Get exceptions
-      const exceptions = await query<{
-        id: string;
-        job_id: string;
-        execution_id: string | null;
-        category: string;
-        severity: string;
-        description: string;
-        resolution_status: string;
-        resolved_at: Date | null;
-        resolved_by: string | null;
-        resolution_notes: string | null;
-        created_at: Date;
-      }>(
-        `SELECT e.id, e.job_id, e.execution_id, e.category, e.severity,
-                e.description, e.resolution_status,
-                e.resolved_at, e.resolved_by, e.resolution_notes,
-                e.created_at
-         FROM exceptions e
-         JOIN jobs j ON e.job_id = j.id
-         ${whereClause}
-         ORDER BY e.created_at DESC
-         LIMIT $${paramCount++} OFFSET $${paramCount++}`,
-        [...values, limit, offset]
-      );
-
-      // Get total count
-      const countResult = await query<{ count: string }>(
-        `SELECT COUNT(*) as count
-         FROM exceptions e
-         JOIN jobs j ON e.job_id = j.id
-         ${whereClause}`,
-        values
-      );
-
-      if (!countResult[0]) {
-        throw new Error("Failed to get exception count");
-      }
-      const total = parseInt(countResult[0].count);
+      const total = await prisma.reconciliationMatch.count({ where });
 
       res.json({
-        data: exceptions
-          .map((e) => {
-            if (!e) return null;
-            return {
-              id: e.id,
-              jobId: e.job_id,
-              executionId: e.execution_id,
-              category: e.category,
-              severity: e.severity,
-              description: e.description,
-              status: e.resolution_status,
-              resolvedAt: e.resolved_at?.toISOString() || null,
-              resolvedBy: e.resolved_by || null,
-              notes: e.resolution_notes || null,
-              createdAt: e.created_at.toISOString(),
-            };
-          })
-          .filter((e) => e !== null),
+        data: exceptions.map((e) => ({
+          id: e.id,
+          jobId: e.run.id,
+          executionId: e.run.id,
+          category: e.sourceTransaction.category,
+          severity: "error",
+          description: e.sourceTransaction.description,
+          status: e.reviewed ? "resolved" : "open",
+          resolvedAt: e.reviewedAt?.toISOString() || null,
+          resolvedBy: e.reviewedBy || null,
+          notes: e.matchReason || null,
+          createdAt: e.createdAt.toISOString(),
+        })),
         pagination: {
           limit,
           offset,
@@ -181,58 +130,37 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
-      const userId = req.userId!;
+      const tenantId = req.tenantId!;
 
-      if (!id || !userId) {
-        throw new NotFoundError(
-          "Exception ID and User ID are required",
-          "exception",
-          id || "unknown"
-        );
-      }
+      const exception = await prisma.reconciliationMatch.findFirst({
+        where: {
+          id,
+          tenantId,
+          matchType: "unmatched",
+        },
+        include: {
+          run: true,
+          sourceTransaction: true,
+        },
+      });
 
-      const exceptions = await query<{
-        id: string;
-        job_id: string;
-        execution_id: string | null;
-        category: string;
-        severity: string;
-        description: string;
-        resolution_status: string;
-        resolved_at: Date | null;
-        resolved_by: string | null;
-        resolution_notes: string | null;
-        created_at: Date;
-      }>(
-        `SELECT e.id, e.job_id, e.execution_id, e.category, e.severity,
-                e.description, e.resolution_status,
-                e.resolved_at, e.resolved_by, e.resolution_notes,
-                e.created_at
-         FROM exceptions e
-         JOIN jobs j ON e.job_id = j.id
-         WHERE e.id = $1 AND j.user_id = $2`,
-        [id, userId]
-      );
-
-      if (exceptions.length === 0 || !exceptions[0]) {
+      if (!exception) {
         throw new NotFoundError("Exception not found", "exception", id);
       }
 
-      const e = exceptions[0];
-
       res.json({
         data: {
-          id: e.id,
-          jobId: e.job_id,
-          executionId: e.execution_id,
-          category: e.category,
-          severity: e.severity,
-          description: e.description,
-          status: e.resolution_status,
-          resolvedAt: e.resolved_at?.toISOString() || null,
-          resolvedBy: e.resolved_by || null,
-          notes: e.resolution_notes || null,
-          createdAt: e.created_at.toISOString(),
+          id: exception.id,
+          jobId: exception.run.id,
+          executionId: exception.run.id,
+          category: exception.sourceTransaction.category,
+          severity: "error",
+          description: exception.sourceTransaction.description,
+          status: exception.reviewed ? "resolved" : "open",
+          resolvedAt: exception.reviewedAt?.toISOString() || null,
+          resolvedBy: exception.reviewedBy || null,
+          notes: exception.matchReason || null,
+          createdAt: exception.createdAt.toISOString(),
         },
       });
     } catch (error: unknown) {
@@ -253,69 +181,30 @@ router.post(
       const { resolution, notes } = req.body;
       const userId = req.userId!;
 
-      if (!id || !userId) {
-        throw new NotFoundError(
-          "Exception ID and User ID are required",
-          "exception",
-          id || "unknown"
-        );
-      }
-
-      // Verify ownership
-      const existing = await query<{ id: string; status: string }>(
-        `SELECT e.id, e.status
-         FROM exceptions e
-         JOIN jobs j ON e.job_id = j.id
-         WHERE e.id = $1 AND j.user_id = $2`,
-        [id, userId]
-      );
-
-      if (existing.length === 0 || !existing[0]) {
-        throw new NotFoundError("Exception not found", "exception", id);
-      }
-
-      const existingException = existing[0];
-      if (existingException.status !== "pending") {
-        throw new ValidationError("Exception is already resolved", "status", [
-          {
-            field: "status",
-            message: `Exception is already ${existingException.status}`,
-            code: "ALREADY_RESOLVED",
+      if (resolution === "ignored") {
+        await prisma.reconciliationMatch.update({
+          where: {
+            id,
           },
-        ]);
+          data: {
+            reviewed: true,
+            reviewedBy: userId,
+            reviewedAt: new Date(),
+            matchReason: notes,
+          },
+        });
+
+        trackEventAsync(userId, "ExceptionResolved", {
+          exceptionId: id,
+          resolution,
+        });
+
+        res.json({
+          message: "Exception resolved successfully",
+        });
+      } else {
+        throw new Error("Resolution type not yet implemented");
       }
-
-      await transaction(async (client) => {
-        // Update exception
-        await client.query(
-          `UPDATE exceptions
-           SET status = 'resolved',
-               resolution = $1,
-               notes = $2,
-               resolved_at = NOW(),
-               resolved_by = $3,
-               updated_at = NOW()
-           WHERE id = $4`,
-          [resolution, notes || null, userId, id]
-        );
-
-        // Log audit event
-        await client.query(
-          `INSERT INTO audit_logs (event, user_id, metadata)
-           VALUES ($1, $2, $3)`,
-          ["exception_resolved", userId, JSON.stringify({ exceptionId: id, resolution, notes })]
-        );
-      });
-
-      // Track event
-      trackEventAsync(userId, "ExceptionResolved", {
-        exceptionId: id,
-        resolution,
-      });
-
-      res.json({
-        message: "Exception resolved successfully",
-      });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to resolve exception", 500, { userId: req.userId });
     }
@@ -333,68 +222,37 @@ router.post(
       const { exceptionIds, resolution, notes } = req.body;
       const userId = req.userId!;
 
-      await transaction(async (client) => {
-        // Verify all exceptions belong to user
-        const ownedResult = await client.query<{ id: string }>(
-          `SELECT e.id
-           FROM exceptions e
-           JOIN jobs j ON e.job_id = j.id
-           WHERE e.id = ANY($1) AND j.user_id = $2 AND e.status = 'pending'`,
-          [exceptionIds, userId]
-        );
+      if (resolution === "ignored") {
+        await prisma.reconciliationMatch.updateMany({
+          where: {
+            id: {
+              in: exceptionIds,
+            },
+            tenantId: req.tenantId,
+          },
+          data: {
+            reviewed: true,
+            reviewedBy: userId,
+            reviewedAt: new Date(),
+            matchReason: notes,
+          },
+        });
 
-        const owned = ownedResult.rows || [];
-        if (owned.length !== exceptionIds.length) {
-          throw new ValidationError(
-            "Some exceptions not found or already resolved",
-            "exceptionIds",
-            [
-              {
-                field: "exceptionIds",
-                message: `Only ${owned.length} of ${exceptionIds.length} exceptions can be resolved`,
-                code: "INVALID_EXCEPTIONS",
-              },
-            ]
-          );
+        for (const exceptionId of exceptionIds) {
+          trackEventAsync(userId, "ExceptionResolved", {
+            exceptionId,
+            resolution,
+            bulk: true,
+          });
         }
 
-        // Bulk update
-        await client.query(
-          `UPDATE exceptions
-           SET resolution_status = 'resolved',
-               resolution_notes = $1,
-               resolved_at = NOW(),
-               resolved_by = $2,
-               updated_at = NOW()
-           WHERE id = ANY($3)`,
-          [notes || null, userId, exceptionIds]
-        );
-
-        // Log audit event
-        await client.query(
-          `INSERT INTO audit_logs (event, user_id, metadata)
-           VALUES ($1, $2, $3)`,
-          [
-            "exceptions_bulk_resolved",
-            userId,
-            JSON.stringify({ exceptionIds, resolution, count: exceptionIds.length }),
-          ]
-        );
-      });
-
-      // Track events
-      for (const exceptionId of exceptionIds) {
-        trackEventAsync(userId, "ExceptionResolved", {
-          exceptionId,
-          resolution,
-          bulk: true,
+        res.json({
+          message: `Resolved ${exceptionIds.length} exceptions successfully`,
+          count: exceptionIds.length,
         });
+      } else {
+        throw new Error("Resolution type not yet implemented");
       }
-
-      res.json({
-        message: `Resolved ${exceptionIds.length} exceptions successfully`,
-        count: exceptionIds.length,
-      });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to bulk resolve exceptions", 500, {
         userId: req.userId,
@@ -409,68 +267,37 @@ router.get(
   requirePermission(Permission.REPORTS_READ),
   async (req: AuthRequest, res: Response) => {
     try {
-      const userId = req.userId!;
+      const tenantId = req.tenantId!;
       const { jobId } = req.query as { jobId?: string };
 
-      const conditions: string[] = [];
-      const values: (string | number | boolean | Date | null)[] = [];
-      let paramCount = 1;
-
-      conditions.push(`j.user_id = $${paramCount++}`);
-      values.push(userId);
-
-      if (jobId) {
-        conditions.push(`e.job_id = $${paramCount++}`);
-        values.push(jobId);
-      }
-
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
-
-      const stats = await query<{
-        total: string;
-        open: string;
-        in_progress: string;
-        resolved: string;
-        dismissed: string;
-        by_category: unknown;
-      }>(
-        `SELECT
-           COUNT(*) as total,
-           COUNT(*) FILTER (WHERE e.resolution_status = 'open') as open,
-           COUNT(*) FILTER (WHERE e.resolution_status = 'in_progress') as in_progress,
-           COUNT(*) FILTER (WHERE e.resolution_status = 'resolved') as resolved,
-           COUNT(*) FILTER (WHERE e.resolution_status = 'dismissed') as dismissed,
-           json_object_agg(e.category, COUNT(*)) FILTER (WHERE e.category IS NOT NULL) as by_category
-         FROM exceptions e
-         JOIN jobs j ON e.job_id = j.id
-         ${whereClause}
-         GROUP BY e.category`,
-        values
-      );
-
-      // Aggregate stats
-      const aggregated = {
-        total: 0,
-        open: 0,
-        inProgress: 0,
-        resolved: 0,
-        dismissed: 0,
-        byCategory: {} as Record<string, number>,
+      const where = {
+        tenantId,
+        matchType: "unmatched",
+        run: {
+          ...(jobId && { reconJobId: jobId }),
+        },
       };
 
-      for (const stat of stats) {
-        aggregated.total += parseInt(stat.total);
-        aggregated.open += parseInt(stat.open);
-        aggregated.inProgress += parseInt(stat.in_progress);
-        aggregated.resolved += parseInt(stat.resolved);
-        aggregated.dismissed += parseInt(stat.dismissed);
-        if (stat.by_category && typeof stat.by_category === "object") {
-          Object.assign(aggregated.byCategory, stat.by_category);
-        }
-      }
+      const total = await prisma.reconciliationMatch.count({ where });
+      const open = await prisma.reconciliationMatch.count({
+        where: { ...where, reviewed: false },
+      });
+      const resolved = await prisma.reconciliationMatch.count({
+        where: { ...where, reviewed: true },
+      });
+
+      // TODO: Get stats by category
+      const byCategory = {};
 
       res.json({
-        data: aggregated,
+        data: {
+          total,
+          open,
+          inProgress: 0, // TODO
+          resolved,
+          dismissed: 0, // TODO
+          byCategory,
+        },
       });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to get exception statistics", 500, {

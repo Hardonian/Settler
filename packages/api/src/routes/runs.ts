@@ -15,7 +15,8 @@ import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
 import { enforceFreezeState } from "../middleware/governance";
-import { PrismaClient, ReconResult } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import { Run, RunSummary } from "@settler/types";
 import { handleRouteError } from "../utils/error-handler";
 import { NotFoundError, ValidationError } from "../utils/typed-errors";
 import { trackEventAsync } from "../utils/event-tracker";
@@ -88,28 +89,16 @@ router.get(
       const total = await prisma.reconResult.count({ where });
 
       // Transform to operator-friendly format
-      const data = runs.map((run) => {
-        const summary = run.summary as {
-          totalItems?: number;
-          matched?: number;
-          missing?: number;
-          drift?: number;
-          mismatched?: number;
-        } | null;
+      const data: Run[] = runs.map((run) => {
+        const summary = run.summary as RunSummary | null;
 
         return {
           id: run.id,
           name: run.reconJob.name,
-          status: run.status,
+          status: run.status as "pending" | "running" | "completed" | "failed" | "unknown",
           startedAt: run.startedAt.toISOString(),
           completedAt: run.completedAt?.toISOString() || null,
-          summary: {
-            totalItems: summary?.totalItems || 0,
-            matched: summary?.matched || 0,
-            missing: summary?.missing || 0,
-            drift: summary?.drift || 0,
-            mismatched: summary?.mismatched || 0,
-          },
+          summary,
         };
       });
 
@@ -213,30 +202,18 @@ router.get(
         },
       ];
 
-      const summary = run.summary as {
-        totalItems?: number;
-        matched?: number;
-        missing?: number;
-        drift?: number;
-        mismatched?: number;
-      } | null;
+      const summary = run.summary as RunSummary | null;
 
       res.json({
         data: {
           id: run.id,
           name: run.reconJob.name,
-          status: run.status,
+          status: run.status as "pending" | "running" | "completed" | "failed" | "unknown",
           progress,
           startedAt: run.startedAt,
           completedAt: run.completedAt,
           error: run.errorMessage,
-          summary: {
-            totalItems: summary?.totalItems || 0,
-            matched: summary?.matched || 0,
-            missing: summary?.missing || 0,
-            drift: summary?.drift || 0,
-            mismatched: summary?.mismatched || 0,
-          },
+          summary,
           stages,
         },
       });

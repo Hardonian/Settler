@@ -13,30 +13,7 @@ import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
 import { RefreshCw, CheckCircle2, XCircle, Clock, AlertCircle } from "lucide-react";
 import Link from "next/link";
 
-interface RunSummary {
-  total: number;
-  sourceCount: number;
-  targetCount: number;
-  matched: number;
-  unmatched: number;
-  unmatchedSourceCount: number;
-  unmatchedTargetCount: number;
-  conflicts: number;
-}
-
-interface Run {
-  id: string;
-  name: string;
-  status: "pending" | "running" | "completed" | "failed" | "unknown";
-  statusLabel?: string;
-  startedAt: string;
-  completedAt: string | null;
-  summary?: RunSummary;
-  summaryState?: "success" | "review_needed" | "in_progress" | "failed" | "empty" | "unknown";
-  progress?: number;
-  progressState?: "not_started" | "in_progress" | "completed" | "failed" | "unknown";
-  isTerminal?: boolean;
-}
+import { Run, RunSummary } from "@settler/types";
 
 interface RunFilters {
   status?: string;
@@ -366,19 +343,17 @@ export default function RunsPage() {
                         {run.startedAt ? formatDuration(run.startedAt, run.completedAt) : "-"}
                       </td>
                       <td className="py-3 px-4 text-sm text-slate-600 dark:text-slate-400">
-                        {run.summary
-                          ? `${run.summary.sourceCount.toLocaleString()} / ${run.summary.targetCount.toLocaleString()}`
-                          : "-"}
+                        {run.summary ? `${run.summary.totalItems.toLocaleString()}` : "-"}
                       </td>
                       <td className="py-3 px-4">
-                        {run.summary && run.summary.unmatched + run.summary.conflicts > 0 ? (
+                        {run.summary && run.summary.mismatched + run.summary.missing > 0 ? (
                           <span className="text-red-600 dark:text-red-400 font-medium">
-                            {(run.summary.unmatched + run.summary.conflicts).toLocaleString()}
+                            {(run.summary.mismatched + run.summary.missing).toLocaleString()}
                           </span>
                         ) : (
                           <span className="text-slate-600 dark:text-slate-400">
                             {run.summary
-                              ? (run.summary.unmatched + run.summary.conflicts).toLocaleString()
+                              ? (run.summary.mismatched + run.summary.missing).toLocaleString()
                               : "-"}
                           </span>
                         )}
