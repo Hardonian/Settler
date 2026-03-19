@@ -1,26 +1,33 @@
 /**
  * Analytics Studio Component
- * 
+ *
  * Tableau-style pivot dashboard with self-fueling cost & usage intelligence
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Download, Save, BarChart3, Table as TableIcon, AlertCircle } from 'lucide-react';
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Download, Save, AlertCircle } from "lucide-react";
 
 interface Dataset {
   name: string;
@@ -35,7 +42,7 @@ interface PivotQuery {
   rows: string[];
   columns: string[];
   measure: string;
-  aggregation: 'sum' | 'count' | 'avg' | 'min' | 'max' | 'p95';
+  aggregation: "sum" | "count" | "avg" | "min" | "max" | "p95";
   filters: Record<string, any>;
   dateRange?: { start: string; end: string };
 }
@@ -62,30 +69,32 @@ interface SavedView {
 
 export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
   const [datasets, setDatasets] = useState<Record<string, Dataset>>({});
-  const [selectedDataset, setSelectedDataset] = useState<string>('');
+  const [selectedDataset, setSelectedDataset] = useState<string>("");
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
-  const [selectedMeasure, setSelectedMeasure] = useState<string>('');
-  const [selectedAggregation, setSelectedAggregation] = useState<'sum' | 'count' | 'avg' | 'min' | 'max' | 'p95'>('sum');
+  const [selectedMeasure, setSelectedMeasure] = useState<string>("");
+  const [selectedAggregation, setSelectedAggregation] = useState<
+    "sum" | "count" | "avg" | "min" | "max" | "p95"
+  >("sum");
   const [dateRange, setDateRange] = useState<{ start: string; end: string }>(() => {
-    const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-    const endDate = new Date().toISOString().split('T')[0];
+    const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+    const endDate = new Date().toISOString().split("T")[0];
     return {
-      start: startDate || '',
-      end: endDate || '',
+      start: startDate || "",
+      end: endDate || "",
     };
   });
   const [pivotResult, setPivotResult] = useState<PivotResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'table' | 'chart'>('table');
+
   const [savedViews, setSavedViews] = useState<SavedView[]>([]);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
-  const [saveViewName, setSaveViewName] = useState('');
+  const [saveViewName, setSaveViewName] = useState("");
 
   // Load datasets
   useEffect(() => {
-    fetch('/api/console/analytics/datasets')
+    fetch("/api/console/analytics/datasets")
       .then((res) => res.json())
       .then((data) => {
         setDatasets(data.datasets || {});
@@ -95,20 +104,20 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
         }
       })
       .catch((err) => {
-        console.error('Failed to load datasets:', err);
-        setError('Failed to load datasets');
+        console.error("Failed to load datasets:", err);
+        setError("Failed to load datasets");
       });
   }, []);
 
   // Load saved views
   useEffect(() => {
-    fetch('/api/console/analytics/saved-views')
+    fetch("/api/console/analytics/saved-views")
       .then((res) => res.json())
       .then((data) => {
         setSavedViews(data.views || []);
       })
       .catch((err) => {
-        console.error('Failed to load saved views:', err);
+        console.error("Failed to load saved views:", err);
       });
   }, []);
 
@@ -116,7 +125,7 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
 
   const executeQuery = async () => {
     if (!selectedDataset || !selectedMeasure) {
-      setError('Please select a dataset and measure');
+      setError("Please select a dataset and measure");
       return;
     }
 
@@ -134,22 +143,22 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
         dateRange,
       };
 
-      const res = await fetch('/api/console/analytics/pivot', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/console/analytics/pivot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(query),
       });
 
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.error || 'Failed to execute query');
+        throw new Error(errorData.error || "Failed to execute query");
       }
 
       const result = await res.json();
       setPivotResult(result);
     } catch (error: unknown) {
-      console.error('Query error:', error);
-      setError(error instanceof Error ? error.message : 'Failed to execute query');
+      console.error("Query error:", error);
+      setError(error instanceof Error ? error.message : "Failed to execute query");
     } finally {
       setLoading(false);
     }
@@ -157,20 +166,20 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
 
   const saveView = async () => {
     if (!saveViewName.trim()) {
-      setError('Please enter a view name');
+      setError("Please enter a view name");
       return;
     }
 
     try {
-      const res = await fetch('/api/console/analytics/saved-views', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/console/analytics/saved-views", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: saveViewName,
-          dataset: selectedDataset || '',
+          dataset: selectedDataset || "",
           rows: selectedRows,
           columns: selectedColumns,
-          measure: selectedMeasure || '',
+          measure: selectedMeasure || "",
           aggregation: selectedAggregation,
           filters: {},
           dateRange,
@@ -182,13 +191,13 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
         const data = await res.json();
         setSavedViews([...savedViews, data.view]);
         setShowSaveDialog(false);
-        setSaveViewName('');
+        setSaveViewName("");
       } else {
-        throw new Error('Failed to save view');
+        throw new Error("Failed to save view");
       }
     } catch (error: unknown) {
-      console.error('Save error:', error);
-      setError(error instanceof Error ? error.message : 'Failed to save view');
+      console.error("Save error:", error);
+      setError(error instanceof Error ? error.message : "Failed to save view");
     }
   };
 
@@ -207,27 +216,26 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
     if (!pivotResult) return;
 
     const headers = [
-      ...(currentDataset?.dimensions.filter((d) => selectedRows.includes(d.name)) || []).map((d) => d.name),
+      ...(currentDataset?.dimensions.filter((d) => selectedRows.includes(d.name)) || []).map(
+        (d) => d.name
+      ),
       ...pivotResult.columnLabels,
     ];
 
     const rows = pivotResult.data.map((row) => {
       return [
-        ...selectedRows.map((r) => row[r] || ''),
-        ...pivotResult.columnLabels.map((col) => row[col] || ''),
+        ...selectedRows.map((r) => row[r] || ""),
+        ...pivotResult.columnLabels.map((col) => row[col] || ""),
       ];
     });
 
-    const csv = [
-      headers.join(','),
-      ...rows.map((r) => r.join(',')),
-    ].join('\n');
+    const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
 
-    const blob = new Blob([csv], { type: 'text/csv' });
+    const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `analytics-${selectedDataset}-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `analytics-${selectedDataset}-${new Date().toISOString().split("T")[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -262,9 +270,7 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
                 </SelectContent>
               </Select>
               {currentDataset?.description && (
-                <p className="text-sm text-muted-foreground mt-1">
-                  {currentDataset.description}
-                </p>
+                <p className="text-sm text-muted-foreground mt-1">{currentDataset.description}</p>
               )}
             </div>
 
@@ -325,8 +331,8 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
             <div>
               <Label>Row Dimensions (max 2)</Label>
               <Select
-                value={selectedRows.join(',')}
-                onValueChange={(v) => setSelectedRows(v ? v.split(',') : [])}
+                value={selectedRows.join(",")}
+                onValueChange={(v) => setSelectedRows(v ? v.split(",") : [])}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select row dimensions" />
@@ -344,8 +350,8 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
             <div>
               <Label>Column Dimensions (max 2)</Label>
               <Select
-                value={selectedColumns.join(',')}
-                onValueChange={(v) => setSelectedColumns(v ? v.split(',') : [])}
+                value={selectedColumns.join(",")}
+                onValueChange={(v) => setSelectedColumns(v ? v.split(",") : [])}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select column dimensions" />
@@ -388,12 +394,7 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
           <CardContent>
             <div className="flex flex-wrap gap-2">
               {savedViews.map((view) => (
-                <Button
-                  key={view.id}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => loadView(view)}
-                >
+                <Button key={view.id} variant="outline" size="sm" onClick={() => loadView(view)}>
                   {view.name}
                 </Button>
               ))}
@@ -427,75 +428,51 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Results</CardTitle>
-              <div className="flex gap-2">
-                <Button
-                  variant={viewMode === 'table' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setViewMode('table')}
-                >
-                  <TableIcon className="w-4 h-4 mr-2" />
-                  Table
-                </Button>
-                <Button
-                  variant={viewMode === 'chart' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setViewMode('chart')}
-                >
-                  <BarChart3 className="w-4 h-4 mr-2" />
-                  Chart
-                </Button>
-              </div>
             </div>
           </CardHeader>
           <CardContent>
-            {viewMode === 'table' ? (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      {selectedRows.map((row) => (
-                        <TableHead key={row}>{row}</TableHead>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {selectedRows.map((row) => (
+                      <TableHead key={row}>{row}</TableHead>
+                    ))}
+                    {pivotResult.columnLabels.map((col) => (
+                      <TableHead key={col}>{col}</TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {pivotResult.data.map((row, idx) => (
+                    <TableRow key={idx}>
+                      {selectedRows.map((r) => (
+                        <TableCell key={r}>{row[r] || "-"}</TableCell>
                       ))}
                       {pivotResult.columnLabels.map((col) => (
-                        <TableHead key={col}>{col}</TableHead>
+                        <TableCell key={col}>
+                          {typeof row[col] === "number"
+                            ? row[col].toLocaleString()
+                            : row[col] || "-"}
+                        </TableCell>
                       ))}
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pivotResult.data.map((row, idx) => (
-                      <TableRow key={idx}>
-                        {selectedRows.map((r) => (
-                          <TableCell key={r}>{row[r] || '-'}</TableCell>
-                        ))}
-                        {pivotResult.columnLabels.map((col) => (
-                          <TableCell key={col}>
-                            {typeof row[col] === 'number'
-                              ? row[col].toLocaleString()
-                              : row[col] || '-'}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))}
-                    {pivotResult.totals && (
-                      <TableRow className="font-bold">
-                        <TableCell colSpan={selectedRows.length}>Total</TableCell>
-                        {pivotResult.columnLabels.map((col) => (
-                          <TableCell key={col}>
-                            {typeof pivotResult.totals[col] === 'number'
-                              ? pivotResult.totals[col].toLocaleString()
-                              : pivotResult.totals[col] || '-'}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            ) : (
-              <div className="h-96 flex items-center justify-center text-muted-foreground">
-                Chart view coming soon
-              </div>
-            )}
+                  ))}
+                  {pivotResult.totals && (
+                    <TableRow className="font-bold">
+                      <TableCell colSpan={selectedRows.length}>Total</TableCell>
+                      {pivotResult.columnLabels.map((col) => (
+                        <TableCell key={col}>
+                          {typeof pivotResult.totals[col] === "number"
+                            ? pivotResult.totals[col].toLocaleString()
+                            : pivotResult.totals[col] || "-"}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       )}

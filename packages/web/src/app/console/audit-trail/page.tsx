@@ -5,7 +5,6 @@
  * Checks for tenant/organization context before rendering audit logs.
  */
 
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
 import { AdvancedAuditTrail } from "@/components/console/AdvancedAuditTrail";

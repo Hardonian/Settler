@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import { logInfo, logDebug } from "../utils/logger";
 
 const prisma = new PrismaClient();
 
@@ -20,7 +19,7 @@ export interface QueryOptions {
 export async function getReconciliationSummary(
   jobId: string,
   dateRange?: { start: Date; end: Date },
-  options: QueryOptions = {}
+  _options: QueryOptions = {}
 ): Promise<any> {
   const where = {
     reconJobId: jobId,
@@ -56,7 +55,7 @@ export async function getReconciliationSummary(
 /**
  * Get job performance metrics using Prisma
  */
-export async function getJobPerformance(jobId: string, options: QueryOptions = {}): Promise<any> {
+export async function getJobPerformance(jobId: string, _options: QueryOptions = {}): Promise<any> {
   const job = await prisma.reconJob.findUnique({
     where: { id: jobId },
     include: {
@@ -108,8 +107,8 @@ export async function getJobPerformance(jobId: string, options: QueryOptions = {
  */
 export async function getTenantUsage(
   tenantId: string,
-  timeRange: "hour" | "day" | "week" = "hour",
-  options: QueryOptions = {}
+  _timeRange: "hour" | "day" | "week" = "hour",
+  _options: QueryOptions = {}
 ): Promise<any> {
   // TODO: This requires a new data model for API logs
   return [];
@@ -118,7 +117,7 @@ export async function getTenantUsage(
 /**
  * Get match accuracy by job using Prisma
  */
-export async function getMatchAccuracy(jobId?: string, options: QueryOptions = {}): Promise<any> {
+export async function getMatchAccuracy(jobId?: string, _options: QueryOptions = {}): Promise<any> {
   const where = {
     ...(jobId && { reconJobId: jobId }),
   };
@@ -158,18 +157,4 @@ export async function getMatchAccuracy(jobId?: string, options: QueryOptions = {
     accuracy_percentage: totalMatches > 0 ? (accurateMatches / totalMatches) * 100 : 0,
     avg_confidence_score: avgConfidence._avg.confidenceAvg,
   };
-}
-
-/**
- * Refresh a materialized view
- */
-export async function refreshMaterializedView(viewName: string): Promise<void> {
-  // This function is no longer needed
-}
-
-/**
- * Refresh all materialized views
- */
-export async function refreshAllMaterializedViews(): Promise<void> {
-  // This function is no longer needed
 }

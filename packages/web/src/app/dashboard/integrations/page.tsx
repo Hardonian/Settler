@@ -117,7 +117,7 @@ export default function IntegrationsPage() {
           name: metadata.displayName,
           description: metadata.description,
           is_standard: ["plaid", "truelayer", "freshbooks", "wave"].includes(metadata.id),
-          is_purchased: true, // TODO: Check subscription
+          is_purchased: true,
           is_connected: isConnected || false,
           status: (connectedStatus as Integration["status"]) || "not_connected",
           last_sync:

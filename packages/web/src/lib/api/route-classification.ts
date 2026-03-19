@@ -543,6 +543,18 @@ export const ROUTE_CLASSIFICATIONS: Record<string, RouteClassification> = {
   },
   "console/usage/export": {
     class: "tenant-scoped",
+    methods: ["GET", "POST"],
+    auth: "session",
+    tenantScoped: true,
+  },
+  "console/usage/export/[exportId]": {
+    class: "tenant-scoped",
+    methods: ["GET", "POST"],
+    auth: "session",
+    tenantScoped: true,
+  },
+  "console/usage/export/[exportId]/download": {
+    class: "tenant-scoped",
     methods: ["GET"],
     auth: "session",
     tenantScoped: true,

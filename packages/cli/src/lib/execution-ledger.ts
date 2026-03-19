@@ -121,19 +121,18 @@ export async function verifyLedgerEntry(executionId: string): Promise<Verificati
     return null;
   }
 
-  const { execution_hash, ...receiptPart } = entry;
   const canonicalReceipt: CanonicalExecutionReceipt = {
-    execution_id: receiptPart.execution_id,
-    tenant_id: receiptPart.tenant_id,
-    trace_id: receiptPart.trace_id,
-    timestamp: receiptPart.timestamp,
-    policy_version: receiptPart.policy_version,
-    input_hash: receiptPart.input_hash,
-    output_hash: receiptPart.output_hash,
-    status: receiptPart.status,
-    duration: receiptPart.duration,
-    initiator: receiptPart.initiator,
-    tool_calls: receiptPart.tool_calls,
+    execution_id: entry.execution_id,
+    tenant_id: entry.tenant_id,
+    trace_id: entry.trace_id,
+    timestamp: entry.timestamp,
+    policy_version: entry.policy_version,
+    input_hash: entry.input_hash,
+    output_hash: entry.output_hash,
+    status: entry.status,
+    duration: entry.duration,
+    initiator: entry.initiator,
+    tool_calls: entry.tool_calls,
   };
 
   const computedHash = computeExecutionHash(entry.previous_execution_hash, canonicalReceipt);

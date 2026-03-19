@@ -3,13 +3,13 @@
 import { GET as getConsoleUsage } from "@/app/api/console/usage/route";
 
 const createClientMock = jest.fn();
-const usageEventFindManyMock = jest.fn();
 const getCurrentUsageMock = jest.fn();
 const getCorrelationIdMock = jest.fn();
 const addCorrelationHeadersMock = jest.fn();
 const createLoggerMock = jest.fn();
 const getBillingAccountOptimizedMock = jest.fn();
 const executeWithRetryMock = jest.fn();
+const getUsageSummaryAggregateMock = jest.fn();
 
 jest.mock("@/lib/middleware/api-security", () => ({
   withSecurity: (handler: unknown) => handler,
@@ -21,14 +21,6 @@ jest.mock("@/middleware/billing-gate-universal", () => ({
 
 jest.mock("@/lib/supabase/server", () => ({
   createClient: (...args: unknown[]) => createClientMock(...args),
-}));
-
-jest.mock("@/shared/db/prismaClient", () => ({
-  prisma: {
-    usageEvent: {
-      findMany: (...args: unknown[]) => usageEventFindManyMock(...args),
-    },
-  },
 }));
 
 jest.mock("@/lib/usage/tracking", () => ({
@@ -49,6 +41,10 @@ jest.mock("@/lib/db/connection-pool", () => ({
   executeWithRetry: (...args: unknown[]) => executeWithRetryMock(...args),
 }));
 
+jest.mock("@/lib/console/usage-aggregation", () => ({
+  getUsageSummaryAggregate: (...args: unknown[]) => getUsageSummaryAggregateMock(...args),
+}));
+
 function req(url: string) {
   return {
     url,
@@ -61,13 +57,13 @@ function req(url: string) {
 describe("GET /api/console/usage", () => {
   beforeEach(() => {
     createClientMock.mockReset();
-    usageEventFindManyMock.mockReset();
     getCurrentUsageMock.mockReset();
     getCorrelationIdMock.mockReset();
     addCorrelationHeadersMock.mockReset();
     createLoggerMock.mockReset();
     getBillingAccountOptimizedMock.mockReset();
     executeWithRetryMock.mockReset();
+    getUsageSummaryAggregateMock.mockReset();
 
     createClientMock.mockResolvedValue({
       auth: {
@@ -75,10 +71,20 @@ describe("GET /api/console/usage", () => {
       },
     });
 
-    usageEventFindManyMock.mockResolvedValue([
-      { eventType: "reconcile-run", quantity: 2, metadata: {} },
-      { eventType: "receipts-upload", quantity: 1, metadata: { error: true } },
-    ]);
+    getUsageSummaryAggregateMock.mockResolvedValue({
+      totalCalls: 3,
+      byService: {
+        reconcile: 2,
+        receipts: 1,
+      },
+      byOperation: {
+        run: 2,
+        upload: 1,
+      },
+      errorRate: 1 / 3,
+      groupedEventTypes: 2,
+      matchedRows: 2,
+    });
 
     getCurrentUsageMock.mockResolvedValue({
       current: 10,
@@ -119,10 +125,8 @@ describe("GET /api/console/usage", () => {
     expect(payload.totalCalls).toBe(3);
     expect(getCurrentUsageMock).toHaveBeenCalledTimes(4);
 
-    const queryArgs = usageEventFindManyMock.mock.calls[0]?.[0] as {
-      where: { timestamp: { gte: Date; lte: Date } };
-    };
-    const gte = queryArgs.where.timestamp.gte.getTime();
+    const callArgs = getUsageSummaryAggregateMock.mock.calls[0] as [string, Date, Date];
+    const gte = callArgs[1].getTime();
     const now = Date.now();
     const diffDays = Math.round((now - gte) / (24 * 60 * 60 * 1000));
     expect(diffDays).toBeGreaterThanOrEqual(89);

@@ -1,12 +1,13 @@
 /**
  * Console Usage Domain
- * 
+ *
  * Queries usage events for the Developer Console.
  * Uses Prisma with billing account scoping for tenant isolation.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
-import { createClient } from '@/lib/supabase/server';
+import { prisma } from "@/shared/db/prismaClient";
+import { createClient } from "@/lib/supabase/server";
+import { getUsageSummaryAggregate } from "@/lib/console/usage-aggregation";
 
 export interface UsageEventItem {
   id: string;
@@ -45,27 +46,29 @@ export interface UsageQueryFilters {
 async function verifyBillingAccountAccess(billingAccountId: string): Promise<boolean> {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
       return false;
     }
-    
+
     // Check if billing account exists and belongs to user
-    if (!prisma || typeof prisma.billingAccount === 'undefined') {
+    if (!prisma || typeof prisma.billingAccount === "undefined") {
       return false;
     }
-    
+
     const billingAccount = await prisma.billingAccount.findFirst({
       where: {
         id: billingAccountId,
         userId: user.id,
       },
     });
-    
+
     return !!billingAccount;
   } catch (error) {
-    console.error('[verifyBillingAccountAccess] Error:', error);
+    console.error("[verifyBillingAccountAccess] Error:", error);
     return false;
   }
 }
@@ -82,10 +85,10 @@ export async function getUsageEvents(
     // Verify billing account access
     const hasAccess = await verifyBillingAccountAccess(billingAccountId);
     if (!hasAccess) {
-      console.warn('[getUsageEvents] Access denied for billing account:', billingAccountId);
+      console.warn("[getUsageEvents] Access denied for billing account:", billingAccountId);
       return [];
     }
-    
+
     const where: Record<string, unknown> = {
       billingAccountId,
     };
@@ -113,25 +116,25 @@ export async function getUsageEvents(
 
     const events = await prisma.usageEvent.findMany({
       where,
-      orderBy: { timestamp: 'desc' },
+      orderBy: { timestamp: "desc" },
       take: filters.limit || 100,
       skip: filters.offset || 0,
     });
 
     return events.map((event: (typeof events)[number]) => {
-      const [service, operation] = event.eventType.split(':');
+      const [service, operation] = event.eventType.split(":");
       return {
         id: event.id,
         timestamp: event.timestamp,
         service: service || event.eventType,
-        operation: operation || 'unknown',
+        operation: operation || "unknown",
         quantity: Number(event.quantity),
         unit: event.unit || undefined,
         metadata: event.metadata as Record<string, unknown> | undefined,
       };
     });
   } catch (error) {
-    console.error('[getUsageEvents] Error:', error);
+    console.error("[getUsageEvents] Error:", error);
     // Return empty array instead of throwing to prevent 500 errors
     return [];
   }
@@ -150,7 +153,7 @@ export async function getUsageSummary(
     // Verify billing account access
     const hasAccess = await verifyBillingAccountAccess(billingAccountId);
     if (!hasAccess) {
-      console.warn('[getUsageSummary] Access denied for billing account:', billingAccountId);
+      console.warn("[getUsageSummary] Access denied for billing account:", billingAccountId);
       return {
         totalCalls: 0,
         byService: {},
@@ -159,10 +162,10 @@ export async function getUsageSummary(
         period: { start: startDate, end: endDate },
       };
     }
-    
+
     // Check if Prisma is available
-    if (!prisma || typeof prisma.usageEvent === 'undefined') {
-      console.warn('[getUsageSummary] Prisma client not available, returning empty summary');
+    if (!prisma || typeof prisma.usageEvent === "undefined") {
+      console.warn("[getUsageSummary] Prisma client not available, returning empty summary");
       return {
         totalCalls: 0,
         byService: {},
@@ -171,48 +174,18 @@ export async function getUsageSummary(
         period: { start: startDate, end: endDate },
       };
     }
-    
-    const events = await prisma.usageEvent.findMany({
-      where: {
-        billingAccountId,
-        timestamp: {
-          gte: startDate,
-          lte: endDate,
-        },
-      },
-    });
 
-    const byService: Record<string, number> = {};
-    const byOperation: Record<string, number> = {};
-    let totalCalls = 0;
-    let errorCount = 0;
-
-    for (const event of events) {
-      totalCalls += Number(event.quantity);
-      
-      const [service, operation] = event.eventType.split(':');
-      const serviceName = service || event.eventType;
-      const operationName = operation || 'unknown';
-
-      byService[serviceName] = (byService[serviceName] || 0) + Number(event.quantity);
-      byOperation[operationName] = (byOperation[operationName] || 0) + Number(event.quantity);
-
-      // Check for errors in metadata
-      const metadata = event.metadata as Record<string, unknown> | null;
-      if (metadata?.status === 'error' || metadata?.error) {
-        errorCount += Number(event.quantity);
-      }
-    }
+    const aggregate = await getUsageSummaryAggregate(billingAccountId, startDate, endDate);
 
     return {
-      totalCalls,
-      byService,
-      byOperation,
-      errorRate: totalCalls > 0 ? errorCount / totalCalls : 0,
+      totalCalls: aggregate.totalCalls,
+      byService: aggregate.byService,
+      byOperation: aggregate.byOperation,
+      errorRate: aggregate.errorRate,
       period: { start: startDate, end: endDate },
     };
   } catch (error) {
-    console.error('[getUsageSummary] Error:', error);
+    console.error("[getUsageSummary] Error:", error);
     // Return empty summary instead of throwing to prevent 500 errors
     return {
       totalCalls: 0,

@@ -1,6 +1,7 @@
 # PILOT OPERATOR RUNBOOK
 
 ## 1) Onboarding steps
+
 1. Create tenant bootstrap plan:
    - `pnpm tenant:create --name "Acme Pilot" --slug acme-pilot --owner-email ops@acme.test`
 2. Execute tenant creation against target API:
@@ -10,13 +11,15 @@
    - `pnpm verify:tenant`
 
 ## 2) Reconciliation workflow
+
 1. Stage pilot data from `/pilot-data`.
-2. Parse + validate + preview with import workbench module (`scripts/pilot/import-workbench.ts`).
+2. Parse + validate + preview with import workbench module (`scripts/pilot/import-workbench.ts` - _pending creation_).
 3. Load normalized transactions to ingestion route (CSV/webhook/REST).
 4. Trigger reconciliation run for the workspace.
 5. Record run ID and reconciliation evidence bundle for audit.
 
 ## 3) Alert handling
+
 1. Monitor alert channels (email/Slack/PagerDuty) for:
    - reconciliation drift
    - mismatch threshold breach
@@ -28,6 +31,7 @@
 3. Apply least-privilege remediation and re-run only affected tenant scope.
 
 ## 4) Replay workflow
+
 1. Locate target run ID from operator UI or execution ledger.
 2. Replay with immutable input snapshot and pinned policy version.
 3. Compare output hash to original evidence hash.
@@ -37,6 +41,7 @@
    - preserve both evidence bundles.
 
 ## 5) Troubleshooting
+
 - **Tenant creation fails**: verify admin API key scope and workspace slug uniqueness.
 - **Connector ingest fails**: validate source signature/credentials and payload schema.
 - **Reconciliation stalls**: inspect worker queue depth and Redis health.

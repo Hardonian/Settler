@@ -14,7 +14,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DriverValidationError = exports.DriverConnectorError = void 0;
+exports.processInBatches = exports.trackTokenRefresh = exports.trackWebhook = exports.trackRateLimit = exports.trackApiCall = exports.trackSyncFailure = exports.trackSyncComplete = exports.trackSyncStart = exports.DriverValidationError = exports.DriverConnectorError = void 0;
 // Public connector contract (for external developers)
 __exportStar(require("./connector-contract"), exports);
 // Built-in connectors (reference implementations)
@@ -43,9 +43,15 @@ __exportStar(require("./webhook-verification"), exports);
 __exportStar(require("./token-refresh"), exports);
 __exportStar(require("./rate-limiting"), exports);
 __exportStar(require("./concurrency-protection"), exports);
-__exportStar(require("./metrics/prometheus"), exports);
-__exportStar(require("./alerting/alert-manager"), exports);
-__exportStar(require("./retry-queue/retry-queue"), exports);
-__exportStar(require("./validation/data-validator"), exports);
-__exportStar(require("./performance/batch-processor"), exports);
+// Metrics - export tracking functions only (infrastructure not part of public API)
+var prometheus_1 = require("./metrics/prometheus");
+Object.defineProperty(exports, "trackSyncStart", { enumerable: true, get: function () { return prometheus_1.trackSyncStart; } });
+Object.defineProperty(exports, "trackSyncComplete", { enumerable: true, get: function () { return prometheus_1.trackSyncComplete; } });
+Object.defineProperty(exports, "trackSyncFailure", { enumerable: true, get: function () { return prometheus_1.trackSyncFailure; } });
+Object.defineProperty(exports, "trackApiCall", { enumerable: true, get: function () { return prometheus_1.trackApiCall; } });
+Object.defineProperty(exports, "trackRateLimit", { enumerable: true, get: function () { return prometheus_1.trackRateLimit; } });
+Object.defineProperty(exports, "trackWebhook", { enumerable: true, get: function () { return prometheus_1.trackWebhook; } });
+Object.defineProperty(exports, "trackTokenRefresh", { enumerable: true, get: function () { return prometheus_1.trackTokenRefresh; } });
+var batch_processor_1 = require("./performance/batch-processor");
+Object.defineProperty(exports, "processInBatches", { enumerable: true, get: function () { return batch_processor_1.processInBatches; } });
 //# sourceMappingURL=index.js.map

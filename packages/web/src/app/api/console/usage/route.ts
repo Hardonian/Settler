@@ -7,7 +7,6 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { prisma } from "@/shared/db/prismaClient";
 import { getCurrentUsage } from "@/lib/usage/tracking";
 import {
   getCorrelationId,
@@ -19,6 +18,11 @@ import { executeWithRetry } from "@/lib/db/connection-pool";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { withSecurity } from "@/lib/middleware/api-security";
 import { appLogger } from "@/lib/utils/logger";
+import { getUsageSummaryAggregate } from "@/lib/console/usage-aggregation";
+import {
+  estimateJsonPayloadBytes,
+  recordUsageEndpointMetrics,
+} from "@/lib/console/usage-observability";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -40,6 +44,10 @@ interface UsageSummary {
 export const GET = withSecurity(
   withUniversalBillingGate(
     async function GET(request: NextRequest) {
+      const startedAt = Date.now();
+      let statusCode = 500;
+      let queryRows = 0;
+      let payloadBytes = 0;
       const correlationId = await getCorrelationId();
       const logger = await createLogger({ route: "/api/console/usage", method: "GET" });
 
@@ -51,28 +59,28 @@ export const GET = withSecurity(
         } = await supabase.auth.getUser();
 
         if (!user) {
-          return NextResponse.json(
-            {
-              error: "Unauthorized",
-              message: "Authentication required",
-              correlationId,
-            },
-            { status: 401 }
-          );
+          statusCode = 401;
+          const unauthorizedPayload = {
+            error: "Unauthorized",
+            message: "Authentication required",
+            correlationId,
+          };
+          payloadBytes = estimateJsonPayloadBytes(unauthorizedPayload);
+          return NextResponse.json(unauthorizedPayload, { status: 401 });
         }
 
         // Get billing account with optimized query and caching
         const billingAccount = await getBillingAccountOptimized(user.id, true);
 
         if (!billingAccount) {
-          return NextResponse.json(
-            {
-              error: "Billing account not found",
-              message: "No billing account is associated with the authenticated user",
-              correlationId,
-            },
-            { status: 404 }
-          );
+          statusCode = 404;
+          const missingBillingPayload = {
+            error: "Billing account not found",
+            message: "No billing account is associated with the authenticated user",
+            correlationId,
+          };
+          payloadBytes = estimateJsonPayloadBytes(missingBillingPayload);
+          return NextResponse.json(missingBillingPayload, { status: 404 });
         }
 
         // Get query parameters
@@ -86,45 +94,11 @@ export const GET = withSecurity(
         // Get subscription info for limits (not used but kept for future use)
         // const subscription = await getSubscriptionInfo();
 
-        // Get usage events from database with connection pooling and retry
-        const usageEvents = (await executeWithRetry(() =>
-          prisma.usageEvent.findMany({
-            where: {
-              billingAccountId: billingAccount.id,
-              timestamp: {
-                gte: startDate,
-                lte: endDate,
-              },
-            },
-            select: {
-              eventType: true,
-              quantity: true,
-              metadata: true,
-            },
-          })
-        )) as Array<{ eventType: string; quantity: number; metadata: unknown }>;
-
-        // Aggregate usage by service
-        const byService: Record<string, number> = {};
-        const byOperation: Record<string, number> = {};
-        let totalCalls = 0;
-        let errorCount = 0;
-
-        for (const event of usageEvents) {
-          const service = event.eventType.split("-")[0] || "unknown";
-          const operation = event.eventType.split("-").slice(1).join("-") || "unknown";
-          const quantity = Number(event.quantity) || 1;
-
-          byService[service] = (byService[service] || 0) + quantity;
-          byOperation[operation] = (byOperation[operation] || 0) + quantity;
-          totalCalls += quantity;
-
-          if (event.metadata && typeof event.metadata === "object" && "error" in event.metadata) {
-            errorCount += quantity;
-          }
-        }
-
-        const errorRate = totalCalls > 0 ? errorCount / totalCalls : 0;
+        // Compute usage summary through DB-side grouping and aggregation.
+        const summaryAggregate = await executeWithRetry(() =>
+          getUsageSummaryAggregate(billingAccount.id, startDate, endDate)
+        );
+        queryRows = summaryAggregate.matchedRows;
 
         // Get real-time usage limits
         const limits: UsageSummary["limits"] = {};
@@ -167,19 +141,23 @@ export const GET = withSecurity(
         }
 
         const summary: UsageSummary = {
-          totalCalls,
-          byService,
-          byOperation,
-          errorRate,
+          totalCalls: summaryAggregate.totalCalls,
+          byService: summaryAggregate.byService,
+          byOperation: summaryAggregate.byOperation,
+          errorRate: summaryAggregate.errorRate,
           period: { start: startDate, end: endDate },
           limits,
         };
+        payloadBytes = estimateJsonPayloadBytes(summary);
+        statusCode = 200;
 
         logger.info("Usage summary generated successfully", {
           correlationId,
-          totalCalls,
-          errorRate,
+          totalCalls: summary.totalCalls,
+          errorRate: summary.errorRate,
           days,
+          groupedEventTypes: summaryAggregate.groupedEventTypes,
+          matchedRows: summaryAggregate.matchedRows,
         });
         const response = NextResponse.json(summary, {
           status: 200,
@@ -197,15 +175,25 @@ export const GET = withSecurity(
           stack: error instanceof Error ? error.stack : undefined,
         });
         // Fail closed so clients do not treat this as authoritative usage truth.
-        const response = NextResponse.json(
-          {
-            error: "Failed to retrieve usage summary",
-            message: "Please retry or contact support if the issue persists",
-            correlationId,
-          },
-          { status: 500 }
-        );
+        const failurePayload = {
+          error: "Failed to retrieve usage summary",
+          message: "Please retry or contact support if the issue persists",
+          correlationId,
+        };
+        payloadBytes = estimateJsonPayloadBytes(failurePayload);
+        statusCode = 500;
+        const response = NextResponse.json(failurePayload, { status: 500 });
         return addCorrelationHeaders(response, correlationId);
+      } finally {
+        await recordUsageEndpointMetrics({
+          endpoint: "/api/console/usage",
+          method: "GET",
+          statusCode,
+          latencyMs: Date.now() - startedAt,
+          queryRows,
+          payloadBytes,
+          mode: "sync",
+        });
       }
     },
     { feature: "Usage API" }

@@ -10,7 +10,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -44,10 +44,29 @@ interface UsageAnalytics {
   };
 }
 
+type UsageExportFormat = "csv" | "json";
+
+interface UsageExportJob {
+  exportId: string;
+  format: UsageExportFormat;
+  status: "pending" | "processing" | "completed" | "failed" | string;
+  totalRows: number;
+  processedRows: number;
+  chunkCount: number;
+  batchCount: number;
+  pollUrl: string;
+  downloadUrl: string | null;
+  errorMessage: string | null;
+}
+
 export function UsageAnalyticsDashboard() {
   const [analytics, setAnalytics] = useState<UsageAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<"7d" | "30d" | "90d">("30d");
+  const [activeExport, setActiveExport] = useState<UsageExportJob | null>(null);
+  const [exportingFormat, setExportingFormat] = useState<UsageExportFormat | null>(null);
+  const [exportError, setExportError] = useState<string | null>(null);
+  const exportPollCountRef = useRef(0);
 
   useEffect(() => {
     fetchAnalytics();
@@ -80,25 +99,127 @@ export function UsageAnalyticsDashboard() {
     fetchAnalytics();
   };
 
-  const exportData = async (format: "csv" | "json") => {
+  useEffect(() => {
+    if (
+      !activeExport ||
+      (activeExport.status !== "pending" && activeExport.status !== "processing")
+    ) {
+      return;
+    }
+
+    let cancelled = false;
+    const pollTimer = setInterval(async () => {
+      if (cancelled || !activeExport.pollUrl) {
+        return;
+      }
+
+      exportPollCountRef.current += 1;
+      if (exportPollCountRef.current > 40) {
+        clearInterval(pollTimer);
+        setExportError(
+          "Export is taking longer than expected. You can retry from the export status."
+        );
+        setExportingFormat(null);
+        return;
+      }
+
+      try {
+        const statusRes = await fetch(`${activeExport.pollUrl}?tick=1`, {
+          cache: "no-store",
+        });
+        if (!statusRes.ok) {
+          return;
+        }
+
+        const statusPayload = (await statusRes.json()) as UsageExportJob;
+        if (cancelled) {
+          return;
+        }
+
+        setActiveExport(statusPayload);
+        if (statusPayload.status === "completed" || statusPayload.status === "failed") {
+          setExportingFormat(null);
+          clearInterval(pollTimer);
+        }
+      } catch {
+        // Keep polling; transient errors should not crash the UI.
+      }
+    }, 3000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(pollTimer);
+    };
+  }, [activeExport?.exportId, activeExport?.status, activeExport?.pollUrl]);
+
+  const startExport = async (format: UsageExportFormat) => {
     try {
-      const res = await fetch(
-        `/api/console/usage/export?format=${format}&days=${timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : 90}`
-      );
-      if (res.ok) {
-        const blob = await res.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `settler-usage-${timeRange}.${format}`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+      setExportError(null);
+      setExportingFormat(format);
+      exportPollCountRef.current = 0;
+      const days = timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : 90;
+      const res = await fetch(`/api/console/usage/export`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ format, days }),
+      });
+
+      const payload = (await res.json().catch(() => null)) as
+        | UsageExportJob
+        | { error?: string }
+        | null;
+      if (!res.ok || !payload || !("exportId" in payload)) {
+        setExportError(
+          payload && "error" in payload && payload.error
+            ? payload.error
+            : "Failed to queue export. Please retry."
+        );
+        setExportingFormat(null);
+        return;
+      }
+
+      setActiveExport(payload);
+      if (payload.status === "completed") {
+        setExportingFormat(null);
       }
     } catch (error: unknown) {
       console.error("Failed to export data:", error);
+      setExportError("Failed to queue export. Please retry.");
+      setExportingFormat(null);
     }
+  };
+
+  const retryExport = async () => {
+    if (!activeExport) {
+      return;
+    }
+
+    try {
+      setExportError(null);
+      setExportingFormat(activeExport.format);
+      exportPollCountRef.current = 0;
+      const res = await fetch(`/api/console/usage/export/${activeExport.exportId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "retry" }),
+      });
+      const payload = (await res.json()) as UsageExportJob;
+      setActiveExport(payload);
+      if (payload.status === "completed" || payload.status === "failed") {
+        setExportingFormat(null);
+      }
+    } catch {
+      setExportError("Retry failed. Please try again.");
+      setExportingFormat(null);
+    }
+  };
+
+  const downloadExport = () => {
+    if (!activeExport?.downloadUrl) {
+      return;
+    }
+
+    window.location.assign(activeExport.downloadUrl);
   };
 
   if (loading) {
@@ -146,16 +267,60 @@ export function UsageAnalyticsDashboard() {
             >
               <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
             </Button>
-            <Button variant="outline" size="sm" onClick={() => exportData("csv")}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => startExport("csv")}
+              disabled={exportingFormat === "csv"}
+            >
               <Download className="w-4 h-4 mr-2" />
-              Export CSV
+              {exportingFormat === "csv" ? "Queueing CSV..." : "Export CSV"}
             </Button>
-            <Button variant="outline" size="sm" onClick={() => exportData("json")}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => startExport("json")}
+              disabled={exportingFormat === "json"}
+            >
               <Download className="w-4 h-4 mr-2" />
-              Export JSON
+              {exportingFormat === "json" ? "Queueing JSON..." : "Export JSON"}
             </Button>
           </div>
         </div>
+        {activeExport && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Usage Export Status</CardTitle>
+              <CardDescription>
+                {activeExport.format.toUpperCase()} export {activeExport.exportId.slice(0, 8)}...
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="text-sm text-slate-600 dark:text-slate-400">
+                Status: <span className="font-medium capitalize">{activeExport.status}</span> ·
+                Rows: {activeExport.processedRows.toLocaleString()} /{" "}
+                {activeExport.totalRows.toLocaleString()}
+              </div>
+              {activeExport.status === "completed" && activeExport.downloadUrl && (
+                <Button variant="default" size="sm" onClick={downloadExport}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Download Export
+                </Button>
+              )}
+              {activeExport.status === "failed" && (
+                <div className="space-y-2">
+                  <p className="text-sm text-red-600 dark:text-red-400">
+                    {activeExport.errorMessage || "Export failed before artifact creation."}
+                  </p>
+                  <Button variant="outline" size="sm" onClick={retryExport}>
+                    Retry Export
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+        {exportError && <p className="text-sm text-red-600 dark:text-red-400">{exportError}</p>}
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

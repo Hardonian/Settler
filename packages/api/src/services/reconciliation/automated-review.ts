@@ -40,14 +40,6 @@ export interface ReviewResult {
   auditEntryId: string;
 }
 
-// Industry-standard confidence thresholds
-const CONFIDENCE_THRESHOLDS = {
-  AUTO_APPROVE: 0.95, // Auto-approve immediately (SOC 2 compliant)
-  RULE_BASED: 0.8, // Apply rule-based resolution
-  EXCEPTION_HANDLING: 0.6, // Automated exception handling
-  SYSTEM_REVIEW: 0.0, // Flag for system-level review (NOT human review)
-} as const;
-
 // Resolution rules for exception handling
 const RESOLUTION_RULES = {
   AMOUNT_MISMATCH_THRESHOLD: 1.0, // Auto-resolve amount differences <$1.00
@@ -197,24 +189,6 @@ export async function autoReviewRun(
   errors: number;
 }> {
   try {
-    // Load matching rules config from canonical loader
-    let matchingConfig;
-    try {
-      matchingConfig = await getMatchingRulesForJob(tenantId, runId);
-    } catch (error) {
-      logError("Failed to load matching rules, using defaults", error, { tenantId, runId });
-      matchingConfig = {
-        amountTolerance: DEFAULT_TOLERANCES.amount,
-        dateToleranceDays: DEFAULT_TOLERANCES.dateDays,
-        matchingRules: [],
-      };
-    }
-
-    // Use config values or fall back to defaults
-    const amountMismatchThreshold = matchingConfig.amountTolerance;
-    const dateMismatchThreshold = matchingConfig.dateToleranceDays;
-    const exactMatchThreshold = 0.85; // High confidence for exact match
-
     // Fetch all unreviewed matches for this run
     const matches = await query<{
       id: string;
@@ -483,7 +457,7 @@ async function logAuditTrail(params: {
         JSON.stringify(params.metadata),
       ]
     );
-  } catch (error) {
+  } catch {
     // If table doesn't exist, log to reconciliation_runs metadata
     logInfo("Audit table not available, logging to metadata", {
       auditId,
