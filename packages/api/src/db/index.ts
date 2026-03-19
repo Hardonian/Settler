@@ -273,6 +273,14 @@ export async function initDatabase(): Promise<void> {
       }
     }
   } else {
-    logWarn("No initial schema migration found at: " + migrationPath);
+    // Legacy custom migrations have been replaced by Prisma.
+    // Use Prisma for database schema management:
+    //   npx prisma migrate deploy
+    //   npx prisma db push
+    logWarn(
+      "No legacy migration files found. Database schema is now managed via Prisma. " +
+        "Run 'npx prisma migrate deploy' or 'npx prisma db push' to set up the database.",
+      { migrationPath }
+    );
   }
 }
