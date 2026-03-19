@@ -320,3 +320,133 @@ export async function getAlertsList(limit: number = 30) {
     return [];
   }
 }
+
+/**
+ * Fetches real reconciliation matches for the active tenant.
+ */
+export async function getMatchesList(limit: number = 50) {
+  const { prisma } = await import("@/shared/db/prismaClient");
+  const tenantId = await getActiveTenantId();
+  if (!tenantId) return [];
+
+  try {
+    const matches = await prisma.reconciliationMatch.findMany({
+      where: { tenantId },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      include: {
+        sourceTransaction: {
+          select: {
+            id: true,
+            amount: true,
+            currency: true,
+            transactionDate: true
+          }
+        }
+      }
+    });
+
+    return matches.map((match: any) => ({
+      id: match.id,
+      runId: match.runId,
+      matchType: match.matchType,
+      confidence: Number(match.confidence),
+      amount: Number(match.sourceTransaction.amount),
+      currency: match.sourceTransaction.currency,
+      timestamp: match.createdAt.toISOString(),
+      status: match.reviewed ? "reviewed" : "pending",
+      discrepancy: match.amountDiff ? Number(match.amountDiff) : 0,
+    }));
+  } catch (error) {
+    console.error("Failed to fetch matches:", error);
+    return [];
+  }
+}
+
+/**
+ * Fetches contract versions (policies) for the active tenant.
+ */
+export async function getPoliciesList(limit: number = 20) {
+  const { prisma } = await import("@/shared/db/prismaClient");
+  const tenantId = await getActiveTenantId();
+  if (!tenantId) return [];
+
+  try {
+    const policies = await prisma.contractVersion.findMany({
+      where: { tenantId },
+      orderBy: { updatedAt: "desc" },
+      take: limit,
+      include: {
+        _count: {
+          select: { driftEvents: true }
+        }
+      }
+    });
+
+    return policies.map((p: any) => ({
+      id: p.id,
+      name: p.contractName,
+      version: p.version,
+      status: p.isActive ? "active" : "deprecated",
+      driftCount: p._count.driftEvents,
+      updatedAt: p.updatedAt.toISOString(),
+      schema: p.schemaDefinition
+    }));
+  } catch (error) {
+    console.error("Failed to fetch policies:", error);
+    return [];
+  }
+}
+
+export interface AuditLogItem {
+  id: string;
+  action: string;
+  resource: string;
+  resourceId: string | null;
+  actor: string;
+  ip: string;
+  timestamp: string;
+  details: string;
+}
+
+/**
+ * Fetches audit log entries for the active tenant.
+ */
+export async function getAuditLogs(limit: number = 50): Promise<AuditLogItem[]> {
+  const { prisma } = await import("@/shared/db/prismaClient");
+  const tenantId = await getActiveTenantId();
+  if (!tenantId) return [];
+
+  try {
+    const logs = await prisma.auditLog.findMany({
+      where: { tenantId },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      select: {
+        id: true,
+        action: true,
+        resourceType: true,
+        resourceId: true,
+        actorType: true,
+        actorId: true,
+        ipAddress: true,
+        createdAt: true,
+        metadata: true,
+      }
+    });
+
+    return logs.map((log: any) => ({
+      id: log.id,
+      action: log.action,
+      resource: log.resourceType,
+      resourceId: log.resourceId,
+      actor: log.actorType || "system",
+      ip: log.ipAddress || "—",
+      timestamp: log.createdAt.toISOString(),
+      details: (log.metadata as Record<string, unknown> | null)?.message || `Performed ${log.action} on ${log.resourceType}`,
+    }));
+  } catch (error) {
+    console.error("Failed to fetch audit logs:", error);
+    return [];
+  }
+}
