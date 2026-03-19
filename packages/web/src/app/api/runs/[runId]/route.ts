@@ -141,6 +141,10 @@ export const GET = withSecurity(
                 deltaMatched: truth.summary.matched - previousSummary.matched,
                 deltaUnmatched: truth.summary.unmatched - previousSummary.unmatched,
                 deltaConflicts: truth.summary.conflicts - previousSummary.conflicts,
+                snapshotChanged:
+                  (latestResult?.snapshot_id ?? null) !== (previousResult.snapshot_id ?? null),
+                inputHashChanged:
+                  (latestResult?.input_hash ?? null) !== (previousResult.input_hash ?? null),
               }
             : null;
         const config = buildRunConfigurationSummary({

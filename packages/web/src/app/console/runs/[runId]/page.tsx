@@ -75,6 +75,8 @@ interface Run {
     inputHash: string | null;
     configSource: "snapshot" | "job_definition";
     configCapturedAt: string | null;
+    definitionDriftDetected: boolean;
+    definitionDriftNotes: string[];
     summaryBasis: string;
   };
   resultContext?: {
@@ -89,6 +91,8 @@ interface Run {
       deltaMatched: number;
       deltaUnmatched: number;
       deltaConflicts: number;
+      snapshotChanged: boolean;
+      inputHashChanged: boolean;
     } | null;
   };
   exceptions?: {
@@ -368,6 +372,11 @@ export default function RunPage() {
                   {formatSignedDelta(run.resultContext.comparison.deltaUnmatched)} • Conflicts{" "}
                   {formatSignedDelta(run.resultContext.comparison.deltaConflicts)}
                 </p>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                  Snapshot{" "}
+                  {run.resultContext.comparison.snapshotChanged ? "changed" : "unchanged"} • Input
+                  hash {run.resultContext.comparison.inputHashChanged ? "changed" : "unchanged"}
+                </p>
               </div>
             )}
           </CardContent>
@@ -556,6 +565,16 @@ export default function RunPage() {
                 ? ` Captured ${new Date(run.config.configCapturedAt).toLocaleString()}.`
                 : ""}
             </div>
+            {run.config.definitionDriftDetected && run.config.definitionDriftNotes.length > 0 && (
+              <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+                <p className="font-medium">Current definition differs from captured snapshot:</p>
+                <ul className="mt-2 list-disc pl-5 space-y-1">
+                  {run.config.definitionDriftNotes.map((note) => (
+                    <li key={note}>{note}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               <div>
                 <p className="text-sm font-medium text-slate-900 dark:text-white">Adapters</p>

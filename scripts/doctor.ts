@@ -655,6 +655,55 @@ async function checkSeedData() {
   } catch {
     addCheck('database', 'Seed Data', 'warn', 'Could not check seed status');
   }
+  
+  // Also check for demo data files
+  const demoDir = path.join(process.cwd(), 'demo', 'data');
+  const requiredFiles = [
+    'demo_stripe_transactions.json',
+    'demo_bank_transactions.json',
+    'demo_expected_matches.json'
+  ];
+  
+  if (!fs.existsSync(demoDir)) {
+    addCheck(
+      'database',
+      'Demo Data Files',
+      'fail',
+      'Demo data directory does not exist',
+      'Run "pnpm demo:seed" to generate demo data files'
+    );
+    return;
+  }
+  
+  const missingFiles = requiredFiles.filter(file => !fs.existsSync(path.join(demoDir, file)));
+  
+  if (missingFiles.length > 0) {
+    addCheck(
+      'database',
+      'Demo Data Files',
+      'fail',
+      `Missing demo data files: ${missingFiles.join(', ')}`,
+      'Run "pnpm demo:seed" to generate missing demo data files'
+    );
+    return;
+  }
+  
+  // Check if files are valid JSON
+  try {
+    requiredFiles.forEach(file => {
+      const filePath = path.join(demoDir, file);
+      JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    });
+    addCheck('database', 'Demo Data Files', 'pass', 'All demo data files exist and are valid JSON');
+  } catch (err) {
+    addCheck(
+      'database',
+      'Demo Data Files',
+      'fail',
+      'One or more demo data files contain invalid JSON',
+      'Run "pnpm demo:seed" to regenerate demo data files'
+    );
+  }
 }
 
 function checkWorkspaceFiles() {

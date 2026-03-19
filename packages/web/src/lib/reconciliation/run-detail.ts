@@ -11,6 +11,8 @@ export interface RunConfigurationSummary {
   inputHash: string | null;
   configSource: "snapshot" | "job_definition";
   configCapturedAt: string | null;
+  definitionDriftDetected: boolean;
+  definitionDriftNotes: string[];
   summaryBasis: string;
 }
 
@@ -83,6 +85,14 @@ function summarizeRuleVersions(ruleVersions: unknown): string[] {
     .slice(0, 6);
 }
 
+function stableSerialize(value: unknown): string | null {
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return null;
+  }
+}
+
 export function buildRunConfigurationSummary(input: {
   sourceAdapter?: string | null;
   targetAdapter?: string | null;
@@ -114,6 +124,38 @@ export function buildRunConfigurationSummary(input: {
   const inputHash = input.inputHash ?? snapshot?.inputHash ?? null;
   const configSource = snapshotId ? "snapshot" : "job_definition";
   const configCapturedAt = snapshot?.createdAt ?? input.resultStartedAt ?? null;
+  const driftNotes: string[] = [];
+
+  if (configSource === "snapshot") {
+    if (
+      input.reconStrategy &&
+      effectiveReconStrategy &&
+      input.reconStrategy.toLowerCase() !== effectiveReconStrategy.toLowerCase()
+    ) {
+      driftNotes.push("Reconciliation strategy changed since this result was captured.");
+    }
+
+    if (input.templateId && effectiveTemplateId && input.templateId !== effectiveTemplateId) {
+      driftNotes.push("Template reference changed since this result was captured.");
+    }
+
+    if (Array.isArray(snapshotValidationRules) && Array.isArray(input.validationRules)) {
+      if (snapshotValidationRules.length !== input.validationRules.length) {
+        driftNotes.push("Validation rule count changed since this result was captured.");
+      } else {
+        const snapshotSerialized = stableSerialize(snapshotValidationRules);
+        const currentSerialized = stableSerialize(input.validationRules);
+        if (
+          snapshotSerialized &&
+          currentSerialized &&
+          snapshotSerialized !== currentSerialized
+        ) {
+          driftNotes.push("Validation rule definitions changed since this result was captured.");
+        }
+      }
+    }
+  }
+
   const summaryBasis =
     configSource === "snapshot"
       ? "Configuration was loaded from the run snapshot captured before execution. Current job settings can differ."
@@ -132,6 +174,8 @@ export function buildRunConfigurationSummary(input: {
     inputHash,
     configSource,
     configCapturedAt,
+    definitionDriftDetected: driftNotes.length > 0,
+    definitionDriftNotes: driftNotes,
     summaryBasis,
   };
 }
