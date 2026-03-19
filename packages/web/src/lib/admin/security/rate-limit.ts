@@ -10,12 +10,14 @@ import { createHash } from "crypto";
 interface RateLimitEntry {
   count: number;
   resetAt: number;
+  createdAt: number;
 }
 
 class RateLimiter {
   private store = new Map<string, RateLimitEntry>();
   private readonly DEFAULT_WINDOW_MS = 60 * 1000; // 1 minute
   private readonly DEFAULT_MAX_REQUESTS = 60; // 60 requests per minute
+  private readonly MAX_TRACKED_KEYS = 10_000;
 
   /**
    * Check if request should be rate limited
@@ -36,11 +38,16 @@ class RateLimiter {
     const currentEntry = this.store.get(key);
 
     if (!currentEntry) {
+      if (this.store.size >= this.MAX_TRACKED_KEYS) {
+        this.pruneStore(now);
+      }
+
       // First request - create entry
       const resetAt = now + windowMs;
       this.store.set(key, {
         count: 1,
         resetAt,
+        createdAt: now,
       });
 
       return {
@@ -95,6 +102,25 @@ class RateLimiter {
       }
     }
   }
+
+  private pruneStore(now: number): void {
+    this.cleanup();
+    if (this.store.size < this.MAX_TRACKED_KEYS) {
+      return;
+    }
+
+    // If the store remains saturated, evict oldest reset windows first.
+    const sorted = Array.from(this.store.entries()).sort((a, b) => a[1].resetAt - b[1].resetAt);
+    const targetSize = Math.floor(this.MAX_TRACKED_KEYS * 0.9);
+    const removeCount = Math.max(1, this.store.size - targetSize);
+
+    for (let index = 0; index < removeCount && index < sorted.length; index += 1) {
+      const key = sorted[index]?.[0];
+      if (key) {
+        this.store.delete(key);
+      }
+    }
+  }
 }
 
 // Singleton instance
@@ -116,11 +142,38 @@ if (typeof setInterval !== "undefined") {
  * Get rate limit key from request
  */
 export function getRateLimitKey(request: Request): string {
-  // Use IP address + user agent for rate limiting
+  // Use method + normalized route + client fingerprint for predictable buckets.
   const forwarded = request.headers.get("x-forwarded-for");
-  const ip = forwarded ? forwarded.split(",")[0] : "unknown";
+  const ip = forwarded ? forwarded.split(",")[0]?.trim() : "unknown";
   const userAgent = request.headers.get("user-agent") || "unknown";
+  const method = request.method || "GET";
+  const pathname = getPathname(request);
+  const normalizedPath = normalizePathname(pathname);
 
   // Hash for privacy
-  return createHash("sha256").update(`${ip}:${userAgent}`).digest("hex");
+  return createHash("sha256")
+    .update(`${method}:${normalizedPath}:${ip}:${userAgent}`)
+    .digest("hex");
+}
+
+function getPathname(request: Request): string {
+  try {
+    if ("nextUrl" in request && (request as { nextUrl?: URL }).nextUrl) {
+      return ((request as { nextUrl: URL }).nextUrl.pathname || "/").toLowerCase();
+    }
+
+    return new URL(request.url).pathname.toLowerCase();
+  } catch {
+    return "/";
+  }
+}
+
+function normalizePathname(pathname: string): string {
+  return pathname
+    .replace(
+      /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/gi,
+      ":uuid"
+    )
+    .replace(/\b\d{4,}\b/g, ":id")
+    .replace(/\/{2,}/g, "/");
 }

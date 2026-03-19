@@ -281,3 +281,6 @@ export interface ReconciliationSummary {
   totalFees: Money;
   effectiveRate: number; // Average effective rate
 }
+
+// Run types (for reconciliation runs/executions)
+export { Run, RunSummary } from "./run";

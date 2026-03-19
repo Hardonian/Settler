@@ -15,50 +15,42 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseEnv } from "@/lib/env/validator";
 import { safeLogger } from "@/lib/observability/safe-logger";
 
-// Client cache to reuse connections
-let cachedClient: SupabaseClient<Database> | null = null;
-let clientCacheTimestamp = 0;
 const CLIENT_CACHE_TTL = 60000; // 1 minute
 
 /**
  * Get Supabase server client for authenticated requests
  * Uses cookies for session management
  * Gracefully handles errors to prevent page crashes
- * Optimized with connection reuse
+ * IMPORTANT: This client is request-scoped because it depends on cookies().
+ * Never cache it globally, otherwise auth state can leak across users/tenants.
  */
 export async function createClient(): Promise<SupabaseClient<Database>> {
   // Use validator to get env vars with proper error handling
   let supabaseUrl: string;
   let supabaseAnonKey: string;
-  
+
   try {
     const env = getSupabaseEnv();
     supabaseUrl = env.url;
     supabaseAnonKey = env.anonKey;
   } catch (error) {
     // Log error but don't crash - return a safe fallback client
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    await safeLogger.error('[Supabase] Failed to get environment variables', {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    await safeLogger.error("[Supabase] Failed to get environment variables", {
       error: errorMessage,
       stack: error instanceof Error ? error.stack : undefined,
     });
-    
+
     // Return a proper mock client that won't throw on method calls
     // This prevents hard 500s while still allowing the page to render
     return {
       auth: {
         getUser: async () => ({
           data: { user: null },
-          error: { message: 'Supabase not configured', status: 500 },
+          error: { message: "Supabase not configured", status: 500 },
         }),
       },
     } as unknown as SupabaseClient<Database>;
-  }
-
-  // Reuse cached client if available and fresh
-  const now = Date.now();
-  if (cachedClient && now - clientCacheTimestamp < CLIENT_CACHE_TTL) {
-    return cachedClient;
   }
 
   // Get cookie store with error handling
@@ -66,7 +58,7 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
   try {
     cookieStore = await cookies();
   } catch (error) {
-    await safeLogger.error('[Supabase] Failed to get cookies', {
+    await safeLogger.error("[Supabase] Failed to get cookies", {
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
     });
@@ -84,9 +76,7 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
         },
       },
     }) as SupabaseClient<Database>;
-    
-    cachedClient = fallbackClient;
-    clientCacheTimestamp = now;
+
     return fallbackClient;
   }
 
@@ -121,10 +111,6 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
     },
   }) as SupabaseClient<Database>;
 
-  // Cache the client
-  cachedClient = client;
-  clientCacheTimestamp = now;
-
   return client;
 }
 
@@ -144,18 +130,20 @@ export async function createAdminClient(): Promise<SupabaseClient<Database>> {
     const env = getSupabaseEnv();
     supabaseUrl = env.url;
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    await safeLogger.error('[Supabase Admin] Failed to get Supabase URL', {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    await safeLogger.error("[Supabase Admin] Failed to get Supabase URL", {
       error: errorMessage,
       stack: error instanceof Error ? error.stack : undefined,
     });
     return {} as SupabaseClient<Database>;
   }
-  
+
   const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
   if (!supabaseServiceRoleKey) {
-    await safeLogger.warn('[Supabase Admin] SERVICE_ROLE_KEY not set - admin features may not work');
+    await safeLogger.warn(
+      "[Supabase Admin] SERVICE_ROLE_KEY not set - admin features may not work"
+    );
     // Return a minimal mock client that will fail gracefully
     return {} as SupabaseClient<Database>;
   }
@@ -177,11 +165,11 @@ export async function createAdminClient(): Promise<SupabaseClient<Database>> {
       },
       // Optimize connection settings
       db: {
-        schema: 'public',
+        schema: "public",
       },
       global: {
         headers: {
-          'x-client-info': 'settler-web-admin',
+          "x-client-info": "settler-web-admin",
         },
       },
     });
@@ -192,7 +180,7 @@ export async function createAdminClient(): Promise<SupabaseClient<Database>> {
 
     return adminClient;
   } catch (error) {
-    await safeLogger.error('[Supabase Admin] Failed to create admin client', {
+    await safeLogger.error("[Supabase Admin] Failed to create admin client", {
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
     });
@@ -209,8 +197,6 @@ export async function createAdminClient(): Promise<SupabaseClient<Database>> {
  * Clear client cache (useful for testing or when credentials change)
  */
 export function clearSupabaseCache(): void {
-  cachedClient = null;
   cachedAdminClient = null;
-  clientCacheTimestamp = 0;
   adminClientCacheTimestamp = 0;
 }
