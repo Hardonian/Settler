@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getDashboardStats } from "@/lib/domain/runs/runs-reader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import {
   Activity,
   ShieldCheck,
@@ -93,12 +94,11 @@ export default async function AppPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-primary"
-                    style={{ width: `${stats?.metrics?.integrity_score ?? 100}%` }}
-                  />
-                </div>
+                <Progress
+                  value={stats?.metrics?.integrity_score ?? 100}
+                  className="h-1.5"
+                  indicatorClassName="bg-primary"
+                />
               </CardContent>
             </Card>
             <Card className="bg-background shadow-none border-border/60">
