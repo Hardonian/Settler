@@ -1,4 +1,4 @@
-import express, { Express, Request, Response, NextFunction } from "express";
+import express, { Express, Request, Response, NextFunction, Router } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -74,13 +74,11 @@ import { createServer } from "http";
 import { scanJsonDepth } from "./utils/json-depth";
 import { emitOperatorRuntimeEvent } from "./services/ops-intelligence/runtime-events";
 import {
-  LedgerService,
   getLedgerService,
   isLedgerEnabled,
   isLedgerUsingFallback,
   getLedgerDisabledReason,
 } from "./domain/services/LedgerService";
-import { logInfo as logLedgerInfo } from "./utils/logger";
 
 const app: Express = express();
 const PORT = config.port;
@@ -261,78 +259,73 @@ app.use("/api/v1", openApiRouter);
 // API versioning middleware
 app.use("/api", versionMiddleware);
 
+interface ProtectedRouterOptions {
+  versionRouter: Router;
+  includeReconciliationSummary?: boolean;
+}
+
+function configureProtectedRouter(router: Router, options: ProtectedRouterOptions): void {
+  // Auth required routes (apply auth middleware once per request)
+  router.use(authMiddleware);
+
+  // Idempotency middleware for state-changing operations (requires auth)
+  router.use(idempotencyMiddleware());
+
+  // Rate limiting per API key
+  router.use(rateLimitMiddleware());
+
+  // Test mode middleware (after auth, before routes)
+  router.use(testModeMiddleware);
+  router.use(validateTestMode);
+
+  // Shared protected routes
+  router.use(apiKeysRouter);
+  router.use(exceptionsRouter);
+  router.use(testModeRouter);
+  router.use(dashboardsRouter);
+  router.use(feedbackRouter);
+  router.use(alertsRouter);
+  router.use(adapterTestRouter);
+  router.use(reportsEnhancedRouter);
+  router.use(confidenceRouter);
+  router.use(reconciliationStatusRouter);
+  router.use(rulesEditorRouter);
+  router.use("/runs", runsRouter);
+  router.use(cliWizardRouter);
+  router.use(exportEnhancedRouter);
+  router.use(aiAssistantRouter);
+  router.use(auditTrailRouter);
+  router.use("/tenant", tenantMiddleware, tenantDataRouter);
+  router.use("/webhooks", webhookManagementRouter);
+  router.use("/notifications", notificationsRouter);
+  router.use("/usage", usageRouter);
+  router.use("/batch", batchRouter);
+  router.use("/exports", exportsRouter);
+  router.use("/tenant", tenantMiddleware, platformControlPlaneRouter);
+
+  // Version-specific routes
+  router.use(options.versionRouter);
+
+  if (options.includeReconciliationSummary) {
+    // Optimized reconciliation summary endpoint
+    router.use("/reconciliations", reconciliationSummaryRouter);
+  }
+}
+
 const v1ProtectedRouter = express.Router();
 const v2ProtectedRouter = express.Router();
 
-// Auth required routes (apply auth middleware once per request)
-v1ProtectedRouter.use(authMiddleware);
-v2ProtectedRouter.use(authMiddleware);
-
-// Idempotency middleware for state-changing operations (requires auth)
-v1ProtectedRouter.use(idempotencyMiddleware());
-v2ProtectedRouter.use(idempotencyMiddleware());
-
-// Rate limiting per API key
-v1ProtectedRouter.use(rateLimitMiddleware());
-v2ProtectedRouter.use(rateLimitMiddleware());
-
-// Test mode middleware (after auth, before routes)
-v1ProtectedRouter.use(testModeMiddleware);
-v2ProtectedRouter.use(testModeMiddleware);
-v1ProtectedRouter.use(validateTestMode);
-v2ProtectedRouter.use(validateTestMode);
+configureProtectedRouter(v1ProtectedRouter, {
+  versionRouter: v1Router,
+  includeReconciliationSummary: true,
+});
+configureProtectedRouter(v2ProtectedRouter, {
+  versionRouter: v2Router,
+});
 
 // Auth routes (no auth required for login/refresh)
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v2/auth", authRouter);
-
-// API Keys routes (requires auth)
-v1ProtectedRouter.use(apiKeysRouter);
-v2ProtectedRouter.use(apiKeysRouter);
-
-// Exceptions routes (requires auth)
-v1ProtectedRouter.use(exceptionsRouter);
-v2ProtectedRouter.use(exceptionsRouter);
-
-// Test mode routes (requires auth)
-v1ProtectedRouter.use(testModeRouter);
-v2ProtectedRouter.use(testModeRouter);
-
-// Dashboard routes (requires auth)
-v1ProtectedRouter.use(dashboardsRouter);
-v2ProtectedRouter.use(dashboardsRouter);
-
-// Feedback routes (requires auth)
-v1ProtectedRouter.use(feedbackRouter);
-v2ProtectedRouter.use(feedbackRouter);
-
-// Alert routes (requires auth)
-v1ProtectedRouter.use(alertsRouter);
-v2ProtectedRouter.use(alertsRouter);
-
-// Adapter test routes (requires auth)
-v1ProtectedRouter.use(adapterTestRouter);
-v2ProtectedRouter.use(adapterTestRouter);
-
-// Enhanced reports routes (requires auth)
-v1ProtectedRouter.use(reportsEnhancedRouter);
-v2ProtectedRouter.use(reportsEnhancedRouter);
-
-// Confidence score routes (requires auth)
-v1ProtectedRouter.use(confidenceRouter);
-v2ProtectedRouter.use(confidenceRouter);
-
-// Reconciliation status routes (requires auth)
-v1ProtectedRouter.use(reconciliationStatusRouter);
-v2ProtectedRouter.use(reconciliationStatusRouter);
-
-// Rules editor routes (requires auth)
-v1ProtectedRouter.use(rulesEditorRouter);
-v2ProtectedRouter.use(rulesEditorRouter);
-
-// Runs routes (requires auth) - operator-facing run history
-v1ProtectedRouter.use("/runs", runsRouter);
-v2ProtectedRouter.use("/runs", runsRouter);
 
 // Playground routes (no auth, rate-limited)
 app.use("/api/v1/playground", playgroundRouter);
@@ -340,57 +333,6 @@ app.use("/api/v2/playground", playgroundRouter);
 
 // CSRF token endpoint (for web UI)
 app.get("/api/csrf-token", getCsrfToken);
-
-// CLI wizard routes (requires auth)
-v1ProtectedRouter.use(cliWizardRouter);
-v2ProtectedRouter.use(cliWizardRouter);
-
-// Enhanced export routes (requires auth)
-v1ProtectedRouter.use(exportEnhancedRouter);
-v2ProtectedRouter.use(exportEnhancedRouter);
-
-// AI assistant routes (requires auth)
-v1ProtectedRouter.use(aiAssistantRouter);
-v2ProtectedRouter.use(aiAssistantRouter);
-
-// Audit trail routes (requires auth)
-v1ProtectedRouter.use(auditTrailRouter);
-v2ProtectedRouter.use(auditTrailRouter);
-
-// Tenant data management routes (requires auth + tenant context)
-v1ProtectedRouter.use("/tenant", tenantMiddleware, tenantDataRouter);
-v2ProtectedRouter.use("/tenant", tenantMiddleware, tenantDataRouter);
-
-// Webhook management routes (requires auth)
-v1ProtectedRouter.use("/webhooks", webhookManagementRouter);
-v2ProtectedRouter.use("/webhooks", webhookManagementRouter);
-
-// Notification routes (requires auth)
-v1ProtectedRouter.use("/notifications", notificationsRouter);
-v2ProtectedRouter.use("/notifications", notificationsRouter);
-
-// Usage tracking routes (requires auth)
-v1ProtectedRouter.use("/usage", usageRouter);
-v2ProtectedRouter.use("/usage", usageRouter);
-
-// Batch processing routes (requires auth)
-v1ProtectedRouter.use("/batch", batchRouter);
-v2ProtectedRouter.use("/batch", batchRouter);
-
-// Export routes (requires auth)
-v1ProtectedRouter.use("/exports", exportsRouter);
-v2ProtectedRouter.use("/exports", exportsRouter);
-
-// Platform control plane routes (requires auth + tenant context)
-v1ProtectedRouter.use("/tenant", tenantMiddleware, platformControlPlaneRouter);
-v2ProtectedRouter.use("/tenant", tenantMiddleware, platformControlPlaneRouter);
-
-// Versioned API routes
-v1ProtectedRouter.use(v1Router);
-v2ProtectedRouter.use(v2Router);
-
-// Optimized reconciliation summary endpoint
-v1ProtectedRouter.use("/reconciliations", reconciliationSummaryRouter);
 
 app.use("/api/v1", v1ProtectedRouter);
 app.use("/api/v2", v2ProtectedRouter);
@@ -432,7 +374,7 @@ async function startServer() {
 
     // Initialize Ledger Service (with graceful fallback)
     // This allows the app to boot even if TigerBeetle is not available
-    const ledgerService = getLedgerService();
+    getLedgerService();
     if (isLedgerEnabled()) {
       logInfo("Ledger: TigerBeetle is enabled");
     } else if (isLedgerUsingFallback()) {

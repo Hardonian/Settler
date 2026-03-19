@@ -9,12 +9,12 @@
     "partial": 2,
     "missing": 236,
     "criticalMissing": 39,
-    "unmountedCandidates": 1,
+    "unmountedCandidates": 0,
     "undeclaredMethodHandlers": 0,
     "duplicateMethodPathEntries": 0
   },
   "diagnostics": {
-    "unmountedRouteCandidates": ["packages/web/src/app/api/console/api-keys-v2/route.ts.example"],
+    "unmountedRouteCandidates": [],
     "undeclaredMethodHandlers": [],
     "duplicateMethodPathEntries": []
   },
