@@ -1,13 +1,6 @@
-import { headers } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-
-type Run = {
-  run_id: string;
-  created_at: string;
-  status: string;
-  status_label?: string;
-  policy?: string;
-};
+import { getRunsList, RunListItem } from "@/lib/domain/runs/runs-reader";
 
 function formatDate(iso: string): string {
   try {
@@ -20,23 +13,23 @@ function formatDate(iso: string): string {
   }
 }
 
-async function getRuns(): Promise<{ runs: Run[]; error?: string }> {
-  const h = await headers();
-  const host = h.get("host") || "localhost:3000";
-  const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
-
+async function getRuns(): Promise<{ runs: RunListItem[]; error?: string }> {
   try {
-    const res = await fetch(`${protocol}://${host}/api/v1/runs?limit=20`, {
-      headers: { authorization: h.get("authorization") || "" },
-      cache: "no-store",
-    });
-    if (!res.ok) {
-      return { runs: [], error: `Backend API failed with status ${res.status}.` };
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const tenantId = user?.user_metadata?.tenant_id;
+
+    if (!tenantId) {
+      return { runs: [], error: "No active workspace context found." };
     }
-    const data = await res.json();
-    return { runs: (data.rows ?? []) as Run[] };
-  } catch {
-    return { runs: [], error: "Network error connecting to internal API." };
+
+    const runs = await getRunsList(tenantId, 20);
+    return { runs };
+  } catch (err: any) {
+    console.error("[RunsPage] Error fetching runs:", err);
+    return { runs: [], error: "Failed to connect to the database. Please try again." };
   }
 }
 
@@ -80,8 +73,7 @@ export default async function RunsPage() {
                 <td colSpan={4} className="px-3 py-8 text-center">
                   <p className="text-sm text-muted-foreground">No runs found.</p>
                   <p className="mt-1 text-xs text-muted-foreground/70">
-                    Start a reconciliation workflow to populate this list. If you expect data,
-                    verify API connectivity.
+                    Start a reconciliation workflow to populate this list.
                   </p>
                 </td>
               </tr>
