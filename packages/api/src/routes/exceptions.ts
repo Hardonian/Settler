@@ -23,6 +23,7 @@ import { Permission } from "../infrastructure/security/Permissions";
 import { handleRouteError } from "../utils/error-handler";
 import { NotFoundError } from "../utils/typed-errors";
 import { trackEventAsync } from "../utils/event-tracker";
+import { logInfo } from "../utils/logger";
 
 const router: Router = Router();
 import { prisma } from "../infrastructure/db/prisma";
@@ -98,6 +99,15 @@ router.get(
       });
 
       const total = await prisma.reconciliationMatch.count({ where });
+
+      logInfo("Exceptions listed", {
+        tenantId,
+        jobId,
+        count: exceptions.length,
+        total,
+        limit,
+        offset,
+      });
 
       // Map exception to API response with proper status and null safety
       const mapExceptionToResponse = (e: any) => {
@@ -238,6 +248,13 @@ router.post(
         resolution,
       });
 
+      logInfo("Exception resolved", {
+        tenantId: req.tenantId,
+        exceptionId: id,
+        resolution,
+        resolvedBy: userId,
+      });
+
       res.json({
         message: "Exception resolved successfully",
         resolution,
@@ -280,6 +297,13 @@ router.post(
           bulk: true,
         });
       }
+
+      logInfo("Exceptions bulk resolved", {
+        tenantId: req.tenantId,
+        count: result.count,
+        resolution,
+        resolvedBy: userId,
+      });
 
       res.json({
         message: `Resolved ${result.count} exceptions successfully`,

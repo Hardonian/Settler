@@ -12,6 +12,7 @@ import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
 import { query } from "../db";
 import { handleRouteError } from "../utils/error-handler";
+import { logInfo, logWarn } from "../utils/logger";
 
 const router: Router = Router();
 
@@ -134,6 +135,13 @@ router.get(
             activationRate: c.activation_rate,
           })),
         },
+      });
+
+      logInfo("Activation dashboard fetched", {
+        tenantId,
+        startDate: start.toISOString(),
+        endDate: end.toISOString(),
+        signupCount: parseInt(signupFunnel[0]?.signup_completed || "0"),
       });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to get activation dashboard", 500, {
@@ -259,6 +267,13 @@ router.get(
           })),
         },
       });
+
+      logInfo("Usage dashboard fetched", {
+        tenantId,
+        startDate: start.toISOString(),
+        endDate: end.toISOString(),
+        volumeCount: reconciliationVolume.length,
+      });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to get usage dashboard", 500, {
         tenantId: req.tenantId,
@@ -286,6 +301,8 @@ router.get(
 
       // TRUTHFUL STATE: Revenue data requires billing integration
       // Return clear unavailable state instead of misleading zeros
+      logWarn("Revenue dashboard accessed but requires billing integration", { tenantId });
+
       res.json({
         data: null,
         available: false,
@@ -369,6 +386,13 @@ router.get(
             p95_hours: 0,
           },
         },
+      });
+
+      logInfo("Support dashboard fetched", {
+        tenantId,
+        startDate: start.toISOString(),
+        endDate: end.toISOString(),
+        ticketCount: ticketVolume.length,
       });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to get support dashboard", 500, {

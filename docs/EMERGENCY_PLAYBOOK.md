@@ -28,6 +28,7 @@
 ## P0: Service Down
 
 ### Symptoms
+
 - API returns 500 errors
 - Console won't load
 - Database connection failures
@@ -35,9 +36,11 @@
 ### Immediate Actions
 
 1. **Check Vercel Status**
+
    ```bash
    vercel logs [project-name] --follow
    ```
+
    - Look for deployment failures
    - Check recent deployments
 
@@ -47,13 +50,15 @@
    - Review recent migrations
 
 3. **Check Health Checks**
+
    ```sql
-   SELECT * FROM health_checks 
-   ORDER BY timestamp DESC 
+   SELECT * FROM health_checks
+   ORDER BY timestamp DESC
    LIMIT 10;
    ```
 
 4. **Rollback if Needed**
+
    ```bash
    vercel rollback [deployment-url]
    ```
@@ -75,6 +80,7 @@
 ## P0: Security Breach
 
 ### Symptoms
+
 - Unauthorized access detected
 - Suspicious API activity
 - Data exfiltration
@@ -82,34 +88,38 @@
 ### Immediate Actions
 
 1. **Rotate All Secrets** (within 5 minutes)
+
    ```bash
    # JWT Secret
    openssl rand -base64 32
    # Update in Vercel Environment Variables
-   
+
    # Encryption Key
    openssl rand -hex 16
    # Update in Vercel Environment Variables
-   
+
    # Stripe API Keys
    # Revoke in Stripe Dashboard → Create new → Update env vars
    ```
 
 2. **Revoke Compromised API Keys**
+
    ```sql
-   UPDATE api_keys 
-   SET revoked = TRUE, revoked_at = NOW() 
+   UPDATE api_keys
+   SET revoked = TRUE, revoked_at = NOW()
    WHERE id IN ('compromised-key-id');
    ```
 
 3. **Review Access Logs**
+
    ```sql
-   SELECT * FROM activity_log 
+   SELECT * FROM activity_log
    WHERE created_at > NOW() - INTERVAL '24 hours'
    ORDER BY created_at DESC;
    ```
 
 4. **Check for Data Exfiltration**
+
    ```sql
    SELECT user_id, COUNT(*) as api_calls
    FROM usage_events
@@ -136,6 +146,7 @@
 ## P1: Billing Failures
 
 ### Symptoms
+
 - Stripe webhooks failing
 - Subscriptions not syncing
 - Payment failures
@@ -147,10 +158,11 @@
    - Check webhook events → Recent events
 
 2. **Check Webhook Processing**
+
    ```sql
-   SELECT * FROM stripe_event_log 
-   WHERE processed = FALSE 
-   ORDER BY created_at DESC 
+   SELECT * FROM stripe_event_log
+   WHERE processed = FALSE
+   ORDER BY created_at DESC
    LIMIT 20;
    ```
 
@@ -159,10 +171,11 @@
    - Test webhook endpoint manually
 
 4. **Manually Sync if Needed**
+
    ```sql
    -- Get Stripe subscription ID
    SELECT stripe_subscription_id FROM subscriptions WHERE id = 'sub-id';
-   
+
    -- Manually trigger webhook from Stripe dashboard
    -- Stripe Dashboard → Developers → Webhooks → [Event] → Send test webhook
    ```
@@ -188,6 +201,7 @@
 ## P1: High Error Rates
 
 ### Symptoms
+
 - Error rate > 5%
 - Multiple 500 errors
 - User complaints
@@ -195,20 +209,24 @@
 ### Immediate Actions
 
 1. **Check Error Logs**
+
    ```bash
    vercel logs [project-name] --follow | grep ERROR
    ```
 
 2. **Run Diagnostics**
+
    ```bash
-   curl https://your-domain.com/api/ops/diagnostics
+   curl https://your-domain.com/api/v1/observability/health
+   curl https://your-domain.com/api/v1/observability/metrics
    ```
 
 3. **Check Database Performance**
+
    ```sql
-   SELECT * FROM diagnostics 
-   WHERE diagnostic_type = 'automated' 
-   ORDER BY timestamp DESC 
+   SELECT * FROM diagnostics
+   WHERE diagnostic_type = 'automated'
+   ORDER BY timestamp DESC
    LIMIT 1;
    ```
 
@@ -233,6 +251,7 @@
 ## P2: Performance Degradation
 
 ### Symptoms
+
 - Slow API responses (> 1s)
 - Database queries slow
 - High latency
@@ -240,10 +259,11 @@
 ### Immediate Actions
 
 1. **Check Database Performance**
+
    ```sql
-   SELECT * FROM health_checks 
+   SELECT * FROM health_checks
    WHERE results @> '[{"check": "database_performance"}]'
-   ORDER BY timestamp DESC 
+   ORDER BY timestamp DESC
    LIMIT 10;
    ```
 
@@ -252,6 +272,7 @@
    - Look for slow queries
 
 3. **Check Usage Patterns**
+
    ```sql
    SELECT event_type, COUNT(*) as count
    FROM usage_events
@@ -261,7 +282,7 @@
 
 4. **Add Indexes if Needed**
    ```sql
-   CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_table_column 
+   CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_table_column
    ON table_name(column_name);
    ```
 
@@ -277,6 +298,7 @@
 ## P2: Email Delivery Failures
 
 ### Symptoms
+
 - Emails not sending
 - High bounce rate
 - Resend API errors
@@ -288,14 +310,16 @@
    - Check API key validity
 
 2. **Check Email Sends**
+
    ```sql
-   SELECT * FROM email_sends 
-   WHERE status = 'failed' 
-   ORDER BY created_at DESC 
+   SELECT * FROM email_sends
+   WHERE status = 'failed'
+   ORDER BY created_at DESC
    LIMIT 20;
    ```
 
 3. **Verify API Key**
+
    ```bash
    curl https://api.resend.com/emails \
      -H "Authorization: Bearer $RESEND_API_KEY" \
@@ -320,6 +344,7 @@
 ### Disable Automated Systems
 
 1. **Disable Trial Provisioning**
+
    ```sql
    DROP TRIGGER trigger_provision_trial_on_signup ON profiles;
    ```
@@ -367,9 +392,9 @@ SELECT * FROM usage_events ORDER BY created_at DESC LIMIT 20;
 
 ### API Endpoints
 
-- Health: `GET /api/health/console`
-- Diagnostics: `GET /api/ops/diagnostics`
-- Usage Warnings: `GET /api/console/usage/warnings`
+- Health: `GET /api/health` (basic), `GET /api/health/detailed` (with checks), `GET /api/health/ready` (readiness)
+- Observability: `GET /api/v1/observability/health` (detailed), `GET /api/v1/observability/metrics`
+- Health: `GET /api/health` or `GET /api/health/detailed`
 
 ---
 

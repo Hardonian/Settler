@@ -20,6 +20,7 @@ import { Run, RunSummary } from "@settler/types";
 import { handleRouteError } from "../utils/error-handler";
 import { NotFoundError, ValidationError } from "../utils/typed-errors";
 import { trackEventAsync } from "../utils/event-tracker";
+import { logInfo } from "../utils/logger";
 
 const router: Router = Router();
 import { prisma } from "../infrastructure/db/prisma";
@@ -87,6 +88,8 @@ router.get(
       });
 
       const total = await prisma.reconResult.count({ where });
+
+      logInfo("Runs listed", { tenantId, status, count: runs.length, total, page, limit });
 
       // Transform to operator-friendly format
       const data: Run[] = runs.map((run) => {
@@ -207,6 +210,14 @@ router.get(
 
       const summary = (run.summary as RunSummary | null) || undefined;
 
+      logInfo("Run detail fetched", {
+        tenantId,
+        runId: run.id,
+        jobName: run.reconJob.name,
+        status: run.status,
+        hasError: !!run.errorMessage,
+      });
+
       res.json({
         data: {
           id: run.id,
@@ -285,6 +296,14 @@ router.post(
         originalRunId: runId,
         newExecutionId: newRun.id,
         jobId: newRun.reconJobId,
+      });
+
+      logInfo("Run retry initiated", {
+        tenantId,
+        originalRunId: runId,
+        newExecutionId: newRun.id,
+        jobId: newRun.reconJobId,
+        triggeredBy: userId,
       });
 
       res.status(201).json({

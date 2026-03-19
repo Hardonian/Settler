@@ -2,7 +2,12 @@
  * JobForge shared types
  * Used by both TypeScript and Python SDKs
  */
-export type JobStatus = 'queued' | 'running' | 'succeeded' | 'failed' | 'dead' | 'canceled';
+/**
+ * Canonical Job Status
+ * Used by both TypeScript and Python SDKs for job queue operations.
+ * Note: Uses American English 'canceled' (not 'cancelled') for consistency.
+ */
+export type JobStatus = "queued" | "running" | "succeeded" | "failed" | "dead" | "canceled";
 export interface JobRow {
     id: string;
     tenant_id: string;
@@ -69,7 +74,7 @@ export interface HeartbeatJobParams {
 export interface CompleteJobParams {
     job_id: string;
     worker_id: string;
-    status: 'succeeded' | 'failed';
+    status: "succeeded" | "failed";
     error?: Record<string, unknown>;
     result?: Record<string, unknown>;
     artifact_ref?: string;
