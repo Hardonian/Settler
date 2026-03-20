@@ -5,6 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, Copy } from "lucide-react";
 
+  Terminal,
+  Search,
+  ArrowRight,
+  Zap,
+  ShieldCheck,
+  Database,
+  Filter,
 export const metadata: Metadata = {
   title: "Policy Cookbook | Settler",
   description:

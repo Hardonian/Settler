@@ -2,13 +2,12 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { AnimatedHero } from "@/components/AnimatedHero";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   ShieldCheck,
   ArrowRight,
   Zap,
-  History,
-  Globe,
   Lock,
   Search,
   Network,
@@ -162,7 +161,7 @@ export default function ProofExplorerMarketingPage() {
       <section className="py-24 border-y border-border/40 bg-muted/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 space-y-4">
-            <h2 className="text-3xl font-bold italic tracking-tight italic underline italic underline-offset-8">
+            <h2 className="text-3xl font-bold italic tracking-tight underline underline-offset-8">
               Trust Ecosystem
             </h2>
             <p className="text-muted-foreground font-medium max-w-xl mx-auto">

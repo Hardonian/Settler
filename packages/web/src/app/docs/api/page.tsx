@@ -1,20 +1,12 @@
 import { Metadata } from "next";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  Terminal,
-  Code,
-  Lock,
-  Globe,
-  RefreshCw,
-  Download,
   ArrowRight,
   Copy,
   Zap,
-  Search,
-  BookOpen,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -61,7 +53,7 @@ export default function DocsApiPage() {
             <h1 className="text-4xl md:text-7xl font-bold tracking-tight italic">
               API Documentation
             </h1>
-            <p className="text-xl text-slate-400 font-medium max-w-2xl mx-auto leading-relaxed italic underline italic">
+            <p className="text-xl text-slate-400 font-medium max-w-2xl mx-auto leading-relaxed italic underline">
               Interact with the Settler control plane and ingestion layers programmatically. Built
               on REST and secured with HMAC-SHA256 signatures.
             </p>
@@ -126,7 +118,7 @@ export default function DocsApiPage() {
               <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 leading-tight">
                 Current Engine Version
               </p>
-              <p className="text-xs font-bold text-foreground italic border-b border-primary/20 pb-2 italic">
+              <p className="text-xs font-bold text-foreground italic border-b border-primary/20 pb-2">
                 settler-core-v2.4.1
               </p>
             </div>
@@ -138,7 +130,7 @@ export default function DocsApiPage() {
           {/* Auth Section */}
           <section id="authentication" className="space-y-10">
             <div className="space-y-6">
-              <h2 className="text-3xl font-bold tracking-tight italic underline italic underline-offset-8">
+              <h2 className="text-3xl font-bold tracking-tight italic underline underline-offset-8">
                 Authentication
               </h2>
               <p className="text-lg text-muted-foreground font-medium italic">
@@ -191,13 +183,13 @@ export default function DocsApiPage() {
                         {ep.path}
                       </code>
                     </div>
-                    <h2 className="text-3xl font-bold italic underline underline-offset-8 tracking-tight italic">
+                    <h2 className="text-3xl font-bold italic underline underline-offset-8 tracking-tight">
                       {ep.title}
                     </h2>
                   </div>
                   <Button
                     variant="outline"
-                    className="h-10 font-bold gap-2 italic underline italic underline-offset-4 border-primary/20 bg-primary/5 text-primary"
+                    className="h-10 font-bold gap-2 italic underline underline-offset-4 border-primary/20 bg-primary/5 text-primary"
                   >
                     Try in Playground
                     <ArrowRight size={14} />
@@ -268,10 +260,10 @@ export default function DocsApiPage() {
       {/* Support / Help */}
       <section className="py-32 px-4 border-t border-border/40 text-center space-y-12">
         <div className="max-w-2xl mx-auto space-y-6">
-          <h2 className="text-3xl font-bold tracking-tight italic underline-offset-8 italic underline">
+          <h2 className="text-3xl font-bold tracking-tight italic underline underline-offset-8">
             Have Complex Integration Needs?
           </h2>
-          <p className="text-lg text-muted-foreground font-medium italic underline italic">
+          <p className="text-lg text-muted-foreground font-medium italic underline">
             Our SDK engineers can assist with custom adapter development and performance tuning.
             Reach out via our developer relations portal.
           </p>
