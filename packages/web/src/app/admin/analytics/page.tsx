@@ -231,7 +231,10 @@ export default function AdminAnalyticsPage() {
           </Card>
         </div>
       ) : (
-        <EmptyState title="No data available" />
+        <EmptyState
+          title="No data available"
+          description="There is no data to display at this time."
+        />
       )}
 
       {/* Workspaces */}
