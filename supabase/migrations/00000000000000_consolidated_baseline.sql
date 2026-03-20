@@ -580,7 +580,7 @@ CREATE INDEX IF NOT EXISTS idx_validation_rules_tenant_id ON public.validation_r
 CREATE INDEX IF NOT EXISTS idx_validation_rules_rule_type ON public.validation_rules(rule_type);
 CREATE INDEX IF NOT EXISTS idx_validation_rules_is_active ON public.validation_rules(is_active);
 
--- TRANSFORM REIPES
+-- TRANSFORM RECIPES
 CREATE TABLE IF NOT EXISTS public.transform_recipes (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   tenant_id uuid,
