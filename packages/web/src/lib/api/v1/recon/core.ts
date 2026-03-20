@@ -2,6 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateApiKey } from "@/shared/auth/apiKey";
 import { prisma } from "@/shared/db/prismaClient";
+import { encrypt } from "@/lib/security/encryption";
 import { z } from "zod";
 
 export const runtime = "nodejs";
@@ -13,6 +14,7 @@ type ProblemCode =
   | "SETTLER_INVALID_INPUT"
   | "SETTLER_CONFLICT"
   | "SETTLER_NOT_FOUND"
+  | "SETTLER_NOT_IMPLEMENTED"
   | "SETTLER_INTERNAL";
 
 export const RunCreateSchema = z
@@ -194,7 +196,19 @@ export function storeIdempotent(
 }
 
 export async function createRun(ctx: ApiContext, body: z.infer<typeof RunCreateSchema>) {
-  const startedAt = Date.now();
+  if (!body.async) {
+    // Synchronous execution is not yet implemented. Callers must use async: true
+    // and poll /runs/:id for status. Returning 501 prevents a fake "succeeded"
+    // result from being written without any actual reconciliation work.
+    throw Object.assign(new Error("Synchronous run mode is not yet supported. Set async: true and poll for completion."), {
+      code: "SETTLER_NOT_IMPLEMENTED",
+      status: 501,
+    });
+  }
+
+  const sourceConfigEncrypted = encrypt(JSON.stringify(body.sourceConfig));
+  const targetConfigEncrypted = encrypt(JSON.stringify(body.targetConfig));
+
   const job = await prisma.reconJob.create({
     data: {
       tenantId: ctx.tenantId,
@@ -202,47 +216,14 @@ export async function createRun(ctx: ApiContext, body: z.infer<typeof RunCreateS
       name: body.name,
       description: body.description || null,
       sourceAdapter: body.sourceAdapter,
-      sourceConfigEncrypted: JSON.stringify(body.sourceConfig),
+      sourceConfigEncrypted,
       targetAdapter: body.targetAdapter,
-      targetConfigEncrypted: JSON.stringify(body.targetConfig),
+      targetConfigEncrypted,
       validationRules: body.rules,
-      status: body.async ? "queued" : "running",
-      metadata: { mode: body.async ? "async" : "sync" },
+      status: "queued",
+      metadata: { mode: "async" },
     },
   });
-
-  if (!body.async) {
-    const fingerprint = createHash("sha256").update(job.id).digest("hex");
-    await prisma.reconResult.create({
-      data: {
-        reconJobId: job.id,
-        tenantId: ctx.tenantId,
-        status: "succeeded",
-        completedAt: new Date(),
-        summary: { message: "sync execution completed" },
-        metadata: { fingerprint },
-      },
-    });
-    await prisma.reconJob.update({ where: { id: job.id }, data: { status: "completed" } });
-
-    await recordRunMetrics(ctx, {
-      runId: job.id,
-      status: "succeeded",
-      durationMs: Date.now() - startedAt,
-      fingerprint,
-      replayOk: null,
-      evidenceSizeBytes: JSON.stringify(body).length,
-      policyId: "default",
-      policyHash: createHash("sha256").update("default-policy").digest("hex"),
-    });
-
-    await recordEconomicMetrics(ctx, job.id, {
-      computeUnits: 1,
-      memoryUnits: 1,
-      casIoUnits: 1,
-      replayCalls: 0,
-    });
-  }
 
   return job;
 }
@@ -354,6 +335,25 @@ export function fail(error: unknown, request: NextRequest, requestId: string) {
       requestId,
       request.nextUrl.pathname
     );
+  }
+  // Typed errors with an explicit status (e.g. 501 Not Implemented)
+  if (error instanceof Error && typeof (error as NodeJS.ErrnoException & { status?: number }).status === "number") {
+    const typedError = error as Error & { code?: ProblemCode; status: number };
+    const knownCodes: ProblemCode[] = [
+      "SETTLER_AUTH_REQUIRED",
+      "SETTLER_RATE_LIMITED",
+      "SETTLER_TENANT_REQUIRED",
+      "SETTLER_INVALID_INPUT",
+      "SETTLER_CONFLICT",
+      "SETTLER_NOT_FOUND",
+      "SETTLER_NOT_IMPLEMENTED",
+      "SETTLER_INTERNAL",
+    ];
+    const code: ProblemCode =
+      typedError.code && knownCodes.includes(typedError.code as ProblemCode)
+        ? (typedError.code as ProblemCode)
+        : "SETTLER_INTERNAL";
+    return problem(typedError.status, code, "Request failed", typedError.message, requestId, request.nextUrl.pathname);
   }
   const message = error instanceof Error ? error.message : "Unhandled API error";
   return problem(

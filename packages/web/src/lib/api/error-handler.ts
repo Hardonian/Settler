@@ -33,8 +33,9 @@ export enum ErrorCode {
 
 /**
  * Handle errors in API routes
- * Always returns 200 with error envelope (never 500)
- * Includes trace_id in response
+ * Returns semantically correct HTTP status codes so clients and monitors can
+ * act on them without parsing the response body.
+ * Includes trace_id in all error responses.
  */
 export async function handleApiError(
   error: unknown,
@@ -43,11 +44,11 @@ export async function handleApiError(
 ): Promise<NextResponse<ErrorEnvelope & { trace_id: string }>> {
   // Get trace_id
   const traceId = await getTraceId();
-  
+
   // Log error server-side with trace_id (never expose to client)
   const errorMessage = error instanceof Error ? error.message : String(error);
   const errorStack = error instanceof Error ? error.stack : undefined;
-  
+
   await logger.error('API Error', {
     trace_id: traceId,
     route: context?.route,
@@ -76,7 +77,7 @@ export async function handleApiError(
           })),
         },
       },
-      { status: 200 } // Return 200 even for validation errors
+      { status: 400 }
     );
     response.headers.set('x-trace-id', traceId);
     return response;
@@ -90,7 +91,7 @@ export async function handleApiError(
         error: 'Authentication required',
         code: ErrorCode.UNAUTHORIZED,
       },
-      { status: 200 } // Return 200, client can check code
+      { status: 401 }
     );
     response.headers.set('x-trace-id', traceId);
     return response;
@@ -104,7 +105,7 @@ export async function handleApiError(
         error: 'Permission denied',
         code: ErrorCode.FORBIDDEN,
       },
-      { status: 200 }
+      { status: 403 }
     );
     response.headers.set('x-trace-id', traceId);
     return response;
@@ -118,7 +119,7 @@ export async function handleApiError(
         error: 'Resource not found',
         code: ErrorCode.NOT_FOUND,
       },
-      { status: 200 }
+      { status: 404 }
     );
     response.headers.set('x-trace-id', traceId);
     return response;
@@ -132,7 +133,7 @@ export async function handleApiError(
         error: 'Rate limit exceeded',
         code: ErrorCode.RATE_LIMIT,
       },
-      { status: 200 }
+      { status: 429 }
     );
     response.headers.set('x-trace-id', traceId);
     return response;
@@ -146,20 +147,20 @@ export async function handleApiError(
         error: 'Service temporarily unavailable',
         code: ErrorCode.SERVICE_UNAVAILABLE,
       },
-      { status: 200 }
+      { status: 503 }
     );
     response.headers.set('x-trace-id', traceId);
     return response;
   }
 
-  // Default error (never expose internal details)
+  // Default: internal server error
   const response = NextResponse.json(
     {
       ...baseResponse,
       error: defaultMessage,
       code: ErrorCode.INTERNAL_ERROR,
     },
-    { status: 200 } // Always return 200, never 500
+    { status: 500 }
   );
   response.headers.set('x-trace-id', traceId);
   return response;

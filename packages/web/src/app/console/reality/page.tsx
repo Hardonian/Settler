@@ -43,8 +43,8 @@ async function RealityDashboardContent() {
     );
   }
 
-  // Check admin access
-  const isAdmin = user.user_metadata?.role === 'admin' || user.email?.endsWith('@settler.dev');
+  // Check admin access via role metadata only — email domain bypass removed (security)
+  const isAdmin = user.user_metadata?.role === 'admin' || user.user_metadata?.role === 'SUPER_ADMIN' || user.user_metadata?.role === 'super_admin';
   
   if (!isAdmin) {
     return (

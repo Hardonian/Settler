@@ -32,12 +32,7 @@ export async function isSuperAdmin(): Promise<boolean> {
     if (userMetadata?.role === 'SUPER_ADMIN' || userMetadata?.role === 'super_admin') {
       return true;
     }
-    
-    // Fallback: Check email domain (for Settler team)
-    if (user.email?.endsWith('@settler.dev')) {
-      return true;
-    }
-    
+
     return false;
   } catch (error) {
     console.error('[isSuperAdmin] Error checking super admin status:', error);
