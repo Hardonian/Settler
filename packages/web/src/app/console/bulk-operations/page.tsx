@@ -1,21 +1,16 @@
-import { BulkOperations } from "@/components/console/BulkOperations";
-import { ConsoleErrorBoundary } from "@/components/console/ErrorBoundary";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Terminal } from "lucide-react";
 
 export default function BulkOperationsPage() {
   return (
-    <ConsoleErrorBoundary>
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            Bulk Operations
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            Execute batch actions across reconciliation runs, receipts, and data records. Monitor
-            progress and review results.
-          </p>
-        </div>
-        <BulkOperations />
-      </div>
-    </ConsoleErrorBoundary>
+    <div className="container mx-auto p-8">
+      <Alert>
+        <Terminal className="h-4 w-4" />
+        <AlertTitle>Coming Soon!</AlertTitle>
+        <AlertDescription>
+          This page is under construction. Please check back later.
+        </AlertDescription>
+      </Alert>
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 /**
  * Get Reconciliation Run
  *
- * GET /api/runs/[runId]
+ * GET /api/runs/[id]
  *
  * Returns canonical run detail for the same entity used by /api/runs.
  */
@@ -36,8 +36,8 @@ export const runtime = "nodejs";
 
 export const GET = withSecurity(
   withUniversalBillingGate(
-    async function GET(_request: NextRequest, { params }: { params: { runId: string } }) {
-      const logger = createLogger({ runId: params.runId });
+    async function GET(_request: NextRequest, { params }: { params: { id: string } }) {
+      const logger = createLogger({ runId: params.id });
 
       try {
         const { supabase, tenantIds: accessibleTenantIds } = await resolveTenantMembershipScope();
@@ -47,7 +47,7 @@ export const GET = withSecurity(
           .select(
             "id, name, status, created_at, updated_at, tenant_id, template_id, source_adapter, target_adapter, source_config_encrypted, target_config_encrypted, validation_rules, recon_strategy"
           )
-          .eq("id", params.runId)
+          .eq("id", params.id)
           .in("tenant_id", accessibleTenantIds)
           .single()) as {
           data:
@@ -74,19 +74,17 @@ export const GET = withSecurity(
           .select(
             "id, recon_job_id, status, started_at, completed_at, source_count, target_count, matched_count, unmatched_source_count, unmatched_target_count, conflict_count, error_message, input_hash, snapshot_id, summary, metadata"
           )
-          .eq("recon_job_id", params.runId)
+          .eq("recon_job_id", params.id)
           .eq("tenant_id", run.tenant_id)
           .order("started_at", { ascending: false })
           .limit(2)) as {
-          data:
-            | Array<
-                ReconResultRow & {
-                  input_hash?: string | null;
-                  snapshot_id?: string | null;
-                  summary?: unknown;
-                }
-              >
-            | null;
+          data: Array<
+            ReconResultRow & {
+              input_hash?: string | null;
+              snapshot_id?: string | null;
+              summary?: unknown;
+            }
+          > | null;
           error: { message?: string } | null;
         };
 
@@ -101,7 +99,7 @@ export const GET = withSecurity(
         const { count: persistedResultCount } = (await supabase
           .from("recon_results" as any)
           .select("id", { count: "exact", head: true })
-          .eq("recon_job_id", params.runId)
+          .eq("recon_job_id", params.id)
           .eq("tenant_id", run.tenant_id)) as {
           count: number | null;
           error: { message?: string } | null;
@@ -120,23 +118,21 @@ export const GET = withSecurity(
               .eq("id", snapshotId)
               .eq("tenant_id", run.tenant_id)
               .maybeSingle()) as {
-              data:
-                | {
-                    id: string;
-                    input_hash: string | null;
-                    adapter_config_hashes: unknown;
-                    job_config: unknown;
-                    rule_versions: unknown;
-                    created_at: string | null;
-                  }
-                | null;
+              data: {
+                id: string;
+                input_hash: string | null;
+                adapter_config_hashes: unknown;
+                job_config: unknown;
+                rule_versions: unknown;
+                created_at: string | null;
+              } | null;
             })
           : { data: null };
 
         const { data: audits, error: auditsError } = (await supabase
           .from("recon_audits" as any)
           .select("id, audit_type, action, metadata, created_at")
-          .eq("recon_job_id", params.runId)
+          .eq("recon_job_id", params.id)
           .eq("tenant_id", run.tenant_id)
           .order("created_at", { ascending: false })
           .limit(50)) as {
@@ -173,7 +169,7 @@ export const GET = withSecurity(
               WHERE LOWER(metadata -> 'resolution' ->> 'status') = 'ignored'
             )::int AS ignored
           FROM drift_events
-          WHERE recon_job_id = ${params.runId}
+          WHERE recon_job_id = ${params.id}
             AND tenant_id = ${run.tenant_id}
         `;
 
@@ -209,7 +205,7 @@ export const GET = withSecurity(
             `;
           } catch (error) {
             logger.warn("Deterministic match rows unavailable for run detail", {
-              runId: params.runId,
+              runId: params.id,
               resultId: latestResult.id,
               error: error instanceof Error ? error.message : "Unknown",
             });
@@ -272,13 +268,13 @@ export const GET = withSecurity(
           validationRules: run.validation_rules,
           snapshotId,
           inputHash:
-            ((latestResult?.input_hash as string | null | undefined) ||
-              (latestResult?.inputHash as string | null | undefined) ||
-              null),
+            (latestResult?.input_hash as string | null | undefined) ||
+            (latestResult?.inputHash as string | null | undefined) ||
+            null,
           resultStartedAt:
-            ((latestResult?.started_at as string | null | undefined) ||
-              (latestResult?.startedAt as string | null | undefined) ||
-              null),
+            (latestResult?.started_at as string | null | undefined) ||
+            (latestResult?.startedAt as string | null | undefined) ||
+            null,
           sourceConfigEncrypted: run.source_config_encrypted ?? null,
           targetConfigEncrypted: run.target_config_encrypted ?? null,
           snapshot: snapshotRecord
@@ -329,8 +325,7 @@ export const GET = withSecurity(
             unmatchedSourceCount: truth.summary.unmatchedSourceCount,
             unmatchedTargetCount: truth.summary.unmatchedTargetCount,
             conflictCount: truth.summary.conflicts,
-            note:
-              "unmatched = unmatched_source + unmatched_target; review scope includes unresolved exceptions",
+            note: "unmatched = unmatched_source + unmatched_target; review scope includes unresolved exceptions",
           },
           provenance: contract.provenance,
           resultContext: {
