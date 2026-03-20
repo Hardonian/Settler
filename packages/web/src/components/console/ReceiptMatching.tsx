@@ -20,7 +20,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle2, AlertTriangle, RefreshCw, Upload } from "lucide-react";
+import { CheckCircle2, AlertTriangle, RefreshCw, Upload, Loader2 } from "lucide-react";
 import { useGovernanceState } from "@/hooks/use-governance-state";
 import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
 
@@ -33,8 +33,24 @@ interface ReceiptMatch {
   verified: boolean;
 }
 
+interface Receipt {
+  id: string;
+  amount: number;
+  currency: string;
+  date: string;
+}
+
+interface Transaction {
+  id: string;
+  amount: number;
+  currency: string;
+  date: string;
+}
+
 export function ReceiptMatching() {
   const [matches, setMatches] = useState<ReceiptMatch[]>([]);
+  const [receipts, setReceipts] = useState<Receipt[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [reconciliationRunId, setReconciliationRunId] = useState<string>("");
@@ -60,6 +76,29 @@ export function ReceiptMatching() {
     }
   };
 
+  const fetchReceiptsAndTransactions = async (
+    runId: string
+  ): Promise<{ receipts: Receipt[]; transactions: Transaction[] }> => {
+    // Fetch receipts for the reconciliation run
+    const receiptsRes = await fetch(`/api/v1/receipts?reconciliationRunId=${runId}`);
+    const transactionsRes = await fetch(`/api/v1/transactions?reconciliationRunId=${runId}`);
+
+    let receipts: Receipt[] = [];
+    let transactions: Transaction[] = [];
+
+    if (receiptsRes.ok) {
+      const receiptsData = await receiptsRes.json();
+      receipts = receiptsData.data || [];
+    }
+
+    if (transactionsRes.ok) {
+      const transactionsData = await transactionsRes.json();
+      transactions = transactionsData.data || [];
+    }
+
+    return { receipts, transactions };
+  };
+
   const handleMatchReceipts = async () => {
     if (!reconciliationRunId) {
       setError("Reconciliation run ID is required");
@@ -70,15 +109,39 @@ export function ReceiptMatching() {
       setMatching(true);
       setError(null);
 
-      // In a real implementation, you'd fetch receipts and transactions first
-      // For now, this is a placeholder
+      // First, fetch the actual receipts and transactions for this run
+      const { receipts, transactions } = await fetchReceiptsAndTransactions(reconciliationRunId);
+
+      // Store for display
+      setReceipts(receipts);
+      setTransactions(transactions);
+
+      // Check if we have data to match
+      if (receipts.length === 0 && transactions.length === 0) {
+        setError(
+          "No receipts or transactions found for this reconciliation run. Please verify the run ID or ensure data has been ingested."
+        );
+        return;
+      }
+
+      // Send meaningful payload to the API
       const res = await fetch("/api/v1/receipt-matching/match", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           reconciliationRunId,
-          receipts: [], // Would come from actual receipt data
-          transactions: [], // Would come from actual transaction data
+          receipts: receipts.map((r) => ({
+            id: r.id,
+            amount: r.amount,
+            currency: r.currency,
+            date: r.date,
+          })),
+          transactions: transactions.map((t) => ({
+            id: t.id,
+            amount: t.amount,
+            currency: t.currency,
+            date: t.date,
+          })),
         }),
       });
 
@@ -174,6 +237,25 @@ export function ReceiptMatching() {
             </div>
           </div>
 
+          {/* Data availability info */}
+          {reconciliationRunId && !matching && (
+            <div className="text-sm text-slate-500 dark:text-slate-400">
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Loading data...
+                </span>
+              ) : receipts.length > 0 || transactions.length > 0 ? (
+                <span>
+                  Found {receipts.length} receipts and {transactions.length} transactions for
+                  matching
+                </span>
+              ) : (
+                <span>Click "Match Receipts" to fetch and match data</span>
+              )}
+            </div>
+          )}
+
           {matches.length > 0 && (
             <div>
               <h3 className="text-lg font-semibold mb-2">Matches ({matches.length})</h3>
@@ -230,7 +312,7 @@ export function ReceiptMatching() {
             </div>
           )}
 
-          {matches.length === 0 && !loading && reconciliationRunId && (
+          {matches.length === 0 && !loading && reconciliationRunId && !matching && (
             <Alert>
               <AlertDescription>No matches found for this reconciliation run</AlertDescription>
             </Alert>

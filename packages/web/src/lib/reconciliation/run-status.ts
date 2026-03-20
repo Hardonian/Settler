@@ -22,19 +22,19 @@ export interface RunSummary {
   sourceCount: number;
   targetCount: number;
   // Canonical contract fields
-  processed: number;
+  processed?: number;
   matched: number;
-  matchedWithTolerance: number;
+  matchedWithTolerance?: number;
   unmatched: number;
-  mismatched: number;
+  mismatched?: number;
   unmatchedSourceCount: number;
   unmatchedTargetCount: number;
   conflicts: number;
   // Extended fields from canonical
-  exceptioned: number;
-  unresolved: number;
-  resolved: number;
-  ignored: number;
+  exceptioned?: number;
+  unresolved?: number;
+  resolved?: number;
+  ignored?: number;
 }
 
 export interface ReconJobRow {

@@ -21,7 +21,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 // Status icon mapping
-const statusIcons: Record<JobStatus, React.ReactNode> = {
+const statusIcons: Partial<Record<JobStatus, React.ReactNode>> = {
   queued: <Clock className="w-4 h-4 text-blue-500" />,
   running: <Loader2 className="w-4 h-4 text-yellow-500 animate-spin" />,
   succeeded: <CheckCircle2 className="w-4 h-4 text-green-500" />,
@@ -31,7 +31,7 @@ const statusIcons: Record<JobStatus, React.ReactNode> = {
 };
 
 // Status color mapping
-const statusColors: Record<JobStatus, string> = {
+const statusColors: Partial<Record<JobStatus, string>> = {
   queued: "bg-blue-50 text-blue-700 border-blue-200",
   running: "bg-yellow-50 text-yellow-700 border-yellow-200",
   succeeded: "bg-green-50 text-green-700 border-green-200",

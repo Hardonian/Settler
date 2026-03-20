@@ -20,12 +20,20 @@ export const metadata = {
 
 export default function OperatorPage() {
   const healthData = {
-    status: "healthy",
+    status: "healthy" as const,
     checks: {
-      database: { status: "healthy", latency: 4, timestamp: new Date().toISOString() },
-      reconciliation: { status: "healthy", latency: 12, timestamp: new Date().toISOString() },
-      "trust-graph": { status: "healthy", latency: 8, timestamp: new Date().toISOString() },
-      storage: { status: "healthy", timestamp: new Date().toISOString() },
+      database: { status: "healthy" as const, latency: 4, timestamp: new Date().toISOString() },
+      reconciliation: {
+        status: "healthy" as const,
+        latency: 12,
+        timestamp: new Date().toISOString(),
+      },
+      "trust-graph": {
+        status: "healthy" as const,
+        latency: 8,
+        timestamp: new Date().toISOString(),
+      },
+      storage: { status: "healthy" as const, timestamp: new Date().toISOString() },
     },
     timestamp: new Date().toISOString(),
   };

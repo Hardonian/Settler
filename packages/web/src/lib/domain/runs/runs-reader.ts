@@ -8,6 +8,7 @@ import {
 import { buildReplayLabReport } from "@/lib/replay-lab/engine";
 import { getExecutionGraph, verifyProofChain } from "@/lib/trust-graph/explorer";
 import { RunListItem } from "@settler/types";
+export type { RunListItem };
 
 /**
  * Domain reader for Reconciliation Runs.
@@ -15,8 +16,6 @@ import { RunListItem } from "@settler/types";
  * Implements "Cheap Read" architecture by selecting specific fields
  * and minimizing contract overhead where possible.
  */
-
-// RunListItem is now imported from @settler/types
 
 export async function getRunsList(tenantId: string, limit: number = 20): Promise<RunListItem[]> {
   if (!tenantId || tenantId === "—") return [];

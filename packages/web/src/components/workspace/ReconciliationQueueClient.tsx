@@ -154,7 +154,7 @@ export function ReconciliationQueueClient() {
                 <TableCell className="text-right font-mono">{run.records}</TableCell>
                 <TableCell className="text-right text-green-600 font-mono">{run.matches}</TableCell>
                 <TableCell className="text-right text-red-600 font-mono">
-                  {run.mismatched}
+                  {run.mismatches}
                 </TableCell>
                 <TableCell className="text-right">
                   <Button variant="ghost" size="icon">

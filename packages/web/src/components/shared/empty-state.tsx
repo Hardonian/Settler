@@ -1,23 +1,23 @@
 /**
  * Shared Empty State Components
- * 
+ *
  * Consistent empty states across the application.
  * Re-exports from canonical ui/empty-state location.
  */
 
-'use client';
+"use client";
 
 // Re-export canonical EmptyState and RetryButton from ui
-export { EmptyState, RetryButton } from '@/components/ui/empty-state';
-export type { EmptyStateProps, RetryButtonProps } from '@/components/ui/empty-state';
+export { EmptyState, RetryButton } from "@/components/ui/empty-state";
+export type { EmptyStateProps, RetryButtonProps } from "@/components/ui/empty-state";
 
-import { Inbox, Search, AlertCircle } from 'lucide-react';
-import { EmptyState } from '@/components/ui/empty-state';
+import { Inbox, Search, AlertCircle } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 
-export function NoResultsEmptyState({ 
+export function NoResultsEmptyState({
   searchQuery,
-  entityName = 'items'
-}: { 
+  entityName = "items",
+}: {
   searchQuery?: string;
   entityName?: string;
 }) {
@@ -34,11 +34,11 @@ export function NoResultsEmptyState({
   );
 }
 
-export function NoDataEmptyState({ 
+export function NoDataEmptyState({
   entityName,
   actionLabel,
-  actionHref
-}: { 
+  actionHref,
+}: {
   entityName: string;
   actionLabel?: string;
   actionHref?: string;
@@ -48,31 +48,34 @@ export function NoDataEmptyState({
       icon={<Inbox className="w-12 h-12" />}
       title={`No ${entityName} yet`}
       description={`Get started by creating your first ${entityName.toLowerCase()}.`}
-      action={actionLabel && actionHref ? {
-        label: actionLabel,
-        onClick: () => {},
-        href: actionHref,
-      } : undefined}
+      action={
+        actionLabel && actionHref
+          ? {
+              label: actionLabel,
+              onClick: () => {
+                window.location.href = actionHref;
+              },
+            }
+          : undefined
+      }
     />
   );
 }
 
-export function ErrorEmptyState({ 
-  message,
-  onRetry
-}: { 
-  message?: string;
-  onRetry?: () => void;
-}) {
+export function ErrorEmptyState({ message, onRetry }: { message?: string; onRetry?: () => void }) {
   return (
     <EmptyState
       icon={<AlertCircle className="w-12 h-12 text-red-500" />}
       title="Unable to load data"
-      description={message || 'An error occurred while loading. Please try again.'}
-      action={onRetry ? {
-        label: 'Try Again',
-        onClick: onRetry,
-      } : undefined}
+      description={message || "An error occurred while loading. Please try again."}
+      action={
+        onRetry
+          ? {
+              label: "Try Again",
+              onClick: onRetry,
+            }
+          : undefined
+      }
     />
   );
 }

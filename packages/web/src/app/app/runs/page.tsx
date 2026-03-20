@@ -169,25 +169,25 @@ export default async function AppRunsPage() {
                     </div>
                   </TableCell>
                   <TableCell className="text-sm font-bold text-foreground">
-                    {run.matched_records.toLocaleString()} records
+                    {(run.matched_records ?? 0).toLocaleString()} records
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Progress
-                        value={run.confidence * 100}
+                        value={(run.confidence ?? 1) * 100}
                         indicatorClassName={
-                          run.confidence >= 0.98
+                          (run.confidence ?? 1) >= 0.98
                             ? "bg-success"
-                            : run.confidence >= 0.9
+                            : (run.confidence ?? 1) >= 0.9
                               ? "bg-warning"
                               : "bg-destructive"
                         }
                         className="h-1 max-w-[60px]"
                       />
                       <span
-                        className={`text-xs font-bold ${run.confidence >= 0.98 ? "text-success" : run.confidence >= 0.9 ? "text-warning" : "text-destructive"}`}
+                        className={`text-xs font-bold ${(run.confidence ?? 1) >= 0.98 ? "text-success" : (run.confidence ?? 1) >= 0.9 ? "text-warning" : "text-destructive"}`}
                       >
-                        {Math.round(run.confidence * 100)}%
+                        {Math.round((run.confidence ?? 1) * 100)}%
                       </span>
                     </div>
                   </TableCell>
