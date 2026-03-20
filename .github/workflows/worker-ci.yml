@@ -17,8 +17,8 @@ on:
       - ".github/workflows/worker-ci.yml"
 
 env:
-  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  TURBO_TOKEN: "${{ secrets.TURBO_TOKEN }}"
+  TURBO_TEAM: "${{ secrets.TURBO_TEAM }}"
 
 jobs:
   # Minimal worker smoke test with mocked DB (for CI without real database)

@@ -88,6 +88,24 @@ jobs:
 
           echo "✅ No hard 500 routes found"
 
+      - name: Check for Error Boundaries and Placeholder Links
+        run: |
+          echo "Checking for missing error boundaries..."
+          # Ensure the root layout has a fallback error boundary
+          if [ ! -f "packages/web/src/app/error.tsx" ] && [ ! -f "packages/web/src/app/error.ts" ]; then
+            echo "❌ Global error.tsx is missing. Every app must handle its failures."
+            exit 1
+          fi
+
+          echo "Checking for placeholder links..."
+          # Fail the build if we find empty/dead anchors acting as buttons/placeholders
+          if grep -r -n 'href="#"' packages/web/src/app/ --include="*.tsx"; then
+            echo "❌ Found dead links (href='#'). Please wire them properly or remove them."
+            exit 1
+          fi
+
+          echo "✅ Error boundaries and link integrity checks passed"
+
   check-unverified-claims:
     name: Check for Unverified Claims
     runs-on: ubuntu-latest

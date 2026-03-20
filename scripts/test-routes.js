@@ -60,7 +60,8 @@ async function runTests() {
     const result = await testRoute(route);
     results.push(result);
 
-    const statusStr = result.status > 0 ? result.status : "ERR";
+    const statusNum = Number(result.status);
+    const statusStr = statusNum > 0 ? statusNum.toString() : "ERR";
     const okStr = result.ok ? "✓" : "✗";
     console.log(`${statusStr.padStart(3)} ${okStr} ${route}`);
   }
