@@ -21,9 +21,7 @@ on:
         type: boolean
         default: false
 
-env:
-  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+# Global environment variables are moved to specific jobs to resolve IDE validation warnings.
 
 jobs:
   # Build the application for testing
@@ -56,6 +54,8 @@ jobs:
       - name: Build web application
         run: npx turbo run build --filter @settler/web...
         env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
           NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-key
