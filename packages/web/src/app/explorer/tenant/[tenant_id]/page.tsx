@@ -12,7 +12,7 @@ export default async function ExplorerTenantPage({
   return (
     <main className="mx-auto max-w-5xl p-6 space-y-4">
       <h1 className="text-2xl font-bold">Tenant execution timeline</h1>
-      <p className="text-sm text-slate-500">{tenant_id}</p>
+      <p className="text-sm text-muted-foreground">{tenant_id}</p>
       <ul className="space-y-2">
         {entries.map((entry) => (
           <li key={entry.execution_id} className="rounded border p-3 text-sm">
@@ -22,7 +22,7 @@ export default async function ExplorerTenantPage({
             >
               {entry.execution_id}
             </Link>
-            <div className="text-slate-500">
+            <div className="text-muted-foreground">
               {entry.status} · {entry.duration}ms · {entry.policy_version}
             </div>
           </li>

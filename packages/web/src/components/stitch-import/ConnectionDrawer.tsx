@@ -9,9 +9,9 @@ const ConnectionDrawer: React.FC = () => {
       <div className="absolute inset-0 bg-background/40 backdrop-blur-sm pointer-events-auto"></div>
       <div className="bg-card w-full max-w-md rounded-t-3xl shadow-2xl pointer-events-auto flex flex-col max-h-[90vh] relative animate-in slide-in-from-bottom duration-300">
         <div className="w-full flex justify-center pt-3 pb-1 cursor-grab active:cursor-grabbing">
-          <div className="w-12 h-1.5 rounded-full bg-slate-200"></div>
+          <div className="w-12 h-1.5 rounded-full bg-border"></div>
         </div>
-        <div className="px-6 pt-2 pb-4 border-b border-slate-100 flex items-start justify-between">
+        <div className="px-6 pt-2 pb-4 border-b border-border/30 flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-foreground">Stripe Payments</h2>
             <div className="flex items-center gap-2 mt-1">
@@ -71,11 +71,11 @@ const ConnectionDrawer: React.FC = () => {
               Schema Preview
             </h3>
             <div className="border border-border rounded-lg overflow-hidden shadow-sm">
-              <div className="bg-card px-3 py-3 border-b border-slate-100 flex justify-between items-center cursor-pointer hover:bg-muted/20 transition-colors">
+              <div className="bg-card px-3 py-3 border-b border-border/30 flex justify-between items-center cursor-pointer hover:bg-muted/20 transition-colors">
                 <span className="text-sm font-semibold font-mono text-foreground">Charges</span>
                 <ChevronUp className="h-5 w-5 text-muted-foreground" />
               </div>
-              <div className="bg-muted/20 p-3 space-y-2 border-b border-slate-100">
+              <div className="bg-muted/20 p-3 space-y-2 border-b border-border/30">
                 <div className="flex justify-between items-center text-xs">
                   <span className="font-mono font-medium text-muted-foreground">id</span>
                   <span className="px-1.5 py-0.5 rounded bg-card border border-border text-muted-foreground font-mono text-[10px]">
@@ -95,7 +95,7 @@ const ConnectionDrawer: React.FC = () => {
                   </span>
                 </div>
               </div>
-              <div className="bg-card px-3 py-3 border-b border-slate-100 flex justify-between items-center cursor-pointer hover:bg-muted/20 transition-colors">
+              <div className="bg-card px-3 py-3 border-b border-border/30 flex justify-between items-center cursor-pointer hover:bg-muted/20 transition-colors">
                 <span className="text-sm font-semibold font-mono text-foreground">Refunds</span>
                 <ChevronDown className="h-5 w-5 text-muted-foreground" />
               </div>

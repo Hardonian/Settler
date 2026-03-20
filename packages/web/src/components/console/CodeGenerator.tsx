@@ -81,7 +81,7 @@ export function CodeGenerator({ apiCall, apiKey }: CodeGeneratorProps) {
           {snippets.map((snippet) => (
             <TabsContent key={snippet.language} value={snippet.language}>
               <div className="relative">
-                <pre className="p-4 bg-slate-900 text-slate-100 rounded-lg overflow-x-auto text-sm">
+                <pre className="p-4 bg-card text-foreground rounded-lg overflow-x-auto text-sm">
                   <code>{snippet.code}</code>
                 </pre>
                 <Button

@@ -44,5 +44,5 @@
       "@jobforge/fetch": ["./packages/jobforge-fetch/src"]
     }
   },
-  "exclude": ["node_modules", "dist", "build", ".next"]
+  "exclude": ["node_modules", "dist", "build", ".next", "app", "benchmarks"]
 }

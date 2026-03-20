@@ -15,8 +15,8 @@ export default async function ExperimentsList() {
     <div className="p-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Experiments</h1>
-          <p className="text-slate-500 mt-1">A/B Tests and Feature Rollouts</p>
+          <h1 className="text-3xl font-bold text-foreground">Experiments</h1>
+          <p className="text-muted-foreground mt-1">A/B Tests and Feature Rollouts</p>
         </div>
         <Link href="/admin/experiments/new">
           <Button className="gap-2">
@@ -45,7 +45,7 @@ export default async function ExperimentsList() {
                 {experiments.map((exp) => (
                     <TableRow key={exp.id}>
                     <TableCell className="font-medium">{exp.name}</TableCell>
-                    <TableCell className="font-mono text-xs text-slate-500">{exp.slug}</TableCell>
+                    <TableCell className="font-mono text-xs text-muted-foreground">{exp.slug}</TableCell>
                     <TableCell>{exp.targetPage?.slug || 'Unknown'}</TableCell>
                     <TableCell>
                         <Badge variant="outline">{exp.status}</Badge>
@@ -58,7 +58,7 @@ export default async function ExperimentsList() {
                 </TableBody>
             </Table>
           ) : (
-             <div className="text-center py-12 text-slate-500">
+             <div className="text-center py-12 text-muted-foreground">
                  No experiments running.
              </div>
           )}

@@ -234,7 +234,7 @@ export default function AdminOpsConsole() {
               No exceptions found
             </div>
           ) : (
-            <div className="divide-y divide-slate-200 dark:divide-slate-800">
+            <div className="divide-y divide-slate-200 dark:divide-border">
               {filteredExceptions.map((ex: ExceptionItem, index: number) => (
                 <button
                   key={ex.id}

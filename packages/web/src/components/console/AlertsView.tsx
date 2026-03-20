@@ -136,7 +136,7 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
       <Card>
         <CardContent className="py-12 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-slate-600 dark:text-slate-400">Loading alerts...</p>
+          <p className="mt-4 text-muted-foreground">Loading alerts...</p>
         </CardContent>
       </Card>
     );
@@ -161,10 +161,10 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+          <h2 className="text-2xl font-bold text-foreground mb-2">
             Alerts
           </h2>
-          <p className="text-slate-600 dark:text-slate-400">
+          <p className="text-muted-foreground">
             Intelligent alerts with explanations and threshold tracking.
           </p>
         </div>
@@ -180,10 +180,10 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">Total Alerts</p>
+                  <p className="text-sm text-muted-foreground">Total Alerts</p>
                   <p className="text-2xl font-bold">{alerts.length}</p>
                 </div>
-                <Bell className="w-8 h-8 text-slate-400" />
+                <Bell className="w-8 h-8 text-muted-foreground/60" />
               </div>
             </CardContent>
           </Card>
@@ -191,7 +191,7 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">Unacknowledged</p>
+                  <p className="text-sm text-muted-foreground">Unacknowledged</p>
                   <p className="text-2xl font-bold">{unacknowledgedAlerts.length}</p>
                 </div>
                 <AlertTriangle className="w-8 h-8 text-orange-400" />
@@ -202,7 +202,7 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">Critical</p>
+                  <p className="text-sm text-muted-foreground">Critical</p>
                   <p className="text-2xl font-bold text-red-600">{criticalAlerts.length}</p>
                 </div>
                 <AlertTriangle className="w-8 h-8 text-red-400" />
@@ -216,9 +216,9 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
       {alerts.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <CheckCircle2 className="w-12 h-12 mx-auto mb-4 text-slate-400" />
+            <CheckCircle2 className="w-12 h-12 mx-auto mb-4 text-muted-foreground/60" />
             <h3 className="text-lg font-semibold mb-2">No alerts</h3>
-            <p className="text-slate-600 dark:text-slate-400">
+            <p className="text-muted-foreground">
               All systems are operating normally. Alerts will appear here when detected.
             </p>
           </CardContent>
@@ -258,26 +258,26 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
                   {/* Explanation */}
                   <div>
                     <p className="text-sm font-medium mb-2">Why This Matters</p>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                    <p className="text-sm text-muted-foreground">
                       {alert.explanation.whyItMatters}
                     </p>
                   </div>
 
                   {/* Threshold */}
                   {alert.threshold && (
-                    <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
+                    <div className="p-4 bg-muted/10 rounded-lg">
                       <p className="text-sm font-medium mb-2">Threshold Exceeded</p>
                       <div className="flex items-center gap-4 text-sm">
                         <div>
-                          <p className="text-slate-600 dark:text-slate-400">Threshold</p>
+                          <p className="text-muted-foreground">Threshold</p>
                           <p className="font-bold">{alert.threshold.value}</p>
                         </div>
                         <div>
-                          <p className="text-slate-600 dark:text-slate-400">Actual</p>
+                          <p className="text-muted-foreground">Actual</p>
                           <p className="font-bold text-red-600">{alert.threshold.actual}</p>
                         </div>
                         <div>
-                          <p className="text-slate-600 dark:text-slate-400">Type</p>
+                          <p className="text-muted-foreground">Type</p>
                           <p className="font-bold">{alert.threshold.type}</p>
                         </div>
                       </div>
@@ -324,10 +324,10 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
                     </Button>
                     {runId && (
                       <>
-                        <Link href={`/app/runs/${runId}`} className="inline-flex items-center rounded-md border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                        <Link href={`/app/runs/${runId}`} className="inline-flex items-center rounded-md border border-border/40 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:bg-muted/10">
                           Open affected run
                         </Link>
-                        <Link href={`/app/replay?runId=${runId}`} className="inline-flex items-center rounded-md border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                        <Link href={`/app/replay?runId=${runId}`} className="inline-flex items-center rounded-md border border-border/40 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:bg-muted/10">
                           Replay affected run
                         </Link>
                       </>
@@ -352,7 +352,7 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
                   </div>
 
                   {/* Metadata */}
-                  <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
                     <span>Created: {new Date(alert.createdAt).toLocaleString()}</span>
                     {alert.acknowledgedAt && (
                       <span>Acknowledged: {new Date(alert.acknowledgedAt).toLocaleString()}</span>
@@ -377,20 +377,20 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
             <div className="space-y-4">
               <div>
                 <p className="text-sm font-medium mb-2">Full Explanation</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-muted-foreground">
                   {selectedAlert.explanation.summary}
                 </p>
               </div>
               <div>
                 <p className="text-sm font-medium mb-2">Why This Matters</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-muted-foreground">
                   {selectedAlert.explanation.whyItMatters}
                 </p>
               </div>
               {selectedAlert.explanation.suggestedNextStep && (
                 <div>
                   <p className="text-sm font-medium mb-2">Suggested Next Step</p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <p className="text-sm text-muted-foreground">
                     {selectedAlert.explanation.suggestedNextStep}
                   </p>
                 </div>

@@ -92,24 +92,24 @@ export function ProofExplorer() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-4 bg-white dark:bg-slate-900">
+      <div className="rounded-xl border border-border/40 dark:border-border p-4 bg-white dark:bg-card">
         <h2 className="text-xl font-semibold mb-3">Proof Explorer</h2>
-        <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+        <p className="text-sm text-muted-foreground mb-2">
           Event links, provenance metadata, and proof hashes surfaced with deterministic replay
           verification.
         </p>
-        <p className="text-xs text-slate-500 mb-4">
+        <p className="text-xs text-muted-foreground mb-4">
           Data mode: <span className="font-semibold">{dataMode}</span>
         </p>
         <div className="grid gap-3 md:grid-cols-3">
           <input
-            className="rounded border border-slate-300 dark:border-slate-700 bg-transparent px-3 py-2 text-sm"
+            className="rounded border border-border bg-transparent px-3 py-2 text-sm"
             placeholder="Run ID"
             value={runId}
             onChange={(event) => setRunId(event.target.value.trim())}
           />
           <input
-            className="rounded border border-slate-300 dark:border-slate-700 bg-transparent px-3 py-2 text-sm"
+            className="rounded border border-border bg-transparent px-3 py-2 text-sm"
             placeholder="API Key"
             value={apiKey}
             type="password"
@@ -119,7 +119,7 @@ export function ProofExplorer() {
             type="button"
             disabled={!runId || !apiKey || loading}
             onClick={loadExplorer}
-            className="rounded bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-2 text-sm disabled:opacity-50"
+            className="rounded bg-card text-white dark:bg-white dark:text-foreground px-4 py-2 text-sm disabled:opacity-50"
           >
             {loading ? "Loading…" : "Load execution graph"}
           </button>
@@ -127,17 +127,17 @@ export function ProofExplorer() {
         {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
       </div>
 
-      <section className="rounded-xl border border-slate-200 dark:border-slate-800 p-4 bg-white dark:bg-slate-900">
+      <section className="rounded-xl border border-border/40 dark:border-border p-4 bg-white dark:bg-card">
         <h3 className="font-semibold mb-3">Audit / Replay Intelligence</h3>
         <div className="grid gap-3 md:grid-cols-2 text-sm">
           {dashboardData.auditEvents.map((event) => (
             <div
               key={event.id}
-              className="rounded border border-slate-200 dark:border-slate-700 p-3"
+              className="rounded border border-border/40 dark:border-border p-3"
             >
               <p className="font-medium">{event.action}</p>
-              <p className="text-slate-500">trace: {event.traceId}</p>
-              <p className="text-slate-500">
+              <p className="text-muted-foreground">trace: {event.traceId}</p>
+              <p className="text-muted-foreground">
                 entity: {event.entityType}:{event.entityId}
               </p>
             </div>
@@ -145,11 +145,11 @@ export function ProofExplorer() {
           {dashboardData.proofReceipts.map((receipt) => (
             <div
               key={receipt.id}
-              className="rounded border border-slate-200 dark:border-slate-700 p-3"
+              className="rounded border border-border/40 dark:border-border p-3"
             >
               <p className="font-medium">Proof {receipt.id}</p>
-              <p className="text-slate-500">hash: {receipt.hash}</p>
-              <p className="text-slate-500">provenance: {receipt.provenance.join(" → ")}</p>
+              <p className="text-muted-foreground">hash: {receipt.hash}</p>
+              <p className="text-muted-foreground">provenance: {receipt.provenance.join(" → ")}</p>
             </div>
           ))}
         </div>
@@ -157,34 +157,34 @@ export function ProofExplorer() {
 
       {graph?.graph && (
         <div className="grid gap-4 md:grid-cols-2">
-          <section className="rounded-xl border border-slate-200 dark:border-slate-800 p-4 bg-white dark:bg-slate-900">
+          <section className="rounded-xl border border-border/40 dark:border-border p-4 bg-white dark:bg-card">
             <h3 className="font-semibold mb-2">Execution Timeline</h3>
             <ul className="space-y-2 text-sm">
               {graph.graph.nodes.map((node) => (
                 <li key={node.id} className="border-l-2 border-blue-500 pl-3">
                   <span className="font-medium">{node.label}</span>
-                  <div className="text-slate-500">{node.type}</div>
+                  <div className="text-muted-foreground">{node.type}</div>
                 </li>
               ))}
             </ul>
           </section>
 
-          <section className="rounded-xl border border-slate-200 dark:border-slate-800 p-4 bg-white dark:bg-slate-900">
+          <section className="rounded-xl border border-border/40 dark:border-border p-4 bg-white dark:bg-card">
             <h3 className="font-semibold mb-2">Artifact Dependency Tree</h3>
             <ul className="space-y-2 text-sm">
               {lineage?.lineage?.lineage.map((entry) => (
                 <li key={entry.node.id}>
                   <span className="font-medium">{entry.node.label}</span>
-                  <span className="text-slate-500"> ({entry.node.type})</span>
+                  <span className="text-muted-foreground"> ({entry.node.type})</span>
                   {entry.viaEdge && (
-                    <div className="text-xs text-slate-500">via {entry.viaEdge.type}</div>
+                    <div className="text-xs text-muted-foreground">via {entry.viaEdge.type}</div>
                   )}
                 </li>
               ))}
             </ul>
           </section>
 
-          <section className="rounded-xl border border-slate-200 dark:border-slate-800 p-4 bg-white dark:bg-slate-900">
+          <section className="rounded-xl border border-border/40 dark:border-border p-4 bg-white dark:bg-card">
             <h3 className="font-semibold mb-2">Policy Decision Viewer</h3>
             <p className="text-sm mb-2">Impacted artifacts:</p>
             <ul className="list-disc pl-5 text-sm">
@@ -200,7 +200,7 @@ export function ProofExplorer() {
             </ul>
           </section>
 
-          <section className="rounded-xl border border-slate-200 dark:border-slate-800 p-4 bg-white dark:bg-slate-900">
+          <section className="rounded-xl border border-border/40 dark:border-border p-4 bg-white dark:bg-card">
             <h3 className="font-semibold mb-2">Proof Integrity</h3>
             <p className="text-sm">
               Graph hash:{" "}

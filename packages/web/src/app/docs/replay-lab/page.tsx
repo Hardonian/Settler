@@ -41,7 +41,7 @@ export default function ReplayLabDocsPage() {
   return (
     <div className="prose prose-slate dark:prose-invert max-w-none">
       <h1>Replay Lab</h1>
-      <p className="text-lg text-slate-600 dark:text-slate-400">
+      <p className="text-lg text-muted-foreground">
         Replay Lab is the verification surface for deterministic execution. It proves that a prior
         reconciliation can be replayed with identical output using the saved evidence artifact.
       </p>
@@ -59,7 +59,7 @@ export default function ReplayLabDocsPage() {
           <Card key={step.title} className="border-2">
             <CardHeader>
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 font-bold text-sm">
+                <div className="w-8 h-8 rounded-full bg-muted/40 flex items-center justify-center text-muted-foreground font-bold text-sm">
                   {index + 1}
                 </div>
                 <CardTitle className="text-lg">{step.title}</CardTitle>
@@ -78,7 +78,7 @@ export default function ReplayLabDocsPage() {
           <CheckCircle2 className="w-5 h-5 text-green-600" />
           Related surfaces
         </h2>
-        <ul className="space-y-2 text-slate-700 dark:text-slate-300">
+        <ul className="space-y-2 text-muted-foreground">
           <li>
             •{" "}
             <Link href="/replay-lab" className="text-blue-600 dark:text-blue-400 hover:underline">

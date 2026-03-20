@@ -15,7 +15,7 @@ export default async function ExplorerExecutionPage({
   return (
     <main className="mx-auto max-w-4xl p-6 space-y-4">
       <h1 className="text-2xl font-bold">Execution {entry.execution_id}</h1>
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-muted-foreground">
         Tenant {entry.tenant_id} · {entry.timestamp}
       </p>
       <pre className="rounded border p-4 overflow-x-auto text-xs">

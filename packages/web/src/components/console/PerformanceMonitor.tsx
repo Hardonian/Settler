@@ -99,7 +99,7 @@ export function PerformanceMonitor() {
     return (
       <Card>
         <CardContent className="py-12 text-center">
-          <p className="text-slate-600 dark:text-slate-400">Unable to load performance metrics.</p>
+          <p className="text-muted-foreground">Unable to load performance metrics.</p>
         </CardContent>
       </Card>
     );
@@ -111,7 +111,7 @@ export function PerformanceMonitor() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold">Performance Monitor</h2>
-            <p className="text-slate-600 dark:text-slate-400">
+            <p className="text-muted-foreground">
               API performance metrics and monitoring
             </p>
           </div>
@@ -119,7 +119,7 @@ export function PerformanceMonitor() {
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value as "7d" | "30d")}
-              className="px-3 py-2 border rounded-md bg-white dark:bg-slate-800"
+              className="px-3 py-2 border rounded-md bg-white dark:bg-card/80"
             >
               <option value="7d">Last 7 days</option>
               <option value="30d">Last 30 days</option>
@@ -146,7 +146,7 @@ export function PerformanceMonitor() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Activity className="w-4 h-4" />
                 <span>Average response time</span>
               </div>
@@ -161,7 +161,7 @@ export function PerformanceMonitor() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Gauge className="w-4 h-4" />
                 <span>95th percentile</span>
               </div>
@@ -200,7 +200,7 @@ export function PerformanceMonitor() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-sm text-slate-600 dark:text-slate-400">Requests per second</div>
+              <div className="text-sm text-muted-foreground">Requests per second</div>
             </CardContent>
           </Card>
         </div>

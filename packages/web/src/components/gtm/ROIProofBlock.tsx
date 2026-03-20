@@ -64,8 +64,8 @@ export function ROIProofBlock({
       <Card className={className}>
         <CardContent className="pt-6">
           <div className="animate-pulse space-y-4">
-            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
-            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2" />
+            <div className="h-4 bg-border dark:bg-border rounded w-3/4" />
+            <div className="h-4 bg-border dark:bg-border rounded w-1/2" />
           </div>
         </CardContent>
       </Card>
@@ -90,10 +90,10 @@ export function ROIProofBlock({
           <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
             <CheckCircle2 className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
             <div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">
+              <div className="text-2xl font-bold text-foreground">
                 {metrics.totalReconciliations.toLocaleString()}
               </div>
-              <div className="text-sm text-slate-600 dark:text-slate-400">
+              <div className="text-sm text-muted-foreground">
                 Reconciliations completed
               </div>
             </div>
@@ -104,10 +104,10 @@ export function ROIProofBlock({
             <div className="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
               <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" />
               <div>
-                <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                <div className="text-2xl font-bold text-foreground">
                   {metrics.totalRecordsProcessed.toLocaleString()}
                 </div>
-                <div className="text-sm text-slate-600 dark:text-slate-400">
+                <div className="text-sm text-muted-foreground">
                   Records processed
                 </div>
               </div>
@@ -119,10 +119,10 @@ export function ROIProofBlock({
             <div className="flex items-start gap-3 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
               <Clock className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5" />
               <div>
-                <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                <div className="text-2xl font-bold text-foreground">
                   {metrics.totalTimeSavedHours.toFixed(1)}h
                 </div>
-                <div className="text-sm text-slate-600 dark:text-slate-400">
+                <div className="text-sm text-muted-foreground">
                   Estimated time saved
                 </div>
               </div>
@@ -134,10 +134,10 @@ export function ROIProofBlock({
             <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
               <DollarSign className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5" />
               <div>
-                <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                <div className="text-2xl font-bold text-foreground">
                   ${metrics.estimatedCostSavings.toFixed(0)}
                 </div>
-                <div className="text-sm text-slate-600 dark:text-slate-400">
+                <div className="text-sm text-muted-foreground">
                   Estimated cost savings
                 </div>
               </div>
@@ -149,10 +149,10 @@ export function ROIProofBlock({
             <div className="flex items-start gap-3 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
               <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5" />
               <div>
-                <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                <div className="text-2xl font-bold text-foreground">
                   {metrics.exceptionsDetected.toLocaleString()}
                 </div>
-                <div className="text-sm text-slate-600 dark:text-slate-400">
+                <div className="text-sm text-muted-foreground">
                   Exceptions detected
                 </div>
               </div>
@@ -164,10 +164,10 @@ export function ROIProofBlock({
             <div className="flex items-start gap-3 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
               <CheckCircle2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400 mt-0.5" />
               <div>
-                <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                <div className="text-2xl font-bold text-foreground">
                   {metrics.integrationsConnected}
                 </div>
-                <div className="text-sm text-slate-600 dark:text-slate-400">
+                <div className="text-sm text-muted-foreground">
                   Integrations connected
                 </div>
               </div>
@@ -177,11 +177,11 @@ export function ROIProofBlock({
 
         {/* Amount Reconciled */}
         {metrics.totalAmountReconciled > 0 && (
-          <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
-            <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+          <div className="mt-4 p-4 bg-muted/10 rounded-lg">
+            <div className="text-sm text-muted-foreground mb-1">
               Total amount reconciled
             </div>
-            <div className="text-3xl font-bold text-slate-900 dark:text-white">
+            <div className="text-3xl font-bold text-foreground">
               ${metrics.totalAmountReconciled.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,

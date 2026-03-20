@@ -77,7 +77,7 @@ const RoleMatrix: React.FC = () => {
         {/* Role Card 3 */}
         <div className="min-w-[140px] bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-lg p-3 flex flex-col gap-2 relative group">
           <div className="flex justify-between items-start">
-            <div className="w-8 h-8 rounded-full bg-slate-500/10 flex items-center justify-center text-slate-500">
+            <div className="w-8 h-8 rounded-full bg-muted/100/10 flex items-center justify-center text-muted-foreground">
               <Eye className="h-5 w-5" />
             </div>
             <MoreVertical className="h-4 w-4 text-text-muted-light dark:text-text-muted-dark" />

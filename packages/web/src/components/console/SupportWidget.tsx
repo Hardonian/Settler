@@ -94,7 +94,7 @@ export function SupportWidget() {
         <CardContent className="py-8 text-center">
           <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">Ticket Created</h3>
-          <p className="text-slate-600 dark:text-slate-400 mb-4">
+          <p className="text-muted-foreground mb-4">
             Your support ticket has been created. We'll get back to you soon.
           </p>
           <Button onClick={() => setSubmitted(false)} variant="outline">

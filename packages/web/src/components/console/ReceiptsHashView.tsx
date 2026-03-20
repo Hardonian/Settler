@@ -99,7 +99,7 @@ export function ReceiptsHashView({ limit = 50 }: ReceiptsHashViewProps) {
       <Card>
         <CardContent className="py-12 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-slate-600 dark:text-slate-400">Loading receipts...</p>
+          <p className="mt-4 text-muted-foreground">Loading receipts...</p>
         </CardContent>
       </Card>
     );
@@ -121,10 +121,10 @@ export function ReceiptsHashView({ limit = 50 }: ReceiptsHashViewProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+          <h2 className="text-2xl font-bold text-foreground mb-2">
             Receipts
           </h2>
-          <p className="text-slate-600 dark:text-slate-400">
+          <p className="text-muted-foreground">
             Tamper-evident receipts with hash chain integrity verification.
           </p>
         </div>
@@ -136,9 +136,9 @@ export function ReceiptsHashView({ limit = 50 }: ReceiptsHashViewProps) {
       {receipts.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <Receipt className="w-12 h-12 mx-auto mb-4 text-slate-400" />
+            <Receipt className="w-12 h-12 mx-auto mb-4 text-muted-foreground/60" />
             <h3 className="text-lg font-semibold mb-2">No receipts yet</h3>
-            <p className="text-slate-600 dark:text-slate-400">
+            <p className="text-muted-foreground">
               Receipts will appear here once created.
             </p>
           </CardContent>
@@ -164,12 +164,12 @@ export function ReceiptsHashView({ limit = 50 }: ReceiptsHashViewProps) {
               <CardContent>
                 <div className="space-y-4">
                   {/* Hash Chain */}
-                  <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg space-y-2">
+                  <div className="p-4 bg-muted/10 rounded-lg space-y-2">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Receipt Hash</p>
+                        <p className="text-sm text-muted-foreground mb-1">Receipt Hash</p>
                         <div className="flex items-center gap-2">
-                          <code className="text-xs font-mono bg-white dark:bg-slate-800 px-2 py-1 rounded">
+                          <code className="text-xs font-mono bg-white dark:bg-card/80 px-2 py-1 rounded">
                             {formatHash(receipt.hash)}
                           </code>
                           <Button
@@ -183,9 +183,9 @@ export function ReceiptsHashView({ limit = 50 }: ReceiptsHashViewProps) {
                       </div>
                       {receipt.prevHash && (
                         <div>
-                          <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Previous Hash</p>
+                          <p className="text-sm text-muted-foreground mb-1">Previous Hash</p>
                           <div className="flex items-center gap-2">
-                            <code className="text-xs font-mono bg-white dark:bg-slate-800 px-2 py-1 rounded">
+                            <code className="text-xs font-mono bg-white dark:bg-card/80 px-2 py-1 rounded">
                               {formatHash(receipt.prevHash)}
                             </code>
                             <Button
@@ -286,7 +286,7 @@ export function ReceiptsHashView({ limit = 50 }: ReceiptsHashViewProps) {
                   )}
 
                   {/* Metadata */}
-                  <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
                     <span>Created: {new Date(receipt.createdAt).toLocaleString()}</span>
                     {receipt.sourceId && <span>Source: {receipt.sourceId}</span>}
                   </div>
@@ -311,7 +311,7 @@ export function ReceiptsHashView({ limit = 50 }: ReceiptsHashViewProps) {
               {/* Narrative */}
               <div>
                 <p className="text-sm font-medium mb-2">Why This Matters</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-muted-foreground">
                   {selectedReceipt.narrative.whyItMatters}
                 </p>
               </div>
@@ -319,7 +319,7 @@ export function ReceiptsHashView({ limit = 50 }: ReceiptsHashViewProps) {
               {selectedReceipt.narrative.nextSteps && (
                 <div>
                   <p className="text-sm font-medium mb-2">Next Steps</p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <p className="text-sm text-muted-foreground">
                     {selectedReceipt.narrative.nextSteps}
                   </p>
                 </div>
@@ -328,7 +328,7 @@ export function ReceiptsHashView({ limit = 50 }: ReceiptsHashViewProps) {
               {/* Canonical JSON */}
               <div>
                 <p className="text-sm font-medium mb-2">Canonical JSON</p>
-                <pre className="text-xs bg-slate-50 dark:bg-slate-900 p-4 rounded-lg overflow-x-auto">
+                <pre className="text-xs bg-muted/10 p-4 rounded-lg overflow-x-auto">
                   {JSON.stringify(selectedReceipt.canonicalJson, null, 2)}
                 </pre>
               </div>
@@ -338,15 +338,15 @@ export function ReceiptsHashView({ limit = 50 }: ReceiptsHashViewProps) {
                 <p className="text-sm font-medium mb-2">Hash Chain</p>
                 <div className="space-y-2">
                   <div>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Current Hash</p>
-                    <code className="text-xs font-mono bg-slate-50 dark:bg-slate-900 px-2 py-1 rounded block break-all">
+                    <p className="text-xs text-muted-foreground mb-1">Current Hash</p>
+                    <code className="text-xs font-mono bg-muted/10 px-2 py-1 rounded block break-all">
                       {selectedReceipt.hash}
                     </code>
                   </div>
                   {selectedReceipt.prevHash && (
                     <div>
-                      <p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Previous Hash</p>
-                      <code className="text-xs font-mono bg-slate-50 dark:bg-slate-900 px-2 py-1 rounded block break-all">
+                      <p className="text-xs text-muted-foreground mb-1">Previous Hash</p>
+                      <code className="text-xs font-mono bg-muted/10 px-2 py-1 rounded block break-all">
                         {selectedReceipt.prevHash}
                       </code>
                     </div>

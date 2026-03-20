@@ -124,7 +124,7 @@ export function FeatureFlagsPolicy() {
       <Card>
         <CardContent className="py-12 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-slate-600 dark:text-slate-400">Loading feature flags...</p>
+          <p className="mt-4 text-muted-foreground">Loading feature flags...</p>
         </CardContent>
       </Card>
     );
@@ -158,10 +158,10 @@ export function FeatureFlagsPolicy() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+          <h2 className="text-2xl font-bold text-foreground mb-2">
             Feature Flags
           </h2>
-          <p className="text-slate-600 dark:text-slate-400">
+          <p className="text-muted-foreground">
             Manage business policy controls (alert thresholds, sensitivity, export permissions).
           </p>
         </div>
@@ -203,7 +203,7 @@ export function FeatureFlagsPolicy() {
                           </Badge>
                         )}
                       </div>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                      <p className="text-sm text-muted-foreground mb-4">
                         {flagDef.description}
                       </p>
 
@@ -234,7 +234,7 @@ export function FeatureFlagsPolicy() {
                             className="w-48"
                           />
                           {flagDef.validation && (
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-muted-foreground">
                               Range: {flagDef.validation.min ?? '0'} - {flagDef.validation.max ?? '∞'}
                             </p>
                           )}
@@ -316,8 +316,8 @@ export function FeatureFlagsPolicy() {
       {tenantFlags.length === 0 && (
         <Card>
           <CardContent className="py-12 text-center">
-            <CheckCircle2 className="w-12 h-12 mx-auto mb-4 text-slate-400" />
-            <p className="text-slate-600 dark:text-slate-400">No feature flags configured</p>
+            <CheckCircle2 className="w-12 h-12 mx-auto mb-4 text-muted-foreground/60" />
+            <p className="text-muted-foreground">No feature flags configured</p>
           </CardContent>
         </Card>
       )}

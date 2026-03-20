@@ -16,17 +16,17 @@ export default function IntegrationsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-gradient-to-br from-background to-white dark:from-background dark:to-card">
       <Navigation />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 className="text-4xl font-bold mb-6 text-slate-900 dark:text-white">Integrations</h1>
-        <p className="text-lg text-slate-600 dark:text-slate-400 mb-12">
+        <h1 className="text-4xl font-bold mb-6 text-foreground">Integrations</h1>
+        <p className="text-lg text-muted-foreground mb-12">
           Connect Settler with your favorite platforms using pre-built adapters.
         </p>
 
         {/* Integration Guides */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white">
+          <h2 className="text-2xl font-bold mb-6 text-foreground">
             Integration Guides
           </h2>
           <div className="grid md:grid-cols-2 gap-4">
@@ -34,17 +34,17 @@ export default function IntegrationsPage() {
               <Link
                 key={integration.name}
                 href={integration.href}
-                className="block p-6 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors"
+                className="block p-6 bg-white dark:bg-card/80 rounded-lg border border-border/40 dark:border-border hover:border-blue-500 dark:hover:border-blue-500 transition-colors"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
+                  <h3 className="text-xl font-semibold text-foreground">
                     {integration.name}
                   </h3>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                  <span className="text-xs text-muted-foreground">
                     {integration.category}
                   </span>
                 </div>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-muted-foreground">
                   View integration guide →
                 </p>
               </Link>

@@ -67,13 +67,13 @@ const IntegrationList: React.FC = () => {
               </button>
             </div>
             <div className="mb-4 grid grid-cols-2 gap-3">
-              <div className="rounded-lg border border-slate-100 bg-muted/20 p-3">
+              <div className="rounded-lg border border-border/30 bg-muted/20 p-3">
                 <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   Expires
                 </p>
                 <p className="text-sm font-semibold text-foreground">28 days</p>
               </div>
-              <div className="rounded-lg border border-slate-100 bg-muted/20 p-3">
+              <div className="rounded-lg border border-border/30 bg-muted/20 p-3">
                 <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   Privilege
                 </p>
@@ -94,7 +94,7 @@ const IntegrationList: React.FC = () => {
               </button>
             </div>
           </div>
-          <div className="border-t border-slate-100 bg-muted/20/50">
+          <div className="border-t border-border/30 bg-muted/20/50">
             <details className="group/accordion">
               <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-3 transition-colors hover:bg-muted/20">
                 <span className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
@@ -107,7 +107,7 @@ const IntegrationList: React.FC = () => {
                   aria-hidden="true"
                 />
               </summary>
-              <div className="space-y-2 border-t border-slate-100 bg-card px-5 pb-4 pt-3">
+              <div className="space-y-2 border-t border-border/30 bg-card px-5 pb-4 pt-3">
                 {githubActivity.map(({ ts, status, variant }) => (
                   <div
                     key={ts}
@@ -162,13 +162,13 @@ const IntegrationList: React.FC = () => {
               </button>
             </div>
             <div className="mb-4 grid grid-cols-2 gap-3">
-              <div className="rounded-lg border border-slate-100 bg-muted/20 p-3">
+              <div className="rounded-lg border border-border/30 bg-muted/20 p-3">
                 <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   Expires
                 </p>
                 <p className="text-sm font-semibold text-foreground">Never</p>
               </div>
-              <div className="rounded-lg border border-slate-100 bg-muted/20 p-3">
+              <div className="rounded-lg border border-border/30 bg-muted/20 p-3">
                 <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   Privilege
                 </p>

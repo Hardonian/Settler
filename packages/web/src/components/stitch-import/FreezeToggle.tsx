@@ -32,14 +32,14 @@ const FreezeToggle: React.FC = () => {
 
   return (
     <>
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="rounded-xl border border-border/40 bg-white p-4 shadow-sm">
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <Lock className="h-5 w-5 text-red-500" aria-hidden="true" />
-              <h2 className="text-base font-bold text-slate-900">Freeze System</h2>
+              <h2 className="text-base font-bold text-foreground">Freeze System</h2>
             </div>
-            <p className="text-sm leading-relaxed text-slate-500">
+            <p className="text-sm leading-relaxed text-muted-foreground">
               Switch to Read-Only Mode for emergency safety. All write operations will be blocked.
             </p>
           </div>
@@ -62,12 +62,12 @@ const FreezeToggle: React.FC = () => {
                 "h-6 w-11 rounded-full transition-colors duration-200 peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2",
                 frozen
                   ? "bg-red-500"
-                  : "bg-slate-200 dark:bg-slate-700",
+                  : "bg-border dark:bg-border",
               ].join(" ")}
             />
             <div
               className={[
-                "absolute left-[2px] top-[2px] h-5 w-5 rounded-full border border-slate-300 bg-white shadow transition-transform duration-200",
+                "absolute left-[2px] top-[2px] h-5 w-5 rounded-full border border-border/60 bg-white shadow transition-transform duration-200",
                 frozen ? "translate-x-5 border-red-300" : "",
               ].join(" ")}
             />
@@ -106,7 +106,7 @@ const FreezeToggle: React.FC = () => {
           <DialogFooter>
             <button
               onClick={() => setConfirming(false)}
-              className="rounded-md border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+              className="rounded-md border border-border/40 px-4 py-2 text-sm font-medium text-foreground/80 hover:bg-muted/10 transition-colors"
             >
               Cancel
             </button>

@@ -83,7 +83,7 @@ export function IntegrationUpgradeFlow({
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground/60" />
           </div>
         </CardContent>
       </Card>
@@ -106,7 +106,7 @@ export function IntegrationUpgradeFlow({
     return (
       <Card>
         <CardContent className="pt-6">
-          <div className="text-center py-8 text-slate-600 dark:text-slate-400">
+          <div className="text-center py-8 text-muted-foreground">
             Integration version details are currently unavailable.
           </div>
         </CardContent>
@@ -120,7 +120,7 @@ export function IntegrationUpgradeFlow({
         <CardContent className="pt-6">
           <div className="text-center py-8">
             <CheckCircle2 className="w-12 h-12 text-green-600 mx-auto mb-4" />
-            <p className="text-slate-600 dark:text-slate-400">
+            <p className="text-muted-foreground">
               Your integration is up to date (v{currentVersion})
             </p>
           </div>
@@ -170,8 +170,8 @@ export function IntegrationUpgradeFlow({
         )}
 
         <div>
-          <h4 className="font-semibold text-slate-900 dark:text-white mb-2">What&apos;s New:</h4>
-          <ul className="list-disc list-inside space-y-1 text-sm text-slate-600 dark:text-slate-400">
+          <h4 className="font-semibold text-foreground mb-2">What&apos;s New:</h4>
+          <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
             {version.changelog.map((item, index) => (
               <li key={index}>{item}</li>
             ))}

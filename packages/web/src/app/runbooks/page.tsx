@@ -162,7 +162,7 @@ export default function Runbooks() {
               return (
                 <Card
                   key={runbook.id}
-                  className="h-full cursor-pointer bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 transition-all duration-200 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700"
+                  className="h-full cursor-pointer bg-white dark:bg-card border-border/40 dark:border-border transition-all duration-200 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700"
                   onClick={() => setSelectedRunbook(runbook.id)}
                 >
                   <div className="flex flex-col h-full">
@@ -174,10 +174,10 @@ export default function Runbooks() {
                         {runbook.severity}
                       </Badge>
                     </div>
-                    <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">
+                    <h3 className="text-lg font-semibold mb-2 text-foreground">
                       {runbook.title}
                     </h3>
-                    <p className="text-slate-600 dark:text-slate-400 mb-4 flex-grow text-sm leading-relaxed">
+                    <p className="text-muted-foreground mb-4 flex-grow text-sm leading-relaxed">
                       {runbook.description}
                     </p>
                     <div className="flex flex-wrap gap-2 mb-2">
@@ -189,7 +189,7 @@ export default function Runbooks() {
                     </div>
                     <Button
                       variant="ghost"
-                      className="w-full text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                      className="w-full text-muted-foreground hover:bg-muted/30 dark:hover:bg-card/80"
                       onClick={(e) => {
                         e.stopPropagation();
                         setSelectedRunbook(runbook.id);
@@ -212,7 +212,7 @@ export default function Runbooks() {
           onClick={() => setSelectedRunbook(null)}
         >
           <Card
-            className="max-w-3xl w-full max-h-[90vh] overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl"
+            className="max-w-3xl w-full max-h-[90vh] overflow-y-auto bg-white dark:bg-card border border-border/40 dark:border-border shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <CardHeader>
@@ -223,10 +223,10 @@ export default function Runbooks() {
                       {selectedRunbookData.severity}
                     </Badge>
                   </div>
-                  <CardTitle className="text-2xl text-slate-900 dark:text-white mb-2">
+                  <CardTitle className="text-2xl text-foreground mb-2">
                     {selectedRunbookData.title}
                   </CardTitle>
-                  <CardDescription className="text-slate-600 dark:text-slate-300">
+                  <CardDescription className="text-muted-foreground">
                     {selectedRunbookData.description}
                   </CardDescription>
                 </div>
@@ -242,23 +242,23 @@ export default function Runbooks() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <h4 className="font-semibold text-slate-900 dark:text-white mb-4">Steps</h4>
-                <ol className="list-decimal list-inside space-y-3 text-slate-600 dark:text-slate-400">
+                <h4 className="font-semibold text-foreground mb-4">Steps</h4>
+                <ol className="list-decimal list-inside space-y-3 text-muted-foreground">
                   {selectedRunbookData.steps.map((step, idx) => (
                     <li key={idx} className="text-sm">{step}</li>
                   ))}
                 </ol>
               </div>
-              <div className="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+              <div className="flex gap-3 pt-4 border-t border-border/40 dark:border-border">
                 <Button
                   asChild
-                  className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100"
+                  className="bg-card dark:bg-white text-white dark:text-foreground hover:bg-card/80 dark:hover:bg-muted/30"
                 >
                   <Link href="/console">Open Console</Link>
                 </Button>
                 <Button
                   variant="outline"
-                  className="border-slate-300 dark:border-slate-700"
+                  className="border-border"
                   asChild
                 >
                   <Link href="/docs">View Docs</Link>
@@ -270,12 +270,12 @@ export default function Runbooks() {
       )}
 
       {/* CTA Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-800">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-border/40 dark:border-border">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl font-semibold mb-3 text-slate-900 dark:text-white">
+          <h2 className="text-2xl font-semibold mb-3 text-foreground">
             Need help with operations?
           </h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
+          <p className="text-muted-foreground mb-6">
             Access the Developer Console for advanced monitoring and management tools.
           </p>
           <div className="flex gap-3 justify-center">
@@ -289,7 +289,7 @@ export default function Runbooks() {
             <Button
               variant="outline"
               size="lg"
-              className="border-slate-300 dark:border-slate-700"
+              className="border-border"
               asChild
             >
               <Link href="/support">Get Support</Link>

@@ -88,7 +88,7 @@ export function ExecutiveDashboard() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-slate-600 dark:text-slate-400">
+          <p className="text-muted-foreground">
             {error || 'Failed to load metrics'}
           </p>
         </CardContent>
@@ -120,11 +120,11 @@ export function ExecutiveDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-slate-500" />
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatNumber(metrics.totalUsers)}</div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               {formatNumber(metrics.activeUsers)} active
             </p>
           </CardContent>
@@ -133,11 +133,11 @@ export function ExecutiveDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">MRR</CardTitle>
-            <DollarSign className="h-4 w-4 text-slate-500" />
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(metrics.mrr)}</div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               ARR: {formatCurrency(metrics.arr)}
             </p>
           </CardContent>
@@ -146,11 +146,11 @@ export function ExecutiveDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Paid Users</CardTitle>
-            <Target className="h-4 w-4 text-slate-500" />
+            <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatNumber(metrics.paidUsers)}</div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               {formatPercent(metrics.conversionRate)} conversion
             </p>
           </CardContent>
@@ -159,11 +159,11 @@ export function ExecutiveDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">New Users</CardTitle>
-            <TrendingUp className="h-4 w-4 text-slate-500" />
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatNumber(metrics.newUsers)}</div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               Last 7 days
             </p>
           </CardContent>
@@ -220,14 +220,14 @@ export function ExecutiveDashboard() {
             }`}>
               {formatPercent(metrics.userGrowthRate)}
             </div>
-            <p className="text-xs text-slate-500">Month-over-month</p>
+            <p className="text-xs text-muted-foreground">Month-over-month</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Churn Rate</CardTitle>
-            <AlertCircle className="h-4 w-4 text-slate-500" />
+            <AlertCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className={`text-2xl font-bold ${
@@ -235,29 +235,29 @@ export function ExecutiveDashboard() {
             }`}>
               {formatPercent(metrics.churnRate)}
             </div>
-            <p className="text-xs text-slate-500">Last 30 days</p>
+            <p className="text-xs text-muted-foreground">Last 30 days</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">ARPU</CardTitle>
-            <DollarSign className="h-4 w-4 text-slate-500" />
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(metrics.averageRevenuePerUser)}</div>
-            <p className="text-xs text-slate-500">Average per user</p>
+            <p className="text-xs text-muted-foreground">Average per user</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Session Duration</CardTitle>
-            <Activity className="h-4 w-4 text-slate-500" />
+            <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatNumber(metrics.averageSessionDuration)}</div>
-            <p className="text-xs text-slate-500">Average minutes</p>
+            <p className="text-xs text-muted-foreground">Average minutes</p>
           </CardContent>
         </Card>
       </div>

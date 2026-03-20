@@ -236,8 +236,8 @@ export default function JobForgeAdminPage() {
   return (
     <div className="space-y-6 p-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">JobForge Admin</h1>
-        <p className="text-sm text-slate-600 dark:text-slate-300">
+        <h1 className="text-2xl font-semibold text-foreground">JobForge Admin</h1>
+        <p className="text-sm text-muted-foreground">
           Run JobForge operations with explicit tenant and project mapping. No operations execute
           unless the integration is enabled.
         </p>
@@ -252,7 +252,7 @@ export default function JobForgeAdminPage() {
             </Badge>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+        <CardContent className="space-y-2 text-sm text-muted-foreground">
           {statusError && <p className="text-red-500">{statusError}</p>}
           <p>JobForge Enabled: {status.enabled ? 'Yes' : 'No'}</p>
           <p>Ready: {status.ready ? 'Yes' : 'No'}</p>
@@ -271,7 +271,7 @@ export default function JobForgeAdminPage() {
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
+            <label className="text-sm font-medium text-muted-foreground">
               Tenant ID
             </label>
             <Input
@@ -281,7 +281,7 @@ export default function JobForgeAdminPage() {
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
+            <label className="text-sm font-medium text-muted-foreground">
               Project ID
             </label>
             <Input
@@ -316,7 +316,7 @@ export default function JobForgeAdminPage() {
             >
               Submit Event
             </Button>
-            {eventResult && <p className="text-sm text-slate-600 dark:text-slate-300">{eventResult}</p>}
+            {eventResult && <p className="text-sm text-muted-foreground">{eventResult}</p>}
           </CardContent>
         </Card>
 
@@ -343,7 +343,7 @@ export default function JobForgeAdminPage() {
               Run Dry-Run
             </Button>
             {moduleResult && (
-              <p className="text-sm text-slate-600 dark:text-slate-300">{moduleResult}</p>
+              <p className="text-sm text-muted-foreground">{moduleResult}</p>
             )}
           </CardContent>
         </Card>
@@ -368,7 +368,7 @@ export default function JobForgeAdminPage() {
             </Button>
             {reportError && <p className="text-sm text-red-500">{reportError}</p>}
             {reportResult && (
-              <pre className="text-xs bg-slate-100 dark:bg-slate-900 p-3 rounded overflow-auto">
+              <pre className="text-xs bg-muted/30 p-3 rounded overflow-auto">
                 {JSON.stringify(reportResult, null, 2)}
               </pre>
             )}
@@ -393,7 +393,7 @@ export default function JobForgeAdminPage() {
                 onChange={(event) => setBundleConfirm(event.target.checked)}
                 className="h-4 w-4"
               />
-              <label htmlFor="bundle-confirm" className="text-sm text-slate-600 dark:text-slate-300">
+              <label htmlFor="bundle-confirm" className="text-sm text-muted-foreground">
                 Confirm bundle execution request
               </label>
             </div>
@@ -415,7 +415,7 @@ export default function JobForgeAdminPage() {
               </p>
             )}
             {bundleResult && (
-              <p className="text-sm text-slate-600 dark:text-slate-300">{bundleResult}</p>
+              <p className="text-sm text-muted-foreground">{bundleResult}</p>
             )}
           </CardContent>
         </Card>

@@ -82,7 +82,7 @@ export default function NewEdgeNodePage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
-      <Link href="/edge-ai/nodes" className="flex items-center gap-2 text-slate-600 mb-6">
+      <Link href="/edge-ai/nodes" className="flex items-center gap-2 text-muted-foreground mb-6">
         <ArrowLeft className="w-4 h-4" />
         Back to Nodes
       </Link>
@@ -148,7 +148,7 @@ export default function NewEdgeNodePage() {
                     placeholder="Enter enrollment key from Settler dashboard"
                     required
                   />
-                  <p className="text-sm text-slate-500 mt-2">
+                  <p className="text-sm text-muted-foreground mt-2">
                     Get your enrollment key from the Edge Nodes page
                   </p>
                 </div>

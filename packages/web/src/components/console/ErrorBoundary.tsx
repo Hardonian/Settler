@@ -63,11 +63,11 @@ export class ConsoleErrorBoundary extends Component<Props, State> {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4">
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+              <div className="bg-muted/10 rounded-lg p-4">
+                <p className="text-sm text-muted-foreground mb-2">
                   This might be due to:
                 </p>
-                <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 list-disc list-inside">
+                <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
                   <li>Database connection issues</li>
                   <li>Missing authentication</li>
                   <li>Configuration problems</li>

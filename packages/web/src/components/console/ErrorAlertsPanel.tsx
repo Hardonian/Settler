@@ -63,8 +63,8 @@ export function ErrorAlertsPanel() {
       <Card>
         <CardContent className="py-8">
           <div className="animate-pulse space-y-2">
-            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
-            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+            <div className="h-4 bg-border dark:bg-border rounded w-3/4"></div>
+            <div className="h-4 bg-border dark:bg-border rounded w-1/2"></div>
           </div>
         </CardContent>
       </Card>
@@ -79,7 +79,7 @@ export function ErrorAlertsPanel() {
           <CardDescription>Active error alerts and warnings</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+          <div className="text-center py-8 text-muted-foreground">
             <Info className="w-12 h-12 mx-auto mb-2 opacity-50" />
             <p>No active alerts</p>
             <p className="text-sm mt-1">All systems operating normally</p>
@@ -162,15 +162,15 @@ export function ErrorAlertsPanel() {
                       <p className="font-semibold">{alert.message}</p>
                       {getSeverityBadge(alert.severity)}
                     </div>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+                    <p className="text-sm text-muted-foreground mb-2">
                       {format(new Date(alert.timestamp), "PPp")}
                     </p>
                     {alert.details && Object.keys(alert.details).length > 0 && (
                       <details className="text-sm">
-                        <summary className="cursor-pointer text-slate-600 dark:text-slate-400">
+                        <summary className="cursor-pointer text-muted-foreground">
                           View details
                         </summary>
-                        <pre className="mt-2 p-2 bg-slate-100 dark:bg-slate-800 rounded text-xs overflow-auto">
+                        <pre className="mt-2 p-2 bg-muted/40 rounded text-xs overflow-auto">
                           {JSON.stringify(alert.details, null, 2)}
                         </pre>
                       </details>

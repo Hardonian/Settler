@@ -134,7 +134,7 @@ export function ApiLogsViewer() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-electric-cyan mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-400">Loading API logs...</p>
+          <p className="text-muted-foreground">Loading API logs...</p>
         </div>
       </div>
     );
@@ -256,13 +256,13 @@ export function ApiLogsViewer() {
               <tbody>
                 {logs.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="text-center p-8 text-slate-500">
+                    <td colSpan={6} className="text-center p-8 text-muted-foreground">
                       No API logs found
                     </td>
                   </tr>
                 ) : (
                   logs.map((log) => (
-                    <tr key={log.id} className="border-b hover:bg-slate-50 dark:hover:bg-slate-900">
+                    <tr key={log.id} className="border-b hover:bg-muted/10 dark:hover:bg-card">
                       <td className="p-2 font-mono text-xs">
                         {log.timestamp.toLocaleString()}
                       </td>

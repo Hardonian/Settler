@@ -100,7 +100,7 @@ const EvidenceViewer: React.FC = () => {
       </div>
       {/* Sheet Footer Actions */}
       <div className="p-5 border-t border-border dark:border-border bg-background-light dark:bg-surface-dark flex gap-3">
-        <button className="flex-1 py-3 px-4 rounded-lg bg-slate-200 dark:bg-muted text-foreground dark:text-white font-semibold text-sm hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
+        <button className="flex-1 py-3 px-4 rounded-lg bg-border dark:bg-muted text-foreground dark:text-white font-semibold text-sm hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
           Ignore Mismatch
         </button>
         <button className="flex-1 py-3 px-4 rounded-lg bg-primary text-white font-semibold text-sm hover:bg-blue-600 transition-colors shadow-lg shadow-primary/25">

@@ -54,7 +54,7 @@ export default function DocsSdkPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+    <div className="min-h-screen bg-gradient-to-br from-background via-blue-50 to-indigo-50 dark:from-background dark:via-card dark:to-black">
       <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
@@ -64,10 +64,10 @@ export default function DocsSdkPage() {
         ]} />
 
         <div className="mt-8 mb-12">
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-foreground mb-4">
             SDK Documentation
           </h1>
-          <p className="text-xl text-slate-600 dark:text-slate-400 mb-8">
+          <p className="text-xl text-muted-foreground mb-8">
             Choose your language and get started with Settler in minutes. All SDKs are production-ready with automatic retries, error handling, and full API coverage.
           </p>
         </div>
@@ -97,7 +97,7 @@ export default function DocsSdkPage() {
                     <h3 className="font-semibold mb-2">Features</h3>
                     <ul className="space-y-1">
                       {sdk.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                        <li key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
                           <CheckCircle2 className="w-4 h-4 text-green-600" />
                           {feature}
                         </li>
@@ -106,7 +106,7 @@ export default function DocsSdkPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold mb-2">Installation</h3>
-                    <code className="block p-2 bg-slate-100 dark:bg-slate-800 rounded text-sm overflow-x-auto whitespace-nowrap">
+                    <code className="block p-2 bg-muted/40 rounded text-sm overflow-x-auto whitespace-nowrap">
                       {sdk.install}
                     </code>
                   </div>

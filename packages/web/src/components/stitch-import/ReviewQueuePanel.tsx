@@ -154,7 +154,7 @@ export function ReviewQueuePanel() {
         </div>
 
         <Card className="overflow-hidden border-border dark:border-border shadow-sm font-medium">
-          <div className="grid grid-cols-2 divide-x divide-slate-100 dark:divide-slate-800 bg-muted/20 dark:bg-background border-b border-slate-100 dark:border-border">
+          <div className="grid grid-cols-2 divide-x divide-border/30 dark:divide-border bg-muted/20 dark:bg-background border-b border-border/30 dark:border-border">
             <div className="p-4 text-center">
               <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
                 Source A (ERP)
@@ -167,8 +167,8 @@ export function ReviewQueuePanel() {
             </div>
           </div>
 
-          <div className="divide-y divide-slate-50 dark:divide-slate-800">
-            <div className="grid grid-cols-2 divide-x divide-slate-50 dark:divide-slate-800 hover:bg-muted/20/50 transition-colors">
+          <div className="divide-y divide-slate-50 dark:divide-border">
+            <div className="grid grid-cols-2 divide-x divide-slate-50 dark:divide-border hover:bg-muted/20/50 transition-colors">
               <div className="p-4">
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
                   Transaction ID
@@ -183,7 +183,7 @@ export function ReviewQueuePanel() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 divide-x divide-slate-50 dark:divide-slate-800 bg-red-50/10 relative">
+            <div className="grid grid-cols-2 divide-x divide-slate-50 dark:divide-border bg-red-50/10 relative">
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-600" />
               <div className="p-4">
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
@@ -204,7 +204,7 @@ export function ReviewQueuePanel() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 divide-x divide-slate-50 dark:divide-slate-800 hover:bg-muted/20/50 transition-colors">
+            <div className="grid grid-cols-2 divide-x divide-slate-50 dark:divide-border hover:bg-muted/20/50 transition-colors">
               <div className="p-4">
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
                   Currency

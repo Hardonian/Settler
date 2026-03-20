@@ -220,6 +220,82 @@ export async function getDashboardStats() {
   }
 }
 
+/**
+ * Returns daily run counts for the last `days` days, oldest-first.
+ * Used to power sparklines on the runs dashboard.
+ * Returns an empty array if the tenant has no runs or data is unavailable.
+ */
+export async function getRunsSparklineData(
+  tenantId: string,
+  days = 14
+): Promise<number[]> {
+  if (!tenantId || tenantId === "—") return [];
+
+  const since = new Date();
+  since.setDate(since.getDate() - days + 1);
+  since.setHours(0, 0, 0, 0);
+
+  try {
+    const runs = await prisma.reconJob.findMany({
+      where: { tenantId, deletedAt: null, createdAt: { gte: since } },
+      select: { createdAt: true },
+      orderBy: { createdAt: "asc" },
+    });
+
+    // Build a zeroed map keyed by ISO date string, then fill
+    const dayMap = new Map<string, number>();
+    for (let i = 0; i < days; i++) {
+      const d = new Date(since);
+      d.setDate(d.getDate() + i);
+      dayMap.set(d.toISOString().slice(0, 10), 0);
+    }
+    for (const run of runs) {
+      const key = run.createdAt.toISOString().slice(0, 10);
+      dayMap.set(key, (dayMap.get(key) ?? 0) + 1);
+    }
+    return Array.from(dayMap.values());
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Computes real aggregate stats for the runs page header cards.
+ * Returns null if the tenant has no data.
+ */
+export async function getRunsPageStats(tenantId: string) {
+  if (!tenantId || tenantId === "—") return null;
+
+  try {
+    const [totalRuns, results] = await Promise.all([
+      prisma.reconJob.count({ where: { tenantId, deletedAt: null } }),
+      prisma.reconResult.findMany({
+        where: { tenantId },
+        select: {
+          matchedCount: true,
+          sourceCount: true,
+          targetCount: true,
+        },
+        orderBy: { startedAt: "desc" },
+        take: 200,
+      }),
+    ]);
+
+    const totalMatched = results.reduce((s, r) => s + (r.matchedCount ?? 0), 0);
+    const totalRecords = results.reduce(
+      (s, r) => s + (r.sourceCount ?? 0) + (r.targetCount ?? 0),
+      0
+    );
+    // Confidence = matched / total half-records (each record has source + target)
+    const avgConfidence =
+      totalRecords > 0 ? totalMatched / (totalRecords / 2) : null;
+
+    return { totalRuns, totalMatched, avgConfidence };
+  } catch {
+    return null;
+  }
+}
+
 export async function getRunReplay(tenantId: string, runId: string) {
   if (!tenantId || tenantId === "—" || !runId) return null;
   // Use the existing Replay Lab engine directly

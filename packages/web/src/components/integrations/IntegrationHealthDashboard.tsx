@@ -64,7 +64,7 @@ export function IntegrationHealthDashboard() {
       bg: "bg-amber-100 dark:bg-amber-900/30",
     },
     down: { icon: XCircle, color: "text-red-600", bg: "bg-red-100 dark:bg-red-900/30" },
-    unknown: { icon: Clock, color: "text-slate-600", bg: "bg-slate-100 dark:bg-slate-800" },
+    unknown: { icon: Clock, color: "text-muted-foreground", bg: "bg-muted/40" },
   };
 
   const overallHealth =
@@ -77,8 +77,8 @@ export function IntegrationHealthDashboard() {
       <Card>
         <CardContent className="pt-6">
           <div className="animate-pulse space-y-4">
-            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
-            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+            <div className="h-4 bg-border dark:bg-border rounded w-3/4"></div>
+            <div className="h-4 bg-border dark:bg-border rounded w-1/2"></div>
           </div>
         </CardContent>
       </Card>
@@ -109,10 +109,10 @@ export function IntegrationHealthDashboard() {
           <div className="space-y-4">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                <span className="text-sm font-medium text-muted-foreground">
                   Overall Health
                 </span>
-                <span className="text-sm font-bold text-slate-900 dark:text-white">
+                <span className="text-sm font-bold text-foreground">
                   {(overallHealth * 100).toFixed(0)}%
                 </span>
               </div>
@@ -123,25 +123,25 @@ export function IntegrationHealthDashboard() {
                 <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                   {integrations.filter((i: any) => i.status === "healthy").length}
                 </div>
-                <div className="text-xs text-slate-500 dark:text-slate-400">Healthy</div>
+                <div className="text-xs text-muted-foreground">Healthy</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">
                   {integrations.filter((i: any) => i.status === "degraded").length}
                 </div>
-                <div className="text-xs text-slate-500 dark:text-slate-400">Degraded</div>
+                <div className="text-xs text-muted-foreground">Degraded</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-red-600 dark:text-red-400">
                   {integrations.filter((i: any) => i.status === "down").length}
                 </div>
-                <div className="text-xs text-slate-500 dark:text-slate-400">Down</div>
+                <div className="text-xs text-muted-foreground">Down</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-slate-600 dark:text-slate-400">
+                <div className="text-2xl font-bold text-muted-foreground">
                   {integrations.filter((i: any) => i.status === "unknown").length}
                 </div>
-                <div className="text-xs text-slate-500 dark:text-slate-400">Unknown</div>
+                <div className="text-xs text-muted-foreground">Unknown</div>
               </div>
             </div>
           </div>
@@ -170,7 +170,7 @@ export function IntegrationHealthDashboard() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-600 dark:text-slate-400">Status:</span>
+                  <span className="text-muted-foreground">Status:</span>
                   <Badge
                     variant={
                       integration.status === "healthy"
@@ -188,25 +188,25 @@ export function IntegrationHealthDashboard() {
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-600 dark:text-slate-400">Success Rate:</span>
+                  <span className="text-muted-foreground">Success Rate:</span>
                   <span className="font-medium">{integration.successRate}%</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-600 dark:text-slate-400">Avg Response:</span>
+                  <span className="text-muted-foreground">Avg Response:</span>
                   <span className="font-medium">{integration.avgResponseTime}ms</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-600 dark:text-slate-400">Last Sync:</span>
+                  <span className="text-muted-foreground">Last Sync:</span>
                   <span className="font-medium">
                     {new Date(integration.lastSync).toLocaleString()}
                   </span>
                 </div>
                 {integration.warnings.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+                  <div className="mt-3 pt-3 border-t border-border/40 dark:border-border">
                     <div className="text-xs font-medium text-amber-600 dark:text-amber-400 mb-1">
                       Warnings:
                     </div>
-                    <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1">
+                    <ul className="text-xs text-muted-foreground space-y-1">
                       {integration.warnings.map((warning, index) => (
                         <li key={index}>• {warning}</li>
                       ))}

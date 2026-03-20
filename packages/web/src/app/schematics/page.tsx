@@ -137,7 +137,7 @@ export default function Schematics() {
               return (
                 <Card
                   key={schematic.id}
-                  className="h-full cursor-pointer bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 transition-all duration-200 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700"
+                  className="h-full cursor-pointer bg-white dark:bg-card border-border/40 dark:border-border transition-all duration-200 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700"
                   onClick={() => setSelectedSchematic(schematic.id)}
                 >
                   <div className="flex flex-col h-full">
@@ -147,10 +147,10 @@ export default function Schematics() {
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="outline">{schematic.category}</Badge>
                     </div>
-                    <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">
+                    <h3 className="text-lg font-semibold mb-2 text-foreground">
                       {schematic.title}
                     </h3>
-                    <p className="text-slate-600 dark:text-slate-400 mb-4 flex-grow text-sm leading-relaxed">
+                    <p className="text-muted-foreground mb-4 flex-grow text-sm leading-relaxed">
                       {schematic.description}
                     </p>
                     <div className="flex flex-wrap gap-2 mb-2">
@@ -162,7 +162,7 @@ export default function Schematics() {
                     </div>
                     <Button
                       variant="ghost"
-                      className="w-full text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                      className="w-full text-muted-foreground hover:bg-muted/30 dark:hover:bg-card/80"
                       onClick={(e) => {
                         e.stopPropagation();
                         setSelectedSchematic(schematic.id);
@@ -185,7 +185,7 @@ export default function Schematics() {
           onClick={() => setSelectedSchematic(null)}
         >
           <Card
-            className="max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl"
+            className="max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-white dark:bg-card border border-border/40 dark:border-border shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <CardHeader>
@@ -194,10 +194,10 @@ export default function Schematics() {
                   <div className="flex items-center gap-2 mb-2">
                     <Badge variant="outline">{selectedSchematicData.category}</Badge>
                   </div>
-                  <CardTitle className="text-2xl text-slate-900 dark:text-white mb-2">
+                  <CardTitle className="text-2xl text-foreground mb-2">
                     {selectedSchematicData.title}
                   </CardTitle>
-                  <CardDescription className="text-slate-600 dark:text-slate-300">
+                  <CardDescription className="text-muted-foreground">
                     {selectedSchematicData.description}
                   </CardDescription>
                 </div>
@@ -213,15 +213,15 @@ export default function Schematics() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <h4 className="font-semibold text-slate-900 dark:text-white mb-4">
+                <h4 className="font-semibold text-foreground mb-4">
                   Mermaid Diagram
                 </h4>
-                <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
-                  <pre className="text-xs font-mono text-slate-700 dark:text-slate-300 whitespace-pre-wrap overflow-x-auto">
+                <div className="bg-muted/20 p-4 rounded-lg border border-border/40 dark:border-border">
+                  <pre className="text-xs font-mono text-muted-foreground whitespace-pre-wrap overflow-x-auto">
                     {selectedSchematicData.mermaid}
                   </pre>
                 </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                <p className="text-xs text-muted-foreground mt-2">
                   Copy this Mermaid code to visualize in{" "}
                   <a
                     href="https://mermaid.live"
@@ -233,16 +233,16 @@ export default function Schematics() {
                   </a>
                 </p>
               </div>
-              <div className="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+              <div className="flex gap-3 pt-4 border-t border-border/40 dark:border-border">
                 <Button
                   asChild
-                  className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100"
+                  className="bg-card dark:bg-white text-white dark:text-foreground hover:bg-card/80 dark:hover:bg-muted/30"
                 >
                   <Link href="/console">Open Console</Link>
                 </Button>
                 <Button
                   variant="outline"
-                  className="border-slate-300 dark:border-slate-700"
+                  className="border-border"
                   asChild
                 >
                   <Link href="/cookbook">View Cookbooks</Link>
@@ -254,12 +254,12 @@ export default function Schematics() {
       )}
 
       {/* CTA Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-800">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-border/40 dark:border-border">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl font-semibold mb-3 text-slate-900 dark:text-white">
+          <h2 className="text-2xl font-semibold mb-3 text-foreground">
             Want to see more workflows?
           </h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
+          <p className="text-muted-foreground mb-6">
             Explore our cookbook for code examples and implementation guides.
           </p>
           <div className="flex gap-3 justify-center">
@@ -273,7 +273,7 @@ export default function Schematics() {
             <Button
               variant="outline"
               size="lg"
-              className="border-slate-300 dark:border-slate-700"
+              className="border-border"
               asChild
             >
               <Link href="/docs">Read Docs</Link>

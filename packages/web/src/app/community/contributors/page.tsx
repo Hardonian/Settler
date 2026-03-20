@@ -170,13 +170,13 @@ export default function ContributorsPage() {
               as="h2"
               id="contribution-types-heading"
               text="Ways to Contribute"
-              className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white"
+              className="text-3xl md:text-4xl font-bold mb-6 text-foreground"
               delay={0}
               staggerDelay={0.02}
             />
             <TextReveal
               text="Choose how you'd like to contribute to Settler"
-              className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto"
+              className="text-lg text-muted-foreground max-w-2xl mx-auto"
               delay={0.2}
               staggerDelay={0.01}
             />
@@ -206,7 +206,7 @@ export default function ContributorsPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                        <h3 className="text-xl font-bold text-foreground">
                           {type.title}
                         </h3>
                         {type.badge && (
@@ -215,7 +215,7 @@ export default function ContributorsPage() {
                           </Badge>
                         )}
                       </div>
-                      <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed">
+                      <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
                         {type.description}
                       </p>
                     </div>
@@ -258,19 +258,19 @@ export default function ContributorsPage() {
       </section>
 
       {/* How to Contribute Steps */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-background via-blue-50 to-indigo-50 dark:from-background dark:via-card dark:to-background">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <TextRevealHeading
               as="h2"
               text="Getting Started"
-              className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white"
+              className="text-3xl md:text-4xl font-bold mb-6 text-foreground"
               delay={0}
               staggerDelay={0.02}
             />
             <TextReveal
               text="Follow these steps to make your first contribution"
-              className="text-lg text-slate-600 dark:text-slate-400"
+              className="text-lg text-muted-foreground"
               delay={0.2}
               staggerDelay={0.01}
             />
@@ -293,10 +293,10 @@ export default function ContributorsPage() {
                       {way.step}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">
+                      <h3 className="text-xl font-bold mb-2 text-foreground">
                         {way.title}
                       </h3>
-                      <p className="text-slate-600 dark:text-slate-300 mb-4 leading-relaxed">
+                      <p className="text-muted-foreground mb-4 leading-relaxed">
                         {way.description}
                       </p>
                       <Button variant="outline" size="sm" asChild={!way.external}>
@@ -329,7 +329,7 @@ export default function ContributorsPage() {
             <TextRevealHeading
               as="h2"
               text="Our Community"
-              className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white"
+              className="text-3xl md:text-4xl font-bold mb-6 text-foreground"
               delay={0}
               staggerDelay={0.02}
             />
@@ -357,10 +357,10 @@ export default function ContributorsPage() {
                     <div className="w-12 h-12 mx-auto mb-3 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white">
                       <Icon className="w-6 h-6" />
                     </div>
-                    <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1">
+                    <div className="text-3xl font-bold text-foreground mb-1">
                       {stat.value}
                     </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-300">{stat.label}</div>
+                    <div className="text-sm text-muted-foreground">{stat.label}</div>
                   </SpotlightCard>
                 </div>
               );
@@ -377,10 +377,10 @@ export default function ContributorsPage() {
         <div className="max-w-4xl mx-auto relative z-10">
           <SpotlightCard className="p-10 text-center">
             <Heart className="w-12 h-12 mx-auto mb-4 text-red-500" />
-            <h2 className="text-3xl font-bold mb-4 text-slate-900 dark:text-white">
+            <h2 className="text-3xl font-bold mb-4 text-foreground">
               Ready to Contribute?
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-300 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
               Join our open source community and help build the future of financial reconciliation.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

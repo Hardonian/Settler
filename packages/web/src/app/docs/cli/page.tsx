@@ -26,7 +26,7 @@ export default function DocsCliPage() {
             CLI Documentation Content
           </h2>
 
-          <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 mb-8">
+          <Card className="bg-white dark:bg-card border-border/40 dark:border-border mb-8">
             <CardHeader>
               <CardTitle className="text-2xl mb-2">Installation</CardTitle>
               <CardDescription>Install the Settler CLI tool</CardDescription>
@@ -34,28 +34,28 @@ export default function DocsCliPage() {
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">npm</h3>
-                  <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-4 overflow-x-auto">
+                  <h3 className="text-lg font-semibold mb-2 text-foreground">npm</h3>
+                  <div className="bg-card dark:bg-card/80 rounded-lg p-4 overflow-x-auto">
                     <pre className="text-green-400 text-sm">
                       <code>npm install -g @settler/cli</code>
                     </pre>
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">
+                  <h3 className="text-lg font-semibold mb-2 text-foreground">
                     yarn
                   </h3>
-                  <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-4 overflow-x-auto">
+                  <div className="bg-card dark:bg-card/80 rounded-lg p-4 overflow-x-auto">
                     <pre className="text-green-400 text-sm">
                       <code>yarn global add @settler/cli</code>
                     </pre>
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">
+                  <h3 className="text-lg font-semibold mb-2 text-foreground">
                     pnpm
                   </h3>
-                  <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-4 overflow-x-auto">
+                  <div className="bg-card dark:bg-card/80 rounded-lg p-4 overflow-x-auto">
                     <pre className="text-green-400 text-sm">
                       <code>pnpm add -g @settler/cli</code>
                     </pre>
@@ -65,17 +65,17 @@ export default function DocsCliPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 mb-8">
+          <Card className="bg-white dark:bg-card border-border/40 dark:border-border mb-8">
             <CardHeader>
               <CardTitle className="text-2xl mb-2">Authentication</CardTitle>
               <CardDescription>Configure your API key</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <p className="text-slate-600 dark:text-slate-300">
+                <p className="text-muted-foreground">
                   Set your API key as an environment variable or use the configure command:
                 </p>
-                <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-4 overflow-x-auto">
+                <div className="bg-card dark:bg-card/80 rounded-lg p-4 overflow-x-auto">
                   <pre className="text-green-400 text-sm">
                     <code>{`export SETTLER_API_KEY=sk_...
 # Or
@@ -86,7 +86,7 @@ settler configure`}</code>
             </CardContent>
           </Card>
 
-          <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 mb-8">
+          <Card className="bg-white dark:bg-card border-border/40 dark:border-border mb-8">
             <CardHeader>
               <CardTitle className="text-2xl mb-2">Commands</CardTitle>
               <CardDescription>Available CLI commands</CardDescription>
@@ -98,14 +98,14 @@ settler configure`}</code>
                     <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
                       COMMAND
                     </Badge>
-                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                    <h3 className="text-lg font-semibold text-foreground">
                       settler jobs
                     </h3>
                   </div>
-                  <p className="text-slate-600 dark:text-slate-300 mb-2">
+                  <p className="text-muted-foreground mb-2">
                     Manage reconciliation jobs
                   </p>
-                  <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-4 overflow-x-auto">
+                  <div className="bg-card dark:bg-card/80 rounded-lg p-4 overflow-x-auto">
                     <pre className="text-green-400 text-sm">
                       <code>{`settler jobs list
 settler jobs create <config-file>
@@ -120,14 +120,14 @@ settler jobs run <job-id>`}</code>
                     <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
                       COMMAND
                     </Badge>
-                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                    <h3 className="text-lg font-semibold text-foreground">
                       settler reports
                     </h3>
                   </div>
-                  <p className="text-slate-600 dark:text-slate-300 mb-2">
+                  <p className="text-muted-foreground mb-2">
                     View reconciliation reports
                   </p>
-                  <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-4 overflow-x-auto">
+                  <div className="bg-card dark:bg-card/80 rounded-lg p-4 overflow-x-auto">
                     <pre className="text-green-400 text-sm">
                       <code>{`settler reports get <job-id>
 settler reports export <job-id> --format json`}</code>
@@ -140,12 +140,12 @@ settler reports export <job-id> --format json`}</code>
                     <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
                       COMMAND
                     </Badge>
-                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                    <h3 className="text-lg font-semibold text-foreground">
                       settler adapters
                     </h3>
                   </div>
-                  <p className="text-slate-600 dark:text-slate-300 mb-2">List available adapters</p>
-                  <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-4 overflow-x-auto">
+                  <p className="text-muted-foreground mb-2">List available adapters</p>
+                  <div className="bg-card dark:bg-card/80 rounded-lg p-4 overflow-x-auto">
                     <pre className="text-green-400 text-sm">
                       <code>settler adapters list</code>
                     </pre>
@@ -157,14 +157,14 @@ settler reports export <job-id> --format json`}</code>
                     <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
                       COMMAND
                     </Badge>
-                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                    <h3 className="text-lg font-semibold text-foreground">
                       settler webhooks
                     </h3>
                   </div>
-                  <p className="text-slate-600 dark:text-slate-300 mb-2">
+                  <p className="text-muted-foreground mb-2">
                     Manage webhook subscriptions
                   </p>
-                  <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-4 overflow-x-auto">
+                  <div className="bg-card dark:bg-card/80 rounded-lg p-4 overflow-x-auto">
                     <pre className="text-green-400 text-sm">
                       <code>{`settler webhooks list
 settler webhooks create <url>

@@ -39,7 +39,7 @@ export default function NewPage() {
             <ArrowLeft size={16} className="mr-2" /> Back to Pages
           </Button>
         </Link>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Create New Page</h1>
+        <h1 className="text-3xl font-bold text-foreground">Create New Page</h1>
       </div>
 
       <Card>
@@ -57,7 +57,7 @@ export default function NewPage() {
             <div className="space-y-2">
               <Label htmlFor="slug">URL Slug</Label>
               <Input id="slug" name="slug" placeholder="e.g. about-us" required />
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 The URL path where this page will be accessible.
               </p>
             </div>

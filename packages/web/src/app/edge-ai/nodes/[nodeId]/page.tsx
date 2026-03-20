@@ -79,7 +79,7 @@ export default function NodeDetailPage() {
   const getStatusBadge = (status: NodeDetail["status"]) => {
     const variants = {
       active: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-      inactive: "bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400",
+      inactive: "bg-muted/30 text-foreground/80 dark:bg-card/30 dark:text-muted-foreground/60",
       error: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
     };
     return variants[status];
@@ -87,13 +87,13 @@ export default function NodeDetailPage() {
 
   if (!nodeId) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+      <div className="min-h-screen bg-gradient-to-br from-background via-blue-50 to-indigo-50 dark:from-background dark:via-card dark:to-black">
         <Navigation />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
           <Card>
             <CardContent className="pt-6">
               <div className="text-center py-12">
-                <p className="text-slate-600 dark:text-slate-400 mb-4">Invalid node ID</p>
+                <p className="text-muted-foreground mb-4">Invalid node ID</p>
                 <Button asChild>
                   <Link href="/edge-ai/nodes">Back to Nodes</Link>
                 </Button>
@@ -108,10 +108,10 @@ export default function NodeDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+      <div className="min-h-screen bg-gradient-to-br from-background via-blue-50 to-indigo-50 dark:from-background dark:via-card dark:to-black">
         <Navigation />
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground/60" />
         </div>
         <Footer />
       </div>
@@ -120,13 +120,13 @@ export default function NodeDetailPage() {
 
   if (!node) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+      <div className="min-h-screen bg-gradient-to-br from-background via-blue-50 to-indigo-50 dark:from-background dark:via-card dark:to-black">
         <Navigation />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
           <Card>
             <CardContent className="pt-6">
               <div className="text-center py-12">
-                <p className="text-slate-600 dark:text-slate-400 mb-4">Node not found</p>
+                <p className="text-muted-foreground mb-4">Node not found</p>
                 <Button asChild>
                   <Link href="/edge-ai/nodes">Back to Nodes</Link>
                 </Button>
@@ -140,7 +140,7 @@ export default function NodeDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+    <div className="min-h-screen bg-gradient-to-br from-background via-blue-50 to-indigo-50 dark:from-background dark:via-card dark:to-black">
       <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
@@ -157,12 +157,12 @@ export default function NodeDetailPage() {
           <div>
             <div className="flex items-center gap-3 mb-3">
               <Server className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground">
                 {node.name}
               </h1>
               <Badge className={getStatusBadge(node.status)}>{node.status}</Badge>
             </div>
-            <p className="text-slate-600 dark:text-slate-400 text-sm md:text-base">
+            <p className="text-muted-foreground text-sm md:text-base">
               Edge AI node for low-latency reconciliation processing
             </p>
           </div>
@@ -191,7 +191,7 @@ export default function NodeDetailPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2 text-xs md:text-sm text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
                 <Activity className="w-4 h-4" />
                 <span>All time</span>
               </div>
@@ -217,7 +217,7 @@ export default function NodeDetailPage() {
               <CardTitle className="text-2xl md:text-3xl uppercase">{node.region}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2 text-xs md:text-sm text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
                 <Server className="w-4 h-4" />
                 <span>Deployed</span>
               </div>
@@ -235,42 +235,42 @@ export default function NodeDetailPage() {
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  <span className="text-sm font-medium text-muted-foreground">
                     Model:
                   </span>
-                  <span className="ml-2 text-sm text-slate-600 dark:text-slate-400">
+                  <span className="ml-2 text-sm text-muted-foreground">
                     {node.config.model}
                   </span>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  <span className="text-sm font-medium text-muted-foreground">
                     Version:
                   </span>
-                  <span className="ml-2 text-sm text-slate-600 dark:text-slate-400">
+                  <span className="ml-2 text-sm text-muted-foreground">
                     {node.config.version}
                   </span>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  <span className="text-sm font-medium text-muted-foreground">
                     Endpoint:
                   </span>
-                  <span className="ml-2 text-sm text-slate-600 dark:text-slate-400 font-mono">
+                  <span className="ml-2 text-sm text-muted-foreground font-mono">
                     {node.config.endpoint}
                   </span>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  <span className="text-sm font-medium text-muted-foreground">
                     Created:
                   </span>
-                  <span className="ml-2 text-sm text-slate-600 dark:text-slate-400">
+                  <span className="ml-2 text-sm text-muted-foreground">
                     {new Date(node.createdAt).toLocaleDateString()}
                   </span>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  <span className="text-sm font-medium text-muted-foreground">
                     Last Active:
                   </span>
-                  <span className="ml-2 text-sm text-slate-600 dark:text-slate-400">
+                  <span className="ml-2 text-sm text-muted-foreground">
                     {new Date(node.lastActive).toLocaleString()}
                   </span>
                 </div>
@@ -286,19 +286,19 @@ export default function NodeDetailPage() {
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Status</span>
+                  <span className="text-sm text-muted-foreground">Status</span>
                   <Badge className={getStatusBadge(node.status)}>{node.status}</Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                  <span className="text-sm text-muted-foreground">
                     Average Latency
                   </span>
-                  <span className="text-sm font-medium text-slate-900 dark:text-white">
+                  <span className="text-sm font-medium text-foreground">
                     {node.latency}ms
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                  <span className="text-sm text-muted-foreground">
                     Request Accuracy
                   </span>
                   <span className="text-sm font-medium text-green-600 dark:text-green-400">
@@ -306,8 +306,8 @@ export default function NodeDetailPage() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Total Requests</span>
-                  <span className="text-sm font-medium text-slate-900 dark:text-white">
+                  <span className="text-sm text-muted-foreground">Total Requests</span>
+                  <span className="text-sm font-medium text-foreground">
                     {node.requests.toLocaleString()}
                   </span>
                 </div>

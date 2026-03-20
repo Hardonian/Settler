@@ -55,7 +55,7 @@ export default function QuickstartPage() {
       <Navigation />
 
       {/* Hero / Header */}
-      <section className="relative pt-32 pb-24 border-b border-border/40 overflow-hidden bg-slate-50 dark:bg-slate-950/20 shadow-2xl">
+      <section className="relative pt-32 pb-24 border-b border-border/40 overflow-hidden bg-muted/10 dark:bg-card/20 shadow-2xl">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 relative z-10 space-y-8 text-center">
           <div className="flex flex-col items-center space-y-6">
             <Badge
@@ -102,23 +102,23 @@ export default function QuickstartPage() {
               </div>
 
               {/* Interactive CLI Card */}
-              <Card className="bg-slate-950 border-white/5 shadow-2xl overflow-hidden glass group/cli ring-1 ring-white/5">
+              <Card className="bg-card border-white/5 shadow-2xl overflow-hidden glass group/cli ring-1 ring-white/5">
                 <CardHeader className="bg-white/5 border-b border-white/5 p-4 flex flex-row items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <Terminal size={14} className="text-slate-500" />
-                    <span className="text-[10px] font-mono text-slate-400 tracking-[0.2em] font-black italic">
+                    <Terminal size={14} className="text-muted-foreground" />
+                    <span className="text-[10px] font-mono text-muted-foreground/60 tracking-[0.2em] font-black italic">
                       SHELL_EXEC
                     </span>
                   </div>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-slate-500 hover:text-white group-hover/cli:bg-primary/20 group-hover/cli:text-primary transition-all"
+                    className="h-8 w-8 text-muted-foreground hover:text-white group-hover/cli:bg-primary/20 group-hover/cli:text-primary transition-all"
                   >
                     <Copy size={14} />
                   </Button>
                 </CardHeader>
-                <CardContent className="p-8 font-mono text-base text-slate-300 leading-relaxed overflow-x-auto whitespace-pre">
+                <CardContent className="p-8 font-mono text-base text-muted-foreground/40 leading-relaxed overflow-x-auto whitespace-pre">
                   <span className="text-primary mr-3 opacity-60">$</span>
                   <span className="group-hover/cli:text-white transition-colors">
                     {step.command}
@@ -131,7 +131,7 @@ export default function QuickstartPage() {
       </section>
 
       {/* Troubleshooting / Next Steps */}
-      <section className="py-32 px-4 bg-slate-900 text-white border-y border-white/5 shadow-2xl relative overflow-hidden">
+      <section className="py-32 px-4 bg-card text-white border-y border-white/5 shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 right-0 p-20 opacity-[0.03]">
           <Rocket className="h-96 w-96 text-primary" />
         </div>
@@ -141,7 +141,7 @@ export default function QuickstartPage() {
             <h2 className="text-4xl md:text-6xl font-bold tracking-tight italic underline underline-offset-8">
               You&apos;re Officially Onboarded
             </h2>
-            <p className="text-xl text-slate-400 font-medium italic underline">
+            <p className="text-xl text-muted-foreground/60 font-medium italic underline">
               Now that you&apos;ve run your first reconciliation, it&apos;s time to dig into the DSL
               patterns and build production-grade invariants.
             </p>
@@ -157,7 +157,7 @@ export default function QuickstartPage() {
             <Button
               variant="ghost"
               size="lg"
-              className="h-14 px-8 font-bold text-slate-300 hover:text-white border border-white/10 hover:bg-white/5"
+              className="h-14 px-8 font-bold text-muted-foreground/40 hover:text-white border border-white/10 hover:bg-white/5"
             >
               <Monitor size={20} className="mr-2" />
               View Console

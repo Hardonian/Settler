@@ -129,14 +129,14 @@ export function PipelinesPanel() {
             </span>
             <span className="text-2xl font-bold text-foreground dark:text-white">12</span>
           </div>
-          <div className="w-[1px] h-10 bg-slate-200 dark:bg-card" />
+          <div className="w-[1px] h-10 bg-border dark:bg-card" />
           <div className="flex flex-col gap-1">
             <span className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
               Error Rate
             </span>
             <span className="text-2xl font-bold text-red-500">0.4%</span>
           </div>
-          <div className="w-[1px] h-10 bg-slate-200 dark:bg-card" />
+          <div className="w-[1px] h-10 bg-border dark:bg-card" />
           <div className="flex flex-col gap-1">
             <span className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
               Throughput
@@ -184,7 +184,7 @@ export function PipelinesPanel() {
                       : pipe.status === "Critical"
                         ? "bg-red-500/10 text-red-500"
                         : pipe.status === "Paused"
-                          ? "bg-slate-500/10 text-muted-foreground"
+                          ? "bg-muted/100/10 text-muted-foreground"
                           : "bg-yellow-500/10 text-yellow-500"
                   )}
                 >
@@ -260,7 +260,7 @@ export function PipelinesPanel() {
                   </div>
                 </div>
 
-                <div className="flex items-end justify-between pt-4 border-t border-slate-100 dark:border-border">
+                <div className="flex items-end justify-between pt-4 border-t border-border/30 dark:border-border">
                   <div className="flex flex-col gap-2 w-full mr-8">
                     <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                       Error Trend (24h)
@@ -315,7 +315,7 @@ export function PipelinesPanel() {
             )}
 
             {pipe.status === "Paused" && (
-              <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-border">
+              <div className="flex items-center justify-between pt-4 border-t border-border/30 dark:border-border">
                 <span className="text-sm text-muted-foreground italic font-medium">
                   Configuration frozen at {pipe.version}
                 </span>
@@ -381,7 +381,7 @@ export function PipelinesPanel() {
                 <h3 className="text-sm font-bold text-foreground dark:text-white uppercase tracking-widest">
                   Execution Flow
                 </h3>
-                <div className="relative space-y-8 pl-12 before:absolute before:left-6 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-card">
+                <div className="relative space-y-8 pl-12 before:absolute before:left-6 before:top-2 before:bottom-2 before:w-0.5 before:bg-border dark:before:bg-card">
                   <div className="relative">
                     <div className="absolute -left-12 h-12 w-12 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500 bg-card bg-muted z-10 transition-transform hover:scale-110">
                       <ArrowRightCircle className="w-5 h-5" />
@@ -443,7 +443,7 @@ export function PipelinesPanel() {
                 <h3 className="text-sm font-bold text-foreground dark:text-white uppercase tracking-widest">
                   Version History
                 </h3>
-                <div className="rounded-xl border border-border dark:border-border overflow-hidden divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+                <div className="rounded-xl border border-border dark:border-border overflow-hidden divide-y divide-border/30 dark:divide-border font-medium">
                   <div className="flex items-center justify-between p-4 hover:bg-muted/20 dark:hover:bg-background/50 transition-colors">
                     <div className="flex items-center gap-3">
                       <div className="h-2 w-2 rounded-full bg-emerald-500" />

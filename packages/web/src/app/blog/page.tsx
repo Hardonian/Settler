@@ -84,18 +84,18 @@ export default function BlogPage() {
   const [featured, ...rest] = posts;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-muted/10 dark:bg-card">
       <Navigation />
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
         {/* Header */}
         <div className="mb-14">
-          <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500 mb-3">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
             Settler Blog
           </p>
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-foreground mb-4">
             Engineering &amp; Product
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl">
+          <p className="text-lg text-muted-foreground max-w-2xl">
             Deep dives into reconciliation infrastructure, integration patterns, audit evidence, and
             how Settler is built.
           </p>
@@ -103,7 +103,7 @@ export default function BlogPage() {
 
         {/* Featured post */}
         {featured && (
-          <article className="mb-12 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+          <article className="mb-12 rounded-2xl border border-border/40 dark:border-border bg-white dark:bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
             <div className="p-8">
               <div className="flex items-center gap-3 mb-4">
                 <span
@@ -116,14 +116,14 @@ export default function BlogPage() {
                   Latest
                 </Badge>
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <h2 className="text-2xl font-bold text-foreground mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {featured.title}
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+              <p className="text-muted-foreground mb-6 leading-relaxed">
                 {featured.description}
               </p>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-500">
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5" />
                     {new Date(featured.date).toLocaleDateString("en-US", {
@@ -151,7 +151,7 @@ export default function BlogPage() {
           {rest.map((post) => (
             <article
               key={post.slug}
-              className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-sm hover:shadow-md transition-shadow group"
+              className="rounded-2xl border border-border/40 dark:border-border bg-white dark:bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow group"
             >
               <div className="p-6">
                 <div className="flex items-center gap-2 mb-3">
@@ -162,14 +162,14 @@ export default function BlogPage() {
                     {post.category}
                   </span>
                 </div>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                <h2 className="text-lg font-bold text-foreground mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
                   {post.title}
                 </h2>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed line-clamp-3">
+                <p className="text-sm text-muted-foreground mb-4 leading-relaxed line-clamp-3">
                   {post.description}
                 </p>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-500">
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
                       {new Date(post.date).toLocaleDateString("en-US", {
@@ -194,13 +194,13 @@ export default function BlogPage() {
         </div>
 
         {/* Tags cloud */}
-        <div className="mt-12 pt-10 border-t border-slate-200 dark:border-slate-800">
-          <p className="text-sm font-semibold text-slate-700 dark:text-slate-400 mb-4">Topics</p>
+        <div className="mt-12 pt-10 border-t border-border/40 dark:border-border">
+          <p className="text-sm font-semibold text-foreground/80 dark:text-muted-foreground/60 mb-4">Topics</p>
           <div className="flex flex-wrap gap-2">
             {Array.from(new Set(posts.flatMap((p) => p.tags))).map((tag) => (
               <span
                 key={tag}
-                className="inline-flex items-center rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1 text-xs font-medium text-slate-700 dark:text-slate-300"
+                className="inline-flex items-center rounded-full border border-border/40 dark:border-border bg-white dark:bg-card px-3 py-1 text-xs font-medium text-muted-foreground"
               >
                 {tag}
               </span>
@@ -210,10 +210,10 @@ export default function BlogPage() {
 
         {/* CTA */}
         <div className="mt-12 rounded-2xl border border-blue-200 dark:border-blue-900/40 bg-blue-50 dark:bg-blue-900/10 p-8 text-center">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
+          <h3 className="text-lg font-bold text-foreground mb-2">
             Want to talk reconciliation infrastructure?
           </h3>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             We publish technical deep dives for engineering and finance operations teams.
           </p>
           <Link

@@ -32,7 +32,7 @@ export default function EdgeAIPage() {
           <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Edge AI Reconciliation Platform
           </h1>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Dual-layer architecture combining cloud intelligence with local edge processing for
             webhook-based reconciliation with near-real-time results, reduced latency, and enhanced
             privacy.
@@ -114,7 +114,7 @@ export default function EdgeAIPage() {
               <CardTitle>Ultra-Low Latency</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-muted-foreground">
                 Process reconciliation locally with &lt;10ms latency. No round-trip to cloud for
                 critical operations.
               </p>
@@ -127,7 +127,7 @@ export default function EdgeAIPage() {
               <CardTitle>Privacy-First</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-muted-foreground">
                 PII redaction and tokenization before cloud sync. Keep sensitive data local while
                 leveraging cloud intelligence.
               </p>
@@ -140,7 +140,7 @@ export default function EdgeAIPage() {
               <CardTitle>AI-Optimized Models</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-slate-600 mb-3">
+              <p className="text-sm text-muted-foreground mb-3">
                 Quantized models (int4/int8) optimized via{" "}
                 <a
                   href={AIAS_STUDIO_URL}
@@ -153,7 +153,7 @@ export default function EdgeAIPage() {
                 </a>{" "}
                 for your specific device architecture.
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 Model optimization powered by AIAS Edge Studio — a separate service for Edge AI
                 model optimization
               </p>
@@ -166,7 +166,7 @@ export default function EdgeAIPage() {
               <CardTitle>Offline Capable</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-muted-foreground">
                 Continue processing during network outages. Automatic sync when connectivity is
                 restored.
               </p>
@@ -179,7 +179,7 @@ export default function EdgeAIPage() {
               <CardTitle>Scalable Architecture</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-muted-foreground">
                 Deploy edge nodes across multiple locations. Fleet management and centralized
                 monitoring.
               </p>
@@ -192,7 +192,7 @@ export default function EdgeAIPage() {
               <CardTitle>Compliance Ready</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-muted-foreground">
                 GDPR, HIPAA, and SOC 2 compliant. Data residency controls and audit trails.
               </p>
             </CardContent>
@@ -202,7 +202,7 @@ export default function EdgeAIPage() {
         {/* CTA Section */}
         <div className="text-center">
           <h2 className="text-3xl font-bold mb-4">Get Started with Edge AI</h2>
-          <p className="text-slate-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
             Deploy your first edge node in minutes. Start with our free tier and scale as you grow.
           </p>
           <div className="flex gap-4 justify-center">
@@ -217,7 +217,7 @@ export default function EdgeAIPage() {
       </section>
 
       {/* Quick Links */}
-      <section className="container mx-auto px-4 py-12 bg-slate-50">
+      <section className="container mx-auto px-4 py-12 bg-muted/10">
         <h2 className="text-2xl font-bold mb-6 text-center">Explore Edge AI</h2>
         <div className="grid md:grid-cols-4 gap-4">
           <Link href="/edge-ai/nodes">
@@ -226,7 +226,7 @@ export default function EdgeAIPage() {
                 <CardTitle className="text-lg">Edge Nodes</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-muted-foreground">
                   Manage and monitor your edge node deployments
                 </p>
               </CardContent>
@@ -242,11 +242,11 @@ export default function EdgeAIPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-slate-600 mb-2">
+                <p className="text-sm text-muted-foreground mb-2">
                   Optimize models via{" "}
                   <span className="font-semibold text-purple-600">AIAS Edge Studio</span>
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted-foreground">
                   External service for Edge AI model optimization
                 </p>
               </CardContent>
@@ -259,7 +259,7 @@ export default function EdgeAIPage() {
                 <CardTitle className="text-lg">Anomaly Dashboard</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-slate-600">View real-time anomaly detection insights</p>
+                <p className="text-sm text-muted-foreground">View real-time anomaly detection insights</p>
               </CardContent>
             </Card>
           </Link>
@@ -270,7 +270,7 @@ export default function EdgeAIPage() {
                 <CardTitle className="text-lg">Benchmark Results</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-muted-foreground">
                   Performance metrics and optimization results
                 </p>
               </CardContent>

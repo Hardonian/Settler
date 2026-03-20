@@ -53,10 +53,10 @@ export function ConsolePublicOverview() {
     <div className="space-y-12">
       {/* Hero Section */}
       <div className="text-center space-y-6">
-        <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white">
+        <h1 className="text-4xl md:text-5xl font-bold text-foreground">
           Developer Console
         </h1>
-        <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
           Manage your API keys, monitor usage, and control your Settler integration from one unified dashboard.
         </p>
         <div className="flex gap-4 justify-center pt-4">
@@ -79,7 +79,7 @@ export function ConsolePublicOverview() {
           return (
             <Card key={feature.title} className="hover:shadow-lg transition-shadow">
               <CardHeader>
-                <div className={`w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-2`}>
+                <div className={`w-12 h-12 rounded-lg bg-muted/40 flex items-center justify-center mb-2`}>
                   <Icon className={`w-6 h-6 ${feature.color}`} />
                 </div>
                 <CardTitle className="text-lg">{feature.title}</CardTitle>
@@ -98,7 +98,7 @@ export function ConsolePublicOverview() {
             <CardTitle>Real-time Monitoring</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-slate-600 dark:text-slate-400">
+            <p className="text-muted-foreground">
               Track API calls, errors, and performance metrics in real-time with live activity feeds.
             </p>
           </CardContent>
@@ -110,7 +110,7 @@ export function ConsolePublicOverview() {
             <CardTitle>Secure & Reliable</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-slate-600 dark:text-slate-400">
+            <p className="text-muted-foreground">
               Enterprise-grade security with encrypted API keys, role-based access, and audit logs.
             </p>
           </CardContent>
@@ -122,7 +122,7 @@ export function ConsolePublicOverview() {
             <CardTitle>Developer-First</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-slate-600 dark:text-slate-400">
+            <p className="text-muted-foreground">
               Built for developers with comprehensive APIs, SDKs, and interactive documentation.
             </p>
           </CardContent>
