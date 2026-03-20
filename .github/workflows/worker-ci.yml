@@ -119,9 +119,6 @@ jobs:
   worker-quality:
     name: Worker Quality Gates
     runs-on: ubuntu-latest
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v4
 
@@ -156,7 +153,13 @@ jobs:
 
       - name: TypeScript type check
         run: pnpm typecheck --filter=@settler/types --filter=@settler/protocol || true
+        env:
+          TURBO_TOKEN: ${{ secrets['TURBO_TOKEN'] }}
+          TURBO_TEAM: ${{ secrets['TURBO_TEAM'] }}
 
       - name: Lint check
         run: pnpm lint || true
+        env:
+          TURBO_TOKEN: ${{ secrets['TURBO_TOKEN'] }}
+          TURBO_TEAM: ${{ secrets['TURBO_TEAM'] }}
         continue-on-error: true

@@ -30,9 +30,6 @@ jobs:
   build:
     name: Build Application
     runs-on: ubuntu-latest
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v4
 
@@ -64,6 +61,8 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-key
           SKIP_ENV_VALIDATION: true
           SAFE_MODE: "1"
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
