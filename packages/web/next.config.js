@@ -421,6 +421,27 @@ const nextConfig = {
         destination: "/playground",
         permanent: true,
       },
+      // Phase 1 route closure - 4 known broken routes
+      {
+        source: "/console/dashboard",
+        destination: "/console",
+        permanent: true,
+      },
+      {
+        source: "/console/rules",
+        destination: "/console/rules-engine",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/settings",
+        destination: "/console/settings",
+        permanent: true,
+      },
+      {
+        source: "/console/integrations",
+        destination: "/dashboard/integrations",
+        permanent: true,
+      },
     ];
   },
   async rewrites() {
