@@ -73,9 +73,7 @@ export default function SignupPage() {
               <SettlerLogo className="h-10 w-auto" />
             </Link>
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold italic tracking-tight underline italic">
-                Get Started
-              </h1>
+              <h1 className="text-3xl font-bold italic tracking-tight underline">Get Started</h1>
               <p className="text-muted-foreground font-medium">
                 Create your account and start your free 14-day trial.
               </p>

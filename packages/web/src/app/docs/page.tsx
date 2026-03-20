@@ -5,7 +5,6 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
-  Book,
   Code,
   Terminal,
   Settings,
@@ -13,8 +12,6 @@ import {
   Zap,
   ArrowRight,
   Search,
-  BookOpen,
-  FileCode,
   Globe,
   Database,
 } from "lucide-react";
@@ -224,10 +221,10 @@ export default function DocsLandingPage() {
       {/* Community / Support */}
       <section className="py-32 px-4 text-center space-y-12">
         <div className="max-w-2xl mx-auto space-y-6">
-          <h2 className="text-3xl font-bold italic tracking-tight italic underline italic underline-offset-8">
+          <h2 className="text-3xl font-bold italic tracking-tight underline underline-offset-8">
             Need Assistance?
           </h2>
-          <p className="text-lg text-muted-foreground font-medium italic underline italic">
+          <p className="text-lg text-muted-foreground font-medium italic underline">
             Our engineering team is active on Discord and dedicated support channels for enterprise
             migration.
           </p>
@@ -239,7 +236,7 @@ export default function DocsLandingPage() {
           <Button
             size="lg"
             variant="outline"
-            className="h-14 px-8 font-bold gap-2 font-bold italic underline"
+            className="h-14 px-8 font-bold gap-2 italic underline"
           >
             Contact Support
           </Button>

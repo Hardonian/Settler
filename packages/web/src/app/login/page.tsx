@@ -22,7 +22,7 @@ export default function LoginPage() {
               <SettlerLogo className="h-10 w-auto" />
             </Link>
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold italic tracking-tight italic">Welcome Back</h1>
+              <h1 className="text-3xl font-bold italic tracking-tight">Welcome Back</h1>
               <p className="text-muted-foreground font-medium">
                 Enter your credentials to access the Control Plane.
               </p>
