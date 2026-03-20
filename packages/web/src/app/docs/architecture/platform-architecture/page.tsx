@@ -1,7 +1,7 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
 
-export default function QuickstartPage() {
+export default function DocsPlatformArchitecturePage() {
   return (
     <div className="container mx-auto p-8">
       <Alert>
