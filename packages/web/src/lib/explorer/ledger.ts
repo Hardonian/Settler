@@ -1,6 +1,5 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { cache } from "react";
 
 export type ExplorerLedgerEntry = {
   execution_id: string;
@@ -20,7 +19,10 @@ export type ExplorerLedgerEntry = {
 
 const LEDGER_DIR = path.resolve(process.cwd(), process.env.SETTLER_LEDGER_DIR ?? "ledger");
 
-const readAll = cache(async (): Promise<ExplorerLedgerEntry[]> => {
+// Use a simple memoization pattern instead of React.cache
+let cachedEntries: ExplorerLedgerEntry[] | null = null;
+
+async function readAllInternal(): Promise<ExplorerLedgerEntry[]> {
   try {
     const files = (await fs.readdir(LEDGER_DIR)).filter((file) => file.endsWith(".json"));
     const entries = await Promise.all(
@@ -32,7 +34,19 @@ const readAll = cache(async (): Promise<ExplorerLedgerEntry[]> => {
   } catch {
     return [];
   }
-});
+}
+
+async function readAll(): Promise<ExplorerLedgerEntry[]> {
+  if (cachedEntries === null) {
+    cachedEntries = await readAllInternal();
+  }
+  return cachedEntries;
+}
+
+export async function getExecutionLedgerEntry(id: string): Promise<ExplorerLedgerEntry | null> {
+  const entries = await readAll();
+  return entries.find((entry) => entry.execution_id === id) || null;
+}
 
 export async function listExecutionLedgerEntries(options: {
   tenantId?: string;
@@ -46,11 +60,4 @@ export async function listExecutionLedgerEntries(options: {
     ? entries.filter((entry) => entry.tenant_id === options.tenantId)
     : entries;
   return scoped.slice(offset, offset + limit);
-}
-
-export async function getExecutionLedgerEntry(
-  executionId: string
-): Promise<ExplorerLedgerEntry | null> {
-  const entries = await readAll();
-  return entries.find((entry) => entry.execution_id === executionId) ?? null;
 }

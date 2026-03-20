@@ -1,27 +1,36 @@
 /**
  * Guided Tour Component
- * 
+ *
  * Provides step-by-step guidance for first-time console users,
  * helping them understand key features and next steps.
  */
 
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { X, ArrowRight, ArrowLeft, CheckCircle2, Key, RefreshCw, Receipt, ToggleLeft } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import {
+  X,
+  ArrowRight,
+  ArrowLeft,
+  CheckCircle2,
+  Key,
+  RefreshCw,
+  Receipt,
+  ToggleLeft,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 
-export type TourStep = 
-  | 'welcome'
-  | 'api_keys'
-  | 'playground'
-  | 'reconcile'
-  | 'receipts'
-  | 'feature_flags'
-  | 'complete';
+export type TourStep =
+  | "welcome"
+  | "api_keys"
+  | "playground"
+  | "reconcile"
+  | "receipts"
+  | "feature_flags"
+  | "complete";
 
 interface TourStepConfig {
   id: TourStep;
@@ -35,66 +44,73 @@ interface TourStepConfig {
 
 const TOUR_STEPS: TourStepConfig[] = [
   {
-    id: 'welcome',
-    title: 'Welcome to Settler Console',
-    description: 'This is your command center for managing API keys, running reconciliations, and monitoring usage.',
+    id: "welcome",
+    title: "Welcome to Settler Console",
+    description:
+      "This is your command center for managing API keys, running reconciliations, and monitoring usage.",
     icon: CheckCircle2,
-    ctaLabel: 'Get Started',
-    ctaUrl: '#',
+    ctaLabel: "Get Started",
+    ctaUrl: "#",
     optional: false,
   },
   {
-    id: 'api_keys',
-    title: 'API Keys',
-    description: 'Create API keys to authenticate your applications. Each key can have different permissions and scopes.',
+    id: "api_keys",
+    title: "API Keys",
+    description:
+      "Create API keys to authenticate your applications. Each key can have different permissions and scopes.",
     icon: Key,
-    ctaLabel: 'Create API Key',
-    ctaUrl: '/console/api-keys',
+    ctaLabel: "Create API Key",
+    ctaUrl: "/console/api-keys",
     optional: false,
   },
   {
-    id: 'playground',
-    title: 'Playground',
-    description: 'Test Settler APIs interactively without writing code. Perfect for exploring features and testing configurations.',
+    id: "playground",
+    title: "Playground",
+    description:
+      "Test Settler APIs interactively without writing code. Perfect for exploring features and testing configurations.",
     icon: RefreshCw,
-    ctaLabel: 'Open Playground',
-    ctaUrl: '/console/playground',
+    ctaLabel: "Open Playground",
+    ctaUrl: "/console/playground",
     optional: false,
   },
   {
-    id: 'reconcile',
-    title: 'Reconciliation',
-    description: 'Reconciliation happens automatically. Match transactions across platforms with system-level enforcement. Scheduled jobs run automatically.',
+    id: "reconcile",
+    title: "Reconciliation",
+    description:
+      "Use the reconciliation workspace to inspect completed runs, see mismatches ranked by impact, and understand why a result needs review.",
     icon: RefreshCw,
-    ctaLabel: 'Try Reconciliation',
-    ctaUrl: '/console/playground/reconcile',
+    ctaLabel: "Open Reconciliations",
+    ctaUrl: "/console/reconciliations",
     optional: false,
   },
   {
-    id: 'receipts',
-    title: 'Receipt Parsing',
-    description: 'Upload receipts and let Settler extract key information automatically. Perfect for expense management.',
+    id: "receipts",
+    title: "Receipt Parsing",
+    description:
+      "Upload receipts and let Settler extract key information automatically. Perfect for expense management.",
     icon: Receipt,
-    ctaLabel: 'Parse Receipt',
-    ctaUrl: '/console/receipts',
+    ctaLabel: "Parse Receipt",
+    ctaUrl: "/console/receipts",
     optional: true,
   },
   {
-    id: 'feature_flags',
-    title: 'Feature Flags',
-    description: 'Control feature rollouts programmatically. Create flags, set targeting rules, and manage releases.',
+    id: "feature_flags",
+    title: "Feature Flags",
+    description:
+      "Control feature rollouts programmatically. Create flags, set targeting rules, and manage releases.",
     icon: ToggleLeft,
-    ctaLabel: 'Create Flag',
-    ctaUrl: '/console/feature-flags',
+    ctaLabel: "Create Flag",
+    ctaUrl: "/console/feature-flags",
     optional: true,
   },
   {
-    id: 'complete',
-    title: 'Tour Complete!',
-    description: 'You\'re all set to start using Settler. Explore the console and start automating your financial reconciliation.',
+    id: "complete",
+    title: "Tour Complete!",
+    description:
+      "You're all set to start using Settler. Explore the console and start automating your financial reconciliation.",
     icon: CheckCircle2,
-    ctaLabel: 'Go to Dashboard',
-    ctaUrl: '/console',
+    ctaLabel: "Go to Dashboard",
+    ctaUrl: "/console",
     optional: false,
   },
 ];
@@ -111,10 +127,10 @@ export function GuidedTour({ onComplete, onSkip }: GuidedTourProps) {
 
   useEffect(() => {
     // Check if tour was already completed or dismissed
-    if (typeof window !== 'undefined') {
-      const tourCompleted = localStorage.getItem('settler_tour_completed') === 'true';
-      const tourDismissed = localStorage.getItem('settler_tour_dismissed') === 'true';
-      
+    if (typeof window !== "undefined") {
+      const tourCompleted = localStorage.getItem("settler_tour_completed") === "true";
+      const tourDismissed = localStorage.getItem("settler_tour_dismissed") === "true";
+
       if (!tourCompleted && !tourDismissed) {
         setIsVisible(true);
       }
@@ -137,16 +153,16 @@ export function GuidedTour({ onComplete, onSkip }: GuidedTourProps) {
 
   const handleSkip = () => {
     setIsVisible(false);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('settler_tour_dismissed', 'true');
+    if (typeof window !== "undefined") {
+      localStorage.setItem("settler_tour_dismissed", "true");
     }
     onSkip?.();
   };
 
   const handleComplete = () => {
     setIsVisible(false);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('settler_tour_completed', 'true');
+    if (typeof window !== "undefined") {
+      localStorage.setItem("settler_tour_completed", "true");
     }
     onComplete?.();
   };
@@ -154,7 +170,7 @@ export function GuidedTour({ onComplete, onSkip }: GuidedTourProps) {
   const handleCTAClick = () => {
     const step = TOUR_STEPS[currentStep];
     if (!step) return;
-    if (step.ctaUrl !== '#') {
+    if (step.ctaUrl !== "#") {
       router.push(step.ctaUrl);
     }
     if (currentStep === TOUR_STEPS.length - 1) {
@@ -195,10 +211,10 @@ export function GuidedTour({ onComplete, onSkip }: GuidedTourProps) {
               <Icon className="w-5 h-5 text-white" />
             </div>
             <div>
-              <CardTitle>{step?.title || ''}</CardTitle>
+              <CardTitle>{step?.title || ""}</CardTitle>
               <CardDescription>
                 Step {currentStep + 1} of {TOUR_STEPS.length}
-                {step?.optional && ' (Optional)'}
+                {step?.optional && " (Optional)"}
               </CardDescription>
             </div>
           </div>
@@ -206,9 +222,9 @@ export function GuidedTour({ onComplete, onSkip }: GuidedTourProps) {
         </CardHeader>
         <CardContent className="space-y-6">
           <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-            {step?.description || ''}
+            {step?.description || ""}
           </p>
-          
+
           <div className="flex items-center justify-between gap-4">
             <Button
               variant="outline"
@@ -216,7 +232,7 @@ export function GuidedTour({ onComplete, onSkip }: GuidedTourProps) {
               disabled={isFirstStep}
             >
               {isFirstStep ? (
-                'Skip Tour'
+                "Skip Tour"
               ) : (
                 <>
                   <ArrowLeft className="w-4 h-4 mr-2" />
@@ -224,16 +240,16 @@ export function GuidedTour({ onComplete, onSkip }: GuidedTourProps) {
                 </>
               )}
             </Button>
-            
+
             <Button
               onClick={isLastStep ? handleComplete : handleCTAClick}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               {isLastStep ? (
-                'Complete Tour'
+                "Complete Tour"
               ) : (
                 <>
-                  {step?.ctaLabel || 'Next'}
+                  {step?.ctaLabel || "Next"}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </>
               )}

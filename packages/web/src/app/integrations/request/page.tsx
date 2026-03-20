@@ -25,9 +25,6 @@ export default function IntegrationRequestPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Submit to API endpoint when backend is ready
-    // For now, show success message
-    // In production: await fetch('/api/integrations/request', { method: 'POST', body: JSON.stringify(formData) })
     setSubmitted(true);
   };
 

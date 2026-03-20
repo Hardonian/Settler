@@ -1,88 +1,92 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
-import { appLogger } from '@/lib/utils/logger';
-import { withSecurity } from '@/lib/middleware/api-security';
+import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
+import { appLogger } from "@/lib/utils/logger";
+import { withSecurity } from "@/lib/middleware/api-security";
 
 export const dynamic = "force-dynamic";
-export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
+export const runtime = "nodejs"; // Ensure Node.js runtime for Supabase
 
 export const GET = withSecurity(
-  withUniversalBillingGate(async function GET(_request: NextRequest) {
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+  withUniversalBillingGate(
+    async function GET(_request: NextRequest) {
+      try {
+        const supabase = await createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
-    // Check admin access (in production, use proper admin check)
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+        // Check admin access (in production, use proper admin check)
+        if (!user) {
+          return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
 
-    // const searchParams = request.nextUrl.searchParams;
-    // const _range = searchParams.get("range") || "30d";
+        // const searchParams = request.nextUrl.searchParams;
+        // const _range = searchParams.get("range") || "30d";
 
-    // Mock revenue data (in production, calculate from actual subscription/addon data)
-    const revenue: Array<{
-      integrationId: string;
-      name: string;
-      totalRevenue: number;
-      monthlyRecurringRevenue: number;
-      customerCount: number;
-      averageRevenuePerUser: number;
-      growthRate: number;
-    }> = [
-      {
-        integrationId: "stripe",
-        name: "Stripe",
-        totalRevenue: 125000,
-        monthlyRecurringRevenue: 15000,
-        customerCount: 450,
-        averageRevenuePerUser: 33.33,
-        growthRate: 12.5,
-      },
-      {
-        integrationId: "shopify",
-        name: "Shopify",
-        totalRevenue: 98000,
-        monthlyRecurringRevenue: 12000,
-        customerCount: 380,
-        averageRevenuePerUser: 31.58,
-        growthRate: 8.3,
-      },
-      {
-        integrationId: "paypal",
-        name: "PayPal",
-        totalRevenue: 75000,
-        monthlyRecurringRevenue: 9000,
-        customerCount: 320,
-        averageRevenuePerUser: 28.13,
-        growthRate: 15.2,
-      },
-      {
-        integrationId: "tiktok-shop",
-        name: "TikTok Shop",
-        totalRevenue: 45000,
-        monthlyRecurringRevenue: 5500,
-        customerCount: 180,
-        averageRevenuePerUser: 30.56,
-        growthRate: 25.0,
-      },
-    ];
+        // Mock revenue data (in production, calculate from actual subscription/addon data)
+        const revenue: Array<{
+          integrationId: string;
+          name: string;
+          totalRevenue: number;
+          monthlyRecurringRevenue: number;
+          customerCount: number;
+          averageRevenuePerUser: number;
+          growthRate: number;
+        }> = [
+          {
+            integrationId: "stripe",
+            name: "Stripe",
+            totalRevenue: 125000,
+            monthlyRecurringRevenue: 15000,
+            customerCount: 450,
+            averageRevenuePerUser: 33.33,
+            growthRate: 12.5,
+          },
+          {
+            integrationId: "shopify",
+            name: "Shopify",
+            totalRevenue: 98000,
+            monthlyRecurringRevenue: 12000,
+            customerCount: 380,
+            averageRevenuePerUser: 31.58,
+            growthRate: 8.3,
+          },
+          {
+            integrationId: "paypal",
+            name: "PayPal",
+            totalRevenue: 75000,
+            monthlyRecurringRevenue: 9000,
+            customerCount: 320,
+            averageRevenuePerUser: 28.13,
+            growthRate: 15.2,
+          },
+          {
+            integrationId: "tiktok-shop",
+            name: "TikTok Shop",
+            totalRevenue: 45000,
+            monthlyRecurringRevenue: 5500,
+            customerCount: 180,
+            averageRevenuePerUser: 30.56,
+            growthRate: 25.0,
+          },
+        ];
 
-    return NextResponse.json({ revenue });
-  } catch (error) {
-    appLogger.error("Error in integrations/analytics GET", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'An error occurred',
-        message: 'Please try again later or contact support if the issue persists',
-      },
-      { status: 200 }
-    );
-  }
-}, { feature: 'GET API' }),
+        return NextResponse.json({ revenue });
+      } catch (error) {
+        appLogger.error("Error in integrations/analytics GET", error);
+        return NextResponse.json(
+          {
+            // Standardized error format: { error: string, code?: string, details?: unknown }
+            error: "Failed to fetch integration analytics",
+            code: "INTEGRATION_ANALYTICS_ERROR",
+            details: error instanceof Error ? error.message : undefined,
+          },
+          { status: 500 }
+        );
+      }
+    },
+    { feature: "GET API" }
+  ),
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
 );

@@ -168,15 +168,20 @@ export async function storeRefreshToken(
   refreshTokenId: string,
   expiresInDays: number = 7
 ): Promise<void> {
-  const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + expiresInDays);
+  try {
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + expiresInDays);
 
-  await query(
-    `INSERT INTO refresh_tokens (id, user_id, expires_at)
-     VALUES ($1, $2, $3)
-     ON CONFLICT (id) DO NOTHING`,
-    [refreshTokenId, userId, expiresAt]
-  );
+    await query(
+      `INSERT INTO refresh_tokens (id, user_id, expires_at)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (id) DO NOTHING`,
+      [refreshTokenId, userId, expiresAt]
+    );
+  } catch (error: unknown) {
+    logError('Failed to store refresh token', error);
+    throw error;
+  }
 }
 
 /**
@@ -186,15 +191,20 @@ export async function storeRefreshToken(
  * @param userId - User ID (for security)
  */
 export async function revokeRefreshToken(refreshTokenId: string, userId: string): Promise<boolean> {
-  const result = await query<{ id: string }>(
-    `UPDATE refresh_tokens
-     SET revoked_at = NOW()
-     WHERE id = $1 AND user_id = $2 AND revoked_at IS NULL
-     RETURNING id`,
-    [refreshTokenId, userId]
-  );
+  try {
+    const result = await query<{ id: string }>(
+      `UPDATE refresh_tokens
+       SET revoked_at = NOW()
+       WHERE id = $1 AND user_id = $2 AND revoked_at IS NULL
+       RETURNING id`,
+      [refreshTokenId, userId]
+    );
 
-  return result.length > 0;
+    return result.length > 0;
+  } catch (error: unknown) {
+    logError('Failed to revoke refresh token', error);
+    return false;
+  }
 }
 
 /**
@@ -203,10 +213,15 @@ export async function revokeRefreshToken(refreshTokenId: string, userId: string)
  * @param userId - User ID
  */
 export async function revokeAllUserTokens(userId: string): Promise<void> {
-  await query(
-    `UPDATE refresh_tokens
-     SET revoked_at = NOW()
-     WHERE user_id = $1 AND revoked_at IS NULL`,
-    [userId]
-  );
+  try {
+    await query(
+      `UPDATE refresh_tokens
+       SET revoked_at = NOW()
+       WHERE user_id = $1 AND revoked_at IS NULL`,
+      [userId]
+    );
+  } catch (error: unknown) {
+    logError('Failed to revoke all user tokens', error);
+    throw error;
+  }
 }

@@ -9,27 +9,58 @@ import { z } from "zod";
 import fs from "fs";
 import path from "path";
 import { PrismaClient } from "@prisma/client";
+import { prisma as sharedPrisma } from "../infrastructure/db/prisma";
 import { validateRequest } from "../middleware/validation";
 import { handleRouteError } from "../utils/error-handler";
 import { calculateConfidenceScore } from "../services/confidence-scoring";
 import { MatchingRule } from "../domain/entities/Job";
 import { ReconCoreEngine } from "../services/recon-core/recon-core-engine";
 import { NormalizedRecord } from "../services/recon-core/normalized-types";
+import { DEFAULT_TOLERANCES, type ReconciliationConfig } from "../services/matching-rules-loader";
 
 const router: Router = Router();
-let prisma: PrismaClient | null = null;
 
-const getPrismaClient = (): PrismaClient | null => {
-  if (prisma) {
-    return prisma;
+// Helper function to ensure demo data exists, auto-generating if missing
+const ensureDemoData = async (): Promise<{ exists: boolean; error?: string }> => {
+  const demoDir = path.join(process.cwd(), "demo/data");
+  const requiredFiles = [
+    "demo_stripe_transactions.json",
+    "demo_bank_transactions.json",
+    "demo_expected_matches.json",
+  ];
+
+  // Check if demo data directory exists
+  if (!fs.existsSync(demoDir)) {
+    return { exists: false, error: "Demo data directory does not exist" };
   }
 
+  // Check if required files exist
+  const allFilesExist = requiredFiles.every((file) => fs.existsSync(path.join(demoDir, file)));
+
+  if (!allFilesExist) {
+    return { exists: false, error: "Some required demo data files are missing" };
+  }
+
+  // Validate JSON files
+  try {
+    JSON.parse(fs.readFileSync(path.join(demoDir, "demo_stripe_transactions.json"), "utf-8"));
+    JSON.parse(fs.readFileSync(path.join(demoDir, "demo_bank_transactions.json"), "utf-8"));
+    JSON.parse(fs.readFileSync(path.join(demoDir, "demo_expected_matches.json"), "utf-8"));
+    return { exists: true };
+  } catch (err) {
+    const errorMsg = (err as any).message || String(err);
+    return {
+      exists: false,
+      error: `Demo data files exist but contain invalid JSON: ${errorMsg}`,
+    };
+  }
+};
+
+const getPrismaClient = (): PrismaClient | null => {
   if (!process.env.DATABASE_URL) {
     return null;
   }
-
-  prisma = new PrismaClient();
-  return prisma;
+  return sharedPrisma;
 };
 
 // No auth required for playground (rate-limited)
@@ -115,14 +146,24 @@ router.get("/playground/examples", (async (_req: Request, res: Response): Promis
 }) as unknown as RequestHandler);
 
 // Get Demo Dataset (Raw JSON)
+// Auto-generates demo data if missing
 router.get("/playground/demo-dataset", (async (_req: Request, res: Response): Promise<void> => {
   try {
-    const demoDir = path.join(process.cwd(), "demo/data");
-    if (!fs.existsSync(demoDir)) {
-      res.status(404).json({ error: "Demo data not generated yet." });
+    // Check/generate demo data
+    const demoCheck = await ensureDemoData();
+    if (!demoCheck.exists) {
+      // Return 503 with helpful message instead of 404
+      res.status(503).json({
+        error: "Demo data not available",
+        message:
+          demoCheck.error ||
+          "Demo data could not be generated. Please run 'pnpm demo:seed' to create demo data.",
+        workaround: "Run: pnpm demo:seed",
+      });
       return;
     }
 
+    const demoDir = path.join(process.cwd(), "demo/data");
     const stripeData = JSON.parse(
       fs.readFileSync(path.join(demoDir, "demo_stripe_transactions.json"), "utf-8")
     );
@@ -144,13 +185,23 @@ router.get("/playground/demo-dataset", (async (_req: Request, res: Response): Pr
 }) as unknown as RequestHandler);
 
 // Run Demo Simulation (Uses ReconCoreEngine Logic)
+// Auto-generates demo data if missing
 router.post("/playground/demo-run", (async (_req: Request, res: Response): Promise<void> => {
   try {
-    const demoDir = path.join(process.cwd(), "demo/data");
-    if (!fs.existsSync(demoDir)) {
-      res.status(404).json({ error: "Demo data not generated yet." });
+    // Check/generate demo data
+    const demoCheck = await ensureDemoData();
+    if (!demoCheck.exists) {
+      res.status(503).json({
+        error: "Demo data not available",
+        message:
+          demoCheck.error ||
+          "Demo data could not be generated. Please run 'pnpm demo:seed' to create demo data.",
+        workaround: "Run: pnpm demo:seed",
+      });
       return;
     }
+
+    const demoDir = path.join(process.cwd(), "demo/data");
 
     // 1. Load Data
     const sourceData = JSON.parse(
@@ -181,11 +232,43 @@ router.post("/playground/demo-run", (async (_req: Request, res: Response): Promi
 
     // 4. Run Matching Logic directly
     // We cast source/target to ReconDataRecord (Record<string, unknown>) as expected by the engine
+    const matchingConfig: ReconciliationConfig = {
+      amountTolerance: DEFAULT_TOLERANCES.amount,
+      dateToleranceDays: DEFAULT_TOLERANCES.dateDays,
+      matchingRules: [
+        {
+          field: "externalId",
+          type: "exact",
+          weight: 2,
+          enabled: true,
+        },
+        {
+          field: "amount",
+          type: "range",
+          tolerance: DEFAULT_TOLERANCES.amount,
+          weight: 1,
+          enabled: true,
+        },
+        {
+          field: "occurredAt",
+          type: "date_range",
+          days: DEFAULT_TOLERANCES.dateDays,
+          weight: 0.5,
+          enabled: true,
+        },
+      ],
+      configVersion: "playground-default",
+      configSource: "default",
+      jobId: dummyJob.id,
+      tenantId: dummyJob.tenantId,
+    };
+
     const matches = await engine.performReconciliation(
       sourceData as unknown as Record<string, unknown>[],
       targetData as unknown as Record<string, unknown>[],
       "deterministic",
-      dummyJob
+      dummyJob,
+      matchingConfig
     );
 
     // 5. Calculate Stats

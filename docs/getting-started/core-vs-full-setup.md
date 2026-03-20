@@ -4,20 +4,13 @@
 
 Use core product surfaces first (`@settler/web`, `@settler/api`, shared runtime libraries).
 
-Typical commands:
-
-```bash
-pnpm install
-pnpm run build
-pnpm run typecheck
-```
+Follow the canonical setup sequence defined in [SETUP.md](../SETUP.md) for the most reliable experience.
 
 ## Full setup (advanced/integration-heavy)
 
 Includes JobForge adapters, extended QA/security verification, and full workspace checks.
 
-Typical commands:
-
+After completing the canonical setup sequence, run:
 ```bash
 pnpm run verify
 pnpm run repo-integrity
@@ -28,3 +21,4 @@ pnpm run verify:security:full
 
 - Some advanced checks require external services/credentials.
 - Keep optional integrations disabled unless actively needed.
+- Always begin with the canonical setup sequence before running full verification.

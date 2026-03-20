@@ -1,19 +1,10 @@
-/**
- * Reconciliation Run Detail Page
- * Shows reconciliation matches and results
- */
+import { redirect } from "next/navigation";
 
-import { ReconciliationMatches } from "@/components/console/ReconciliationMatches";
-
-export default function ReconciliationPage({
+export default async function ReconciliationRunAlias({
   params,
 }: {
-  params: { runId: string };
+  params: Promise<{ runId: string }>;
 }) {
-  return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-6">Reconciliation Results</h1>
-      <ReconciliationMatches runId={params.runId} />
-    </div>
-  );
+  const { runId } = await params;
+  redirect(`/console/reconciliations?runId=${encodeURIComponent(runId)}`);
 }

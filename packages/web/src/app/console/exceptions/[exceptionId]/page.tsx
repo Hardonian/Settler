@@ -1,14 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { EmptyState } from "@/components/EmptyState";
-import { ErrorState } from "@/components/ErrorState";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { safeFetch } from "@/lib/safe-fetch";
-import { RefreshCw, CheckCircle2, XCircle, Clock, AlertCircle, Copy, Zap } from "lucide-react";
+import { RefreshCw, CheckCircle2, XCircle, Clock, AlertCircle, Copy } from "lucide-react";
 import Link from "next/link";
 import { useGovernanceState } from "@/hooks/use-governance-state";
 import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
@@ -18,24 +19,29 @@ interface ExceptionDetail {
   type: string;
   status: "pending" | "investigating" | "resolved" | "ignored";
   severity: "low" | "medium" | "high" | "critical";
-  detectedAt: Date;
+  detectedAt: string;
   description: string;
+  statusDetail?: string;
+  reasonTags?: string[];
   amount?: number;
   currency?: string;
   sourceTransactionId?: string;
   targetTransactionId?: string;
   sourceSystem?: string;
   targetSystem?: string;
-  rootCause?: string;
+  runId?: string;
+  fieldPath?: string;
+  expectedValue?: unknown;
+  actualValue?: unknown;
   resolution?: string;
-  resolvedAt?: Date;
-  ignoredAt?: Date;
+  resolvedAt?: string;
+  ignoredAt?: string;
   ignoredBy?: string;
   playbookApplied?: string;
   confidenceScore?: number;
   suggestedActions?: string[];
   auditTrail: {
-    timestamp: Date;
+    timestamp: string;
     action: string;
     user: string;
     details?: string;
@@ -43,16 +49,21 @@ interface ExceptionDetail {
 }
 
 export default function ExceptionDetailPage() {
+  const params = useParams();
+  const exceptionId =
+    params && typeof params.exceptionId === "string" ? params.exceptionId : undefined;
   const [exception, setException] = useState<ExceptionDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { isFrozen, governanceState } = useGovernanceState();
 
-  // In a real app, we'd get the exceptionId from useParams()
-  // For now, we'll simulate it or leave it as a placeholder
-  const exceptionId = "EXC-12345"; // This would come from useParams()
-
   useEffect(() => {
+    if (!exceptionId) {
+      setError("Missing exception ID");
+      setLoading(false);
+      return;
+    }
+
     loadExceptionDetail();
 
     // Poll for updates if exception is still active
@@ -64,11 +75,22 @@ export default function ExceptionDetailPage() {
   }, [exceptionId, exception?.status]);
 
   const loadExceptionDetail = async () => {
+    if (!exceptionId) {
+      return;
+    }
+
     setLoading(true);
-    const result = await safeFetch<ExceptionDetail>(`/api/exceptions/${exceptionId}`);
+    const result = await safeFetch<{ exception?: ExceptionDetail } | ExceptionDetail>(
+      `/api/exceptions/${exceptionId}`
+    );
 
     if (result.success && result.data) {
-      setException(result.data);
+      const payload = result.data;
+      const nextException: ExceptionDetail | null =
+        payload && typeof payload === "object" && "exception" in payload
+          ? (payload.exception ?? null)
+          : (payload as ExceptionDetail);
+      setException(nextException);
       setError(null);
     } else {
       setError(result.error?.message || "Failed to load exception detail");
@@ -104,18 +126,6 @@ export default function ExceptionDetailPage() {
       } else {
         alert(result.error?.message || "Failed to ignore exception");
       }
-    }
-  };
-
-  const handleRetry = async () => {
-    const result = await safeFetch(`/api/exceptions/${exceptionId}?action=retry`, {
-      method: "POST",
-    });
-
-    if (result.success) {
-      await loadExceptionDetail();
-    } else {
-      alert(result.error?.message || "Failed to retry exception");
     }
   };
 
@@ -255,6 +265,11 @@ export default function ExceptionDetailPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
+            {exception.statusDetail && (
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300">
+                {exception.statusDetail}
+              </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <h3 className="font-medium text-slate-900 dark:text-white">Type</h3>
@@ -262,6 +277,18 @@ export default function ExceptionDetailPage() {
                   {exception.type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                 </p>
               </div>
+              {exception.reasonTags && exception.reasonTags.length > 0 && (
+                <div>
+                  <h3 className="font-medium text-slate-900 dark:text-white">Decision Drivers</h3>
+                  <div className="mt-1 flex flex-wrap gap-1.5">
+                    {exception.reasonTags.map((tag) => (
+                      <Badge key={`${exception.id}-${tag}`} variant="outline">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div>
                 <h3 className="font-medium text-slate-900 dark:text-white">Description</h3>
                 <p className="text-slate-600 dark:text-slate-400">{exception.description}</p>
@@ -272,6 +299,25 @@ export default function ExceptionDetailPage() {
                   {new Date(exception.detectedAt).toLocaleString()}
                 </p>
               </div>
+              {exception.runId && (
+                <div>
+                  <h3 className="font-medium text-slate-900 dark:text-white">Run</h3>
+                  <Link
+                    href={`/console/runs/${exception.runId}`}
+                    className="text-sm text-blue-600 hover:underline dark:text-blue-400"
+                  >
+                    {exception.runId}
+                  </Link>
+                </div>
+              )}
+              {exception.fieldPath && (
+                <div>
+                  <h3 className="font-medium text-slate-900 dark:text-white">Field</h3>
+                  <p className="text-slate-600 dark:text-slate-400 font-mono">
+                    {exception.fieldPath}
+                  </p>
+                </div>
+              )}
               {exception.amount && exception.currency && (
                 <div>
                   <h3 className="font-medium text-slate-900 dark:text-white">Amount</h3>
@@ -333,56 +379,68 @@ export default function ExceptionDetailPage() {
         </CardContent>
       </Card>
 
-      {/* Root Cause and Resolution */}
-      {exception.rootCause ||
-        exception.resolution ||
-        (exception.suggestedActions?.length && (
-          <>
-            {exception.rootCause && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Root Cause Analysis</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-slate-600 dark:text-slate-400 whitespace-pre-line">
-                    {exception.rootCause}
-                  </p>
-                </CardContent>
-              </Card>
+      {(exception.expectedValue !== undefined || exception.actualValue !== undefined) && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Observed Difference</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900/60">
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  Expected
+                </p>
+                <pre className="mt-2 whitespace-pre-wrap break-words text-sm text-slate-700 dark:text-slate-300">
+                  {JSON.stringify(exception.expectedValue ?? null, null, 2)}
+                </pre>
+              </div>
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900/60">
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  Actual
+                </p>
+                <pre className="mt-2 whitespace-pre-wrap break-words text-sm text-slate-700 dark:text-slate-300">
+                  {JSON.stringify(exception.actualValue ?? null, null, 2)}
+                </pre>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {(exception.resolution || exception.resolvedAt || exception.ignoredAt) && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Decision Record</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+            {exception.resolution && <p>{exception.resolution}</p>}
+            {exception.resolvedAt && (
+              <p>Resolved at {new Date(exception.resolvedAt).toLocaleString()}</p>
             )}
-            {exception.resolution && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Resolution</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-slate-600 dark:text-slate-400 whitespace-pre-line">
-                    {exception.resolution}
-                  </p>
-                  {exception.resolvedAt && (
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
-                      Resolved {new Date(exception.resolvedAt).toLocaleString()}
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
+            {exception.ignoredAt && (
+              <p>
+                Ignored at {new Date(exception.ignoredAt).toLocaleString()}
+                {exception.ignoredBy ? ` by ${exception.ignoredBy}` : ""}
+              </p>
             )}
-            {exception.suggestedActions?.length && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Suggested Actions</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="list-disc list-inside space-y-2 text-slate-600 dark:text-slate-400">
-                    {exception.suggestedActions.map((action, index) => (
-                      <li key={index}>{action}</li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            )}
-          </>
-        ))}
+          </CardContent>
+        </Card>
+      )}
+
+      {exception.suggestedActions?.length ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Suggested Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc list-inside space-y-2 text-slate-600 dark:text-slate-400">
+              {exception.suggestedActions.map((action, index) => (
+                <li key={index}>{action}</li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      ) : null}
 
       {/* Playbook Applied */}
       {exception.playbookApplied && (
@@ -399,36 +457,41 @@ export default function ExceptionDetailPage() {
       {/* Action Buttons */}
       {(exception.status === "pending" || exception.status === "investigating") && (
         <div className="flex flex-wrap gap-4">
-          {exception.status === "pending" && (
-            <>
-              <FreezeBlockedButton
-                onClick={handleResolve}
-                className="bg-green-600 hover:bg-green-700"
-                isFrozen={isFrozen}
-                freezeReason={governanceState?.freeze_reason}
-                frozenMessage="Exception resolution blocked by tenant freeze"
-              >
-                <CheckCircle2 className="mr-2" />
-                Resolve Exception
-              </FreezeBlockedButton>
-              <Button onClick={handleIgnore} className="bg-slate-600 hover:bg-slate-700">
-                <XCircle className="mr-2" />
-                Ignore Exception
-              </Button>
-            </>
-          )}
-          {exception.status === "investigating" && (
-            <>
-              <Button onClick={handleReopen} className="bg-yellow-600 hover:bg-yellow-700">
-                <AlertCircle className="mr-2" />
-                Reopen Investigation
-              </Button>
-              <Button onClick={handleRetry} className="bg-blue-600 hover:bg-blue-700">
-                <Zap className="mr-2" />
-                Retry Processing
-              </Button>
-            </>
-          )}
+          <FreezeBlockedButton
+            onClick={handleResolve}
+            className="bg-green-600 hover:bg-green-700"
+            isFrozen={isFrozen}
+            freezeReason={governanceState?.freeze_reason}
+            frozenMessage="Exception resolution blocked by tenant freeze"
+          >
+            <CheckCircle2 className="mr-2" />
+            Mark Resolved
+          </FreezeBlockedButton>
+          <FreezeBlockedButton
+            onClick={handleIgnore}
+            className="bg-slate-600 hover:bg-slate-700"
+            isFrozen={isFrozen}
+            freezeReason={governanceState?.freeze_reason}
+            frozenMessage="Ignoring exceptions is blocked by tenant freeze"
+          >
+            <XCircle className="mr-2" />
+            Ignore Exception
+          </FreezeBlockedButton>
+        </div>
+      )}
+
+      {(exception.status === "resolved" || exception.status === "ignored") && (
+        <div className="flex flex-wrap gap-4">
+          <FreezeBlockedButton
+            onClick={handleReopen}
+            className="bg-yellow-600 hover:bg-yellow-700"
+            isFrozen={isFrozen}
+            freezeReason={governanceState?.freeze_reason}
+            frozenMessage="Reopening exceptions is blocked by tenant freeze"
+          >
+            <AlertCircle className="mr-2" />
+            Reopen Exception
+          </FreezeBlockedButton>
         </div>
       )}
 

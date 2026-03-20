@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -120,7 +122,7 @@ export function WorkspaceInvestigationClient() {
               </p>
             </div>
             <div className="bg-muted rounded p-4">
-              <p className="text-xs text-muted-foreground font-medium">Mismatched</p>
+              <p className="text-xs text-muted-foreground font-medium">Unmatched</p>
               <p className="text-2xl font-bold text-foreground">
                 {investigation.mismatchedTransactions}
               </p>

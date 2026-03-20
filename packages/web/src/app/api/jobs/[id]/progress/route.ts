@@ -12,7 +12,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/shared/db/prismaClient";
 import { authenticateApiKey } from "@/shared/auth/apiKey";
-import { createClient } from "@/lib/supabase/server";
+import {
+  resolveTenantMembershipScope,
+  TenantMembershipError,
+} from "@/lib/supabase/tenant-membership";
 import { z } from "zod";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
@@ -71,40 +74,20 @@ export const GET = withSecurity(
         }
 
         // Authenticate request
-        let tenantId: string | null = null;
+        let tenantIds: string[] = [];
         let userId: string | null = null;
 
         const auth = await authenticateApiKey(request);
-        if (auth) {
-          tenantId = auth.tenantId || null;
+        if (auth?.tenantId && auth.userId) {
+          tenantIds = [auth.tenantId];
           userId = auth.userId || null;
         } else {
-          // Try Supabase auth as fallback (graceful degradation)
-          try {
-            const supabase = await createClient();
-            const {
-              data: { user },
-            } = await supabase.auth.getUser();
-            if (user) {
-              userId = user.id;
-              const billingAccount = await prisma.billingAccount.findFirst({
-                where: { userId: user.id },
-                select: { tenantId: true },
-              });
-              tenantId = billingAccount?.tenantId || null;
-            }
-          } catch {
-            return NextResponse.json(
-              {
-                error: "Unauthorized",
-                message: "Authentication required",
-              },
-              { status: 401 }
-            );
-          }
+          const scope = await resolveTenantMembershipScope();
+          tenantIds = scope.tenantIds;
+          userId = scope.userId;
         }
 
-        if (!tenantId || !userId) {
+        if (tenantIds.length === 0 || !userId) {
           return NextResponse.json(
             {
               error: "Unauthorized",
@@ -114,16 +97,31 @@ export const GET = withSecurity(
           );
         }
 
+        const requestedTenantId = request.nextUrl.searchParams.get("tenant_id")?.trim() || null;
+        const scopedTenantIds = requestedTenantId ? [requestedTenantId] : tenantIds;
+
+        if (requestedTenantId && !tenantIds.includes(requestedTenantId)) {
+          // Hide resource existence across tenant boundaries.
+          return NextResponse.json(
+            {
+              error: "Not found",
+              message: `Reconciliation job ${id} not found`,
+            },
+            { status: 404 }
+          );
+        }
+
         // Fetch job
         const job = await prisma.reconJob.findFirst({
           where: {
             id: id,
-            tenantId: tenantId,
+            tenantId: { in: scopedTenantIds },
             deletedAt: null,
           },
           select: {
             id: true,
             status: true,
+            tenantId: true,
           },
         });
 
@@ -141,8 +139,19 @@ export const GET = withSecurity(
         const currentResult = await prisma.reconResult.findFirst({
           where: {
             reconJobId: id,
-            tenantId: tenantId,
+            tenantId: job.tenantId,
             status: "running",
+          },
+          select: {
+            id: true,
+            status: true,
+            startedAt: true,
+            sourceCount: true,
+            targetCount: true,
+            matchedCount: true,
+            unmatchedSourceCount: true,
+            unmatchedTargetCount: true,
+            metadata: true,
           },
           orderBy: {
             startedAt: "desc",
@@ -212,14 +221,31 @@ export const GET = withSecurity(
         const duration = Date.now() - startTime;
         appLogger.info("[Job Progress API] Success", {
           jobId: id,
-          tenantId,
+          tenantId: job.tenantId,
           userId,
           duration,
           hasProgress: progress !== null,
         });
 
-        return NextResponse.json(response, { status: 200 });
+        return NextResponse.json(response, {
+          status: 200,
+          headers: {
+            "Cache-Control": "private, no-store, max-age=0",
+            Vary: "Authorization, Cookie, X-API-Key",
+          },
+        });
       } catch (error) {
+        if (error instanceof TenantMembershipError) {
+          return NextResponse.json(
+            {
+              progress: null,
+              error: error.message,
+              code: error.code,
+            },
+            { status: error.status }
+          );
+        }
+
         const duration = Date.now() - startTime;
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
         const errorStack = error instanceof Error ? error.stack : undefined;
@@ -230,7 +256,6 @@ export const GET = withSecurity(
           duration,
         });
 
-        // Never return 500 - return graceful error response
         return NextResponse.json(
           {
             progress: null,
@@ -238,7 +263,7 @@ export const GET = withSecurity(
             message: "Please try again later or contact support if the issue persists",
             details: process.env.NODE_ENV === "development" ? errorMessage : undefined,
           },
-          { status: 200 }
+          { status: 500 }
         );
       }
     },

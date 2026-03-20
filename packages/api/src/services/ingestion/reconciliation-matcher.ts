@@ -6,19 +6,34 @@
 
 import { v4 as uuidv4 } from "uuid";
 import { query, transaction } from "../../db";
-import { logError, logInfo } from "../../utils/logger";
+import { logError, logInfo, logWarn } from "../../utils/logger";
 import { MatchResult, ReconciliationConfig } from "./types";
 import { mlMatchingEngine } from "../matching/ml-matching-engine";
 import { enhancedCrossCustomerIntelligence } from "../matching/enhanced-cross-customer-intelligence";
 import { appendRunIntegrityEntry } from "../reconciliation/integrity";
 import { emitOperatorRuntimeEvent } from "../ops-intelligence/runtime-events";
+import {
+  getMatchingRulesForJob,
+  ReconciliationConfig as LoaderReconciliationConfig,
+} from "../matching-rules-loader";
 
+/**
+ * Default tolerance values (fallback when config loading fails)
+ */
 const DEFAULT_CONFIG: Required<ReconciliationConfig> = {
   dateWindowDays: 7,
   amountTolerance: 0.01,
   fuzzyDescriptionThreshold: 0.8,
   requireExactAmount: false,
 };
+
+/**
+ * Default tolerances from canonical loader
+ */
+const DEFAULT_TOLERANCES = {
+  amount: 0.01,
+  dateDays: 7,
+} as const;
 
 /**
  * Calculate Levenshtein distance (edit distance) between two strings
@@ -106,6 +121,69 @@ function datesWithinWindow(date1: Date, date2: Date, windowDays: number): boolea
 function daysDifference(date1: Date, date2: Date): number {
   const diffMs = date1.getTime() - date2.getTime();
   return Math.round(diffMs / (1000 * 60 * 60 * 24));
+}
+
+export interface OneToOneMatchingResult {
+  matches: MatchResult[];
+  matchedCount: number;
+  unmatchedSourceCount: number;
+  unmatchedTargetCount: number;
+  totalConfidence: number;
+}
+
+/**
+ * Enforce one-to-one source->target matching.
+ * A target transaction can be consumed by at most one source transaction.
+ */
+export async function executeOneToOneMatching(
+  sourceIds: string[],
+  targetIds: string[],
+  matcher: (sourceId: string, candidateTargetIds: string[]) => Promise<MatchResult | null>
+): Promise<OneToOneMatchingResult> {
+  const remainingTargetIds = new Set(targetIds);
+  const matches: MatchResult[] = [];
+  let matchedCount = 0;
+  let unmatchedSourceCount = 0;
+  let totalConfidence = 0;
+
+  for (const sourceId of sourceIds) {
+    const candidateTargetIds = Array.from(remainingTargetIds);
+    const match = await matcher(sourceId, candidateTargetIds);
+
+    if (!match) {
+      unmatchedSourceCount += 1;
+      continue;
+    }
+
+    if (match.targetTransactionId) {
+      if (!remainingTargetIds.has(match.targetTransactionId)) {
+        matches.push({
+          sourceTransactionId: match.sourceTransactionId,
+          matchType: "unmatched",
+          confidence: 0,
+          matchReason: "Target already consumed by another source transaction",
+        });
+        unmatchedSourceCount += 1;
+        continue;
+      }
+
+      remainingTargetIds.delete(match.targetTransactionId);
+      matchedCount += 1;
+      totalConfidence += match.confidence;
+    } else {
+      unmatchedSourceCount += 1;
+    }
+
+    matches.push(match);
+  }
+
+  return {
+    matches,
+    matchedCount,
+    unmatchedSourceCount,
+    unmatchedTargetCount: remainingTargetIds.size,
+    totalConfidence,
+  };
 }
 
 /**
@@ -351,10 +429,76 @@ export async function runReconciliation(
   ingestionId: string,
   tenantId: string,
   userId: string,
+  jobId?: string,
+  templateId?: string,
   config: ReconciliationConfig = {}
 ): Promise<string> {
   const runId = uuidv4();
   const traceId = uuidv4();
+
+  // Load matching rules config from canonical loader
+  let matchingConfig: LoaderReconciliationConfig;
+  try {
+    matchingConfig = await getMatchingRulesForJob(
+      tenantId,
+      jobId ?? `reconciliation-${runId}`,
+      templateId
+    );
+    logInfo("Loaded matching rules from canonical loader", {
+      runId,
+      tenantId,
+      jobId,
+      templateId,
+      configSource: matchingConfig.configSource,
+      amountTolerance: matchingConfig.amountTolerance,
+      dateToleranceDays: matchingConfig.dateToleranceDays,
+    });
+  } catch (error) {
+    logWarn("Failed to load matching rules from canonical loader, using defaults", {
+      runId,
+      tenantId,
+      jobId,
+      templateId,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    // Use defaults - matchingConfig will have default tolerances
+    matchingConfig = {
+      amountTolerance: DEFAULT_TOLERANCES.amount,
+      dateToleranceDays: DEFAULT_TOLERANCES.dateDays,
+      matchingRules: [],
+      configVersion: `fallback-${Date.now()}`,
+      configSource: "default",
+      tenantId,
+      jobId: jobId ?? `reconciliation-${runId}`,
+    };
+  }
+
+  // Merge user-provided config with loader config (user config takes precedence)
+  const effectiveConfig: Required<ReconciliationConfig> = {
+    ...DEFAULT_CONFIG,
+    amountTolerance: config.amountTolerance ?? matchingConfig.amountTolerance,
+    dateWindowDays: config.dateWindowDays ?? matchingConfig.dateToleranceDays,
+    fuzzyDescriptionThreshold: config.fuzzyDescriptionThreshold ?? 0.8,
+    requireExactAmount: config.requireExactAmount ?? false,
+  };
+
+  const runMetadata = {
+    traceId,
+    ingestionId,
+    jobId: jobId ?? null,
+    templateId: templateId ?? null,
+    requestedConfig: config,
+    effectiveConfig,
+    matchingConfig: {
+      amountTolerance: matchingConfig.amountTolerance,
+      dateToleranceDays: matchingConfig.dateToleranceDays,
+      matchingRulesCount: matchingConfig.matchingRules.length,
+      configVersion: matchingConfig.configVersion,
+      configSource: matchingConfig.configSource,
+      templateId: matchingConfig.templateId ?? null,
+      jobId: matchingConfig.jobId ?? null,
+    },
+  };
 
   try {
     // Create reconciliation run
@@ -363,7 +507,7 @@ export async function runReconciliation(
         id, ingestion_id, tenant_id, user_id, status, started_at,
         trace_id, metadata, created_at, updated_at
       ) VALUES ($1, $2, $3, $4, $5, NOW(), $6, $7, NOW(), NOW())`,
-      [runId, ingestionId, tenantId, userId, "running", traceId, JSON.stringify(config)]
+      [runId, ingestionId, tenantId, userId, "running", traceId, JSON.stringify(runMetadata)]
     );
 
     await emitOperatorRuntimeEvent({
@@ -400,24 +544,13 @@ export async function runReconciliation(
       traceId,
     });
 
-    // Match each source transaction
-    const matches: MatchResult[] = [];
-    let matchedCount = 0;
-    let unmatchedCount = 0;
-    let totalConfidence = 0;
-
-    for (const sourceId of sourceIds) {
-      const match = await matchTransaction(sourceId, targetIds, tenantId, config);
-      if (match) {
-        matches.push(match);
-        if (match.targetTransactionId) {
-          matchedCount++;
-          totalConfidence += match.confidence;
-        } else {
-          unmatchedCount++;
-        }
-      }
-    }
+    const oneToOneResult = await executeOneToOneMatching(sourceIds, targetIds, (sourceId, candidates) =>
+      matchTransaction(sourceId, candidates, tenantId, effectiveConfig)
+    );
+    const matches = oneToOneResult.matches;
+    const matchedCount = oneToOneResult.matchedCount;
+    const unmatchedCount = oneToOneResult.unmatchedSourceCount;
+    const totalConfidence = oneToOneResult.totalConfidence;
 
     // Store matches
     await transaction(async (client) => {
@@ -448,6 +581,17 @@ export async function runReconciliation(
 
     // Update reconciliation run
     const avgConfidence = matchedCount > 0 ? totalConfidence / matchedCount : 0;
+    const unmatchedTargetCount = oneToOneResult.unmatchedTargetCount;
+
+    const completedMetadata = {
+      ...runMetadata,
+      completion: {
+        matchedCount,
+        unmatchedSourceCount: unmatchedCount,
+        unmatchedTargetCount,
+        avgConfidence,
+      },
+    };
 
     await query(
       `UPDATE reconciliation_runs SET
@@ -459,15 +603,17 @@ export async function runReconciliation(
         unmatched_source_count = $4,
         unmatched_target_count = $5,
         confidence_avg = $6,
+        metadata = $7,
         updated_at = NOW()
-      WHERE id = $7`,
+      WHERE id = $8`,
       [
         sourceIds.length,
         targetIds.length,
         matchedCount,
         unmatchedCount,
-        targetIds.length - matchedCount, // Unmatched targets
+        unmatchedTargetCount,
         avgConfidence,
+        JSON.stringify(completedMetadata),
         runId,
       ]
     );
@@ -489,7 +635,11 @@ export async function runReconciliation(
       runId,
       matchedCount,
       unmatchedCount,
+      unmatchedTargetCount,
       avgConfidence,
+      effectiveAmountTolerance: effectiveConfig.amountTolerance,
+      effectiveDateWindowDays: effectiveConfig.dateWindowDays,
+      configSource: matchingConfig.configSource,
       traceId,
     });
 

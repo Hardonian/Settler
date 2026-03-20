@@ -1,274 +1,181 @@
-"use client";
+import { getAlertsList } from "@/lib/domain/runs/runs-reader";
+import { AlertsList } from "@/components/AlertsList";
+import { Bell, Search, Activity, ShieldAlert, ShieldCheck, Zap, Filter } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
-import React, { useState } from "react";
-import {
-  Search,
-  AlertCircle,
-  Server,
-  ListChecks,
-  BellOff,
-  AlertTriangle,
-  Building,
-  BookOpen,
-  Info,
-  FileText,
-  Download,
-  Lock,
-} from "lucide-react";
-import { DemoBanner } from "@/components/app/DemoBanner";
+export default async function AlertsPage() {
+  const alerts: any[] = await getAlertsList();
 
-type FilterTab = "open" | "ack" | "resolved";
-
-export default function AlertsPage() {
-  const [activeTab, setActiveTab] = useState<FilterTab>("open");
+  const criticalCount = alerts.filter((a) => a.severity === "critical").length;
+  const warningCount = alerts.filter((a) => a.severity === "warning").length;
+  const openCount = alerts.filter((a) => !a.acknowledged).length;
 
   return (
-    <div className="space-y-4">
-      {/* Page heading — rendered by the app shell header; we only need content here */}
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-          Operator Intelligence
-        </p>
-        <h1 className="text-2xl font-semibold text-slate-900">Live Alerts</h1>
-      </div>
+    <div className="space-y-8 pb-8">
+      {/* Page Header */}
+      <section className="relative overflow-hidden rounded-2xl border border-primary/10 bg-gradient-to-br from-primary/5 via-background to-background p-8 shadow-sm">
+        <div className="relative z-10">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary/70">
+            Operator Intelligence
+          </p>
+          <div className="flex items-center gap-4 mt-3">
+            <h1 className="text-4xl font-bold tracking-tight text-foreground">Live Alerts</h1>
+            {openCount > 0 && (
+              <Badge
+                variant="destructive"
+                className="h-6 px-3 bg-destructive/80 animate-pulse border-none"
+              >
+                {openCount} ACTIVE
+              </Badge>
+            )}
+          </div>
+          <p className="mt-4 max-w-2xl text-base text-muted-foreground leading-relaxed">
+            Monitor infrastructure-level drift and runtime reconciliation failures. Drill into
+            specific runs to confirm stable output hashes and root-cause analysis.
+          </p>
+        </div>
+        <div className="absolute -right-12 -top-12 opacity-[0.03] pointer-events-none">
+          <Bell size={320} className="text-primary" />
+        </div>
+      </section>
 
-      <DemoBanner label="Alert counts and card content are sample data. Connect an alerting backend to populate this surface with live events." />
-
-      {/* Summary strip */}
-      <div className="flex gap-3 overflow-x-auto pb-1">
-        <div className="flex min-w-[140px] flex-1 items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
-          <div className="h-2 w-2 animate-pulse rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
-          <div>
-            <span className="block text-2xl font-bold leading-none text-red-600">2</span>
-            <span className="text-xs font-medium uppercase tracking-wider text-red-500">
+      {/* Summary Matrix */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="bg-destructive/5 border-destructive/20 shadow-none">
+          <CardHeader className="p-4 pb-1">
+            <CardDescription className="text-[10px] uppercase font-bold tracking-wider text-destructive/80 flex justify-between">
               Critical
-            </span>
-          </div>
-        </div>
-        <div className="flex min-w-[140px] flex-1 items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
-          <div className="h-2 w-2 rounded-full bg-amber-500" />
-          <div>
-            <span className="block text-2xl font-bold leading-none text-amber-600">5</span>
-            <span className="text-xs font-medium uppercase tracking-wider text-amber-500">
+              <ShieldAlert className="w-3 h-3" />
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <p className="text-3xl font-mono font-bold text-destructive">{criticalCount}</p>
+            <p className="text-[10px] text-destructive/60 mt-1">Immediate triage required</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-amber-500/5 border-amber-500/20 shadow-none">
+          <CardHeader className="p-4 pb-1">
+            <CardDescription className="text-[10px] uppercase font-bold tracking-wider text-amber-600 flex justify-between">
               Warning
-            </span>
-          </div>
-        </div>
-        <div className="flex min-w-[140px] flex-1 items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
-          <div className="h-2 w-2 rounded-full bg-primary" />
-          <div>
-            <span className="block text-2xl font-bold leading-none text-primary">12</span>
-            <span className="text-xs font-medium uppercase tracking-wider text-primary/70">
-              Info
-            </span>
-          </div>
-        </div>
+              <Zap className="w-3 h-3" />
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <p className="text-3xl font-mono font-bold text-amber-600">{warningCount}</p>
+            <p className="text-[10px] text-amber-600/60 mt-1">Potential drift detected</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-primary/5 border-primary/20 shadow-none">
+          <CardHeader className="p-4 pb-1">
+            <CardDescription className="text-[10px] uppercase font-bold tracking-wider text-primary flex justify-between">
+              Health Check
+              <ShieldCheck className="w-3 h-3" />
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <p className="text-3xl font-mono font-bold text-primary">Normal</p>
+            <p className="text-[10px] text-primary/60 mt-1">Continuous verification active</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-muted/50 border-border/60 shadow-none">
+          <CardHeader className="p-4 pb-1">
+            <CardDescription className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground flex justify-between">
+              Uptime
+              <Activity className="w-3 h-3" />
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <p className="text-3xl font-mono font-bold text-foreground">99.98%</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Last 30 days active</p>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Filter tabs */}
-      <div
-        role="tablist"
-        aria-label="Alert filter"
-        className="flex rounded-lg bg-slate-100 p-1"
-      >
-        {(
-          [
-            { id: "open", label: "Open (14)" },
-            { id: "ack", label: "Ack (4)" },
-            { id: "resolved", label: "Resolved" },
-          ] as { id: FilterTab; label: string }[]
-        ).map(({ id, label }) => (
-          <button
-            key={id}
-            role="tab"
-            aria-selected={activeTab === id}
-            onClick={() => setActiveTab(id)}
-            className={
-              activeTab === id
-                ? "flex-1 rounded-md bg-white px-3 py-1.5 text-sm font-medium text-slate-900 shadow-sm transition-all"
-                : "flex-1 rounded-md px-3 py-1.5 text-sm font-medium text-slate-500 transition-all hover:text-slate-900"
-            }
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-
-      {/* Alert feed */}
-      <div className="space-y-3">
-        {/* Alert 1: Critical */}
-        <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-transform duration-200 active:scale-[0.98]">
-          <div className="absolute bottom-0 left-0 top-0 w-1.5 bg-red-500" />
-          <div className="p-4 pl-5">
-            <div className="mb-2 flex items-start justify-between">
-              <div className="flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-red-600" aria-hidden="true" />
-                <span className="text-xs font-bold uppercase tracking-wider text-red-600">
-                  Critical
-                </span>
-              </div>
-              <span className="font-mono text-xs text-slate-400">2m ago</span>
-            </div>
-            <h3 className="mb-1 text-base font-semibold leading-tight text-slate-900">
-              Payment Gateway Timeout — 500 Error
-            </h3>
-            <div className="mb-4 flex items-center gap-2 text-sm text-slate-500">
-              <Server className="h-4 w-4" aria-hidden="true" />
-              <span>api-gateway</span>
-              <span className="h-1 w-1 rounded-full bg-slate-400" />
-              <span>us-east-1</span>
-            </div>
-            <div className="mt-3 flex items-center justify-between">
-              <span className="inline-flex cursor-pointer items-center gap-1.5 rounded border border-primary/20 bg-primary/5 px-2.5 py-1 font-mono text-xs font-medium text-primary transition-colors hover:bg-primary/10">
-                <ListChecks className="h-3.5 w-3.5" aria-hidden="true" />
-                TRC-9928-X
-              </span>
-              <div className="flex gap-2">
-                <button
-                  aria-label="Silence this alert"
-                  className="rounded-lg bg-slate-100 p-2 text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-900"
-                >
-                  <BellOff className="h-5 w-5" aria-hidden="true" />
-                </button>
-                <button className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary/90">
-                  Ack
-                </button>
-              </div>
-            </div>
-          </div>
+      <div className="grid gap-8 lg:grid-cols-4 items-start">
+        {/* Main Feed */}
+        <div className="lg:col-span-3">
+          <AlertsList initialAlerts={alerts} />
         </div>
 
-        {/* Alert 2: Warning (expanded) */}
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          <div className="border-l-[6px] border-amber-500 p-4 pl-5">
-            <div className="mb-2 flex items-start justify-between">
-              <div className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-amber-600" aria-hidden="true" />
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-600">
-                  Warning
-                </span>
+        {/* Sidebar Filters & Settings */}
+        <aside className="space-y-6">
+          <Card className="border-border/60">
+            <CardHeader className="p-4">
+              <CardTitle className="text-sm font-bold flex items-center gap-2">
+                <Search className="w-4 h-4 text-primary" />
+                Search & Filter
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0 space-y-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search by ID or type..."
+                  className="w-full bg-muted/30 border border-border/40 rounded-lg py-2 pl-9 pr-3 text-xs focus:outline-none focus:ring-1 focus:ring-primary/40 transition-all font-mono"
+                />
               </div>
-              <span className="font-mono text-xs text-slate-400">15m ago</span>
-            </div>
-            <h3 className="mb-1 text-base font-semibold leading-tight text-slate-900">
-              Reconciliation Delay &gt; 5m
-            </h3>
-            <div className="mb-3 flex items-center gap-2 text-sm text-slate-500">
-              <Building className="h-4 w-4" aria-hidden="true" />
-              <span>ledger-service</span>
-            </div>
-            <div className="mt-4 border-t border-slate-100 pt-4">
-              <div className="mb-4 flex items-center gap-2">
-                <div className="flex -space-x-2">
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-slate-200 text-[10px] font-medium">
-                    JD
-                  </div>
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-slate-300 text-[10px] text-slate-500">
-                    +1
-                  </div>
-                </div>
-                <span className="text-xs text-slate-500">
-                  Acknowledged by{" "}
-                  <span className="font-medium text-slate-900">Jane Doe</span>
-                </span>
-              </div>
-              <div className="relative mb-4 space-y-4 pl-3 before:absolute before:bottom-1 before:left-0 before:top-1 before:w-px before:bg-slate-200">
-                <div className="relative pl-4">
-                  <div className="absolute -left-[5px] top-1.5 h-2 w-2 rounded-full bg-slate-300" />
-                  <p className="text-xs leading-tight text-slate-500">
-                    Alert triggered on{" "}
-                    <span className="font-mono">thresh_latency_high</span>
-                  </p>
-                </div>
-                <div className="relative pl-4">
-                  <div className="absolute -left-[5px] top-1.5 h-2 w-2 rounded-full bg-primary ring-4 ring-primary/20" />
-                  <p className="text-xs font-medium leading-tight text-slate-900">
-                    Runbook suggestion: Check DB locks
-                  </p>
-                  <button className="mt-2 flex items-center gap-1.5 text-xs font-medium text-primary hover:underline">
-                    <BookOpen className="h-3.5 w-3.5" aria-hidden="true" />
-                    View SOP-Ledger-04
-                  </button>
+              <div className="space-y-2">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Severity Level
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] bg-destructive/5 text-destructive border-destructive/20 cursor-pointer hover:bg-destructive/10"
+                  >
+                    CRITICAL
+                  </Badge>
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] bg-amber-500/5 text-amber-600 border-amber-500/20 cursor-pointer hover:bg-amber-500/10"
+                  >
+                    WARNING
+                  </Badge>
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] bg-blue-500/5 text-blue-600 border-blue-500/20 cursor-pointer hover:bg-blue-500/10"
+                  >
+                    INFO
+                  </Badge>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <button className="flex-1 rounded-lg bg-slate-100 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-200">
-                  Escalate
-                </button>
-                <button className="flex-1 rounded-lg bg-primary/10 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/20">
-                  Resolve
-                </button>
+              <div className="space-y-2">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Component
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="outline" className="text-[10px] cursor-pointer hover:bg-muted/60">
+                    RECONCILIATION
+                  </Badge>
+                  <Badge variant="outline" className="text-[10px] cursor-pointer hover:bg-muted/60">
+                    SYSTEM
+                  </Badge>
+                  <Badge variant="outline" className="text-[10px] cursor-pointer hover:bg-muted/60">
+                    SCHEMA
+                  </Badge>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
+            </CardContent>
+          </Card>
 
-        {/* Alert 3: Info */}
-        <div className="rounded-xl border border-slate-200 bg-white shadow-sm transition-transform duration-200 active:scale-[0.98]">
-          <div className="border-l-[6px] border-primary p-4 pl-5">
-            <div className="mb-2 flex items-start justify-between">
-              <div className="flex items-center gap-2">
-                <Info className="h-5 w-5 text-primary" aria-hidden="true" />
-                <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                  Info
-                </span>
-              </div>
-              <span className="font-mono text-xs text-slate-400">1h ago</span>
-            </div>
-            <h3 className="mb-1 text-base font-semibold leading-tight text-slate-900">
-              Daily Settlement Report Generated
-            </h3>
-            <div className="mb-3 flex items-center gap-2 text-sm text-slate-500">
-              <FileText className="h-4 w-4" aria-hidden="true" />
-              <span>reporting-service</span>
-            </div>
-            <div className="mt-2">
-              <button className="inline-flex items-center gap-1.5 rounded border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-xs font-medium text-slate-500 transition-colors hover:text-primary">
-                <Download className="h-3.5 w-3.5" aria-hidden="true" />
-                RPT-settlement-latest.pdf
+          <Card className="bg-primary/5 border-primary/20 shadow-none">
+            <CardContent className="p-4">
+              <h3 className="text-xs font-bold text-primary mb-2 flex items-center gap-2">
+                <Filter className="w-3 h-3" />
+                Smart Alert Routing
+              </h3>
+              <p className="text-[10px] text-muted-foreground leading-relaxed">
+                Settler automatically routes drift events based on their affected policy context.
+                Configure PagerDuty or Slack integrations in settings.
+              </p>
+              <button className="mt-3 text-[10px] font-bold text-primary hover:underline">
+                Edit Alert Rules →
               </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Alert 4: Critical (silenced) */}
-        <div className="rounded-xl border border-slate-200 bg-white opacity-60 shadow-sm transition-transform duration-200 active:scale-[0.98]">
-          <div className="border-l-[6px] border-red-500 p-4 pl-5">
-            <div className="mb-2 flex items-start justify-between">
-              <div className="flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-red-600" aria-hidden="true" />
-                <span className="text-xs font-bold uppercase tracking-wider text-red-600">
-                  Critical
-                </span>
-              </div>
-              <span className="font-mono text-xs text-slate-400">3h ago</span>
-            </div>
-            <h3 className="mb-1 text-base font-semibold leading-tight text-slate-900 line-through decoration-slate-400">
-              High Latency on Auth Service
-            </h3>
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <Lock className="h-4 w-4" aria-hidden="true" />
-              <span>auth-service</span>
-              <span className="ml-auto rounded bg-slate-800 px-2 py-0.5 text-xs text-slate-300">
-                Silenced
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Search bar */}
-      <div className="relative">
-        <Search
-          className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
-          aria-hidden="true"
-        />
-        <input
-          type="search"
-          placeholder="Search alerts…"
-          aria-label="Search alerts"
-          className="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-        />
+            </CardContent>
+          </Card>
+        </aside>
       </div>
     </div>
   );

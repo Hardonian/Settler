@@ -275,7 +275,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                   aria-hidden="true"
                 />
                 <Image
-                  src="/illustrations/hero-visual.svg"
+                  src="/assets/illustrations/hero-visual.svg"
                   alt="Settler deterministic reconciliation engine visualization showing data flow through rules-based matching pipeline"
                   width={600}
                   height={500}

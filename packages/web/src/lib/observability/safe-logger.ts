@@ -1,6 +1,6 @@
 /**
  * Safe Logger Wrapper
- * 
+ *
  * CRITICAL: All logging must go through this module.
  * - Never use console.* directly
  * - Always includes trace_id, user_id, tenant_id when available
@@ -8,14 +8,14 @@
  * - No deprecated warnings
  */
 
-import { logger } from './logger';
-import { getTraceId } from './trace';
+import { logger } from "./logger";
+import { getTraceId } from "./trace";
 
 /**
  * Safe log wrapper that never throws
  */
 async function safeLog(
-  level: 'info' | 'warn' | 'error' | 'debug',
+  level: "info" | "warn" | "error" | "debug",
   message: string,
   meta?: Record<string, unknown>
 ): Promise<void> {
@@ -28,16 +28,16 @@ async function safeLog(
     };
 
     switch (level) {
-      case 'info':
+      case "info":
         await logger.info(message, enrichedMeta);
         break;
-      case 'warn':
+      case "warn":
         await logger.warn(message, enrichedMeta);
         break;
-      case 'error':
+      case "error":
         await logger.error(message, enrichedMeta);
         break;
-      case 'debug':
+      case "debug":
         await logger.debug(message, enrichedMeta);
         break;
     }
@@ -52,28 +52,8 @@ async function safeLog(
  * Never throws, always succeeds (or fails silently)
  */
 export const safeLogger = {
-  info: (message: string, meta?: Record<string, unknown>) => safeLog('info', message, meta),
-  warn: (message: string, meta?: Record<string, unknown>) => safeLog('warn', message, meta),
-  error: (message: string, meta?: Record<string, unknown>) => safeLog('error', message, meta),
-  debug: (message: string, meta?: Record<string, unknown>) => safeLog('debug', message, meta),
+  info: (message: string, meta?: Record<string, unknown>) => safeLog("info", message, meta),
+  warn: (message: string, meta?: Record<string, unknown>) => safeLog("warn", message, meta),
+  error: (message: string, meta?: Record<string, unknown>) => safeLog("error", message, meta),
+  debug: (message: string, meta?: Record<string, unknown>) => safeLog("debug", message, meta),
 };
-
-/**
- * Replace console.warn with safe logger
- * @deprecated Use safeLogger.warn instead
- */
-export function logWarn(message: string, meta?: Record<string, unknown>): void {
-  safeLogger.warn(message, meta).catch(() => {
-    // Silently fail
-  });
-}
-
-/**
- * Replace console.error with safe logger
- * @deprecated Use safeLogger.error instead
- */
-export function logError(message: string, meta?: Record<string, unknown>): void {
-  safeLogger.error(message, meta).catch(() => {
-    // Silently fail
-  });
-}

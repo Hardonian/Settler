@@ -1,9 +1,13 @@
 /**
- * Runs API Route
+ * Runs API Route v1
  * Exposes reconciliation run history and status
+ *
+ * @deprecated This is the v1 API. New code should use /api/runs which uses the
+ * canonical response format with { data, pagination } instead of { rows, pagination }.
  */
 
 import { Router, Response } from "express";
+import { RunListResponseV1 } from "@settler/types";
 import { z } from "zod";
 import { AuthRequest } from "../../middleware/auth";
 import { requirePermission } from "../../middleware/authorization";
@@ -92,7 +96,8 @@ router.get(
         policy_name: string | null;
         total_records: number | null;
         matched_count: number | null;
-        mismatched_count: number | null;
+        unmatched_source_count: number | null;
+        unmatched_target_count: number | null;
       }>(
         `SELECT
           id,
@@ -103,7 +108,8 @@ router.get(
           policy_name,
           total_records,
           matched_count,
-          mismatched_count
+          unmatched_source_count,
+          unmatched_target_count
          FROM reconciliation_runs
          WHERE tenant_id = $1
          ORDER BY created_at DESC
@@ -118,7 +124,7 @@ router.get(
       );
       const totalCount = countResult[0] ? parseInt(countResult[0].count, 10) : 0;
 
-      // Transform to frontend-expected format
+      // Transform to frontend-expected format using canonical contract terminology
       const rows = runs.map((run) => ({
         run_id: run.id,
         created_at: run.created_at,
@@ -126,7 +132,10 @@ router.get(
         policy: run.policy_name,
         total_records: run.total_records,
         matched: run.matched_count,
-        mismatched: run.mismatched_count,
+        // Canonical: unmatched = unmatched_source_count + unmatched_target_count
+        unmatched: (run.unmatched_source_count || 0) + (run.unmatched_target_count || 0),
+        unmatchedSourceCount: run.unmatched_source_count,
+        unmatchedTargetCount: run.unmatched_target_count,
       }));
 
       res.json({
@@ -150,7 +159,7 @@ router.get(
 
 /**
  * GET /api/v1/runs/:id
- * Returns detailed information about a specific run
+ * Returns detailed information about a specific run, including provenance from recon_results
  */
 router.get(
   "/runs/:id",
@@ -175,7 +184,7 @@ router.get(
         return;
       }
 
-      // Query specific run with tenant scoping
+      // Query specific run with tenant scoping and LEFT JOIN to recon_results for provenance
       const runs = await query<{
         id: string;
         tenant_id: string;
@@ -185,22 +194,53 @@ router.get(
         policy_name: string | null;
         total_records: number | null;
         matched_count: number | null;
-        mismatched_count: number | null;
+        unmatched_source_count: number | null;
+        unmatched_target_count: number | null;
         error_message: string | null;
+        // Run-level fields
+        source_adapter: string | null;
+        target_adapter: string | null;
+        template_id: string | null;
+        // Provenance fields from recon_results
+        result_id: string | null;
+        snapshot_id: string | null;
+        input_hash: string | null;
+        started_at: string | null;
+        completed_at: string | null;
+        provenance_config_version: string | null;
+        provenance_config_source: string | null;
+        provenance_template_id: string | null;
+        provenance_matching_rule_ids: string | null;
+        provenance_rule_version_count: string | null;
       }>(
         `SELECT
-          id,
-          tenant_id,
-          created_at,
-          updated_at,
-          status,
-          policy_name,
-          total_records,
-          matched_count,
-          mismatched_count,
-          error_message
-         FROM reconciliation_runs
-         WHERE id = $1 AND tenant_id = $2`,
+          rr.id,
+          rr.tenant_id,
+          rr.created_at,
+          rr.updated_at,
+          rr.status,
+          rr.policy_name,
+          rr.total_records,
+          rr.matched_count,
+          rr.unmatched_source_count,
+          rr.unmatched_target_count,
+          rr.error_message,
+          rr.source_adapter,
+          rr.target_adapter,
+          rr.template_id,
+          recon_results.id as result_id,
+          recon_results.snapshot_id,
+          recon_results.input_hash,
+          recon_results.started_at,
+          recon_results.completed_at,
+          recon_results.summary -> 'provenance' ->> 'configVersion' as provenance_config_version,
+          recon_results.summary -> 'provenance' ->> 'configSource' as provenance_config_source,
+          recon_results.summary -> 'provenance' ->> 'templateId' as provenance_template_id,
+          recon_results.summary -> 'provenance' ->> 'matchingRuleIds' as provenance_matching_rule_ids,
+          recon_results.summary -> 'provenance' ->> 'ruleVersionCount' as provenance_rule_version_count
+         FROM reconciliation_runs rr
+         LEFT JOIN recon_results ON recon_results.recon_job_id = rr.id AND recon_results.tenant_id = rr.tenant_id
+         WHERE rr.id = $1 AND rr.tenant_id = $2`,
         [runId, tenantId]
       );
 
@@ -221,6 +261,44 @@ router.get(
         return;
       }
 
+      // Build provenance object matching CanonicalRunProvenance contract
+      const hasProvenanceData =
+        run.provenance_config_version !== null ||
+        run.provenance_config_source !== null ||
+        run.snapshot_id !== null;
+
+      const matchingRuleIds = run.provenance_matching_rule_ids
+        ? JSON.parse(run.provenance_matching_rule_ids)
+        : [];
+
+      const sourceAdapter = run.source_adapter || null;
+      const targetAdapter = run.target_adapter || null;
+
+      const provenance = hasProvenanceData
+        ? {
+            runId: run.id,
+            runResultId: run.result_id,
+            snapshotId: run.snapshot_id,
+            inputHash: run.input_hash,
+            executedAt: run.started_at,
+            completedAt: run.completed_at,
+            configSource: run.provenance_config_source,
+            configVersion: run.provenance_config_version,
+            templateId: run.provenance_template_id,
+            matchingRuleIds,
+            ruleVersionCount: run.provenance_rule_version_count
+              ? Number(run.provenance_rule_version_count)
+              : 0,
+            sourceAdapter,
+            targetAdapter,
+            sourceReference: [
+              sourceAdapter || "source",
+              targetAdapter || "target",
+              run.result_id || "result",
+            ].join(":"),
+          }
+        : null;
+
       res.json({
         data: {
           run_id: run.id,
@@ -229,9 +307,13 @@ router.get(
           status: run.status,
           policy: run.policy_name,
           total_records: run.total_records,
+          // Canonical contract fields
           matched: run.matched_count,
-          mismatched: run.mismatched_count,
+          unmatched: (run.unmatched_source_count || 0) + (run.unmatched_target_count || 0),
+          unmatchedSourceCount: run.unmatched_source_count,
+          unmatchedTargetCount: run.unmatched_target_count,
           error_message: run.error_message,
+          provenance,
         },
         timestamp: new Date().toISOString(),
       });
@@ -372,12 +454,10 @@ router.post(
       }
 
       if (["pending", "running"].includes(runs[0]?.status ?? "")) {
-        res
-          .status(400)
-          .json({
-            error: "INVALID_STATE",
-            message: "Cannot retry a run that is currently in progress",
-          });
+        res.status(400).json({
+          error: "INVALID_STATE",
+          message: "Cannot retry a run that is currently in progress",
+        });
         return;
       }
 

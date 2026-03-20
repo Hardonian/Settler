@@ -27,13 +27,46 @@ export const BrandMessages = {
 
   // Empty States
   empty: {
-    apiKeys: 'No API keys yet. Create your first API key to get started.',
+    // Basic empty messages (for when data exists but user hasn't created any)
+    apiKeys: 'No API keys yet. Create your first API key to get started with the API.',
     receipts: 'No receipts yet. Start parsing receipts using the Receipts API.',
-    featureFlags: 'No feature flags yet. Create your first flag to get started.',
-    webhooks: 'No webhooks configured yet. Create a webhook to receive real-time notifications.',
+    featureFlags: 'No feature flags yet. Create your first flag to control feature rollouts.',
+    webhooks: 'No webhooks configured yet. Set up webhooks to receive real-time notifications.',
     insights: 'No insights available yet. We\'ll generate insights as you use Settler.',
     alerts: 'No active alerts. All systems operating normally.',
     usage: 'No usage data available for this period.',
+    
+    // First-run / No data states - these explain WHY empty
+    noData: {
+      runs: {
+        default: 'No reconciliation runs yet. Start your first run to see results here.',
+        noSetup: 'Complete workspace setup before running reconciliations.',
+        noSeed: 'No demo data loaded. Run "pnpm demo:seed" to populate sample data.',
+      },
+      apiKeys: {
+        default: 'No API keys yet. Create one to authenticate API requests.',
+        noSetup: 'Complete workspace setup to create API keys.',
+        noSeed: 'No demo API keys available.',
+      },
+      webhooks: {
+        default: 'No webhooks configured. Add a webhook to receive event notifications.',
+        noSetup: 'Complete workspace setup to configure webhooks.',
+        noSeed: 'No demo webhooks available.',
+      },
+      receipts: {
+        default: 'No receipts parsed yet. Submit receipts to see them here.',
+        noSetup: 'Complete workspace setup to start parsing receipts.',
+        noSeed: 'No demo receipts available. Run "pnpm demo:seed" to load sample data.',
+      },
+    },
+    
+    // Setup required states - when user needs to complete setup first
+    setupRequired: {
+      runs: 'Complete workspace setup and connect data sources before running reconciliations.',
+      apiKeys: 'Complete workspace setup to generate API keys.',
+      webhooks: 'Complete workspace setup to configure webhooks.',
+      receipts: 'Complete workspace setup to start parsing receipts.',
+    },
   },
 
   // Loading States

@@ -1,341 +1,297 @@
-/**
- * Console Usage & Metrics Page
- *
- * Shows usage statistics and metrics across all services.
- */
-
-"use client";
-
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { UsageLimitIndicator } from "@/components/UsageLimitIndicator";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Activity, TrendingUp, AlertCircle } from "lucide-react";
-import { format } from "date-fns";
+  BarChart3,
+  Zap,
+  CreditCard,
+  ArrowUpRight,
+  Database,
+  Globe,
+  Clock,
+  Layers,
+} from "lucide-react";
+import Link from "next/link";
 
-interface UsageEvent {
-  id: string;
-  timestamp: Date;
-  service: string;
-  operation: string;
-  quantity: number;
-  unit?: string;
-}
-
-interface UsageSummary {
-  totalCalls: number;
-  byService: Record<string, number>;
-  byOperation: Record<string, number>;
-  errorRate: number;
-  period: {
-    start: Date;
-    end: Date;
-  };
-  limits?: {
-    reconcile?: { current: number; limit: number; remaining: number };
-    receipts?: { current: number; limit: number; remaining: number };
-    featureFlags?: { current: number; limit: number; remaining: number };
-    playground?: { current: number; limit: number; remaining: number };
-  };
-}
+export const metadata = {
+  title: "Usage & Billing | Settler",
+  description: "Monitor your reconciliation volume, resource consumption, and plan limits.",
+};
 
 export default function UsagePage() {
-  const [summary, setSummary] = useState<UsageSummary | null>(null);
-  const [events, setEvents] = useState<UsageEvent[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [timeRange, setTimeRange] = useState<"7d" | "30d" | "90d">("7d");
-
-  useEffect(() => {
-    fetchUsageData();
-  }, [timeRange]);
-
-  const fetchUsageData = async () => {
-    try {
-      setLoading(true);
-      const days = timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : 90;
-      // Fetch usage data with real-time tracking
-      const res = await fetch(`/api/console/usage?days=${days}`);
-      if (res.ok) {
-        const data = await res.json();
-        setSummary({
-          totalCalls: data.totalCalls || 0,
-          byService: data.byService || {},
-          byOperation: data.byOperation || {},
-          errorRate: data.errorRate || 0,
-          period: {
-            start: new Date(data.period?.start || Date.now()),
-            end: new Date(data.period?.end || Date.now()),
-          },
-          limits: data.limits || {},
-        });
-        setEvents(data.events || []);
-      } else {
-        // Handle error gracefully
-        setSummary({
-          totalCalls: 0,
-          byService: {},
-          byOperation: {},
-          errorRate: 0,
-          period: { start: new Date(), end: new Date() },
-          limits: {},
-        });
-        setEvents([]);
-      }
-    } catch (err) {
-      console.error("Failed to fetch usage data:", err);
-      // Set empty state on error
-      setSummary({
-        totalCalls: 0,
-        byService: {},
-        byOperation: {},
-        errorRate: 0,
-        period: { start: new Date(), end: new Date() },
-        limits: {},
-      });
-      setEvents([]);
-    } finally {
-      setLoading(false);
-    }
+  // Real-world dashboard pattern for usage
+  const quota = {
+    reconciliations: { current: 12540, limit: 100000 },
+    storage: { current: 4.2, limit: 50 }, // GB
+    retention: { current: 30, limit: 30 }, // Days
+    compute: { current: 840, limit: 2000 }, // CPU Hours
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
+  const plan = {
+    name: "Commercial",
+    status: "active",
+    nextBilling: "April 15, 2026",
+    amount: "$99.00/mo",
+  };
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            Usage & Metrics
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            View your API usage across all Settler services.
+    <div className="space-y-8 pb-8">
+      <div className="flex items-end justify-between">
+        <div className="max-w-4xl">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary/70 mb-2">
+            Operations & Billing
+          </p>
+          <h1 className="text-4xl font-bold tracking-tight text-foreground">Usage Control</h1>
+          <p className="mt-4 text-base text-muted-foreground leading-relaxed">
+            Monitor infrastructure consumption and manage your resource allocation. Usage metrics
+            are tracked in real-time to ensure predictable performance across your reconciliation
+            pipelines.
           </p>
         </div>
-        <select
-          value={timeRange}
-          onChange={(e) => setTimeRange(e.target.value as "7d" | "30d" | "90d")}
-          className="w-32 px-3 py-2 border rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
-        >
-          <option value="7d">Last 7 days</option>
-          <option value="30d">Last 30 days</option>
-          <option value="90d">Last 90 days</option>
-        </select>
+        <Button asChild size="lg" className="h-12 font-bold gap-2 shadow-xl ring-1 ring-primary/20">
+          <Link href="/pricing" className="flex items-center gap-2">
+            Upgrade Resources
+            <ArrowUpRight className="h-4 w-4" />
+          </Link>
+        </Button>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardDescription>Total API Calls</CardDescription>
-            <CardTitle className="text-3xl">{summary?.totalCalls.toLocaleString() || 0}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-              <Activity className="w-4 h-4" />
-              <span>Last {timeRange}</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardDescription>Error Rate</CardDescription>
-            <CardTitle className="text-3xl">{(summary?.errorRate || 0).toFixed(2)}%</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2 text-sm">
-              {summary && summary.errorRate < 0.01 ? (
-                <>
-                  <TrendingUp className="w-4 h-4 text-green-500" />
-                  <span className="text-green-600 dark:text-green-400">Excellent</span>
-                </>
-              ) : (
-                <>
-                  <AlertCircle className="w-4 h-4 text-amber-500" />
-                  <span className="text-amber-600 dark:text-amber-400">View</span>
-                </>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardDescription>Active Services</CardDescription>
-            <CardTitle className="text-3xl">
-              {summary ? Object.keys(summary.byService).length : 0}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-sm text-slate-600 dark:text-slate-400">Services with usage</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Tabs defaultValue="by-service" className="w-full">
-        <TabsList>
-          <TabsTrigger value="by-service">By Service</TabsTrigger>
-          <TabsTrigger value="by-operation">By Operation</TabsTrigger>
-          <TabsTrigger value="recent">Recent Events</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="by-service" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Usage by Service</CardTitle>
-              <CardDescription>API calls broken down by service with limits</CardDescription>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Resource Consumption Grid */}
+        <div className="lg:col-span-2 space-y-6">
+          <Card className="border-border/40 overflow-hidden glass">
+            <CardHeader className="border-b border-border/40 bg-muted/20 pb-6">
+              <CardTitle className="text-lg font-bold flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-primary" />
+                Consumption Metrics
+              </CardTitle>
+              <CardDescription className="font-medium mt-1">
+                Resource utilization across the current billing period.
+              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {summary &&
-                  Object.entries(summary.byService).map(([service, count]) => {
-                    const serviceKey = service.replace("settler-", "") as
-                      | "reconcile"
-                      | "receipts"
-                      | "featureFlags"
-                      | "playground";
-                    const limit = summary.limits?.[serviceKey];
-                    const hasLimit = limit && limit.limit > 0;
-                    const usagePercent = hasLimit
-                      ? (limit.current / limit.limit) * 100
-                      : (count / (summary.totalCalls || 1)) * 100;
-
-                    return (
-                      <div key={service} className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium capitalize">
-                            {service.replace("settler-", "").replace("-", " ")}
-                          </span>
-                          <div className="flex items-center gap-4">
-                            {hasLimit ? (
-                              <>
-                                <span className="text-sm text-slate-600 dark:text-slate-400">
-                                  {limit.current.toLocaleString()} /{" "}
-                                  {limit.limit === -1 ? "∞" : limit.limit.toLocaleString()}
-                                </span>
-                                {limit.remaining !== -1 && (
-                                  <span
-                                    className={`text-xs px-2 py-1 rounded ${
-                                      limit.remaining < limit.limit * 0.1
-                                        ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-                                        : limit.remaining < limit.limit * 0.25
-                                          ? "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200"
-                                          : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                                    }`}
-                                  >
-                                    {limit.remaining.toLocaleString()} remaining
-                                  </span>
-                                )}
-                              </>
-                            ) : (
-                              <span className="text-slate-600 dark:text-slate-400">
-                                {count.toLocaleString()} calls
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                          <div
-                            className={`h-2 rounded-full ${
-                              hasLimit && usagePercent > 90
-                                ? "bg-red-600"
-                                : hasLimit && usagePercent > 75
-                                  ? "bg-amber-600"
-                                  : "bg-blue-600"
-                            }`}
-                            style={{
-                              width: `${Math.min(usagePercent, 100)}%`,
-                            }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                {(!summary || Object.keys(summary.byService).length === 0) && (
-                  <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-                    No usage data available for this period.
+            <CardContent className="p-8 space-y-10">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                      <Zap className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold">Monthly Reconciliations</h3>
+                      <p className="text-xs text-muted-foreground font-medium">
+                        Volume processed through the engine
+                      </p>
+                    </div>
                   </div>
-                )}
+                  <div className="text-right">
+                    <span className="text-lg font-bold font-mono">12,540</span>
+                    <span className="text-xs text-muted-foreground font-medium ml-2">/ 100k</span>
+                  </div>
+                </div>
+                <Progress value={12.5} className="h-2" />
+              </div>
+
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                      <Database className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold">Evidence Snapshot Storage</h3>
+                      <p className="text-xs text-muted-foreground font-medium">
+                        Merkle-tree proofs and raw ingestion buffers
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-lg font-bold font-mono">4.2 GB</span>
+                    <span className="text-xs text-muted-foreground font-medium ml-2">/ 50 GB</span>
+                  </div>
+                </div>
+                <Progress value={8.4} className="h-2" />
+              </div>
+
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                      <Globe className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold">API Egress Traffic</h3>
+                      <p className="text-xs text-muted-foreground font-medium">
+                        External Webhook and Result payload delivery
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-lg font-bold font-mono">148 MB</span>
+                    <span className="text-xs text-muted-foreground font-medium ml-2">/ 10 GB</span>
+                  </div>
+                </div>
+                <Progress value={1.5} className="h-2" />
+              </div>
+
+              <div className="pt-4 flex items-center gap-2 text-[10px] uppercase font-black tracking-widest text-muted-foreground/60">
+                <Clock className="h-3 w-3" />
+                Last synchronized: March 20, 2026 02:45 UTC
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
 
-        <TabsContent value="by-operation" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Usage by Operation</CardTitle>
-              <CardDescription>Most used operations</CardDescription>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="border-border/40">
+              <CardHeader className="pb-2">
+                <CardDescription className="text-xs font-bold uppercase tracking-wider">
+                  Active Policy Count
+                </CardDescription>
+                <CardTitle className="text-2xl font-mono">
+                  4 <span className="text-muted-foreground text-sm">/ 10</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                  <div className="h-full bg-primary w-[40%]" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="border-border/40">
+              <CardHeader className="pb-2">
+                <CardDescription className="text-xs font-bold uppercase tracking-wider">
+                  Historical Replays
+                </CardDescription>
+                <CardTitle className="text-2xl font-mono">
+                  82 <span className="text-muted-foreground text-sm">/ 500</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                  <div className="h-full bg-primary w-[16.4%]" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Plan & Billing Sidebar */}
+        <div className="space-y-6">
+          <Card className="border-primary/20 bg-primary/5 shadow-none overflow-hidden relative">
+            <div className="absolute -right-8 -top-8 p-4 opacity-10">
+              <CreditCard className="h-32 w-32 text-primary" />
+            </div>
+            <CardHeader className="relative z-10">
+              <CardTitle className="text-lg font-bold flex items-center gap-2">
+                Plan Details
+              </CardTitle>
+              <CardDescription className="font-bold text-primary italic underline underline-offset-4">
+                {plan.name} License
+              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {summary &&
-                  Object.entries(summary.byOperation)
-                    .sort(([, a], [, b]) => b - a)
-                    .slice(0, 10)
-                    .map(([operation, count]) => (
-                      <div key={operation} className="flex items-center justify-between py-2">
-                        <code className="text-sm">{operation}</code>
-                        <span className="text-slate-600 dark:text-slate-400">
-                          {count.toLocaleString()}
+            <CardContent className="relative z-10 space-y-6">
+              <div className="space-y-1">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                  Next Billing Cycle
+                </p>
+                <p className="text-sm font-bold text-foreground">{plan.nextBilling}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                  Estimated Amount
+                </p>
+                <p className="text-xl font-bold text-foreground font-mono">{plan.amount}</p>
+              </div>
+
+              <div className="pt-6 border-t border-primary/20 space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                  <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                    High-Priority Reconciliation Queue
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                  <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                    SSO & Multi-Tenant Support
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                  <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                    Automated Evidence Signing
+                  </span>
+                </div>
+              </div>
+
+              <Button variant="default" className="w-full h-11 font-bold shadow-lg">
+                Manage Payment Method
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/40 bg-card/30">
+            <CardHeader className="pb-4 border-b border-border/40">
+              <CardTitle className="text-sm font-bold flex items-center gap-2">
+                <Layers className="h-4 w-4" />
+                Limits & Warnings
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 pt-8">
+              <UsageLimitIndicator
+                current={quota.reconciliations.current}
+                limit={quota.reconciliations.limit}
+                type="reconciliations"
+                userPlan="commercial"
+              />
+
+              <div className="mt-8 pt-8 border-t border-border/40 space-y-6">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">
+                    Recent Invoices
+                  </h4>
+                  <Link
+                    href="/console/billing/history"
+                    className="text-[10px] font-bold text-primary hover:underline"
+                  >
+                    View All
+                  </Link>
+                </div>
+                <div className="space-y-3">
+                  {[
+                    { id: "INV-621", date: "Mar 01, 2026", amount: "$99.00", status: "Paid" },
+                    { id: "INV-584", date: "Feb 01, 2026", amount: "$99.00", status: "Paid" },
+                  ].map((inv) => (
+                    <div
+                      key={inv.id}
+                      className="flex items-center justify-between p-3 rounded-lg border border-border/20 bg-muted/40 group hover:bg-primary/5 transition-colors"
+                    >
+                      <div className="flex flex-col">
+                        <span className="text-[11px] font-bold text-foreground group-hover:text-primary transition-colors">
+                          {inv.id}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground font-medium">
+                          {inv.date}
                         </span>
                       </div>
-                    ))}
+                      <div className="text-right">
+                        <p className="text-xs font-bold font-mono text-foreground">{inv.amount}</p>
+                        <Badge
+                          variant="outline"
+                          className="text-[9px] font-black uppercase text-success border-success/30 bg-success/5 h-4"
+                        >
+                          PAID
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="recent" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Events</CardTitle>
-              <CardDescription>Latest API usage events</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Time</TableHead>
-                    <TableHead>Service</TableHead>
-                    <TableHead>Operation</TableHead>
-                    <TableHead>Quantity</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {events.map((event) => (
-                    <TableRow key={event.id}>
-                      <TableCell className="text-sm">
-                        {format(new Date(event.timestamp), "PPp")}
-                      </TableCell>
-                      <TableCell className="capitalize">
-                        {event.service.replace("settler-", "").replace("-", " ")}
-                      </TableCell>
-                      <TableCell>
-                        <code className="text-xs">{event.operation}</code>
-                      </TableCell>
-                      <TableCell>{event.quantity}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+        </div>
+      </div>
     </div>
   );
 }

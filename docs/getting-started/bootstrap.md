@@ -1,6 +1,6 @@
 # Bootstrap
 
-`pnpm run bootstrap` is the canonical first-run setup command.
+`pnpm run bootstrap` is the canonical first-run setup command, as defined in [SETUP.md](../SETUP.md).
 
 It performs:
 
@@ -10,3 +10,5 @@ It performs:
 4. Run `pnpm run doctor -- --skip-pipeline --first-run`.
 
 Bootstrap is idempotent for repeated local runs and keeps core onboarding independent from optional integrations.
+
+For the complete canonical setup sequence, see [SETUP.md](../SETUP.md).

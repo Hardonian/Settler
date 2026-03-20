@@ -1,292 +1,198 @@
-import Link from "next/link";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { AnimatedHero } from "@/components/AnimatedHero";
 import { Button } from "@/components/ui/button";
-import { ReviewQueuePanel } from "@/components/stitch-import/ReviewQueuePanel";
-import {
-  ArrowRight,
-  GitBranch,
-  CheckCircle2,
-  Clock,
-  Hash,
-  RefreshCw,
-  Shield,
-  Terminal,
-} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { History, Play, ShieldCheck, ArrowRight, Terminal, RefreshCw, Layers } from "lucide-react";
+import Link from "next/link";
 
 export const metadata = {
-  title: "Deterministic Replay Lab | Settler",
-  description:
-    "Inspect replay timelines with expected-vs-observed hash diffs. Verify determinism, debug mismatches, and audit past reconciliation runs.",
+  title: "Replay Lab | Settler",
+  description: "Deterministic execution replay infrastructure for financial auditing.",
 };
 
-const capabilities = [
+const features = [
   {
+    title: "100% Determinism",
+    description:
+      "Re-run any historical matching job with the exact data snapshot, ensuring 1:1 hash parity.",
     icon: RefreshCw,
-    title: "Exact Replay",
-    description:
-      "Re-run any historical reconciliation with the same data snapshot and rules configuration. Same inputs, guaranteed same outputs.",
   },
   {
-    icon: Hash,
-    title: "Hash Diff Inspection",
+    title: "Drift Visualization",
     description:
-      "Compare expected vs. observed SHA-256 hashes at every step in the execution timeline. Pinpoint exactly where and why drift occurred.",
+      "Compare baseline snapshots against production state to identify subtle data mutation.",
+    icon: Layers,
   },
   {
-    icon: GitBranch,
-    title: "Timeline Visualization",
+    title: "Immutable Evidence",
     description:
-      "Navigate the full execution DAG — match passes, rule evaluations, variance flags — as an interactive timeline with full context.",
-  },
-  {
-    icon: Shield,
-    title: "Audit Evidence Export",
-    description:
-      "Export replay results as a signed, self-contained evidence bundle. Attach to audit packages or share with reviewers.",
+      "Every replay is cryptographically signed and added to the audit-ready evidence chain.",
+    icon: ShieldCheck,
   },
 ];
 
-const terminalLines = [
-  { prefix: "$", text: "settler replay --run-id rec_01HX9K2W --snapshot HEAD", type: "cmd" },
-  { prefix: "→", text: "Loading execution snapshot run rec_01HX9K2W...", type: "info" },
-  {
-    prefix: "→",
-    text: "Rules: v2.4.1 · Adapter: stripe + postgres · Records: 14,822",
-    type: "info",
-  },
-  { prefix: "→", text: "Replaying 3 reconciliation passes...", type: "info" },
-  { prefix: "✓", text: "Pass 1/3 complete — 14,691 matched (SHA256: a3f9c1...)", type: "success" },
-  { prefix: "✓", text: "Pass 2/3 complete — 128 flagged  (SHA256: b72d4e...)", type: "success" },
-  { prefix: "✓", text: "Pass 3/3 complete — 3 escalated  (SHA256: 9e1a0f...)", type: "success" },
-  { prefix: "→", text: "Hash chain verified. Determinism confirmed.", type: "info" },
-  {
-    prefix: "✓",
-    text: "Evidence bundle written to ./replay-evidence-rec_01HX9K2W.json",
-    type: "success",
-  },
-];
-
-export default function ReplayLabPage() {
+export default function ReplayLabMarketingPage() {
   return (
-    <>
+    <div className="min-h-screen bg-background">
       <Navigation />
-      <main id="main-content" className="min-h-screen bg-slate-50 dark:bg-slate-950 antialiased">
-        {/* Hero */}
-        <section className="pt-24 sm:pt-28 lg:pt-36 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
-          <div className="max-w-4xl mx-auto">
-            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500 mb-4">
-              Deterministic Replay
-            </p>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white tracking-tight mb-5 leading-[1.1]">
-              Replay Lab
-            </h1>
-            <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed mb-8">
-              Validate determinism with timeline replay and hash-diff inspection from real execution
-              receipts. Re-run any past reconciliation, verify its outputs, and export the evidence.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button
-                size="lg"
-                asChild
-                className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 px-7 py-5 font-semibold shadow-lg transition-all duration-200"
-              >
-                <Link href="/app/replay" className="flex items-center gap-2">
-                  Open Replay Surface
-                  <ArrowRight className="w-4 h-4" aria-hidden="true" />
-                </Link>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                asChild
-                className="px-7 py-5 border-slate-300 dark:border-slate-700 font-medium"
-              >
-                <Link href="/docs/replay-lab">Read the Docs</Link>
-              </Button>
-            </div>
-          </div>
-        </section>
 
-        {/* Capabilities */}
-        <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950">
-          <div className="max-w-6xl mx-auto">
-            <div className="mb-10">
-              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500 mb-3">
-                What Replay Lab Does
-              </p>
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-                Verify every run. Debug any mismatch. Prove the results.
-              </h2>
-            </div>
+      <AnimatedHero
+        badge="Platform Feature"
+        title="Replay Lab"
+        description="Point-in-time reconstruction for financial flows. Every reconciliation run is a time-capsule, ready for replay, audit, and verification."
+      />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {capabilities.map((cap, idx) => {
-                const Icon = cap.icon;
-                return (
-                  <div
-                    key={idx}
-                    className="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-md transition-all duration-200"
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
-                      <Icon
-                        className="w-5 h-5 text-slate-700 dark:text-slate-300"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-1.5 tracking-tight">
-                      {cap.title}
-                    </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                      {cap.description}
+      {/* Main Feature Visualization */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto -mt-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="space-y-8">
+            <h2 className="text-4xl font-bold tracking-tight italic">Audit-Ready Replay Engine</h2>
+            <p className="text-lg text-muted-foreground font-medium leading-relaxed max-w-xl">
+              Financial auditing requires more than just logs. Settler Replay Lab allows you to
+              travel back to the exact moment of a match, restoring the full execution context to
+              prove mathematical correctness at any later date.
+            </p>
+
+            <div className="space-y-4">
+              {features.map((f) => (
+                <div
+                  key={f.title}
+                  className="flex gap-4 p-4 rounded-xl border border-border/40 bg-card/50"
+                >
+                  <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                    <f.icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold">{f.title}</h3>
+                    <p className="text-xs text-muted-foreground mt-1 font-medium">
+                      {f.description}
                     </p>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
+
+            <Button asChild size="lg" className="h-14 px-8 text-lg font-bold group">
+              <Link href="/signup">
+                Start Replaying
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </Button>
           </div>
-        </section>
 
-        {/* Terminal preview */}
-        <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-slate-900 text-white">
-          <div className="max-w-4xl mx-auto">
-            <div className="mb-8">
-              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-3">
-                CLI Preview
-              </p>
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3">
-                Replay from the terminal
-              </h2>
-              <p className="text-slate-400 leading-relaxed max-w-2xl">
-                The Settler CLI makes any past run replayable. Pass a run ID and the CLI will
-                reconstruct the execution, verify the hash chain, and confirm determinism.
-              </p>
-            </div>
-
-            {/* Terminal window */}
-            <div className="rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-950">
-              <div className="flex items-center gap-2 px-4 py-3 bg-slate-900 border-b border-slate-800">
-                <div className="w-3 h-3 rounded-full bg-red-500/80" aria-hidden="true" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500/80" aria-hidden="true" />
-                <div className="w-3 h-3 rounded-full bg-green-500/80" aria-hidden="true" />
-                <div className="ml-3 flex items-center gap-2">
-                  <Terminal className="w-3.5 h-3.5 text-slate-500" aria-hidden="true" />
-                  <span className="text-xs text-slate-500 font-mono">settler-cli</span>
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary to-blue-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition-opacity" />
+            <Card className="relative border-border/60 bg-slate-950 overflow-hidden min-h-[500px] flex flex-col">
+              <div className="flex items-center gap-2 p-4 bg-slate-900 border-b border-white/5">
+                <div className="flex gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-500/20" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/20" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-green-500/20" />
+                </div>
+                <div className="ml-4 px-3 py-1 rounded bg-slate-800 text-[10px] font-mono text-slate-400">
+                  ~/replay-engine/active-session
                 </div>
               </div>
-              <div className="p-5 font-mono text-sm space-y-2 leading-relaxed">
-                {terminalLines.map((line, idx) => (
-                  <div key={idx} className="flex items-start gap-3">
-                    <span
-                      className={
-                        line.type === "cmd"
-                          ? "text-slate-500 flex-shrink-0 w-4"
-                          : line.type === "success"
-                            ? "text-green-400 flex-shrink-0 w-4"
-                            : "text-blue-400 flex-shrink-0 w-4"
-                      }
-                    >
-                      {line.prefix}
-                    </span>
-                    <span
-                      className={
-                        line.type === "cmd"
-                          ? "text-slate-200"
-                          : line.type === "success"
-                            ? "text-slate-300"
-                            : "text-slate-500"
-                      }
-                    >
-                      {line.text}
+              <CardContent className="flex-1 p-6 font-mono text-sm leading-relaxed overflow-hidden">
+                <div className="space-y-4">
+                  <p className="text-slate-500"># Initializing Replay Session [ID: rpl_9281X]</p>
+                  <p className="text-primary">$ setter restore --snapshot 2026-03-15T12:00:00Z</p>
+                  <p className="text-slate-300 ml-4">
+                    [SYSTEM] Restoring 4.2GB Ingestion Buffer...
+                  </p>
+                  <p className="text-slate-300 ml-4">
+                    [SYSTEM] Applying Contract Policy: v2.4.1 (Hash: 8aF9...)
+                  </p>
+                  <p className="text-primary">$ settler execute --mode deterministic</p>
+                  <div className="ml-4 space-y-1">
+                    <p className="text-slate-400 flex items-center gap-2">
+                      <Play className="h-3 w-3 fill-current text-primary" />
+                      Replaying 152,491 matches...
+                    </p>
+                    <div className="h-1.5 w-full max-w-[200px] bg-slate-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-primary w-[75%] animate-pulse" />
+                    </div>
+                  </div>
+                  <p className="text-success font-bold mt-4">
+                    DONE: 100% Match Hash Parity Confirmed.
+                  </p>
+                  <p className="text-slate-500">Proof Capsule generated: evidence_0315.json</p>
+                </div>
+              </CardContent>
+              <div className="p-4 border-t border-white/5 bg-slate-900/50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-primary">
+                    <ShieldCheck className="h-4 w-4" />
+                    <span className="text-[10px] uppercase font-bold tracking-widest">
+                      Signed Evidence Ready
                     </span>
                   </div>
-                ))}
+                  <Terminal className="h-4 w-4 text-slate-600" />
+                </div>
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10">
-              {[
-                {
-                  icon: Clock,
-                  title: "Point-in-time replay",
-                  desc: "Any past run, reconstructed exactly",
-                },
-                {
-                  icon: CheckCircle2,
-                  title: "Determinism verified",
-                  desc: "Hash chain confirms identical output",
-                },
-                {
-                  icon: Shield,
-                  title: "Evidence bundle",
-                  desc: "Signed export ready for audit packages",
-                },
-              ].map((f, idx) => {
-                const Icon = f.icon;
-                return (
-                  <div key={idx} className="flex items-start gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-4 h-4 text-slate-300" aria-hidden="true" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-white text-sm">{f.title}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">{f.desc}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            </Card>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* CTA */}
-        <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-4">
-              Ready to replay a run?
-            </h2>
-            <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed max-w-xl mx-auto">
-              Open the control-plane replay surface to inspect a specific run, or read the docs to
-              learn how replay integrates with your CI pipeline.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button
-                size="lg"
-                asChild
-                className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 px-8 font-semibold shadow-lg"
-              >
-                <Link href="/app/replay" className="flex items-center gap-2">
-                  Open Replay Surface
-                  <ArrowRight className="w-4 h-4" aria-hidden="true" />
-                </Link>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                asChild
-                className="px-8 border-slate-300 dark:border-slate-700"
-              >
-                <Link href="/docs/replay-lab">Read the Docs</Link>
-              </Button>
+      {/* Workflow Section */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center space-y-12">
+        <h2 className="text-3xl font-bold tracking-tight italic underline underline-offset-8">
+          How it works
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+          {[
+            {
+              step: "01",
+              title: "Ingestion Snapshot",
+              desc: "Settler captures and hashes all raw ingestion data before processing.",
+            },
+            {
+              step: "02",
+              title: "Frozen Policy",
+              desc: "The exact logic used during reconciliation is versioned and stored with the run.",
+            },
+            {
+              step: "03",
+              title: "Point-in-time Replay",
+              desc: "Our engine reconstructs the VM state to prove the result is invariant.",
+            },
+          ].map((item) => (
+            <div key={item.step} className="space-y-4">
+              <span className="text-4xl font-black text-primary/20 italic">{item.step}</span>
+              <h3 className="text-lg font-bold">{item.title}</h3>
+              <p className="text-sm text-muted-foreground font-medium leading-relaxed">
+                {item.desc}
+              </p>
             </div>
-          </div>
-        </section>
+          ))}
+        </div>
+      </section>
 
-        {/* Live Replay Review Surface — inside main for correct document structure */}
-        <section className="py-10 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              Live Replay Review Surface
-            </h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
-              Queue of reconciliation runs available for replay inspection.
-            </p>
-            <ReviewQueuePanel />
+      {/* Pre-footer CTA */}
+      <section className="py-24 bg-primary/5 border-t border-border/40">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <History className="h-16 w-16 text-primary mx-auto mb-8 opacity-40" />
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 tracking-tight italic">
+            Stop Assuming. Start Proving.
+          </h2>
+          <p className="text-xl text-muted-foreground mb-10 leading-relaxed font-medium">
+            Give your compliance and audit teams the tools they need to verify every financial
+            outcome.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button asChild size="lg" className="h-14 px-8 text-lg font-bold">
+              <Link href="/signup">Get Started</Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="h-14 px-8 text-lg font-bold">
+              <Link href="/docs/replay-lab">Read the Spec</Link>
+            </Button>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
 
       <Footer />
-    </>
+    </div>
   );
 }

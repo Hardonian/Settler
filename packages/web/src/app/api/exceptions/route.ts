@@ -7,10 +7,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/shared/db/prismaClient";
 import { getTraceId } from "@/lib/observability/trace";
-import { requireAuth } from "@/lib/api/unified-auth";
+import {
+  resolveTenantForMutation,
+  resolveTenantMembershipScope,
+  TenantMembershipError,
+} from "@/lib/supabase/tenant-membership";
 import { withSecurity } from "@/lib/middleware/api-security";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
+import {
+  buildExceptionDescription,
+  buildExceptionReasonTags,
+  buildExceptionStatusDetail,
+  getExceptionWorkflowState,
+} from "@/lib/exceptions/presentation";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +28,7 @@ export const runtime = "nodejs";
 
 // Query parameters schema
 const queryParamsSchema = z.object({
+  runId: z.string().uuid().optional(),
   status: z.enum(["pending", "investigating", "resolved", "ignored"]).optional(),
   severity: z.enum(["low", "medium", "high", "critical"]).optional(),
   type: z.string().optional(),
@@ -28,6 +39,59 @@ const queryParamsSchema = z.object({
 
 type QueryParams = z.infer<typeof queryParamsSchema>;
 
+function withWorkflowStatusFilter(
+  baseWhere: Record<string, unknown>,
+  status?: QueryParams["status"]
+): Record<string, unknown> {
+  if (!status) {
+    return baseWhere;
+  }
+
+  switch (status) {
+    case "pending":
+      return { ...baseWhere, acknowledged: false };
+    case "resolved":
+      return {
+        ...baseWhere,
+        acknowledged: true,
+        metadata: {
+          path: ["resolution", "status"],
+          equals: "resolved",
+        },
+      };
+    case "ignored":
+      return {
+        ...baseWhere,
+        acknowledged: true,
+        metadata: {
+          path: ["resolution", "status"],
+          equals: "ignored",
+        },
+      };
+    case "investigating":
+      return {
+        ...baseWhere,
+        acknowledged: true,
+        NOT: [
+          {
+            metadata: {
+              path: ["resolution", "status"],
+              equals: "resolved",
+            },
+          },
+          {
+            metadata: {
+              path: ["resolution", "status"],
+              equals: "ignored",
+            },
+          },
+        ],
+      };
+    default:
+      return baseWhere;
+  }
+}
+
 /**
  * GET /api/exceptions - List exceptions for the current workspace
  */
@@ -37,20 +101,15 @@ export const GET = withSecurity(
       const traceId = await getTraceId(request);
 
       try {
-        // Authenticate and get workspace context
-        const auth = await requireAuth(request);
-        const tenantId = auth.tenantId;
-
-        if (!tenantId) {
-          return NextResponse.json(
-            { error: "No workspace found", trace_id: traceId },
-            { status: 401 }
-          );
-        }
+        const { tenantIds } = await resolveTenantMembershipScope();
 
         // Parse and validate query params
         const { searchParams } = new URL(request.url);
+        const requestedTenantId =
+          searchParams.get("workspace_id")?.trim() || searchParams.get("tenant_id")?.trim() || null;
+        const tenantId = resolveTenantForMutation(tenantIds, requestedTenantId);
         const rawParams: QueryParams = {
+          runId: searchParams.get("runId") || undefined,
           status: (searchParams.get("status") as QueryParams["status"]) || undefined,
           severity: (searchParams.get("severity") as QueryParams["severity"]) || undefined,
           type: searchParams.get("type") || undefined,
@@ -62,17 +121,7 @@ export const GET = withSecurity(
         const params = queryParamsSchema.parse(rawParams);
 
         // Build where clause - workspace scoped
-        const whereClause: {
-          tenantId: string;
-          severity?: string;
-          driftType?: string;
-          acknowledged?: boolean;
-          OR?: Array<{
-            fieldPath?: { contains: string; mode: "insensitive" };
-            expectedValue?: { contains: string; mode: "insensitive" };
-            actualValue?: { contains: string; mode: "insensitive" };
-          }>;
-        } = { tenantId };
+        let whereClause: Record<string, unknown> = { tenantId };
 
         if (params.severity) {
           whereClause.severity = params.severity;
@@ -82,17 +131,17 @@ export const GET = withSecurity(
           whereClause.driftType = params.type;
         }
 
-        // Map status to acknowledged
-        if (params.status) {
-          whereClause.acknowledged = params.status === "resolved" || params.status === "ignored";
+        if (params.runId) {
+          whereClause.reconJobId = params.runId;
         }
+
+        whereClause = withWorkflowStatusFilter(whereClause, params.status);
 
         // Search in fieldPath, expectedValue, actualValue
         if (params.search) {
-          whereClause.OR = [
+          (whereClause as { OR?: unknown }).OR = [
             { fieldPath: { contains: params.search, mode: "insensitive" } },
-            { expectedValue: { contains: params.search, mode: "insensitive" } },
-            { actualValue: { contains: params.search, mode: "insensitive" } },
+            { driftType: { contains: params.search, mode: "insensitive" } },
           ];
         }
 
@@ -127,7 +176,11 @@ export const GET = withSecurity(
 
         // Transform to frontend format
         const items = exceptions.map((ex: any) => {
-          const status = ex.acknowledged ? "resolved" : "pending";
+          const metadata = (ex.metadata as Record<string, unknown>) || {};
+          const status = getExceptionWorkflowState({
+            acknowledged: ex.acknowledged,
+            metadata,
+          });
 
           return {
             id: ex.id,
@@ -135,7 +188,28 @@ export const GET = withSecurity(
             status: status as "pending" | "investigating" | "resolved" | "ignored",
             severity: (ex.severity || "low") as "low" | "medium" | "high" | "critical",
             detectedAt: ex.createdAt,
-            description: ex.fieldPath ? `Field mismatch: ${ex.fieldPath}` : "Drift detected",
+            description: buildExceptionDescription({
+              driftType: ex.driftType,
+              fieldPath: ex.fieldPath,
+              expectedValue: ex.expectedValue,
+              actualValue: ex.actualValue,
+            }),
+            statusDetail: buildExceptionStatusDetail({
+              driftType: ex.driftType,
+              fieldPath: ex.fieldPath,
+              expectedValue: ex.expectedValue,
+              actualValue: ex.actualValue,
+              metadata,
+              createdAt: ex.createdAt,
+              acknowledged: ex.acknowledged,
+              acknowledgedBy: ex.acknowledgedBy,
+              acknowledgedAt: ex.acknowledgedAt,
+            }),
+            reasonTags: buildExceptionReasonTags({
+              driftType: ex.driftType,
+              fieldPath: ex.fieldPath,
+              metadata,
+            }),
             amount: (ex.metadata as Record<string, unknown>)?.amount as number | undefined,
             currency: (ex.metadata as Record<string, unknown>)?.currency as string | undefined,
             sourceTransactionId: (ex.metadata as Record<string, unknown>)?.sourceTransactionId as
@@ -144,17 +218,27 @@ export const GET = withSecurity(
             targetTransactionId: (ex.metadata as Record<string, unknown>)?.targetTransactionId as
               | string
               | undefined,
+            runId: ex.reconJobId || undefined,
+            fieldPath: ex.fieldPath || undefined,
           };
         });
 
         return NextResponse.json({
           items,
+          data: items,
           total,
           limit,
           offset,
           trace_id: traceId,
         });
       } catch (error) {
+        if (error instanceof TenantMembershipError) {
+          return NextResponse.json(
+            { error: error.message, code: error.code, trace_id: traceId },
+            { status: error.status }
+          );
+        }
+
         appLogger.error("[Exceptions API] Error fetching exceptions", error);
 
         if (error instanceof z.ZodError) {
@@ -164,7 +248,6 @@ export const GET = withSecurity(
           );
         }
 
-        // Never return 500 - return graceful error response
         return NextResponse.json(
           {
             items: [],
@@ -173,7 +256,7 @@ export const GET = withSecurity(
             message: "Please try again later or contact support if the issue persists",
             trace_id: traceId,
           },
-          { status: 200 }
+          { status: 500 }
         );
       }
     },

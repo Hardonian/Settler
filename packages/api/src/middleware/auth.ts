@@ -7,12 +7,35 @@ import { config } from "../config";
 import { sendProblemJson } from "../utils/problem-json";
 
 export interface AuthRequest extends Request {
+  /**
+   * The authenticated user's ID
+   */
   userId?: string;
+  /**
+   * API key ID if using API key authentication
+   */
   apiKeyId?: string;
+  /**
+   * The raw API key (only set during validation)
+   */
   apiKey?: string;
+  /**
+   * Trace ID for request correlation
+   */
   traceId?: string;
+  /**
+   * Tenant ID - populated by auth middleware after successful authentication
+   * SECURITY: This tenantId should be used for all tenant-scoped queries
+   * instead of deriving tenant from userId
+   */
   tenantId?: string;
+  /**
+   * Request ID for deduplication
+   */
   requestId?: string;
+  /**
+   * Execution ID for long-running operations
+   */
   executionId?: string;
 }
 

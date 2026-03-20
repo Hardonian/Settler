@@ -12,8 +12,9 @@ import { Json } from "@/types/database.types";
 import { appLogger } from "@/lib/utils/logger";
 import { v4 as uuidv4 } from "uuid";
 
-// Types
-export type JobStatus = "queued" | "running" | "succeeded" | "failed" | "dead" | "canceled";
+// Types - import from canonical jobforge-shared
+import { JobStatus } from "@jobforge/shared";
+export type { JobStatus };
 
 export interface EnqueueJobParams {
   tenantId: string;
@@ -241,7 +242,7 @@ export async function getJobResult(jobId: string, tenantId: string): Promise<Job
 
     const { data: result, error } = await client
       .from("job_results")
-      .select("*")
+      .select("id, job_id, tenant_id, result_data, result_url, created_at")
       .eq("job_id", jobId)
       .single();
 

@@ -11,7 +11,12 @@ import {
   getReconciliationSummary,
   listReconciliationItems,
 } from "@/lib/server/settler/reconciliation";
-import { getPrimaryTenant } from "@/lib/supabase/tenant-helpers";
+import {
+  assertTenantMembership,
+  resolveTenantForMutation,
+  resolveTenantMembershipScope,
+  TenantMembershipError,
+} from "@/lib/supabase/tenant-membership";
 import { z } from "zod";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
@@ -24,6 +29,10 @@ export const maxDuration = 60;
 const RunReconciliationSchema = z.object({
   sourceId: z.string().min(1),
   targetAdapter: z.string().optional(),
+  amountTolerance: z.number().min(0).optional(),
+  dateWindowDays: z.number().min(0).optional(),
+  fuzzyDescriptionThreshold: z.number().min(0).max(1).optional(),
+  requireExactAmount: z.boolean().optional(),
   rules: z
     .array(
       z.object({
@@ -40,26 +49,68 @@ export const POST = withSecurity(
     async function POST(request: NextRequest) {
       try {
         const authContext: UnifiedAuthContext = await requireAuth(request);
+        const { userId, tenantIds } = await resolveTenantMembershipScope();
 
         // Get tenant ID
-        const tenantId = authContext.tenantId;
-        if (!tenantId) {
-          return NextResponse.json({ error: "No tenant found" }, { status: 400 });
+        let tenantId: string;
+        if (authContext.tenantId) {
+          assertTenantMembership(tenantIds, authContext.tenantId);
+          tenantId = authContext.tenantId;
+        } else {
+          tenantId = resolveTenantForMutation(tenantIds);
         }
-
-        // Get user ID
-        const userId = authContext.userId;
 
         // Parse and validate body
         const body = await request.json();
         const params = RunReconciliationSchema.parse(body);
 
+        const normalizedConfig: Record<string, unknown> = {};
+        if (typeof params.amountTolerance === "number") {
+          normalizedConfig.amountTolerance = params.amountTolerance;
+        }
+        if (typeof params.dateWindowDays === "number") {
+          normalizedConfig.dateWindowDays = params.dateWindowDays;
+        }
+        if (typeof params.fuzzyDescriptionThreshold === "number") {
+          normalizedConfig.fuzzyDescriptionThreshold = params.fuzzyDescriptionThreshold;
+        }
+        if (typeof params.requireExactAmount === "boolean") {
+          normalizedConfig.requireExactAmount = params.requireExactAmount;
+        }
+
+        // Backward compatibility for callers still sending tolerance/window in rules[] payload.
+        if (Array.isArray(params.rules) && params.rules.length > 0) {
+          const amountRule = params.rules.find(
+            (rule) =>
+              rule.field.toLowerCase().includes("amount") && typeof rule.tolerance === "number"
+          );
+          if (
+            amountRule &&
+            typeof normalizedConfig.amountTolerance !== "number" &&
+            typeof amountRule.tolerance === "number"
+          ) {
+            normalizedConfig.amountTolerance = amountRule.tolerance;
+          }
+
+          const dateRule = params.rules.find(
+            (rule) =>
+              rule.field.toLowerCase().includes("date") &&
+              typeof rule.tolerance === "number" &&
+              Number.isFinite(rule.tolerance)
+          );
+          if (
+            dateRule &&
+            typeof normalizedConfig.dateWindowDays !== "number" &&
+            typeof dateRule.tolerance === "number"
+          ) {
+            normalizedConfig.dateWindowDays = dateRule.tolerance;
+          }
+        }
+
         // Run reconciliation via the authoritative internal API
         const result = await triggerInternalReconciliationRun(tenantId, userId, {
           ingestionId: params.sourceId,
-          config: {
-            rules: params.rules,
-          },
+          config: normalizedConfig,
         });
 
         if (!result || !result.runId) {
@@ -83,6 +134,13 @@ export const POST = withSecurity(
           );
         }
 
+        if (error instanceof TenantMembershipError) {
+          return NextResponse.json(
+            { error: error.message, code: error.code },
+            { status: error.status }
+          );
+        }
+
         appLogger.error("[Reconciliation API] Error", error);
         return NextResponse.json(
           {
@@ -90,7 +148,7 @@ export const POST = withSecurity(
             error: "Failed to run reconciliation",
             message: "Please try again later or contact support if the issue persists",
           },
-          { status: 200 }
+          { status: 500 }
         );
       }
     },
@@ -104,12 +162,14 @@ export const GET = withSecurity(
     async function GET(request: NextRequest) {
       try {
         // Authenticate
-        await requireAuth(request);
-
-        // Get tenant ID
-        const tenantId = await getPrimaryTenant();
-        if (!tenantId) {
-          return NextResponse.json({ reconciliations: [] }, { status: 200 });
+        const authContext = await requireAuth(request);
+        const { tenantIds } = await resolveTenantMembershipScope();
+        let tenantId: string;
+        if (authContext.tenantId) {
+          assertTenantMembership(tenantIds, authContext.tenantId);
+          tenantId = authContext.tenantId;
+        } else {
+          tenantId = resolveTenantForMutation(tenantIds);
         }
 
         // Get reconciliation ID from query params
@@ -125,9 +185,11 @@ export const GET = withSecurity(
 
           // Get items
           const items = await listReconciliationItems(tenantId, reconciliationId);
+          const enrichedSummary =
+            items.length > 0 ? { ...summary, highestRiskItem: items[0] } : summary;
 
           return NextResponse.json({
-            reconciliation: summary,
+            reconciliation: enrichedSummary,
             items,
           });
         }
@@ -135,8 +197,20 @@ export const GET = withSecurity(
         // List all reconciliations (placeholder - would need list function)
         return NextResponse.json({ reconciliations: [] }, { status: 200 });
       } catch (error) {
+        if (error instanceof TenantMembershipError) {
+          return NextResponse.json(
+            { error: error.message, code: error.code },
+            { status: error.status }
+          );
+        }
         appLogger.error("[Reconciliation API] Error", error);
-        return NextResponse.json({ reconciliations: [] }, { status: 200 });
+        return NextResponse.json(
+          {
+            error: "Failed to load reconciliations",
+            message: "Please try again later or contact support if the issue persists",
+          },
+          { status: 500 }
+        );
       }
     },
     { feature: "GET API" }

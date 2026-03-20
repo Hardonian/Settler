@@ -12,7 +12,9 @@
 import { ConsoleLayout } from "@/components/console/ConsoleLayout";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { LocalDevBanner } from "@/components/env/LocalDevBanner";
 import { getConsoleAccessStatus } from "@/lib/auth/console-gate";
+import { isSuperAdmin } from "@/lib/auth/super-admin";
 import { validateSupabaseEnv } from "@/lib/env/validator";
 import { EnvErrorPanel } from "@/components/env/EnvErrorPanel";
 import { appLogger } from "@/lib/utils/logger";
@@ -59,6 +61,7 @@ export default async function ConsoleRootLayout({ children }: { children: React.
     // Check console access status (doesn't redirect, just returns status)
     // This allows unauthenticated users to see the free view
     const accessStatus = await getConsoleAccessStatus();
+    const hasSuperAdminScope = await isSuperAdmin();
 
     // Log access status for monitoring
     if (!accessStatus.allowed) {
@@ -75,7 +78,8 @@ export default async function ConsoleRootLayout({ children }: { children: React.
     return (
       <ErrorBoundary context="Console Layout">
         <Navigation />
-        <ConsoleLayout>{children}</ConsoleLayout>
+        {process.env.NODE_ENV === "development" && <LocalDevBanner />}
+        <ConsoleLayout isSuperAdmin={hasSuperAdminScope}>{children}</ConsoleLayout>
         <Footer />
       </ErrorBoundary>
     );
@@ -99,7 +103,7 @@ export default async function ConsoleRootLayout({ children }: { children: React.
     return (
       <>
         <Navigation />
-        <ConsoleLayout>
+        <ConsoleLayout isSuperAdmin={false}>
           <RouteStateCard
             {...routeStateFromVariant("backend-unreachable", {
               icon: TriangleAlert,

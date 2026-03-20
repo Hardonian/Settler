@@ -72,6 +72,9 @@ export function PaymentRecoveryFlow({ userId, subscriptionId }: PaymentRecoveryF
 
       if (response.ok) {
         await fetchRecoveryStatus();
+      } else {
+        const payload = (await response.json().catch(() => ({}))) as { error?: string };
+        alert(payload.error || "Failed to retry payment");
       }
     } catch (error: unknown) {
       console.error("Failed to retry payment:", error);

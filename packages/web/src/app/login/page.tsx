@@ -1,97 +1,153 @@
+import { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { type Metadata } from "next";
-
-// Login page reads auth cookies via Supabase server client — must be dynamic.
-export const dynamic = "force-dynamic";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
+import { SettlerLogo } from "@/components/brand/SettlerLogo";
+import { ShieldCheck, ArrowRight, Zap, History, Globe } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Log In — Settler",
-  description: "Sign in to your Settler reconciliation workspace.",
-  robots: { index: false, follow: false },
+  title: "Login | Settler",
+  description: "Secure access to your reconciliation control plane.",
 };
 
-async function loginAction(formData: FormData) {
-  "use server";
-
-  const email = String(formData.get("email") ?? "").trim();
-  const password = String(formData.get("password") ?? "");
-  const nextPath = String(formData.get("next") ?? "/app");
-
-  if (!email || !password) {
-    redirect("/login?error=missing_credentials");
-  }
-
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-  if (error) {
-    redirect("/login?error=invalid_credentials");
-  }
-
-  redirect(nextPath.startsWith("/") ? nextPath : "/app");
-}
-
-interface LoginPageProps {
-  searchParams: Promise<{ next?: string; error?: string }>;
-}
-
-export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const params = await searchParams;
-  const nextPath = params.next && params.next.startsWith("/") ? params.next : "/app";
-  const errorMessage =
-    params.error === "invalid_credentials"
-      ? "Invalid email or password."
-      : params.error === "missing_credentials"
-        ? "Email and password are required."
-        : null;
-
+export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <main className="mx-auto max-w-md px-4 py-16">
-        <div className="rounded-xl border border-border bg-card p-8">
-          <h1 className="mb-2 text-3xl font-semibold text-foreground">Log in to Settler</h1>
-          <p className="mb-6 text-sm text-muted-foreground">
-            Access your reconciliation workspace and deterministic run history.
-          </p>
-
-          {errorMessage ? (
-            <p className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-              {errorMessage}
-            </p>
-          ) : null}
-
-          <form action={loginAction} className="space-y-4">
-            <input type="hidden" name="next" value={nextPath} />
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" required />
+    <div className="flex min-h-screen">
+      {/* Left side: Form */}
+      <div className="flex flex-col flex-1 justify-center px-8 lg:px-12 xl:px-24 bg-background">
+        <div className="w-full max-w-sm mx-auto space-y-12">
+          <div className="space-y-6">
+            <Link href="/" className="inline-block hover:opacity-80 transition-opacity">
+              <SettlerLogo className="h-10 w-auto" />
+            </Link>
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold italic tracking-tight">Welcome Back</h1>
+              <p className="text-muted-foreground font-medium">
+                Enter your credentials to access the Control Plane.
+              </p>
             </div>
-            <div>
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" name="password" type="password" required />
+          </div>
+
+          <form className="space-y-6">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label
+                  htmlFor="email"
+                  className="text-xs font-bold uppercase tracking-widest text-muted-foreground"
+                >
+                  Email Address
+                </Label>
+                <Input
+                  id="email"
+                  placeholder="name@company.com"
+                  type="email"
+                  className="h-12 border-border/60 bg-muted/20 focus:ring-primary focus:border-primary font-medium"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label
+                    htmlFor="password"
+                    className="text-xs font-bold uppercase tracking-widest text-muted-foreground"
+                  >
+                    Password
+                  </Label>
+                  <Link
+                    href="/forgot-password"
+                    size="sm"
+                    className="text-xs font-bold text-primary hover:underline"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  className="h-12 border-border/60 bg-muted/20 focus:ring-primary focus:border-primary font-medium"
+                  required
+                />
+              </div>
             </div>
-            <Button type="submit" className="w-full">
-              Log In
+
+            <Button className="w-full h-12 text-lg font-bold group" size="lg">
+              Sign In
+              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </form>
 
-          <p className="mt-6 text-sm text-muted-foreground">
-            New to Settler?{" "}
-            <Link href="/signup" className="text-primary hover:underline">
-              Get Started
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border/60" />
+            </div>
+            <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest bg-background px-4 text-muted-foreground">
+              Secure Auth Protocol Enforced
+            </div>
+          </div>
+
+          <p className="text-center text-sm font-medium text-muted-foreground">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/signup"
+              className="font-bold text-primary hover:underline underline-offset-4"
+            >
+              Create an account
             </Link>
           </p>
         </div>
-      </main>
-      <Footer />
+      </div>
+
+      {/* Right side: Visual / Brand Support */}
+      <div className="hidden lg:flex flex-col flex-1 relative bg-slate-950 overflow-hidden">
+        {/* Animated background accent */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-slate-900 to-slate-950" />
+        <div className="absolute inset-0 bg-grid-white/[0.05] [mask-image:radial-gradient(white,transparent_85%)]" />
+
+        <div className="relative z-10 flex flex-col items-center justify-center h-full text-white p-16">
+          <div className="max-w-md space-y-12">
+            <div className="space-y-6">
+              <div className="p-3 bg-primary/20 rounded-2xl w-fit shadow-2xl ring-1 ring-primary/40">
+                <ShieldCheck size={40} className="text-primary" />
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground italic">
+                Sign in to Settler
+              </h1>
+              <p className="text-lg text-slate-400 font-medium leading-relaxed">
+                Settler ensures your reconciliation flows are cryptographically verifiable and
+                perfectly reproducible.
+              </p>
+            </div>
+
+            <div className="grid gap-6">
+              {[
+                { icon: Zap, text: "Real-time Drift Detection" },
+                { icon: History, text: "Point-in-time Execution Replay" },
+                { icon: Globe, text: "Multi-Source Native Adapters" },
+              ].map((feature) => (
+                <div key={feature.text} className="flex items-center gap-4 group">
+                  <div className="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                    <feature.icon size={20} />
+                  </div>
+                  <span className="font-bold text-slate-300 group-hover:text-white transition-colors">
+                    {feature.text}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-12 border-t border-white/10 italic">
+              <p className="text-sm text-slate-500 font-medium">
+                &quot;Settler transformed how we audit our payment flows. Total confidence, absolute
+                determinism.&quot;
+              </p>
+              <div className="mt-4">
+                <p className="text-sm font-bold text-slate-300">CTO, Leading Fintech Provider</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

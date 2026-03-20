@@ -1,9 +1,9 @@
 /**
  * Automated Reconciliation Review Service
- * 
+ *
  * Implements industry-standard automated review process for reconciliation matches.
  * Eliminates all manual intervention requirements while maintaining compliance.
- * 
+ *
  * Industry Standards Implemented:
  * - SOC 2: Complete audit trail
  * - PCI-DSS: Secure automated processing
@@ -13,6 +13,7 @@
 import { query } from "../../db";
 import { logError, logInfo } from "../../utils/logger";
 import { v4 as uuidv4 } from "uuid";
+import { getMatchingRulesForJob, DEFAULT_TOLERANCES } from "../matching-rules-loader";
 
 export interface ReconciliationMatch {
   id: string;
@@ -39,19 +40,11 @@ export interface ReviewResult {
   auditEntryId: string;
 }
 
-// Industry-standard confidence thresholds
-const CONFIDENCE_THRESHOLDS = {
-  AUTO_APPROVE: 0.95,        // Auto-approve immediately (SOC 2 compliant)
-  RULE_BASED: 0.80,          // Apply rule-based resolution
-  EXCEPTION_HANDLING: 0.60,   // Automated exception handling
-  SYSTEM_REVIEW: 0.0          // Flag for system-level review (NOT human review)
-} as const;
-
 // Resolution rules for exception handling
 const RESOLUTION_RULES = {
-  AMOUNT_MISMATCH_THRESHOLD: 1.00,  // Auto-resolve amount differences <$1.00
-  DATE_MISMATCH_THRESHOLD_DAYS: 3,   // Auto-resolve date differences <3 days
-  ROUNDING_TOLERANCE: 0.01,           // Standard rounding tolerance
+  AMOUNT_MISMATCH_THRESHOLD: 1.0, // Auto-resolve amount differences <$1.00
+  DATE_MISMATCH_THRESHOLD_DAYS: 3, // Auto-resolve date differences <3 days
+  ROUNDING_TOLERANCE: 0.01, // Standard rounding tolerance
 } as const;
 
 const SYSTEM_USER_ID = "system:automated_review";
@@ -61,7 +54,8 @@ const SYSTEM_USER_ID = "system:automated_review";
  */
 export async function autoReviewMatch(
   matchId: string,
-  tenantId: string
+  tenantId: string,
+  jobId?: string
 ): Promise<ReviewResult> {
   try {
     // Fetch match details
@@ -69,6 +63,28 @@ export async function autoReviewMatch(
     if (!match) {
       throw new Error(`Match ${matchId} not found`);
     }
+
+    // Load matching rules config from canonical loader
+    const configJobId = jobId ?? match.runId;
+    let matchingConfig;
+    try {
+      matchingConfig = await getMatchingRulesForJob(tenantId, configJobId);
+    } catch (error) {
+      logError("Failed to load matching rules, using defaults", error, {
+        tenantId,
+        jobId: configJobId,
+      });
+      matchingConfig = {
+        amountTolerance: DEFAULT_TOLERANCES.amount,
+        dateToleranceDays: DEFAULT_TOLERANCES.dateDays,
+      };
+    }
+
+    // Use threshold from matching rules or fall back to default
+    const autoApproveThreshold = 0.95; // High confidence for auto-approve
+    const ruleBasedThreshold =
+      matchingConfig.matchingRules?.find((r) => r.type === "fuzzy")?.threshold ?? 0.8;
+    const exceptionThreshold = 0.6;
 
     // Skip if already reviewed
     if (match.reviewed) {
@@ -85,16 +101,16 @@ export async function autoReviewMatch(
     let action: ReviewResult["action"];
     let resolutionRule: string | undefined;
 
-    if (match.confidence >= CONFIDENCE_THRESHOLDS.AUTO_APPROVE) {
+    if (match.confidence >= autoApproveThreshold) {
       // Tier 1: Auto-approve high confidence matches
       action = "auto_approved";
       resolutionRule = "high_confidence_auto_approve";
-    } else if (match.confidence >= CONFIDENCE_THRESHOLDS.RULE_BASED) {
+    } else if (match.confidence >= ruleBasedThreshold) {
       // Tier 2: Apply rule-based resolution
-      const ruleResult = await applyRuleBasedResolution(match);
+      const ruleResult = await applyRuleBasedResolution(match, matchingConfig);
       action = ruleResult.action;
       resolutionRule = ruleResult.rule;
-    } else if (match.confidence >= CONFIDENCE_THRESHOLDS.EXCEPTION_HANDLING) {
+    } else if (match.confidence >= exceptionThreshold) {
       // Tier 3: Automated exception handling
       const exceptionResult = await handleException(match);
       action = exceptionResult.action;
@@ -202,7 +218,7 @@ export async function autoReviewRun(
       try {
         const result = await autoReviewMatch(match.id, tenantId);
         stats.reviewed++;
-        
+
         switch (result.action) {
           case "auto_approved":
             stats.autoApproved++;
@@ -244,13 +260,16 @@ export async function autoReviewRun(
  * Apply rule-based resolution for medium-confidence matches
  */
 async function applyRuleBasedResolution(
-  match: ReconciliationMatch
+  match: ReconciliationMatch,
+  matchingConfig?: { amountTolerance: number; dateToleranceDays: number }
 ): Promise<{ action: ReviewResult["action"]; rule: string }> {
+  // Use config values or fall back to defaults
+  const amountMismatchThreshold = matchingConfig?.amountTolerance ?? DEFAULT_TOLERANCES.amount;
+  const dateMismatchThreshold = matchingConfig?.dateToleranceDays ?? DEFAULT_TOLERANCES.dateDays;
+  const exactMatchThreshold = 0.85; // High confidence for exact match
+
   // Rule 1: Amount mismatch within rounding tolerance
-  if (
-    match.amountDiff !== null &&
-    Math.abs(match.amountDiff) <= RESOLUTION_RULES.AMOUNT_MISMATCH_THRESHOLD
-  ) {
+  if (match.amountDiff !== null && Math.abs(match.amountDiff) <= amountMismatchThreshold) {
     return {
       action: "rule_resolved",
       rule: "amount_mismatch_within_tolerance",
@@ -258,10 +277,7 @@ async function applyRuleBasedResolution(
   }
 
   // Rule 2: Date mismatch within acceptable window
-  if (
-    match.dateDiff !== null &&
-    Math.abs(match.dateDiff) <= RESOLUTION_RULES.DATE_MISMATCH_THRESHOLD_DAYS
-  ) {
+  if (match.dateDiff !== null && Math.abs(match.dateDiff) <= dateMismatchThreshold) {
     return {
       action: "rule_resolved",
       rule: "date_mismatch_within_window",
@@ -269,7 +285,7 @@ async function applyRuleBasedResolution(
   }
 
   // Rule 3: Exact match type with high confidence
-  if (match.matchType === "exact" && match.confidence >= 0.85) {
+  if (match.matchType === "exact" && match.confidence >= exactMatchThreshold) {
     return {
       action: "rule_resolved",
       rule: "exact_match_high_confidence",
@@ -312,7 +328,7 @@ async function handleException(
   }
 
   // Exception 3: Missing target transaction (create placeholder)
-  if (!match.targetTransactionId && match.confidence >= 0.70) {
+  if (!match.targetTransactionId && match.confidence >= 0.7) {
     // Pattern-based placeholder creation would go here
     return {
       action: "exception_handled",
@@ -330,10 +346,7 @@ async function handleException(
 /**
  * Get match details
  */
-async function getMatch(
-  matchId: string,
-  tenantId: string
-): Promise<ReconciliationMatch | null> {
+async function getMatch(matchId: string, tenantId: string): Promise<ReconciliationMatch | null> {
   const results = await query<{
     id: string;
     run_id: string;
@@ -404,13 +417,7 @@ async function markMatchReviewed(
          ),
          updated_at = NOW()
      WHERE id = $4 AND tenant_id = $5`,
-    [
-      SYSTEM_USER_ID,
-      action,
-      resolutionRule || null,
-      matchId,
-      tenantId,
-    ]
+    [SYSTEM_USER_ID, action, resolutionRule || null, matchId, tenantId]
   );
 }
 
@@ -450,7 +457,7 @@ async function logAuditTrail(params: {
         JSON.stringify(params.metadata),
       ]
     );
-  } catch (error) {
+  } catch {
     // If table doesn't exist, log to reconciliation_runs metadata
     logInfo("Audit table not available, logging to metadata", {
       auditId,

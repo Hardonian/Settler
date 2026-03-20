@@ -3,12 +3,8 @@ import { getFoundryDatasets, getFoundryRuns } from "@/lib/foundry/store";
 
 export const dynamic = "force-dynamic";
 
-export default async function FoundryDatasetPage({
-  params,
-}: {
-  params: Promise<{ datasetId: string }>;
-}): Promise<JSX.Element> {
-  const { datasetId } = await params;
+export default async function FoundryDatasetPage({ params }: { params: { datasetId: string } }) {
+  const { datasetId } = params;
   const dataset = getFoundryDatasets().find((entry) => entry.dataset_id === datasetId);
   const runs = getFoundryRuns(datasetId);
 

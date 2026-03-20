@@ -435,8 +435,8 @@ Configure alerts for:
 For issues or questions:
 
 - **Security Team:** security@settler.dev
-- **Documentation:** `/docs/settler-defense-moat.md`
-- **Runbook:** `/docs/INCIDENT_RUNBOOK.md`
+- **Documentation:** `/docs/security/` for security configurations
+- **Runbook:** `/docs/incident-runbook.md` or `/docs/INCIDENT_RESPONSE.md`
 
 ---
 

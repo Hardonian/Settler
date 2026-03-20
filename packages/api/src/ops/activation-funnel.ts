@@ -1,28 +1,27 @@
 /**
  * Activation Funnel Instrumentation
- * 
+ *
  * Emits canonical lifecycle events for product-led growth tracking.
  * Uses existing UsageEvent table for event storage.
  */
 
-import { PrismaClient, Prisma } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { Prisma } from "@prisma/client";
+import { prisma } from "../infrastructure/db/prisma";
 
 /**
  * Canonical lifecycle event types
  */
 export enum LifecycleEventType {
-  USER_SIGNED_UP = 'user.signed_up',
-  TENANT_CREATED = 'tenant.created',
-  PROVIDER_CONNECTED = 'provider.connected',
-  RECON_FIRST_RUN = 'recon.first_run',
-  RECON_EXCEPTION_CREATED = 'recon.exception_created',
-  RECON_EXCEPTION_RESOLVED = 'recon.exception_resolved',
-  BILLING_CHECKOUT_STARTED = 'billing.checkout_started',
-  BILLING_CHECKOUT_COMPLETED = 'billing.checkout_completed',
-  BILLING_PAYMENT_FAILED = 'billing.payment_failed',
-  BILLING_SUBSCRIPTION_CANCELED = 'billing.subscription_canceled',
+  USER_SIGNED_UP = "user.signed_up",
+  TENANT_CREATED = "tenant.created",
+  PROVIDER_CONNECTED = "provider.connected",
+  RECON_FIRST_RUN = "recon.first_run",
+  RECON_EXCEPTION_CREATED = "recon.exception_created",
+  RECON_EXCEPTION_RESOLVED = "recon.exception_resolved",
+  BILLING_CHECKOUT_STARTED = "billing.checkout_started",
+  BILLING_CHECKOUT_COMPLETED = "billing.checkout_completed",
+  BILLING_PAYMENT_FAILED = "billing.payment_failed",
+  BILLING_SUBSCRIPTION_CANCELED = "billing.subscription_canceled",
 }
 
 export interface LifecycleEventProperties {
@@ -70,11 +69,13 @@ export async function emitLifecycleEvent(
       if (!user) {
         // Would need user email - skip for now if not available
         // Use dynamic import to avoid circular dependencies
-        import('../utils/logger').then(({ logWarn }) => {
-          logWarn(`Cannot emit lifecycle event ${eventType}: no billing account found`);
-        }).catch(() => {
-          // Silent fail if logger unavailable
-        });
+        import("../utils/logger")
+          .then(({ logWarn }) => {
+            logWarn(`Cannot emit lifecycle event ${eventType}: no billing account found`);
+          })
+          .catch(() => {
+            // Silent fail if logger unavailable
+          });
         return;
       }
       finalBillingAccountId = user.id;
@@ -82,11 +83,13 @@ export async function emitLifecycleEvent(
 
     if (!finalBillingAccountId) {
       // Use dynamic import to avoid circular dependencies
-      import('../utils/logger').then(({ logWarn }) => {
-        logWarn(`Cannot emit lifecycle event ${eventType}: no billing account ID available`);
-      }).catch(() => {
-        // Silent fail if logger unavailable
-      });
+      import("../utils/logger")
+        .then(({ logWarn }) => {
+          logWarn(`Cannot emit lifecycle event ${eventType}: no billing account ID available`);
+        })
+        .catch(() => {
+          // Silent fail if logger unavailable
+        });
       return;
     }
 
@@ -98,7 +101,7 @@ export async function emitLifecycleEvent(
         tenantId: tenantId || null,
         eventType,
         quantity: 1,
-        unit: 'event',
+        unit: "event",
         metadata: properties as Prisma.InputJsonValue,
         timestamp: new Date(),
         aggregated: false,
@@ -107,11 +110,13 @@ export async function emitLifecycleEvent(
   } catch (error) {
     // Don't throw - event tracking should never break the main flow
     // Use dynamic import to avoid circular dependencies
-    import('../utils/logger').then(({ logError }) => {
-      logError(`Failed to emit lifecycle event ${eventType}`, error);
-    }).catch(() => {
-      // Silent fail if logger unavailable
-    });
+    import("../utils/logger")
+      .then(({ logError }) => {
+        logError(`Failed to emit lifecycle event ${eventType}`, error);
+      })
+      .catch(() => {
+        // Silent fail if logger unavailable
+      });
   }
 }
 

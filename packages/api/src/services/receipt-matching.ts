@@ -1,11 +1,11 @@
 /**
  * Receipt Auto-Matching Service
- * 
+ *
  * Automatically matches receipts to transactions based on:
  * - Amount (within tolerance)
  * - Date (within window)
  * - Merchant name (fuzzy matching)
- * 
+ *
  * Enterprise-ready with:
  * - Type-safe Prisma queries
  * - Comprehensive error handling
@@ -13,8 +13,9 @@
  * - Confidence scoring
  */
 
-import { PrismaClient } from '@prisma/client';
-import { logError } from '../utils/logger';
+import { PrismaClient } from "@prisma/client";
+import { logError } from "../utils/logger";
+import { levenshteinDistance } from "../lib/levenshtein";
 
 interface MatchResult {
   receiptId: string;
@@ -83,7 +84,7 @@ export async function matchReceiptToTransaction(
           gte: receipt.total ? Number(receipt.total) - matchingConfig.amountTolerance : undefined,
           lte: receipt.total ? Number(receipt.total) + matchingConfig.amountTolerance : undefined,
         },
-        currency: receipt.currency || 'USD',
+        currency: receipt.currency || "USD",
       },
       take: 100, // Limit for performance
     });
@@ -127,7 +128,7 @@ export async function matchReceiptToTransaction(
       }
 
       // Combined confidence score
-      const confidence = (amountScore * 0.5 + dateScore * 0.3 + merchantScore * 0.2);
+      const confidence = amountScore * 0.5 + dateScore * 0.3 + merchantScore * 0.2;
 
       return {
         transactionId: transaction.id,
@@ -185,45 +186,7 @@ function stringSimilarity(str1: string, str2: string): number {
 
   // Calculate Levenshtein distance (simplified)
   const distance = levenshteinDistance(str1, str2);
-  return 1 - distance / Math.max(str1.length, str2.length);
-}
-
-function levenshteinDistance(str1: string, str2: string): number {
-  const len1 = str1.length;
-  const len2 = str2.length;
-  // Initialize matrix with proper dimensions - TypeScript knows all indices exist
-  const matrix: number[][] = [];
-  for (let i = 0; i <= len2; i++) {
-    matrix[i] = [];
-    for (let j = 0; j <= len1; j++) {
-      matrix[i]![j] = 0;
-    }
-  }
-
-  // Initialize first row and column
-  for (let i = 0; i <= len2; i++) {
-    matrix[i]![0] = i;
-  }
-  for (let j = 0; j <= len1; j++) {
-    matrix[0]![j] = j;
-  }
-
-  // Fill the matrix
-  for (let i = 1; i <= len2; i++) {
-    for (let j = 1; j <= len1; j++) {
-      if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-        matrix[i]![j] = matrix[i - 1]![j - 1]!;
-      } else {
-        matrix[i]![j] = Math.min(
-          matrix[i - 1]![j - 1]! + 1,
-          matrix[i]![j - 1]! + 1,
-          matrix[i - 1]![j]! + 1
-        );
-      }
-    }
-  }
-
-  return matrix[len2]![len1]!;
+  return 1 - distance / longer.length;
 }
 
 /**
@@ -261,7 +224,7 @@ export async function matchReceiptsToTransactions(
   // This is a simplified version for the existing route
   // In production, use the full matchReceiptToTransaction function with PrismaClient
   const matches: Array<{ receiptId: string; transactionId: string; confidence: number }> = [];
-  
+
   // Basic matching logic (simplified)
   for (const receipt of receipts) {
     // Find best matching transaction
@@ -270,7 +233,7 @@ export async function matchReceiptsToTransactions(
       // Simple matching logic
       return true; // Placeholder
     });
-    
+
     if (bestMatch) {
       matches.push({
         receiptId: receipt.id,
@@ -279,7 +242,7 @@ export async function matchReceiptsToTransactions(
       });
     }
   }
-  
+
   return matches;
 }
 

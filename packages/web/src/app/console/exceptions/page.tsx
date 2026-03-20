@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { EmptyState } from "@/components/EmptyState";
-import { ErrorState } from "@/components/ErrorState";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
+import { shouldPollExceptions } from "@/lib/console/polling";
 import { safeFetch } from "@/lib/safe-fetch";
 import { RefreshCw, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -17,12 +19,16 @@ interface Exception {
   type: string;
   status: "pending" | "investigating" | "resolved" | "ignored";
   severity: "low" | "medium" | "high" | "critical";
-  detectedAt: Date;
+  detectedAt: string;
   description: string;
+  statusDetail?: string;
+  reasonTags?: string[];
   amount?: number;
   currency?: string;
   sourceTransactionId?: string;
   targetTransactionId?: string;
+  runId?: string;
+  fieldPath?: string;
 }
 
 interface ExceptionFilters {
@@ -31,6 +37,8 @@ interface ExceptionFilters {
   type?: string;
   search?: string;
 }
+
+const POLL_INTERVAL_MS = 15_000;
 
 export default function ExceptionsPage() {
   const searchParams = useSearchParams();
@@ -48,19 +56,17 @@ export default function ExceptionsPage() {
     if (typeFilter && !filters.type) {
       setFilters((prev) => ({ ...prev, type: typeFilter }));
     }
-  }, [typeFilter]);
+  }, [filters.type, typeFilter]);
 
-  useEffect(() => {
-    loadExceptions();
+  const pollingEnabled = shouldPollExceptions({
+    autoRefresh,
+    exceptions,
+    loadingInitialState: loading && exceptions.length === 0,
+    statusFilter: filters.status,
+    runScoped: Boolean(runId),
+  });
 
-    if (autoRefresh) {
-      const interval = setInterval(loadExceptions, 30000); // Poll every 30 seconds
-      return () => clearInterval(interval);
-    }
-    return undefined;
-  }, [autoRefresh, filters]);
-
-  const loadExceptions = async () => {
+  const loadExceptions = useCallback(async () => {
     setLoading(true);
     const queryParams = new URLSearchParams();
 
@@ -70,22 +76,43 @@ export default function ExceptionsPage() {
       }
     });
 
-    // Consequence Truth: Intelligently switch to the isolated, run-scoped endpoint if navigating from a specific run
-    const endpoint = runId
-      ? `/api/v1/runs/${runId}/exceptions?${queryParams.toString()}`
-      : `/api/exceptions?${queryParams.toString()}`;
+    if (runId) {
+      queryParams.set("runId", runId);
+    }
 
-    const result = await safeFetch<{ data: Exception[]; pagination: unknown }>(endpoint);
+    const endpoint = `/api/exceptions?${queryParams.toString()}`;
+    const result = await safeFetch<{
+      items?: Exception[];
+      data?: Exception[];
+      exceptions?: Exception[];
+      pagination?: unknown;
+    }>(endpoint);
 
     if (result.success && result.data) {
-      setExceptions(result.data.data);
+      const items = result.data.items ?? result.data.data ?? result.data.exceptions ?? [];
+      setExceptions(items);
       setError(null);
     } else {
       setError(result.error?.message || "Failed to load exceptions");
       setExceptions([]);
     }
     setLoading(false);
-  };
+  }, [filters, runId]);
+
+  useEffect(() => {
+    void loadExceptions();
+  }, [loadExceptions]);
+
+  useEffect(() => {
+    if (!pollingEnabled) {
+      return undefined;
+    }
+
+    const interval = setInterval(() => {
+      void loadExceptions();
+    }, POLL_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, [loadExceptions, pollingEnabled]);
 
   const handleRefresh = async () => {
     await loadExceptions();
@@ -119,7 +146,7 @@ export default function ExceptionsPage() {
 
   if (loading && exceptions.length === 0) {
     return (
-      <div className="p-6 space-y-6">
+      <div className="space-y-6">
         <Skeleton className="h-12 w-64" />
         <Skeleton className="h-64" />
       </div>
@@ -128,7 +155,7 @@ export default function ExceptionsPage() {
 
   if (error && exceptions.length === 0) {
     return (
-      <div className="p-6">
+      <div>
         <ErrorState title="Failed to load exceptions" message={error} onRetry={handleRefresh} />
       </div>
     );
@@ -136,10 +163,14 @@ export default function ExceptionsPage() {
 
   if (exceptions.length === 0) {
     return (
-      <div className="p-6">
+      <div>
         <EmptyState
           title="No exceptions found"
-          description="There are currently no exceptions matching your filters"
+          description={
+            runId
+              ? "No exceptions were recorded for this run under the current filters."
+              : "There are currently no exceptions matching your filters."
+          }
           action={{
             label: "Clear Filters",
             onClick: () => {
@@ -152,7 +183,7 @@ export default function ExceptionsPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Back navigation when coming from run detail */}
       {runId && (
         <div className="mb-4">
@@ -165,15 +196,15 @@ export default function ExceptionsPage() {
         </div>
       )}
 
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Exceptions</h1>
-          <p className="text-slate-600 dark:text-slate-400 mt-1">
-            {runId
-              ? "Exceptions from this reconciliation run"
-              : "Monitoring and managing reconciliation discrepancies"}
-          </p>
-        </div>
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <ConsolePageHeader
+          title="Exceptions"
+          description={
+            runId
+              ? "Exceptions recorded for this run, with status, severity, and rationale tags carried from the canonical workflow model."
+              : "Operator decision queue for unresolved reconciliation outcomes, grouped by workflow status instead of legacy mismatch projections."
+          }
+        />
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
             <input
@@ -187,6 +218,9 @@ export default function ExceptionsPage() {
               Auto-refresh
             </label>
           </div>
+          <Badge variant="outline">
+            {pollingEnabled ? `Polling every ${POLL_INTERVAL_MS / 1000}s` : "Polling paused"}
+          </Badge>
           <Button variant="outline" size="sm" onClick={handleRefresh}>
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
             Refresh
@@ -324,6 +358,20 @@ export default function ExceptionsPage() {
                         <p className="text-sm text-slate-600 dark:text-slate-400 truncate">
                           {exception.description}
                         </p>
+                        {exception.statusDetail && (
+                          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                            {exception.statusDetail}
+                          </p>
+                        )}
+                        {exception.reasonTags && exception.reasonTags.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            {exception.reasonTags.map((tag) => (
+                              <Badge key={`${exception.id}-${tag}`} variant="outline">
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -353,6 +401,8 @@ export default function ExceptionsPage() {
                     {exception.targetTransactionId && (
                       <span>Target: {exception.targetTransactionId.slice(0, 8)}...</span>
                     )}
+                    {exception.fieldPath && <span>Field: {exception.fieldPath}</span>}
+                    {exception.runId && <span>Run: {exception.runId.slice(0, 8)}...</span>}
                   </div>
                 </div>
               </div>

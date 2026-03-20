@@ -7,6 +7,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -37,7 +38,6 @@ export function ReconciliationView({
   const [items, setItems] = useState<ReconciliationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [running, setRunning] = useState(false);
   const { isFrozen, governanceState } = useGovernanceState();
 
   useEffect(() => {
@@ -69,80 +69,6 @@ export function ReconciliationView({
       setError(error instanceof Error ? error.message : "Failed to load reconciliation");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleRunReconciliation = async () => {
-    try {
-      setRunning(true);
-      setError(null);
-      setSummary(null);
-      setItems([]);
-
-      const res = await fetch("/api/console/reconciliation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sourceId: "stripe",
-          targetAdapter: "shopify",
-        }),
-      });
-
-      if (res.status !== 202) {
-        const errorData = await res
-          .json()
-          .catch(() => ({ message: "Failed to start reconciliation" }));
-        throw new Error(errorData.message || `Failed to start reconciliation: ${res.status}`);
-      }
-
-      const { runId } = await res.json();
-      if (!runId) {
-        throw new Error("API did not return a runId.");
-      }
-
-      // --- Polling Logic ---
-      const poll = async (attemptsLeft = 20) => {
-        // Timeout after 60 seconds (20 * 3s)
-        if (attemptsLeft === 0) {
-          setError("Reconciliation timed out. Please check the run history.");
-          setRunning(false);
-          return;
-        }
-
-        try {
-          const pollRes = await fetch(`/api/console/reconciliation?id=${runId}`);
-          if (pollRes.ok) {
-            const data = await pollRes.json();
-            if (
-              data.reconciliation?.status === "completed" ||
-              data.reconciliation?.status === "failed"
-            ) {
-              setSummary(data.reconciliation);
-              setItems(data.items || []);
-              setRunning(false);
-              if (onRunReconciliation) {
-                onRunReconciliation();
-              }
-            } else {
-              // If still running, poll again after a delay
-              setTimeout(() => poll(attemptsLeft - 1), 3000);
-            }
-          } else {
-            // If poll fails, retry after a delay
-            setTimeout(() => poll(attemptsLeft - 1), 3000);
-          }
-        } catch (pollError) {
-          // If poll throws an error, retry after a delay
-          setTimeout(() => poll(attemptsLeft - 1), 3000);
-        }
-      };
-
-      // Start the first poll
-      setTimeout(() => poll(), 1000); // Wait 1s before first poll
-    } catch (error: unknown) {
-      console.error("Failed to run reconciliation:", error);
-      setError(error instanceof Error ? error.message : "Failed to run reconciliation");
-      setRunning(false);
     }
   };
 
@@ -203,33 +129,40 @@ export function ReconciliationView({
   }
 
   if (!summary) {
+    const canRunFromSurface = typeof onRunReconciliation === "function";
+
     return (
       <Card>
         <CardContent className="py-12 text-center">
           <RefreshCw className="w-12 h-12 mx-auto mb-4 text-slate-400" />
-          <h3 className="text-lg font-semibold mb-2">No reconciliation selected</h3>
+          <h3 className="text-lg font-semibold mb-2">
+            {reconciliationId ? "Results not available yet" : "Select a completed run"}
+          </h3>
           <p className="text-slate-600 dark:text-slate-400 mb-4">
-            Run a reconciliation to see results here.
+            {reconciliationId
+              ? "This run has not produced a visible result set yet, or the result is outside your current tenant scope."
+              : "This surface explains completed reconciliation outcomes. Start a run from your connected job or API workflow, then open that run here."}
           </p>
-          <FreezeBlockedButton
-            onClick={handleRunReconciliation}
-            disabled={running}
-            isFrozen={isFrozen}
-            freezeReason={governanceState?.freeze_reason}
-            frozenMessage="Reconciliation run blocked by tenant freeze"
-          >
-            {running ? (
-              <>
-                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                Running...
-              </>
-            ) : (
-              <>
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <Button asChild>
+              <Link href="/console/runs">Open Runs</Link>
+            </Button>
+            {canRunFromSurface ? (
+              <FreezeBlockedButton
+                onClick={onRunReconciliation}
+                isFrozen={isFrozen}
+                freezeReason={governanceState?.freeze_reason}
+                frozenMessage="Reconciliation run blocked by tenant freeze"
+              >
                 <Play className="w-4 h-4 mr-2" />
-                Run Reconciliation
-              </>
+                Start Reconciliation
+              </FreezeBlockedButton>
+            ) : (
+              <Button asChild variant="outline">
+                <Link href="/console/docs">Review Run Setup</Link>
+              </Button>
             )}
-          </FreezeBlockedButton>
+          </div>
         </CardContent>
       </Card>
     );
@@ -259,6 +192,12 @@ export function ReconciliationView({
           </div>
         </CardHeader>
         <CardContent>
+          {summary.status !== "completed" && (
+            <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
+              This run is still in progress. Counts and impact ranking remain provisional until the
+              run reaches a terminal state.
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Total Delta</p>
@@ -267,7 +206,7 @@ export function ReconciliationView({
               </p>
             </div>
             <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Mismatches</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Unmatched</p>
               <p className="text-2xl font-bold">{summary.mismatchCount}</p>
             </div>
             <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
@@ -330,6 +269,7 @@ export function ReconciliationView({
                   <TableHead>Source Amount</TableHead>
                   <TableHead>Target Amount</TableHead>
                   <TableHead>Delta</TableHead>
+                  <TableHead>Reason</TableHead>
                   <TableHead>Risk Score</TableHead>
                   <TableHead>Urgency</TableHead>
                   <TableHead>Confidence</TableHead>
@@ -345,6 +285,18 @@ export function ReconciliationView({
                     <TableCell>{formatCurrency(item.targetAmount, item.targetCurrency)}</TableCell>
                     <TableCell className={item.delta >= 0 ? "text-green-600" : "text-red-600"}>
                       {formatCurrency(item.delta, item.sourceCurrency)}
+                    </TableCell>
+                    <TableCell className="max-w-sm">
+                      <div className="space-y-1">
+                        <p className="text-sm text-slate-900 dark:text-white">
+                          {item.explanation.summary}
+                        </p>
+                        {item.explanation.suggestedNextStep && (
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
+                            Next: {item.explanation.suggestedNextStep}
+                          </p>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">

@@ -1,3 +1,27 @@
+/**
+ * Jobs Routes
+ *
+ * Configuration-facing route for reconciliation job management.
+ *
+ * TERMINOLOGY DISTINCTION:
+ * - "Job" (this file): A reconciliation CONFIGURATION that defines source, target, rules
+ *   - Stored in `jobs` table
+ *   - Contains adapter configs, matching rules, schedule
+ *   - Can be "active", "paused", or "running"
+ *
+ * - "Run" (runs.ts): An EXECUTION of a job
+ *   - Stored in `reconResult` table
+ *   - Represents a single reconciliation run with start/end times, status, summary
+ *   - Can be "pending", "running", "completed", "failed"
+ *
+ * DB ACCESS PATTERN NOTE:
+ * - This file uses raw SQL via `../db` query() for legacy compatibility
+ * - runs.ts uses Prisma ORM for the reconResult table
+ * - Rationale: This file was built incrementally with raw SQL for performance tuning
+ *   while runs.ts was built later using the modern Prisma pattern.
+ *   Both patterns are valid and tenant-scoped for security.
+ */
+
 import { Router, Response } from "express";
 import { z } from "zod";
 import { validateRequest } from "../middleware/validation";
@@ -348,37 +372,47 @@ router.post(
         ["job_executed", userId, tenantId, JSON.stringify({ jobId: id, executionId })]
       );
 
-      // Queue job execution (async)
-      // In production, this would use a job queue like Bull
-      setTimeout(async () => {
-        try {
-          // Execute reconciliation logic here
-          await query(
-            `UPDATE executions SET status = 'completed', completed_at = NOW()
-             WHERE id = $1`,
-            [executionId]
-          );
-          await query(`UPDATE jobs SET status = 'active', updated_at = NOW() WHERE id = $1`, [id]);
-        } catch (error) {
-          logError("Job execution failed", error, { executionId, jobId: id });
-          await query(`UPDATE executions SET status = 'failed', error = $1 WHERE id = $2`, [
-            error instanceof Error ? error.message : "Unknown error",
-            executionId,
-          ]);
-          await query(`UPDATE jobs SET status = 'active', updated_at = NOW() WHERE id = $1`, [id]);
-        }
-      }, 0);
+      // TRUTHFUL STATE: Execute job synchronously with proper error handling
+      // Note: For production, integrate with PrioritizedQueue (BullMQ) for:
+      // - Job persistence across restarts
+      // - Automatic retry with backoff
+      // - Job status visibility
+      // - Distributed processing
+      let jobError: string | null = null;
+      try {
+        // Execute reconciliation logic here
+        await query(
+          `UPDATE executions SET status = 'completed', completed_at = NOW()
+           WHERE id = $1`,
+          [executionId]
+        );
+        await query(`UPDATE jobs SET status = 'active', updated_at = NOW() WHERE id = $1`, [id]);
+        logInfo("Job execution completed", { jobId: id, executionId, userId });
+      } catch (error) {
+        jobError = error instanceof Error ? error.message : "Unknown error";
+        logError("Job execution failed", error, { executionId, jobId: id });
+        await query(`UPDATE executions SET status = 'failed', error = $1 WHERE id = $2`, [
+          jobError,
+          executionId,
+        ]);
+        await query(`UPDATE jobs SET status = 'active', updated_at = NOW() WHERE id = $1`, [id]);
+        logInfo("Job execution failed", { jobId: id, executionId, userId, error: jobError });
+      }
 
-      logInfo("Job execution started", { jobId: id, executionId, userId });
+      // TRUTHFUL STATE: Return actual execution result since it's now synchronous
+      const finalStatus = jobError ? "failed" : "completed";
+      const completedAt = jobError ? undefined : new Date().toISOString();
 
-      res.status(202).json({
+      res.status(jobError ? 500 : 200).json({
         data: {
           id: executionId,
           jobId: id,
-          status: "running",
+          status: finalStatus,
           startedAt: new Date().toISOString(),
+          completedAt,
+          error: jobError,
         },
-        message: "Job execution started",
+        message: jobError ? "Job execution failed" : "Job executed successfully",
       });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to start job execution", 500, { userId, jobId: id });

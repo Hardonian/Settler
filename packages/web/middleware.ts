@@ -19,6 +19,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   // CRITICAL: Wrap entire middleware in try-catch to prevent any 500 errors
   try {
     const pathname = request.nextUrl.pathname;
+    const isApiRoute = pathname.startsWith("/api");
     const nonce = createCspNonce();
     // Generate or get trace_id
     let traceId = request.headers.get("x-trace-id") || request.cookies.get("trace-id")?.value;
@@ -31,17 +32,25 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       maxAge: 60 * 60 * 24 * 7,
       path: "/",
     };
-    serverLogger.info("middleware.request", {
-      trace_id: traceId,
-      method: request.method,
-      path: pathname,
-    });
+    if (process.env.MIDDLEWARE_LOG_REQUESTS === "true") {
+      serverLogger.info("middleware.request", {
+        trace_id: traceId,
+        method: request.method,
+        path: pathname,
+      });
+    }
 
-    const applyTraceContext = (nextResponse: NextResponse): NextResponse => {
+    const applyTraceContext = (
+      nextResponse: NextResponse,
+      options: { persistTraceCookie?: boolean } = {}
+    ): NextResponse => {
+      const { persistTraceCookie = true } = options;
       nextResponse.headers.set("x-trace-id", traceId);
       nextResponse.headers.set("x-request-id", traceId);
       nextResponse.headers.set("x-csp-nonce", nonce);
-      nextResponse.cookies.set("trace-id", traceId, traceCookieOptions);
+      if (persistTraceCookie) {
+        nextResponse.cookies.set("trace-id", traceId, traceCookieOptions);
+      }
       return nextResponse;
     };
 
@@ -52,13 +61,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
           headers: new Headers(request.headers),
         },
       });
-      response.headers.set("x-trace-id", traceId);
-      response.headers.set("x-request-id", traceId);
-      response.headers.set("x-csp-nonce", nonce);
+      applyTraceContext(response, { persistTraceCookie: false });
       return addSecurityHeaders(response, { nonce });
     }
-
-    const isApiRoute = pathname.startsWith("/api");
 
     const isAuthRequiredRoute = !isApiRoute && isAppAuthRequiredRoute(pathname);
 
@@ -69,7 +74,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     });
 
     // Add trace_id to response headers
-    applyTraceContext(response);
+    applyTraceContext(response, { persistTraceCookie: !isApiRoute });
 
     const appEnvStatus = getAppEnvStatus();
     const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;

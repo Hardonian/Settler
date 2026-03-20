@@ -1,0 +1,76 @@
+src/app/admin/metrics/page.tsx(92,14): error TS2786: 'AdminMetricsContent' cannot be used as a JSX component.
+  Its type '() => Promise<Element>' is not a valid JSX element type.
+    Type '() => Promise<Element>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'Promise<Element>' is not assignable to type 'ReactNode'.
+src/app/admin/webhooks/page.tsx(284,10): error TS2786: 'WebhookInboxContent' cannot be used as a JSX component.
+  Its type '() => Promise<Element>' is not a valid JSX element type.
+    Type '() => Promise<Element>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'Promise<Element>' is not assignable to type 'ReactNode'.
+src/app/builder/[...page]/page.tsx(99,12): error TS2607: JSX element class does not support attributes because it does not have a 'props' property.
+src/app/builder/[...page]/page.tsx(99,13): error TS2786: 'BuilderComponent' cannot be used as a JSX component.
+  Its type 'typeof BuilderComponent' is not a valid JSX element type.
+    Types of construct signatures are incompatible.
+      Type 'new (props: BuilderComponentProps) => BuilderComponent' is not assignable to type 'new (props: any, deprecatedLegacyContext?: any) => Component<any, any, any>'.
+        Type 'BuilderComponent' is missing the following properties from type 'Component<any, any, any>': context, setState, forceUpdate, props, and 2 more.
+src/app/console/admin/jobs/page.tsx(298,10): error TS2786: 'JobsAdminContent' cannot be used as a JSX component.
+  Its type '({ searchParams }: JobsAdminPageProps) => Promise<Element>' is not a valid JSX element type.
+    Type '({ searchParams }: JobsAdminPageProps) => Promise<Element>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'Promise<Element>' is not assignable to type 'ReactNode'.
+src/app/console/admin/tenants/page.tsx(56,10): error TS2786: 'TenantsObservabilityContent' cannot be used as a JSX component.
+  Its type '() => Promise<Element>' is not a valid JSX element type.
+    Type '() => Promise<Element>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'Promise<Element>' is not assignable to type 'ReactNode'.
+src/app/console/analytics/page.tsx(81,12): error TS2786: 'AnalyticsContent' cannot be used as a JSX component.
+  Its type '() => Promise<Element>' is not a valid JSX element type.
+    Type '() => Promise<Element>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'Promise<Element>' is not assignable to type 'ReactNode'.
+src/app/console/api-logs/page.tsx(54,8): error TS2786: 'ApiLogsContent' cannot be used as a JSX component.
+  Its type '() => Promise<Element | null>' is not a valid JSX element type.
+    Type '() => Promise<Element | null>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'Promise<Element | null>' is not assignable to type 'ReactNode'.
+src/app/console/briefings/page.tsx(70,14): error TS2786: 'BriefingsContent' cannot be used as a JSX component.
+  Its type '() => Promise<Element>' is not a valid JSX element type.
+    Type '() => Promise<Element>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'Promise<Element>' is not assignable to type 'ReactNode'.
+src/app/console/insights/page.tsx(61,14): error TS2786: 'InsightsContent' cannot be used as a JSX component.
+  Its type '() => Promise<Element>' is not a valid JSX element type.
+    Type '() => Promise<Element>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'Promise<Element>' is not assignable to type 'ReactNode'.
+src/app/console/ops/page.tsx(69,12): error TS2786: 'OpsContent' cannot be used as a JSX component.
+  Its type '() => Promise<Element>' is not a valid JSX element type.
+    Type '() => Promise<Element>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'Promise<Element>' is not assignable to type 'ReactNode'.
+src/app/console/page.tsx(793,10): error TS2786: 'ConsoleOverviewContent' cannot be used as a JSX component.
+  Its type '() => Promise<Element>' is not a valid JSX element type.
+    Type '() => Promise<Element>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'Promise<Element>' is not assignable to type 'ReactNode'.
+src/app/console/reality/page.tsx(327,8): error TS2786: 'RealityDashboardContent' cannot be used as a JSX component.
+  Its type '() => Promise<Element>' is not a valid JSX element type.
+    Type '() => Promise<Element>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'Promise<Element>' is not assignable to type 'ReactNode'.
+src/app/console/setup-check/page.tsx(272,8): error TS2786: 'SetupChecks' cannot be used as a JSX component.
+  Its type '() => Promise<Element>' is not a valid JSX element type.
+    Type '() => Promise<Element>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'Promise<Element>' is not assignable to type 'ReactNode'.
+src/app/console/support/page.tsx(63,12): error TS2786: 'SupportContent' cannot be used as a JSX component.
+  Its type '() => Promise<Element>' is not a valid JSX element type.
+    Type '() => Promise<Element>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'Promise<Element>' is not assignable to type 'ReactNode'.
+src/app/dashboard/page.tsx(448,8): error TS2786: 'DashboardMetrics' cannot be used as a JSX component.
+  Its type '() => Promise<Element>' is not a valid JSX element type.
+    Type '() => Promise<Element>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'Promise<Element>' is not assignable to type 'ReactNode'.
+src/app/dashboard/user/page.tsx(336,8): error TS2786: 'UserDashboardContent' cannot be used as a JSX component.
+  Its type '() => Promise<Element | null>' is not a valid JSX element type.
+    Type '() => Promise<Element | null>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'Promise<Element | null>' is not assignable to type 'ReactNode'.
+src/app/investor/proof/page.tsx(347,8): error TS2786: 'InvestorProofContent' cannot be used as a JSX component.
+  Its type '() => Promise<Element>' is not a valid JSX element type.
+    Type '() => Promise<Element>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'Promise<Element>' is not assignable to type 'ReactNode'.
+src/app/investor/reality/page.tsx(315,8): error TS2786: 'InvestorDashboardContent' cannot be used as a JSX component.
+  Its type '() => Promise<Element>' is not a valid JSX element type.
+    Type '() => Promise<Element>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'Promise<Element>' is not assignable to type 'ReactNode'.
+src/components/SecureMobileApp.tsx(328,43): error TS2322: Type '{ children: string; jsx: true; global: true; }' is not assignable to type 'DetailedHTMLProps<StyleHTMLAttributes<HTMLStyleElement>, HTMLStyleElement>'.
+  Property 'jsx' does not exist on type 'DetailedHTMLProps<StyleHTMLAttributes<HTMLStyleElement>, HTMLStyleElement>'.

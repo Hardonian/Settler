@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { useParams } from "next/navigation";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
@@ -11,17 +11,13 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft, BookOpen, Code2, Settings } from "lucide-react";
 
-interface IntegrationDocsPageProps {
-  params: Promise<{ integrationId: string }>;
-}
-
 const integrationInfo: Record<
   string,
   {
     name: string;
     description: string;
     category: string;
-    status: "available" | "beta" | "coming-soon";
+    status: "available" | "beta";
     docs: {
       overview: string;
       setup: string;
@@ -112,8 +108,9 @@ const integrationInfo: Record<
   },
 };
 
-export default function IntegrationDocsPage({ params }: IntegrationDocsPageProps) {
-  const { integrationId } = use(params);
+export default function IntegrationDocsPage() {
+  const params = useParams();
+  const integrationId = (params?.integrationId || "") as string;
   const integration = integrationInfo[integrationId.toLowerCase()];
 
   if (!integration) {
@@ -181,11 +178,7 @@ export default function IntegrationDocsPage({ params }: IntegrationDocsPageProps
                     : "bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300"
               }
             >
-              {integration.status === "available"
-                ? "Available"
-                : integration.status === "beta"
-                  ? "Beta"
-                  : "Coming Soon"}
+              {integration.status === "available" ? "Available" : "Beta"}
             </Badge>
           </div>
 

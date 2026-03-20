@@ -112,8 +112,8 @@ export function BulkTriageClient() {
               <DropdownMenuItem onClick={() => handleFilterChange("matched")}>
                 Matched
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleFilterChange("mismatched")}>
-                Mismatched
+              <DropdownMenuItem onClick={() => handleFilterChange("unmatched")}>
+                Unmatched
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleFilterChange("requires-review")}>
                 Requires Review
@@ -195,7 +195,7 @@ export function BulkTriageClient() {
                     className={`px-2 py-0.5 text-xs font-medium rounded-full ${
                       item.status === "matched"
                         ? "bg-green-100 text-green-800"
-                        : item.status === "mismatched"
+                        : item.status === "unmatched"
                           ? "bg-red-100 text-red-800"
                           : item.status === "requires-review"
                             ? "bg-yellow-100 text-yellow-800"

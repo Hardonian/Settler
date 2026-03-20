@@ -1,22 +1,27 @@
-import { headers } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import { getRunsList, RunListItem } from "@/lib/domain/runs/runs-reader";
 
-async function getRuns() {
-  const h = await headers();
-  const host = h.get("host") || "localhost:3000";
-  const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
-  const res = await fetch(`${protocol}://${host}/api/v1/runs?limit=50`, {
-    headers: { authorization: h.get("authorization") || "" },
-    cache: "no-store",
-  });
-  if (!res.ok) return [];
-  const data = await res.json();
-  return data.rows || [];
+async function getRuns(): Promise<RunListItem[]> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const tenantId = user?.user_metadata?.tenant_id;
+
+    if (!tenantId) return [];
+
+    return await getRunsList(tenantId, 50);
+  } catch (err) {
+    console.error("[MismatchesPage] Error fetching runs:", err);
+    return [];
+  }
 }
 
 export default async function MismatchesPage() {
   const runs = await getRuns();
-  const mismatches = runs.filter((run: { status?: string }) => run.status !== "succeeded");
+  const mismatches = runs.filter((run) => run.status !== "completed");
 
   return (
     <div>
@@ -39,11 +44,11 @@ export default async function MismatchesPage() {
                 </td>
               </tr>
             ) : (
-              mismatches.map((row: { run_id: string; created_at: string; status: string }) => (
+              mismatches.map((row) => (
                 <tr key={row.run_id} className="border-t border-border">
                   <td className="px-3 py-2 font-mono text-xs">{row.run_id}</td>
                   <td className="px-3 py-2 text-muted-foreground">{row.created_at}</td>
-                  <td className="px-3 py-2">{row.status}</td>
+                  <td className="px-3 py-2 capitalize">{row.status}</td>
                   <td className="px-3 py-2">
                     <Link href={`/app/runs/${row.run_id}`} className="text-primary hover:underline">
                       Review run

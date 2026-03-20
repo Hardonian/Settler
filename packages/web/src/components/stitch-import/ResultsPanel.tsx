@@ -30,7 +30,7 @@ const results = [
     id: "8a9f...2b1",
     ref: "#STR-29384",
     pipeline: "Payments_v2",
-    status: "Mismatched",
+    status: "Unmatched",
     time: "10:42 AM",
     traceId: "8a9f...2b1",
   },
@@ -177,7 +177,7 @@ export function ResultsPanel() {
               key={res.id}
               className={cn(
                 "p-5 hover:border-primary-500/50 transition-all cursor-pointer active:scale-[0.99] border-l-4",
-                res.status === "Mismatched"
+                res.status === "Unmatched"
                   ? "border-l-rose-500"
                   : res.status === "Needs Review"
                     ? "border-l-amber-500"
@@ -187,7 +187,7 @@ export function ResultsPanel() {
             >
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-2">
-                  {res.status === "Mismatched" ? (
+                  {res.status === "Unmatched" ? (
                     <AlertCircle className="w-4 h-4 text-rose-500" />
                   ) : res.status === "Needs Review" ? (
                     <AlertTriangle className="w-4 h-4 text-amber-500" />
@@ -198,7 +198,7 @@ export function ResultsPanel() {
                     variant={
                       res.status === "Matched"
                         ? "success"
-                        : res.status === "Mismatched"
+                        : res.status === "Unmatched"
                           ? "destructive"
                           : "warning"
                     }
@@ -251,7 +251,7 @@ export function ResultsPanel() {
                     <span
                       className={cn(
                         "text-sm font-bold",
-                        selectedResult.status === "Mismatched" ? "text-rose-500" : "text-amber-500"
+                        selectedResult.status === "Unmatched" ? "text-rose-500" : "text-amber-500"
                       )}
                     >
                       {selectedResult.status} • Trace {selectedResult.traceId}

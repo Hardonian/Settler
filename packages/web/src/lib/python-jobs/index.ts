@@ -21,7 +21,9 @@ export type PythonJobType =
   | "data_quality_check"
   | "custom";
 
-export type PythonJobStatus = "queued" | "running" | "succeeded" | "failed" | "dead" | "cancelled";
+// PythonJobStatus - import from canonical jobforge-shared and re-export
+import { JobStatus } from "@jobforge/shared";
+export type PythonJobStatus = JobStatus;
 
 export interface PythonJob {
   id: string;
@@ -228,7 +230,6 @@ export async function getPythonJobStats(): Promise<PythonJobStats | null> {
     };
 
     if (Array.isArray(data)) {
-       
       for (const row of data as any[]) {
         const status = row.status as keyof Omit<PythonJobStats, "total">;
         const count = Number(row.count);

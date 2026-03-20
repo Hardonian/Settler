@@ -421,6 +421,27 @@ const nextConfig = {
         destination: "/playground",
         permanent: true,
       },
+      // Phase 1 route closure - 4 known broken routes
+      {
+        source: "/console/dashboard",
+        destination: "/console",
+        permanent: true,
+      },
+      {
+        source: "/console/rules",
+        destination: "/console/rules-engine",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/settings",
+        destination: "/console/settings",
+        permanent: true,
+      },
+      {
+        source: "/console/integrations",
+        destination: "/dashboard/integrations",
+        permanent: true,
+      },
     ];
   },
   async rewrites() {
@@ -437,4 +458,28 @@ const nextConfig = {
   },
 };
 
-module.exports = withBundleAnalyzer(withMDX(nextConfig));
+// Sentry Webpack Plugin Configuration
+// Only apply Sentry config if the package is available
+let finalConfig = withBundleAnalyzer(withMDX(nextConfig));
+
+try {
+  const { withSentryConfig } = require("@sentry/nextjs");
+
+  const sentryWebpackPluginOptions = {
+    // Disable by default unless explicitly enabled via env vars
+    disable: !(process.env.NEXT_PUBLIC_ENABLE_SENTRY === "true" && process.env.SENTRY_DSN),
+    org: process.env.SENTRY_ORG || "settler-dev",
+    project: process.env.SENTRY_PROJECT || "web",
+    silent: true,
+    widenClientFileUpload: true,
+    hideSourceMaps: true,
+    disableLogger: true,
+  };
+
+  finalConfig = withSentryConfig(finalConfig, sentryWebpackPluginOptions);
+} catch (e) {
+  // Sentry webpack plugin not available - continue without it
+  console.warn("[Sentry] Webpack plugin not available, skipping source map upload");
+}
+
+module.exports = finalConfig;

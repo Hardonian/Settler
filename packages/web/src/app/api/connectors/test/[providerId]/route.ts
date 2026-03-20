@@ -64,7 +64,6 @@ export const POST = withUniversalBillingGate(async function POST(
    
       } catch (error) {
     appLogger.error('Error in test route', error);
-    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
         success: false,
@@ -72,7 +71,7 @@ export const POST = withUniversalBillingGate(async function POST(
         message: error instanceof Error ? error.message : String(error),
         result: null,
       },
-      { status: 200 }
+      { status: 500 }
     );
   }
 }, { feature: 'POST API' });

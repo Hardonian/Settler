@@ -4,7 +4,7 @@
  * Shows user's reconciliation data, trial status, usage stats, and personalized recommendations
  */
 
-import { Suspense, use } from "react";
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
@@ -29,8 +29,8 @@ async function fetchUserDashboard(): Promise<UserDashboardData | null> {
   return getUserDashboardData();
 }
 
-function UserDashboardContent() {
-  const data = use(fetchUserDashboard());
+async function UserDashboardContent() {
+  const data = await fetchUserDashboard();
 
   // Redirect to signup if not authenticated
   if (!data) {

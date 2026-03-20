@@ -38,6 +38,10 @@ export function IntegrationDebugger({ integrationId }: IntegrationDebuggerProps)
       if (response.ok) {
         const result = await response.json();
         setDebugResult(result);
+      } else {
+        const payload = (await response.json().catch(() => ({}))) as { error?: string };
+        setDebugResult(null);
+        throw new Error(payload.error || "Failed to debug integration");
       }
     } catch (error: unknown) {
       console.error("Failed to debug:", error);

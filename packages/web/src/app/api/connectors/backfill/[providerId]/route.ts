@@ -75,7 +75,6 @@ export const POST = withUniversalBillingGate(
       });
     } catch (error) {
       appLogger.error("Error in backfill route", error);
-      // Never return 500 - return graceful error response
       return NextResponse.json(
         {
           success: false,
@@ -83,7 +82,7 @@ export const POST = withUniversalBillingGate(
           message: error instanceof Error ? error.message : String(error),
           result: null,
         },
-        { status: 200 }
+        { status: 500 }
       );
     }
   },

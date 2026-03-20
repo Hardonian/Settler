@@ -114,14 +114,13 @@ export const POST = withUniversalBillingGate(async function POST(
    
       } catch (error) {
     appLogger.error('Error in disconnect route', error);
-    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to disconnect connector',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 200 }
+      { status: 500 }
     );
   }
 }, { feature: 'POST API' });

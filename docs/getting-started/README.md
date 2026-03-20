@@ -1,33 +1,21 @@
 # Getting Started: Local Development Setup
 
-This is the canonical guide for setting up Settler for local development.
+This is the canonical guide for setting up Settler for local development. For the definitive setup sequence, see [SETUP.md](../SETUP.md).
+
+## Quick Reference
+
+For the fastest path to a working screen, follow the [Canonical Install/Run Order](#canonical-installrun-order) below.
 
 ## 1. Prerequisites
 
-- **Node.js:** Version `22.0` or higher. We recommend using a version manager like `nvm`.
+- **Node.js:** Version `24.x` (24.12.0 recommended). We recommend using a version manager like `nvm`.
 - **pnpm:** Version `10.13` or higher.
 - **Docker:** Required for running local instances of TigerBeetle and Postgres.
 - **Doppler (Recommended):** For secret management.
 
 ## 2. Initial Setup
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/settler/settler.git
-    cd settler
-    ```
-
-2.  **Install dependencies:**
-    ```bash
-    pnpm install
-    ```
-
-3.  **Set up environment variables:**
-    Copy the example `.env` file. For a first run, the defaults are sufficient.
-    ```bash
-    cp .env.local.example .env.local
-    ```
-    For production or advanced configurations, refer to the [Environment Variable Matrix](docs/setup/env-matrix.md).
+Follow the [Canonical Install/Run Order](#canonical-installrun-order) detailed in [SETUP.md](../SETUP.md).
 
 ## 3. Start Local Infrastructure
 
@@ -96,6 +84,11 @@ pnpm check
 
 ## Next Steps
 
+- **What Works Today:** [WHAT_WORKS.md](./WHAT_WORKS.md) - Core functional workflows
+- **Demo Walkthrough:** [DEMO_WALKTHROUGH.md](./DEMO_WALKTHROUGH.md) - Step-by-step demo
+- **Verification:** [VERIFICATION_COMMANDS.md](../VERIFICATION_COMMANDS.md) - All verification commands
+- **Setup Traps:** [SETUP_TRAPS.md](../troubleshooting/SETUP_TRAPS.md) - Avoid common issues
+- **Intentional Boundaries:** [INTENTIONAL_BOUNDARIES.md](./INTENTIONAL_BOUNDARIES.md) - What's not production-ready
 - **Architecture Overview:** [`docs/architecture/platform-architecture.md`](../architecture/platform-architecture.md)
 - **Using the CLI:** [`packages/cli/README.md`](../../packages/cli/README.md)
 - **API Reference:** [`docs/api/README.md`](../api/README.md)

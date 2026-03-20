@@ -6,7 +6,7 @@
 
 "use client";
 
-import { use, useState } from "react";
+import { useState } from "react";
 import { useAdminRuns } from "@/lib/admin/hooks/use-admin-metrics";
 import { ReconciliationRun } from "@/lib/admin/metrics/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,11 +17,10 @@ import Link from "next/link";
 export default function CompareRunsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ run1?: string; run2?: string }>;
+  searchParams: { run1?: string; run2?: string };
 }) {
-  const params = use(searchParams);
-  const [run1Id, setRun1Id] = useState(params.run1 || "");
-  const [run2Id, setRun2Id] = useState(params.run2 || "");
+  const [run1Id, setRun1Id] = useState(searchParams.run1 || "");
+  const [run2Id, setRun2Id] = useState(searchParams.run2 || "");
 
   const { data: runsData } = useAdminRuns({ limit: 1000 });
 
@@ -70,8 +69,11 @@ export default function CompareRunsPage({
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Run 1</label>
+              <label htmlFor="run1-select" className="block text-sm font-medium mb-2">
+                Run 1
+              </label>
               <select
+                id="run1-select"
                 value={run1Id}
                 onChange={(e) => setRun1Id(e.target.value)}
                 className="w-full border border-slate-200 dark:border-slate-700 rounded px-3 py-2 bg-white dark:bg-slate-900"
@@ -86,8 +88,11 @@ export default function CompareRunsPage({
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Run 2</label>
+              <label htmlFor="run2-select" className="block text-sm font-medium mb-2">
+                Run 2
+              </label>
               <select
+                id="run2-select"
                 value={run2Id}
                 onChange={(e) => setRun2Id(e.target.value)}
                 className="w-full border border-slate-200 dark:border-slate-700 rounded px-3 py-2 bg-white dark:bg-slate-900"

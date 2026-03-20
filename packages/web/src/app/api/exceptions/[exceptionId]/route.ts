@@ -2,16 +2,28 @@
  * Exception Detail API Route (Workspace-scoped)
  *
  * GET /api/exceptions/[exceptionId] - Get a single exception by ID
- * POST /api/exceptions/[exceptionId] - Handle exception actions via query param (?action=resolve|ignore|retry|reopen)
+ * POST /api/exceptions/[exceptionId] - Handle exception actions via query param (?action=resolve|ignore|reopen)
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/shared/db/prismaClient";
 import { getTraceId } from "@/lib/observability/trace";
-import { requireAuth } from "@/lib/api/unified-auth";
+import {
+  resolveTenantForMutation,
+  resolveTenantMembershipScope,
+  TenantMembershipError,
+} from "@/lib/supabase/tenant-membership";
 import { withSecurity } from "@/lib/middleware/api-security";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
+import {
+  buildExceptionAuditTrail,
+  buildExceptionDescription,
+  buildExceptionReasonTags,
+  buildExceptionStatusDetail,
+  buildSuggestedActions,
+  getExceptionWorkflowState,
+} from "@/lib/exceptions/presentation";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +36,7 @@ const paramsSchema = z.object({
 
 // Action query param schema
 const actionQuerySchema = z.object({
-  action: z.enum(["resolve", "ignore", "retry", "reopen"]),
+  action: z.enum(["resolve", "ignore", "reopen"]),
 });
 
 // Request body schema for exception actions
@@ -59,16 +71,12 @@ export const GET = withSecurity(
 
         const { exceptionId } = parsedParams.data;
 
-        // Authenticate and get workspace context
-        const auth = await requireAuth(request);
-        const tenantId = auth.tenantId;
-
-        if (!tenantId) {
-          return NextResponse.json(
-            { error: "No workspace found", trace_id: traceId },
-            { status: 401 }
-          );
-        }
+        const { tenantIds } = await resolveTenantMembershipScope();
+        const requestedTenantId =
+          request.nextUrl.searchParams.get("workspace_id")?.trim() ||
+          request.nextUrl.searchParams.get("tenant_id")?.trim() ||
+          null;
+        const tenantId = resolveTenantForMutation(tenantIds, requestedTenantId);
 
         // Fetch exception - workspace scoped
         const exception = await prisma.driftEvent.findFirst({
@@ -90,6 +98,7 @@ export const GET = withSecurity(
             fieldPath: true,
             expectedValue: true,
             actualValue: true,
+            driftMetrics: true,
             metadata: true,
           },
         });
@@ -102,7 +111,42 @@ export const GET = withSecurity(
         }
 
         // Transform to frontend format
-        const status = exception.acknowledged ? "resolved" : "pending";
+        const metadata = (exception.metadata as Record<string, unknown>) || {};
+        const status = getExceptionWorkflowState({
+          acknowledged: exception.acknowledged,
+          metadata,
+        });
+        const statusDetail = buildExceptionStatusDetail({
+          driftType: exception.driftType,
+          fieldPath: exception.fieldPath,
+          expectedValue: exception.expectedValue,
+          actualValue: exception.actualValue,
+          metadata,
+          createdAt: exception.createdAt,
+          acknowledged: exception.acknowledged,
+          acknowledgedBy: exception.acknowledgedBy,
+          acknowledgedAt: exception.acknowledgedAt,
+        });
+        const suggestedActions = buildSuggestedActions({
+          driftType: exception.driftType,
+          fieldPath: exception.fieldPath,
+          status,
+        });
+        const resolution = (metadata.resolution as Record<string, unknown> | undefined) || {};
+        const auditTrail = buildExceptionAuditTrail({
+          driftType: exception.driftType,
+          fieldPath: exception.fieldPath,
+          expectedValue: exception.expectedValue,
+          actualValue: exception.actualValue,
+          metadata,
+          createdAt: exception.createdAt,
+          acknowledged: exception.acknowledged,
+          acknowledgedBy: exception.acknowledgedBy,
+          acknowledgedAt: exception.acknowledgedAt,
+        }).map((entry) => ({
+          ...entry,
+          timestamp: entry.timestamp,
+        }));
 
         const result = {
           id: exception.id,
@@ -110,15 +154,28 @@ export const GET = withSecurity(
           status: status as "pending" | "investigating" | "resolved" | "ignored",
           severity: (exception.severity || "low") as "low" | "medium" | "high" | "critical",
           detectedAt: exception.createdAt,
-          description: exception.fieldPath
-            ? `Field mismatch: ${exception.fieldPath}`
-            : "Drift detected",
-          amount: (exception.metadata as Record<string, unknown>)?.amount as number | undefined,
-          currency: (exception.metadata as Record<string, unknown>)?.currency as string | undefined,
-          sourceTransactionId: (exception.metadata as Record<string, unknown>)
-            ?.sourceTransactionId as string | undefined,
-          targetTransactionId: (exception.metadata as Record<string, unknown>)
-            ?.targetTransactionId as string | undefined,
+          description: buildExceptionDescription({
+            driftType: exception.driftType,
+            fieldPath: exception.fieldPath,
+            expectedValue: exception.expectedValue,
+            actualValue: exception.actualValue,
+          }),
+          statusDetail,
+          reasonTags: buildExceptionReasonTags({
+            driftType: exception.driftType,
+            fieldPath: exception.fieldPath,
+            metadata,
+          }),
+          amount: metadata.amount as number | undefined,
+          currency: metadata.currency as string | undefined,
+          sourceTransactionId: metadata.sourceTransactionId as string | undefined,
+          targetTransactionId: metadata.targetTransactionId as string | undefined,
+          sourceSystem:
+            (metadata.sourceSystem as string | undefined) ||
+            (metadata.sourceAdapter as string | undefined),
+          targetSystem:
+            (metadata.targetSystem as string | undefined) ||
+            (metadata.targetAdapter as string | undefined),
           // Additional details
           runId: exception.reconJobId,
           expectedValue: exception.expectedValue,
@@ -128,16 +185,56 @@ export const GET = withSecurity(
           acknowledgedAt: exception.acknowledgedAt?.toISOString() || null,
           createdAt: exception.createdAt.toISOString(),
           updatedAt: exception.updatedAt?.toISOString() || exception.createdAt.toISOString(),
+          resolution:
+            typeof resolution.notes === "string"
+              ? resolution.notes
+              : status === "ignored"
+                ? "Ignored by operator"
+                : status === "resolved"
+                  ? "Resolved by operator"
+                  : undefined,
+          resolvedAt:
+            status === "resolved" && typeof resolution.resolvedAt === "string"
+              ? resolution.resolvedAt
+              : undefined,
+          ignoredAt:
+            status === "ignored" && typeof resolution.ignoredAt === "string"
+              ? resolution.ignoredAt
+              : undefined,
+          ignoredBy:
+            status === "ignored" && typeof resolution.ignoredBy === "string"
+              ? resolution.ignoredBy
+              : undefined,
+          confidenceScore:
+            typeof (exception.driftMetrics as Record<string, unknown> | null)?.confidenceScore ===
+            "number"
+              ? ((exception.driftMetrics as Record<string, unknown>).confidenceScore as number)
+              : typeof metadata.confidenceScore === "number"
+                ? (metadata.confidenceScore as number)
+                : undefined,
+          suggestedActions,
+          playbookApplied:
+            typeof metadata.playbookApplied === "string"
+              ? (metadata.playbookApplied as string)
+              : undefined,
+          auditTrail,
         };
 
         return NextResponse.json({
+          ...result,
           exception: result,
           trace_id: traceId,
         });
       } catch (error) {
+        if (error instanceof TenantMembershipError) {
+          return NextResponse.json(
+            { error: error.message, code: error.code, trace_id: traceId },
+            { status: error.status }
+          );
+        }
+
         appLogger.error("[Exception Detail API] Error fetching exception", error);
 
-        // Never return 500 - return graceful error response
         return NextResponse.json(
           {
             exception: null,
@@ -145,7 +242,7 @@ export const GET = withSecurity(
             message: "Please try again later or contact support if the issue persists",
             trace_id: traceId,
           },
-          { status: 200 }
+          { status: 500 }
         );
       }
     },
@@ -156,7 +253,7 @@ export const GET = withSecurity(
 
 /**
  * POST /api/exceptions/[exceptionId] - Handle exception actions
- * Accepts action via query param: ?action=resolve|ignore|retry|reopen
+ * Accepts action via query param: ?action=resolve|ignore|reopen
  */
 export const POST = withSecurity(
   withUniversalBillingGate(
@@ -190,7 +287,7 @@ export const POST = withSecurity(
           return NextResponse.json(
             {
               success: false,
-              error: "Invalid action. Use ?action=resolve|ignore|retry|reopen",
+              error: "Invalid action. Use ?action=resolve|ignore|reopen",
               trace_id: traceId,
             },
             { status: 400 }
@@ -199,24 +296,13 @@ export const POST = withSecurity(
 
         const actionName = parsedAction.data.action;
 
-        // Authenticate and get workspace context
-        const auth = await requireAuth(request);
-        const tenantId = auth.tenantId;
-        const userId = auth.userId;
-
-        if (!tenantId) {
-          return NextResponse.json(
-            { success: false, error: "No workspace found", trace_id: traceId },
-            { status: 401 }
-          );
-        }
-
-        if (!userId) {
-          return NextResponse.json(
-            { success: false, error: "No user found", trace_id: traceId },
-            { status: 401 }
-          );
-        }
+        const scope = await resolveTenantMembershipScope();
+        const requestedTenantId =
+          request.nextUrl.searchParams.get("workspace_id")?.trim() ||
+          request.nextUrl.searchParams.get("tenant_id")?.trim() ||
+          null;
+        const tenantId = resolveTenantForMutation(scope.tenantIds, requestedTenantId);
+        const userId = scope.userId;
 
         // Parse optional notes from body
         let notes: string | undefined;
@@ -240,9 +326,6 @@ export const POST = withSecurity(
           case "ignore":
             result = await handleIgnore(exceptionId, tenantId, userId, notes);
             break;
-          case "retry":
-            result = await handleRetry(exceptionId, tenantId, userId, notes);
-            break;
           case "reopen":
             result = await handleReopen(exceptionId, tenantId, userId, notes);
             break;
@@ -251,13 +334,14 @@ export const POST = withSecurity(
         }
 
         if (!result.success) {
+          const status = result.error === "Exception not found" ? 404 : 422;
           return NextResponse.json(
             {
               success: false,
               error: result.error || `Failed to ${actionName} exception`,
               trace_id: traceId,
             },
-            { status: 200 }
+            { status }
           );
         }
 
@@ -268,12 +352,27 @@ export const POST = withSecurity(
           action: actionName,
         });
 
+        const actionLabel =
+          actionName === "ignore" ? "ignored" : actionName === "reopen" ? "reopened" : "resolved";
+
         return NextResponse.json({
           success: true,
-          message: `Exception ${actionName}ed successfully`,
+          message: `Exception ${actionLabel} successfully`,
           trace_id: traceId,
         });
       } catch (error) {
+        if (error instanceof TenantMembershipError) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: error.message,
+              code: error.code,
+              trace_id: traceId,
+            },
+            { status: error.status }
+          );
+        }
+
         appLogger.error("[Exception API] Error performing exception action", error);
 
         return NextResponse.json(
@@ -283,7 +382,7 @@ export const POST = withSecurity(
             message: "Please try again later or contact support if the issue persists",
             trace_id: traceId,
           },
-          { status: 200 }
+          { status: 500 }
         );
       }
     },
@@ -363,42 +462,6 @@ async function handleIgnore(
   return { success: true };
 }
 
-async function handleRetry(
-  exceptionId: string,
-  tenantId: string,
-  userId: string,
-  notes?: string
-): Promise<{ success: boolean; error?: string }> {
-  const exception = await prisma.driftEvent.findFirst({
-    where: { id: exceptionId, tenantId },
-  });
-
-  if (!exception) {
-    return { success: false, error: "Exception not found" };
-  }
-
-  // Reset acknowledgment state for retry
-  await prisma.driftEvent.update({
-    where: { id: exceptionId },
-    data: {
-      acknowledged: false,
-      acknowledgedBy: null,
-      acknowledgedAt: null,
-      metadata: {
-        ...((exception.metadata as Record<string, unknown>) || {}),
-        retry: {
-          retriedBy: userId,
-          retriedAt: new Date().toISOString(),
-          notes,
-          previousAcknowledged: exception.acknowledged,
-        },
-      },
-    },
-  });
-
-  return { success: true };
-}
-
 async function handleReopen(
   exceptionId: string,
   tenantId: string,
@@ -422,6 +485,7 @@ async function handleReopen(
       acknowledgedAt: null,
       metadata: {
         ...((exception.metadata as Record<string, unknown>) || {}),
+        resolution: null,
         reopen: {
           reopenedBy: userId,
           reopenedAt: new Date().toISOString(),

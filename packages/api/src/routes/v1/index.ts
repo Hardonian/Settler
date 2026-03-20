@@ -28,6 +28,7 @@ import notificationsRouter from "./notifications";
 import receiptMatchingRouter from "./receipt-matching";
 import bulkOperationsRouter from "./bulk-operations";
 import slaRouter from "./sla";
+import { sloAlertingRouter } from "../slo";
 import auditTrailRouter from "./audit-trail";
 import advancedMatchingRulesRouter from "./advanced-matching-rules";
 import customIntegrationsRouter from "./custom-integrations";
@@ -35,6 +36,7 @@ import dedicatedInfrastructureRouter from "./dedicated-infrastructure";
 import automatedReviewRouter from "./automated-review";
 import capabilitiesRouter from "./capabilities";
 import supportRouter from "./support";
+import toleranceSettingsRouter from "../tolerance-settings";
 
 export const v1Router: Router = Router();
 
@@ -69,10 +71,12 @@ v1Router.use("/audit-trail", auditTrailRouter);
 v1Router.use("/receipt-matching", receiptMatchingRouter);
 v1Router.use("/bulk-operations", bulkOperationsRouter);
 v1Router.use("/advanced-matching-rules", advancedMatchingRulesRouter);
+v1Router.use("/tolerance", toleranceSettingsRouter);
 // Currency routes already exist at /currency
 
 // Phase 3: Enterprise Features
 v1Router.use("/sla", slaRouter);
+v1Router.use("/slo", sloAlertingRouter);
 v1Router.use("/custom-integrations", customIntegrationsRouter);
 v1Router.use("/dedicated-infrastructure", dedicatedInfrastructureRouter);
 

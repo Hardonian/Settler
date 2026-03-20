@@ -9,6 +9,7 @@
 
 import { query } from "../../db";
 import { logError, logInfo } from "../../utils/logger";
+import { levenshteinDistance } from "../../lib/levenshtein";
 
 export interface MLMatchFeatures {
   amountDiff: number;
@@ -424,46 +425,10 @@ export class MLMatchingEngine {
       return 0;
     }
 
-    const distance = this.levenshteinDistance(normalized1, normalized2);
+    const distance = levenshteinDistance(normalized1, normalized2);
     return 1 - distance / maxLen;
   }
 
-  /**
-   * Levenshtein distance
-   */
-  private levenshteinDistance(str1: string, str2: string): number {
-    const len1 = str1.length;
-    const len2 = str2.length;
-    const matrix: number[][] = [];
-
-    for (let i = 0; i <= len1; i++) {
-      matrix[i] = [i];
-    }
-    for (let j = 0; j <= len2; j++) {
-      if (matrix[0]) {
-        matrix[0][j] = j;
-      }
-    }
-
-    for (let i = 1; i <= len1; i++) {
-      const row = matrix[i];
-      const prevRow = matrix[i - 1];
-      if (!row || !prevRow) continue;
-      for (let j = 1; j <= len2; j++) {
-        if (str1[i - 1] === str2[j - 1]) {
-          row[j] = prevRow[j - 1] ?? 0;
-        } else {
-          row[j] = Math.min(
-            (prevRow[j] ?? 0) + 1,
-            (row[j - 1] ?? 0) + 1,
-            (prevRow[j - 1] ?? 0) + 1
-          );
-        }
-      }
-    }
-
-    return matrix[len1]?.[len2] ?? 0;
-  }
 }
 
 export const mlMatchingEngine = new MLMatchingEngine();

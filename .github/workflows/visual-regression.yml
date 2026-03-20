@@ -21,9 +21,7 @@ on:
         type: boolean
         default: false
 
-env:
-  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+# Global environment variables are moved to specific jobs to resolve IDE validation warnings.
 
 jobs:
   # Build the application for testing
@@ -56,6 +54,8 @@ jobs:
       - name: Build web application
         run: npx turbo run build --filter @settler/web...
         env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
           NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-key
@@ -294,6 +294,51 @@ jobs:
             playwright-report/
           retention-days: 7
 
+  # Accessibility & Semantics Audit (Phase 10)
+  accessibility-audit:
+    name: Accessibility Baseline Audit
+    runs-on: ubuntu-latest
+    needs: [build]
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: web-build
+          path: packages/web/.next
+
+      - name: Start production server
+        run: |
+          cd packages/web
+          pnpm start &
+          sleep 10
+          curl -f http://localhost:3000 || (sleep 5 && curl -f http://localhost:3000)
+        env:
+          PORT: 3000
+          NODE_ENV: production
+          SAFE_MODE: "1"
+
+      - name: Run Accessibility Audit
+        run: npx playwright test tests/e2e/accessibility.audit.spec.ts
+        env:
+          BASE_URL: http://localhost:3000
+
   # Update baselines workflow (manual trigger only, restricted to main)
   update-baselines:
     name: Update Baseline Snapshots
@@ -396,6 +441,15 @@ jobs:
             echo "- ✅ UI Consistency Audit: Completed" >> $GITHUB_STEP_SUMMARY
           else
             echo "- ❌ UI Consistency Audit: Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Check A11y audit
+          if [ -d "artifacts/a11y-audit-results" ]; then
+            echo "- ✅ Accessibility Audit: Completed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚠️ Accessibility Audit: Pending/Missing" >> $GITHUB_STEP_SUMMARY
           fi
 
           echo "" >> $GITHUB_STEP_SUMMARY

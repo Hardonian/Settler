@@ -1,6 +1,9 @@
 /**
  * Advanced Audit Trail Component
  * Enhanced audit log viewer with filtering and exports
+ *
+ * SECURITY: This component receives tenantId from the parent page
+ * to ensure tenant-scoped API calls. The API filters by tenant_id.
  */
 
 "use client";
@@ -37,7 +40,15 @@ interface AuditLog {
   complianceTags?: string[];
 }
 
-export function AdvancedAuditTrail() {
+interface AdvancedAuditTrailProps {
+  /**
+   * Tenant ID for tenant-scoped audit log filtering
+   * SECURITY: Must be provided from server-side context
+   */
+  tenantId?: string;
+}
+
+export function AdvancedAuditTrail({ tenantId }: AdvancedAuditTrailProps) {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,7 +80,14 @@ export function AdvancedAuditTrail() {
       if (filters.startDate) params.append("startDate", filters.startDate);
       if (filters.endDate) params.append("endDate", filters.endDate);
 
-      const res = await fetch(`/api/v1/audit-trail/logs?${params.toString()}`);
+      // SECURITY: Include tenant_id header for tenant-scoped API calls
+      // The API middleware validates tenant access
+      const headers: HeadersInit = {};
+      if (tenantId) {
+        headers["X-Tenant-ID"] = tenantId;
+      }
+
+      const res = await fetch(`/api/v1/audit-trail?${params.toString()}`, { headers });
       if (!res.ok) throw new Error("Failed to fetch logs");
 
       const data = await res.json();
@@ -84,20 +102,31 @@ export function AdvancedAuditTrail() {
   const handleExport = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/v1/audit-trail/exports", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          filters,
-          exportFormat: "csv",
-          expiresInDays: 7,
-        }),
+      // SECURITY: Include tenant_id header for tenant-scoped exports
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (tenantId) {
+        headers["X-Tenant-ID"] = tenantId;
+      }
+
+      const res = await fetch("/api/v1/audit-trail/export", {
+        method: "GET",
+        headers,
       });
 
-      if (!res.ok) throw new Error("Failed to create export");
+      if (!res.ok) throw new Error("Failed to export audit trail");
 
-      const data = await res.json();
-      setStatusMessage(`Export requested: ${data.id}`);
+      // Trigger download for CSV
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `audit-trail-${tenantId || "export"}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      setStatusMessage("Audit trail exported successfully");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Failed to export");
       setStatusMessage(null);

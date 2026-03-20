@@ -83,7 +83,7 @@ export const POST = withUniversalBillingGate(
                 error: "Failed to create connector",
                 message: "Please try again later or contact support if the issue persists",
               },
-              { status: 200 }
+              { status: 500 }
             );
           }
 
@@ -120,7 +120,6 @@ export const POST = withUniversalBillingGate(
       });
     } catch (error) {
       appLogger.error("Error in connect route", error);
-      // Never return 500 - return graceful error response
       return NextResponse.json(
         {
           success: false,
@@ -133,7 +132,7 @@ export const POST = withUniversalBillingGate(
                 : String(error)
               : undefined,
         },
-        { status: 200 }
+        { status: 500 }
       );
     }
   },

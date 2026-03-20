@@ -1,62 +1,13 @@
-"use client";
+/**
+ * Empty State Component
+ * 
+ * Re-exports from canonical ui/empty-state location.
+ */
 
-import { LucideIcon } from "lucide-react";
-import { Button } from "./ui/button";
-import { cn } from "@/lib/utils";
+'use client';
 
-interface EmptyStateProps {
-  icon?: LucideIcon;
-  title: string;
-  description?: string;
-  action?: {
-    label: string;
-    onClick: () => void;
-    variant?: "default" | "outline" | "secondary";
-  };
-  secondaryAction?: {
-    label: string;
-    onClick: () => void;
-    variant?: "default" | "outline" | "secondary";
-  };
-  className?: string;
-}
-
-export function EmptyState({
-  icon: Icon,
-  title,
-  description,
-  action,
-  secondaryAction,
-  className,
-}: EmptyStateProps) {
-  return (
-    <div
-      className={cn("flex flex-col items-center justify-center py-12 px-4 text-center", className)}
-    >
-      {Icon && (
-        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-          <Icon className="w-8 h-8 text-muted-foreground" />
-        </div>
-      )}
-      <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
-      {description && <p className="text-sm text-muted-foreground max-w-md mb-6">{description}</p>}
-      {(action || secondaryAction) && (
-        <div className="flex gap-3">
-          {action && (
-            <Button variant={action.variant || "default"} onClick={action.onClick}>
-              {action.label}
-            </Button>
-          )}
-          {secondaryAction && (
-            <Button
-              variant={secondaryAction.variant || "outline"}
-              onClick={secondaryAction.onClick}
-            >
-              {secondaryAction.label}
-            </Button>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
+// Re-export canonical EmptyState from ui
+export { EmptyState } from './ui/empty-state';
+export type { EmptyStateProps } from './ui/empty-state';
+export { RetryButton } from './ui/empty-state';
+export type { RetryButtonProps } from './ui/empty-state';

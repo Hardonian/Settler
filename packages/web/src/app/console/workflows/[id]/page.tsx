@@ -17,7 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { safeFetch } from "@/lib/safe-fetch";
 import { ArrowLeft, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { ErrorState } from "@/components/ErrorState";
+import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface Workflow {

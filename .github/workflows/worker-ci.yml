@@ -16,9 +16,7 @@ on:
       - "scripts/worker-smoke-test.ts"
       - ".github/workflows/worker-ci.yml"
 
-env:
-  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+# Global environment variables are moved to specific jobs to resolve IDE validation warnings.
 
 jobs:
   # Minimal worker smoke test with mocked DB (for CI without real database)

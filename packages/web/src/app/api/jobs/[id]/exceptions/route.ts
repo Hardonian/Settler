@@ -14,7 +14,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/shared/db/prismaClient";
 import { authenticateApiKey } from "@/shared/auth/apiKey";
-import { createClient } from "@/lib/supabase/server";
+import {
+  resolveTenantMembershipScope,
+  TenantMembershipError,
+} from "@/lib/supabase/tenant-membership";
 import { z } from "zod";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
@@ -85,6 +88,30 @@ interface ExceptionResponse {
   };
 }
 
+function runMetadataReferencesJob(metadata: unknown, jobId: string): boolean {
+  if (!metadata || typeof metadata !== "object") {
+    return false;
+  }
+
+  const meta = metadata as Record<string, unknown>;
+  const directCandidates = ["jobId", "job_id", "reconJobId", "recon_job_id"];
+  for (const candidate of directCandidates) {
+    if (meta[candidate] === jobId) {
+      return true;
+    }
+  }
+
+  const nested = meta.matchingConfig;
+  if (nested && typeof nested === "object") {
+    const nestedJobId = (nested as Record<string, unknown>).jobId;
+    if (nestedJobId === jobId) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 /**
  * GET /api/jobs/[id]/exceptions
  * Get exceptions (unmatched transactions and conflicts) for a job
@@ -137,43 +164,28 @@ export const GET = withSecurity(
         const { runId, matchType, reviewed, limit, offset, sortBy, sortOrder } =
           queryValidation.data;
 
-        // Authenticate request
-        let auth;
-        let tenantId: string | null = null;
+        // Authenticate request and derive scoped tenant context.
+        let scopedTenantId: string | null = null;
         let userId: string | null = null;
+        let memberTenantIds: string[] | null = null;
 
         try {
-          auth = await authenticateApiKey(request);
-          if (auth) {
-            tenantId = auth.tenantId || null;
-            userId = auth.userId || null;
+          const apiKeyAuth = await authenticateApiKey(request);
+          if (apiKeyAuth?.tenantId) {
+            scopedTenantId = apiKeyAuth.tenantId;
+            userId = apiKeyAuth.userId || "api-key";
           } else {
-            // Try Supabase auth as fallback (graceful degradation)
-            try {
-              const supabase = await createClient();
-              const {
-                data: { user },
-              } = await supabase.auth.getUser();
-              if (user) {
-                userId = user.id;
-                // Get tenant from billing account
-                const billingAccount = await prisma.billingAccount.findFirst({
-                  where: { userId: user.id },
-                  select: { tenantId: true },
-                });
-                tenantId = billingAccount?.tenantId || null;
-              }
-            } catch {
-              return NextResponse.json(
-                {
-                  error: "Unauthorized",
-                  message: "Authentication required",
-                },
-                { status: 401 }
-              );
-            }
+            const scope = await resolveTenantMembershipScope();
+            memberTenantIds = scope.tenantIds;
+            userId = scope.userId;
           }
-        } catch {
+        } catch (error) {
+          if (error instanceof TenantMembershipError) {
+            return NextResponse.json(
+              { error: error.message, code: error.code },
+              { status: error.status }
+            );
+          }
           return NextResponse.json(
             {
               error: "Unauthorized",
@@ -183,24 +195,26 @@ export const GET = withSecurity(
           );
         }
 
-        if (!tenantId || !userId) {
+        if (!userId) {
           return NextResponse.json(
             {
               error: "Unauthorized",
-              message: "Tenant ID and User ID required",
+              message: "Authentication required",
             },
             { status: 401 }
           );
         }
 
-        // Verify job exists and belongs to tenant
+        // Verify job exists and belongs to authenticated scope.
         const job = await prisma.reconJob.findFirst({
           where: {
             id: id,
-            tenantId: tenantId,
             deletedAt: null,
+            ...(scopedTenantId
+              ? { tenantId: scopedTenantId }
+              : { tenantId: { in: memberTenantIds || [] } }),
           },
-          select: { id: true },
+          select: { id: true, tenantId: true },
         });
 
         if (!job) {
@@ -213,16 +227,31 @@ export const GET = withSecurity(
           );
         }
 
+        const tenantId = job.tenantId;
+        if (!tenantId) {
+          return NextResponse.json(
+            {
+              error: "Not found",
+              message: `Reconciliation job ${id} not found`,
+            },
+            { status: 404 }
+          );
+        }
+
         // Get reconciliation runs for this job
+        // NOTE: Reconciliation runs are stored separately from recon jobs, so we use metadata
+        // provenance linkage when present and fail closed to avoid cross-job leakage.
         const runs = await prisma.reconciliationRun.findMany({
           where: {
             tenantId: tenantId,
             ...(runId ? { id: runId } : {}),
           },
-          select: { id: true },
+          select: { id: true, metadata: true },
         });
 
-        const runIds = runs.map((r: { id: string }) => r.id);
+        const runIds = runs
+          .filter((run: { metadata: unknown }) => runMetadataReferencesJob(run.metadata, id))
+          .map((run: { id: string }) => run.id);
 
         if (runIds.length === 0) {
           return NextResponse.json({
@@ -448,7 +477,6 @@ export const GET = withSecurity(
           duration,
         });
 
-        // Never return 500 - return empty exceptions array with graceful error message
         return NextResponse.json(
           {
             exceptions: [],
@@ -456,7 +484,7 @@ export const GET = withSecurity(
             message: "Please try again later or contact support if the issue persists",
             details: process.env.NODE_ENV === "development" ? errorMessage : undefined,
           },
-          { status: 200 }
+          { status: 500 }
         );
       }
     },

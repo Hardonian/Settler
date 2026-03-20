@@ -264,6 +264,8 @@ model ReconResult {
   reconJobId            String    @db.Uuid
   tenantId              String    @db.Uuid
   executionId           String?   @db.Uuid
+  snapshotId            String?   @db.Uuid
+  inputHash             String?
   status                String    @default("running")
   startedAt             DateTime  @default(now())
   completedAt           DateTime?
@@ -285,19 +287,77 @@ model ReconResult {
   errorMessage          String?   @db.Text
   errorStack            String?   @db.Text
   summary               Json      @default("{}")
-metadata          Json      @default("{}")
-proofCapsule     Json?     @default("{}")
-createdAt         DateTime  @default(now())
+  metadata              Json      @default("{}")
+  proofCapsule          Json?     @default("{}")
+  createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
   reconJob              ReconJob @relation(fields: [reconJobId], references: [id], onDelete: Cascade)
+  snapshot              RunSnapshot? @relation(fields: [snapshotId], references: [id], onDelete: SetNull)
   audits                ReconAudit[]
+  provenance            ExecutionProvenance[]
 
   @@index([reconJobId])
   @@index([tenantId])
   @@index([status])
+  @@index([reconJobId, tenantId, status, startedAt(sort: Desc)])
   @@index([startedAt(sort: Desc)])
+  @@index([snapshotId])
+  @@index([inputHash])
   @@map("recon_results")
+}
+
+model RunSnapshot {
+  id                    String    @id @default(uuid())
+  tenantId              String    @db.Uuid
+  reconJobId            String    @db.Uuid
+  inputHash             String    @unique
+  sourceDataHash        String
+  targetDataHash        String
+  adapterConfigHashes   Json      @default("{}")
+  jobConfig             Json      @default("{}")
+  ruleVersions          Json      @default("[]")
+  engineVersion         String    @default("1.0.0")
+  metadata              Json      @default("{}")
+  createdAt             DateTime  @default(now())
+
+  results               ReconResult[]
+
+  @@index([tenantId])
+  @@index([reconJobId])
+  @@index([inputHash])
+  @@index([createdAt(sort: Desc)])
+  @@map("run_snapshots")
+}
+
+model ExecutionProvenance {
+  id                    String    @id @default(uuid())
+  tenantId              String    @db.Uuid
+  runResultId           String    @db.Uuid
+  snapshotId            String    @db.Uuid
+  sequence              Int
+  operation             String
+  entityType            String
+  entityId              String    @db.Uuid
+  ruleId                String?   @db.Uuid
+  ruleVersion           Int?
+  confidence            Decimal?  @db.Decimal(5, 4)
+  actor                 String    @default("system")
+  actorUserId           String?   @db.Uuid
+  details               Json      @default("{}")
+  entryHash             String
+  timestamp             DateTime  @default(now())
+
+  runResult             ReconResult @relation(fields: [runResultId], references: [id], onDelete: Cascade)
+
+  @@unique([runResultId, sequence])
+  @@index([tenantId])
+  @@index([runResultId])
+  @@index([snapshotId])
+  @@index([operation])
+  @@index([entityId])
+  @@index([timestamp])
+  @@map("execution_provenance")
 }
 
 model ReconTemplate {
@@ -405,6 +465,33 @@ model ValidationRule {
   @@index([isActive])
   @@index([isPublic])
   @@map("validation_rules")
+}
+
+model CustomMatchingRule {
+  id                String    @id @default(uuid())
+  tenantId          String?   @db.Uuid
+  name              String
+  description       String?
+  matchConditions   Json      @default("{}") // JSON object defining matching criteria
+  matchStrategy     String    @default("exact") // exact, fuzzy, regex, custom
+  priority          Int       @default(0) // Lower values = higher priority
+  isActive          Boolean   @default(true)
+  isPublic          Boolean   @default(false)
+  isSystem          Boolean   @default(false)
+  applicableSources Json      @default("[]") // Array of source adapter types this rule applies to
+  applicableTargets Json      @default("[]") // Array of target adapter types this rule applies to
+  usageCount        Int       @default(0)
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  @@index([tenantId])
+  @@index([matchStrategy])
+  @@index([priority])
+  @@index([isActive])
+  @@index([isPublic])
+  @@map("custom_matching_rules")
 }
 
 model TransformRecipe {
@@ -524,16 +611,17 @@ model AnalyticsEvent {
   id        String   @id @default(cuid())
   type      String
   data      Json     @default("{}")
-  userId    String?  // UUID
+  userId    String?  @db.Uuid
   sessionId String?
   timestamp DateTime @default(now())
   metadata  Json     @default("{}")
-  createdAt DateTime @default(now()) @updatedAt
+  createdAt DateTime @default(now())
 
   @@index([type])
   @@index([userId])
   @@index([sessionId])
   @@index([timestamp])
+  @@map("analytics_events")
 }
 
 model SDKDownload {
@@ -541,52 +629,55 @@ model SDKDownload {
   packageName    String
   version        String
   packageManager String
-  userId         String?
+  userId         String?  @db.Uuid
   sessionId      String?
   userAgent      String?
   referrer       String?
   ipAddress      String?
   timestamp      DateTime @default(now())
-  createdAt      DateTime @default(now()) @updatedAt
+  createdAt      DateTime @default(now())
 
   @@index([packageName])
   @@index([timestamp])
   @@index([userId])
+  @@map("sdk_downloads")
 }
 
 model PlaygroundUsage {
-  id           String   @id @default(cuid())
-  feature      String
-  action       String
-  integration  String?
-  durationMs   Int?
-  success      Boolean?
-  userId       String?
-  sessionId    String?
-  metadata     Json     @default("{}")
-  timestamp    DateTime @default(now())
-  createdAt    DateTime @default(now()) @updatedAt
+  id          String   @id @default(cuid())
+  feature     String
+  action      String
+  integration String?
+  durationMs  Int?
+  success     Boolean?
+  userId      String?  @db.Uuid
+  sessionId   String?
+  metadata    Json     @default("{}")
+  timestamp   DateTime @default(now())
+  createdAt   DateTime @default(now())
 
   @@index([feature])
   @@index([timestamp])
   @@index([userId])
+  @@map("playground_usage")
 }
 
 model ChatbotConversation {
-  id            String   @id @default(cuid())
+  id             String   @id @default(cuid())
   conversationId String
-  message       String
-  response      String
-  userId        String?
-  sessionId     String?
-  deviceInfo    Json     @default("{}")
-  metadata      Json     @default("{}")
-  timestamp     DateTime @default(now())
-  createdAt     DateTime @default(now()) @updatedAt
+  message        String   @db.Text
+  response       String   @db.Text
+  userId         String?  @db.Uuid
+  sessionId      String?
+  deviceInfo     Json     @default("{}")
+  metadata       Json     @default("{}")
+  timestamp      DateTime @default(now())
+  createdAt      DateTime @default(now())
 
   @@index([conversationId])
   @@index([timestamp])
   @@index([userId])
+  @@map("chatbot_conversations")
 }
 
 model ChatbotAnalytics {
@@ -594,13 +685,14 @@ model ChatbotAnalytics {
   type      String
   data      Json     @default("{}")
   sessionId String?
-  userId    String?
+  userId    String?  @db.Uuid
   timestamp DateTime @default(now())
-  createdAt DateTime @default(now()) @updatedAt
+  createdAt DateTime @default(now())
 
   @@index([type])
   @@index([timestamp])
   @@index([sessionId])
+  @@map("chatbot_analytics")
 }
 
 model NewsletterSubscription {
@@ -618,6 +710,7 @@ model NewsletterSubscription {
 
   @@index([email])
   @@index([subscribed])
+  @@map("newsletter_subscriptions")
 }
 
 model TenantBranding {
@@ -1360,4 +1453,24 @@ model Export {
   @@index([createdAt(sort: Desc)])
   @@index([expiresAt])
   @@map("exports")
+}
+
+// ============================================================================
+// RETENTION AUTOMATION MODELS
+// ============================================================================
+
+model RetentionMetric {
+  id              String    @id @default(uuid())
+  tenantId        String?   @db.Uuid
+  prunedCount     Int       @default(0)
+  storageBytes    BigInt    @default(0)
+  violations      Int       @default(0)
+  latencyMs       BigInt    @default(0)
+  runDate         DateTime  @db.Date @default(now())
+  createdAt       DateTime  @default(now())
+
+  @@unique([tenantId, runDate])
+  @@index([tenantId])
+  @@index([runDate(sort: Desc)])
+  @@map("retention_metrics")
 }

@@ -15,12 +15,15 @@ import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
 import { enforceFreezeState } from "../middleware/governance";
-import { query } from "../db";
+
+import { Run, RunSummary } from "@settler/types";
 import { handleRouteError } from "../utils/error-handler";
 import { NotFoundError, ValidationError } from "../utils/typed-errors";
 import { trackEventAsync } from "../utils/event-tracker";
+import { logInfo } from "../utils/logger";
 
 const router: Router = Router();
+import { prisma } from "../infrastructure/db/prisma";
 
 const getRunSchema = z.object({
   params: z.object({
@@ -48,94 +51,57 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
-      const userId = req.userId!;
+
       const status = req.query.status as string | undefined;
       const search = req.query.search as string | undefined;
       const page = parseInt((req.query.page as string) || "1");
       const limit = Math.min(parseInt((req.query.limit as string) || "50"), 100);
       const offset = (page - 1) * limit;
 
-      // Build query with filters
-      const conditions: string[] = ["j.tenant_id = $1"];
-      const params: (string | number)[] = [tenantId];
-      let paramIndex = 2;
+      const where: any = {
+        tenantId,
+        ...(status && { status }),
+        ...(search && {
+          reconJob: {
+            name: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+        }),
+      };
 
-      if (status) {
-        conditions.push(`e.status = $${paramIndex}`);
-        params.push(status);
-        paramIndex++;
-      }
+      const runs = await prisma.reconResult.findMany({
+        where,
+        include: {
+          reconJob: {
+            select: {
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          startedAt: "desc",
+        },
+        take: limit,
+        skip: offset,
+      });
 
-      if (search) {
-        conditions.push(`j.name ILIKE $${paramIndex}`);
-        params.push(`%${search}%`);
-        paramIndex++;
-      }
+      const total = await prisma.reconResult.count({ where });
 
-      const whereClause = conditions.join(" AND ");
-
-      // Get runs with job context
-      const runs = await query<{
-        id: string;
-        job_id: string;
-        job_name: string;
-        status: string;
-        started_at: Date;
-        completed_at: Date | null;
-        summary: unknown;
-        error: string | null;
-      }>(
-        `SELECT
-          e.id,
-          e.job_id,
-          j.name as job_name,
-          e.status,
-          e.started_at,
-          e.completed_at,
-          e.summary,
-          e.error
-        FROM executions e
-        JOIN jobs j ON e.job_id = j.id
-        WHERE ${whereClause}
-        ORDER BY e.started_at DESC
-        LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
-        [...params, limit, offset] as (string | number)[]
-      );
-
-      // Get total count
-      const countResult = await query<{ count: string }>(
-        `SELECT COUNT(*) as count
-         FROM executions e
-         JOIN jobs j ON e.job_id = j.id
-         WHERE ${whereClause}`,
-        params as (string | number)[]
-      );
-
-      const total = parseInt(countResult[0]?.count || "0");
+      logInfo("Runs listed", { tenantId, status, count: runs.length, total, page, limit });
 
       // Transform to operator-friendly format
-      const data = runs.map((run) => {
-        const summary = run.summary as {
-          total?: number;
-          matched?: number;
-          unmatched?: number;
-          conflicts?: number;
-        } | null;
+      const data: Run[] = runs.map((run) => {
+        const summary = (run.summary as RunSummary | null) || undefined;
 
         return {
           id: run.id,
-          name: run.job_name,
-          status: run.status,
-          startedAt: run.started_at.toISOString(),
-          completedAt: run.completed_at?.toISOString() || null,
-          summary: summary
-            ? {
-                total: summary.total || 0,
-                matched: summary.matched || 0,
-                unmatched: summary.unmatched || 0,
-                conflicts: summary.conflicts || 0,
-              }
-            : undefined,
+          name: run.reconJob.name,
+          status: run.status as "pending" | "running" | "completed" | "failed" | "unknown",
+          startedAt: run.startedAt.toISOString(),
+          completedAt: run.completedAt?.toISOString() || null,
+          summary,
         };
       });
 
@@ -166,51 +132,41 @@ router.get(
     try {
       const { runId } = req.params;
       const tenantId = req.tenantId!;
-      const userId = req.userId!;
 
       // Get run with job context - tenant-scoped
-      const runs = await query<{
-        id: string;
-        job_id: string;
-        job_name: string;
-        status: string;
-        started_at: Date;
-        completed_at: Date | null;
-        summary: unknown;
-        error: string | null;
-      }>(
-        `SELECT
-          e.id,
-          e.job_id,
-          j.name as job_name,
-          e.status,
-          e.started_at,
-          e.completed_at,
-          e.summary,
-          e.error
-        FROM executions e
-        JOIN jobs j ON e.job_id = j.id
-        WHERE e.id = $1 AND j.tenant_id = $2`,
-        [runId, tenantId] as (string | number)[]
-      );
+      const run = await prisma.reconResult.findFirst({
+        where: {
+          id: runId,
+          tenantId,
+        },
+        include: {
+          reconJob: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      });
 
-      if (runs.length === 0 || !runs[0]) {
+      if (!run) {
         throw new NotFoundError("Run not found or access denied", "run", runId);
       }
 
-      const run = runs[0];
-
-      // Calculate progress
-      let progress = 0;
+      // TRUTHFUL STATE: Progress calculation
+      // - completed: 100%
+      // - failed: 0%
+      // - pending: null (not started)
+      // - running: null (no reliable estimate available - hardcoded estimate removed)
+      // Note: Real progress tracking requires job checkpoints or progress percentage stored in DB
+      let progress: number | null = null;
       if (run.status === "completed") {
         progress = 100;
       } else if (run.status === "failed") {
         progress = 0;
-      } else if (run.status === "running") {
-        const elapsed = Date.now() - run.started_at.getTime();
-        const estimatedDuration = 30000; // 30s estimate
-        progress = Math.min(95, Math.floor((elapsed / estimatedDuration) * 100));
+      } else if (run.status === "pending") {
+        progress = null;
       }
+      // running status returns null - no reliable estimate available
 
       // Build stage information (simplified for now - can be enhanced)
       const stages = [
@@ -218,8 +174,8 @@ router.get(
           id: "1",
           name: "Initialize",
           status: run.status === "pending" ? "pending" : "completed",
-          startedAt: run.started_at,
-          completedAt: run.status === "pending" ? undefined : run.started_at,
+          startedAt: run.startedAt,
+          completedAt: run.status === "pending" ? undefined : run.startedAt,
         },
         {
           id: "2",
@@ -232,50 +188,46 @@ router.get(
                 : run.status === "failed"
                   ? "failed"
                   : "completed",
-          startedAt: run.status === "pending" ? undefined : run.started_at,
-          completedAt: run.status === "completed" ? run.completed_at : undefined,
-          error: run.status === "failed" ? run.error : undefined,
+          startedAt: run.status === "pending" ? undefined : run.startedAt,
+          completedAt: run.status === "completed" ? run.completedAt : undefined,
+          error: run.status === "failed" ? run.errorMessage : undefined,
         },
         {
           id: "3",
           name: "Match Records",
           status: run.status === "completed" ? "completed" : "pending",
-          startedAt: run.status === "completed" ? run.started_at : undefined,
-          completedAt: run.completed_at,
+          startedAt: run.status === "completed" ? run.startedAt : undefined,
+          completedAt: run.completedAt,
         },
         {
           id: "4",
           name: "Generate Results",
           status: run.status === "completed" ? "completed" : "pending",
-          startedAt: run.status === "completed" ? run.started_at : undefined,
-          completedAt: run.completed_at,
+          startedAt: run.status === "completed" ? run.startedAt : undefined,
+          completedAt: run.completedAt,
         },
       ];
 
-      const summary = run.summary as {
-        total?: number;
-        matched?: number;
-        unmatched?: number;
-        conflicts?: number;
-      } | null;
+      const summary = (run.summary as RunSummary | null) || undefined;
+
+      logInfo("Run detail fetched", {
+        tenantId,
+        runId: run.id,
+        jobName: run.reconJob.name,
+        status: run.status,
+        hasError: !!run.errorMessage,
+      });
 
       res.json({
         data: {
           id: run.id,
-          name: run.job_name,
-          status: run.status,
+          name: run.reconJob.name,
+          status: run.status as "pending" | "running" | "completed" | "failed" | "unknown",
           progress,
-          startedAt: run.started_at,
-          completedAt: run.completed_at,
-          error: run.error,
-          summary: summary
-            ? {
-                total: summary.total || 0,
-                matched: summary.matched || 0,
-                unmatched: summary.unmatched || 0,
-                conflicts: summary.conflicts || 0,
-              }
-            : undefined,
+          startedAt: run.startedAt,
+          completedAt: run.completedAt,
+          error: run.errorMessage,
+          summary,
           stages,
         },
       });
@@ -303,27 +255,20 @@ router.post(
       const tenantId = req.tenantId!;
       const userId = req.userId!;
 
-      // Get the original execution to find the job
-      const executions = await query<{
-        id: string;
-        job_id: string;
-        job_name: string;
-        status: string;
-      }>(
-        `SELECT e.id, e.job_id, j.name as job_name, e.status
-         FROM executions e
-         JOIN jobs j ON e.job_id = j.id
-         WHERE e.id = $1 AND j.tenant_id = $2`,
-        [runId, tenantId] as (string | number)[]
-      );
+      const originalRun = await prisma.reconResult.findFirst({
+        where: {
+          id: runId,
+          tenantId,
+        },
+        include: {
+          reconJob: true,
+        },
+      });
 
-      if (executions.length === 0 || !executions[0]) {
+      if (!originalRun) {
         throw new NotFoundError("Run not found or access denied", "run", runId);
       }
 
-      const originalRun = executions[0];
-
-      // Only allow retry for failed runs
       if (originalRun.status !== "failed") {
         throw new ValidationError("Can only retry failed runs", "status", [
           {
@@ -334,51 +279,38 @@ router.post(
         ]);
       }
 
-      const jobId = originalRun.job_id;
-
-      // Use atomic update to prevent race conditions - only create if not already running
-      const updated = await query<{ id: string; execution_id: string }>(
-        `WITH job_update AS (
-          UPDATE jobs
-          SET status = 'running', updated_at = NOW()
-          WHERE id = $1 AND status != 'running'
-          RETURNING id
-        )
-        INSERT INTO executions (job_id, status, triggered_by, triggered_at)
-        SELECT $1, 'running', $2, NOW()
-        WHERE EXISTS (SELECT 1 FROM job_update)
-        RETURNING id as execution_id`,
-        [jobId, userId] as (string | number)[]
-      );
-
-      if (updated.length === 0 || !updated[0]) {
-        // Check if job is already running
-        const jobCheck = await query<{ status: string }>(`SELECT status FROM jobs WHERE id = $1`, [
-          jobId,
-        ]);
-
-        if (jobCheck.length > 0 && jobCheck[0]?.status === "running") {
-          throw new ValidationError("Job is already running", "status", [
-            { field: "status", message: "Job is currently running", code: "CONFLICT" },
-          ]);
-        }
-        throw new Error("Failed to create execution - please retry");
-      }
-
-      const newExecutionId = updated[0].execution_id;
+      const newRun = await prisma.reconResult.create({
+        data: {
+          reconJob: {
+            connect: {
+              id: originalRun.reconJobId,
+            },
+          },
+          tenantId,
+          status: "running",
+        },
+      });
 
       // Track event
       trackEventAsync(userId, "RunRetried", {
         originalRunId: runId,
-        newExecutionId,
-        jobId,
+        newExecutionId: newRun.id,
+        jobId: newRun.reconJobId,
+      });
+
+      logInfo("Run retry initiated", {
+        tenantId,
+        originalRunId: runId,
+        newExecutionId: newRun.id,
+        jobId: newRun.reconJobId,
+        triggeredBy: userId,
       });
 
       res.status(201).json({
         message: "Run retry initiated successfully",
         data: {
-          id: newExecutionId,
-          name: originalRun.job_name,
+          id: newRun.id,
+          name: originalRun.reconJob.name,
           status: "running",
           triggeredBy: userId,
           triggeredAt: new Date().toISOString(),

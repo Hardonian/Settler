@@ -1,99 +1,107 @@
 /**
  * Empty State Components
- * 
- * Consistent empty states for admin dashboard.
+ *
+ * Re-exports from canonical ui/empty-state location.
  */
 
-'use client';
+"use client";
 
-import { FileSearch, AlertCircle, Inbox, Search } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { FileSearch, AlertCircle, Inbox, Search } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
-interface EmptyStateProps {
-  icon?: React.ReactNode;
-  title: string;
-  description: string;
-  action?: {
-    label: string;
-    onClick: () => void;
-  };
-  className?: string;
-}
+// Re-export canonical EmptyState and RetryButton from ui
+export { EmptyState, RetryButton } from "@/components/ui/empty-state";
+export type { EmptyStateProps, RetryButtonProps } from "@/components/ui/empty-state";
 
-export function EmptyState({ 
-  icon, 
-  title, 
-  description, 
-  action,
-  className 
-}: EmptyStateProps) {
+/**
+ * No Results - Generic search with no results
+ */
+export function NoResultsEmptyState({ searchQuery }: { searchQuery?: string }) {
   return (
-    <Card className={className}>
+    <Card>
       <CardContent className="pt-12 pb-12">
         <div className="flex flex-col items-center text-center">
-          {icon && (
-            <div className="mb-4 text-slate-400 dark:text-slate-500">
-              {icon}
-            </div>
-          )}
+          <div className="mb-4 text-slate-400 dark:text-slate-500">
+            <Search className="w-12 h-12" />
+          </div>
           <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-            {title}
+            No results found
           </h3>
           <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mb-4">
-            {description}
+            {searchQuery
+              ? `No items match "${searchQuery}". Try adjusting your search or filters.`
+              : "No items found matching your criteria."}
           </p>
-          {action && (
-            <Button onClick={action.onClick} size="sm">
-              {action.label}
-            </Button>
-          )}
         </div>
       </CardContent>
     </Card>
   );
 }
 
-export function NoResultsEmptyState({ searchQuery }: { searchQuery?: string }) {
-  return (
-    <EmptyState
-      icon={<Search className="w-12 h-12" />}
-      title="No results found"
-      description={
-        searchQuery
-          ? `No items match "${searchQuery}". Try adjusting your search or filters.`
-          : 'No items found matching your criteria.'
-      }
-    />
-  );
-}
-
+/**
+ * No Exceptions - Exception queue is empty
+ */
 export function NoExceptionsEmptyState() {
   return (
-    <EmptyState
-      icon={<AlertCircle className="w-12 h-12" />}
-      title="No exceptions"
-      description="The exception queue is empty. Exceptions appear here when mismatches are flagged for review."
-    />
+    <Card>
+      <CardContent className="pt-12 pb-12">
+        <div className="flex flex-col items-center text-center">
+          <div className="mb-4 text-slate-400 dark:text-slate-500">
+            <AlertCircle className="w-12 h-12" />
+          </div>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+            No exceptions
+          </h3>
+          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mb-4">
+            The exception queue is empty. Exceptions appear here when mismatches are flagged for
+            review.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
+/**
+ * No Runs - No reconciliation runs yet
+ */
 export function NoRunsEmptyState() {
   return (
-    <EmptyState
-      icon={<FileSearch className="w-12 h-12" />}
-      title="No runs yet"
-      description="No reconciliation runs recorded. Trigger a run via the API or CLI to get started."
-    />
+    <Card>
+      <CardContent className="pt-12 pb-12">
+        <div className="flex flex-col items-center text-center">
+          <div className="mb-4 text-slate-400 dark:text-slate-500">
+            <FileSearch className="w-12 h-12" />
+          </div>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">No runs yet</h3>
+          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mb-4">
+            No reconciliation runs recorded. Trigger a run via the API or CLI to get started.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
+/**
+ * No Audit - No audit trail entries
+ */
 export function NoAuditEmptyState() {
   return (
-    <EmptyState
-      icon={<Inbox className="w-12 h-12" />}
-      title="No audit entries"
-      description="No audit trail entries found for the selected filters."
-    />
+    <Card>
+      <CardContent className="pt-12 pb-12">
+        <div className="flex flex-col items-center text-center">
+          <div className="mb-4 text-slate-400 dark:text-slate-500">
+            <Inbox className="w-12 h-12" />
+          </div>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+            No audit entries
+          </h3>
+          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mb-4">
+            No audit trail entries found for the selected filters.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

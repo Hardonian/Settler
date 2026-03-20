@@ -6,6 +6,7 @@
  * Example: /builder/landing/product-launch
  */
 
+import React from "react";
 import { notFound } from "next/navigation";
 
 // Use dynamic rendering to avoid React context issues during static generation

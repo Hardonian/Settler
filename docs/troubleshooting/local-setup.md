@@ -3,6 +3,11 @@
 ## `pnpm install` fails
 
 - Confirm Node version compatible with workspace expectations.
+- Use the dedicated reinstall command:
+  ```bash
+  pnpm reinstall        # Safe reinstall
+  pnpm reinstall:force # Force clear cache and reinstall
+  ```
 - Remove stale lock/cache and retry.
 
 ## CLI command not found

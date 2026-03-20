@@ -1,19 +1,19 @@
 /**
  * Onboarding Service
- * 
+ *
  * Manages user onboarding progress and provides next steps.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
-import { createClient } from '@/lib/supabase/server';
+import { prisma } from "@/shared/db/prismaClient";
+import { createClient } from "@/lib/supabase/server";
 
-export type OnboardingStep = 
-  | 'welcome'
-  | 'create_api_key'
-  | 'try_playground'
-  | 'first_reconciliation'
-  | 'invite_team'
-  | 'complete';
+export type OnboardingStep =
+  | "welcome"
+  | "create_api_key"
+  | "try_playground"
+  | "first_reconciliation"
+  | "invite_team"
+  | "complete";
 
 export interface OnboardingProgress {
   id: string;
@@ -38,51 +38,51 @@ export interface OnboardingStepInfo {
 
 const ONBOARDING_STEPS: OnboardingStepInfo[] = [
   {
-    id: 'welcome',
-    title: 'Welcome to Settler',
-    description: 'Learn about Settler and what you can do',
-    actionLabel: 'Get Started',
-    actionUrl: '/console',
+    id: "welcome",
+    title: "Welcome to Settler",
+    description: "Learn about Settler and what you can do",
+    actionLabel: "Get Started",
+    actionUrl: "/console",
     optional: false,
   },
   {
-    id: 'create_api_key',
-    title: 'Create Your First API Key',
-    description: 'Generate an API key to start using the Settler API',
-    actionLabel: 'Create API Key',
-    actionUrl: '/console/api-keys',
+    id: "create_api_key",
+    title: "Create Your First API Key",
+    description: "Generate an API key to start using the Settler API",
+    actionLabel: "Create API Key",
+    actionUrl: "/console/api-keys",
     optional: false,
   },
   {
-    id: 'try_playground',
-    title: 'Try the Playground',
-    description: 'Test the API in our interactive playground',
-    actionLabel: 'Open Playground',
-    actionUrl: '/console/playground',
+    id: "try_playground",
+    title: "Try the Playground",
+    description: "Test the API in our interactive playground",
+    actionLabel: "Open Playground",
+    actionUrl: "/console/playground",
     optional: false,
   },
   {
-    id: 'first_reconciliation',
-    title: 'Create Your First Reconciliation',
-    description: 'Set up your first reconciliation job',
-    actionLabel: 'Create Job',
-    actionUrl: '/console/playground/reconcile',
+    id: "first_reconciliation",
+    title: "Open Reconciliation Workspace",
+    description: "Inspect how completed reconciliation runs are presented in the console",
+    actionLabel: "Open Reconciliations",
+    actionUrl: "/console/reconciliations",
     optional: false,
   },
   {
-    id: 'invite_team',
-    title: 'Invite Your Team',
-    description: 'Collaborate with your team members',
-    actionLabel: 'Invite Team',
-    actionUrl: '/console',
+    id: "invite_team",
+    title: "Invite Your Team",
+    description: "Collaborate with your team members",
+    actionLabel: "Invite Team",
+    actionUrl: "/console",
     optional: true,
   },
   {
-    id: 'complete',
-    title: 'Onboarding Complete!',
-    description: 'You\'re all set to start using Settler',
-    actionLabel: 'Go to Dashboard',
-    actionUrl: '/console',
+    id: "complete",
+    title: "Onboarding Complete!",
+    description: "You're all set to start using Settler",
+    actionLabel: "Go to Dashboard",
+    actionUrl: "/console",
     optional: false,
   },
 ];
@@ -101,7 +101,7 @@ export async function getOnboardingProgress(userId: string): Promise<OnboardingP
       progress = await prisma.onboardingProgress.create({
         data: {
           userId,
-          currentStep: 'welcome',
+          currentStep: "welcome",
           completedSteps: [],
           skippedSteps: [],
           progress: 0,
@@ -111,7 +111,7 @@ export async function getOnboardingProgress(userId: string): Promise<OnboardingP
 
     return progress as OnboardingProgress;
   } catch (error) {
-    console.error('[Onboarding] Error getting progress:', error);
+    console.error("[Onboarding] Error getting progress:", error);
     return null;
   }
 }
@@ -120,7 +120,7 @@ export async function getOnboardingProgress(userId: string): Promise<OnboardingP
  * Get current onboarding step info
  */
 export function getCurrentStepInfo(step: OnboardingStep): OnboardingStepInfo | null {
-  return ONBOARDING_STEPS.find(s => s.id === step) || null;
+  return ONBOARDING_STEPS.find((s) => s.id === step) || null;
 }
 
 /**
@@ -130,18 +130,18 @@ export function getAllStepsWithStatus(
   currentStep: OnboardingStep,
   completedSteps: OnboardingStep[],
   skippedSteps: OnboardingStep[]
-): Array<OnboardingStepInfo & { status: 'completed' | 'current' | 'pending' | 'skipped' }> {
-  return ONBOARDING_STEPS.map(step => {
+): Array<OnboardingStepInfo & { status: "completed" | "current" | "pending" | "skipped" }> {
+  return ONBOARDING_STEPS.map((step) => {
     if (completedSteps.includes(step.id)) {
-      return { ...step, status: 'completed' as const };
+      return { ...step, status: "completed" as const };
     }
     if (skippedSteps.includes(step.id)) {
-      return { ...step, status: 'skipped' as const };
+      return { ...step, status: "skipped" as const };
     }
     if (step.id === currentStep) {
-      return { ...step, status: 'current' as const };
+      return { ...step, status: "current" as const };
     }
-    return { ...step, status: 'pending' as const };
+    return { ...step, status: "pending" as const };
   });
 }
 
@@ -157,17 +157,17 @@ export async function completeStep(
     if (!progress) return null;
 
     const completedSteps = [...new Set([...progress.completedSteps, step])];
-    const skippedSteps = progress.skippedSteps.filter(s => s !== step);
-    
+    const skippedSteps = progress.skippedSteps.filter((s) => s !== step);
+
     // Find next step
-    const currentStepIndex = ONBOARDING_STEPS.findIndex(s => s.id === progress.currentStep);
+    const currentStepIndex = ONBOARDING_STEPS.findIndex((s) => s.id === progress.currentStep);
     const nextStep = ONBOARDING_STEPS[currentStepIndex + 1];
-    const newCurrentStep = nextStep ? nextStep.id : 'complete';
-    
+    const newCurrentStep = nextStep ? nextStep.id : "complete";
+
     // Calculate progress
     const totalSteps = ONBOARDING_STEPS.length - 1; // Exclude 'complete' step
     const newProgress = Math.min(100, Math.round((completedSteps.length / totalSteps) * 100));
-    
+
     const completedAt = newProgress === 100 ? new Date() : null;
 
     const updated = await prisma.onboardingProgress.update({
@@ -183,7 +183,7 @@ export async function completeStep(
 
     return updated as OnboardingProgress;
   } catch (error) {
-    console.error('[Onboarding] Error completing step:', error);
+    console.error("[Onboarding] Error completing step:", error);
     return null;
   }
 }
@@ -200,13 +200,13 @@ export async function skipStep(
     if (!progress) return null;
 
     const skippedSteps = [...new Set([...progress.skippedSteps, step])];
-    const completedSteps = progress.completedSteps.filter(s => s !== step);
-    
+    const completedSteps = progress.completedSteps.filter((s) => s !== step);
+
     // Find next step
-    const currentStepIndex = ONBOARDING_STEPS.findIndex(s => s.id === progress.currentStep);
+    const currentStepIndex = ONBOARDING_STEPS.findIndex((s) => s.id === progress.currentStep);
     const nextStep = ONBOARDING_STEPS[currentStepIndex + 1];
-    const newCurrentStep = nextStep ? nextStep.id : 'complete';
-    
+    const newCurrentStep = nextStep ? nextStep.id : "complete";
+
     // Calculate progress
     const totalSteps = ONBOARDING_STEPS.length - 1;
     const newProgress = Math.min(100, Math.round((completedSteps.length / totalSteps) * 100));
@@ -223,7 +223,7 @@ export async function skipStep(
 
     return updated as OnboardingProgress;
   } catch (error) {
-    console.error('[Onboarding] Error skipping step:', error);
+    console.error("[Onboarding] Error skipping step:", error);
     return null;
   }
 }
@@ -234,9 +234,9 @@ export async function skipStep(
 export async function isOnboardingComplete(userId: string): Promise<boolean> {
   try {
     const progress = await getOnboardingProgress(userId);
-    return progress?.progress === 100 || progress?.currentStep === 'complete' || false;
+    return progress?.progress === 100 || progress?.currentStep === "complete" || false;
   } catch (error) {
-    console.error('[Onboarding] Error checking completion:', error);
+    console.error("[Onboarding] Error checking completion:", error);
     return false;
   }
 }
@@ -247,15 +247,17 @@ export async function isOnboardingComplete(userId: string): Promise<boolean> {
 export async function getCurrentUserOnboardingProgress(): Promise<OnboardingProgress | null> {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
       return null;
     }
 
     return await getOnboardingProgress(user.id);
   } catch (error) {
-    console.error('[Onboarding] Error getting current user progress:', error);
+    console.error("[Onboarding] Error getting current user progress:", error);
     return null;
   }
 }

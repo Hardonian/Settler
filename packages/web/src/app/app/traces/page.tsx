@@ -1,318 +1,199 @@
 import React from "react";
 import {
-  ArrowLeft,
-  Bell,
   Search,
-  Filter,
   Fingerprint,
-  Copy,
-  Activity,
   RefreshCw,
   Play,
-  Scale,
   CheckCircle,
-  Eye,
-  FileText,
-  Database,
   Network,
+  ArrowRight,
+  Shield,
+  Scale,
+  Terminal,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
-const TracesPage: React.FC = () => {
+export const metadata = {
+  title: "Trace Explorer | Settler",
+  description: "Distributed correlation and execution lineage tracking.",
+};
+
+export default function TracesPage() {
   return (
-    <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display antialiased selection:bg-primary/30">
-      <div className="relative min-h-screen w-full flex flex-col mx-auto max-w-md bg-background-light dark:bg-background-dark shadow-2xl overflow-hidden border-x border-slate-200 dark:border-slate-800">
-        {/* Header */}
-        <header className="sticky top-0 z-50 backdrop-blur-md bg-background-light/90 dark:bg-background-dark/90 border-b border-slate-200 dark:border-slate-800 px-4 pt-12 pb-3">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <button className="text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-white transition-colors">
-                <ArrowLeft className="h-6 w-6" />
-              </button>
-              <h1 className="text-lg font-bold tracking-tight">Trace Explorer</h1>
-            </div>
-            <button className="text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-white transition-colors relative">
-              <Bell className="h-6 w-6" />
-              <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-error"></span>
-            </button>
-          </div>
-          {/* Search */}
-          <div className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-              <Search className="h-5 w-5" />
-            </div>
-            <input
-              className="w-full bg-white dark:bg-surface-darker border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent block pl-10 p-2.5 placeholder-slate-400 transition-all shadow-sm"
-              placeholder="Search Trace ID..."
-              type="text"
-              value="8f7a-2b1c"
-            />
-            <div className="absolute inset-y-0 right-0 pr-1.5 flex items-center">
-              <button className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-medium px-2 py-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-                Trace ID
-              </button>
-            </div>
-          </div>
-          {/* Quick Filters */}
-          <div className="flex gap-2 mt-3 overflow-x-auto no-scrollbar pb-1">
-            <button className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary dark:text-primary-400 text-xs font-medium rounded-full border border-primary/20">
-              <Filter className="h-4 w-4" />
-              Workspace
-            </button>
-            <button className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-surface-dark text-slate-600 dark:text-slate-400 text-xs font-medium rounded-full border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600">
-              Pipeline
-            </button>
-            <button className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-surface-dark text-slate-600 dark:text-slate-400 text-xs font-medium rounded-full border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600">
-              Date Range
-            </button>
-          </div>
-        </header>
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden pb-24">
-          {/* Trace Summary Card */}
-          <div className="p-4">
-            <div className="bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-slate-700/50 shadow-sm relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-4 opacity-50">
-                <Fingerprint className="h-14 w-14 text-slate-100 dark:text-slate-800 -rotate-12" />
-              </div>
-              <div className="relative z-10">
-                <div className="flex justify-between items-start mb-2">
+    <div className="space-y-8 pb-8">
+      <div className="max-w-4xl">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary/70 mb-2">
+          System Diagnostics
+        </p>
+        <h1 className="text-4xl font-bold tracking-tight text-foreground">Trace Explorer</h1>
+        <p className="mt-4 text-base text-muted-foreground leading-relaxed">
+          Correlate events across distributed reconciliation pipelines. Use Trace IDs to
+          reconstructed request-response lifecycles, identifying bottlenecks and provenance failures
+          in the data trust graph.
+        </p>
+      </div>
+
+      <div className="flex gap-3">
+        <div className="relative flex-1 group">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+          <Input
+            className="pl-10 h-10 rounded-xl border-border/40 bg-card/50"
+            placeholder="Enter Trace ID (e.g. 8f7a-2b1c-9d3e)..."
+          />
+        </div>
+        <Button className="h-10 rounded-xl font-bold px-6">Explore Trace</Button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-6">
+          <Card className="border-border/40 bg-card/50 overflow-hidden">
+            <CardContent className="p-0">
+              <div className="p-6 border-b border-border/40 flex items-center justify-between bg-muted/20">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                    <Fingerprint className="h-5 w-5" />
+                  </div>
                   <div>
-                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
-                      Trace ID
+                    <h2 className="text-sm font-bold font-mono">TRACE #8F7A-2B1C</h2>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
+                      Initiated Today, 10:42:15 AM
                     </p>
-                    <div className="flex items-center gap-2">
-                      <h2 className="font-mono text-xl font-bold text-slate-900 dark:text-white">
-                        #8f7a-2b1c
-                      </h2>
-                      <button className="text-slate-400 hover:text-primary transition-colors">
-                        <Copy className="h-4 w-4" />
-                      </button>
+                  </div>
+                </div>
+                <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+                  COMPLETED
+                </Badge>
+              </div>
+
+              <div className="p-8">
+                <div className="relative pl-8">
+                  {/* Vertical Line */}
+                  <div className="absolute left-[39px] top-6 bottom-6 w-0.5 bg-border" />
+
+                  <div className="space-y-12">
+                    {/* Step 1 */}
+                    <div className="relative flex gap-6">
+                      <div className="relative z-10 w-6 h-6 rounded-full bg-primary border-4 border-background flex items-center justify-center -ml-3 mt-1">
+                        <RefreshCw className="h-3 w-3 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center mb-1">
+                          <h4 className="text-sm font-bold text-foreground">
+                            Data Ingestion (Sync)
+                          </h4>
+                          <span className="text-[10px] font-mono text-muted-foreground">42ms</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          Snapshotted 1,402 records from{" "}
+                          <code className="text-primary font-bold">internal_postgres</code>. Schema
+                          version validated against policy{" "}
+                          <code className="text-foreground font-bold">v2.1.0</code>.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Step 2 */}
+                    <div className="relative flex gap-6">
+                      <div className="relative z-10 w-6 h-6 rounded-full bg-primary border-4 border-background flex items-center justify-center -ml-3 mt-1">
+                        <Play className="h-3 w-3 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center mb-1">
+                          <h4 className="text-sm font-bold text-foreground">
+                            Reconciliation Execution
+                          </h4>
+                          <span className="text-[10px] font-mono text-muted-foreground">158ms</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          Matched 1,398 items with 100% confidence. Identified 4 potential drift
+                          events. Replay fingerprint generated:{" "}
+                          <code className="text-foreground">6e72...a2f1</code>.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Step 3 */}
+                    <div className="relative flex gap-6">
+                      <div className="relative z-10 w-6 h-6 rounded-full bg-emerald-500 border-4 border-background flex items-center justify-center -ml-3 mt-1">
+                        <CheckCircle className="h-3 w-3 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center mb-1">
+                          <h4 className="text-sm font-bold text-foreground">Governance Review</h4>
+                          <span className="text-[10px] font-mono text-muted-foreground">
+                            0ms (Auto)
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          Auto-approved based on confidence scoring. Post-mortem evidence exported
+                          to S3.
+                        </p>
+                        <div className="mt-3 p-3 rounded-lg bg-muted/40 font-mono text-[10px] text-muted-foreground border border-border/40">
+                          {`{ "status": "ok", "drift_count": 4, "verifiable": true }`}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-success/10 text-success border border-success/20">
-                    <span className="w-1.5 h-1.5 rounded-full bg-success"></span>
-                    Success
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-4 mt-4">
-                  <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Duration</p>
-                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-200">
-                      420ms
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Started</p>
-                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-200">
-                      Today, 10:42:15 AM
-                    </p>
-                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-          {/* Timeline Section */}
-          <div className="px-4 pb-2">
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-              <Activity className="h-5 w-5 text-primary" />
-              Trace Journey
-            </h3>
-            <div className="relative pl-3">
-              {/* Vertical Line */}
-              <div className="absolute left-[19px] top-2 bottom-6 w-[2px] bg-slate-200 dark:bg-slate-700"></div>
-              {/* Step 1: Sync (Completed) */}
-              <div className="relative flex gap-4 mb-6 group">
-                <div className="absolute left-[19px] top-8 h-full w-[2px] bg-primary origin-top"></div>
-                <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center border-4 border-white dark:border-background-dark shadow-glow">
-                  <RefreshCw className="h-4 w-4 text-white" />
-                </div>
-                <div className="flex-1 pt-1">
-                  <div className="flex justify-between items-center mb-1">
-                    <h4 className="text-sm font-semibold text-slate-900 dark:text-white">Sync</h4>
-                    <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
-                      45ms
-                    </span>
-                  </div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-surface-dark/50 rounded p-2 border border-slate-100 dark:border-slate-800">
-                    Source: <span className="font-mono text-primary">Postgres_Primary</span>
-                  </div>
-                </div>
-              </div>
-              {/* Step 2: Run (Completed) */}
-              <div className="relative flex gap-4 mb-6">
-                <div className="absolute left-[19px] top-8 h-full w-[2px] bg-primary origin-top"></div>
-                <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center border-4 border-white dark:border-background-dark shadow-glow">
-                  <Play className="h-4 w-4 text-white" />
-                </div>
-                <div className="flex-1 pt-1">
-                  <div className="flex justify-between items-center mb-1">
-                    <h4 className="text-sm font-semibold text-slate-900 dark:text-white">Run</h4>
-                    <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
-                      120ms
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Executed pipeline{" "}
-                    <span className="text-slate-700 dark:text-slate-300 font-medium">
-                      Daily_Recon_v2
-                    </span>
-                  </p>
-                </div>
-              </div>
-              {/* Step 3: Rules (Completed) */}
-              <div className="relative flex gap-4 mb-6">
-                <div className="absolute left-[19px] top-8 h-full w-[2px] bg-success origin-top"></div>
-                <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center border-4 border-white dark:border-background-dark shadow-glow">
-                  <Scale className="h-4 w-4 text-white" />
-                </div>
-                <div className="flex-1 pt-1">
-                  <div className="flex justify-between items-center mb-1">
-                    <h4 className="text-sm font-semibold text-slate-900 dark:text-white">Rules</h4>
-                    <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
-                      85ms
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-success/10 text-success border border-success/20">
-                      Match: 100%
-                    </span>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
-                      3 Rules Applied
-                    </span>
-                  </div>
-                </div>
-              </div>
-              {/* Step 4: Results (Warning/Attention) */}
-              <div className="relative flex gap-4 mb-6">
-                <div className="absolute left-[19px] top-8 h-full w-[2px] bg-slate-200 dark:bg-slate-700"></div>
-                <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-success flex items-center justify-center border-4 border-white dark:border-background-dark">
-                  <CheckCircle className="h-4 w-4 text-white" />
-                </div>
-                <div className="flex-1 pt-1">
-                  <div className="flex justify-between items-center mb-1">
-                    <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
-                      Results
-                    </h4>
-                    <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
-                      150ms
-                    </span>
-                  </div>
-                  <div className="bg-surface-darker rounded-lg p-2 font-mono text-[10px] text-slate-300 border border-slate-700 overflow-x-auto">
-                    <pre>{'{"status": "ok", "matched": 452, "unmatched": 0}'}</pre>
-                  </div>
-                </div>
-              </div>
-              {/* Step 5: Review (Pending) */}
-              <div className="relative flex gap-4 mb-6">
-                <div className="absolute left-[19px] top-8 h-full w-[2px] bg-slate-200 dark:bg-slate-700"></div>
-                <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-surface-dark border border-slate-300 dark:border-slate-600 flex items-center justify-center border-4 border-white dark:border-background-dark">
-                  <Eye className="h-4 w-4 text-slate-400" />
-                </div>
-                <div className="flex-1 pt-1 opacity-60">
-                  <h4 className="text-sm font-semibold text-slate-900 dark:text-white">Review</h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Auto-approved based on rules
-                  </p>
-                </div>
-              </div>
-              {/* Step 6: Artifacts */}
-              <div className="relative flex gap-4">
-                <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-surface-dark border border-slate-300 dark:border-slate-600 flex items-center justify-center border-4 border-white dark:border-background-dark">
-                  <FileText className="h-4 w-4 text-slate-400" />
-                </div>
-                <div className="flex-1 pt-1 opacity-60">
-                  <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
-                    Artifacts
-                  </h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Generated 2 reports</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* Related Objects */}
-          <div className="p-4 mt-2">
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">
-              Context &amp; Relations
-            </h3>
-            <div className="grid grid-cols-2 gap-3">
-              {/* Card 1 */}
-              <div className="bg-white dark:bg-surface-dark p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-primary/50 transition-colors cursor-pointer">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-6 h-6 rounded bg-primary/20 flex items-center justify-center text-primary">
-                    <Database className="h-4 w-4" />
-                  </div>
-                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                    Connection
-                  </span>
-                </div>
-                <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
-                  Postgres_Primary
-                </p>
-                <div className="flex items-center gap-1 mt-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-success"></span>
-                  <span className="text-[10px] text-slate-500">Active</span>
-                </div>
-              </div>
-              {/* Card 2 */}
-              <div className="bg-white dark:bg-surface-dark p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-primary/50 transition-colors cursor-pointer">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-6 h-6 rounded bg-primary/20 flex items-center justify-center text-primary">
-                    <Network className="h-4 w-4" />
-                  </div>
-                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                    Pipeline
-                  </span>
-                </div>
-                <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
-                  Daily_Recon_v2
-                </p>
-                <div className="flex items-center gap-1 mt-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-                  <span className="text-[10px] text-slate-500">v2.1.0</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* Raw Data Preview */}
-          <div className="px-4 pb-4">
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-                Payload Preview
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-6">
+          <Card className="border-border/40 bg-card/50">
+            <CardContent className="p-6">
+              <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
+                <Shield className="h-4 w-4" />
+                Contextual Trust
               </h3>
-              <button className="text-primary text-xs font-medium hover:underline">
-                View Full Log
-              </button>
-            </div>
-            <div className="bg-slate-900 rounded-lg p-3 border border-slate-700 font-mono text-xs text-slate-300 overflow-hidden relative">
-              <div className="absolute top-2 right-2 flex gap-1">
-                <span className="w-2 h-2 rounded-full bg-red-500/50"></span>
-                <span className="w-2 h-2 rounded-full bg-yellow-500/50"></span>
-                <span className="w-2 h-2 rounded-full bg-green-500/50"></span>
+              <div className="space-y-4">
+                <div className="p-4 rounded-xl border border-border/40 space-y-2">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                    Pipeline
+                  </p>
+                  <p className="text-sm font-bold text-foreground flex items-center justify-between">
+                    Daily_Settle_v4
+                    <Network className="h-4 w-4 text-primary" />
+                  </p>
+                </div>
+                <div className="p-4 rounded-xl border border-border/40 space-y-2">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                    Compliance Scope
+                  </p>
+                  <p className="text-sm font-bold text-foreground flex items-center justify-between">
+                    SOX-Verifiable
+                    <Scale className="h-4 w-4 text-emerald-500" />
+                  </p>
+                </div>
               </div>
-              <pre className="overflow-x-auto no-scrollbar">
-                {`{
-  "trace_id": "8f7a-2b1c",
-  "timestamp": "2023-10-27T10:42:15Z",
-  "source": "api_gateway",
-  "meta": {
-    "region": "us-east-1",
-    "retry_count": 0
-  },
-  "data": {
-    "records_processed": 1500,
-    "discrepancies": []
-  }
-}`}
-              </pre>
-              <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-slate-900 to-transparent pointer-events-none"></div>
-            </div>
-          </div>
-          {/* Bottom Spacer */}
-          <div className="h-6"></div>
-        </main>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-primary/5 border-primary/20 shadow-none">
+            <CardContent className="p-6">
+              <h3 className="text-xs font-bold text-primary uppercase tracking-widest mb-3 flex items-center gap-2">
+                <Terminal className="h-4 w-4" />
+                Lineage Discovery
+              </h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                Settler uses content-addressable storage for all trace payloads, ensuring zero-drift
+                between the log and the actual data states.
+              </p>
+              <Button
+                variant="ghost"
+                className="w-full justify-between text-[10px] font-bold h-8 text-primary hover:text-primary hover:bg-primary/10"
+              >
+                EXPORT LINEAGE PROOF
+                <ArrowRight className="h-3 w-3" />
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
-};
-
-export default TracesPage;
+}

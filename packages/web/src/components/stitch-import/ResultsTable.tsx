@@ -88,7 +88,7 @@ const ResultsTable: React.FC = () => {
             <div className="flex items-center gap-2">
               <AlertCircle className="h-5 w-5 text-rose-500" />
               <span className="text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-100 dark:bg-rose-500/10 px-2 py-0.5 rounded">
-                Mismatched
+                Unmatched
               </span>
             </div>
             <span className="text-xs text-slate-400">10:42 AM</span>

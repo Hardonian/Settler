@@ -49,7 +49,7 @@ export const POST = withSecurity(
         error: 'An error occurred',
         message: 'Please try again later or contact support if the issue persists',
       },
-      { status: 200 }
+      { status: 500 }
     );
   }
 }, { feature: 'POST API' }),

@@ -8,15 +8,18 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 import { validateInputManifest } from "@/lib/ingest/manifest";
-import { requireWorkspaceMembership } from "@/lib/authz";
 import { createLogger, generateCorrelationId } from "@/lib/logger";
 import { z } from "zod";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { emitLifecycleEventSafe, LifecycleEventType } from "@/lib/ops/lifecycle-events";
 import { prisma } from "@/shared/db/prismaClient";
 import { withSecurity } from "@/lib/middleware/api-security";
+import {
+  resolveTenantForMutation,
+  resolveTenantMembershipScope,
+  TenantMembershipError,
+} from "@/lib/supabase/tenant-membership";
 
 const CreateRunSchema = z.object({
   workspace_id: z.string().uuid(),
@@ -36,9 +39,8 @@ export const POST = withSecurity(
       try {
         const body = await request.json();
         const validated = CreateRunSchema.parse(body);
-
-        // Verify workspace membership
-        await requireWorkspaceMembership(validated.workspace_id);
+        const { supabase, userId, tenantIds } = await resolveTenantMembershipScope();
+        const workspaceId = resolveTenantForMutation(tenantIds, validated.workspace_id);
 
         // Validate input manifest
         const manifestValidation = validateInputManifest(validated.input_manifest);
@@ -53,19 +55,10 @@ export const POST = withSecurity(
           );
         }
 
-        const supabase = await createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
-        if (!user) {
-          return NextResponse.json({ error: "Not authenticated", correlationId }, { status: 401 });
-        }
-
         // Check for existing run with same idempotency_key
         const existingResult = await (supabase.from("recon_runs") as any)
           .select("*")
-          .eq("workspace_id", validated.workspace_id)
+          .eq("workspace_id", workspaceId)
           .eq("idempotency_key", validated.idempotency_key)
           .single();
         const { data: existing } = existingResult as {
@@ -89,8 +82,8 @@ export const POST = withSecurity(
         // Create new run
         const runResult = await (supabase.from("recon_runs") as any)
           .insert({
-            workspace_id: validated.workspace_id,
-            created_by: user.id,
+            workspace_id: workspaceId,
+            created_by: userId,
             idempotency_key: validated.idempotency_key,
             input_manifest: validated.input_manifest,
             status: "created",
@@ -105,7 +98,7 @@ export const POST = withSecurity(
 
         if (createError || !run) {
           logger.error("Failed to create run", createError as Error);
-          // Never return 500 - return actionable error message
+          // Return truthful server failure semantics to avoid false-success UX.
           return NextResponse.json(
             {
               error: "Failed to create run",
@@ -114,13 +107,13 @@ export const POST = withSecurity(
               correlationId,
               retryable: true,
             },
-            { status: 200 }
+            { status: 500 }
           );
         }
 
         // Create initial event
         await (supabase.from("run_events" as any).insert({
-          workspace_id: validated.workspace_id,
+          workspace_id: workspaceId,
           run_id: run.id,
           type: "state_change",
           payload: {
@@ -128,12 +121,12 @@ export const POST = withSecurity(
             to: "created",
             correlationId,
           },
-          created_by: user.id,
+          created_by: userId,
         } as any) as any);
 
         // Enqueue job to process the run
         const { error: jobError } = await (supabase.from("jobs" as any).insert({
-          workspace_id: validated.workspace_id,
+          workspace_id: workspaceId,
           type: "run.process",
           payload: {
             run_id: run.id,
@@ -156,7 +149,7 @@ export const POST = withSecurity(
           const { data: billingAccount } = (await (supabase
             .from("billing_accounts" as any)
             .select("id, tenant_id, user_id")
-            .eq("tenant_id", validated.workspace_id)
+            .eq("tenant_id", workspaceId)
             .eq("status", "active")
             .is("deleted_at", null)
             .single() as any)) as {
@@ -167,8 +160,8 @@ export const POST = withSecurity(
             const accountId = billingAccount.id!;
             await trackReconciliationTransaction(
               accountId,
-              billingAccount.tenant_id || validated.workspace_id,
-              billingAccount.user_id || user.id,
+              billingAccount.tenant_id || workspaceId,
+              billingAccount.user_id || userId,
               1, // Run creation = 1 usage event
               undefined // Will be set when run processes transactions
             );
@@ -178,7 +171,7 @@ export const POST = withSecurity(
               // Check if this is the first reconciliation run for this tenant
               const previousRuns = await prisma.reconciliationRun.count({
                 where: {
-                  tenantId: validated.workspace_id,
+                  tenantId: workspaceId,
                 },
               });
 
@@ -186,8 +179,8 @@ export const POST = withSecurity(
 
               if (isFirstRun) {
                 const params = {
-                  userId: user.id,
-                  tenantId: validated.workspace_id,
+                  userId,
+                  tenantId: workspaceId,
                   billingAccountId: accountId,
                   properties: {
                     run_id: run.id,
@@ -216,7 +209,7 @@ export const POST = withSecurity(
 
         logger.info("Created run", {
           runId: run.id,
-          workspaceId: validated.workspace_id,
+          workspaceId,
           correlationId,
         });
 
@@ -239,7 +232,17 @@ export const POST = withSecurity(
           );
         }
 
-        // Never return 500 - return actionable error message
+        if (error instanceof TenantMembershipError) {
+          return NextResponse.json(
+            {
+              error: error.message,
+              code: error.code,
+              correlationId,
+            },
+            { status: error.status }
+          );
+        }
+
         return NextResponse.json(
           {
             error: "Internal server error",
@@ -248,7 +251,7 @@ export const POST = withSecurity(
             correlationId,
             retryable: true,
           },
-          { status: 200 }
+          { status: 500 }
         );
       }
     },

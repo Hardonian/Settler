@@ -6,13 +6,12 @@ import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { EmptyState } from "@/components/EmptyState";
-import { ErrorState } from "@/components/ErrorState";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { safeFetch } from "@/lib/safe-fetch";
 import {
   RefreshCw,
-  Play,
   CheckCircle2,
   XCircle,
   Clock,
@@ -26,25 +25,83 @@ interface RunStage {
   id: string;
   name: string;
   status: "pending" | "running" | "completed" | "failed";
-  startedAt?: Date;
-  completedAt?: Date;
+  startedAt?: string;
+  completedAt?: string;
   error?: string;
 }
 
 interface Run {
   id: string;
   name: string;
-  status: "pending" | "running" | "completed" | "failed";
+  status: "pending" | "running" | "completed" | "failed" | "unknown";
+  statusLabel?: string;
+  isTerminal?: boolean;
   stages: RunStage[];
   progress: number;
-  startedAt: Date;
-  completedAt?: Date;
+  progressState?: "not_started" | "in_progress" | "completed" | "failed" | "unknown";
+  startedAt: string;
+  completedAt?: string;
   error?: string;
   summary?: {
     total: number;
+    sourceCount: number;
+    targetCount: number;
     matched: number;
     unmatched: number;
+    unmatchedSourceCount: number;
+    unmatchedTargetCount: number;
     conflicts: number;
+  };
+  summaryMath?: {
+    sourceCount: number;
+    targetCount: number;
+    matchedCount: number;
+    unmatchedSourceCount: number;
+    unmatchedTargetCount: number;
+    conflictCount: number;
+    note: string;
+  };
+  summaryState?: "success" | "review_needed" | "in_progress" | "failed" | "empty" | "unknown";
+  config?: {
+    sourceAdapter: string | null;
+    targetAdapter: string | null;
+    reconStrategy: string | null;
+    templateId: string | null;
+    validationRuleCount: number;
+    validationRuleLabels: string[];
+    ruleVersionCount: number;
+    ruleVersionLabels: string[];
+    snapshotId: string | null;
+    inputHash: string | null;
+    configSource: "snapshot" | "job_definition";
+    configCapturedAt: string | null;
+    definitionDriftDetected: boolean;
+    definitionDriftNotes: string[];
+    summaryBasis: string;
+  };
+  resultContext?: {
+    latestResultId: string | null;
+    latestResultStatus: string | null;
+    latestResultStartedAt: string | null;
+    latestResultCompletedAt: string | null;
+    persistedResultCount: number;
+    comparison?: {
+      previousResultId: string;
+      previousResultStartedAt: string | null;
+      deltaMatched: number;
+      deltaUnmatched: number;
+      deltaConflicts: number;
+      snapshotChanged: boolean;
+      inputHashChanged: boolean;
+    } | null;
+  };
+  exceptions?: {
+    total: number;
+    pending: number;
+    investigating: number;
+    resolved: number;
+    ignored: number;
+    reviewRequired: number;
   };
 }
 
@@ -59,12 +116,12 @@ export default function RunPage() {
   useEffect(() => {
     loadRun();
 
-    if (autoRefresh && run?.status === "running") {
+    if (autoRefresh && run && !run.isTerminal) {
       const interval = setInterval(loadRun, 2000); // Poll every 2 seconds for running jobs
       return () => clearInterval(interval);
     }
     return undefined;
-  }, [runId, autoRefresh, run?.status]);
+  }, [runId, autoRefresh, run?.isTerminal]);
 
   const loadRun = async () => {
     setLoading(true);
@@ -80,18 +137,6 @@ export default function RunPage() {
     setLoading(false);
   };
 
-  const handleRetry = async () => {
-    const result = await safeFetch(`/api/runs/${runId}/retry`, {
-      method: "POST",
-    });
-
-    if (result.success) {
-      loadRun();
-    } else {
-      alert(result.error?.message || "Failed to retry");
-    }
-  };
-
   const getStatusIcon = (status: Run["status"]) => {
     switch (status) {
       case "completed":
@@ -100,6 +145,8 @@ export default function RunPage() {
         return XCircle;
       case "running":
         return RefreshCw;
+      case "unknown":
+        return AlertCircle;
       default:
         return Clock;
     }
@@ -113,9 +160,18 @@ export default function RunPage() {
         return "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300";
       case "running":
         return "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300";
+      case "unknown":
+        return "bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300";
       default:
         return "bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300";
     }
+  };
+
+  const formatSignedDelta = (value: number) => {
+    if (value > 0) {
+      return `+${value}`;
+    }
+    return `${value}`;
   };
 
   if (loading && !run) {
@@ -197,12 +253,6 @@ export default function RunPage() {
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </Button>
-          {run.status === "failed" && (
-            <Button variant="outline" size="sm" onClick={handleRetry}>
-              <Play className="w-4 h-4 mr-2" />
-              Retry
-            </Button>
-          )}
         </div>
       </div>
 
@@ -213,7 +263,7 @@ export default function RunPage() {
             <CardTitle>Status</CardTitle>
             <Badge className={getStatusColor(run.status)}>
               <StatusIcon className="w-4 h-4 mr-1" />
-              {run.status}
+              {run.statusLabel || run.status}
             </Badge>
           </div>
         </CardHeader>
@@ -232,28 +282,166 @@ export default function RunPage() {
               </div>
             </div>
             {run.summary && (
-              <div className="grid grid-cols-4 gap-4 pt-4 border-t">
-                <div>
-                  <div className="text-2xl font-bold">{run.summary.total}</div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">Total</div>
+              <div className="space-y-3 pt-4 border-t">
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
+                  <div>
+                    <div className="text-2xl font-bold">{run.summary.sourceCount}</div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">Source Rows</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">{run.summary.targetCount}</div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">Target Rows</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-green-600">{run.summary.matched}</div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">Matched</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-amber-600">
+                      {run.summary.unmatchedSourceCount}
+                    </div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">
+                      Unmatched Source
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-amber-600">
+                      {run.summary.unmatchedTargetCount}
+                    </div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">
+                      Unmatched Target
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-red-600">{run.summary.conflicts}</div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">Conflicts</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-2xl font-bold text-green-600">{run.summary.matched}</div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">Matched</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-yellow-600">{run.summary.unmatched}</div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">Unmatched</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-red-600">{run.summary.conflicts}</div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">Conflicts</div>
-                </div>
+                {run.summaryMath?.note ? (
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{run.summaryMath.note}</p>
+                ) : null}
               </div>
             )}
           </div>
         </CardContent>
       </Card>
+
+      {run.resultContext && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Result Provenance</CardTitle>
+            <CardDescription>
+              Run detail shows the latest persisted result for this run definition.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+            <p>
+              Persisted results:{" "}
+              <span className="font-medium text-slate-900 dark:text-white">
+                {run.resultContext.persistedResultCount}
+              </span>
+            </p>
+            {run.resultContext.latestResultId ? (
+              <p>
+                Latest result ID:{" "}
+                <code className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded break-all">
+                  {run.resultContext.latestResultId}
+                </code>
+              </p>
+            ) : (
+              <p>No persisted result has been recorded yet.</p>
+            )}
+            {run.resultContext.latestResultStartedAt && (
+              <p>Evaluated at {new Date(run.resultContext.latestResultStartedAt).toLocaleString()}.</p>
+            )}
+            {run.resultContext.comparison && (
+              <div className="rounded-md border border-slate-200 dark:border-slate-700 p-3">
+                <p className="font-medium text-slate-900 dark:text-white">Compared to prior result</p>
+                <p className="mt-1">
+                  Previous result{" "}
+                  <code className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded break-all">
+                    {run.resultContext.comparison.previousResultId}
+                  </code>
+                  {run.resultContext.comparison.previousResultStartedAt
+                    ? ` from ${new Date(run.resultContext.comparison.previousResultStartedAt).toLocaleString()}`
+                    : ""}
+                  .
+                </p>
+                <p className="mt-1">
+                  Matched {formatSignedDelta(run.resultContext.comparison.deltaMatched)} • Unmatched{" "}
+                  {formatSignedDelta(run.resultContext.comparison.deltaUnmatched)} • Conflicts{" "}
+                  {formatSignedDelta(run.resultContext.comparison.deltaConflicts)}
+                </p>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                  Snapshot{" "}
+                  {run.resultContext.comparison.snapshotChanged ? "changed" : "unchanged"} • Input
+                  hash {run.resultContext.comparison.inputHashChanged ? "changed" : "unchanged"}
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {run.exceptions && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Exception Workflow</CardTitle>
+            <CardDescription>
+              Exceptions are run-scoped operator decisions, distinct from run execution status.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
+              <div>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                  {run.exceptions.total}
+                </p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Total</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-amber-600">{run.exceptions.pending}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Pending</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-blue-600">{run.exceptions.investigating}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Investigating</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-green-600">{run.exceptions.resolved}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Resolved</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-slate-700 dark:text-slate-200">
+                  {run.exceptions.ignored}
+                </p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Ignored</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-red-600">{run.exceptions.reviewRequired}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Needs Review</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Link href={`/console/exceptions?runId=${run.id}`}>
+                <Button variant="outline" size="sm">
+                  Open All Run Exceptions
+                </Button>
+              </Link>
+              <Link href={`/console/exceptions?runId=${run.id}&status=pending`}>
+                <Button variant="outline" size="sm">
+                  Open Pending
+                </Button>
+              </Link>
+              <Link href={`/console/exceptions?runId=${run.id}&status=investigating`}>
+                <Button variant="outline" size="sm">
+                  Open Investigating
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Workflow Continuity - Next Actions */}
       {run.status === "completed" && (
@@ -264,7 +452,7 @@ export default function RunPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Link href={`/console/reconciliation-view?runId=${run.id}`}>
+              <Link href={`/console/reconciliations?runId=${run.id}`}>
                 <Button
                   variant="outline"
                   className="w-full h-20 flex flex-col items-start justify-center"
@@ -354,6 +542,126 @@ export default function RunPage() {
       )}
 
       {/* Stages */}
+      {run.config && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Effective Configuration</CardTitle>
+            <CardDescription>
+              Configuration context used to interpret the latest persisted result.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div
+              className={`rounded-md border p-3 text-sm ${
+                run.config.configSource === "snapshot"
+                  ? "border-green-200 bg-green-50 text-green-900 dark:border-green-800 dark:bg-green-900/20 dark:text-green-200"
+                  : "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200"
+              }`}
+            >
+              {run.config.configSource === "snapshot"
+                ? "Snapshot-backed configuration: run decisions are tied to a captured snapshot."
+                : "Live-definition fallback: snapshot data was not available for this result."}
+              {run.config.configCapturedAt
+                ? ` Captured ${new Date(run.config.configCapturedAt).toLocaleString()}.`
+                : ""}
+            </div>
+            {run.config.definitionDriftDetected && run.config.definitionDriftNotes.length > 0 && (
+              <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+                <p className="font-medium">Current definition differs from captured snapshot:</p>
+                <ul className="mt-2 list-disc pl-5 space-y-1">
+                  {run.config.definitionDriftNotes.map((note) => (
+                    <li key={note}>{note}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              <div>
+                <p className="text-sm font-medium text-slate-900 dark:text-white">Adapters</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  {[run.config.sourceAdapter, run.config.targetAdapter]
+                    .filter(Boolean)
+                    .join(" -> ") || "Not recorded"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-900 dark:text-white">Strategy</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  {run.config.reconStrategy || "Not recorded"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-900 dark:text-white">Rules</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  {run.config.validationRuleCount > 0
+                    ? `${run.config.validationRuleCount} rule${
+                        run.config.validationRuleCount === 1 ? "" : "s"
+                      } active`
+                    : "No validation rules recorded"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-900 dark:text-white">Rule Versions</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  {run.config.ruleVersionCount > 0
+                    ? `${run.config.ruleVersionCount} locked version${
+                        run.config.ruleVersionCount === 1 ? "" : "s"
+                      }`
+                    : "No rule-version lock recorded"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-900 dark:text-white">Snapshot</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400 font-mono break-all">
+                  {run.config.snapshotId || "Not persisted"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-900 dark:text-white">Input Hash</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400 font-mono break-all">
+                  {run.config.inputHash || "Not recorded"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-900 dark:text-white">Template</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400 font-mono break-all">
+                  {run.config.templateId || "None"}
+                </p>
+              </div>
+            </div>
+            {run.config.validationRuleLabels.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-medium text-slate-900 dark:text-white">
+                  Recorded Rule Coverage
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {run.config.validationRuleLabels.map((label) => (
+                    <Badge key={label} variant="outline">
+                      {label}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+            {run.config.ruleVersionLabels.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-medium text-slate-900 dark:text-white">
+                  Snapshot Rule Versions
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {run.config.ruleVersionLabels.map((label) => (
+                    <Badge key={label} variant="outline">
+                      {label}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+            <p className="text-sm text-slate-500 dark:text-slate-400">{run.config.summaryBasis}</p>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle>Stages</CardTitle>
@@ -422,10 +730,6 @@ export default function RunPage() {
           </CardHeader>
           <CardContent>
             <p className="text-red-800 dark:text-red-300">{run.error}</p>
-            <Button onClick={handleRetry} className="mt-4">
-              <Play className="w-4 h-4 mr-2" />
-              Retry Run
-            </Button>
           </CardContent>
         </Card>
       )}

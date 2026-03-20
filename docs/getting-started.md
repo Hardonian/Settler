@@ -6,8 +6,17 @@ This guide will help you get started with Settler in under 30 minutes.
 
 - Node.js 24.0.0 or higher
 - npm 10.0.0 or higher
-- A Settler account ([sign up free](https://settler.io/signup))
-- API keys from your platforms (Stripe, Shopify, etc.)
+- A Supabase project (for local development)
+- API keys from your platforms (Stripe, Shopify, etc.) - or use demo mode
+
+## Running Locally
+
+For local development, follow the [canonical setup guide](./SETUP.md) or use demo mode:
+
+```bash
+# Demo mode works without external dependencies
+DEMO_MODE=true
+```
 
 ## Step 1: Install the SDK
 
@@ -143,7 +152,7 @@ const webhook = await settler.webhooks.create({
 console.log(`Webhook created: ${webhook.data.id}`);
 ```
 
-See [Webhook Setup Guide](./webhook-setup.md) for complete details.
+See [API Reference](./api-reference.md) for complete webhook configuration details.
 
 ## Common Patterns
 
@@ -189,6 +198,6 @@ try {
 
 ## Need Help?
 
-- **Documentation:** [docs.settler.io](https://docs.settler.io)
+- **Documentation:** See the `/docs` directory in this repository
 - **Issues:** [GitHub Issues](https://github.com/shardie-github/Settler-API/issues)
-- **Email Support:** [support@settler.io](mailto:support@settler.io)
+- **Email Support:** Check project README for community support channels

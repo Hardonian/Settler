@@ -1,6 +1,5 @@
 "use client";
 
-import { use } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -74,8 +73,8 @@ const CATEGORY_ARTICLES: Record<
   ],
 };
 
-export default function CategoryPage({ params }: { params: Promise<{ categoryId: string }> }) {
-  const { categoryId } = use(params);
+export default function CategoryPage({ params }: { params: { categoryId: string } }) {
+  const { categoryId } = params;
   const articles = CATEGORY_ARTICLES[categoryId] || [];
 
   return (

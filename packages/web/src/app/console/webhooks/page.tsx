@@ -2,6 +2,7 @@
  * Webhooks Management Page
  *
  * Self-service webhook configuration and management.
+ * Marked as runtime-degraded-without-provider in route maturity registry.
  */
 
 "use client";

@@ -8,7 +8,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -27,11 +27,14 @@ import {
   ShieldCheck,
   ClipboardCheck,
   Bot,
+  PlayCircle,
+  AlertTriangle,
   type LucideIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Tooltip } from "@/components/ui/Tooltip";
 import { BackendHealthBadge } from "./BackendHealthBadge";
 import { CONSOLE_ROUTE_REGISTRY, type ConsoleRouteEntry } from "@/lib/console/route-maturity";
 import { OperationalRouteNotice } from "@/components/shared/OperationalRouteNotice";
@@ -48,6 +51,8 @@ const navSectionOrder = [
 const labelToIcon: Record<string, LucideIcon> = {
   Dashboard: LayoutDashboard,
   Reconciliations: Scale,
+  Runs: PlayCircle,
+  Exceptions: AlertTriangle,
   Audits: ClipboardCheck,
   "Proof Explorer": ShieldCheck,
   Policies: Shield,
@@ -71,34 +76,34 @@ function maturityBadge(entry: ConsoleRouteEntry) {
   if (entry.maturity === "thin") return <Badge variant="outline">Thin</Badge>;
   if (entry.maturity === "admin-only") return <Badge variant="secondary">Admin</Badge>;
   if (entry.maturity.startsWith("runtime-degraded"))
-    return <Badge variant="outline">Partial</Badge>;
+    return (
+      <Tooltip content="Partial coverage - some routes have degraded status due to missing environment, tenant, or provider configuration">
+        <Badge variant="outline">Partial</Badge>
+      </Tooltip>
+    );
   return null;
 }
 
 interface ConsoleLayoutProps {
   children: React.ReactNode;
+  isSuperAdmin?: boolean;
 }
 
-export function ConsoleLayout({ children }: ConsoleLayoutProps) {
+export function ConsoleLayout({
+  children,
+  isSuperAdmin: initialIsSuperAdmin = false,
+}: ConsoleLayoutProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
-
-  useEffect(() => {
-    fetch("/api/console/user-role")
-      .then((res) => res.json())
-      .then((data) => {
-        setIsSuperAdmin(data.role === "SUPER_ADMIN" || data.isSuperAdmin === true);
-      })
-      .catch(() => {
-        setIsSuperAdmin(false);
-      });
-  }, []);
+  const isSuperAdmin = initialIsSuperAdmin;
 
   const navSections = navSectionOrder
     .map((section) => {
       const items = CONSOLE_ROUTE_REGISTRY.filter((item) => item.section === section).filter(
         (item) => {
+          if (item.navTreatment === "restricted" || item.maturity === "thin") {
+            return false;
+          }
           if (item.roleRestriction === "super-admin") {
             return isSuperAdmin;
           }

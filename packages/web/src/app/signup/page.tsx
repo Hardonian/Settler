@@ -1,232 +1,178 @@
-/**
- * User Sign-up Page
- *
- * Handles user registration and account creation.
- */
-
-import { type Metadata } from "next";
-import { signUpUser } from "@/app/actions/auth";
+import { Metadata } from "next";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
-import { UserPlus, AlertCircle } from "lucide-react";
-import { redirect } from "next/navigation";
-import Link from "next/link";
+import { SettlerLogo } from "@/components/brand/SettlerLogo";
+import { ShieldCheck, ArrowRight, Zap, History, Globe } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Get Started — Settler",
-  description:
-    "Create a Settler account to start running deterministic reconciliation workflows.",
-  robots: { index: false, follow: false },
+  title: "Create Account | Settler",
+  description: "Join the infrastructure for deterministic financial reconciliation.",
 };
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-function SignUpForm() {
-  async function handleSubmit(formData: FormData) {
-    "use server";
-
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    const name = formData.get("name") as string;
-    const acceptTerms = formData.get("acceptTerms") === "on";
-
-    if (!email || !password) {
-      return;
-    }
-
-    const result = await signUpUser(email, password, name, acceptTerms);
-
-    if (result.success) {
-      // Redirect to console with welcome flag
-      redirect("/console?welcome=true");
-    }
-  }
-
+export default function SignupPage() {
   return (
-    <form action={handleSubmit} className="space-y-6">
-      <div>
-        <Label htmlFor="name" className="mb-2 block">
-          Name (Optional)
-        </Label>
-        <Input id="name" name="name" type="text" placeholder="Your name" className="w-full" />
-      </div>
+    <div className="flex min-h-screen">
+      {/* Left side: Content support */}
+      <div className="hidden lg:flex flex-col flex-1 relative bg-slate-950 overflow-hidden">
+        {/* Animated background accent */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-slate-900 to-slate-950" />
+        <div className="absolute inset-0 bg-grid-white/[0.05] [mask-image:radial-gradient(white,transparent_85%)]" />
 
-      <div>
-        <Label htmlFor="email" className="mb-2 block">
-          Email *
-        </Label>
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          placeholder="you@example.com"
-          required
-          className="w-full"
-        />
-      </div>
+        <div className="relative z-10 flex flex-col items-center justify-center h-full text-white p-16">
+          <div className="max-w-md space-y-12">
+            <div className="space-y-6">
+              <div className="p-3 bg-primary/20 rounded-2xl w-fit shadow-2xl ring-1 ring-primary/40">
+                <ShieldCheck size={40} className="text-primary" />
+              </div>
+              <h2 className="text-4xl font-bold leading-tight tracking-tight italic">
+                Start Building High-Integrity Reconciliations
+              </h2>
+              <p className="text-lg text-slate-400 font-medium leading-relaxed">
+                Join thousands of organizations using Settler for verifiable financial operations
+                and automated drift detection.
+              </p>
+            </div>
 
-      <div>
-        <Label htmlFor="password" className="mb-2 block">
-          Password *
-        </Label>
-        <Input
-          id="password"
-          name="password"
-          type="password"
-          placeholder="••••••••"
-          required
-          minLength={8}
-          className="w-full"
-        />
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Must be at least 8 characters
-        </p>
-      </div>
-
-      <div className="flex items-start gap-2">
-        <input
-          type="checkbox"
-          id="accept-terms"
-          name="acceptTerms"
-          required
-          className="mt-1 w-4 h-4 text-blue-600 bg-slate-100 border-slate-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-slate-800 focus:ring-2 dark:bg-slate-700 dark:border-slate-600"
-        />
-        <Label htmlFor="accept-terms" className="text-sm text-slate-600 dark:text-slate-400">
-          I agree to the{" "}
-          <Link
-            href="/legal/terms"
-            className="text-blue-600 dark:text-electric-cyan hover:underline"
-            target="_blank"
-          >
-            Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link
-            href="/legal/privacy"
-            className="text-blue-600 dark:text-electric-cyan hover:underline"
-            target="_blank"
-          >
-            Privacy Policy
-          </Link>
-          *
-        </Label>
-      </div>
-
-      <Button
-        type="submit"
-        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-electric-cyan dark:to-electric-blue dark:hover:from-electric-cyan/90 dark:hover:to-electric-blue/90"
-      >
-        <UserPlus className="w-4 h-4 mr-2" />
-        Create Account
-      </Button>
-    </form>
-  );
-}
-
-interface SignUpPageProps {
-  searchParams: Promise<{ error?: string }>;
-}
-
-export default async function SignUpPage({ searchParams }: SignUpPageProps) {
-  const params = await searchParams;
-  const error = params.error;
-
-  const errorMessages: Record<string, { title: string; description: string }> = {
-    auth_required: {
-      title: "Authentication Required",
-      description: "Please sign up or sign in to access the console.",
-    },
-  };
-
-  const errorInfo = error ? errorMessages[error] : null;
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
-      <Navigation />
-
-      <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-8 border border-slate-200 dark:border-slate-700">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-              Start Your Free Trial
-            </h1>
-            <p className="text-slate-600 dark:text-slate-400 mb-4">
-              Create your account and get instant access to a 14-day free trial—no credit card
-              required. Full access to all features, perfect for testing Settler with your data.
-            </p>
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-5 text-left mt-4">
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 dark:bg-blue-500 flex items-center justify-center mt-0.5">
-                  <svg
-                    className="w-4 h-4 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 10V3L4 14h7v7l9-11h-7z"
-                    />
-                  </svg>
+            <div className="grid gap-6">
+              {[
+                { icon: Zap, text: "Automated Evidence Collection" },
+                { icon: History, text: "90-day Immutable Snapshot Storage" },
+                { icon: Globe, text: "Standardized Reconciliation Protocols" },
+              ].map((feature) => (
+                <div key={feature.text} className="flex items-center gap-4 group">
+                  <div className="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                    <feature.icon size={20} />
+                  </div>
+                  <span className="font-bold text-slate-300 group-hover:text-white transition-colors">
+                    {feature.text}
+                  </span>
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-blue-900 dark:text-blue-200 mb-2">
-                    Get started in minutes:
-                  </p>
-                  <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-2">
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-600 dark:text-blue-400 mt-0.5">✓</span>
-                      <span>Generate your API key instantly</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-600 dark:text-blue-400 mt-0.5">✓</span>
-                      <span>Explore our interactive playground—no coding required</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-600 dark:text-blue-400 mt-0.5">✓</span>
-                      <span>
-                        Connect your first integration (Stripe, Shopify, QuickBooks, and more)
-                      </span>
-                    </li>
-                  </ul>
-                </div>
+              ))}
+            </div>
+
+            <div className="pt-12 border-t border-white/10 italic">
+              <p className="text-sm text-slate-500 font-medium">
+                &quot;Settler is the first platform that makes reconciliation feel like software
+                engineering. No more spreadsheet chaos.&quot;
+              </p>
+              <div className="mt-4">
+                <p className="text-sm font-bold text-slate-300">VP Operations, Fintech Unicorn</p>
               </div>
             </div>
-          </div>
-
-          {errorInfo && (
-            <Alert className="mb-6 border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20">
-              <AlertCircle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
-              <AlertTitle className="text-yellow-900 dark:text-yellow-300">
-                {errorInfo.title}
-              </AlertTitle>
-              <AlertDescription className="text-yellow-800 dark:text-yellow-400">
-                {errorInfo.description}
-              </AlertDescription>
-            </Alert>
-          )}
-
-          <SignUpForm />
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              Already have an account?{" "}
-              <Link
-                href="/login"
-                className="text-blue-600 dark:text-electric-cyan hover:underline font-medium"
-              >
-                Log in
-              </Link>
-            </p>
           </div>
         </div>
       </div>
 
-      <Footer />
+      {/* Right side: Form */}
+      <div className="flex flex-col flex-1 justify-center px-8 lg:px-12 xl:px-24 bg-background">
+        <div className="w-full max-w-sm mx-auto space-y-12">
+          <div className="space-y-6 text-left">
+            <Link href="/" className="inline-block hover:opacity-80 transition-opacity">
+              <SettlerLogo className="h-10 w-auto" />
+            </Link>
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold italic tracking-tight underline">Get Started</h1>
+              <p className="text-muted-foreground font-medium">
+                Create your account and start your free 14-day trial.
+              </p>
+            </div>
+          </div>
+
+          <form className="space-y-6">
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="first-name"
+                    className="text-xs font-bold uppercase tracking-widest text-muted-foreground"
+                  >
+                    First Name
+                  </Label>
+                  <Input
+                    id="first-name"
+                    placeholder="John"
+                    className="h-12 border-border/60 bg-muted/20 focus:ring-primary focus:border-primary font-medium"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="last-name"
+                    className="text-xs font-bold uppercase tracking-widest text-muted-foreground"
+                  >
+                    Last Name
+                  </Label>
+                  <Input
+                    id="last-name"
+                    placeholder="Doe"
+                    className="h-12 border-border/60 bg-muted/20 focus:ring-primary focus:border-primary font-medium"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="email"
+                  className="text-xs font-bold uppercase tracking-widest text-muted-foreground"
+                >
+                  Work Email
+                </Label>
+                <Input
+                  id="email"
+                  placeholder="name@company.com"
+                  type="email"
+                  className="h-12 border-border/60 bg-muted/20 focus:ring-primary focus:border-primary font-medium"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="password"
+                  className="text-xs font-bold uppercase tracking-widest text-muted-foreground"
+                >
+                  Password
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  className="h-12 border-border/60 bg-muted/20 focus:ring-primary focus:border-primary font-medium"
+                  required
+                />
+              </div>
+            </div>
+
+            <Button className="w-full h-12 text-lg font-bold group" size="lg">
+              Create Account
+              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </form>
+
+          <p className="text-xs text-muted-foreground leading-relaxed text-center font-medium">
+            By clicking &quot;Create Account&quot;, you agree to our{" "}
+            <Link href="/terms" className="text-primary underline">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link href="/privacy" className="text-primary underline">
+              Privacy Policy
+            </Link>
+            .
+          </p>
+
+          <p className="text-center text-sm font-medium text-muted-foreground pt-4 border-t border-border/40">
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              className="font-bold text-primary hover:underline underline-offset-4"
+            >
+              Login
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

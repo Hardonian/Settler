@@ -12,16 +12,33 @@ import {
   recordRequestMetrics,
   storeIdempotent,
 } from "@/lib/api/v1/recon/core";
+import {
+  buildCanonicalRunResultContract,
+  type ReconJobRecordLike,
+  type ReconResultRecordLike,
+} from "@/lib/reconciliation/canonical-run-result";
 import { prisma } from "@/shared/db/prismaClient";
 
 export const runtime = "nodejs";
+
+type RunListRow = {
+  id: string;
+  createdAt: Date;
+  status: string;
+  tenantId?: string;
+  sourceAdapter?: string | null;
+  targetAdapter?: string | null;
+  reconStrategy?: string | null;
+  templateId?: string | null;
+  validationRules?: unknown;
+  sourceConfigEncrypted?: string | null;
+  targetConfigEncrypted?: string | null;
+};
 
 export async function GET(request: NextRequest) {
   const ctx = await buildContext(request);
   if (ctx instanceof NextResponse) return ctx;
 
-  // TENANT ISOLATION HARDENING: Strictly enforce tenant boundary before any DB access.
-  // Prevents Prisma from stripping `undefined` and executing a cross-tenant read.
   if (
     !ctx.tenantId ||
     typeof ctx.tenantId !== "string" ||
@@ -56,23 +73,122 @@ export async function GET(request: NextRequest) {
     const cursor = request.nextUrl.searchParams.get("cursor") ?? undefined;
     const limit = Number(request.nextUrl.searchParams.get("limit") || 20);
 
-    const runs = await prisma.reconJob.findMany({
+    const runs = (await prisma.reconJob.findMany({
       where: {
         tenantId: ctx.tenantId,
-        ...(status ? { status } : {}),
       },
       orderBy: { createdAt: "desc" },
       take: Math.min(limit, 50),
       ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-    });
+    })) as RunListRow[];
+
+    const runIds = runs.map((run: RunListRow) => run.id);
+    const latestResults = runIds.length
+      ? await prisma.reconResult.findMany({
+          where: {
+            tenantId: ctx.tenantId,
+            reconJobId: { in: runIds },
+          },
+          orderBy: { startedAt: "desc" },
+          select: {
+            id: true,
+            reconJobId: true,
+            status: true,
+            startedAt: true,
+            completedAt: true,
+            sourceCount: true,
+            targetCount: true,
+            matchedCount: true,
+            unmatchedSourceCount: true,
+            unmatchedTargetCount: true,
+            conflictCount: true,
+            errorMessage: true,
+            inputHash: true,
+            snapshotId: true,
+            summary: true,
+            metadata: true,
+          },
+        })
+      : [];
+
+    const latestResultByRunId = new Map<string, ReconResultRecordLike>();
+    for (const result of latestResults) {
+      if (latestResultByRunId.has(result.reconJobId)) {
+        continue;
+      }
+      latestResultByRunId.set(result.reconJobId, {
+        id: result.id,
+        recon_job_id: result.reconJobId,
+        status: result.status,
+        started_at: result.startedAt?.toISOString() || null,
+        completed_at: result.completedAt?.toISOString() || null,
+        source_count: result.sourceCount,
+        target_count: result.targetCount,
+        matched_count: result.matchedCount,
+        unmatched_source_count: result.unmatchedSourceCount,
+        unmatched_target_count: result.unmatchedTargetCount,
+        conflict_count: result.conflictCount,
+        error_message: result.errorMessage,
+        input_hash: result.inputHash,
+        snapshot_id: result.snapshotId,
+        summary: result.summary,
+        metadata: (result.metadata as Record<string, unknown> | null) || null,
+      });
+    }
+
+    const rows = runs
+      .map((run: RunListRow) => {
+        const contract = buildCanonicalRunResultContract({
+          job: {
+            id: run.id,
+            status: run.status,
+            tenantId: ctx.tenantId,
+            sourceAdapter: run.sourceAdapter,
+            targetAdapter: run.targetAdapter,
+            reconStrategy: run.reconStrategy,
+            templateId: run.templateId,
+            validationRules: run.validationRules,
+            sourceConfigEncrypted: run.sourceConfigEncrypted,
+            targetConfigEncrypted: run.targetConfigEncrypted,
+          } as ReconJobRecordLike,
+          result: latestResultByRunId.get(run.id) ?? null,
+        });
+
+        return {
+          run_id: run.id,
+          created_at: run.createdAt.toISOString(),
+          status: contract.lifecycle.status,
+          status_label: contract.lifecycle.statusLabel,
+          summary_state: contract.summaryState,
+          progress_state: contract.lifecycle.progressState,
+          progress_percent: contract.lifecycle.progressPercent,
+          is_terminal: contract.lifecycle.isTerminal,
+          policy: "default",
+          summary: {
+            total: contract.summary.total,
+            matched: contract.summary.matched,
+            unmatched: contract.summary.unmatched,
+            conflicts: contract.summary.conflicts,
+          },
+          summary_semantics: {
+            processed: contract.summary.processed,
+            matched_with_tolerance: contract.summary.matchedWithTolerance,
+            exceptioned: contract.summary.exceptioned,
+            unresolved: contract.summary.unresolved,
+            ignored: contract.summary.ignored,
+            resolved: contract.summary.resolved,
+          },
+          provenance: contract.provenance,
+          config_drift: {
+            status: contract.configDrift.status,
+            adapter: contract.configDrift.adapter,
+          },
+        };
+      })
+      .filter((run) => (status ? run.status === status : true));
 
     const payload = {
-      rows: runs.map((run: { id: string; createdAt: Date; status: string }) => ({
-        run_id: run.id,
-        created_at: run.createdAt.toISOString(),
-        status: run.status,
-        policy: "default",
-      })),
+      rows,
       next_cursor: runs.length === Math.min(limit, 50) ? runs[runs.length - 1]?.id : null,
     };
 
@@ -102,7 +218,6 @@ export async function POST(request: NextRequest) {
   const ctx = await buildContext(request);
   if (ctx instanceof NextResponse) return ctx;
 
-  // TENANT ISOLATION HARDENING: Strictly enforce tenant boundary before any mutation.
   if (
     !ctx.tenantId ||
     typeof ctx.tenantId !== "string" ||

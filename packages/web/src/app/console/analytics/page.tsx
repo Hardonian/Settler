@@ -1,21 +1,43 @@
 /**
  * Admin Analytics Studio
+ *
+ * Marked as runtime-degraded-without-env in route maturity registry.
+ * Checks environment configuration before rendering analytics data.
  */
 
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { validateSupabaseEnv } from "@/lib/env/validator";
 import { getUserRole, UserRole } from "@/shared/auth/roles";
 import { AnalyticsStudio } from "@/components/console/AnalyticsStudio";
 import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
 import { RouteStateCard, routeStateFromVariant } from "@/components/shared/route-state";
 import { CardLoadingSkeleton } from "@/components/shared/loading-state";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { appLogger } from "@/lib/utils/logger";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 async function AnalyticsContent() {
+  // Environment validation check - this route is marked as runtime-degraded-without-env
+  const envValidation = validateSupabaseEnv();
+  if (!envValidation.isValid) {
+    appLogger.warn("Analytics page: Missing environment configuration", {
+      route: "/console/analytics",
+      missingVars: envValidation.missing,
+    });
+    return (
+      <RouteStateCard
+        {...routeStateFromVariant("env-missing", {
+          detail:
+            "Analytics Studio requires Supabase environment variables to be configured. Without these, event-derived rollups cannot be computed.",
+        })}
+      />
+    );
+  }
+
   const supabase = await createClient();
   const {
     data: { user },

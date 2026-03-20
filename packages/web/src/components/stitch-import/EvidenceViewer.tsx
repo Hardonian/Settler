@@ -15,7 +15,7 @@ const EvidenceViewer: React.FC = () => {
         <div>
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">Evidence Viewer</h3>
           <p className="text-xs text-rose-500 font-medium flex items-center gap-1">
-            <AlertCircle className="h-3.5 w-3.5" /> Mismatched · Trace 8a9f...2b1
+            <AlertCircle className="h-3.5 w-3.5" /> Unmatched · Trace 8a9f...2b1
           </p>
         </div>
         <button className="text-slate-400 hover:text-white">

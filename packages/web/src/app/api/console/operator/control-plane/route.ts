@@ -777,11 +777,14 @@ export const GET = withSecurity(
       const data = await buildPayload(days);
       return NextResponse.json({ data, generatedAt: new Date().toISOString() });
     } catch (error) {
-      return NextResponse.json({
-        data: null,
-        degraded: true,
-        error: error instanceof Error ? error.message : "Failed",
-      });
+      return NextResponse.json(
+        {
+          data: null,
+          degraded: true,
+          error: error instanceof Error ? error.message : "Failed",
+        },
+        { status: 503 }
+      );
     }
   },
   { requireAuth: true }
@@ -902,16 +905,22 @@ export const POST = withSecurity(
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return NextResponse.json({
-          success: false,
-          error: "Invalid payload",
-          details: error.issues,
-        });
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Invalid payload",
+            details: error.issues,
+          },
+          { status: 400 }
+        );
       }
-      return NextResponse.json({
-        success: false,
-        error: error instanceof Error ? error.message : "Failed",
-      });
+      return NextResponse.json(
+        {
+          success: false,
+          error: error instanceof Error ? error.message : "Failed",
+        },
+        { status: 500 }
+      );
     }
   },
   { requireAuth: true }

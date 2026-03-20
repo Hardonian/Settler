@@ -2,12 +2,8 @@ import { getFoundryRuns } from "@/lib/foundry/store";
 
 export const dynamic = "force-dynamic";
 
-export default async function FoundryRunPage({
-  params,
-}: {
-  params: Promise<{ runId: string }>;
-}): Promise<JSX.Element> {
-  const { runId } = await params;
+export default async function FoundryRunPage({ params }: { params: { runId: string } }) {
+  const { runId } = params;
   const run = getFoundryRuns().find((entry) => entry.dataset_run_id === runId);
 
   if (!run) {

@@ -36,7 +36,7 @@ If you have direct database access:
 
 ```bash
 # Connect to your database
-psql $DATABASE_URL -f supabase/migrations/20260131000000_workspace_onboarding_activation.sql
+psql $DATABASE_URL -f supabase/migrations/_archive/20260131000000_workspace_onboarding_activation.sql
 ```
 
 ### Verify Migration
@@ -45,19 +45,19 @@ After applying, verify the tables were created:
 
 ```sql
 -- Check tables exist
-SELECT table_name 
-FROM information_schema.tables 
-WHERE table_schema = 'public' 
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'public'
   AND table_name IN (
     'workspace_invites',
-    'tenant_onboarding_progress', 
+    'tenant_onboarding_progress',
     'onboarding_events'
   );
 
 -- Check functions exist
-SELECT routine_name 
-FROM information_schema.routines 
-WHERE routine_schema = 'public' 
+SELECT routine_name
+FROM information_schema.routines
+WHERE routine_schema = 'public'
   AND routine_name IN (
     'create_workspace_with_owner',
     'complete_onboarding_step',
@@ -65,8 +65,8 @@ WHERE routine_schema = 'public'
   );
 
 -- Check RLS policies
-SELECT tablename, policyname 
-FROM pg_policies 
+SELECT tablename, policyname
+FROM pg_policies
 WHERE tablename IN (
   'workspace_invites',
   'tenant_onboarding_progress',
@@ -164,9 +164,9 @@ SELECT COUNT(*) FROM tenant_onboarding_progress;
 SELECT COUNT(*) FROM onboarding_events;
 
 -- Check recent onboarding events
-SELECT event_type, step_id, trace_id, created_at 
-FROM onboarding_events 
-ORDER BY created_at DESC 
+SELECT event_type, step_id, trace_id, created_at
+FROM onboarding_events
+ORDER BY created_at DESC
 LIMIT 10;
 ```
 
@@ -175,10 +175,12 @@ LIMIT 10;
 ### Migration Fails
 
 **Error: "relation already exists"**
+
 - Some tables might already exist. The migration uses `CREATE TABLE IF NOT EXISTS`, so this should be safe.
 - Check if you need to drop existing tables first (not recommended in production).
 
 **Error: "function already exists"**
+
 - Functions are created with `CREATE OR REPLACE`, so this should update existing functions.
 - If issues persist, manually drop and recreate:
   ```sql
@@ -188,6 +190,7 @@ LIMIT 10;
   ```
 
 **Error: "permission denied"**
+
 - Ensure database user has CREATE, ALTER, and GRANT permissions.
 - For Supabase, use the service role key or ensure RLS policies allow operations.
 
@@ -269,6 +272,7 @@ After deployment, monitor:
 ## Support
 
 For issues:
+
 1. Check logs with `trace_id` from error responses
 2. Review RLS policies
 3. Check Supabase function logs
@@ -278,6 +282,7 @@ For issues:
 ## Next Steps
 
 After successful deployment:
+
 1. Monitor onboarding completion rates
 2. Track "First Success" path metrics (<3 minutes)
 3. Optimize based on user feedback

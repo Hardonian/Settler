@@ -19,7 +19,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/shared/db/prismaClient";
 import { Prisma } from "@prisma/client";
 import { authenticateApiKey } from "@/shared/auth/apiKey";
-import { createClient } from "@/lib/supabase/server";
+import {
+  resolveTenantMembershipScope,
+  TenantMembershipError,
+} from "@/lib/supabase/tenant-membership";
 import { z } from "zod";
 import { logAuditEvent } from "@/lib/audit/logger";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
@@ -39,6 +42,30 @@ const ReviewActionSchema = z.object({
   comment: z.string().max(1000).optional(),
   reviewed: z.boolean().optional(),
 });
+
+function runMetadataReferencesJob(metadata: unknown, jobId: string): boolean {
+  if (!metadata || typeof metadata !== "object") {
+    return false;
+  }
+
+  const meta = metadata as Record<string, unknown>;
+  const directCandidates = ["jobId", "job_id", "reconJobId", "recon_job_id"];
+  for (const candidate of directCandidates) {
+    if (meta[candidate] === jobId) {
+      return true;
+    }
+  }
+
+  const nested = meta.matchingConfig;
+  if (nested && typeof nested === "object") {
+    const nestedJobId = (nested as Record<string, unknown>).jobId;
+    if (nestedJobId === jobId) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 /**
  * PATCH /api/jobs/[id]/exceptions/[exceptionId]
@@ -91,43 +118,28 @@ export const PATCH = withSecurity(
 
         const { action, targetTransactionId, comment, reviewed } = actionValidation.data;
 
-        // Authenticate request
-        let auth;
-        let tenantId: string | null = null;
+        // Authenticate request and derive scoped tenant context.
+        let scopedTenantId: string | null = null;
         let userId: string | null = null;
+        let memberTenantIds: string[] | null = null;
 
         try {
-          auth = await authenticateApiKey(request);
-          if (auth) {
-            tenantId = auth.tenantId || null;
-            userId = auth.userId || null;
+          const apiKeyAuth = await authenticateApiKey(request);
+          if (apiKeyAuth?.tenantId) {
+            scopedTenantId = apiKeyAuth.tenantId;
+            userId = apiKeyAuth.userId || "api-key";
           } else {
-            // Try Supabase auth as fallback (graceful degradation)
-            try {
-              const supabase = await createClient();
-              const {
-                data: { user },
-              } = await supabase.auth.getUser();
-              if (user) {
-                userId = user.id;
-                // Get tenant from billing account
-                const billingAccount = await prisma.billingAccount.findFirst({
-                  where: { userId: user.id },
-                  select: { tenantId: true },
-                });
-                tenantId = billingAccount?.tenantId || null;
-              }
-            } catch {
-              return NextResponse.json(
-                {
-                  error: "Unauthorized",
-                  message: "Authentication required",
-                },
-                { status: 401 }
-              );
-            }
+            const scope = await resolveTenantMembershipScope();
+            memberTenantIds = scope.tenantIds;
+            userId = scope.userId;
           }
-        } catch {
+        } catch (error) {
+          if (error instanceof TenantMembershipError) {
+            return NextResponse.json(
+              { error: error.message, code: error.code },
+              { status: error.status }
+            );
+          }
           return NextResponse.json(
             {
               error: "Unauthorized",
@@ -137,27 +149,40 @@ export const PATCH = withSecurity(
           );
         }
 
-        if (!tenantId || !userId) {
+        if (!userId) {
           return NextResponse.json(
             {
               error: "Unauthorized",
-              message: "Tenant ID and User ID required",
+              message: "Authentication required",
             },
             { status: 401 }
           );
         }
 
-        // Verify job exists and belongs to tenant
+        // Verify job exists and belongs to authenticated scope.
         const job = await prisma.reconJob.findFirst({
           where: {
             id: id,
-            tenantId: tenantId,
             deletedAt: null,
+            ...(scopedTenantId
+              ? { tenantId: scopedTenantId }
+              : { tenantId: { in: memberTenantIds || [] } }),
           },
-          select: { id: true },
+          select: { id: true, tenantId: true },
         });
 
         if (!job) {
+          return NextResponse.json(
+            {
+              error: "Not found",
+              message: `Reconciliation job ${id} not found`,
+            },
+            { status: 404 }
+          );
+        }
+
+        const tenantId = job.tenantId;
+        if (!tenantId) {
           return NextResponse.json(
             {
               error: "Not found",
@@ -198,12 +223,9 @@ export const PATCH = withSecurity(
             id: exception.runId,
             tenantId: tenantId,
           },
-          include: {
-            ingestion: {
-              select: {
-                sourceId: true,
-              },
-            },
+          select: {
+            id: true,
+            metadata: true,
           },
         });
 
@@ -212,6 +234,16 @@ export const PATCH = withSecurity(
             {
               error: "Not found",
               message: "Reconciliation run not found",
+            },
+            { status: 404 }
+          );
+        }
+
+        if (!runMetadataReferencesJob(run.metadata, id)) {
+          return NextResponse.json(
+            {
+              error: "Not found",
+              message: `Reconciliation job ${id} not found`,
             },
             { status: 404 }
           );
@@ -432,7 +464,6 @@ export const PATCH = withSecurity(
           duration,
         });
 
-        // Never return 500 - return graceful error response
         return NextResponse.json(
           {
             success: false,
@@ -440,7 +471,7 @@ export const PATCH = withSecurity(
             message: "Please try again later or contact support if the issue persists",
             details: process.env.NODE_ENV === "development" ? errorMessage : undefined,
           },
-          { status: 200 }
+          { status: 500 }
         );
       }
     },

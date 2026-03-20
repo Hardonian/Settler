@@ -40,33 +40,37 @@ export default function NodeDetailPage() {
     }
   }, [nodeId]);
 
-  const fetchNodeDetail = (id: string) => {
+  const fetchNodeDetail = async (id: string) => {
     try {
       setIsLoading(true);
-      // In production, fetch from API: `/api/edge-ai/nodes/${id}`
-      const mockNode: NodeDetail = {
-        id: id,
-        name: "US-East Edge Node",
-        status: "active",
-        region: "us-east-1",
-        latency: 8,
-        requests: 12500,
-        accuracy: 99.7,
-        lastActive: new Date().toISOString(),
-        createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-        config: {
-          model: "settler-reconciliation-v2",
-          version: "2.1.0",
-          endpoint: `https://edge-${id}.settler.dev`,
+
+      // Fetch from API
+      const res = await fetch(`/api/edge-ai/nodes/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
         },
-      };
-      setNode(mockNode);
+      });
+
+      if (!res.ok) {
+        if (res.status === 404) {
+          // Node not found - set null to show truthful "not found" state
+          setNode(null);
+          return;
+        }
+        throw new Error(`Failed to fetch node (${res.status})`);
+      }
+
+      const data = await res.json();
+      setNode(data);
     } catch (error) {
       logger.error(
         "Failed to fetch node",
         error instanceof Error ? error : new Error(String(error)),
         { nodeId }
       );
+      // Set to null to show truthful error state
+      setNode(null);
     } finally {
       setIsLoading(false);
     }

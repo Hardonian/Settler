@@ -1,256 +1,203 @@
 import { Metadata } from "next";
-import { CodeBlock } from "@/components/docs/CodeBlock";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { CheckCircle2, ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Terminal,
+  Code,
+  CheckCircle2,
+  Copy,
+  Command,
+  Monitor,
+  Rocket,
+  ShieldCheck,
+} from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Quickstart - Docs",
-  description:
-    "Get started with Settler — run a deterministic reconciliation and inspect the evidence in under 5 minutes",
+  title: "Quickstart | Settler Docs",
+  description: "Get your first reconciliation policy running on Settler in under 5 minutes.",
 };
 
-const demoSteps = [
+const steps = [
   {
-    title: "Clone and Install",
-    description: "No database or API keys required for the demo path.",
-    code: `git clone https://github.com/Hardonian/Settler.git
-cd Settler
-pnpm install`,
-    action: null,
-  },
-  {
-    title: "Copy Environment File",
-    description: "For the demo, DATABASE_URL is not required. Leave it blank.",
-    code: `cp .env.example .env
-# DATABASE_URL is not needed for pnpm demo`,
-    action: null,
-  },
-  {
-    title: "Run the Demo",
+    title: "Project Initialization",
+    icon: Terminal,
+    command: "npx @settler/cli init",
     description:
-      "Executes a Stripe↔QuickBooks reconciliation using fixture data. Writes four output files to examples/demo-output/.",
-    code: `pnpm demo
-
-# Expected output:
-# ✓ Workflow executed deterministically
-# ✓ evidence.json written
-# ✓ results.json written
-# ✓ report.html written`,
-    action: null,
+      "Initialize a new Settler project structure with a default TypeScript environment.",
   },
   {
-    title: "Inspect Results and Evidence",
+    title: "Configure Primary Adapter",
+    icon: Command,
+    command: "settler auth stripe --id=sk_test_...",
     description:
-      "The evidence file contains the full hash-linked audit artifact. Open report.html to browse mismatches visually.",
-    code: `# Summary: matched, unmatched, and variance counts
-cat examples/demo-output/results.json
-
-# Hash-linked audit artifact for this run
-cat examples/demo-output/evidence.json
-
-# Open in browser for a visual mismatch report
-open examples/demo-output/report.html`,
-    action: { label: "Explore the Evidence Model", href: "/proof-explorer" },
+      "Link your first data source. Settler automatically discovers schemas and matches patterns.",
   },
   {
-    title: "Replay Verification",
+    title: "Deploy Test Policy",
+    icon: Code,
+    command: "settler deploy ./policies/standard.ts",
     description:
-      "Re-runs the reconciliation from stored artifacts and verifies the output hash matches the original. Confirms determinism.",
-    code: `pnpm settler:replay examples/demo-output/evidence.json
-
-# Expected output:
-# ✓ Replay complete — hash match confirmed`,
-    action: { label: "Learn about Replay", href: "/docs/api" },
-  },
-];
-
-const sdkSteps = [
-  {
-    title: "Install the SDK",
-    description: "TypeScript and Python SDKs are available.",
-    code: `npm install @settler/sdk`,
-    action: { label: "SDK Reference", href: "/docs/sdk" },
+      "Push your reconciliation logic to the isolated worker pool for deterministic execution.",
   },
   {
-    title: "Create a Reconciliation Job",
-    description:
-      "Connect your data sources and define matching rules in code. Rules are version-controlled and testable.",
-    code: `import { SettlerClient } from '@settler/sdk';
-
-const client = new SettlerClient({
-  apiKey: process.env.SETTLER_API_KEY,
-});
-
-const job = await client.jobs.create({
-  name: "Stripe → Shopify Reconciliation",
-  source: {
-    adapter: "stripe",
-    config: { apiKey: process.env.STRIPE_SECRET_KEY },
-  },
-  target: {
-    adapter: "shopify",
-    config: { apiKey: process.env.SHOPIFY_API_KEY },
-  },
-  rules: {
-    matching: [
-      { field: "order_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 },
-    ],
-  },
-});
-
-console.log("Job created:", job.id);`,
-    action: { label: "Browse Integrations", href: "/docs/integrations" },
-  },
-  {
-    title: "Run and Review Results",
-    description:
-      "Execute the job and inspect the mismatch report. Every run produces a verifiable evidence artifact.",
-    code: `const report = await client.reports.get(job.id);
-
-console.log("Matched:", report.summary.matched);
-console.log("Unmatched:", report.summary.unmatched);
-
-// Each mismatch includes: field, expected, actual, rule applied, evidence hash
-const mismatches = await client.reconciliations.getMismatches(job.id);`,
-    action: { label: "API Reference", href: "/docs/api" },
+    title: "Inspect Results",
+    icon: ShieldCheck,
+    command: "settler run --inspect",
+    description: "Execute a match batch and view the resulting cryptographic proof capsule.",
   },
 ];
 
 export default function QuickstartPage() {
   return (
-    <div className="prose prose-slate dark:prose-invert max-w-none">
-      <h1>Quickstart Guide</h1>
+    <div className="min-h-screen bg-background">
+      <Navigation />
 
-      <p className="text-lg text-slate-600 dark:text-slate-400">
-        Two paths to your first result. The demo path requires no API keys and runs in under 5
-        minutes. The SDK path connects to your own data sources.
-      </p>
-
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 my-6">
-        <p className="text-sm text-blue-800 dark:text-blue-200">
-          <strong>What Settler does:</strong> It matches records across your data sources, surfaces
-          every variance with context, and writes a hash-linked evidence artifact you can replay and
-          share. It does not make decisions — your team reviews the results.
-        </p>
-      </div>
-
-      <h2 className="text-2xl font-bold mt-10 mb-6 text-slate-900 dark:text-white">
-        Path A — Run the Demo (No API Key Needed)
-      </h2>
-      <p className="text-slate-600 dark:text-slate-400 mb-6">
-        Runs a Stripe↔QuickBooks reconciliation using fixture data. Generates evidence you can
-        inspect and replay.
-      </p>
-
-      <div className="space-y-6 my-6">
-        {demoSteps.map((step, index) => (
-          <Card key={index} className="border-2">
-            <CardHeader>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-sm">
-                  {index + 1}
-                </div>
-                <CardTitle className="text-lg">{step.title}</CardTitle>
-              </div>
-              <CardDescription>{step.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <CodeBlock code={step.code} language="bash" />
-              {step.action && (
-                <Button variant="outline" asChild>
-                  <Link href={step.action.href}>
-                    {step.action.label}
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Link>
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <h2 className="text-2xl font-bold mt-12 mb-6 text-slate-900 dark:text-white">
-        Path B — Connect Your Own Data (SDK)
-      </h2>
-      <p className="text-slate-600 dark:text-slate-400 mb-6">
-        Connect your own Stripe, Shopify, QuickBooks, or custom data sources using the TypeScript
-        SDK.
-      </p>
-
-      <div className="space-y-6 my-6">
-        {sdkSteps.map((step, index) => (
-          <Card key={index} className="border-2">
-            <CardHeader>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 font-bold text-sm">
-                  {index + 1}
-                </div>
-                <CardTitle className="text-lg">{step.title}</CardTitle>
-              </div>
-              <CardDescription>{step.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <CodeBlock code={step.code} language="typescript" />
-              {step.action && (
-                <Button variant="outline" asChild>
-                  <Link href={step.action.href}>
-                    {step.action.label}
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Link>
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6 my-8">
-        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-          <CheckCircle2 className="w-6 h-6 text-green-600" />
-          Next Steps
-        </h2>
-        <ul className="space-y-2 text-slate-700 dark:text-slate-300">
-          <li>
-            •{" "}
-            <Link href="/architecture" className="text-blue-600 dark:text-blue-400 hover:underline">
-              Architecture — full system walkthrough
-            </Link>
-          </li>
-          <li>
-            •{" "}
-            <Link href="/docs/api" className="text-blue-600 dark:text-blue-400 hover:underline">
-              API Reference — all endpoints and response shapes
-            </Link>
-          </li>
-          <li>
-            •{" "}
-            <Link
-              href="/docs/integrations"
-              className="text-blue-600 dark:text-blue-400 hover:underline"
+      {/* Hero / Header */}
+      <section className="relative pt-32 pb-24 border-b border-border/40 overflow-hidden bg-slate-50 dark:bg-slate-950/20 shadow-2xl">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 relative z-10 space-y-8 text-center">
+          <div className="flex flex-col items-center space-y-6">
+            <Badge
+              variant="outline"
+              className="px-4 py-1.5 bg-primary/10 text-primary border-primary/20 text-xs font-black tracking-[0.2em] uppercase"
             >
-              Available integrations — Stripe, Shopify, QuickBooks, and more
-            </Link>
-          </li>
-          <li>
-            •{" "}
-            <Link
-              href="/proof-explorer"
-              className="text-blue-600 dark:text-blue-400 hover:underline"
+              Step-by-Step Guide
+            </Badge>
+            <h1 className="text-4xl md:text-7xl font-bold tracking-tight text-foreground italic">
+              Quickstart
+            </h1>
+            <p className="text-xl text-muted-foreground font-medium max-w-3xl mx-auto leading-relaxed underline-offset-8 italic underline">
+              Go from zero to a cryptographically verified reconciliation outcome in less than five
+              minutes. No complex infrastructure setup required.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Modern Step Timeline */}
+      <section className="py-24 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-32">
+        {steps.map((step, idx) => (
+          <div key={step.title} className="flex flex-col md:flex-row gap-12 group">
+            {/* Timeline Indicator */}
+            <div className="flex items-center md:flex-col gap-6 md:gap-0 flex-shrink-0">
+              <div className="h-16 w-16 rounded-3xl bg-primary/10 text-primary flex items-center justify-center text-2xl font-black group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-2xl relative z-10">
+                {idx + 1}
+              </div>
+              {idx !== steps.length - 1 && (
+                <div className="flex-1 w-px bg-border group-hover:bg-primary/20 transition-colors hidden md:block" />
+              )}
+            </div>
+
+            {/* Step Content */}
+            <div className="flex-1 space-y-8">
+              <div className="space-y-4">
+                <h2 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3 italic underline underline-offset-8 decoration-primary/20">
+                  {step.title}
+                  <div className="h-2 w-2 rounded-full bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </h2>
+                <p className="text-lg text-muted-foreground font-medium leading-relaxed italic border-l-2 border-primary/20 pl-6 bg-primary/5 py-4 rounded-r-2xl pr-8 max-w-2xl">
+                  {step.description}
+                </p>
+              </div>
+
+              {/* Interactive CLI Card */}
+              <Card className="bg-slate-950 border-white/5 shadow-2xl overflow-hidden glass group/cli ring-1 ring-white/5">
+                <CardHeader className="bg-white/5 border-b border-white/5 p-4 flex flex-row items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <Terminal size={14} className="text-slate-500" />
+                    <span className="text-[10px] font-mono text-slate-400 tracking-[0.2em] font-black italic">
+                      SHELL_EXEC
+                    </span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-slate-500 hover:text-white group-hover/cli:bg-primary/20 group-hover/cli:text-primary transition-all"
+                  >
+                    <Copy size={14} />
+                  </Button>
+                </CardHeader>
+                <CardContent className="p-8 font-mono text-base text-slate-300 leading-relaxed overflow-x-auto whitespace-pre">
+                  <span className="text-primary mr-3 opacity-60">$</span>
+                  <span className="group-hover/cli:text-white transition-colors">
+                    {step.command}
+                  </span>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* Troubleshooting / Next Steps */}
+      <section className="py-32 px-4 bg-slate-900 text-white border-y border-white/5 shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-20 opacity-[0.03]">
+          <Rocket className="h-96 w-96 text-primary" />
+        </div>
+        <div className="max-w-4xl mx-auto space-y-12 text-center relative z-10">
+          <CheckCircle2 size={80} className="text-success mx-auto mb-8 opacity-40 shadow-2xl" />
+          <div className="space-y-6">
+            <h2 className="text-4xl md:text-6xl font-bold tracking-tight italic underline underline-offset-8">
+              You&apos;re Officially Onboarded
+            </h2>
+            <p className="text-xl text-slate-400 font-medium italic underline">
+              Now that you&apos;ve run your first reconciliation, it&apos;s time to dig into the DSL
+              patterns and build production-grade invariants.
+            </p>
+          </div>
+          <div className="pt-8 flex flex-col sm:flex-row justify-center gap-6">
+            <Button
+              size="lg"
+              className="h-14 px-8 font-extrabold gap-2 shadow-2xl ring-1 ring-primary/40"
             >
-              Proof Explorer — inspect evidence artifacts from your runs
-            </Link>
-          </li>
-          <li>
-            •{" "}
-            <Link href="/docs/auth" className="text-blue-600 dark:text-blue-400 hover:underline">
-              Authentication — API key management and scopes
-            </Link>
-          </li>
-        </ul>
-      </div>
+              <Code size={20} />
+              DSL Deep-Dive
+            </Button>
+            <Button
+              variant="ghost"
+              size="lg"
+              className="h-14 px-8 font-bold text-slate-300 hover:text-white border border-white/10 hover:bg-white/5"
+            >
+              <Monitor size={20} className="mr-2" />
+              View Console
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
     </div>
+  );
+}
+
+function Button({
+  children,
+  className,
+  variant = "default",
+  size = "default",
+  asChild = false,
+  ...props
+}: any) {
+  const Comp = asChild ? "div" : "button";
+  const variants: any = {
+    default: "bg-primary text-primary-foreground hover:bg-primary/90",
+    outline:
+      "border border-border bg-background hover:bg-accent hover:text-accent-foreground shadow-sm",
+    ghost: "hover:bg-accent hover:text-accent-foreground font-black",
+    destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm",
+  };
+  const sizes: any = {
+    default: "h-10 px-4 py-2",
+    sm: "h-9 rounded-md px-3",
+    lg: "h-11 rounded-md px-8",
+  };
+  return (
+    <Comp
+      className={`inline-flex items-center justify-center rounded-xl text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className}`}
+      {...props}
+    >
+      {children}
+    </Comp>
   );
 }

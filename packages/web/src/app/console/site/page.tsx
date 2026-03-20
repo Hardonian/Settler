@@ -2,6 +2,7 @@
  * Site Designer Main Page
  *
  * Lists all pages and provides navigation to editors.
+ * Marked as runtime-degraded-without-tenant in route maturity registry.
  */
 
 "use client";
@@ -119,8 +120,18 @@ export default function SiteDesignerPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-electric-cyan mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-400">Loading pages...</p>
+          {/* Skeleton loader for content */}
+          <div className="grid gap-4 w-full max-w-md">
+            <div className="animate-pulse">
+              <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-64 mx-auto mb-4"></div>
+              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-96 mx-auto mb-2"></div>
+              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-72 mx-auto"></div>
+            </div>
+            <div className="flex justify-center mt-6">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-electric-cyan"></div>
+            </div>
+          </div>
+          <p className="text-slate-600 dark:text-slate-400 mt-4">Loading pages...</p>
         </div>
       </div>
     );
