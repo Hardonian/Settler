@@ -56,7 +56,7 @@ importers:
         specifier: ^10.1.0
         version: 10.1.0
       dotenv:
-        specifier: ^17.2.3
+        specifier: ^17.3.1
         version: 17.3.1
       eslint:
         specifier: ^9.26.0
@@ -198,8 +198,8 @@ importers:
         specifier: ^1.6.0
         version: 1.6.0
       dotenv:
-        specifier: ^16.3.1
-        version: 16.6.1
+        specifier: ^17.3.1
+        version: 17.3.1
       envalid:
         specifier: ^8.0.0
         version: 8.1.1
@@ -364,8 +364,8 @@ importers:
         specifier: ^11.1.0
         version: 11.1.0
       dotenv:
-        specifier: ^16.3.1
-        version: 16.6.1
+        specifier: ^17.3.1
+        version: 17.3.1
       inquirer:
         specifier: ^8.2.6
         version: 8.2.7(@types/node@24.12.0)
@@ -450,8 +450,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1
       dotenv:
-        specifier: ^16.3.1
-        version: 16.6.1
+        specifier: ^17.3.1
+        version: 17.3.1
       node-cron:
         specifier: ^3.0.3
         version: 3.0.3
