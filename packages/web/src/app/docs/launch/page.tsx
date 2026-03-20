@@ -1,14 +1,12 @@
 import { Metadata } from "next";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Rocket,
   CheckCircle2,
   Clock,
-  AlertCircle,
-  ArrowRight,
   ShieldCheck,
   Zap,
   Globe,
@@ -16,7 +14,6 @@ import {
   Search,
   History,
 } from "lucide-react";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Launch Status | Settler Docs",
@@ -72,7 +69,7 @@ export default function LaunchStatusPage() {
             <h1 className="text-4xl md:text-7xl font-bold tracking-tight text-foreground italic">
               Launch Status
             </h1>
-            <p className="text-xl text-muted-foreground font-medium max-w-3xl mx-auto leading-relaxed italic underline italic">
+            <p className="text-xl text-muted-foreground font-medium max-w-3xl mx-auto leading-relaxed italic underline">
               Track the shipping velocity of the Settler platform. We believe in total transparency
               regarding what is production-ready today and what is currently being prioritized.
             </p>
@@ -141,10 +138,10 @@ export default function LaunchStatusPage() {
       {/* Release Notes CTA */}
       <section className="py-32 bg-slate-950 text-white overflow-hidden relative border-t border-white/5 shadow-2xl">
         <div className="max-w-4xl mx-auto px-4 text-center space-y-12 relative z-10">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight italic underline italic underline-offset-8 italic underline-offset-8">
-            Subcribe to System Updates
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight italic underline underline-offset-8">
+            Subscribe to System Updates
           </h2>
-          <p className="text-xl text-slate-400 font-medium italic underline italic">
+          <p className="text-xl text-slate-400 font-medium italic underline">
             Get technical deep-dives on new feature releases and cryptographic enhancements
             delivered directly to your inbox.
           </p>

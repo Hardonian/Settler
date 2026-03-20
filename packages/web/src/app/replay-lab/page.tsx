@@ -147,7 +147,7 @@ export default function ReplayLabMarketingPage() {
 
       {/* Workflow Section */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center space-y-12">
-        <h2 className="text-3xl font-bold tracking-tight italic italic underline underline-offset-8">
+        <h2 className="text-3xl font-bold tracking-tight italic underline underline-offset-8">
           How it works
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">

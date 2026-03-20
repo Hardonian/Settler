@@ -4,16 +4,7 @@ import { AnimatedHero } from "@/components/AnimatedHero";
 import ControlPlaneOverview from "@/components/ControlPlaneOverview";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  CheckCircle2,
-  AlertCircle,
-  Clock,
-  Server,
-  Activity,
-  Database,
-  ShieldCheck,
-  Zap,
-} from "lucide-react";
+import { CheckCircle2, Clock, Server, Activity, Database, ShieldCheck, Zap } from "lucide-react";
 
 export const metadata = {
   title: "System Status | Settler",
@@ -33,7 +24,7 @@ export default function StatusPage() {
       "api-gateway": { status: "healthy", latency: 5, timestamp: new Date().toISOString() },
     },
     timestamp: new Date().toISOString(),
-  };
+  } as const;
 
   const incidents = [
     {
@@ -206,9 +197,7 @@ export default function StatusPage() {
       {/* Pre-footer Status Footer */}
       <section className="py-20 border-t border-border/40 mt-12 bg-muted/20">
         <div className="max-w-4xl mx-auto px-4 text-center space-y-6">
-          <h2 className="text-2xl font-bold italic tracking-tight italic">
-            Global Infrastructure Reach
-          </h2>
+          <h2 className="text-2xl font-bold italic tracking-tight">Global Infrastructure Reach</h2>
           <p className="text-sm text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
             Our control plane is distributed across 3 global regions with real-time failover. If you
             are experiencing local connectivity issues, please consult our regional health

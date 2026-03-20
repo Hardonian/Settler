@@ -1,23 +1,9 @@
 import { Metadata } from "next";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Building2,
-  Database,
-  Network,
-  ShieldCheck,
-  Zap,
-  Lock,
-  Globe,
-  Layers,
-  ArrowRight,
-  Server,
-  Cloud,
-  Terminal,
-  Search,
-} from "lucide-react";
+import { Database, ShieldCheck, Lock, Globe, ArrowRight, Server, Terminal } from "lucide-react";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -44,7 +30,7 @@ export default function DocsPlatformArchitecturePage() {
             <h1 className="text-4xl md:text-7xl font-bold tracking-tight text-foreground italic">
               Platform Architecture
             </h1>
-            <p className="text-xl text-muted-foreground font-medium max-w-3xl mx-auto leading-relaxed italic underline italic">
+            <p className="text-xl text-muted-foreground font-medium max-w-3xl mx-auto leading-relaxed italic underline">
               A comprehensive technical deep-dive into the distributed, deterministic engine that
               powers Settler's cryptographic reconciliation outcomes.
             </p>
@@ -83,7 +69,7 @@ export default function DocsPlatformArchitecturePage() {
               <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 text-center leading-tight">
                 Native Cluster Specs
               </p>
-              <p className="text-xs font-bold text-foreground text-center italic border-b border-primary/20 pb-2 italic text-nowrap">
+              <p className="text-xs font-bold text-foreground text-center italic border-b border-primary/20 pb-2 text-nowrap">
                 Tier-4 Infrastructure
               </p>
             </div>
@@ -95,7 +81,7 @@ export default function DocsPlatformArchitecturePage() {
           {/* Layer 1: Hardware Neutrality */}
           <section id="hardware-neutrality" className="space-y-12">
             <div className="space-y-6">
-              <h2 className="text-3xl font-bold tracking-tight italic border-l-4 border-l-primary/60 pl-8 italic underline italic underline-offset-8">
+              <h2 className="text-3xl font-bold tracking-tight italic border-l-4 border-l-primary/60 pl-8 underline underline-offset-8">
                 Layer 1: Hardware Neutrality
               </h2>
               <p className="text-xl text-muted-foreground font-medium italic underline underline-offset-8 leading-relaxed max-w-3xl">
@@ -141,7 +127,7 @@ export default function DocsPlatformArchitecturePage() {
           {/* Layer 2: Isolated Runtime */}
           <section id="isolated-runtime" className="space-y-12">
             <div className="space-y-6">
-              <h2 className="text-3xl font-bold tracking-tight italic border-l-4 border-l-primary/60 pl-8 italic underline italic underline-offset-8">
+              <h2 className="text-3xl font-bold tracking-tight italic border-l-4 border-l-primary/60 pl-8 underline underline-offset-8">
                 Layer 2: Isolated Runtime VM
               </h2>
               <p className="text-xl text-muted-foreground font-medium leading-relaxed max-w-2xl italic underline italic underline-offset-8">
@@ -158,7 +144,7 @@ export default function DocsPlatformArchitecturePage() {
                     RUNTIME_INIT OUTPUT
                   </span>
                 </div>
-                <Badge className="bg-primary/20 text-primary border-primary/40 text-[9px] font-black tracking-widest h-5 h-auto">
+                <Badge className="bg-primary/20 text-primary border-primary/40 text-[9px] font-black tracking-widest h-5">
                   STRICT_REPRO_ENABLED
                 </Badge>
               </CardHeader>
@@ -174,7 +160,7 @@ export default function DocsPlatformArchitecturePage() {
                 <span className="text-primary font-bold">@v2.4.1</span>
               </CardContent>
             </Card>
-            <p className="text-sm font-bold text-muted-foreground/60 italic underline italic underline-offset-4 decoration-primary/20">
+            <p className="text-sm font-bold text-muted-foreground/60 italic underline underline-offset-4 decoration-primary/20">
               Every runtime initialization event is logged to the immutable Audit Trail.
             </p>
           </section>
@@ -182,7 +168,7 @@ export default function DocsPlatformArchitecturePage() {
           {/* Layer 3: Storage Engines */}
           <section id="storage-engines" className="space-y-12">
             <div className="space-y-6">
-              <h2 className="text-3xl font-bold tracking-tight italic border-l-4 border-l-primary/60 pl-8 italic underline italic underline-offset-8">
+              <h2 className="text-3xl font-bold tracking-tight italic border-l-4 border-l-primary/60 pl-8 underline underline-offset-8">
                 Layer 3: Hybrid Storage
               </h2>
               <p className="text-xl text-muted-foreground font-medium italic underline underline-offset-8 leading-relaxed max-w-3xl">
@@ -221,10 +207,10 @@ export default function DocsPlatformArchitecturePage() {
       <section className="py-32 px-4 border-t border-border/40 bg-slate-900 text-white text-center space-y-12 relative overflow-hidden shadow-2xl">
         <div className="absolute inset-0 bg-grid-white/[0.05]" />
         <div className="max-w-4xl mx-auto space-y-12 relative z-10">
-          <h2 className="text-4xl md:text-6xl font-bold tracking-tight italic underline-offset-8 italic underline">
+          <h2 className="text-4xl md:text-6xl font-bold tracking-tight italic underline underline-offset-8">
             Ready to Inspect the Source?
           </h2>
-          <p className="text-xl text-slate-400 font-medium italic underline italic">
+          <p className="text-xl text-slate-400 font-medium italic underline">
             The Settler engine core is open-source. Audit our determinism primitives and
             cryptographic foundation on GitHub.
           </p>

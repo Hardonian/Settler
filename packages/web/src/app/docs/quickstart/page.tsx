@@ -1,15 +1,12 @@
 import { Metadata } from "next";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  Zap,
   Terminal,
   Code,
   CheckCircle2,
-  RefreshCw,
-  ArrowRight,
   Copy,
   Command,
   Monitor,
@@ -95,7 +92,7 @@ export default function QuickstartPage() {
             {/* Step Content */}
             <div className="flex-1 space-y-8">
               <div className="space-y-4">
-                <h2 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3 italic underline italic underline-offset-8 decoration-primary/20">
+                <h2 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3 italic underline underline-offset-8 decoration-primary/20">
                   {step.title}
                   <div className="h-2 w-2 rounded-full bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </h2>
@@ -141,10 +138,10 @@ export default function QuickstartPage() {
         <div className="max-w-4xl mx-auto space-y-12 text-center relative z-10">
           <CheckCircle2 size={80} className="text-success mx-auto mb-8 opacity-40 shadow-2xl" />
           <div className="space-y-6">
-            <h2 className="text-4xl md:text-6xl font-bold tracking-tight italic underline italic underline-offset-8 italic underline-offset-8">
+            <h2 className="text-4xl md:text-6xl font-bold tracking-tight italic underline underline-offset-8">
               You&apos;re Officially Onboarded
             </h2>
-            <p className="text-xl text-slate-400 font-medium italic underline italic">
+            <p className="text-xl text-slate-400 font-medium italic underline">
               Now that you&apos;ve run your first reconciliation, it&apos;s time to dig into the DSL
               patterns and build production-grade invariants.
             </p>

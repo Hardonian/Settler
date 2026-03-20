@@ -74,7 +74,7 @@ export default function PricingPage() {
       {/* Hero Section */}
       <AnimatedHero
         badge="Pricing Plans"
-        title="High-Integrity Infrastructure, Low-Frustation Pricing"
+        title="High-Integrity Infrastructure, Low-Frustration Pricing"
         description="Choose the plan that matches your volume and governance requirements. From open-source developers to global enterprise flows."
       />
 

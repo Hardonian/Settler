@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Button } from "@/components/ui/button";
 import {
   Play,
@@ -9,13 +9,11 @@ import {
   History,
   ShieldCheck,
   Zap,
-  ArrowRight,
   Maximize2,
   Settings,
   RefreshCw,
   FlaskConical,
 } from "lucide-react";
-import Link from "next/link";
 
 export const metadata = {
   title: "Reconciliation Playground | Settler",
@@ -64,20 +62,34 @@ export default function PlaygroundPage() {
             </CardHeader>
             <CardContent className="p-4 space-y-4">
               <div className="space-y-2">
-                <p className="text-[10px] font-black uppercase text-muted-foreground/60 tracking-wider">
+                <p
+                  id="primary-adapter-label"
+                  className="text-[10px] font-black uppercase text-muted-foreground/60 tracking-wider"
+                >
                   Primary Adapter
                 </p>
-                <select className="w-full h-10 px-3 rounded-lg bg-muted/40 border-none text-xs font-bold focus:ring-1 focus:ring-primary appearance-none outline-none">
+                <select
+                  title="Primary Adapter"
+                  aria-labelledby="primary-adapter-label"
+                  className="w-full h-10 px-3 rounded-lg bg-muted/40 border-none text-xs font-bold focus:ring-1 focus:ring-primary appearance-none outline-none"
+                >
                   <option>Stripe Production (Live)</option>
                   <option>Synthetic Payment Cluster</option>
                   <option>Adyen Mirror V2</option>
                 </select>
               </div>
               <div className="space-y-2">
-                <p className="text-[10px] font-black uppercase text-muted-foreground/60 tracking-wider">
+                <p
+                  id="secondary-adapter-label"
+                  className="text-[10px] font-black uppercase text-muted-foreground/60 tracking-wider"
+                >
                   Secondary Adapter
                 </p>
-                <select className="w-full h-10 px-3 rounded-lg bg-muted/40 border-none text-xs font-bold focus:ring-1 focus:ring-primary appearance-none outline-none">
+                <select
+                  title="Secondary Adapter"
+                  aria-labelledby="secondary-adapter-label"
+                  className="w-full h-10 px-3 rounded-lg bg-muted/40 border-none text-xs font-bold focus:ring-1 focus:ring-primary appearance-none outline-none"
+                >
                   <option>PostgreSQL Internal (Trust)</option>
                   <option>Shopify Mirror (Staging)</option>
                 </select>
@@ -194,13 +206,13 @@ export default function PlaygroundPage() {
                 <div className="flex gap-4">
                   <div className="flex items-center gap-1.5 opacity-60">
                     <div className="h-2 w-2 rounded-full bg-success" />
-                    <span className="text-[10px] uppercase font-black font-bold tracking-widest text-slate-400">
+                    <span className="text-[10px] uppercase font-black tracking-widest text-slate-400">
                       Static Analysis: Passed
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 opacity-60">
                     <div className="h-2 w-2 rounded-full bg-success" />
-                    <span className="text-[10px] uppercase font-black font-bold tracking-widest text-slate-400">
+                    <span className="text-[10px] uppercase font-black tracking-widest text-slate-400">
                       Determinism Check: Ready
                     </span>
                   </div>
@@ -217,7 +229,7 @@ export default function PlaygroundPage() {
                 </div>
                 <div>
                   <h3 className="text-xs font-bold">Fast Reload</h3>
-                  <p className="text-[10px] text-muted-foreground font-medium italic underline italic">
+                  <p className="text-[10px] text-muted-foreground font-medium italic underline">
                     Instantly apply policy changes to the local execution context.
                   </p>
                 </div>
@@ -230,7 +242,7 @@ export default function PlaygroundPage() {
                 </div>
                 <div>
                   <h3 className="text-xs font-bold">Mock Generators</h3>
-                  <p className="text-[10px] text-muted-foreground font-medium italic underline italic">
+                  <p className="text-[10px] text-muted-foreground font-medium italic underline">
                     Generate synthetic data clusters based on schema definitions.
                   </p>
                 </div>
@@ -243,7 +255,7 @@ export default function PlaygroundPage() {
                 </div>
                 <div>
                   <h3 className="text-xs font-bold">Proof Peek</h3>
-                  <p className="text-[10px] text-muted-foreground font-medium italic underline italic">
+                  <p className="text-[10px] text-muted-foreground font-medium italic underline">
                     Visualize the Merkle tree intermediate state during matches.
                   </p>
                 </div>

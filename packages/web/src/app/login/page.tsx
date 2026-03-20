@@ -110,9 +110,9 @@ export default function LoginPage() {
               <div className="p-3 bg-primary/20 rounded-2xl w-fit shadow-2xl ring-1 ring-primary/40">
                 <ShieldCheck size={40} className="text-primary" />
               </div>
-              <h2 className="text-4xl font-bold leading-tight tracking-tight italic">
-                Deterministic Financial Integrity
-              </h2>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground italic">
+                Sign in to Settler
+              </h1>
               <p className="text-lg text-slate-400 font-medium leading-relaxed">
                 Settler ensures your reconciliation flows are cryptographically verifiable and
                 perfectly reproducible.

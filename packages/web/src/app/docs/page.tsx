@@ -163,7 +163,7 @@ export default function DocsLandingPage() {
             <div className="space-y-6">
               <div className="flex items-center gap-2">
                 <Terminal className="h-5 w-5 text-primary" />
-                <h3 className="text-sm font-black uppercase tracking-widest italic font-bold">
+                <h3 className="text-sm font-black uppercase tracking-widest italic">
                   SDK Reference
                 </h3>
               </div>
@@ -182,7 +182,7 @@ export default function DocsLandingPage() {
             <div className="space-y-6">
               <div className="flex items-center gap-2">
                 <Globe className="h-5 w-5 text-primary" />
-                <h3 className="text-sm font-black uppercase tracking-widest italic font-bold">
+                <h3 className="text-sm font-black uppercase tracking-widest italic">
                   API Endpoints
                 </h3>
               </div>
@@ -201,7 +201,7 @@ export default function DocsLandingPage() {
             <div className="space-y-6">
               <div className="flex items-center gap-2">
                 <Database className="h-5 w-5 text-primary" />
-                <h3 className="text-sm font-black uppercase tracking-widest italic font-bold">
+                <h3 className="text-sm font-black uppercase tracking-widest italic">
                   Data Adapters
                 </h3>
               </div>
