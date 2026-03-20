@@ -11,6 +11,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import {
   Play,
   History,
@@ -172,12 +173,17 @@ export default async function AppRunsPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <div className="flex-1 h-1 max-w-[60px] bg-muted rounded-full overflow-hidden">
-                        <div
-                          className={`h-full ${run.confidence >= 0.98 ? "bg-success" : run.confidence >= 0.9 ? "bg-warning" : "bg-destructive"}`}
-                          style={{ width: `${run.confidence * 100}%` }}
-                        />
-                      </div>
+                      <Progress
+                        value={run.confidence * 100}
+                        indicatorClassName={
+                          run.confidence >= 0.98
+                            ? "bg-success"
+                            : run.confidence >= 0.9
+                              ? "bg-warning"
+                              : "bg-destructive"
+                        }
+                        className="h-1 max-w-[60px]"
+                      />
                       <span
                         className={`text-xs font-bold ${run.confidence >= 0.98 ? "text-success" : run.confidence >= 0.9 ? "text-warning" : "text-destructive"}`}
                       >
