@@ -74,16 +74,16 @@ export class ErrorBoundary extends Component<Props, State> {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                 An unexpected error occurred. Our team has been notified.
               </p>
               
               {process.env.NODE_ENV === 'development' && this.state.error && (
                 <details className="text-xs">
-                  <summary className="cursor-pointer text-slate-500 dark:text-slate-400 mb-2">
+                  <summary className="cursor-pointer text-muted-foreground dark:text-muted-foreground mb-2">
                     Error Details (Development Only)
                   </summary>
-                  <pre className="bg-slate-100 dark:bg-slate-800 p-3 rounded overflow-auto">
+                  <pre className="bg-muted/40 dark:bg-card p-3 rounded overflow-auto">
                     {this.state.error.toString()}
                   </pre>
                 </details>

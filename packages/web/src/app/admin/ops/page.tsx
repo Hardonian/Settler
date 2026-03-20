@@ -167,13 +167,13 @@ export default function AdminOpsConsole() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-900" id="main-content">
+    <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)] bg-muted/20 dark:bg-background" id="main-content">
       {/* Left Panel: Exception List */}
-      <div className="w-full lg:w-1/2 border-r border-slate-200 dark:border-slate-800 flex flex-col">
+      <div className="w-full lg:w-1/2 border-r border-border dark:border-border flex flex-col">
         {/* Header */}
-        <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+        <div className="p-4 border-b border-border dark:border-border bg-card bg-muted">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+            <h2 className="text-lg font-semibold text-foreground dark:text-white">
               Exception Queue
             </h2>
             <div className="flex items-center gap-2">
@@ -181,7 +181,7 @@ export default function AdminOpsConsole() {
                 connectionState === 'connected' ? 'bg-green-500' :
                 connectionState === 'reconnecting' ? 'bg-yellow-500' : 'bg-red-500'
               }`} />
-              <span className="text-xs text-slate-500 dark:text-slate-400">
+              <span className="text-xs text-muted-foreground dark:text-muted-foreground">
                 {connectionState}
               </span>
             </div>
@@ -189,7 +189,7 @@ export default function AdminOpsConsole() {
 
           {/* Search */}
           <div className="relative mb-3">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder="Search exceptions..."
               value={searchQuery}
@@ -203,7 +203,7 @@ export default function AdminOpsConsole() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="text-sm border border-slate-200 dark:border-slate-700 rounded px-2 py-1 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+              className="text-sm border border-border dark:border-border rounded px-2 py-1 bg-card dark:bg-background text-foreground dark:text-white"
             >
               <option value="all">All Status</option>
               <option value="new">New</option>
@@ -213,7 +213,7 @@ export default function AdminOpsConsole() {
             <select
               value={severityFilter}
               onChange={(e) => setSeverityFilter(e.target.value)}
-              className="text-sm border border-slate-200 dark:border-slate-700 rounded px-2 py-1 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+              className="text-sm border border-border dark:border-border rounded px-2 py-1 bg-card dark:bg-background text-foreground dark:text-white"
             >
               <option value="all">All Severity</option>
               <option value="critical">Critical</option>
@@ -226,11 +226,11 @@ export default function AdminOpsConsole() {
         {/* List */}
         <div className="flex-1 overflow-y-auto">
           {isLoading ? (
-            <div className="p-4 text-center text-slate-500 dark:text-slate-400">
+            <div className="p-4 text-center text-muted-foreground dark:text-muted-foreground">
               Loading exceptions...
             </div>
           ) : filteredExceptions.length === 0 ? (
-            <div className="p-4 text-center text-slate-500 dark:text-slate-400">
+            <div className="p-4 text-center text-muted-foreground dark:text-muted-foreground">
               No exceptions found
             </div>
           ) : (
@@ -242,8 +242,8 @@ export default function AdminOpsConsole() {
                     setSelectedException(ex.id);
                     selectedIndexRef.current = index;
                   }}
-                  className={`w-full p-4 text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                    selectedException === ex.id ? 'bg-slate-100 dark:bg-slate-800 ring-2 ring-blue-500' : ''
+                  className={`w-full p-4 text-left hover:bg-muted/40 dark:hover:bg-card transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                    selectedException === ex.id ? 'bg-muted/40 dark:bg-card ring-2 ring-blue-500' : ''
                   }`}
                   aria-selected={selectedException === ex.id}
                   role="option"
@@ -260,11 +260,11 @@ export default function AdminOpsConsole() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         {getStatusIcon(ex.status)}
-                        <span className="text-sm font-medium text-slate-900 dark:text-white">
+                        <span className="text-sm font-medium text-foreground dark:text-white">
                           {ex.reason}
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground dark:text-muted-foreground">
                         <span>{ex.source}</span>
                         <span>•</span>
                         <span>{new Date(ex.createdAt).toLocaleString()}</span>
@@ -286,7 +286,7 @@ export default function AdminOpsConsole() {
         {selectedExceptionData ? (
           <ExceptionDetail exception={selectedExceptionData} />
         ) : (
-          <div className="flex-1 flex items-center justify-center text-slate-500 dark:text-slate-400">
+          <div className="flex-1 flex items-center justify-center text-muted-foreground dark:text-muted-foreground">
             Select an exception to view details
           </div>
         )}
@@ -355,28 +355,28 @@ function ExceptionDetail({ exception }: { exception: ExceptionItem }) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <h3 className="text-sm font-medium text-foreground dark:text-muted-foreground mb-2">
               Details
             </h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-slate-500 dark:text-slate-400">Source:</span>
-                <span className="text-slate-900 dark:text-white">{exception.source}</span>
+                <span className="text-muted-foreground dark:text-muted-foreground">Source:</span>
+                <span className="text-foreground dark:text-white">{exception.source}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500 dark:text-slate-400">Status:</span>
-                <span className="text-slate-900 dark:text-white">{exception.status}</span>
+                <span className="text-muted-foreground dark:text-muted-foreground">Status:</span>
+                <span className="text-foreground dark:text-white">{exception.status}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500 dark:text-slate-400">Created:</span>
-                <span className="text-slate-900 dark:text-white">
+                <span className="text-muted-foreground dark:text-muted-foreground">Created:</span>
+                <span className="text-foreground dark:text-white">
                   {new Date(exception.createdAt).toLocaleString()}
                 </span>
               </div>
               {exception.ruleId && (
                 <div className="flex justify-between">
-                  <span className="text-slate-500 dark:text-slate-400">Rule ID:</span>
-                  <span className="text-slate-900 dark:text-white font-mono text-xs">
+                  <span className="text-muted-foreground dark:text-muted-foreground">Rule ID:</span>
+                  <span className="text-foreground dark:text-white font-mono text-xs">
                     {exception.ruleId}
                   </span>
                 </div>
@@ -386,16 +386,16 @@ function ExceptionDetail({ exception }: { exception: ExceptionItem }) {
 
           {exception.evidence && (
             <div>
-              <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <h3 className="text-sm font-medium text-foreground dark:text-muted-foreground mb-2">
                 Evidence
               </h3>
-              <pre className="text-xs bg-slate-100 dark:bg-slate-800 p-3 rounded overflow-auto">
+              <pre className="text-xs bg-muted/40 dark:bg-card p-3 rounded overflow-auto">
                 {JSON.stringify(exception.evidence, null, 2)}
               </pre>
             </div>
           )}
 
-          <div className="flex gap-2 pt-4 border-t border-slate-200 dark:border-slate-800">
+          <div className="flex gap-2 pt-4 border-t border-border dark:border-border">
             <Button 
               variant="default" 
               size="sm"

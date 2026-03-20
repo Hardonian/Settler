@@ -205,6 +205,75 @@
   --z-toast: 500;
 }
 
+/* ============================================
+   LIGHT MODE — Semantic Overrides
+   ============================================
+   Applied when the <html> element does NOT have
+   the `dark` class. These override the dark-first
+   semantic tokens above so both themes are first-class.
+   ============================================ */
+
+:root:not(.dark) {
+  /* Background layers */
+  --bg: #f8fafc;
+  --bg-muted: #f1f5f9;
+  --bg-subtle: #e2e8f0;
+
+  --surface: #ffffff;
+  --surface-muted: #f8fafc;
+  --surface-elevated: #ffffff;
+
+  /* Text */
+  --text: #0f172a;
+  --text-muted: #475569;
+  --text-subtle: #94a3b8;
+  --text-inverse: #ffffff;
+
+  /* Brand/Action — keep teal, same hues */
+  --primary: var(--color-teal-600);
+  --primary-hover: var(--color-teal-700);
+  --primary-light: rgba(13, 148, 136, 0.08);
+  --primary-foreground: #ffffff;
+
+  /* Highlight */
+  --highlight: var(--color-blue-600);
+  --highlight-hover: var(--color-blue-500);
+
+  /* Border — visible on light surfaces */
+  --border: rgba(15, 23, 42, 0.10);
+  --border-muted: rgba(15, 23, 42, 0.06);
+  --border-focus: var(--color-teal-600);
+
+  /* Focus ring */
+  --focus-ring: 0 0 0 3px rgba(13, 148, 136, 0.25);
+  --focus-ring-offset: #ffffff;
+
+  /* Shadows — stronger on light */
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.10), 0 2px 4px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 8px 32px rgba(15, 23, 42, 0.14), 0 4px 8px rgba(15, 23, 42, 0.08);
+
+  /* Sidebar */
+  --sidebar-bg: #ffffff;
+  --sidebar-border: rgba(15, 23, 42, 0.10);
+  --sidebar-active-bg: rgba(13, 148, 136, 0.08);
+  --sidebar-active-text: var(--color-teal-700);
+
+  /* HSL aliases for shadcn/ui compatibility — light overrides */
+  --background: 210 40% 98%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 171 77% 36%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --ring: 171 77% 36%;
+  --input: 214 32% 91%;
+}
+
 /* Backward compatibility aliases */
 :root {
   --color-primary-500: var(--color-teal-500);

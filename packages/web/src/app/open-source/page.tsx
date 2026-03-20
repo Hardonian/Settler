@@ -109,20 +109,20 @@ const quickStartSteps = [
 
 export default function OpenSourcePage() {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-muted/20 bg-muted">
       <Navigation />
       <main id="main-content">
         {/* Hero */}
-        <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+        <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 bg-card dark:bg-background border-b border-border dark:border-border">
           <div className="max-w-5xl mx-auto">
             <div className="flex items-center gap-3 mb-5">
               <Badge variant="outline">Apache 2.0</Badge>
               <Badge variant="outline">Open Source</Badge>
             </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-6 max-w-3xl">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground dark:text-white mb-6 max-w-3xl">
               Reconciliation Infrastructure You Can Actually Inspect
             </h1>
-            <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mb-8 leading-relaxed">
+            <p className="text-xl text-muted-foreground dark:text-muted-foreground max-w-3xl mb-8 leading-relaxed">
               Settler is fully open source. The matching engine, evidence model, CLI, SDK, and
               self-host stack are all Apache 2.0. No gated core, no hidden runtime logic.
             </p>
@@ -150,10 +150,10 @@ export default function OpenSourcePage() {
         {/* OSS Components */}
         <section className="py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+            <h2 className="text-2xl font-bold text-foreground dark:text-white mb-3">
               What&apos;s Open Source
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 mb-10">
+            <p className="text-muted-foreground dark:text-muted-foreground mb-10">
               Every component that processes, hashes, or moves your data is open source and
               auditable.
             </p>
@@ -164,20 +164,20 @@ export default function OpenSourcePage() {
                   <Link
                     key={component.title}
                     href={component.link}
-                    className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 hover:border-blue-400 dark:hover:border-blue-600 transition-colors group"
+                    className="rounded-2xl border border-border dark:border-border bg-card dark:bg-background p-6 hover:border-blue-400 dark:hover:border-blue-600 transition-colors group"
                   >
                     <div className="flex items-center justify-between mb-4">
                       <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                         <Icon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                       </div>
-                      <span className="text-xs font-medium text-slate-500 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 rounded-full px-2.5 py-0.5">
+                      <span className="text-xs font-medium text-muted-foreground dark:text-muted-foreground bg-muted/40 dark:bg-card rounded-full px-2.5 py-0.5">
                         {component.badge}
                       </span>
                     </div>
-                    <h3 className="font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <h3 className="font-bold text-foreground dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                       {component.title}
                     </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <p className="text-sm text-muted-foreground dark:text-muted-foreground leading-relaxed">
                       {component.description}
                     </p>
                   </Link>
@@ -188,14 +188,14 @@ export default function OpenSourcePage() {
         </section>
 
         {/* Quickstart */}
-        <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900 border-t border-b border-slate-200 dark:border-slate-800">
+        <section className="py-12 px-4 sm:px-6 lg:px-8 bg-card dark:bg-background border-t border-b border-border dark:border-border">
           <div className="max-w-5xl mx-auto">
             <div className="grid md:grid-cols-2 gap-12 items-start">
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+                <h2 className="text-2xl font-bold text-foreground dark:text-white mb-3">
                   Run it in 3 Minutes
                 </h2>
-                <p className="text-slate-600 dark:text-slate-400 mb-6">
+                <p className="text-muted-foreground dark:text-muted-foreground mb-6">
                   Clone, install, and run the demo path to see deterministic reconciliation
                   end-to-end. No database or API keys needed.
                 </p>
@@ -206,10 +206,10 @@ export default function OpenSourcePage() {
                         {step.step}
                       </span>
                       <div>
-                        <p className="text-sm font-medium text-slate-900 dark:text-white mb-1">
+                        <p className="text-sm font-medium text-foreground dark:text-white mb-1">
                           {step.title}
                         </p>
-                        <code className="block text-xs bg-slate-900 dark:bg-slate-950 text-green-400 rounded-lg p-2 font-mono">
+                        <code className="block text-xs bg-background bg-muted text-green-400 rounded-lg p-2 font-mono">
                           {step.code}
                         </code>
                       </div>
@@ -227,16 +227,16 @@ export default function OpenSourcePage() {
               </div>
 
               {/* Self-host benefits */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 p-6">
+              <div className="rounded-2xl border border-border dark:border-border bg-muted/20 dark:bg-card/50 p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <Eye className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-                  <h3 className="font-bold text-slate-900 dark:text-white">Why Self-Host?</h3>
+                  <Eye className="w-5 h-5 text-muted-foreground dark:text-muted-foreground" />
+                  <h3 className="font-bold text-foreground dark:text-white">Why Self-Host?</h3>
                 </div>
                 <ul className="space-y-3">
                   {selfHostBenefits.map((benefit) => (
                     <li key={benefit} className="flex items-start gap-2.5">
                       <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-slate-700 dark:text-slate-300">{benefit}</span>
+                      <span className="text-sm text-foreground dark:text-muted-foreground">{benefit}</span>
                     </li>
                   ))}
                 </ul>
@@ -250,10 +250,10 @@ export default function OpenSourcePage() {
           <div className="max-w-5xl mx-auto">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                <h2 className="text-2xl font-bold text-foreground dark:text-white mb-2">
                   Architecture
                 </h2>
-                <p className="text-slate-600 dark:text-slate-400">
+                <p className="text-muted-foreground dark:text-muted-foreground">
                   The OSS build exposes the full system architecture.
                 </p>
               </div>
@@ -284,12 +284,12 @@ export default function OpenSourcePage() {
               ].map((block) => (
                 <div
                   key={block.title}
-                  className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5"
+                  className="rounded-xl border border-border dark:border-border bg-card dark:bg-background p-5"
                 >
-                  <h3 className="font-bold text-slate-900 dark:text-white mb-2 text-sm">
+                  <h3 className="font-bold text-foreground dark:text-white mb-2 text-sm">
                     {block.title}
                   </h3>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                  <p className="text-xs text-muted-foreground dark:text-muted-foreground leading-relaxed">
                     {block.description}
                   </p>
                 </div>
@@ -301,11 +301,11 @@ export default function OpenSourcePage() {
         {/* CTA */}
         <section className="pb-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
-            <div className="rounded-2xl bg-slate-900 dark:bg-slate-800 p-8 text-center">
+            <div className="rounded-2xl bg-background dark:bg-card p-8 text-center">
               <h2 className="text-2xl font-bold text-white mb-3">
                 Inspect the Source Before You Trust It
               </h2>
-              <p className="text-slate-400 mb-6 max-w-xl mx-auto">
+              <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
                 Financial infrastructure should be auditable. Read the code, run the tests, verify
                 the evidence model.
               </p>
@@ -324,7 +324,7 @@ export default function OpenSourcePage() {
                 <Button
                   variant="outline"
                   asChild
-                  className="border-slate-600 text-white hover:bg-slate-700"
+                  className="border-slate-600 text-white hover:bg-muted"
                 >
                   <Link href="/security-and-audit">Security Model</Link>
                 </Button>

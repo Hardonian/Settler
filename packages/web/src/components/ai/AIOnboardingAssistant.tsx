@@ -100,15 +100,15 @@ export function AIOnboardingAssistant() {
                   "max-w-[80%] rounded-lg p-3",
                   message.role === "user"
                     ? "bg-blue-600 text-white"
-                    : "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white"
+                    : "bg-muted/40 dark:bg-card text-foreground dark:text-white"
                 )}
               >
                 <p className="text-sm">{message.content}</p>
                 <p className="text-xs mt-1 opacity-70">{message.timestamp.toLocaleTimeString()}</p>
               </div>
               {message.role === "user" && (
-                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">
-                  <User className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                <div className="w-8 h-8 rounded-full bg-muted/40 dark:bg-card flex items-center justify-center flex-shrink-0">
+                  <User className="w-4 h-4 text-muted-foreground dark:text-muted-foreground" />
                 </div>
               )}
             </div>
@@ -118,8 +118,8 @@ export function AIOnboardingAssistant() {
               <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
                 <Bot className="w-4 h-4 text-blue-600 dark:text-blue-400" />
               </div>
-              <div className="bg-slate-100 dark:bg-slate-800 rounded-lg p-3">
-                <Loader2 className="w-4 h-4 animate-spin text-slate-600 dark:text-slate-400" />
+              <div className="bg-muted/40 dark:bg-card rounded-lg p-3">
+                <Loader2 className="w-4 h-4 animate-spin text-muted-foreground dark:text-muted-foreground" />
               </div>
             </div>
           )}
@@ -127,7 +127,7 @@ export function AIOnboardingAssistant() {
         </div>
 
         {/* Input */}
-        <div className="border-t border-slate-200 dark:border-slate-700 p-4">
+        <div className="border-t border-border dark:border-border p-4">
           <div className="flex items-center gap-2">
             <Input
               value={input}

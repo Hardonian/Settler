@@ -37,10 +37,10 @@ export function LimitedTimeBanner({
         <div className="flex items-start gap-3">
           <Clock className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
           <div className="flex-1">
-            <div className="font-medium text-slate-900 dark:text-white mb-1">
+            <div className="font-medium text-foreground dark:text-white mb-1">
               Limited Time Offer
             </div>
-            <div className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+            <div className="text-sm text-muted-foreground dark:text-muted-foreground mb-3">
               {message || `This offer expires in ${timeText}.`}
             </div>
             <Link href="/pricing">
@@ -71,10 +71,10 @@ export function UpgradePromptBanner({
         <div className="flex items-start gap-3">
           <Zap className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
           <div className="flex-1">
-            <div className="font-medium text-slate-900 dark:text-white mb-1">
+            <div className="font-medium text-foreground dark:text-white mb-1">
               Unlock {feature}
             </div>
-            <div className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+            <div className="text-sm text-muted-foreground dark:text-muted-foreground mb-3">
               Upgrade from <strong>{currentTier}</strong> to <strong>{recommendedTier}</strong> to access this feature.
             </div>
             <Link href="/console/billing">

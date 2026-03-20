@@ -24,7 +24,7 @@ export default function FeatureFlagsPage() {
           <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-electric-purple to-electric-indigo bg-clip-text text-transparent">
             Feature Flags API
           </h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto mb-4">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-4">
             A simple, developer-friendly feature flag service. LaunchDarkly-lite, built by developers for developers.
           </p>
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium mb-8">
@@ -42,9 +42,9 @@ export default function FeatureFlagsPage() {
         </div>
 
         {/* Why Free */}
-        <div className="bg-slate-900 rounded-lg p-8 mb-16 text-center">
+        <div className="bg-background rounded-lg p-8 mb-16 text-center">
           <h2 className="text-2xl font-bold text-white mb-4">Why We Built This</h2>
-          <p className="text-lg text-slate-300 max-w-3xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
             We know what it's like to wrestle with feature flags. Most services are expensive, 
             over-engineered, or require complex setup. We built a simple API that just works. 
             It's free because we're developers too, and we want to help you ship faster.
@@ -53,25 +53,25 @@ export default function FeatureFlagsPage() {
 
         {/* Features */}
         <div className="grid md:grid-cols-3 gap-8 mb-16">
-          <div className="p-6 rounded-lg border border-slate-200 bg-white">
+          <div className="p-6 rounded-lg border border-border bg-card">
             <Code className="w-8 h-8 text-electric-purple mb-4" />
             <h3 className="text-xl font-semibold mb-2">Simple API</h3>
-            <p className="text-slate-600">
+            <p className="text-muted-foreground">
               RESTful endpoints that make sense. Create flags, set environments, evaluate values. 
               No SDK complexity.
             </p>
           </div>
-          <div className="p-6 rounded-lg border border-slate-200 bg-white">
+          <div className="p-6 rounded-lg border border-border bg-card">
             <Zap className="w-8 h-8 text-electric-cyan mb-4" />
             <h3 className="text-xl font-semibold mb-2">Fast Evaluation</h3>
-            <p className="text-slate-600">
+            <p className="text-muted-foreground">
               Sub-10ms evaluation times. Built on Settler's infrastructure with global edge caching.
             </p>
           </div>
-          <div className="p-6 rounded-lg border border-slate-200 bg-white">
+          <div className="p-6 rounded-lg border border-border bg-card">
             <ToggleLeft className="w-8 h-8 text-electric-indigo mb-4" />
             <h3 className="text-xl font-semibold mb-2">Environments & Overrides</h3>
-            <p className="text-slate-600">
+            <p className="text-muted-foreground">
               Organize flags by environment (prod, staging, dev). Override per-user or per-tenant 
               for testing.
             </p>
@@ -79,12 +79,12 @@ export default function FeatureFlagsPage() {
         </div>
 
         {/* Example */}
-        <div className="bg-slate-900 rounded-lg p-8 mb-16">
+        <div className="bg-background rounded-lg p-8 mb-16">
           <h2 className="text-2xl font-bold text-white mb-4">Example Usage</h2>
           <div className="space-y-6">
             <div>
-              <p className="text-sm text-slate-400 mb-2">Create a flag:</p>
-              <pre className="text-sm text-slate-300 overflow-x-auto">
+              <p className="text-sm text-muted-foreground mb-2">Create a flag:</p>
+              <pre className="text-sm text-muted-foreground overflow-x-auto">
 {`POST /api/v1/feature-flags
 {
   "key": "new-dashboard",
@@ -95,8 +95,8 @@ export default function FeatureFlagsPage() {
               </pre>
             </div>
             <div>
-              <p className="text-sm text-slate-400 mb-2">Evaluate in your app:</p>
-              <pre className="text-sm text-slate-300 overflow-x-auto">
+              <p className="text-sm text-muted-foreground mb-2">Evaluate in your app:</p>
+              <pre className="text-sm text-muted-foreground overflow-x-auto">
 {`POST /api/v1/feature-flags/evaluate
 {
   "flagKey": "new-dashboard",
@@ -119,27 +119,27 @@ Response:
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-center mb-8">Perfect For</h2>
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="p-6 rounded-lg bg-slate-50">
+            <div className="p-6 rounded-lg bg-muted/20">
               <h3 className="text-xl font-semibold mb-2">Gradual Rollouts</h3>
-              <p className="text-slate-600">
+              <p className="text-muted-foreground">
                 Enable features for specific users or percentages. Test in production safely.
               </p>
             </div>
-            <div className="p-6 rounded-lg bg-slate-50">
+            <div className="p-6 rounded-lg bg-muted/20">
               <h3 className="text-xl font-semibold mb-2">A/B Testing</h3>
-              <p className="text-slate-600">
+              <p className="text-muted-foreground">
                 Use string/number flags to test different variants and measure impact.
               </p>
             </div>
-            <div className="p-6 rounded-lg bg-slate-50">
+            <div className="p-6 rounded-lg bg-muted/20">
               <h3 className="text-xl font-semibold mb-2">Emergency Kill Switches</h3>
-              <p className="text-slate-600">
+              <p className="text-muted-foreground">
                 Quickly disable features without deploying. Critical for production stability.
               </p>
             </div>
-            <div className="p-6 rounded-lg bg-slate-50">
+            <div className="p-6 rounded-lg bg-muted/20">
               <h3 className="text-xl font-semibold mb-2">Environment Management</h3>
-              <p className="text-slate-600">
+              <p className="text-muted-foreground">
                 Different flag values for prod, staging, and dev. Keep environments in sync.
               </p>
             </div>

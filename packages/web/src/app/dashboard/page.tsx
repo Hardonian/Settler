@@ -180,7 +180,7 @@ async function DashboardMetrics() {
             <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-electric-cyan dark:via-electric-purple dark:to-electric-blue bg-clip-text text-transparent">
               Ecosystem Metrics
             </h1>
-            <p className="text-xl text-slate-700 dark:text-slate-300 mb-4">
+            <p className="text-xl text-foreground dark:text-muted-foreground mb-4">
               Live community and integration activity
             </p>
             <div className="flex justify-center">
@@ -242,34 +242,34 @@ async function DashboardMetrics() {
           {/* Additional Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
             <HoverCard>
-              <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-slate-200 dark:border-slate-700">
+              <div className="bg-card dark:bg-card rounded-lg shadow-lg p-6 border border-border border-border">
                 <div className="flex items-center gap-3 mb-4">
                   <MessageSquare className="w-6 h-6 text-blue-600 dark:text-electric-cyan" />
-                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
+                  <h3 className="text-xl font-semibold text-foreground dark:text-white">
                     Total Published Posts
                   </h3>
                 </div>
-                <p className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
+                <p className="text-4xl font-bold text-foreground dark:text-white mb-2">
                   <AnimatedNumber value={metrics.totalPosts} />
                 </p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                   Community content across all categories
                 </p>
               </div>
             </HoverCard>
 
             <HoverCard>
-              <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-slate-200 dark:border-slate-700">
+              <div className="bg-card dark:bg-card rounded-lg shadow-lg p-6 border border-border border-border">
                 <div className="flex items-center gap-3 mb-4">
                   <Users className="w-6 h-6 text-indigo-600 dark:text-electric-purple" />
-                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
+                  <h3 className="text-xl font-semibold text-foreground dark:text-white">
                     Total Community Members
                   </h3>
                 </div>
-                <p className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
+                <p className="text-4xl font-bold text-foreground dark:text-white mb-2">
                   <AnimatedNumber value={metrics.totalProfiles} />
                 </p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                   Active profiles in the ecosystem
                 </p>
               </div>
@@ -278,12 +278,12 @@ async function DashboardMetrics() {
 
           {/* Top Post Highlight */}
           {topPost && (
-            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-slate-200 dark:border-slate-700 mb-6">
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
+            <div className="bg-card dark:bg-card rounded-lg shadow-lg p-6 border border-border border-border mb-6">
+              <h3 className="text-xl font-semibold text-foreground dark:text-white mb-4">
                 Most Engaged Post Today
               </h3>
-              <p className="text-lg text-slate-700 dark:text-slate-300 mb-2">{topPost.title}</p>
-              <div className="flex gap-6 text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-lg text-foreground dark:text-muted-foreground mb-2">{topPost.title}</p>
+              <div className="flex gap-6 text-sm text-muted-foreground dark:text-muted-foreground">
                 <span>{topPost.views || 0} views</span>
                 <span>{topPost.upvotes || 0} upvotes</span>
                 <span className="font-semibold">{metrics.topPostEngagement} total engagement</span>
@@ -293,67 +293,67 @@ async function DashboardMetrics() {
 
           {/* External API Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-slate-200 dark:border-slate-700">
+            <div className="bg-card dark:bg-card rounded-lg shadow-lg p-6 border border-border border-border">
               <div className="flex items-center gap-3 mb-4">
-                <Github className="w-6 h-6 text-slate-700 dark:text-slate-300" />
-                <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
+                <Github className="w-6 h-6 text-foreground dark:text-muted-foreground" />
+                <h3 className="text-xl font-semibold text-foreground dark:text-white">
                   GitHub Repository
                 </h3>
               </div>
               {externalMetrics.github.unavailable ? (
-                <p className="text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                   GitHub data unavailable — API could not be reached.
                 </p>
               ) : (
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-slate-600 dark:text-slate-400">Stars</span>
-                    <span className="font-semibold text-slate-900 dark:text-white">
+                    <span className="text-muted-foreground dark:text-muted-foreground">Stars</span>
+                    <span className="font-semibold text-foreground dark:text-white">
                       {externalMetrics.github.stars.toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600 dark:text-slate-400">Forks</span>
-                    <span className="font-semibold text-slate-900 dark:text-white">
+                    <span className="text-muted-foreground dark:text-muted-foreground">Forks</span>
+                    <span className="font-semibold text-foreground dark:text-white">
                       {externalMetrics.github.forks.toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600 dark:text-slate-400">Open Issues</span>
-                    <span className="font-semibold text-slate-900 dark:text-white">
+                    <span className="text-muted-foreground dark:text-muted-foreground">Open Issues</span>
+                    <span className="font-semibold text-foreground dark:text-white">
                       {externalMetrics.github.openIssues.toLocaleString()}
                     </span>
                   </div>
                 </div>
               )}
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-4">
+              <p className="text-xs text-muted-foreground dark:text-muted-foreground mt-4">
                 Live data from GitHub API
               </p>
             </div>
 
             <HoverCard>
-              <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-slate-200 dark:border-slate-700">
+              <div className="bg-card dark:bg-card rounded-lg shadow-lg p-6 border border-border border-border">
                 <div className="flex items-center gap-3 mb-4">
-                  <Package className="w-6 h-6 text-slate-700 dark:text-slate-300" />
-                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
+                  <Package className="w-6 h-6 text-foreground dark:text-muted-foreground" />
+                  <h3 className="text-xl font-semibold text-foreground dark:text-white">
                     NPM Package
                   </h3>
                 </div>
                 {externalMetrics.npm.unavailable ? (
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                  <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                     NPM data unavailable — registry could not be reached.
                   </p>
                 ) : (
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-slate-600 dark:text-slate-400">Version</span>
-                      <span className="font-semibold text-slate-900 dark:text-white">
+                      <span className="text-muted-foreground dark:text-muted-foreground">Version</span>
+                      <span className="font-semibold text-foreground dark:text-white">
                         {externalMetrics.npm.version}
                       </span>
                     </div>
                   </div>
                 )}
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-4">
+                <p className="text-xs text-muted-foreground dark:text-muted-foreground mt-4">
                   Live data from NPM Registry
                 </p>
               </div>
@@ -371,7 +371,7 @@ async function DashboardMetrics() {
         <div className="flex items-center justify-center py-24">
           <div className="text-center">
             <p className="text-red-600 dark:text-red-400 mb-4">Error loading dashboard metrics</p>
-            <p className="text-slate-600 dark:text-slate-400 text-sm">
+            <p className="text-muted-foreground dark:text-muted-foreground text-sm">
               Please try refreshing the page
             </p>
           </div>
@@ -399,29 +399,29 @@ function MetricCard({
 }) {
   return (
     <div
-      className={`bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border-2 ${
-        passed ? "border-green-500 dark:border-green-400" : "border-slate-200 dark:border-slate-700"
+      className={`bg-card dark:bg-card rounded-lg shadow-lg p-6 border-2 ${
+        passed ? "border-green-500 dark:border-green-400" : "border-border border-border"
       }`}
     >
       <div className="flex items-center gap-3 mb-4">
         <Icon
           className={`w-6 h-6 ${
-            passed ? "text-green-600 dark:text-green-400" : "text-slate-600 dark:text-slate-400"
+            passed ? "text-green-600 dark:text-green-400" : "text-muted-foreground dark:text-muted-foreground"
           }`}
         />
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{title}</h3>
+        <h3 className="text-lg font-semibold text-foreground dark:text-white">{title}</h3>
       </div>
       <p
         className={`text-4xl font-bold mb-2 ${
-          passed ? "text-green-600 dark:text-green-400" : "text-slate-900 dark:text-white"
+          passed ? "text-green-600 dark:text-green-400" : "text-foreground dark:text-white"
         }`}
       >
         {value.toLocaleString()}
       </p>
-      <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">{description}</p>
+      <p className="text-sm text-muted-foreground dark:text-muted-foreground mb-2">{description}</p>
       <div className="flex items-center gap-2">
         <div className={`w-2 h-2 rounded-full ${passed ? "bg-green-500" : "bg-yellow-500"}`} />
-        <span className="text-xs text-slate-500 dark:text-slate-400">
+        <span className="text-xs text-muted-foreground dark:text-muted-foreground">
           Target: {threshold.toLocaleString()} {passed ? "✓" : "(in progress)"}
         </span>
       </div>
@@ -438,7 +438,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-electric-cyan mx-auto mb-4"></div>
-              <p className="text-slate-600 dark:text-slate-400">Loading metrics…</p>
+              <p className="text-muted-foreground dark:text-muted-foreground">Loading metrics…</p>
             </div>
           </div>
           <Footer />

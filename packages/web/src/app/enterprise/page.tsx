@@ -78,14 +78,14 @@ const narrativeSections = [
 export default function EnterprisePage() {
   if (getSiteMode() !== "enterprise") {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="min-h-screen bg-muted/20 bg-muted">
         <Navigation />
         <main className="mx-auto max-w-3xl px-6 py-32 text-center">
           <Badge className="mb-4">Enterprise feature unavailable</Badge>
           <h1 className="text-3xl font-semibold mb-4">
             Enterprise surface is disabled for this host.
           </h1>
-          <p className="text-slate-600 dark:text-slate-300">
+          <p className="text-muted-foreground dark:text-muted-foreground">
             Set SITE_MODE=enterprise to enable enterprise marketing content.
           </p>
         </main>
@@ -95,7 +95,7 @@ export default function EnterprisePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-muted/20 bg-muted">
       <Navigation />
 
       {/* Hero */}
@@ -106,16 +106,16 @@ export default function EnterprisePage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <Badge className="mb-6 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 text-sm font-medium">
+              <Badge className="mb-6 bg-background text-white dark:bg-muted/40 dark:text-foreground px-4 py-2 text-sm font-medium">
                 Enterprise Infrastructure
               </Badge>
               <h1
                 id="enterprise-heading"
-                className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-slate-900 dark:text-white leading-tight mb-6 tracking-tight"
+                className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground dark:text-white leading-tight mb-6 tracking-tight"
               >
                 What Serious Financial Infrastructure Evolves Toward
               </h1>
-              <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
+              <p className="text-lg md:text-xl text-muted-foreground dark:text-muted-foreground mb-8 leading-relaxed">
                 Deploy deterministic reconciliation with tenant isolation, governance boundaries,
                 and audit-ready evidence trails. Designed for teams where operational confidence is
                 not optional.
@@ -124,7 +124,7 @@ export default function EnterprisePage() {
                 <Button
                   size="lg"
                   asChild
-                  className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 text-white px-8 py-6 text-lg font-semibold"
+                  className="bg-background hover:bg-card dark:bg-card dark:text-foreground dark:hover:bg-muted/40 text-white px-8 py-6 text-lg font-semibold"
                 >
                   <Link href="/contact" className="flex items-center justify-center gap-2">
                     Discuss Your Architecture <ArrowRight className="w-5 h-5" aria-hidden="true" />
@@ -140,7 +140,7 @@ export default function EnterprisePage() {
                 className="absolute inset-0 bg-blue-500/10 blur-3xl rounded-full"
                 aria-hidden="true"
               />
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border border-border">
                 <Image
                   src="https://images.pexels.com/photos/25626439/pexels-photo-25626439.jpeg"
                   alt="Enterprise architecture visualization representing institutional-grade reconciliation infrastructure"
@@ -157,15 +157,15 @@ export default function EnterprisePage() {
 
       {/* Enterprise Capabilities */}
       <section
-        className="py-16 md:py-24 bg-white dark:bg-slate-900 px-4 sm:px-6 lg:px-8"
+        className="py-16 md:py-24 bg-card dark:bg-background px-4 sm:px-6 lg:px-8"
         aria-label="Enterprise capabilities"
       >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 text-foreground dark:text-white tracking-tight">
               Enterprise Capabilities
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg text-muted-foreground dark:text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               Security, compliance, and governance controls built into the infrastructure layer.
             </p>
           </div>
@@ -175,18 +175,18 @@ export default function EnterprisePage() {
               return (
                 <SpotlightCard
                   key={index}
-                  className="p-6 md:p-8 border-slate-200 dark:border-slate-800"
+                  className="p-6 md:p-8 border-border border-border"
                 >
-                  <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center mb-6">
+                  <div className="w-12 h-12 bg-muted/40 dark:bg-card rounded-xl flex items-center justify-center mb-6">
                     <Icon
-                      className="w-6 h-6 text-slate-700 dark:text-slate-300"
+                      className="w-6 h-6 text-foreground dark:text-muted-foreground"
                       aria-hidden="true"
                     />
                   </div>
-                  <h3 className="text-lg md:text-xl font-semibold mb-3 text-slate-900 dark:text-white">
+                  <h3 className="text-lg md:text-xl font-semibold mb-3 text-foreground dark:text-white">
                     {feature.title}
                   </h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                  <p className="text-sm text-muted-foreground dark:text-muted-foreground leading-relaxed">
                     {feature.description}
                   </p>
                 </SpotlightCard>
@@ -202,7 +202,7 @@ export default function EnterprisePage() {
         return (
           <section
             key={index}
-            className={`py-16 md:py-24 px-4 sm:px-6 lg:px-8 ${isEven ? "bg-slate-50 dark:bg-slate-950" : "bg-white dark:bg-slate-900"}`}
+            className={`py-16 md:py-24 px-4 sm:px-6 lg:px-8 ${isEven ? "bg-muted/20 bg-muted" : "bg-card dark:bg-background"}`}
             aria-label={section.badge}
           >
             <div className="max-w-6xl mx-auto">
@@ -210,13 +210,13 @@ export default function EnterprisePage() {
                 className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ${isEven ? "" : "lg:[direction:rtl]"}`}
               >
                 <div className={isEven ? "" : "lg:[direction:ltr]"}>
-                  <Badge className="mb-4 bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-200 px-3 py-1 text-xs font-medium uppercase tracking-wider">
+                  <Badge className="mb-4 bg-slate-200 text-slate-800 dark:bg-card text-muted-foreground px-3 py-1 text-xs font-medium uppercase tracking-wider">
                     {section.badge}
                   </Badge>
-                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-slate-900 dark:text-white tracking-tight leading-tight">
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-foreground dark:text-white tracking-tight leading-tight">
                     {section.title}
                   </h2>
-                  <p className="text-base md:text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+                  <p className="text-base md:text-lg text-muted-foreground dark:text-muted-foreground leading-relaxed">
                     {section.description}
                   </p>
                 </div>
@@ -244,17 +244,17 @@ export default function EnterprisePage() {
 
       {/* Operational Maturity Narrative */}
       <section
-        className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950"
+        className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-muted/20 bg-muted"
         aria-label="Operational maturity"
       >
         <div className="max-w-4xl mx-auto text-center">
-          <Badge className="mb-4 bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-200 px-3 py-1 text-xs font-medium uppercase tracking-wider">
+          <Badge className="mb-4 bg-slate-200 text-slate-800 dark:bg-card text-muted-foreground px-3 py-1 text-xs font-medium uppercase tracking-wider">
             The Operational Maturity Narrative
           </Badge>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-foreground dark:text-white tracking-tight">
             Manual Reconciliation Is a Phase
           </h2>
-          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed mb-12">
+          <p className="text-lg text-muted-foreground dark:text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-12">
             Deterministic, API-based reconciliation is the stable end-state that mature financial
             operations evolve toward. The question is not whether to adopt it, but when.
           </p>
@@ -284,16 +284,16 @@ export default function EnterprisePage() {
               return (
                 <div
                   key={idx}
-                  className="p-6 md:p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800"
+                  className="p-6 md:p-8 bg-card dark:bg-background rounded-2xl border border-border border-border"
                 >
                   <Icon
-                    className="w-8 h-8 text-slate-700 dark:text-slate-300 mx-auto mb-4"
+                    className="w-8 h-8 text-foreground dark:text-muted-foreground mx-auto mb-4"
                     aria-hidden="true"
                   />
-                  <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">
+                  <h3 className="text-lg font-semibold mb-2 text-foreground dark:text-white">
                     {phase.title}
                   </h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                  <p className="text-sm text-muted-foreground dark:text-muted-foreground leading-relaxed">
                     {phase.description}
                   </p>
                 </div>
@@ -305,17 +305,17 @@ export default function EnterprisePage() {
 
       {/* Audit Narrative */}
       <section
-        className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900"
+        className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-card dark:bg-background"
         aria-label="Audit readiness"
       >
         <div className="max-w-4xl mx-auto text-center">
-          <Badge className="mb-4 bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-200 px-3 py-1 text-xs font-medium uppercase tracking-wider">
+          <Badge className="mb-4 bg-slate-200 text-slate-800 dark:bg-card text-muted-foreground px-3 py-1 text-xs font-medium uppercase tracking-wider">
             The Audit Narrative
           </Badge>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-foreground dark:text-white tracking-tight">
             Every Decision Traceable
           </h2>
-          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed mb-10">
+          <p className="text-lg text-muted-foreground dark:text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10">
             Every workflow reproducible. Every adjustment reviewable. Settler produces deterministic
             evidence that auditors can independently verify.
           </p>
@@ -328,13 +328,13 @@ export default function EnterprisePage() {
             ].map((item, idx) => (
               <div
                 key={idx}
-                className="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800"
+                className="p-6 bg-muted/20 dark:bg-card/50 rounded-xl border border-border border-border"
               >
                 <CheckCircle
-                  className="w-8 h-8 text-slate-700 dark:text-slate-300 mx-auto mb-4"
+                  className="w-8 h-8 text-foreground dark:text-muted-foreground mx-auto mb-4"
                   aria-hidden="true"
                 />
-                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{item}</p>
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground leading-relaxed">{item}</p>
               </div>
             ))}
           </div>
@@ -348,17 +348,17 @@ export default function EnterprisePage() {
             ].map((badge, idx) => (
               <div key={idx} className="flex flex-col items-center gap-1">
                 <Shield
-                  className="w-10 h-10 text-slate-400 dark:text-slate-500"
+                  className="w-10 h-10 text-muted-foreground dark:text-muted-foreground"
                   aria-hidden="true"
                 />
-                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <span className="text-xs font-semibold text-foreground dark:text-muted-foreground">
                   {badge.label}
                 </span>
-                <span className="text-xs text-slate-500 dark:text-slate-500">{badge.sublabel}</span>
+                <span className="text-xs text-muted-foreground dark:text-muted-foreground">{badge.sublabel}</span>
               </div>
             ))}
           </div>
-          <p className="text-xs text-slate-400 dark:text-slate-600 mt-6 max-w-lg mx-auto">
+          <p className="text-xs text-muted-foreground dark:text-muted-foreground mt-6 max-w-lg mx-auto">
             Architecture alignment does not constitute certification. Review your deployment configuration and consult your compliance team for your audit requirements.
           </p>
         </div>
@@ -366,14 +366,14 @@ export default function EnterprisePage() {
 
       {/* Final CTA */}
       <section
-        className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-slate-900 text-white"
+        className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-background text-white"
         aria-label="Enterprise engagement"
       >
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl md:text-3xl lg:text-5xl font-bold mb-6 tracking-tight">
             This matches how your systems should already operate.
           </h2>
-          <p className="text-lg md:text-xl text-slate-400 mb-10 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground mb-10 leading-relaxed max-w-2xl mx-auto">
             Discuss your reconciliation architecture with our team. No dramatic claims. Quiet
             inevitability.
           </p>
@@ -381,7 +381,7 @@ export default function EnterprisePage() {
             <Button
               size="lg"
               asChild
-              className="w-full sm:w-auto bg-white text-slate-900 hover:bg-slate-100 px-10 py-7 text-lg font-semibold"
+              className="w-full sm:w-auto bg-card text-foreground hover:bg-muted/40 px-10 py-7 text-lg font-semibold"
             >
               <Link href="/contact" className="flex items-center justify-center gap-2">
                 Schedule an Enterprise Briefing{" "}
@@ -392,7 +392,7 @@ export default function EnterprisePage() {
               size="lg"
               variant="outline"
               asChild
-              className="w-full sm:w-auto px-10 py-7 text-lg border-2 border-slate-600 bg-transparent text-white hover:bg-slate-800"
+              className="w-full sm:w-auto px-10 py-7 text-lg border-2 border-slate-600 bg-transparent text-white hover:bg-card"
             >
               <Link href="/pricing">Explore Engagement Models</Link>
             </Button>

@@ -6,11 +6,11 @@ import { Shield, AlertTriangle } from "lucide-react";
 const RoleMatrix: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center">
-      <div className="rounded-full bg-slate-100 p-4 mb-4">
-        <Shield className="h-8 w-8 text-slate-400" aria-hidden="true" />
+      <div className="rounded-full bg-muted/40 p-4 mb-4">
+        <Shield className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
       </div>
-      <h3 className="text-lg font-bold text-slate-900 mb-2">Role Management Not Yet Implemented</h3>
-      <p className="text-sm text-slate-600 max-w-md mb-4">
+      <h3 className="text-lg font-bold text-foreground mb-2">Role Management Not Yet Implemented</h3>
+      <p className="text-sm text-muted-foreground max-w-md mb-4">
         Backend role and permission management infrastructure is not yet connected. The role matrix
         will be activated once the permission system is fully wired to this interface.
       </p>

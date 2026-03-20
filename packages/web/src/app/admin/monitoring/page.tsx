@@ -220,10 +220,10 @@ export default function MonitoringDashboard() {
   return (
     <div className="p-8 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+        <h1 className="text-3xl font-bold text-foreground mb-2">
           Monitoring Dashboard
         </h1>
-        <p className="text-slate-600 dark:text-slate-400">
+        <p className="text-muted-foreground">
           Real-time system health and business metrics
         </p>
       </div>
@@ -232,7 +232,7 @@ export default function MonitoringDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500 flex items-center gap-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <Activity className="w-4 h-4" />
               System Status
             </CardTitle>
@@ -256,14 +256,14 @@ export default function MonitoringDashboard() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500 flex items-center gap-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <Users className="w-4 h-4" />
               Active Customers
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{health?.metrics.active_customers || 0}</div>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {health?.metrics.active_subscriptions || 0} active subscriptions
             </p>
           </CardContent>
@@ -271,7 +271,7 @@ export default function MonitoringDashboard() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500 flex items-center gap-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <Shield className="w-4 h-4" />
               SLA Compliance
             </CardTitle>
@@ -280,7 +280,7 @@ export default function MonitoringDashboard() {
             <div className="text-2xl font-bold">
               {overallSlaPercentage.toFixed(1)}%
             </div>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {sla?.violations.current || 0} current violations
             </p>
           </CardContent>
@@ -288,14 +288,14 @@ export default function MonitoringDashboard() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500 flex items-center gap-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <Clock className="w-4 h-4" />
               Open Tickets
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{health?.metrics.open_support_tickets || 0}</div>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {health?.metrics.sla_violations || 0} SLA violations
             </p>
           </CardContent>
@@ -306,7 +306,7 @@ export default function MonitoringDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500 flex items-center gap-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <DollarSign className="w-4 h-4" />
               Monthly Recurring Revenue
             </CardTitle>
@@ -315,7 +315,7 @@ export default function MonitoringDashboard() {
             <div className="text-2xl font-bold">
               ${(unitEconomics?.mrr || 0).toLocaleString()}
             </div>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               ARPU: ${((unitEconomics?.calculated_metrics?.arpu) || 0).toFixed(2)}
             </p>
           </CardContent>
@@ -323,7 +323,7 @@ export default function MonitoringDashboard() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500 flex items-center gap-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <TrendingUp className="w-4 h-4" />
               Churn Rate
             </CardTitle>
@@ -332,7 +332,7 @@ export default function MonitoringDashboard() {
             <div className="text-2xl font-bold">
               {(business?.customers.churn_rate || 0).toFixed(2)}%
             </div>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {business?.customers.churned_30d || 0} churned (30d)
             </p>
           </CardContent>
@@ -340,7 +340,7 @@ export default function MonitoringDashboard() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500 flex items-center gap-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <Database className="w-4 h-4" />
               Usage (30d)
             </CardTitle>
@@ -349,13 +349,13 @@ export default function MonitoringDashboard() {
             <div className="text-2xl font-bold">
               {((unitEconomics?.usage?.total_reconciliations_30d) || 0).toLocaleString()}
             </div>
-            <p className="text-xs text-slate-500 mt-1">Reconciliations</p>
+            <p className="text-xs text-muted-foreground mt-1">Reconciliations</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Plan Distribution
             </CardTitle>
           </CardHeader>
@@ -384,19 +384,19 @@ export default function MonitoringDashboard() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <div className="text-sm text-slate-500">Total Tickets</div>
+                <div className="text-sm text-muted-foreground">Total Tickets</div>
                 <div className="text-2xl font-bold">{operational.support.total}</div>
               </div>
               <div>
-                <div className="text-sm text-slate-500">Open</div>
+                <div className="text-sm text-muted-foreground">Open</div>
                 <div className="text-2xl font-bold text-amber-600">{operational.support.open}</div>
               </div>
               <div>
-                <div className="text-sm text-slate-500">SLA Met</div>
+                <div className="text-sm text-muted-foreground">SLA Met</div>
                 <div className="text-2xl font-bold text-green-600">{operational.support.sla_met}</div>
               </div>
               <div>
-                <div className="text-sm text-slate-500">SLA Missed</div>
+                <div className="text-sm text-muted-foreground">SLA Missed</div>
                 <div className="text-2xl font-bold text-red-600">{operational.support.sla_missed}</div>
               </div>
             </div>
@@ -404,19 +404,19 @@ export default function MonitoringDashboard() {
               <div className="text-sm font-semibold mb-2">By Priority</div>
               <div className="grid grid-cols-4 gap-4">
                 <div>
-                  <div className="text-xs text-slate-500">Critical</div>
+                  <div className="text-xs text-muted-foreground">Critical</div>
                   <div className="text-lg font-bold text-red-600">{operational.support.by_priority.critical}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500">High</div>
+                  <div className="text-xs text-muted-foreground">High</div>
                   <div className="text-lg font-bold text-orange-600">{operational.support.by_priority.high}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500">Medium</div>
+                  <div className="text-xs text-muted-foreground">Medium</div>
                   <div className="text-lg font-bold text-yellow-600">{operational.support.by_priority.medium}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500">Low</div>
+                  <div className="text-xs text-muted-foreground">Low</div>
                   <div className="text-lg font-bold text-blue-600">{operational.support.by_priority.low}</div>
                 </div>
               </div>
@@ -441,7 +441,7 @@ export default function MonitoringDashboard() {
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <div className="font-semibold">{account.tier}</div>
-                      <div className="text-sm text-slate-500">
+                      <div className="text-sm text-muted-foreground">
                         {account.total_tickets} tickets
                       </div>
                     </div>
@@ -451,15 +451,15 @@ export default function MonitoringDashboard() {
                   </div>
                   <div className="grid grid-cols-3 gap-4 mt-2 text-sm">
                     <div>
-                      <div className="text-slate-500">SLA Met</div>
+                      <div className="text-muted-foreground">SLA Met</div>
                       <div className="font-semibold text-green-600">{account.sla_met}</div>
                     </div>
                     <div>
-                      <div className="text-slate-500">SLA Missed</div>
+                      <div className="text-muted-foreground">SLA Missed</div>
                       <div className="font-semibold text-red-600">{account.sla_missed}</div>
                     </div>
                     <div>
-                      <div className="text-slate-500">Avg Response</div>
+                      <div className="text-muted-foreground">Avg Response</div>
                       <div className="font-semibold">{(account.avg_response_time_hours || 0).toFixed(1)}h</div>
                     </div>
                   </div>
@@ -498,30 +498,30 @@ export default function MonitoringDashboard() {
                           </div>
                           <div className="grid grid-cols-4 gap-4 text-sm">
                             <div>
-                              <div className="text-slate-500">Total</div>
+                              <div className="text-muted-foreground">Total</div>
                               <div className="font-semibold">{stats.totalRequests.toLocaleString()}</div>
                             </div>
                             <div>
-                              <div className="text-slate-500">Failures</div>
+                              <div className="text-muted-foreground">Failures</div>
                               <div className="font-semibold text-red-600">{stats.failureCount}</div>
                             </div>
                             <div>
-                              <div className="text-slate-500">Avg Duration</div>
+                              <div className="text-muted-foreground">Avg Duration</div>
                               <div className="font-semibold">{stats.avgDurationMs.toFixed(0)}ms</div>
                             </div>
                             <div>
-                              <div className="text-slate-500">P95 Duration</div>
+                              <div className="text-muted-foreground">P95 Duration</div>
                               <div className="font-semibold">{stats.p95DurationMs.toFixed(0)}ms</div>
                             </div>
                           </div>
                           {(stats.retryCount > 0 || stats.deadLetterCount > 0) && (
                             <div className="mt-2 pt-2 border-t grid grid-cols-2 gap-4 text-sm">
                               <div>
-                                <div className="text-slate-500">Retries</div>
+                                <div className="text-muted-foreground">Retries</div>
                                 <div className="font-semibold text-yellow-600">{stats.retryCount}</div>
                               </div>
                               <div>
-                                <div className="text-slate-500">Dead Letters</div>
+                                <div className="text-muted-foreground">Dead Letters</div>
                                 <div className="font-semibold text-red-600">{stats.deadLetterCount}</div>
                               </div>
                             </div>
@@ -545,7 +545,7 @@ export default function MonitoringDashboard() {
                             >
                               {(adapter.errorRate * 100).toFixed(1)}%
                             </Badge>
-                            <span className="text-xs text-slate-500">
+                            <span className="text-xs text-muted-foreground">
                               {adapter.totalRequests} requests
                             </span>
                           </div>
@@ -567,7 +567,7 @@ export default function MonitoringDashboard() {
                       <div className="text-2xl font-bold text-red-600">
                         {health.reliability.deadLetterCount}
                       </div>
-                      <p className="text-xs text-slate-500 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         Jobs requiring manual intervention
                       </p>
                     </CardContent>
@@ -586,8 +586,8 @@ export default function MonitoringDashboard() {
                           {health.reliability.latestFailures.slice(0, 5).map((failure, idx) => (
                             <div key={idx} className="text-sm border-l-2 border-red-500 pl-2">
                               <div className="font-medium">{failure.operation}</div>
-                              <div className="text-xs text-slate-500 truncate">{failure.error}</div>
-                              <div className="text-xs text-slate-400">
+                              <div className="text-xs text-muted-foreground truncate">{failure.error}</div>
+                              <div className="text-xs text-muted-foreground">
                                 {new Date(failure.timestamp).toLocaleString()}
                               </div>
                             </div>
@@ -604,7 +604,7 @@ export default function MonitoringDashboard() {
       )}
 
       {/* Last Updated */}
-      <div className="text-xs text-slate-500 text-center">
+      <div className="text-xs text-muted-foreground text-center">
         Last updated: {health?.metrics.timestamp ? new Date(health.metrics.timestamp).toLocaleString() : 'Never'}
         {' • '}
         Auto-refresh: 30s

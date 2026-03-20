@@ -173,31 +173,31 @@ const packaging = [
 export function PlatformOverviewDiagram() {
   return (
     <section
-      className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+      className="rounded-2xl border border-border bg-card p-6 shadow-sm dark:border-slate-800 dark:bg-background"
       aria-label="Platform overview diagram"
     >
       <div className="mb-6">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">
           System map
         </p>
-        <h2 className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">
+        <h2 className="mt-2 text-2xl font-semibold text-foreground dark:text-slate-100">
           Platform overview: surfaces, control plane, and runtime boundary
         </h2>
       </div>
       <div className="space-y-4">
         {platformLayers.map((layer) => (
           <div key={layer.heading}>
-            <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">
+            <h3 className="mb-3 text-sm font-semibold text-foreground dark:text-muted-foreground">
               {layer.heading}
             </h3>
             <div className="grid gap-3 md:grid-cols-3">
               {layer.nodes.map((node) => (
                 <article
                   key={node.title}
-                  className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-950/50"
+                  className="rounded-xl border border-border bg-muted/20 p-4 dark:border-border dark:bg-slate-950/50"
                 >
                   <div className="flex items-center justify-between gap-3">
-                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                    <p className="text-sm font-semibold text-foreground dark:text-slate-100">
                       {node.title}
                     </p>
                     {node.badge ? (
@@ -206,7 +206,7 @@ export function PlatformOverviewDiagram() {
                       </span>
                     ) : null}
                   </div>
-                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{node.detail}</p>
+                  <p className="mt-2 text-sm text-muted-foreground dark:text-muted-foreground">{node.detail}</p>
                 </article>
               ))}
             </div>
@@ -220,12 +220,12 @@ export function PlatformOverviewDiagram() {
 export function WorkflowJourneyDiagram() {
   return (
     <section
-      className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+      className="rounded-2xl border border-border bg-card p-6 shadow-sm dark:border-slate-800 dark:bg-background"
       aria-label="Workflow journey diagram"
     >
       <div className="mb-6 flex items-center gap-3">
         <MonitorSmartphone className="h-5 w-5 text-blue-600" />
-        <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
+        <h2 className="text-2xl font-semibold text-foreground dark:text-slate-100">
           User, operator, and developer journey lanes
         </h2>
       </div>
@@ -233,23 +233,23 @@ export function WorkflowJourneyDiagram() {
         {journey.map((row) => (
           <div
             key={row.lane}
-            className="rounded-xl border border-slate-200 p-4 dark:border-slate-700"
+            className="rounded-xl border border-border p-4 dark:border-border"
           >
-            <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               {row.lane}
             </p>
             <div className="grid gap-3 md:grid-cols-4">
               {row.steps.map((step, index) => (
                 <div
                   key={step}
-                  className="flex items-center gap-2 rounded-lg bg-slate-50 p-3 text-sm dark:bg-slate-950/40"
+                  className="flex items-center gap-2 rounded-lg bg-muted/20 p-3 text-sm dark:bg-slate-950/40"
                 >
-                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white dark:bg-white dark:text-slate-900">
+                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-background text-xs font-semibold text-white dark:bg-card dark:text-foreground">
                     {index + 1}
                   </span>
-                  <span className="text-slate-700 dark:text-slate-300">{step}</span>
+                  <span className="text-foreground dark:text-muted-foreground">{step}</span>
                   {index < row.steps.length - 1 ? (
-                    <ArrowRight className="ml-auto h-4 w-4 text-slate-400" />
+                    <ArrowRight className="ml-auto h-4 w-4 text-muted-foreground" />
                   ) : null}
                 </div>
               ))}
@@ -264,22 +264,22 @@ export function WorkflowJourneyDiagram() {
 export function CapabilityMap() {
   return (
     <section
-      className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+      className="rounded-2xl border border-border bg-card p-6 shadow-sm dark:border-slate-800 dark:bg-background"
       aria-label="Capability map"
     >
-      <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
+      <h2 className="text-2xl font-semibold text-foreground dark:text-slate-100">
         Capability map grounded in shipped surfaces
       </h2>
       <div className="mt-5 grid gap-4 md:grid-cols-2">
         {capabilityClusters.map((cluster) => (
           <article
             key={cluster.title}
-            className="rounded-xl border border-slate-200 p-4 dark:border-slate-700"
+            className="rounded-xl border border-border p-4 dark:border-border"
           >
-            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+            <h3 className="text-base font-semibold text-foreground dark:text-slate-100">
               {cluster.title}
             </h3>
-            <ul className="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-400">
+            <ul className="mt-3 space-y-2 text-sm text-muted-foreground dark:text-muted-foreground">
               {cluster.bullets.map((bullet) => (
                 <li key={bullet} className="flex gap-2">
                   <span aria-hidden>•</span>
@@ -297,8 +297,8 @@ export function CapabilityMap() {
 export function IntegrationAndPackagingMap() {
   return (
     <section className="grid gap-6 lg:grid-cols-2" aria-label="Integration and packaging maps">
-      <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
+      <article className="rounded-2xl border border-border bg-card p-6 shadow-sm dark:border-slate-800 dark:bg-background">
+        <h2 className="text-2xl font-semibold text-foreground dark:text-slate-100">
           Integration surface map
         </h2>
         <div className="mt-5 space-y-3">
@@ -307,27 +307,27 @@ export function IntegrationAndPackagingMap() {
             return (
               <div
                 key={item.label}
-                className="rounded-xl border border-slate-200 p-4 dark:border-slate-700"
+                className="rounded-xl border border-border p-4 dark:border-border"
               >
                 <div className="flex items-center gap-3">
                   <Icon className="h-4 w-4 text-blue-600" />
-                  <p className="font-semibold text-slate-900 dark:text-slate-100">{item.label}</p>
+                  <p className="font-semibold text-foreground dark:text-slate-100">{item.label}</p>
                 </div>
-                <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{item.detail}</p>
+                <p className="mt-2 text-sm text-muted-foreground dark:text-muted-foreground">{item.detail}</p>
               </div>
             );
           })}
         </div>
       </article>
 
-      <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <article className="rounded-2xl border border-border bg-card p-6 shadow-sm dark:border-slate-800 dark:bg-background">
         <div className="flex items-center gap-2">
           <Lock className="h-4 w-4 text-emerald-600" />
-          <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
+          <h2 className="text-2xl font-semibold text-foreground dark:text-slate-100">
             Packaging boundary map
           </h2>
         </div>
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+        <p className="mt-2 text-sm text-muted-foreground dark:text-muted-foreground">
           Boundaries are based on repository packages and current public route structure.
         </p>
         <div className="mt-5 space-y-3">
@@ -336,14 +336,14 @@ export function IntegrationAndPackagingMap() {
             return (
               <div
                 key={item.title}
-                className="rounded-xl border border-slate-200 p-4 dark:border-slate-700"
+                className="rounded-xl border border-border p-4 dark:border-border"
               >
                 <div className="flex items-center gap-3">
-                  <Icon className="h-4 w-4 text-slate-700 dark:text-slate-300" />
-                  <p className="font-semibold text-slate-900 dark:text-slate-100">{item.title}</p>
+                  <Icon className="h-4 w-4 text-foreground dark:text-muted-foreground" />
+                  <p className="font-semibold text-foreground dark:text-slate-100">{item.title}</p>
                 </div>
-                <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{item.detail}</p>
-                <p className="mt-2 text-xs text-slate-500 dark:text-slate-500">
+                <p className="mt-2 text-sm text-muted-foreground dark:text-muted-foreground">{item.detail}</p>
+                <p className="mt-2 text-xs text-muted-foreground dark:text-muted-foreground">
                   {item.routes.join(" · ")}
                 </p>
               </div>
@@ -358,7 +358,7 @@ export function IntegrationAndPackagingMap() {
 export function VisualProofCTA() {
   return (
     <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5 dark:border-blue-900/40 dark:bg-blue-950/30">
-      <p className="text-sm text-slate-700 dark:text-slate-300">
+      <p className="text-sm text-foreground dark:text-muted-foreground">
         Want deeper implementation proof? See{" "}
         <Link href="/architecture" className="font-semibold text-blue-700 dark:text-blue-300">
           architecture

@@ -13,11 +13,11 @@ import {
 
 const OnboardingPage: React.FC = () => {
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display text-text-main dark:text-slate-100 antialiased selection:bg-primary selection:text-white">
+    <div className="bg-background-light dark:bg-background-dark font-display text-text-main text-muted-foreground antialiased selection:bg-primary selection:text-white">
       <div className="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-2xl overflow-hidden">
         {/* Header */}
-        <header className="flex items-center justify-between px-4 py-3 bg-background-light dark:bg-background-dark sticky top-0 z-10 border-b border-slate-200 dark:border-slate-800">
-          <button className="flex items-center justify-center w-10 h-10 -ml-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-text-main dark:text-white transition-colors">
+        <header className="flex items-center justify-between px-4 py-3 bg-background-light dark:bg-background-dark sticky top-0 z-10 border-b border-border dark:border-border">
+          <button className="flex items-center justify-center w-10 h-10 -ml-2 rounded-full hover:bg-muted/40 dark:hover:bg-card text-text-main dark:text-white transition-colors">
             <ArrowLeft className="h-6 w-6" />
           </button>
           <h1 className="text-base font-semibold text-text-main dark:text-white tracking-tight">
@@ -31,12 +31,12 @@ const OnboardingPage: React.FC = () => {
         <div className="w-full bg-background-light dark:bg-background-dark pt-6 pb-2 px-6">
           <div className="flex w-full items-center justify-center gap-3">
             <div className="h-1.5 w-8 rounded-full bg-primary"></div>
-            <div className="h-1.5 w-8 rounded-full bg-slate-200 dark:bg-slate-700"></div>
-            <div className="h-1.5 w-8 rounded-full bg-slate-200 dark:bg-slate-700"></div>
-            <div className="h-1.5 w-8 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+            <div className="h-1.5 w-8 rounded-full bg-slate-200 dark:bg-muted"></div>
+            <div className="h-1.5 w-8 rounded-full bg-slate-200 dark:bg-muted"></div>
+            <div className="h-1.5 w-8 rounded-full bg-slate-200 dark:bg-muted"></div>
           </div>
           <div className="mt-2 text-center">
-            <span className="text-xs font-medium text-text-secondary dark:text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-medium text-text-secondary dark:text-muted-foreground uppercase tracking-wider">
               Step 1 of 4
             </span>
           </div>
@@ -47,7 +47,7 @@ const OnboardingPage: React.FC = () => {
             <h2 className="text-2xl font-bold text-text-main dark:text-white tracking-tight mb-2">
               Set up your Workspace
             </h2>
-            <p className="text-text-secondary dark:text-slate-400 text-sm leading-relaxed">
+            <p className="text-text-secondary dark:text-muted-foreground text-sm leading-relaxed">
               Let's configure your secure, audit-ready environment. First, give it an identity.
             </p>
           </div>
@@ -55,14 +55,14 @@ const OnboardingPage: React.FC = () => {
             {/* Workspace Name */}
             <div className="space-y-1.5">
               <label
-                className="block text-sm font-medium text-text-main dark:text-slate-200"
+                className="block text-sm font-medium text-text-main text-muted-foreground"
                 htmlFor="workspace-name"
               >
                 Workspace Name
               </label>
               <div className="relative">
                 <input
-                  className="form-input block w-full rounded-lg border-slate-300 dark:border-slate-700 bg-surface-light dark:bg-slate-800 text-text-main dark:text-white shadow-sm focus:border-primary focus:ring-primary h-12 px-4 transition-colors placeholder:text-slate-400"
+                  className="form-input block w-full rounded-lg border-border dark:border-border bg-surface-light dark:bg-card text-text-main dark:text-white shadow-sm focus:border-primary focus:ring-primary h-12 px-4 transition-colors placeholder:text-muted-foreground"
                   id="workspace-name"
                   placeholder="e.g. Acme Corp"
                   type="text"
@@ -76,31 +76,31 @@ const OnboardingPage: React.FC = () => {
             {/* Subdomain */}
             <div className="space-y-1.5">
               <label
-                className="block text-sm font-medium text-text-main dark:text-slate-200"
+                className="block text-sm font-medium text-text-main text-muted-foreground"
                 htmlFor="subdomain"
               >
                 Workspace URL
               </label>
               <div className="flex rounded-lg shadow-sm">
-                <span className="inline-flex items-center rounded-l-lg border border-r-0 border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3 text-slate-500 dark:text-slate-400 sm:text-sm">
+                <span className="inline-flex items-center rounded-l-lg border border-r-0 border-border dark:border-border bg-muted/20 dark:bg-background px-3 text-muted-foreground dark:text-muted-foreground sm:text-sm">
                   https://
                 </span>
                 <input
-                  className="block w-full min-w-0 flex-1 rounded-none rounded-r-lg border-slate-300 dark:border-slate-700 bg-surface-light dark:bg-slate-800 text-text-main dark:text-white focus:border-primary focus:ring-primary sm:text-sm h-12 px-4"
+                  className="block w-full min-w-0 flex-1 rounded-none rounded-r-lg border-border dark:border-border bg-surface-light dark:bg-card text-text-main dark:text-white focus:border-primary focus:ring-primary sm:text-sm h-12 px-4"
                   id="subdomain"
                   placeholder="acme"
                   type="text"
                   defaultValue="acme-production"
                 />
               </div>
-              <p className="text-xs text-text-secondary dark:text-slate-500">
+              <p className="text-xs text-text-secondary dark:text-muted-foreground">
                 Your team will use this URL to access the platform.
               </p>
             </div>
             {/* Environment Type Selection */}
             <div className="space-y-3 pt-2">
               <div className="flex items-center justify-between">
-                <label className="block text-sm font-medium text-text-main dark:text-slate-200">
+                <label className="block text-sm font-medium text-text-main text-muted-foreground">
                   Tenant Mode
                 </label>
                 <button className="text-primary hover:text-primary-dark">
@@ -128,7 +128,7 @@ const OnboardingPage: React.FC = () => {
                       Shared Environment
                     </span>
                     <span
-                      className="mt-1 flex items-center text-sm text-text-secondary dark:text-slate-400"
+                      className="mt-1 flex items-center text-sm text-text-secondary dark:text-muted-foreground"
                       id="tenant-mode-0-description-0"
                     >
                       Cost-effective multi-tenant setup. Best for development and staging.
@@ -141,7 +141,7 @@ const OnboardingPage: React.FC = () => {
                 />
               </label>
               {/* Option 2: Dedicated */}
-              <label className="relative flex cursor-pointer rounded-xl border border-slate-200 dark:border-slate-700 bg-surface-light dark:bg-slate-800 p-4 shadow-sm focus:outline-none hover:border-slate-300 dark:hover:border-slate-600 transition-all">
+              <label className="relative flex cursor-pointer rounded-xl border border-border dark:border-border bg-surface-light dark:bg-card p-4 shadow-sm focus:outline-none hover:border-border dark:hover:border-slate-600 transition-all">
                 <input
                   aria-describedby="tenant-mode-1-description-0 tenant-mode-1-description-1"
                   aria-labelledby="tenant-mode-1-label"
@@ -153,64 +153,64 @@ const OnboardingPage: React.FC = () => {
                 <span className="flex flex-1">
                   <span className="flex flex-col">
                     <span
-                      className="block text-sm font-bold text-text-main dark:text-slate-200 flex items-center gap-2"
+                      className="block text-sm font-bold text-text-main text-muted-foreground flex items-center gap-2"
                       id="tenant-mode-1-label"
                     >
                       <ShieldCheck className="h-5 w-5" />
                       Isolated Environment
                     </span>
                     <span
-                      className="mt-1 flex items-center text-sm text-text-secondary dark:text-slate-400"
+                      className="mt-1 flex items-center text-sm text-text-secondary dark:text-muted-foreground"
                       id="tenant-mode-1-description-0"
                     >
                       Dedicated resources for strict compliance. Best for production.
                     </span>
                   </span>
                 </span>
-                <Circle aria-hidden="true" className="text-slate-300 dark:text-slate-600 h-6 w-6" />
+                <Circle aria-hidden="true" className="text-muted-foreground dark:text-muted-foreground h-6 w-6" />
               </label>
             </div>
             {/* Compliance Quick Toggles */}
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+            <div className="pt-4 border-t border-slate-100 dark:border-border">
               <h3 className="text-sm font-medium text-text-main dark:text-white mb-4">
                 Audit-Ready Defaults
               </h3>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex flex-col">
-                  <span className="text-sm font-medium text-text-main dark:text-slate-200">
+                  <span className="text-sm font-medium text-text-main text-muted-foreground">
                     SOC2 Logging Preset
                   </span>
-                  <span className="text-xs text-text-secondary dark:text-slate-500">
+                  <span className="text-xs text-text-secondary dark:text-muted-foreground">
                     Enables 90-day retention
                   </span>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input defaultChecked className="sr-only peer" type="checkbox" value="" />
-                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer dark:bg-muted peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-card after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                 </label>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex flex-col">
-                  <span className="text-sm font-medium text-text-main dark:text-slate-200">
+                  <span className="text-sm font-medium text-text-main text-muted-foreground">
                     Enforce 2FA
                   </span>
-                  <span className="text-xs text-text-secondary dark:text-slate-500">
+                  <span className="text-xs text-text-secondary dark:text-muted-foreground">
                     Require for all admins
                   </span>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input defaultChecked className="sr-only peer" type="checkbox" value="" />
-                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer dark:bg-muted peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-card after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                 </label>
               </div>
             </div>
           </form>
         </main>
         {/* Sticky Footer */}
-        <div className="absolute bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border-t border-slate-200 dark:border-slate-800 p-4 z-20">
+        <div className="absolute bottom-0 left-0 right-0 bg-card/90 dark:bg-background/90 backdrop-blur-sm border-t border-border dark:border-border p-4 z-20">
           <div className="flex gap-3">
             <button
-              className="flex-1 py-3 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-text-main dark:text-white rounded-lg font-semibold text-sm transition-colors"
+              className="flex-1 py-3 px-4 bg-muted/40 hover:bg-slate-200 dark:bg-card dark:hover:bg-muted text-text-main dark:text-white rounded-lg font-semibold text-sm transition-colors"
               type="button"
             >
               Save Draft

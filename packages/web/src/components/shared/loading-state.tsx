@@ -47,7 +47,7 @@ export function InlineLoading({ message = "Loading..." }: { message?: string }) 
     <div className="flex items-center justify-center py-8" role="status" aria-live="polite">
       <div className="flex flex-col items-center gap-3">
         <LoadingSpinner size="md" aria-label={message} />
-        <p className="text-sm text-slate-600 dark:text-slate-400">{message}</p>
+        <p className="text-sm text-muted-foreground dark:text-muted-foreground">{message}</p>
       </div>
     </div>
   );

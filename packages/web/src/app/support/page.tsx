@@ -279,11 +279,11 @@ export default function Support() {
         <div className="max-w-7xl mx-auto">
           <h2
             id="support-options-heading"
-            className="text-3xl md:text-4xl font-bold text-center mb-4 text-slate-900 dark:text-white"
+            className="text-3xl md:text-4xl font-bold text-center mb-4 text-foreground dark:text-white"
           >
             Support Channels
           </h2>
-          <p className="text-center text-slate-600 dark:text-slate-300 mb-12 max-w-2xl mx-auto">
+          <p className="text-center text-muted-foreground dark:text-muted-foreground mb-12 max-w-2xl mx-auto">
             Choose the support channel that works best for you
           </p>
           <div
@@ -294,20 +294,20 @@ export default function Support() {
             {supportOptions.map((option, index) => (
               <Card
                 key={index}
-                className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 transition-all duration-200 hover:shadow-lg hover:scale-[1.02]"
+                className="bg-card dark:bg-background border-border border-border transition-all duration-200 hover:shadow-lg hover:scale-[1.02]"
                 role="listitem"
               >
                 <CardHeader>
                   <div className="text-4xl mb-2">{option.icon}</div>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg text-slate-900 dark:text-white">
+                    <CardTitle className="text-lg text-foreground dark:text-white">
                       {option.title}
                     </CardTitle>
                     <Badge variant="outline" className="text-xs">
                       {option.tier}
                     </Badge>
                   </div>
-                  <CardDescription className="text-slate-600 dark:text-slate-300">
+                  <CardDescription className="text-muted-foreground dark:text-muted-foreground">
                     {option.description}
                   </CardDescription>
                 </CardHeader>
@@ -316,7 +316,7 @@ export default function Support() {
                     <Button
                       asChild
                       variant="outline"
-                      className="w-full border-slate-300 dark:border-slate-700"
+                      className="w-full border-border border-border"
                     >
                       <a
                         href={option.link}
@@ -331,7 +331,7 @@ export default function Support() {
                     <Button
                       asChild
                       variant="outline"
-                      className="w-full border-slate-300 dark:border-slate-700"
+                      className="w-full border-border border-border"
                     >
                       <Link href={option.link}>{option.linkText} →</Link>
                     </Button>
@@ -345,32 +345,32 @@ export default function Support() {
 
       {/* Support Tiers */}
       <section
-        className="py-20 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50"
+        className="py-20 px-4 sm:px-6 lg:px-8 bg-card/50 dark:bg-card/50"
         aria-labelledby="support-tiers-heading"
       >
         <div className="max-w-7xl mx-auto">
           <h2
             id="support-tiers-heading"
-            className="text-3xl md:text-4xl font-bold text-center mb-4 text-slate-900 dark:text-white"
+            className="text-3xl md:text-4xl font-bold text-center mb-4 text-foreground dark:text-white"
           >
             Support Tiers
           </h2>
-          <p className="text-center text-slate-600 dark:text-slate-300 mb-12 max-w-2xl mx-auto">
+          <p className="text-center text-muted-foreground dark:text-muted-foreground mb-12 max-w-2xl mx-auto">
             Different support levels for different needs
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {supportTiers.map((tier, index) => (
               <Card
                 key={index}
-                className={`bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 transition-all duration-200 hover:shadow-lg ${
+                className={`bg-card dark:bg-background border-border border-border transition-all duration-200 hover:shadow-lg ${
                   tier.tier === "Enterprise" ? "ring-2 ring-blue-500" : ""
                 }`}
               >
                 <CardHeader>
-                  <CardTitle className="text-xl text-slate-900 dark:text-white mb-2">
+                  <CardTitle className="text-xl text-foreground dark:text-white mb-2">
                     {tier.tier}
                   </CardTitle>
-                  <CardDescription className="text-slate-600 dark:text-slate-300">
+                  <CardDescription className="text-muted-foreground dark:text-muted-foreground">
                     Response Time: {tier.responseTime}
                   </CardDescription>
                 </CardHeader>
@@ -379,7 +379,7 @@ export default function Support() {
                     {tier.features.map((feature, idx) => (
                       <li
                         key={idx}
-                        className="flex items-start text-sm text-slate-600 dark:text-slate-300"
+                        className="flex items-start text-sm text-muted-foreground dark:text-muted-foreground"
                       >
                         <span className="mr-2 text-green-500">✓</span>
                         {feature}
@@ -398,29 +398,29 @@ export default function Support() {
         <div className="max-w-7xl mx-auto">
           <h2
             id="escalation-heading"
-            className="text-3xl md:text-4xl font-bold text-center mb-4 text-slate-900 dark:text-white"
+            className="text-3xl md:text-4xl font-bold text-center mb-4 text-foreground dark:text-white"
           >
             Support Escalation
           </h2>
-          <p className="text-center text-slate-600 dark:text-slate-300 mb-12 max-w-2xl mx-auto">
+          <p className="text-center text-muted-foreground dark:text-muted-foreground mb-12 max-w-2xl mx-auto">
             How we handle and escalate support requests
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {escalationLevels.map((level, index) => (
               <Card
                 key={index}
-                className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"
+                className="bg-card dark:bg-background border-border border-border"
               >
                 <CardHeader>
                   <Badge variant="outline" className="w-fit mb-2">
                     {level.level}
                   </Badge>
-                  <CardTitle className="text-lg text-slate-900 dark:text-white">
+                  <CardTitle className="text-lg text-foreground dark:text-white">
                     {level.name}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-300">
+                  <ul className="space-y-1 text-sm text-muted-foreground dark:text-muted-foreground">
                     {level.includes.map((item, idx) => (
                       <li key={idx} className="flex items-start">
                         <span className="mr-2">•</span>
@@ -437,28 +437,28 @@ export default function Support() {
 
       {/* Severity Levels */}
       <section
-        className="py-20 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50"
+        className="py-20 px-4 sm:px-6 lg:px-8 bg-card/50 dark:bg-card/50"
         aria-labelledby="severity-heading"
       >
         <div className="max-w-4xl mx-auto">
           <h2
             id="severity-heading"
-            className="text-3xl md:text-4xl font-bold text-center mb-4 text-slate-900 dark:text-white"
+            className="text-3xl md:text-4xl font-bold text-center mb-4 text-foreground dark:text-white"
           >
             Issue Severity & Response Times
           </h2>
-          <p className="text-center text-slate-600 dark:text-slate-300 mb-12">
+          <p className="text-center text-muted-foreground dark:text-muted-foreground mb-12">
             We prioritize issues based on severity to ensure critical problems are resolved quickly
           </p>
           <div className="space-y-4">
             {severityLevels.map((severity, index) => (
               <Card
                 key={index}
-                className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"
+                className="bg-card dark:bg-background border-border border-border"
               >
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg text-slate-900 dark:text-white">
+                    <CardTitle className="text-lg text-foreground dark:text-white">
                       {severity.severity}
                     </CardTitle>
                     <div className="flex gap-4 text-sm">
@@ -466,7 +466,7 @@ export default function Support() {
                       <Badge variant="outline">Resolution: {severity.resolutionTime}</Badge>
                     </div>
                   </div>
-                  <CardDescription className="text-slate-600 dark:text-slate-300">
+                  <CardDescription className="text-muted-foreground dark:text-muted-foreground">
                     {severity.description}
                   </CardDescription>
                 </CardHeader>
@@ -477,13 +477,13 @@ export default function Support() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-card/50 dark:bg-card/50">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground dark:text-white">
               Frequently Asked Questions
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-300">
+            <p className="text-lg text-muted-foreground dark:text-muted-foreground">
               Search our knowledge base for quick answers
             </p>
           </div>
@@ -495,7 +495,7 @@ export default function Support() {
               placeholder="Search FAQs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-3 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-border border-border rounded-lg bg-card dark:bg-background text-foreground dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               aria-label="Search frequently asked questions"
             />
           </div>
@@ -506,23 +506,23 @@ export default function Support() {
               filteredFaqs.map((faq, index) => (
                 <Card
                   key={index}
-                  className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 transition-all duration-300 hover:shadow-lg"
+                  className="bg-card dark:bg-background border-border border-border transition-all duration-300 hover:shadow-lg"
                   role="listitem"
                 >
                   <CardHeader>
-                    <CardTitle className="text-lg text-slate-900 dark:text-white">
+                    <CardTitle className="text-lg text-foreground dark:text-white">
                       {faq.question}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-slate-600 dark:text-slate-300">{faq.answer}</p>
+                    <p className="text-muted-foreground dark:text-muted-foreground">{faq.answer}</p>
                   </CardContent>
                 </Card>
               ))
             ) : (
-              <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+              <Card className="bg-card dark:bg-background border-border border-border">
                 <CardContent className="py-8 text-center">
-                  <p className="text-slate-600 dark:text-slate-300">
+                  <p className="text-muted-foreground dark:text-muted-foreground">
                     No FAQs found matching "{searchQuery}". Try a different search term.
                   </p>
                 </CardContent>

@@ -23,7 +23,7 @@ export default function AdminRunDetailPage({ params }: { params: { runId: string
     return (
       <div className="p-8">
         <div className="text-center py-12">
-          <p className="text-slate-500 dark:text-slate-400">Run not found</p>
+          <p className="text-muted-foreground dark:text-muted-foreground">Run not found</p>
           <Link href="/admin/runs">
             <Button variant="outline" className="mt-4">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -44,7 +44,7 @@ export default function AdminRunDetailPage({ params }: { params: { runId: string
       case "running":
         return <Clock className="w-5 h-5 text-blue-600 animate-spin" />;
       default:
-        return <Clock className="w-5 h-5 text-slate-400" />;
+        return <Clock className="w-5 h-5 text-muted-foreground" />;
     }
   };
 
@@ -57,7 +57,7 @@ export default function AdminRunDetailPage({ params }: { params: { runId: string
       case "running":
         return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
       default:
-        return "bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-300";
+        return "bg-muted/40 text-foreground dark:bg-background/30 dark:text-muted-foreground";
     }
   };
 
@@ -72,7 +72,7 @@ export default function AdminRunDetailPage({ params }: { params: { runId: string
       : null;
 
   return (
-    <div className="p-8 space-y-6 bg-slate-50 dark:bg-slate-900 min-h-screen">
+    <div className="p-8 space-y-6 bg-muted/20 dark:bg-background min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -83,10 +83,10 @@ export default function AdminRunDetailPage({ params }: { params: { runId: string
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+            <h1 className="text-3xl font-bold text-foreground dark:text-white">
               {run.name || `Run ${run.id.slice(0, 8)}`}
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-muted-foreground dark:text-muted-foreground mt-1">
               Reconciliation run details and drilldown
             </p>
           </div>
@@ -101,48 +101,48 @@ export default function AdminRunDetailPage({ params }: { params: { runId: string
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400">
+            <CardTitle className="text-sm font-medium text-muted-foreground dark:text-muted-foreground">
               Matched
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-900 dark:text-white">
+            <div className="text-2xl font-bold text-foreground dark:text-white">
               {run.matchedCount} ({matchedPercent.toFixed(1)}%)
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400">
+            <CardTitle className="text-sm font-medium text-muted-foreground dark:text-muted-foreground">
               Unmatched Source
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-900 dark:text-white">
+            <div className="text-2xl font-bold text-foreground dark:text-white">
               {run.unmatchedSourceCount || 0}
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400">
+            <CardTitle className="text-sm font-medium text-muted-foreground dark:text-muted-foreground">
               Unmatched Target
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-900 dark:text-white">
+            <div className="text-2xl font-bold text-foreground dark:text-white">
               {run.unmatchedTargetCount || 0}
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400">
+            <CardTitle className="text-sm font-medium text-muted-foreground dark:text-muted-foreground">
               Confidence
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-900 dark:text-white">
+            <div className="text-2xl font-bold text-foreground dark:text-white">
               {run.confidenceAvg ? (Number(run.confidenceAvg) * 100).toFixed(1) + "%" : "N/A"}
             </div>
           </CardContent>
@@ -157,43 +157,43 @@ export default function AdminRunDetailPage({ params }: { params: { runId: string
         <CardContent>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Run ID:</span>
-              <span className="ml-2 font-mono text-xs text-slate-900 dark:text-white">
+              <span className="text-muted-foreground dark:text-muted-foreground">Run ID:</span>
+              <span className="ml-2 font-mono text-xs text-foreground dark:text-white">
                 {run.id}
               </span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Tenant ID:</span>
-              <span className="ml-2 font-mono text-xs text-slate-900 dark:text-white">
+              <span className="text-muted-foreground dark:text-muted-foreground">Tenant ID:</span>
+              <span className="ml-2 font-mono text-xs text-foreground dark:text-white">
                 {run.tenantId.slice(0, 8)}
               </span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Started:</span>
-              <span className="ml-2 text-slate-900 dark:text-white">
+              <span className="text-muted-foreground dark:text-muted-foreground">Started:</span>
+              <span className="ml-2 text-foreground dark:text-white">
                 {new Date(run.startedAt).toLocaleString()}
               </span>
             </div>
             {run.completedAt && (
               <div>
-                <span className="text-slate-500 dark:text-slate-400">Completed:</span>
-                <span className="ml-2 text-slate-900 dark:text-white">
+                <span className="text-muted-foreground dark:text-muted-foreground">Completed:</span>
+                <span className="ml-2 text-foreground dark:text-white">
                   {new Date(run.completedAt).toLocaleString()}
                 </span>
               </div>
             )}
             {duration && (
               <div>
-                <span className="text-slate-500 dark:text-slate-400">Duration:</span>
-                <span className="ml-2 text-slate-900 dark:text-white">
+                <span className="text-muted-foreground dark:text-muted-foreground">Duration:</span>
+                <span className="ml-2 text-foreground dark:text-white">
                   {formatDuration(duration)}
                 </span>
               </div>
             )}
             {run.traceId && (
               <div>
-                <span className="text-slate-500 dark:text-slate-400">Trace ID:</span>
-                <span className="ml-2 font-mono text-xs text-slate-900 dark:text-white">
+                <span className="text-muted-foreground dark:text-muted-foreground">Trace ID:</span>
+                <span className="ml-2 font-mono text-xs text-foreground dark:text-white">
                   {run.traceId}
                 </span>
               </div>
@@ -209,10 +209,10 @@ export default function AdminRunDetailPage({ params }: { params: { runId: string
           )}
           {run.metadata && Object.keys(run.metadata).length > 0 && (
             <details className="mt-4">
-              <summary className="text-sm text-slate-600 dark:text-slate-400 cursor-pointer mb-2">
+              <summary className="text-sm text-muted-foreground dark:text-muted-foreground cursor-pointer mb-2">
                 View Metadata
               </summary>
-              <pre className="text-xs bg-slate-100 dark:bg-slate-800 p-3 rounded overflow-auto">
+              <pre className="text-xs bg-muted/40 dark:bg-card p-3 rounded overflow-auto">
                 {JSON.stringify(run.metadata, null, 2)}
               </pre>
             </details>

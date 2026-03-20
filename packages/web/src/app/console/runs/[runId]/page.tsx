@@ -161,9 +161,9 @@ export default function RunPage() {
       case "running":
         return "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300";
       case "unknown":
-        return "bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300";
+        return "bg-muted/40 text-foreground dark:bg-background dark:text-muted-foreground";
       default:
-        return "bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300";
+        return "bg-muted/40 text-foreground dark:bg-background dark:text-muted-foreground";
     }
   };
 
@@ -211,16 +211,16 @@ export default function RunPage() {
   return (
     <div className="p-6 space-y-6">
       {/* Breadcrumb navigation */}
-      <nav className="flex items-center text-sm text-slate-600 dark:text-slate-400 mb-4">
-        <Link href="/console" className="hover:text-slate-900 dark:hover:text-white">
+      <nav className="flex items-center text-sm text-muted-foreground dark:text-muted-foreground mb-4">
+        <Link href="/console" className="hover:text-foreground dark:hover:text-white">
           Console
         </Link>
         <span className="mx-2">/</span>
-        <Link href="/console/runs" className="hover:text-slate-900 dark:hover:text-white">
+        <Link href="/console/runs" className="hover:text-foreground dark:hover:text-white">
           Runs
         </Link>
         <span className="mx-2">/</span>
-        <span className="text-slate-900 dark:text-white">{run.name}</span>
+        <span className="text-foreground dark:text-white">{run.name}</span>
       </nav>
 
       <div className="flex items-center justify-between">
@@ -232,15 +232,15 @@ export default function RunPage() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{run.name}</h1>
-            <p className="text-slate-600 dark:text-slate-400 mt-1">
+            <h1 className="text-3xl font-bold text-foreground dark:text-white">{run.name}</h1>
+            <p className="text-muted-foreground dark:text-muted-foreground mt-1">
               Run ID:{" "}
-              <code className="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">{run.id}</code>
+              <code className="bg-muted/40 dark:bg-card px-2 py-1 rounded">{run.id}</code>
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+          <label className="flex items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground">
             <input
               type="checkbox"
               checked={autoRefresh}
@@ -274,7 +274,7 @@ export default function RunPage() {
                 <span>Progress</span>
                 <span>{run.progress}%</span>
               </div>
-              <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+              <div className="w-full bg-slate-200 dark:bg-muted rounded-full h-2">
                 <div
                   className="bg-blue-600 h-2 rounded-full transition-all"
                   style={{ width: `${run.progress}%` }}
@@ -286,21 +286,21 @@ export default function RunPage() {
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
                   <div>
                     <div className="text-2xl font-bold">{run.summary.sourceCount}</div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">Source Rows</div>
+                    <div className="text-sm text-muted-foreground dark:text-muted-foreground">Source Rows</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold">{run.summary.targetCount}</div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">Target Rows</div>
+                    <div className="text-sm text-muted-foreground dark:text-muted-foreground">Target Rows</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-green-600">{run.summary.matched}</div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">Matched</div>
+                    <div className="text-sm text-muted-foreground dark:text-muted-foreground">Matched</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-amber-600">
                       {run.summary.unmatchedSourceCount}
                     </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
+                    <div className="text-sm text-muted-foreground dark:text-muted-foreground">
                       Unmatched Source
                     </div>
                   </div>
@@ -308,17 +308,17 @@ export default function RunPage() {
                     <div className="text-2xl font-bold text-amber-600">
                       {run.summary.unmatchedTargetCount}
                     </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
+                    <div className="text-sm text-muted-foreground dark:text-muted-foreground">
                       Unmatched Target
                     </div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-red-600">{run.summary.conflicts}</div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">Conflicts</div>
+                    <div className="text-sm text-muted-foreground dark:text-muted-foreground">Conflicts</div>
                   </div>
                 </div>
                 {run.summaryMath?.note ? (
-                  <p className="text-xs text-slate-500 dark:text-slate-400">{run.summaryMath.note}</p>
+                  <p className="text-xs text-muted-foreground dark:text-muted-foreground">{run.summaryMath.note}</p>
                 ) : null}
               </div>
             )}
@@ -334,17 +334,17 @@ export default function RunPage() {
               Run detail shows the latest persisted result for this run definition.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+          <CardContent className="space-y-3 text-sm text-muted-foreground dark:text-muted-foreground">
             <p>
               Persisted results:{" "}
-              <span className="font-medium text-slate-900 dark:text-white">
+              <span className="font-medium text-foreground dark:text-white">
                 {run.resultContext.persistedResultCount}
               </span>
             </p>
             {run.resultContext.latestResultId ? (
               <p>
                 Latest result ID:{" "}
-                <code className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded break-all">
+                <code className="bg-muted/40 dark:bg-card px-1.5 py-0.5 rounded break-all">
                   {run.resultContext.latestResultId}
                 </code>
               </p>
@@ -355,11 +355,11 @@ export default function RunPage() {
               <p>Evaluated at {new Date(run.resultContext.latestResultStartedAt).toLocaleString()}.</p>
             )}
             {run.resultContext.comparison && (
-              <div className="rounded-md border border-slate-200 dark:border-slate-700 p-3">
-                <p className="font-medium text-slate-900 dark:text-white">Compared to prior result</p>
+              <div className="rounded-md border border-border dark:border-border p-3">
+                <p className="font-medium text-foreground dark:text-white">Compared to prior result</p>
                 <p className="mt-1">
                   Previous result{" "}
-                  <code className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded break-all">
+                  <code className="bg-muted/40 dark:bg-card px-1.5 py-0.5 rounded break-all">
                     {run.resultContext.comparison.previousResultId}
                   </code>
                   {run.resultContext.comparison.previousResultStartedAt
@@ -372,7 +372,7 @@ export default function RunPage() {
                   {formatSignedDelta(run.resultContext.comparison.deltaUnmatched)} • Conflicts{" "}
                   {formatSignedDelta(run.resultContext.comparison.deltaConflicts)}
                 </p>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                <p className="mt-1 text-xs text-muted-foreground dark:text-muted-foreground">
                   Snapshot{" "}
                   {run.resultContext.comparison.snapshotChanged ? "changed" : "unchanged"} • Input
                   hash {run.resultContext.comparison.inputHashChanged ? "changed" : "unchanged"}
@@ -394,32 +394,32 @@ export default function RunPage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
               <div>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                <p className="text-2xl font-bold text-foreground dark:text-white">
                   {run.exceptions.total}
                 </p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Total</p>
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">Total</p>
               </div>
               <div>
                 <p className="text-2xl font-bold text-amber-600">{run.exceptions.pending}</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Pending</p>
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">Pending</p>
               </div>
               <div>
                 <p className="text-2xl font-bold text-blue-600">{run.exceptions.investigating}</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Investigating</p>
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">Investigating</p>
               </div>
               <div>
                 <p className="text-2xl font-bold text-green-600">{run.exceptions.resolved}</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Resolved</p>
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">Resolved</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-slate-700 dark:text-slate-200">
+                <p className="text-2xl font-bold text-foreground dark:text-slate-200">
                   {run.exceptions.ignored}
                 </p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Ignored</p>
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">Ignored</p>
               </div>
               <div>
                 <p className="text-2xl font-bold text-red-600">{run.exceptions.reviewRequired}</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Needs Review</p>
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">Needs Review</p>
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -461,7 +461,7 @@ export default function RunPage() {
                     <Eye className="w-4 h-4" />
                     <span className="font-semibold">View Results</span>
                   </div>
-                  <span className="text-xs text-slate-600 dark:text-slate-400">
+                  <span className="text-xs text-muted-foreground dark:text-muted-foreground">
                     See detailed reconciliation outcomes
                   </span>
                 </Button>
@@ -479,7 +479,7 @@ export default function RunPage() {
                         {run.summary.unmatched}
                       </Badge>
                     </div>
-                    <span className="text-xs text-slate-600 dark:text-slate-400">
+                    <span className="text-xs text-muted-foreground dark:text-muted-foreground">
                       Investigate unmatched records
                     </span>
                   </Button>
@@ -498,7 +498,7 @@ export default function RunPage() {
                         {run.summary.conflicts}
                       </Badge>
                     </div>
-                    <span className="text-xs text-slate-600 dark:text-slate-400">
+                    <span className="text-xs text-muted-foreground dark:text-muted-foreground">
                       Resolve conflicting matches
                     </span>
                   </Button>
@@ -526,13 +526,13 @@ export default function RunPage() {
       )}
 
       {run.status === "pending" && (
-        <Card className="border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/10">
+        <Card className="border-border dark:border-border bg-muted/20/50 dark:bg-card/10">
           <CardContent className="pt-6">
             <div className="flex items-start gap-3">
-              <Clock className="w-5 h-5 text-slate-600 dark:text-slate-400 flex-shrink-0 mt-0.5" />
+              <Clock className="w-5 h-5 text-muted-foreground dark:text-muted-foreground flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-medium text-slate-900 dark:text-white mb-1">Run pending</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="font-medium text-foreground dark:text-white mb-1">Run pending</p>
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                   This run is queued and will start shortly.
                 </p>
               </div>
@@ -577,22 +577,22 @@ export default function RunPage() {
             )}
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               <div>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">Adapters</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm font-medium text-foreground dark:text-white">Adapters</p>
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                   {[run.config.sourceAdapter, run.config.targetAdapter]
                     .filter(Boolean)
                     .join(" -> ") || "Not recorded"}
                 </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">Strategy</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm font-medium text-foreground dark:text-white">Strategy</p>
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                   {run.config.reconStrategy || "Not recorded"}
                 </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">Rules</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm font-medium text-foreground dark:text-white">Rules</p>
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                   {run.config.validationRuleCount > 0
                     ? `${run.config.validationRuleCount} rule${
                         run.config.validationRuleCount === 1 ? "" : "s"
@@ -601,8 +601,8 @@ export default function RunPage() {
                 </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">Rule Versions</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm font-medium text-foreground dark:text-white">Rule Versions</p>
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                   {run.config.ruleVersionCount > 0
                     ? `${run.config.ruleVersionCount} locked version${
                         run.config.ruleVersionCount === 1 ? "" : "s"
@@ -611,27 +611,27 @@ export default function RunPage() {
                 </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">Snapshot</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400 font-mono break-all">
+                <p className="text-sm font-medium text-foreground dark:text-white">Snapshot</p>
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground font-mono break-all">
                   {run.config.snapshotId || "Not persisted"}
                 </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">Input Hash</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400 font-mono break-all">
+                <p className="text-sm font-medium text-foreground dark:text-white">Input Hash</p>
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground font-mono break-all">
                   {run.config.inputHash || "Not recorded"}
                 </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">Template</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400 font-mono break-all">
+                <p className="text-sm font-medium text-foreground dark:text-white">Template</p>
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground font-mono break-all">
                   {run.config.templateId || "None"}
                 </p>
               </div>
             </div>
             {run.config.validationRuleLabels.length > 0 && (
               <div>
-                <p className="mb-2 text-sm font-medium text-slate-900 dark:text-white">
+                <p className="mb-2 text-sm font-medium text-foreground dark:text-white">
                   Recorded Rule Coverage
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -645,7 +645,7 @@ export default function RunPage() {
             )}
             {run.config.ruleVersionLabels.length > 0 && (
               <div>
-                <p className="mb-2 text-sm font-medium text-slate-900 dark:text-white">
+                <p className="mb-2 text-sm font-medium text-foreground dark:text-white">
                   Snapshot Rule Versions
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -657,7 +657,7 @@ export default function RunPage() {
                 </div>
               </div>
             )}
-            <p className="text-sm text-slate-500 dark:text-slate-400">{run.config.summaryBasis}</p>
+            <p className="text-sm text-muted-foreground dark:text-muted-foreground">{run.config.summaryBasis}</p>
           </CardContent>
         </Card>
       )}
@@ -674,7 +674,7 @@ export default function RunPage() {
               return (
                 <div
                   key={stage.id}
-                  className="flex items-start gap-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg"
+                  className="flex items-start gap-4 p-4 bg-muted/20 dark:bg-card rounded-lg"
                 >
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
@@ -684,7 +684,7 @@ export default function RunPage() {
                           ? "bg-blue-100 dark:bg-blue-900/30 animate-pulse"
                           : stage.status === "failed"
                             ? "bg-red-100 dark:bg-red-900/30"
-                            : "bg-slate-100 dark:bg-slate-700"
+                            : "bg-muted/40 dark:bg-muted"
                     }`}
                   >
                     <StageIcon
@@ -695,13 +695,13 @@ export default function RunPage() {
                             ? "text-blue-600 dark:text-blue-400"
                             : stage.status === "failed"
                               ? "text-red-600 dark:text-red-400"
-                              : "text-slate-400"
+                              : "text-muted-foreground"
                       } ${stage.status === "running" ? "animate-spin" : ""}`}
                     />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-medium text-slate-900 dark:text-white">{stage.name}</h3>
+                      <h3 className="font-medium text-foreground dark:text-white">{stage.name}</h3>
                       <Badge className={getStatusColor(stage.status)}>{stage.status}</Badge>
                     </div>
                     {stage.error && (
@@ -711,7 +711,7 @@ export default function RunPage() {
                       </div>
                     )}
                     {stage.completedAt && (
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                      <p className="text-xs text-muted-foreground dark:text-muted-foreground mt-1">
                         Completed {new Date(stage.completedAt).toLocaleString()}
                       </p>
                     )}

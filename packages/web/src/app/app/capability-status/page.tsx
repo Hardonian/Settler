@@ -59,7 +59,7 @@ function systemStatusIcon(status?: string) {
   if (s === 'down' || s === 'error' || s === 'critical') {
     return <XCircle className="h-4 w-4 text-red-500 shrink-0" aria-hidden="true" />;
   }
-  return <Clock className="h-4 w-4 text-slate-400 shrink-0" aria-hidden="true" />;
+  return <Clock className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />;
 }
 
 function formatTimestamp(ts?: string): string {
@@ -86,27 +86,27 @@ export default async function CapabilityStatusPage() {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-xl border border-slate-200 bg-white p-6">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+      <section className="rounded-xl border border-border bg-card p-6">
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           Capability Status
         </p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900">
+        <h1 className="mt-2 text-2xl font-semibold text-foreground">
           Availability and operational posture
         </h1>
-        <p className="mt-2 text-sm text-slate-600">
+        <p className="mt-2 text-sm text-muted-foreground">
           Combines runtime status endpoints with the surfaced capability registry.
         </p>
       </section>
 
       <section className="grid gap-4 md:grid-cols-2">
         {/* System status */}
-        <article className="rounded-lg border border-slate-200 bg-white p-4">
-          <h2 className="font-semibold text-slate-900">System Status</h2>
+        <article className="rounded-lg border border-border bg-card p-4">
+          <h2 className="font-semibold text-foreground">System Status</h2>
           {status ? (
             <>
               <div className="mt-3 flex items-center gap-2">
                 {systemStatusIcon(status.overallStatus)}
-                <span className="text-sm font-medium capitalize text-slate-800">
+                <span className="text-sm font-medium capitalize text-foreground">
                   {status.overallStatus ?? 'Unknown'}
                 </span>
               </div>
@@ -114,10 +114,10 @@ export default async function CapabilityStatusPage() {
                 <ul className="mt-3 space-y-2" aria-label="System component statuses">
                   {status.systems.slice(0, 6).map((s) => (
                     <li key={s.name} className="flex items-center justify-between text-sm">
-                      <span className="text-slate-600">{s.name}</span>
+                      <span className="text-muted-foreground">{s.name}</span>
                       <span className="flex items-center gap-1.5">
                         {systemStatusIcon(s.status)}
-                        <span className="capitalize text-slate-700">{s.status ?? 'unknown'}</span>
+                        <span className="capitalize text-foreground">{s.status ?? 'unknown'}</span>
                       </span>
                     </li>
                   ))}
@@ -130,18 +130,18 @@ export default async function CapabilityStatusPage() {
               )}
             </>
           ) : (
-            <p className="mt-2 text-sm text-slate-500">Status endpoint unavailable.</p>
+            <p className="mt-2 text-sm text-muted-foreground">Status endpoint unavailable.</p>
           )}
         </article>
 
         {/* Health check */}
-        <article className="rounded-lg border border-slate-200 bg-white p-4">
-          <h2 className="font-semibold text-slate-900">Health Check</h2>
+        <article className="rounded-lg border border-border bg-card p-4">
+          <h2 className="font-semibold text-foreground">Health Check</h2>
           {health ? (
             <>
               <div className="mt-3 flex items-center gap-2">
                 {systemStatusIcon(healthStatus)}
-                <span className="text-sm font-medium capitalize text-slate-800">{healthStatus}</span>
+                <span className="text-sm font-medium capitalize text-foreground">{healthStatus}</span>
               </div>
               <div className="mt-3 flex items-center gap-2">
                 {allServicesNominal ? (
@@ -149,39 +149,39 @@ export default async function CapabilityStatusPage() {
                 ) : (
                   <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0" aria-hidden="true" />
                 )}
-                <span className="text-sm text-slate-600">
+                <span className="text-sm text-muted-foreground">
                   {allServicesNominal ? 'All services nominal' : 'One or more services degraded'}
                 </span>
               </div>
-              <p className="mt-3 text-xs text-slate-400">
+              <p className="mt-3 text-xs text-muted-foreground">
                 Last checked: {formatTimestamp(health.timestamp)}
               </p>
             </>
           ) : (
-            <p className="mt-2 text-sm text-slate-500">Health endpoint unavailable.</p>
+            <p className="mt-2 text-sm text-muted-foreground">Health endpoint unavailable.</p>
           )}
         </article>
       </section>
 
       {capabilities.length > 0 && (
-        <section className="rounded-lg border border-slate-200 bg-white p-4">
-          <h2 className="font-semibold text-slate-900">Surfaced Capabilities</h2>
+        <section className="rounded-lg border border-border bg-card p-4">
+          <h2 className="font-semibold text-foreground">Surfaced Capabilities</h2>
           <div className="mt-3 grid gap-3 md:grid-cols-2">
             {capabilities.map((cap) => (
-              <article key={cap.name} className="rounded border border-slate-200 p-3 text-sm">
-                <p className="font-medium text-slate-900">{cap.name}</p>
+              <article key={cap.name} className="rounded border border-border p-3 text-sm">
+                <p className="font-medium text-foreground">{cap.name}</p>
                 <dl className="mt-1 space-y-0.5">
                   <div className="flex gap-2">
-                    <dt className="text-slate-400 w-16 shrink-0">Maturity</dt>
-                    <dd className="text-slate-700 capitalize">{cap.maturity}</dd>
+                    <dt className="text-muted-foreground w-16 shrink-0">Maturity</dt>
+                    <dd className="text-foreground capitalize">{cap.maturity}</dd>
                   </div>
                   <div className="flex gap-2">
-                    <dt className="text-slate-400 w-16 shrink-0">Visibility</dt>
-                    <dd className="text-slate-700 capitalize">{cap.visibility}</dd>
+                    <dt className="text-muted-foreground w-16 shrink-0">Visibility</dt>
+                    <dd className="text-foreground capitalize">{cap.visibility}</dd>
                   </div>
                 </dl>
                 {cap.gating && (
-                  <p className="mt-2 text-xs text-slate-400">{cap.gating}</p>
+                  <p className="mt-2 text-xs text-muted-foreground">{cap.gating}</p>
                 )}
               </article>
             ))}

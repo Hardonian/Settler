@@ -71,7 +71,7 @@ export function UserImpersonation() {
         )}
 
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Search users by email or ID..."
             value={searchQuery}
@@ -80,7 +80,7 @@ export function UserImpersonation() {
           />
         </div>
 
-        <div className="text-sm text-slate-500 dark:text-slate-400">
+        <div className="text-sm text-muted-foreground dark:text-muted-foreground">
           Search for a user and click &quot;Impersonate&quot; to view their dashboard as them.
         </div>
       </CardContent>
