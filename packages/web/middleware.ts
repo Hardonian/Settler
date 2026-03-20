@@ -277,6 +277,8 @@ export const config = {
      * ensure zero auth/env assumptions and maximum performance.
      */
     "/app/:path*",
+    "/console/:path*",
+    "/admin/:path*",
     "/api/:path*",
   ],
 };
