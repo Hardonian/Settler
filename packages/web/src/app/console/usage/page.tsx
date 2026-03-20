@@ -207,19 +207,19 @@ export default function UsagePage() {
               <div className="pt-6 border-t border-primary/20 space-y-4">
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                  <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                  <span className="text-xs font-medium text-muted-foreground">
                     High-Priority Reconciliation Queue
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                  <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                  <span className="text-xs font-medium text-muted-foreground">
                     SSO & Multi-Tenant Support
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                  <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                  <span className="text-xs font-medium text-muted-foreground">
                     Automated Evidence Signing
                   </span>
                 </div>

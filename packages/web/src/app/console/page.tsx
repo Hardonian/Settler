@@ -21,6 +21,7 @@ import {
   ClipboardCheck,
   Bot,
   CheckCircle2,
+  Flag,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getUsageSummary } from "@/domain/console/usage";
@@ -37,6 +38,7 @@ import { PageLoadingSkeleton, CardLoadingSkeleton } from "@/components/shared/lo
 import { ConsoleSurfaceMap } from "@/components/feature-visual-proof";
 import { RealityEvidencePanel } from "@/components/RealityEvidencePanel";
 import { RouteStateCard } from "@/components/shared/route-state";
+import { StatCard } from "@/components/ui/stat-card";
 
 // OPTIMIZATION: Code-split heavy dashboard components
 // These are not needed for initial paint and add ~15KB to the bundle
@@ -567,68 +569,41 @@ async function ConsoleOverviewContent() {
           receipts.length > 0 ||
           flags.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card className="card-hover">
-                <CardHeader className="pb-2 pt-5 px-5">
-                  <CardDescription className="label-muted">Total API Calls</CardDescription>
-                  <div className="metric-value mt-1">{formatNumber(usageSummary.totalCalls)}</div>
-                </CardHeader>
-                <CardContent className="px-5 pb-5">
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-3">
-                    <Activity className="w-3.5 h-3.5" aria-hidden="true" />
-                    <span>Last 7 days</span>
-                  </div>
-                  <Button asChild variant="outline" size="sm" className="w-full text-xs">
-                    <Link href="/console/usage">
-                      View Details <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
+              <StatCard
+                label="Total API Calls"
+                value={formatNumber(usageSummary.totalCalls)}
+                icon={Activity}
+                description="Last 7 days"
+                href="/console/usage"
+                linkLabel="View details"
+              />
 
               <RBACGate requiredTier="subscribed_unpaid" feature="API Keys">
-                <Card className="card-hover">
-                  <CardHeader className="pb-2 pt-5 px-5">
-                    <CardDescription className="label-muted">API Keys</CardDescription>
-                    <div className="metric-value mt-1">{apiKeys.length}</div>
-                  </CardHeader>
-                  <CardContent className="px-5 pb-5">
-                    <Button asChild variant="outline" size="sm" className="w-full text-xs">
-                      <Link href="/console/api-keys">
-                        Manage Keys <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
+                <StatCard
+                  label="API Keys"
+                  value={apiKeys.length}
+                  icon={Key}
+                  href="/console/api-keys"
+                  linkLabel="Manage keys"
+                />
               </RBACGate>
 
-              <Card className="card-hover">
-                <CardHeader className="pb-2 pt-5 px-5">
-                  <CardDescription className="label-muted">Receipts Parsed</CardDescription>
-                  <div className="metric-value mt-1">{formatNumber(receipts.length)}</div>
-                </CardHeader>
-                <CardContent className="px-5 pb-5">
-                  <Button asChild variant="outline" size="sm" className="w-full text-xs">
-                    <Link href="/console/receipts">
-                      View Receipts <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
+              <StatCard
+                label="Receipts Parsed"
+                value={formatNumber(receipts.length)}
+                icon={Receipt}
+                href="/console/receipts"
+                linkLabel="View receipts"
+              />
 
               <RBACGate requiredTier="subscribed_unpaid" feature="Feature Flags">
-                <Card className="card-hover">
-                  <CardHeader className="pb-2 pt-5 px-5">
-                    <CardDescription className="label-muted">Feature Flags</CardDescription>
-                    <div className="metric-value mt-1">{flags.length}</div>
-                  </CardHeader>
-                  <CardContent className="px-5 pb-5">
-                    <Button asChild variant="outline" size="sm" className="w-full text-xs">
-                      <Link href="/console/feature-flags">
-                        Manage Flags <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
+                <StatCard
+                  label="Feature Flags"
+                  value={flags.length}
+                  icon={Flag}
+                  href="/console/feature-flags"
+                  linkLabel="Manage flags"
+                />
               </RBACGate>
             </div>
           ) : (

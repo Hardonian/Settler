@@ -51,16 +51,16 @@ export default function AdminDashboard() {
 
   return (
     <div
-      className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 bg-slate-50 dark:bg-slate-900 min-h-screen"
+      className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 bg-background min-h-screen"
       id="main-content"
     >
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
             Admin Dashboard
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm sm:text-base">
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             Real-time oversight and reconciliation operations
           </p>
         </div>
@@ -76,11 +76,11 @@ export default function AdminDashboard() {
           {/* Connection Status */}
           <div className="flex items-center gap-2">
             <PulseIndicator active={connectionState === "connected"} color="green" />
-            <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+            <span className="text-xs sm:text-sm text-muted-foreground">
               {connectionState === "connected" ? "Live" : connectionState}
             </span>
             {latency && (
-              <span className="text-xs text-slate-500 dark:text-slate-400">({latency}ms)</span>
+              <span className="text-xs text-muted-foreground">({latency}ms)</span>
             )}
           </div>
 
@@ -181,7 +181,7 @@ export default function AdminDashboard() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+            <div className="text-center py-8 text-muted-foreground">
               <Skeleton className="h-4 w-32 mx-auto mb-2" />
               <Skeleton className="h-4 w-24 mx-auto" />
             </div>
@@ -190,12 +190,12 @@ export default function AdminDashboard() {
               {metrics.exceptionHeatmap.map((item, idx) => (
                 <HoverCard key={idx}>
                   <div
-                    className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg transition-all"
+                    className="p-4 border border-border rounded-lg transition-all"
                     role="button"
                     tabIndex={0}
                     aria-label={`${item.source} exceptions: ${item.count} ${item.severity}`}
                   >
-                    <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+                    <div className="text-sm text-muted-foreground mb-1">
                       {item.source}
                     </div>
                     <div className="flex items-center gap-2">
@@ -210,7 +210,7 @@ export default function AdminDashboard() {
                       >
                         {item.severity}
                       </Badge>
-                      <span className="text-lg font-semibold text-slate-900 dark:text-white">
+                      <span className="text-lg font-semibold text-foreground">
                         <AnimatedNumber value={item.count} />
                       </span>
                     </div>
@@ -219,7 +219,7 @@ export default function AdminDashboard() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+            <div className="text-center py-8 text-muted-foreground">
               No exceptions in this period
             </div>
           )}
@@ -243,13 +243,13 @@ export default function AdminDashboard() {
               {metrics.recentActivity.map((activity) => (
                 <div
                   key={activity.id}
-                  className="flex items-start gap-3 p-3 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                  className="flex items-start gap-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors"
                   role="listitem"
                 >
                   <div className="w-2 h-2 rounded-full bg-blue-500 mt-2" aria-hidden="true" />
                   <div className="flex-1">
-                    <div className="text-sm text-slate-900 dark:text-white">{activity.message}</div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    <div className="text-sm text-foreground">{activity.message}</div>
+                    <div className="text-xs text-muted-foreground mt-1">
                       <time dateTime={activity.timestamp}>
                         {new Date(activity.timestamp).toLocaleString()}
                       </time>
@@ -259,7 +259,7 @@ export default function AdminDashboard() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+            <div className="text-center py-8 text-muted-foreground">
               No recent activity
             </div>
           )}
@@ -308,7 +308,7 @@ function KPITile({
       <Card className={href ? "cursor-pointer" : ""} role={href ? "link" : undefined}>
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               {title}
             </CardTitle>
             <div aria-hidden="true">{icon}</div>
@@ -319,8 +319,8 @@ function KPITile({
             <Skeleton className="h-8 w-32" />
           ) : (
             <div className="flex items-baseline gap-2">
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">{value}</div>
-              {unit && <span className="text-sm text-slate-500 dark:text-slate-400">{unit}</span>}
+              <div className="text-2xl font-bold text-foreground">{value}</div>
+              {unit && <span className="text-sm text-muted-foreground">{unit}</span>}
               {trend && (
                 <div
                   className={`ml-auto ${trend === "up" ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}

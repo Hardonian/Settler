@@ -107,8 +107,22 @@ export default function BillingPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <div className="h-8 w-48 rounded-md bg-muted animate-pulse" />
+          <div className="h-4 w-80 rounded-md bg-muted animate-pulse" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <Card key={i}>
+              <CardContent className="py-6 space-y-3">
+                <div className="h-4 w-24 rounded bg-muted animate-pulse" />
+                <div className="h-8 w-32 rounded bg-muted animate-pulse" />
+                <div className="h-2 w-full rounded-full bg-muted animate-pulse" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     );
   }
@@ -166,11 +180,32 @@ export default function BillingPage() {
     <div className="space-y-6">
       <ConsolePageHeader
         title="Billing & Plan"
-        description="Review tenant-scoped plan status, usage thresholds, and billing controls."
+        description="Review plan status, usage thresholds, and billing controls."
+        breadcrumbs={[
+          { label: "Console", href: "/console" },
+          { label: "Billing" },
+        ]}
+        actions={
+          data.subscription && data.stripeConfigured ? (
+            <Button onClick={handleManageBilling} disabled={isCreatingPortal} variant="outline" size="sm">
+              {isCreatingPortal ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Opening...
+                </>
+              ) : (
+                <>
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  Manage Billing
+                </>
+              )}
+            </Button>
+          ) : undefined
+        }
       />
 
       <div className="space-y-6">
-        <div className="flex items-center justify-end">
+        <div className="hidden">
           {data.subscription && data.stripeConfigured && (
             <Button onClick={handleManageBilling} disabled={isCreatingPortal} variant="outline">
               {isCreatingPortal ? (
@@ -260,19 +295,19 @@ export default function BillingPage() {
             {usageBars.map((bar) => (
               <div key={bar.service} className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="font-medium">{bar.service}</span>
-                  <span className="text-muted-foreground">
+                  <span className="font-medium text-foreground">{bar.service}</span>
+                  <span className="text-muted-foreground font-mono tabular-nums text-xs">
                     {bar.current.toLocaleString()} / {bar.limit.toLocaleString()} {bar.unit}
                   </span>
                 </div>
-                <div className="h-2 w-full rounded-full bg-muted">
+                <div className="h-2 w-full rounded-full bg-muted/50">
                   <div
-                    className={`h-2 rounded-full transition-all ${
+                    className={`h-2 rounded-full transition-all duration-500 ${
                       bar.percentage >= 90
                         ? "bg-red-500"
                         : bar.percentage >= 75
                           ? "bg-amber-500"
-                          : "bg-blue-500"
+                          : "bg-primary"
                     }`}
                     style={{ width: `${bar.percentage}%` }}
                   />
@@ -307,7 +342,7 @@ export default function BillingPage() {
               {/* Starter Plan */}
               <div
                 className={`p-4 border rounded-lg ${
-                  isStarter ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" : ""
+                  isStarter ? "border-primary bg-primary/5" : ""
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -340,7 +375,7 @@ export default function BillingPage() {
               {/* Growth Plan */}
               <div
                 className={`p-4 border rounded-lg ${
-                  isGrowth ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" : ""
+                  isGrowth ? "border-primary bg-primary/5" : ""
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -387,7 +422,7 @@ export default function BillingPage() {
               {/* Scale Plan */}
               <div
                 className={`p-4 border rounded-lg ${
-                  isScale ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" : ""
+                  isScale ? "border-primary bg-primary/5" : ""
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -434,7 +469,7 @@ export default function BillingPage() {
               {/* Enterprise Plan */}
               <div
                 className={`p-4 border rounded-lg ${
-                  isEnterprise ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" : ""
+                  isEnterprise ? "border-primary bg-primary/5" : ""
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
