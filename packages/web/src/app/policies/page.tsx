@@ -13,7 +13,7 @@ export default function PoliciesPage() {
             Inspect enforced reconciliation policies and access constraints.
           </p>
           <div className="rounded-xl border border-slate-200 bg-white p-4">
-            <PolicyViewer />
+            <PolicyViewer initialPolicies={[]} />
           </div>
         </div>
       </main>

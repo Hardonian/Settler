@@ -26,6 +26,7 @@ export interface RunSummary {
   matched: number;
   matchedWithTolerance: number;
   unmatched: number;
+  mismatched: number;
   unmatchedSourceCount: number;
   unmatchedTargetCount: number;
   conflicts: number;

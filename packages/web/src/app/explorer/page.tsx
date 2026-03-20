@@ -1,1 +1,1 @@
-export { default, metadata } from "@/app/proof-explorer/page";
+"export { default } from \"@/app/proof-explorer/page\";";

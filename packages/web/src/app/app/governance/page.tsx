@@ -33,7 +33,7 @@ export default function GovernancePage() {
         <FreezeToggle />
         <RoleMatrix />
         <div className="h-px bg-border-light dark:bg-border-dark mx-4 my-4"></div>
-        <PolicyViewer />
+        <PolicyViewer initialPolicies={[]} />
         <div className="h-px bg-border-light dark:bg-border-dark mx-4 my-4"></div>
         <section className="px-4">
           <h3 className="text-sm font-bold uppercase tracking-wider text-text-muted-light dark:text-text-muted-dark mb-4">

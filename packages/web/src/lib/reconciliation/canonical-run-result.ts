@@ -9,7 +9,7 @@ import {
 } from "@settler/types";
 
 // Re-export for backward compatibility
-export { CanonicalRunStatus, RunSummaryState, RunProgressState, CanonicalRunSummary };
+export type { CanonicalRunStatus, RunSummaryState, RunProgressState, CanonicalRunSummary };
 export type { CanonicalRunStatus as CanonicalRunStatusType };
 export type ConfigDriftStatus = "none" | "detected" | "indeterminate";
 
@@ -23,7 +23,6 @@ export type RowRationaleCode =
   | "MANUAL_REVIEW_REQUIRED";
 
 // Re-export CanonicalRunSummary from canonical types (imported above)
-export type { CanonicalRunSummary as CanonicalRunSummary };
 
 // Exception counts - still defined here as not in canonical types
 export interface CanonicalExceptionCounts {
