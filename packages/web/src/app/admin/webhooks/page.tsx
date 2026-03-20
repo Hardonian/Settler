@@ -281,6 +281,7 @@ export default function AdminWebhooksPage() {
           </div>
         }
       >
+        // @ts-expect-error - Async server component
         <WebhookInboxContent />
       </Suspense>
     </div>
