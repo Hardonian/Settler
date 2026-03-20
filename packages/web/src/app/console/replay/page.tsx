@@ -15,6 +15,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 export const metadata = {
   title: "Replay Console | Settler",
@@ -167,8 +168,16 @@ export default async function ReplayConsolePage() {
                   {[40, 60, 45, 90, 100, 85, 95, 100, 100, 100].map((h, i) => (
                     <div
                       key={i}
-                      className={`flex-1 rounded-t-sm bg-primary/20 hover:bg-primary transition-colors cursor-pointer group relative h-[${h}%]`}
-                      style={{ height: `${h}%` }}
+                      className={cn(
+                        "flex-1 rounded-t-sm bg-primary/20 hover:bg-primary transition-colors cursor-pointer group relative",
+                        h === 40 && "h-[40%]",
+                        h === 60 && "h-[60%]",
+                        h === 45 && "h-[45%]",
+                        h === 90 && "h-[90%]",
+                        h === 100 && "h-[100%]",
+                        h === 85 && "h-[85%]",
+                        h === 95 && "h-[95%]"
+                      )}
                     >
                       <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 bg-slate-950 text-white text-[8px] p-1 rounded font-mono">
                         {h}% Match
