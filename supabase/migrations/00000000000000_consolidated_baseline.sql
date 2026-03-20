@@ -108,75 +108,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- get_user_tenant_ids - Critical for RLS policies
-CREATE OR REPLACE FUNCTION public.get_user_tenant_ids()
-RETURNS SETOF uuid
-LANGUAGE plpgsql
-STABLE SECURITY DEFINER
-SET search_path TO 'pg_catalog', 'public', 'auth'
-AS $function$
-BEGIN
-  -- Get tenant IDs from billing_accounts
-  RETURN QUERY
-  SELECT DISTINCT COALESCE(ba.tenant_id, ba.id::uuid)
-  FROM billing_accounts ba
-  WHERE ba.user_id = auth.uid()
-    AND ba.status = 'active'
-    AND ba.deleted_at IS NULL;
-
-  -- Also check memberships for multi-tenant users
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'memberships') THEN
-    RETURN QUERY
-    SELECT DISTINCT m.tenant_id
-    FROM memberships m
-    WHERE m.user_id = auth.uid()
-      AND m.status = 'active';
-  END IF;
-END;
-$function$;
-
-GRANT EXECUTE ON FUNCTION public.get_user_tenant_ids() TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_user_tenant_ids() TO service_role;
-
--- Helper for creating indexes idempotently
-CREATE OR REPLACE FUNCTION create_index_if_not_exists(
-    p_index_name TEXT,
-    p_table_name TEXT,
-    p_index_definition TEXT
-) RETURNS VOID AS $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_indexes
-        WHERE schemaname = 'public'
-        AND tablename = p_table_name
-        AND indexname = p_index_name
-    ) THEN
-        EXECUTE format('CREATE INDEX %I ON %I %s', p_index_name, p_table_name, p_index_definition);
-    END IF;
-END;
-$$ LANGUAGE plpgsql;
-
 -- ============================================================================
 -- SECTION 1: CORE TENANT INFRASTRUCTURE
 -- ============================================================================
-
--- TENANTS
-CREATE TABLE IF NOT EXISTS public.tenants (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  billing_account_id uuid REFERENCES public.billing_accounts(id) ON DELETE SET NULL,
-  slug text UNIQUE NOT NULL,
-  primary_domain text,
-  custom_domain text,
-  name text NOT NULL,
-  is_active boolean DEFAULT true,
-  metadata jsonb DEFAULT '{}',
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-);
-
-CREATE INDEX IF NOT EXISTS idx_tenants_slug ON public.tenants(slug);
-CREATE INDEX IF NOT EXISTS idx_tenants_billing_account_id ON public.tenants(billing_account_id);
-CREATE INDEX IF NOT EXISTS idx_tenants_is_active ON public.tenants(is_active);
 
 -- BILLING ACCOUNTS
 CREATE TABLE IF NOT EXISTS public.billing_accounts (
@@ -209,6 +143,73 @@ CREATE INDEX IF NOT EXISTS idx_billing_accounts_user_id ON public.billing_accoun
 CREATE INDEX IF NOT EXISTS idx_billing_accounts_tenant_id ON public.billing_accounts(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_billing_accounts_stripe_customer_id ON public.billing_accounts(stripe_customer_id);
 CREATE INDEX IF NOT EXISTS idx_billing_accounts_status ON public.billing_accounts(status);
+
+-- Helper for creating indexes idempotently
+CREATE OR REPLACE FUNCTION create_index_if_not_exists(
+    p_index_name TEXT,
+    p_table_name TEXT,
+    p_index_definition TEXT
+) RETURNS VOID AS $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes
+        WHERE schemaname = 'public'
+        AND tablename = p_table_name
+        AND indexname = p_index_name
+    ) THEN
+        EXECUTE format('CREATE INDEX %I ON %I %s', p_index_name, p_table_name, p_index_definition);
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+-- get_user_tenant_ids - Critical for RLS policies
+CREATE OR REPLACE FUNCTION public.get_user_tenant_ids()
+RETURNS SETOF uuid
+LANGUAGE plpgsql
+STABLE SECURITY DEFINER
+SET search_path TO 'pg_catalog', 'public', 'auth'
+AS $function$
+BEGIN
+  -- Get tenant IDs from billing_accounts
+  RETURN QUERY
+  SELECT DISTINCT COALESCE(ba.tenant_id, ba.id::uuid)
+  FROM billing_accounts ba
+  WHERE ba.user_id = auth.uid()
+    AND ba.status = 'active'
+    AND ba.deleted_at IS NULL;
+
+  -- Also check memberships for multi-tenant users
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'memberships') THEN
+    RETURN QUERY
+    SELECT DISTINCT m.tenant_id
+    FROM memberships m
+    WHERE m.user_id = auth.uid()
+      AND m.status = 'active';
+  END IF;
+END;
+$function$;
+
+GRANT EXECUTE ON FUNCTION public.get_user_tenant_ids() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.get_user_tenant_ids() TO service_role;
+
+-- TENANTS
+CREATE TABLE IF NOT EXISTS public.tenants (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  billing_account_id uuid REFERENCES public.billing_accounts(id) ON DELETE SET NULL,
+  slug text UNIQUE NOT NULL,
+  primary_domain text,
+  custom_domain text,
+  name text NOT NULL,
+  is_active boolean DEFAULT true,
+  metadata jsonb DEFAULT '{}',
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_tenants_slug ON public.tenants(slug);
+CREATE INDEX IF NOT EXISTS idx_tenants_billing_account_id ON public.tenants(billing_account_id);
+CREATE INDEX IF NOT EXISTS idx_tenants_is_active ON public.tenants(is_active);
+
 
 -- SUBSCRIPTIONS
 CREATE TABLE IF NOT EXISTS public.subscriptions (
