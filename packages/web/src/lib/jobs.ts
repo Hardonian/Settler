@@ -13,7 +13,7 @@ import { appLogger } from "@/lib/utils/logger";
 import { v4 as uuidv4 } from "uuid";
 
 // Types - import from canonical jobforge-shared
-import { JobStatus } from "@settler/jobforge-shared";
+import { JobStatus } from "@jobforge/shared";
 export type { JobStatus };
 
 export interface EnqueueJobParams {

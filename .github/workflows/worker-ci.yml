@@ -154,12 +154,12 @@ jobs:
       - name: TypeScript type check
         run: pnpm typecheck --filter=@settler/types --filter=@settler/protocol || true
         env:
-          TURBO_TOKEN: ${{ secrets['TURBO_TOKEN'] }}
-          TURBO_TEAM: ${{ secrets['TURBO_TEAM'] }}
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN || '' }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM || '' }}
 
       - name: Lint check
         run: pnpm lint || true
         env:
-          TURBO_TOKEN: ${{ secrets['TURBO_TOKEN'] }}
-          TURBO_TEAM: ${{ secrets['TURBO_TEAM'] }}
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN || '' }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM || '' }}
         continue-on-error: true

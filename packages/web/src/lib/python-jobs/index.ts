@@ -22,7 +22,7 @@ export type PythonJobType =
   | "custom";
 
 // PythonJobStatus - import from canonical jobforge-shared and re-export
-import { JobStatus } from "@settler/jobforge-shared";
+import { JobStatus } from "@jobforge/shared";
 export type PythonJobStatus = JobStatus;
 
 export interface PythonJob {
