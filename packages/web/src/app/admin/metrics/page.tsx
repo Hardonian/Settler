@@ -1,24 +1,27 @@
 /**
  * Admin Metrics Dashboard Page
- * 
+ *
  * Executive dashboard for viewing key business metrics.
  */
 
-import { Suspense } from 'react';
-import { createClient } from '@/lib/supabase/server';
-import { ExecutiveDashboard } from '@/components/console/ExecutiveDashboard';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
-import { adminLogger } from '@/lib/admin/utils/logger';
+import { Suspense } from "react";
+import { createClient } from "@/lib/supabase/server";
+import { ExecutiveDashboard } from "@/components/console/ExecutiveDashboard";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { adminLogger } from "@/lib/admin/utils/logger";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 async function AdminMetricsContent() {
   try {
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
       return (
@@ -31,7 +34,7 @@ async function AdminMetricsContent() {
     }
 
     // Use proper super admin check
-    const { isSuperAdmin } = await import('@/lib/auth/super-admin');
+    const { isSuperAdmin } = await import("@/lib/auth/super-admin");
     const isAdmin = await isSuperAdmin();
 
     if (!isAdmin) {
@@ -44,13 +47,11 @@ async function AdminMetricsContent() {
       );
     }
   } catch (error) {
-    adminLogger.error('Error in admin metrics page', error);
+    adminLogger.error("Error in admin metrics page", error);
     return (
       <div className="text-center py-12">
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 max-w-md mx-auto">
-          <p className="text-red-800 dark:text-red-200 mb-2">
-            Unable to load metrics dashboard.
-          </p>
+          <p className="text-red-800 dark:text-red-200 mb-2">Unable to load metrics dashboard.</p>
           <p className="text-sm text-red-600 dark:text-red-400">
             Please try again or contact support if the problem persists.
           </p>
@@ -65,9 +66,7 @@ async function AdminMetricsContent() {
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
           Executive Dashboard
         </h1>
-        <p className="text-slate-600 dark:text-slate-400">
-          Key business metrics and KPIs
-        </p>
+        <p className="text-slate-600 dark:text-slate-400">Key business metrics and KPIs</p>
       </div>
 
       <ExecutiveDashboard />
@@ -89,6 +88,7 @@ export default function AdminMetricsPage() {
               </div>
             }
           >
+            {/* @ts-ignore */}
             <AdminMetricsContent />
           </Suspense>
         </div>

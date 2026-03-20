@@ -1,16 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Activity,
-  Layers,
-  ShieldCheck,
-  Zap,
-  Globe,
-  Cpu,
-  Terminal,
-  Search,
-  HardDrive,
-} from "lucide-react";
+import { Activity, Layers, Globe, Cpu, Terminal, Search, HardDrive } from "lucide-react";
 import ControlPlaneOverview from "@/components/ControlPlaneOverview";
 
 export const metadata = {

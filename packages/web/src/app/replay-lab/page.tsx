@@ -3,16 +3,7 @@ import { Footer } from "@/components/Footer";
 import { AnimatedHero } from "@/components/AnimatedHero";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  History,
-  Play,
-  ShieldCheck,
-  Zap,
-  ArrowRight,
-  Terminal,
-  RefreshCw,
-  Layers,
-} from "lucide-react";
+import { History, Play, ShieldCheck, ArrowRight, Terminal, RefreshCw, Layers } from "lucide-react";
 import Link from "next/link";
 
 export const metadata = {

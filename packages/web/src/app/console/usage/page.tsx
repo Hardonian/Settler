@@ -12,7 +12,6 @@ import {
   Globe,
   Clock,
   Layers,
-  ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
 

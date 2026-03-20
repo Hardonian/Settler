@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { History, ShieldCheck, Download, Search, User, Monitor, Calendar } from "lucide-react";
+import { History, ShieldCheck, Download, Search, User, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const metadata = {

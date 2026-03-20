@@ -15,7 +15,7 @@ interface ExperimentDashboardClientProps {
 }
 
 export default function ExperimentDashboardClient({ experiment }: ExperimentDashboardClientProps) {
-  const [isPending, startTransition] = useTransition();
+  const [isPending] = useTransition();
   const [status, setStatus] = useState(experiment.status);
   const [split, setSplit] = useState<Record<string, number>>(
     experiment.trafficSplit as Record<string, number>
