@@ -130,7 +130,7 @@ export default function DocsPlatformArchitecturePage() {
               <h2 className="text-3xl font-bold tracking-tight italic border-l-4 border-l-primary/60 pl-8 underline underline-offset-8">
                 Layer 2: Isolated Runtime VM
               </h2>
-              <p className="text-xl text-muted-foreground font-medium leading-relaxed max-w-2xl italic underline italic underline-offset-8">
+              <p className="text-xl text-muted-foreground font-medium leading-relaxed max-w-2xl italic underline underline-offset-8">
                 Policies are executed inside an ephemeral, hardened VM. This sandbox prevents
                 leakage between tenants and provides a pure functional environment for
                 reconciliation logic.

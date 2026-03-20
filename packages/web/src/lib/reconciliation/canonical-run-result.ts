@@ -258,22 +258,6 @@ function asNumber(value: unknown): number {
   return 0;
 }
 
-function asIsoString(value: unknown): string | null {
-  if (!value) {
-    return null;
-  }
-
-  if (value instanceof Date) {
-    return value.toISOString();
-  }
-
-  if (typeof value === "string") {
-    return value;
-  }
-
-  return null;
-}
-
 function getSummaryObject(result: ReconResultRecordLike | null): Record<string, unknown> {
   return asObject(result?.summary) || {};
 }

@@ -8,7 +8,6 @@
 
 import { FileSearch, AlertCircle, Inbox, Search } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 // Re-export canonical EmptyState and RetryButton from ui
 export { EmptyState, RetryButton } from "@/components/ui/empty-state";
