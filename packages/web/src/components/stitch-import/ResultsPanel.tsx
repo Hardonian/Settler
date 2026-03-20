@@ -79,16 +79,16 @@ export function ResultsPanel() {
       <header className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground dark:text-white">
               Reconciliation Results
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-muted-foreground dark:text-muted-foreground mt-1">
               Review the outcomes of your reconciliation pipelines.
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="icon" className="rounded-full">
-              <Share className="w-5 h-5 text-slate-500" />
+              <Share className="w-5 h-5 text-muted-foreground" />
             </Button>
             <Button
               variant="outline"
@@ -101,9 +101,9 @@ export function ResultsPanel() {
         </div>
 
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
           <Input
-            className="pl-10 h-12 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-xl"
+            className="pl-10 h-12 bg-card dark:bg-background border-border dark:border-border rounded-xl"
             placeholder="Search by Trace ID, reference, or pipeline..."
           />
         </div>
@@ -117,19 +117,19 @@ export function ResultsPanel() {
           </Button>
           <Button
             variant="outline"
-            className="rounded-full px-4 h-10 gap-2 border-slate-200 text-slate-600"
+            className="rounded-full px-4 h-10 gap-2 border-border text-muted-foreground"
           >
             <Calendar className="w-4 h-4" /> Last 24h
           </Button>
           <Button
             variant="outline"
-            className="rounded-full px-4 h-10 gap-2 border-slate-200 text-slate-600"
+            className="rounded-full px-4 h-10 gap-2 border-border text-muted-foreground"
           >
             <GitBranch className="w-4 h-4" /> Payments_v2
           </Button>
           <Button
             variant="outline"
-            className="rounded-full px-4 h-10 gap-2 border-slate-200 text-slate-600"
+            className="rounded-full px-4 h-10 gap-2 border-border text-muted-foreground"
           >
             <Filter className="w-4 h-4" /> More
           </Button>
@@ -139,28 +139,28 @@ export function ResultsPanel() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card className="p-4 border-emerald-500/20 bg-emerald-50/10 relative overflow-hidden group">
           <CheckCircle2 className="absolute -right-2 -top-2 w-16 h-16 text-emerald-500 opacity-5" />
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+          <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
             Matched
           </span>
-          <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1">982</div>
+          <div className="text-2xl font-bold text-foreground dark:text-white mt-1">982</div>
           <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-600 mt-2">
             <TrendingUp className="w-3 h-3" /> 12%
           </div>
         </Card>
         <Card className="p-4 border-rose-500/20 bg-rose-50/10 relative overflow-hidden group">
           <XCircle className="absolute -right-2 -top-2 w-16 h-16 text-rose-500 opacity-5" />
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+          <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
             Mismatch
           </span>
-          <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1">14</div>
+          <div className="text-2xl font-bold text-foreground dark:text-white mt-1">14</div>
           <div className="flex items-center gap-1 text-[11px] font-bold text-rose-600 mt-2">
             <TrendingUp className="w-3 h-3" /> 2%
           </div>
         </Card>
         <Card className="p-4 border-amber-500/20 bg-amber-50/10 relative overflow-hidden group">
           <AlertTriangle className="absolute -right-2 -top-2 w-16 h-16 text-amber-500 opacity-5" />
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Review</span>
-          <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1">244</div>
+          <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Review</span>
+          <div className="text-2xl font-bold text-foreground dark:text-white mt-1">244</div>
           <div className="flex items-center gap-1 text-[11px] font-bold text-amber-600 mt-2">
             <TrendingDown className="w-3 h-3" /> 5%
           </div>
@@ -168,7 +168,7 @@ export function ResultsPanel() {
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">
+        <h2 className="text-xs font-bold text-muted-foreground dark:text-muted-foreground uppercase tracking-widest mb-2">
           Recent Transactions
         </h2>
         <div className="grid grid-cols-1 gap-4">
@@ -206,18 +206,18 @@ export function ResultsPanel() {
                     {res.status}
                   </Badge>
                 </div>
-                <span className="text-xs font-semibold text-slate-400">{res.time}</span>
+                <span className="text-xs font-semibold text-muted-foreground">{res.time}</span>
               </div>
               <div className="flex justify-between items-end">
                 <div>
-                  <div className="text-sm font-mono text-slate-500 mb-1">
+                  <div className="text-sm font-mono text-muted-foreground mb-1">
                     Trace:{" "}
-                    <span className="text-slate-900 dark:text-white font-bold">{res.traceId}</span>
+                    <span className="text-foreground dark:text-white font-bold">{res.traceId}</span>
                   </div>
-                  <div className="text-sm font-bold text-slate-900 dark:text-white">
+                  <div className="text-sm font-bold text-foreground dark:text-white">
                     Tx Ref: {res.ref}
                   </div>
-                  <div className="text-xs font-semibold text-slate-500 mt-1">
+                  <div className="text-xs font-semibold text-muted-foreground mt-1">
                     Pipeline: {res.pipeline}
                   </div>
                 </div>
@@ -262,7 +262,7 @@ export function ResultsPanel() {
 
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-xs font-bold uppercase text-slate-500 tracking-wider">
+                  <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider">
                     Comparison Matrix
                   </h3>
                   <Button
@@ -276,19 +276,19 @@ export function ResultsPanel() {
 
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+                    <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
                       <div className="w-2 h-2 rounded-full bg-blue-500" /> Source: Stripe API
                     </div>
-                    <Card className="p-4 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 space-y-4">
+                    <Card className="p-4 bg-muted/20 dark:bg-background border-border dark:border-border space-y-4">
                       <div>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase">
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase">
                           Amount
                         </span>
                         <div className="font-mono text-sm font-bold mt-1">100.00 USD</div>
                       </div>
-                      <div className="h-px bg-slate-200 dark:bg-slate-800" />
+                      <div className="h-px bg-slate-200 dark:bg-card" />
                       <div>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase">
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase">
                           Status
                         </span>
                         <div className="font-mono text-sm font-bold mt-1">succeeded</div>
@@ -296,13 +296,13 @@ export function ResultsPanel() {
                     </Card>
                   </div>
                   <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+                    <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
                       <div className="w-2 h-2 rounded-full bg-purple-500" /> Source: Internal DB
                     </div>
                     <Card className="p-4 bg-rose-50/30 dark:bg-rose-950/20 border-rose-500/30 space-y-4 relative">
                       <div className="absolute inset-x-0 top-0 h-1 bg-rose-500/10" />
                       <div>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase">
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase">
                           Amount
                         </span>
                         <div className="font-mono text-sm font-black text-rose-600 mt-1">
@@ -311,7 +311,7 @@ export function ResultsPanel() {
                       </div>
                       <div className="h-px bg-rose-500/10 my-2" />
                       <div>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase">
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase">
                           Status
                         </span>
                         <div className="font-mono text-sm font-bold mt-1">completed</div>
@@ -321,7 +321,7 @@ export function ResultsPanel() {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-xs font-bold uppercase text-slate-500 tracking-wider">
+                  <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider">
                     Logic Trace
                   </h3>
                   <div className="space-y-3">
@@ -329,7 +329,7 @@ export function ResultsPanel() {
                       <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                       <div>
                         <p className="text-sm font-bold">Currency Match</p>
-                        <p className="text-xs text-slate-500 font-medium">
+                        <p className="text-xs text-muted-foreground font-medium">
                           Both sources match ISO-4217 code: USD
                         </p>
                       </div>

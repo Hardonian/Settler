@@ -236,32 +236,34 @@ export default async function AppRunsPage() {
         </CardContent>
       </Card>
 
-      <section className="bg-slate-900 rounded-3xl p-10 text-white relative overflow-hidden shadow-2xl border border-white/5">
-        <div className="absolute right-0 top-0 p-10 opacity-10">
+      <section className="rounded-2xl p-8 relative overflow-hidden border border-primary/15 bg-gradient-to-br from-primary/8 via-card to-card shadow-sm">
+        <div className="absolute right-0 top-0 p-8 opacity-[0.04] pointer-events-none">
           <ShieldCheck className="h-64 w-64 text-primary" />
         </div>
-        <div className="relative z-10 max-w-2xl space-y-6">
-          <Badge className="bg-primary/20 text-primary border-primary/40 font-black tracking-[0.2em] uppercase px-4 py-1.5 h-auto">
-            Advanced Feature
+        <div className="relative z-10 max-w-2xl space-y-5">
+          <Badge className="bg-primary/10 text-primary border-primary/30 font-semibold tracking-[0.15em] uppercase px-3 py-1 h-auto text-xs">
+            Audit Ready
           </Badge>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight italic">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">
             Automated Evidence Generation
           </h2>
-          <p className="text-slate-400 font-medium leading-relaxed italic border-l-2 border-primary/40 pl-6">
-            Every run listed here generates a cryptographically signed output bundle. These bundles
-            can be sent directly to auditors to prove mathematical correctness without exposing raw
-            underlying sensitive data.
+          <p className="text-muted-foreground leading-relaxed border-l-2 border-primary/30 pl-5">
+            Every run generates a cryptographically signed output bundle. Send directly to auditors
+            to prove mathematical correctness without exposing raw transaction data.
           </p>
-          <div className="flex gap-4 pt-4">
-            <Button className="h-12 px-6 font-bold shadow-2xl ring-1 ring-primary/20">
+          <div className="flex flex-wrap gap-3 pt-2">
+            <Button className="font-semibold gap-2 shadow-sm">
               Configure Evidence Protocols
             </Button>
             <Button
-              variant="ghost"
-              className="h-12 px-6 font-bold text-slate-300 hover:text-white flex gap-2"
+              variant="outline"
+              className="font-semibold gap-2"
+              asChild
             >
-              Learn about Proof Graphs
-              <ExternalLink size={14} />
+              <Link href="/app/proofs">
+                Explore Proof Graph
+                <ExternalLink size={13} />
+              </Link>
             </Button>
           </div>
         </div>

@@ -78,28 +78,28 @@ export function AuditLogViewer() {
         </div>
 
         {loading ? (
-          <div className="text-center py-8 text-slate-500 dark:text-slate-400">Loading...</div>
+          <div className="text-center py-8 text-muted-foreground dark:text-muted-foreground">Loading...</div>
         ) : (
           <div className="space-y-2 max-h-96 overflow-y-auto">
             {filteredLogs.map((log) => (
               <div
                 key={log.id}
-                className="p-3 border border-slate-200 dark:border-slate-700 rounded-lg text-sm"
+                className="p-3 border border-border dark:border-border rounded-lg text-sm"
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">{log.action}</Badge>
-                    <span className="text-slate-600 dark:text-slate-400">{log.resource}</span>
+                    <span className="text-muted-foreground dark:text-muted-foreground">{log.resource}</span>
                   </div>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                  <span className="text-xs text-muted-foreground dark:text-muted-foreground">
                     {new Date(log.timestamp).toLocaleString()}
                   </span>
                 </div>
-                <div className="text-xs text-slate-500 dark:text-slate-400">
+                <div className="text-xs text-muted-foreground dark:text-muted-foreground">
                   User: {log.userId} • IP: {log.ipAddress}
                 </div>
                 {log.details && (
-                  <div className="mt-2 text-xs text-slate-600 dark:text-slate-400">
+                  <div className="mt-2 text-xs text-muted-foreground dark:text-muted-foreground">
                     {log.details}
                   </div>
                 )}

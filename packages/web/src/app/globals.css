@@ -239,7 +239,9 @@
 
   /* Inline code: ensure proper contrast and sizing */
   code:not(pre code) {
-    @apply bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 px-1.5 py-0.5 rounded;
+    background: var(--bg-subtle);
+    color: var(--text);
+    @apply px-1.5 py-0.5 rounded;
     font-size: clamp(0.8125rem, 1vw + 0.25rem, 0.875rem); /* 13px - 14px */
   }
 
@@ -287,15 +289,16 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-neutral-100 dark:bg-neutral-800;
+  background: var(--bg-subtle);
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-neutral-300 dark:bg-neutral-600 rounded-full;
+  background: var(--border);
+  border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-neutral-400 dark:bg-neutral-500;
+  background: var(--text-subtle);
 }
 
 /* Performance optimizations */

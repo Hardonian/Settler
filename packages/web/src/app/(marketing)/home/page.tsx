@@ -149,7 +149,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
     <ErrorBoundary context="Home Page">
       <main
         id="main-content"
-        className="min-h-screen bg-slate-50 pb-[env(safe-area-inset-bottom)] dark:bg-slate-950 antialiased"
+        className="min-h-screen bg-background pb-[env(safe-area-inset-bottom)]  antialiased"
         aria-label="Settler homepage"
       >
         <Navigation />
@@ -173,7 +173,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
               <HeroAnimationWrapper>
                 <div className="text-left max-w-2xl">
                   <div className="mb-5 flex justify-start">
-                    <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-sm">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-border dark:border-border bg-card dark:bg-background px-3.5 py-1.5 text-xs font-semibold text-foreground dark:text-muted-foreground shadow-sm">
                       <Github className="w-3.5 h-3.5" aria-hidden="true" />
                       Open-source · Apache 2.0
                     </span>
@@ -184,7 +184,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                       as="h1"
                       id="hero-heading"
                       text="Reconcile Financial Data. Find Every Mismatch. Prove the Results."
-                      className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold mb-4 sm:mb-6 text-slate-900 dark:text-white tracking-tight leading-[1.1]"
+                      className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold mb-4 sm:mb-6 text-foreground dark:text-foreground tracking-tight leading-[1.1]"
                       delay={0}
                       staggerDelay={0.02}
                       splitBy="words"
@@ -192,7 +192,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                   </div>
 
                   <div className="mb-10 sm:mb-12">
-                    <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <p className="text-lg sm:text-xl text-muted-foreground dark:text-muted-foreground leading-relaxed">
                       Settler matches records across Stripe, banks, ERPs, and ledgers — then
                       surfaces every mismatch with full context. Every run produces verifiable
                       evidence. Every run can be replayed.
@@ -203,7 +203,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                     <Button
                       size="lg"
                       asChild
-                      className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 px-8 py-6 text-lg font-semibold shadow-xl transition-all duration-200"
+                      className="w-full sm:w-auto bg-foreground hover:bg-foreground/90 text-background px-8 py-6 text-lg font-semibold shadow-xl transition-all duration-200"
                     >
                       <Link
                         href="/docs/quickstart"
@@ -218,7 +218,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                       size="lg"
                       variant="outline"
                       asChild
-                      className="w-full sm:w-auto px-8 py-6 text-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200"
+                      className="w-full sm:w-auto px-8 py-6 text-lg border-2 border-border dark:border-border bg-card dark:bg-background hover:bg-background dark:hover:bg-card transition-all duration-200"
                     >
                       <Link href={repoUrl} className="flex items-center justify-center gap-3">
                         <span>View on GitHub</span>
@@ -228,39 +228,39 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
 
                   {/* Trust signals */}
                   <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mb-12 sm:mb-16">
-                    <span className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-500">
+                    <span className="flex items-center gap-1.5 text-sm text-muted-foreground dark:text-muted-foreground">
                       <CheckCircle2
-                        className="w-3.5 h-3.5 text-slate-400 dark:text-slate-600"
+                        className="w-3.5 h-3.5 text-muted-foreground dark:text-muted-foreground"
                         aria-hidden="true"
                       />
                       Apache 2.0
                     </span>
-                    <span className="text-slate-300 dark:text-slate-700" aria-hidden="true">
+                    <span className="text-muted-foreground dark:text-foreground" aria-hidden="true">
                       ·
                     </span>
-                    <span className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-500">
+                    <span className="flex items-center gap-1.5 text-sm text-muted-foreground dark:text-muted-foreground">
                       <CheckCircle2
-                        className="w-3.5 h-3.5 text-slate-400 dark:text-slate-600"
+                        className="w-3.5 h-3.5 text-muted-foreground dark:text-muted-foreground"
                         aria-hidden="true"
                       />
                       Self-hostable
                     </span>
-                    <span className="text-slate-300 dark:text-slate-700" aria-hidden="true">
+                    <span className="text-muted-foreground dark:text-foreground" aria-hidden="true">
                       ·
                     </span>
-                    <span className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-500">
+                    <span className="flex items-center gap-1.5 text-sm text-muted-foreground dark:text-muted-foreground">
                       <CheckCircle2
-                        className="w-3.5 h-3.5 text-slate-400 dark:text-slate-600"
+                        className="w-3.5 h-3.5 text-muted-foreground dark:text-muted-foreground"
                         aria-hidden="true"
                       />
                       TypeScript &amp; Python SDKs
                     </span>
-                    <span className="text-slate-300 dark:text-slate-700" aria-hidden="true">
+                    <span className="text-muted-foreground dark:text-foreground" aria-hidden="true">
                       ·
                     </span>
-                    <span className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-500">
+                    <span className="flex items-center gap-1.5 text-sm text-muted-foreground dark:text-muted-foreground">
                       <CheckCircle2
-                        className="w-3.5 h-3.5 text-slate-400 dark:text-slate-600"
+                        className="w-3.5 h-3.5 text-muted-foreground dark:text-muted-foreground"
                         aria-hidden="true"
                       />
                       SHA-256 audit trail
@@ -289,18 +289,18 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
 
         {/* Core Capabilities */}
         <section
-          className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900"
+          className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-card dark:bg-background"
           aria-label="Core capabilities"
         >
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12 sm:mb-16">
-              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500 mb-3">
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground dark:text-muted-foreground mb-3">
                 Core Capabilities
               </p>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-foreground dark:text-foreground tracking-tight">
                 Verifiable Execution for Operational Systems
               </h2>
-              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-lg text-muted-foreground dark:text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                 No black boxes. Deterministic runs, replay verification, and traceable
                 policy-governed execution at every step.
               </p>
@@ -314,16 +314,16 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                     key={index}
                     className="p-6 sm:p-8 h-full transition-all duration-300 hover:shadow-xl"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-muted/40 dark:bg-card flex items-center justify-center mb-4">
                       <Icon
-                        className="w-6 h-6 text-slate-700 dark:text-slate-300"
+                        className="w-6 h-6 text-foreground dark:text-muted-foreground"
                         aria-hidden="true"
                       />
                     </div>
-                    <h3 className="text-lg sm:text-xl font-semibold mb-2 text-slate-900 dark:text-white">
+                    <h3 className="text-lg sm:text-xl font-semibold mb-2 text-foreground dark:text-foreground">
                       {capability.title}
                     </h3>
-                    <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <p className="text-sm sm:text-base text-muted-foreground dark:text-muted-foreground leading-relaxed">
                       {capability.description}
                     </p>
                   </SpotlightCard>
@@ -335,18 +335,18 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
 
         {/* Developer Workflow */}
         <section
-          className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950"
+          className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-background "
           aria-label="Developer workflow"
         >
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12 sm:mb-16">
-              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500 mb-3">
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground dark:text-muted-foreground mb-3">
                 Developer Experience
               </p>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-foreground dark:text-foreground tracking-tight">
                 Four Steps to Audit-Ready Reconciliation
               </h2>
-              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-lg text-muted-foreground dark:text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                 Install the SDK, define your rules, run reconciliation, review evidence. No complex
                 setup required.
               </p>
@@ -358,9 +358,9 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                 return (
                   <div
                     key={index}
-                    className="relative p-6 pt-10 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col items-center text-center overflow-visible"
+                    className="relative p-6 pt-10 bg-card dark:bg-background rounded-2xl border border-border dark:border-border flex flex-col items-center text-center overflow-visible"
                   >
-                    <div className="absolute top-4 left-4 w-8 h-8 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center text-sm font-bold shadow-sm ring-2 ring-white dark:ring-slate-900">
+                    <div className="absolute top-4 left-4 w-8 h-8 rounded-full bg-foreground text-background flex items-center justify-center text-sm font-bold shadow-sm ring-2 ring-border">
                       {step.number}
                     </div>
 
@@ -374,18 +374,18 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                     </div>
 
                     <div className="pt-2 w-full min-w-0">
-                      <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white flex items-center justify-center gap-2">
+                      <h3 className="text-lg font-semibold mb-2 text-foreground dark:text-foreground flex items-center justify-center gap-2">
                         <Icon
-                          className="w-5 h-5 text-slate-700 dark:text-slate-300"
+                          className="w-5 h-5 text-foreground dark:text-muted-foreground"
                           aria-hidden="true"
                         />
                         {step.title}
                       </h3>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
+                      <p className="text-sm text-muted-foreground dark:text-muted-foreground mb-4 leading-relaxed">
                         {step.description}
                       </p>
                       <code
-                        className="block text-xs bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded text-slate-700 dark:text-slate-300 font-mono overflow-hidden text-ellipsis whitespace-nowrap max-w-full"
+                        className="block text-xs bg-muted/40 dark:bg-card px-3 py-2 rounded text-foreground dark:text-muted-foreground font-mono overflow-hidden text-ellipsis whitespace-nowrap max-w-full"
                         title={step.code}
                       >
                         {step.code}
@@ -400,29 +400,29 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
 
         {/* Code Example */}
         <section
-          className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-slate-900 text-white"
+          className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-background"
           aria-label="Code example"
         >
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-10 sm:mb-12">
-              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-3">
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
                 TypeScript SDK
               </p>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 tracking-tight">
                 Inspectable, Testable, Version Controlled
               </h2>
-              <p className="text-lg text-slate-400 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                 Your reconciliation rules are code. Review them in PRs, test them in CI, deploy them
                 with confidence.
               </p>
             </div>
 
-            <div className="rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl">
-              <div className="flex items-center gap-2 px-4 py-3 bg-slate-900 border-b border-slate-800">
+            <div className="rounded-2xl overflow-hidden bg-card border border-border shadow-2xl">
+              <div className="flex items-center gap-2 px-4 py-3 bg-background border-b border-border">
                 <div className="w-3 h-3 rounded-full bg-red-500" aria-hidden="true" />
                 <div className="w-3 h-3 rounded-full bg-yellow-500" aria-hidden="true" />
                 <div className="w-3 h-3 rounded-full bg-green-500" aria-hidden="true" />
-                <span className="ml-4 text-sm text-slate-400 font-mono">reconciliation.ts</span>
+                <span className="ml-4 text-sm text-muted-foreground font-mono">reconciliation.ts</span>
               </div>
               <div className="p-4 sm:p-6 overflow-x-auto">
                 <AnimatedCodeBlock
@@ -455,12 +455,12 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                 const Icon = feature.icon;
                 return (
                   <div key={idx} className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-5 h-5 text-slate-300" aria-hidden="true" />
+                    <div className="w-10 h-10 rounded-lg bg-card flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-white mb-1">{feature.title}</h4>
-                      <p className="text-sm text-slate-400">{feature.desc}</p>
+                      <h4 className="font-semibold text-foreground mb-1">{feature.title}</h4>
+                      <p className="text-sm text-muted-foreground">{feature.desc}</p>
                     </div>
                   </div>
                 );
@@ -471,18 +471,18 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
 
         {/* Enterprise Inevitability Narrative */}
         <section
-          className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900"
+          className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-card dark:bg-background"
           aria-label="Why this matters"
         >
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12 sm:mb-16">
-              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500 mb-3">
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground dark:text-muted-foreground mb-3">
                 Why Settler
               </p>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-foreground dark:text-foreground tracking-tight">
                 Why Teams Move Beyond Spreadsheets
               </h2>
-              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-lg text-muted-foreground dark:text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                 Manual reconciliation breaks at scale. Repeatable, API-driven reconciliation is what
                 teams build toward.
               </p>
@@ -513,18 +513,18 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                 return (
                   <div
                     key={idx}
-                    className="p-6 md:p-8 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-md transition-all duration-200"
+                    className="p-6 md:p-8 bg-background dark:bg-card/50 rounded-2xl border border-border dark:border-border hover:border-border dark:hover:border-border hover:shadow-md transition-all duration-200"
                   >
-                    <div className="w-11 h-11 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-5 shadow-sm">
+                    <div className="w-11 h-11 rounded-xl bg-card dark:bg-card border border-border dark:border-border flex items-center justify-center mb-5 shadow-sm">
                       <Icon
-                        className="w-5 h-5 text-slate-700 dark:text-slate-300"
+                        className="w-5 h-5 text-foreground dark:text-muted-foreground"
                         aria-hidden="true"
                       />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2.5 text-slate-900 dark:text-white tracking-tight">
+                    <h3 className="text-lg font-semibold mb-2.5 text-foreground dark:text-foreground tracking-tight">
                       {item.title}
                     </h3>
-                    <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                    <p className="text-sm text-foreground dark:text-muted-foreground leading-relaxed">
                       {item.description}
                     </p>
                   </div>
@@ -535,18 +535,18 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
         </section>
 
         <section
-          className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900"
+          className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-card dark:bg-background"
           aria-label="Platform architecture preview"
         >
           <div className="max-w-6xl mx-auto space-y-4">
             <div className="max-w-3xl">
-              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500 mb-3">
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground dark:text-muted-foreground mb-3">
                 Visual proof
               </p>
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-bold text-foreground dark:text-foreground tracking-tight">
                 See the actual system shape, not just feature claims
               </h2>
-              <p className="mt-3 text-slate-600 dark:text-slate-400">
+              <p className="mt-3 text-muted-foreground dark:text-muted-foreground">
                 This architecture preview maps shipped surfaces, control-plane modules, and runtime
                 boundaries. Continue to the dedicated architecture page for deeper detail.
               </p>
@@ -557,18 +557,18 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
 
         {/* Feature Pages */}
         <section
-          className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950"
+          className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-background "
           aria-label="Key features"
         >
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
-              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500 mb-3">
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground dark:text-muted-foreground mb-3">
                 Explore
               </p>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-foreground dark:text-foreground tracking-tight">
                 Go Deeper on Each Capability
               </h2>
-              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-lg text-muted-foreground dark:text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                 Each feature has its own dedicated page with detailed mechanics, interactive demos,
                 and documentation.
               </p>
@@ -606,21 +606,21 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                   <Link
                     key={feature.href}
                     href={feature.href}
-                    className="group p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-lg transition-all duration-200 flex flex-col"
+                    className="group p-6 bg-card dark:bg-background rounded-2xl border border-border dark:border-border hover:border-border dark:hover:border-border hover:shadow-lg transition-all duration-200 flex flex-col"
                   >
-                    <div className="w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4 flex-shrink-0">
+                    <div className="w-11 h-11 rounded-xl bg-muted/40 dark:bg-card flex items-center justify-center mb-4 flex-shrink-0">
                       <Icon
-                        className="w-5 h-5 text-slate-700 dark:text-slate-300"
+                        className="w-5 h-5 text-foreground dark:text-muted-foreground"
                         aria-hidden="true"
                       />
                     </div>
-                    <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-2 tracking-tight">
+                    <h3 className="text-base font-semibold text-foreground dark:text-foreground mb-2 tracking-tight">
                       {feature.label}
                     </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed flex-1 mb-4">
+                    <p className="text-sm text-muted-foreground dark:text-muted-foreground leading-relaxed flex-1 mb-4">
                       {feature.description}
                     </p>
-                    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground dark:text-muted-foreground group-hover:text-foreground dark:group-hover:text-primary-foreground transition-colors">
                       {feature.cta}
                       <ArrowRight
                         className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5"
@@ -636,33 +636,33 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
 
         {/* GitHub / Quickstart CTA */}
         <section
-          className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-slate-900 dark:bg-slate-950"
+          className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-background "
           aria-label="Get started"
         >
           <div className="max-w-3xl mx-auto text-center">
             <div className="mb-5 flex justify-center">
-              <span className="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-800 px-3.5 py-1.5 text-xs font-semibold text-slate-300">
+              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-semibold text-muted-foreground">
                 <Github className="w-3.5 h-3.5" aria-hidden="true" />
                 Apache 2.0 · Open Source
               </span>
             </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight mb-4">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground tracking-tight mb-4">
               Start in Minutes
             </h2>
-            <p className="text-lg text-slate-400 max-w-xl mx-auto leading-relaxed mb-10">
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed mb-10">
               One SDK install. Define your rules. Run reconciliation. Review the evidence.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/docs/quickstart"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white text-slate-900 hover:bg-slate-100 px-8 py-3.5 text-base font-semibold shadow-lg transition-all duration-200"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-card text-foreground hover:bg-muted/40 px-8 py-3.5 text-base font-semibold shadow-lg transition-all duration-200"
               >
                 <BookOpen className="w-4 h-4" aria-hidden="true" />
                 Read the Quickstart
               </Link>
               <Link
                 href={repoUrl}
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 hover:border-slate-600 px-8 py-3.5 text-base font-medium transition-all duration-200"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card text-foreground hover:bg-muted hover:border-border px-8 py-3.5 text-base font-medium transition-all duration-200"
               >
                 <Github className="w-4 h-4" aria-hidden="true" />
                 View on GitHub
@@ -673,27 +673,27 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
 
         {/* FAQ */}
         <section
-          className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950"
+          className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-background "
           aria-label="Common questions"
         >
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-10 sm:mb-12">
-              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-500 mb-3">
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground dark:text-muted-foreground mb-3">
                 FAQ
               </p>
-              <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-slate-900 dark:text-white tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-foreground dark:text-foreground tracking-tight">
                 Common Questions
               </h2>
             </div>
             <Accordion type="single" collapsible className="w-full space-y-4">
               <AccordionItem
                 value="what-is"
-                className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6"
+                className="bg-card dark:bg-background rounded-xl border border-border dark:border-border px-6"
               >
                 <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
                   What is Settler?
                 </AccordionTrigger>
-                <AccordionContent className="text-sm sm:text-base text-slate-700 dark:text-slate-300 pb-4 leading-relaxed">
+                <AccordionContent className="text-sm sm:text-base text-foreground dark:text-muted-foreground pb-4 leading-relaxed">
                   Settler is an open-source reconciliation engine that matches financial records
                   across Stripe, banks, ERPs, and ledgers. It surfaces every mismatch with full
                   context, generates verifiable evidence for each run, and lets you replay any run
@@ -703,12 +703,12 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
 
               <AccordionItem
                 value="deterministic"
-                className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6"
+                className="bg-card dark:bg-background rounded-xl border border-border dark:border-border px-6"
               >
                 <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
                   What does deterministic mean?
                 </AccordionTrigger>
-                <AccordionContent className="text-sm sm:text-base text-slate-700 dark:text-slate-300 pb-4 leading-relaxed">
+                <AccordionContent className="text-sm sm:text-base text-foreground dark:text-muted-foreground pb-4 leading-relaxed">
                   Deterministic means the same inputs always produce the same outputs. Given
                   identical data sources and matching rules, Settler will always identify the same
                   variances. This makes debugging, testing, and auditing tractable.
@@ -717,12 +717,12 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
 
               <AccordionItem
                 value="self-host"
-                className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6"
+                className="bg-card dark:bg-background rounded-xl border border-border dark:border-border px-6"
               >
                 <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
                   Can I self-host Settler?
                 </AccordionTrigger>
-                <AccordionContent className="text-sm sm:text-base text-slate-700 dark:text-slate-300 pb-4 leading-relaxed">
+                <AccordionContent className="text-sm sm:text-base text-foreground dark:text-muted-foreground pb-4 leading-relaxed">
                   Yes. Self-hosting is a first-class deployment model. Settler is open source under
                   Apache 2.0. Your data stays in your infrastructure unless you choose to use the
                   managed cloud service.
@@ -731,12 +731,12 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
 
               <AccordionItem
                 value="not"
-                className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-6"
+                className="bg-card dark:bg-background rounded-xl border border-border dark:border-border px-6"
               >
                 <AccordionTrigger className="text-base sm:text-lg font-semibold py-4 hover:no-underline">
                   What is Settler NOT?
                 </AccordionTrigger>
-                <AccordionContent className="text-sm sm:text-base text-slate-700 dark:text-slate-300 pb-4 leading-relaxed">
+                <AccordionContent className="text-sm sm:text-base text-foreground dark:text-muted-foreground pb-4 leading-relaxed">
                   Settler is not accounting software, an audit tool, or compliance certification. It
                   does not make decisions or automate judgment. It surfaces mismatches and evidence
                   for human review. You decide how to act on the results.

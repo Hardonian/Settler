@@ -102,10 +102,10 @@ export function ConnectionsPanel() {
       <header className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground dark:text-white">
               Connections
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-muted-foreground dark:text-muted-foreground mt-1">
               Manage your data sources and destinations.
             </p>
           </div>
@@ -120,12 +120,12 @@ export function ConnectionsPanel() {
               <span
                 className={cn(
                   "text-xs font-bold uppercase tracking-wider",
-                  stat.color || "text-slate-500"
+                  stat.color || "text-muted-foreground"
                 )}
               >
                 {stat.label}
               </span>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              <div className="text-2xl font-bold text-foreground dark:text-white mt-1">
                 {stat.value}
               </div>
             </Card>
@@ -134,9 +134,9 @@ export function ConnectionsPanel() {
       </header>
 
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
         <Input
-          className="pl-10 h-12 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-xl"
+          className="pl-10 h-12 bg-card dark:bg-background border-border dark:border-border rounded-xl"
           placeholder="Search connections by name, ID, or environment..."
         />
       </div>
@@ -148,7 +148,7 @@ export function ConnectionsPanel() {
             <Card
               key={conn.id}
               className={cn(
-                "group p-5 cursor-pointer hover:shadow-md transition-all active:scale-[0.99] border-slate-200 dark:border-slate-800",
+                "group p-5 cursor-pointer hover:shadow-md transition-all active:scale-[0.99] border-border dark:border-border",
                 conn.status === "Error" && "border-red-200 dark:border-red-900/50 bg-red-50/10"
               )}
               onClick={() => setSelectedConnection(conn)}
@@ -165,10 +165,10 @@ export function ConnectionsPanel() {
                     <Icon className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg text-slate-900 dark:text-white leading-tight">
+                    <h3 className="font-bold text-lg text-foreground dark:text-white leading-tight">
                       {conn.name}
                     </h3>
-                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">
+                    <p className="text-xs font-medium text-muted-foreground dark:text-muted-foreground mt-1">
                       {conn.env}
                     </p>
                   </div>
@@ -189,10 +189,10 @@ export function ConnectionsPanel() {
                 </Badge>
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-border">
                 <div className="flex gap-8">
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                       Error Rate
                     </span>
                     <span
@@ -200,14 +200,14 @@ export function ConnectionsPanel() {
                         "font-mono text-sm font-semibold mt-1",
                         conn.status === "Error"
                           ? "text-red-600"
-                          : "text-slate-700 dark:text-slate-300"
+                          : "text-foreground dark:text-muted-foreground"
                       )}
                     >
                       {conn.errorRate}
                     </span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                       Freshness
                     </span>
                     <span
@@ -215,14 +215,14 @@ export function ConnectionsPanel() {
                         "font-mono text-sm font-semibold mt-1",
                         conn.status === "Error"
                           ? "text-red-600"
-                          : "text-slate-700 dark:text-slate-300"
+                          : "text-foreground dark:text-muted-foreground"
                       )}
                     >
                       {conn.freshness}
                     </span>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-slate-300 group-hover:text-primary-500 transition-colors" />
+                <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary-500 transition-colors" />
               </div>
             </Card>
           );
@@ -249,7 +249,7 @@ export function ConnectionsPanel() {
                           selectedConnection.status === "Healthy" ? "bg-emerald-500" : "bg-red-500"
                         )}
                       />
-                      <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                      <span className="text-sm font-medium text-muted-foreground dark:text-muted-foreground">
                         {selectedConnection.status} • Last synced {selectedConnection.freshness}
                       </span>
                     </div>
@@ -260,7 +260,7 @@ export function ConnectionsPanel() {
               <div className="space-y-6">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xs font-bold uppercase text-slate-500 tracking-wider">
+                    <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider">
                       Credentials
                     </h3>
                     <Button
@@ -272,12 +272,12 @@ export function ConnectionsPanel() {
                       Edit
                     </Button>
                   </div>
-                  <Card className="p-4 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 group relative">
+                  <Card className="p-4 bg-muted/20 dark:bg-background border-border dark:border-border group relative">
                     <div className="flex flex-col gap-1">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase">
                         API Key
                       </span>
-                      <span className="font-mono text-sm text-slate-700 dark:text-slate-300">
+                      <span className="font-mono text-sm text-foreground dark:text-muted-foreground">
                         sk_live_••••••••••••••••
                       </span>
                     </div>
@@ -286,15 +286,15 @@ export function ConnectionsPanel() {
                       size="icon"
                       className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8"
                     >
-                      <Copy className="w-4 h-4 text-slate-400" />
+                      <Copy className="w-4 h-4 text-muted-foreground" />
                     </Button>
                   </Card>
-                  <Card className="p-4 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+                  <Card className="p-4 bg-muted/20 dark:bg-background border-border dark:border-border">
                     <div className="flex flex-col gap-1">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase">
                         Environment
                       </span>
-                      <span className="font-mono text-sm text-slate-700 dark:text-slate-300">
+                      <span className="font-mono text-sm text-foreground dark:text-muted-foreground">
                         Production
                       </span>
                     </div>
@@ -302,25 +302,25 @@ export function ConnectionsPanel() {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-xs font-bold uppercase text-slate-500 tracking-wider">
+                  <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider">
                     Sync Schedule
                   </h3>
-                  <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-                    <div className="w-10 h-10 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-primary-500 shadow-sm">
+                  <div className="flex items-center gap-4 bg-muted/20 dark:bg-background p-4 rounded-xl border border-border dark:border-border">
+                    <div className="w-10 h-10 rounded-lg bg-card dark:bg-card border border-border dark:border-border flex items-center justify-center text-primary-500 shadow-sm">
                       <Calendar className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-slate-900 dark:text-white">
+                      <p className="text-sm font-bold text-foreground dark:text-white">
                         Daily at 00:00 UTC
                       </p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                      <p className="text-xs text-muted-foreground dark:text-muted-foreground">
                         Next run in 14h 32m
                       </p>
                     </div>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="ml-auto h-8 w-8 text-slate-400 hover:text-primary-500"
+                      className="ml-auto h-8 w-8 text-muted-foreground hover:text-primary-500"
                       onClick={() => handleAction("edit_schedule")}
                     >
                       <EditIcon className="w-4 h-4" />
@@ -329,19 +329,19 @@ export function ConnectionsPanel() {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-xs font-bold uppercase text-slate-500 tracking-wider">
+                  <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider">
                     Schema Preview
                   </h3>
-                  <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden divide-y divide-slate-100 dark:divide-slate-800">
-                    <div className="bg-white dark:bg-slate-900 px-4 py-3 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                      <span className="text-sm font-bold font-mono text-slate-700 dark:text-slate-300">
+                  <div className="border border-border dark:border-border rounded-xl overflow-hidden divide-y divide-slate-100 dark:divide-slate-800">
+                    <div className="bg-card dark:bg-background px-4 py-3 flex justify-between items-center cursor-pointer hover:bg-muted/20 dark:hover:bg-card/50 transition-colors">
+                      <span className="text-sm font-bold font-mono text-foreground dark:text-muted-foreground">
                         Charges
                       </span>
-                      <ChevronUp className="w-4 h-4 text-slate-400" />
+                      <ChevronUp className="w-4 h-4 text-muted-foreground" />
                     </div>
-                    <div className="bg-slate-50/50 dark:bg-slate-900/50 p-4 space-y-3">
+                    <div className="bg-muted/20/50 dark:bg-background/50 p-4 space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="font-mono text-xs text-slate-600 dark:text-slate-400">
+                        <span className="font-mono text-xs text-muted-foreground dark:text-muted-foreground">
                           id
                         </span>
                         <Badge variant="outline" className="text-[10px] font-mono">
@@ -349,7 +349,7 @@ export function ConnectionsPanel() {
                         </Badge>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="font-mono text-xs text-slate-600 dark:text-slate-400">
+                        <span className="font-mono text-xs text-muted-foreground dark:text-muted-foreground">
                           amount
                         </span>
                         <Badge variant="outline" className="text-[10px] font-mono">
@@ -357,11 +357,11 @@ export function ConnectionsPanel() {
                         </Badge>
                       </div>
                     </div>
-                    <div className="bg-white dark:bg-slate-900 px-4 py-3 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                      <span className="text-sm font-bold font-mono text-slate-700 dark:text-slate-300">
+                    <div className="bg-card dark:bg-background px-4 py-3 flex justify-between items-center cursor-pointer hover:bg-muted/20 dark:hover:bg-card/50 transition-colors">
+                      <span className="text-sm font-bold font-mono text-foreground dark:text-muted-foreground">
                         Refunds
                       </span>
-                      <ChevronDown className="w-4 h-4 text-slate-400" />
+                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
                     </div>
                   </div>
                 </div>

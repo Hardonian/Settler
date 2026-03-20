@@ -40,15 +40,15 @@ export function AIAssistCard({
 }: AIAssistProps) {
   if (!enabled) {
     return (
-      <Card className="border-slate-200 dark:border-slate-800">
+      <Card className="border-border dark:border-border">
         <CardContent className="pt-6">
-          <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+          <div className="flex items-center gap-2 text-muted-foreground dark:text-muted-foreground">
             <Info className="w-4 h-4" />
             <span className="text-sm">
               AI Assist is disabled. Using deterministic baseline only.
             </span>
           </div>
-          <div className="mt-2 p-3 bg-slate-50 dark:bg-slate-900 rounded text-sm">
+          <div className="mt-2 p-3 bg-muted/20 dark:bg-background rounded text-sm">
             <strong>Baseline:</strong> {recommendation.deterministicBaseline}
           </div>
         </CardContent>
@@ -83,12 +83,12 @@ export function AIAssistCard({
         {/* Deterministic Baseline (Always Shown) */}
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <CheckCircle2 className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            <CheckCircle2 className="w-4 h-4 text-muted-foreground dark:text-muted-foreground" />
+            <span className="text-sm font-medium text-foreground dark:text-muted-foreground">
               Deterministic Baseline
             </span>
           </div>
-          <p className="text-sm text-slate-600 dark:text-slate-400 ml-6">
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground ml-6">
             {recommendation.deterministicBaseline}
           </p>
         </div>
@@ -98,11 +98,11 @@ export function AIAssistCard({
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              <span className="text-sm font-medium text-foreground dark:text-muted-foreground">
                 AI Enhancement
               </span>
             </div>
-            <p className="text-sm text-slate-600 dark:text-slate-400 ml-6">
+            <p className="text-sm text-muted-foreground dark:text-muted-foreground ml-6">
               {recommendation.aiEnhancement}
             </p>
           </div>
@@ -111,27 +111,27 @@ export function AIAssistCard({
         {/* Explanation */}
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Info className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            <Info className="w-4 h-4 text-muted-foreground dark:text-muted-foreground" />
+            <span className="text-sm font-medium text-foreground dark:text-muted-foreground">
               Explanation
             </span>
           </div>
-          <p className="text-sm text-slate-600 dark:text-slate-400 ml-6">
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground ml-6">
             {recommendation.explanation}
           </p>
         </div>
 
         {/* Signals (Expandable) */}
         <details>
-          <summary className="text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer mb-2">
+          <summary className="text-sm font-medium text-foreground dark:text-muted-foreground cursor-pointer mb-2">
             View Detection Signals
           </summary>
           <div className="mt-2 space-y-2 ml-4">
             {recommendation.signals.map((signal, idx) => (
               <div key={idx} className="flex items-center justify-between text-xs">
-                <span className="text-slate-600 dark:text-slate-400">{signal.name}:</span>
+                <span className="text-muted-foreground dark:text-muted-foreground">{signal.name}:</span>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-slate-900 dark:text-white">{signal.value}</span>
+                  <span className="font-mono text-foreground dark:text-white">{signal.value}</span>
                   <Badge variant="outline" className="text-xs">
                     {signal.weight.toFixed(2)}
                   </Badge>
@@ -142,14 +142,14 @@ export function AIAssistCard({
         </details>
 
         {/* Suggested Action */}
-        <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
+        <div className="pt-4 border-t border-border dark:border-border">
           <div className="flex items-center gap-2 mb-2">
-            <AlertCircle className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            <AlertCircle className="w-4 h-4 text-muted-foreground dark:text-muted-foreground" />
+            <span className="text-sm font-medium text-foreground dark:text-muted-foreground">
               Suggested Action
             </span>
           </div>
-          <p className="text-sm text-slate-600 dark:text-slate-400 ml-6 mb-4">
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground ml-6 mb-4">
             {recommendation.suggestedAction}
           </p>
           <div className="flex gap-2">
@@ -163,8 +163,8 @@ export function AIAssistCard({
         </div>
 
         {/* Disclaimer */}
-        <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+        <div className="pt-2 border-t border-border dark:border-border">
+          <p className="text-xs text-muted-foreground dark:text-muted-foreground">
             <strong>Note:</strong> AI recommendations are suggestions only. All actions are logged
             in the audit trail. You can always fall back to the deterministic baseline.
           </p>

@@ -61,7 +61,7 @@ export function JobCompletionBanner({
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+              <h3 className="text-lg font-semibold text-foreground dark:text-white">
                 {isHighAccuracy && !hasUnmatched
                   ? 'Reconciliation Complete'
                   : hasUnmatched
@@ -69,7 +69,7 @@ export function JobCompletionBanner({
                   : 'Reconciliation Complete'}
               </h3>
             </div>
-            <p className="text-slate-700 dark:text-slate-300 mb-4">
+            <p className="text-foreground dark:text-muted-foreground mb-4">
               <strong>{jobName}</strong> finished processing at {new Date(completedAt).toLocaleTimeString()}.
               {isHighAccuracy && !hasUnmatched ? (
                 <> All {matchedCount.toLocaleString()} transactions matched successfully with {accuracy}% accuracy.</>

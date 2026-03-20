@@ -130,7 +130,7 @@ export function AITroubleshootingWizard() {
       <CardContent className="space-y-6">
         <div>
           <div className="flex items-center justify-between mb-4">
-            <span className="text-sm text-slate-600 dark:text-slate-400">
+            <span className="text-sm text-muted-foreground dark:text-muted-foreground">
               Step {currentStep + 1} of {TROUBLESHOOTING_FLOW.length}
             </span>
             <div className="flex gap-1">
@@ -150,7 +150,7 @@ export function AITroubleshootingWizard() {
             </div>
           </div>
 
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+          <h3 className="text-lg font-semibold text-foreground dark:text-white mb-4">
             {step.question}
           </h3>
 
@@ -159,7 +159,7 @@ export function AITroubleshootingWizard() {
               {step.options.map((option) => (
                 <div
                   key={option.value}
-                  className="flex items-center space-x-2 p-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                  className="flex items-center space-x-2 p-3 border border-border dark:border-border rounded-lg hover:bg-muted/20 dark:hover:bg-card cursor-pointer"
                   onClick={() => handleAnswer(option.value, option.nextStep)}
                 >
                   <RadioGroupItem value={option.value} id={option.value} />
@@ -167,7 +167,7 @@ export function AITroubleshootingWizard() {
                     {option.label}
                   </Label>
                   {option.nextStep !== undefined && (
-                    <ChevronRight className="w-4 h-4 text-slate-400" />
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
                   )}
                 </div>
               ))}

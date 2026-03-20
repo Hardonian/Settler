@@ -88,16 +88,16 @@ export function PipelinesPanel() {
       <header className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground dark:text-white">
               Pipelines
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-muted-foreground dark:text-muted-foreground mt-1">
               Monitor and control your data processing pipelines.
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="icon" className="rounded-full">
-              <RefreshCw className="w-5 h-5 text-slate-500" />
+              <RefreshCw className="w-5 h-5 text-muted-foreground" />
             </Button>
             <Button className="rounded-full w-12 h-12 p-0 shadow-lg shadow-primary-600/20">
               <Plus className="w-6 h-6" />
@@ -105,57 +105,57 @@ export function PipelinesPanel() {
           </div>
         </div>
 
-        <button className="flex w-full items-center justify-between rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm group hover:border-primary-500/50 transition-all">
+        <button className="flex w-full items-center justify-between rounded-xl bg-card dark:bg-background border border-border dark:border-border p-4 shadow-sm group hover:border-primary-500/50 transition-all">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400">
               <Globe className="w-6 h-6" />
             </div>
             <div className="flex flex-col items-start">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
                 Active Workspace
               </span>
-              <span className="text-lg font-bold text-slate-900 dark:text-white mt-1">
+              <span className="text-lg font-bold text-foreground dark:text-white mt-1">
                 Production - US East
               </span>
             </div>
           </div>
-          <ChevronDown className="w-5 h-5 text-slate-400 group-hover:text-primary-500" />
+          <ChevronDown className="w-5 h-5 text-muted-foreground group-hover:text-primary-500" />
         </button>
 
         <div className="flex gap-10 px-4">
           <div className="flex flex-col gap-1">
-            <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">
+            <span className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
               Active
             </span>
-            <span className="text-2xl font-bold text-slate-900 dark:text-white">12</span>
+            <span className="text-2xl font-bold text-foreground dark:text-white">12</span>
           </div>
-          <div className="w-[1px] h-10 bg-slate-200 dark:bg-slate-800" />
+          <div className="w-[1px] h-10 bg-slate-200 dark:bg-card" />
           <div className="flex flex-col gap-1">
-            <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">
+            <span className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
               Error Rate
             </span>
             <span className="text-2xl font-bold text-red-500">0.4%</span>
           </div>
-          <div className="w-[1px] h-10 bg-slate-200 dark:bg-slate-800" />
+          <div className="w-[1px] h-10 bg-slate-200 dark:bg-card" />
           <div className="flex flex-col gap-1">
-            <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">
+            <span className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
               Throughput
             </span>
-            <span className="text-2xl font-bold text-slate-900 dark:text-white">45k/s</span>
+            <span className="text-2xl font-bold text-foreground dark:text-white">45k/s</span>
           </div>
         </div>
       </header>
 
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
           <Input
-            className="pl-10 h-12 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-xl"
+            className="pl-10 h-12 bg-card dark:bg-background border-border dark:border-border rounded-xl"
             placeholder="Search pipelines..."
           />
         </div>
         <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl">
-          <Filter className="w-5 h-5 text-slate-500" />
+          <Filter className="w-5 h-5 text-muted-foreground" />
         </Button>
       </div>
 
@@ -184,7 +184,7 @@ export function PipelinesPanel() {
                       : pipe.status === "Critical"
                         ? "bg-red-500/10 text-red-500"
                         : pipe.status === "Paused"
-                          ? "bg-slate-500/10 text-slate-500"
+                          ? "bg-slate-500/10 text-muted-foreground"
                           : "bg-yellow-500/10 text-yellow-500"
                   )}
                 >
@@ -205,7 +205,7 @@ export function PipelinesPanel() {
                   )}
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 dark:text-white text-lg leading-tight">
+                  <h3 className="font-bold text-foreground dark:text-white text-lg leading-tight">
                     {pipe.name}
                   </h3>
                   <div className="flex items-center gap-2 mt-1">
@@ -222,13 +222,13 @@ export function PipelinesPanel() {
                     >
                       {pipe.status}
                     </Badge>
-                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                    <span className="text-xs font-semibold text-muted-foreground dark:text-muted-foreground">
                       • {pipe.lastRun}
                     </span>
                   </div>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" className="text-slate-400">
+              <Button variant="ghost" size="icon" className="text-muted-foreground">
                 <MoreVertical className="w-5 h-5" />
               </Button>
             </div>
@@ -237,32 +237,32 @@ export function PipelinesPanel() {
               <>
                 <div className="grid grid-cols-2 gap-6 mb-4">
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                       Input
                     </span>
                     <div className="flex items-center gap-2">
                       <ArrowRightCircle className="w-4 h-4 text-primary-500" />
-                      <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 truncate">
+                      <span className="text-sm font-semibold text-foreground dark:text-muted-foreground truncate">
                         {pipe.input || "Default Source"}
                       </span>
                     </div>
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                       Output
                     </span>
                     <div className="flex items-center gap-2">
                       <Webhook className="w-4 h-4 text-purple-500" />
-                      <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 truncate">
+                      <span className="text-sm font-semibold text-foreground dark:text-muted-foreground truncate">
                         {pipe.output || "Default Sync"}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-end justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex items-end justify-between pt-4 border-t border-slate-100 dark:border-border">
                   <div className="flex flex-col gap-2 w-full mr-8">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                       Error Trend (24h)
                     </span>
                     <div className="h-8 w-full flex items-end gap-1">
@@ -315,8 +315,8 @@ export function PipelinesPanel() {
             )}
 
             {pipe.status === "Paused" && (
-              <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
-                <span className="text-sm text-slate-500 italic font-medium">
+              <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-border">
+                <span className="text-sm text-muted-foreground italic font-medium">
                   Configuration frozen at {pipe.version}
                 </span>
                 <Button
@@ -341,7 +341,7 @@ export function PipelinesPanel() {
               <SheetHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
                       Detail View
                     </span>
                     <SheetTitle className="text-2xl font-bold mt-1">
@@ -363,14 +363,14 @@ export function PipelinesPanel() {
               </SheetHeader>
 
               <div className="grid grid-cols-2 gap-4">
-                <Card className="p-4 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase">
+                <Card className="p-4 bg-muted/20 dark:bg-background border-border dark:border-border">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase">
                     Latency (P99)
                   </span>
                   <div className="text-xl font-bold mt-1">{selectedPipeline.latency || "---"}</div>
                 </Card>
-                <Card className="p-4 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase">Processed</span>
+                <Card className="p-4 bg-muted/20 dark:bg-background border-border dark:border-border">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase">Processed</span>
                   <div className="text-xl font-bold mt-1 text-primary-600">
                     {selectedPipeline.throughput || "---"}
                   </div>
@@ -378,51 +378,51 @@ export function PipelinesPanel() {
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest">
+                <h3 className="text-sm font-bold text-foreground dark:text-white uppercase tracking-widest">
                   Execution Flow
                 </h3>
-                <div className="relative space-y-8 pl-12 before:absolute before:left-6 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-800">
+                <div className="relative space-y-8 pl-12 before:absolute before:left-6 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-card">
                   <div className="relative">
-                    <div className="absolute -left-12 h-12 w-12 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500 bg-white dark:bg-slate-950 z-10 transition-transform hover:scale-110">
+                    <div className="absolute -left-12 h-12 w-12 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500 bg-card bg-muted z-10 transition-transform hover:scale-110">
                       <ArrowRightCircle className="w-5 h-5" />
                     </div>
                     <div>
                       <h4 className="text-sm font-bold">
                         {selectedPipeline.input || "Default Source"}
                       </h4>
-                      <p className="text-xs text-slate-500 font-medium">Type: API Connector</p>
+                      <p className="text-xs text-muted-foreground font-medium">Type: API Connector</p>
                     </div>
                   </div>
                   <div className="relative">
-                    <div className="absolute -left-12 h-12 w-12 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500 bg-white dark:bg-slate-950 z-10">
+                    <div className="absolute -left-12 h-12 w-12 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500 bg-card bg-muted z-10">
                       <Shuffle className="w-5 h-5" />
                     </div>
                     <div>
                       <h4 className="text-sm font-bold">Normalization Engine</h4>
-                      <p className="text-xs text-slate-500 font-medium">
+                      <p className="text-xs text-muted-foreground font-medium">
                         Rule: standard_currency_mapping
                       </p>
                     </div>
                   </div>
                   <div className="relative">
-                    <div className="absolute -left-12 h-12 w-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 bg-white dark:bg-slate-950 z-10">
+                    <div className="absolute -left-12 h-12 w-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 bg-card bg-muted z-10">
                       <LogOut className="w-5 h-5" />
                     </div>
                     <div>
                       <h4 className="text-sm font-bold">
                         {selectedPipeline.output || "Default Sink"}
                       </h4>
-                      <p className="text-xs text-slate-500 font-medium">Storage Class: Standard</p>
+                      <p className="text-xs text-muted-foreground font-medium">Storage Class: Standard</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest">
+                <h3 className="text-sm font-bold text-foreground dark:text-white uppercase tracking-widest">
                   Infrastructure
                 </h3>
-                <Card className="p-6 border-slate-200 dark:border-slate-800 space-y-4">
+                <Card className="p-6 border-border dark:border-border space-y-4">
                   <div className="flex flex-col gap-2">
                     <Button
                       className="w-full h-12 bg-primary-600 hover:bg-primary-700 text-white font-bold gap-2 shadow-lg shadow-primary-600/20"
@@ -431,7 +431,7 @@ export function PipelinesPanel() {
                       <GitCommit className="w-5 h-5" />
                       Generate Provisioning Patch
                     </Button>
-                    <p className="text-[11px] text-center text-slate-400 italic font-medium px-4">
+                    <p className="text-[11px] text-center text-muted-foreground italic font-medium px-4">
                       Converts current UI configuration into a Terraform/Kubernetes manifest and
                       opens a CI/CD pull request.
                     </p>
@@ -440,29 +440,29 @@ export function PipelinesPanel() {
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest">
+                <h3 className="text-sm font-bold text-foreground dark:text-white uppercase tracking-widest">
                   Version History
                 </h3>
-                <div className="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden divide-y divide-slate-100 dark:divide-slate-800 font-medium">
-                  <div className="flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+                <div className="rounded-xl border border-border dark:border-border overflow-hidden divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+                  <div className="flex items-center justify-between p-4 hover:bg-muted/20 dark:hover:bg-background/50 transition-colors">
                     <div className="flex items-center gap-3">
                       <div className="h-2 w-2 rounded-full bg-emerald-500" />
                       <div className="flex flex-col">
                         <span className="text-sm font-bold">v1.4.2</span>
-                        <span className="text-xs text-slate-500">Deployed by @jdoe</span>
+                        <span className="text-xs text-muted-foreground">Deployed by @jdoe</span>
                       </div>
                     </div>
-                    <span className="text-xs font-mono text-slate-400">2d ago</span>
+                    <span className="text-xs font-mono text-muted-foreground">2d ago</span>
                   </div>
-                  <div className="flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+                  <div className="flex items-center justify-between p-4 hover:bg-muted/20 dark:hover:bg-background/50 transition-colors">
                     <div className="flex items-center gap-3">
                       <div className="h-2 w-2 rounded-full bg-slate-300" />
                       <div className="flex flex-col">
                         <span className="text-sm font-bold">v1.4.1</span>
-                        <span className="text-xs text-slate-500">Auto-rollback failed</span>
+                        <span className="text-xs text-muted-foreground">Auto-rollback failed</span>
                       </div>
                     </div>
-                    <span className="text-xs font-mono text-slate-400">5d ago</span>
+                    <span className="text-xs font-mono text-muted-foreground">5d ago</span>
                   </div>
                 </div>
               </div>

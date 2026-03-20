@@ -85,7 +85,7 @@ export function SupportAssistant({ context }: { context?: { page?: string; actio
               setResponse(null);
               setError(null);
             }}
-            className="text-white hover:bg-white/20 h-8 w-8 p-0"
+            className="text-white hover:bg-card/20 h-8 w-8 p-0"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -130,14 +130,14 @@ export function SupportAssistant({ context }: { context?: { page?: string; actio
         {response && (
           <div className="space-y-4">
             <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-              <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
+              <p className="text-sm text-foreground dark:text-muted-foreground whitespace-pre-wrap">
                 {response.answer}
               </p>
             </div>
 
             {response.suggestions && response.suggestions.length > 0 && (
               <div>
-                <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">
+                <p className="text-xs font-semibold text-muted-foreground dark:text-muted-foreground mb-2">
                   Quick Actions:
                 </p>
                 <div className="space-y-2">
@@ -158,7 +158,7 @@ export function SupportAssistant({ context }: { context?: { page?: string; actio
 
             {response.related_docs && response.related_docs.length > 0 && (
               <div>
-                <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 flex items-center gap-1">
+                <p className="text-xs font-semibold text-muted-foreground dark:text-muted-foreground mb-2 flex items-center gap-1">
                   <BookOpen className="h-3 w-3" />
                   Related Documentation:
                 </p>

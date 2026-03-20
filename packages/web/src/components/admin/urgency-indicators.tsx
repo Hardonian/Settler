@@ -39,13 +39,13 @@ export function UsageWarning({
             isCritical ? 'text-red-600 dark:text-red-400' : 'text-yellow-600 dark:text-yellow-400'
           }`} />
           <div className="flex-1">
-            <div className="font-medium text-slate-900 dark:text-white mb-1">
+            <div className="font-medium text-foreground dark:text-white mb-1">
               {isCritical ? 'Critical' : 'Warning'}: {type === 'usage' ? 'Usage' : type === 'quota' ? 'Quota' : 'Rate'} Limit
             </div>
-            <div className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+            <div className="text-sm text-muted-foreground dark:text-muted-foreground mb-3">
               You've used {current.toLocaleString()} of {limit.toLocaleString()} ({percentage.toFixed(1)}%)
             </div>
-            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mb-3">
+            <div className="w-full bg-slate-200 dark:bg-muted rounded-full h-2 mb-3">
               <div
                 className={`h-2 rounded-full transition-all ${
                   isCritical ? 'bg-red-600' : 'bg-yellow-600'
@@ -85,10 +85,10 @@ export function UpgradePrompt({
         <div className="flex items-start gap-3">
           <Zap className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
           <div className="flex-1">
-            <div className="font-medium text-slate-900 dark:text-white mb-1">
+            <div className="font-medium text-foreground dark:text-white mb-1">
               Unlock {feature}
             </div>
-            <div className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+            <div className="text-sm text-muted-foreground dark:text-muted-foreground mb-3">
               Upgrade from <strong>{currentTier}</strong> to <strong>{recommendedTier}</strong> to access this feature
             </div>
             <Link href="/console/billing">

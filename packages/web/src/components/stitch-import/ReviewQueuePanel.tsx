@@ -54,22 +54,22 @@ export function ReviewQueuePanel() {
       <header className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground dark:text-white">
               Review Queue
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-muted-foreground dark:text-muted-foreground mt-1">
               12 Pending reconciliations require human review.
             </p>
           </div>
           <Button variant="outline" size="icon" className="rounded-full">
-            <Filter className="w-5 h-5 text-slate-500" />
+            <Filter className="w-5 h-5 text-muted-foreground" />
           </Button>
         </div>
       </header>
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
             Priority Queue
           </h2>
           <Button variant="link" size="sm" className="h-auto p-0 font-bold text-primary-600">
@@ -102,7 +102,7 @@ export function ReviewQueuePanel() {
                         : "bg-amber-500"
                     )}
                   />
-                  <span className="text-xs font-mono font-bold text-slate-500">{item.id}</span>
+                  <span className="text-xs font-mono font-bold text-muted-foreground">{item.id}</span>
                 </div>
                 <Badge
                   variant={
@@ -119,15 +119,15 @@ export function ReviewQueuePanel() {
               </div>
               <div className="flex justify-between items-end">
                 <div>
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest leading-none mb-1">
                     Discrepancy
                   </p>
-                  <p className="text-2xl font-black text-slate-900 dark:text-white font-mono">
+                  <p className="text-2xl font-black text-foreground dark:text-white font-mono">
                     {item.amount}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Confidence</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Confidence</p>
                   <div
                     className={cn(
                       "flex items-center gap-1 text-xs font-bold",
@@ -146,50 +146,50 @@ export function ReviewQueuePanel() {
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Evidence Viewer</h2>
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-900 rounded-lg text-xs font-bold text-slate-500 border border-slate-200 dark:border-slate-800 cursor-copy group">
+          <h2 className="text-lg font-bold text-foreground dark:text-white">Evidence Viewer</h2>
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/40 dark:bg-background rounded-lg text-xs font-bold text-muted-foreground border border-border dark:border-border cursor-copy group">
             <Fingerprint className="w-4 h-4 text-primary-500" />
             <span className="font-mono">{activeItem?.traceId}</span>
           </div>
         </div>
 
-        <Card className="overflow-hidden border-slate-200 dark:border-slate-800 shadow-sm font-medium">
-          <div className="grid grid-cols-2 divide-x divide-slate-100 dark:divide-slate-800 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+        <Card className="overflow-hidden border-border dark:border-border shadow-sm font-medium">
+          <div className="grid grid-cols-2 divide-x divide-slate-100 dark:divide-slate-800 bg-muted/20 dark:bg-background border-b border-slate-100 dark:border-border">
             <div className="p-4 text-center">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
                 Source A (ERP)
               </p>
             </div>
             <div className="p-4 text-center">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
                 Source B (Bank)
               </p>
             </div>
           </div>
 
           <div className="divide-y divide-slate-50 dark:divide-slate-800">
-            <div className="grid grid-cols-2 divide-x divide-slate-50 dark:divide-slate-800 hover:bg-slate-50/50 transition-colors">
+            <div className="grid grid-cols-2 divide-x divide-slate-50 dark:divide-slate-800 hover:bg-muted/20/50 transition-colors">
               <div className="p-4">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
                   Transaction ID
                 </p>
-                <p className="text-sm font-mono text-slate-700 dark:text-slate-300">TX_99283811</p>
+                <p className="text-sm font-mono text-foreground dark:text-muted-foreground">TX_99283811</p>
               </div>
               <div className="p-4">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
                   Transaction ID
                 </p>
-                <p className="text-sm font-mono text-slate-700 dark:text-slate-300">TX_99283811</p>
+                <p className="text-sm font-mono text-foreground dark:text-muted-foreground">TX_99283811</p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 divide-x divide-slate-50 dark:divide-slate-800 bg-red-50/10 relative">
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-600" />
               <div className="p-4">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
                   Amount
                 </p>
-                <p className="text-lg font-mono font-black text-slate-700 dark:text-slate-300">
+                <p className="text-lg font-mono font-black text-foreground dark:text-muted-foreground">
                   500.00
                 </p>
               </div>
@@ -204,18 +204,18 @@ export function ReviewQueuePanel() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 divide-x divide-slate-50 dark:divide-slate-800 hover:bg-slate-50/50 transition-colors">
+            <div className="grid grid-cols-2 divide-x divide-slate-50 dark:divide-slate-800 hover:bg-muted/20/50 transition-colors">
               <div className="p-4">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
                   Currency
                 </p>
-                <p className="text-sm font-mono text-slate-700 dark:text-slate-300">USD</p>
+                <p className="text-sm font-mono text-foreground dark:text-muted-foreground">USD</p>
               </div>
               <div className="p-4">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
                   Currency
                 </p>
-                <p className="text-sm font-mono text-slate-700 dark:text-slate-300">USD</p>
+                <p className="text-sm font-mono text-foreground dark:text-muted-foreground">USD</p>
               </div>
             </div>
           </div>
@@ -227,7 +227,7 @@ export function ReviewQueuePanel() {
             <h3 className="text-sm font-black text-primary-700 uppercase tracking-widest mb-1">
               AI Decision Co-pilot
             </h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-semibold">
+            <p className="text-xs text-muted-foreground dark:text-muted-foreground leading-relaxed font-semibold">
               The discrepancy appears to be a decimal placement error (10x difference).
               Historically, manual overrides favor Source B for this vendor. Suggested action:{" "}
               <span className="text-primary-600 underline cursor-pointer">
@@ -253,7 +253,7 @@ export function ReviewQueuePanel() {
           className="flex-1 h-14 rounded-2xl gap-3 flex flex-col items-center justify-center p-0"
           onClick={() => handleAction("override")}
         >
-          <Edit className="w-5 h-5 text-slate-500" />
+          <Edit className="w-5 h-5 text-muted-foreground" />
           <span className="text-[10px] font-black uppercase tracking-widest">Override</span>
         </Button>
         <Button

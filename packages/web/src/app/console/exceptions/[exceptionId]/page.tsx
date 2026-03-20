@@ -159,7 +159,7 @@ export default function ExceptionDetailPage() {
       case "resolved":
         return "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300";
       case "ignored":
-        return "bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300";
+        return "bg-muted/40 text-foreground dark:bg-background dark:text-muted-foreground";
       case "investigating":
         return "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300";
       default:
@@ -222,10 +222,10 @@ export default function ExceptionDetailPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Exception Detail</h1>
-          <p className="text-slate-600 dark:text-slate-400 mt-1">
+          <h1 className="text-3xl font-bold text-foreground dark:text-white">Exception Detail</h1>
+          <p className="text-muted-foreground dark:text-muted-foreground mt-1">
             Exception ID:{" "}
-            <code className="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">{exception.id}</code>
+            <code className="bg-muted/40 dark:bg-card px-2 py-1 rounded">{exception.id}</code>
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -235,7 +235,7 @@ export default function ExceptionDetailPage() {
           </Button>
           <Link
             href="/console/exceptions"
-            className="text-sm text-slate-600 dark:text-slate-400 hover:underline"
+            className="text-sm text-muted-foreground dark:text-muted-foreground hover:underline"
           >
             ← Back to List
           </Link>
@@ -252,7 +252,7 @@ export default function ExceptionDetailPage() {
           {exception.severity.charAt(0).toUpperCase() + exception.severity.slice(1)}
         </Badge>
         {exception.confidenceScore !== undefined && (
-          <Badge className="bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300">
+          <Badge className="bg-muted/40 text-foreground dark:bg-background dark:text-muted-foreground">
             Confidence: {Math.round(exception.confidenceScore * 100)}%
           </Badge>
         )}
@@ -266,20 +266,20 @@ export default function ExceptionDetailPage() {
         <CardContent>
           <div className="space-y-4">
             {exception.statusDetail && (
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300">
+              <div className="rounded-lg border border-border bg-muted/20 p-4 text-sm text-foreground dark:border-border dark:bg-background/60 dark:text-muted-foreground">
                 {exception.statusDetail}
               </div>
             )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <h3 className="font-medium text-slate-900 dark:text-white">Type</h3>
-                <p className="text-slate-600 dark:text-slate-400">
+                <h3 className="font-medium text-foreground dark:text-white">Type</h3>
+                <p className="text-muted-foreground dark:text-muted-foreground">
                   {exception.type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                 </p>
               </div>
               {exception.reasonTags && exception.reasonTags.length > 0 && (
                 <div>
-                  <h3 className="font-medium text-slate-900 dark:text-white">Decision Drivers</h3>
+                  <h3 className="font-medium text-foreground dark:text-white">Decision Drivers</h3>
                   <div className="mt-1 flex flex-wrap gap-1.5">
                     {exception.reasonTags.map((tag) => (
                       <Badge key={`${exception.id}-${tag}`} variant="outline">
@@ -290,18 +290,18 @@ export default function ExceptionDetailPage() {
                 </div>
               )}
               <div>
-                <h3 className="font-medium text-slate-900 dark:text-white">Description</h3>
-                <p className="text-slate-600 dark:text-slate-400">{exception.description}</p>
+                <h3 className="font-medium text-foreground dark:text-white">Description</h3>
+                <p className="text-muted-foreground dark:text-muted-foreground">{exception.description}</p>
               </div>
               <div>
-                <h3 className="font-medium text-slate-900 dark:text-white">Detected</h3>
-                <p className="text-slate-600 dark:text-slate-400">
+                <h3 className="font-medium text-foreground dark:text-white">Detected</h3>
+                <p className="text-muted-foreground dark:text-muted-foreground">
                   {new Date(exception.detectedAt).toLocaleString()}
                 </p>
               </div>
               {exception.runId && (
                 <div>
-                  <h3 className="font-medium text-slate-900 dark:text-white">Run</h3>
+                  <h3 className="font-medium text-foreground dark:text-white">Run</h3>
                   <Link
                     href={`/console/runs/${exception.runId}`}
                     className="text-sm text-blue-600 hover:underline dark:text-blue-400"
@@ -312,24 +312,24 @@ export default function ExceptionDetailPage() {
               )}
               {exception.fieldPath && (
                 <div>
-                  <h3 className="font-medium text-slate-900 dark:text-white">Field</h3>
-                  <p className="text-slate-600 dark:text-slate-400 font-mono">
+                  <h3 className="font-medium text-foreground dark:text-white">Field</h3>
+                  <p className="text-muted-foreground dark:text-muted-foreground font-mono">
                     {exception.fieldPath}
                   </p>
                 </div>
               )}
               {exception.amount && exception.currency && (
                 <div>
-                  <h3 className="font-medium text-slate-900 dark:text-white">Amount</h3>
-                  <p className="text-slate-600 dark:text-slate-400 font-mono">
+                  <h3 className="font-medium text-foreground dark:text-white">Amount</h3>
+                  <p className="text-muted-foreground dark:text-muted-foreground font-mono">
                     {exception.currency} {exception.amount.toLocaleString()}
                   </p>
                 </div>
               )}
               {exception.sourceTransactionId && (
                 <div>
-                  <h3 className="font-medium text-slate-900 dark:text-white">Source Transaction</h3>
-                  <p className="text-slate-600 dark:text-slate-400 font-mono">
+                  <h3 className="font-medium text-foreground dark:text-white">Source Transaction</h3>
+                  <p className="text-muted-foreground dark:text-muted-foreground font-mono">
                     {exception.sourceTransactionId}
                     <Button
                       variant="ghost"
@@ -346,8 +346,8 @@ export default function ExceptionDetailPage() {
               )}
               {exception.targetTransactionId && (
                 <div>
-                  <h3 className="font-medium text-slate-900 dark:text-white">Target Transaction</h3>
-                  <p className="text-slate-600 dark:text-slate-400 font-mono">
+                  <h3 className="font-medium text-foreground dark:text-white">Target Transaction</h3>
+                  <p className="text-muted-foreground dark:text-muted-foreground font-mono">
                     {exception.targetTransactionId}
                     <Button
                       variant="ghost"
@@ -364,14 +364,14 @@ export default function ExceptionDetailPage() {
               )}
               {exception.sourceSystem && (
                 <div>
-                  <h3 className="font-medium text-slate-900 dark:text-white">Source System</h3>
-                  <p className="text-slate-600 dark:text-slate-400">{exception.sourceSystem}</p>
+                  <h3 className="font-medium text-foreground dark:text-white">Source System</h3>
+                  <p className="text-muted-foreground dark:text-muted-foreground">{exception.sourceSystem}</p>
                 </div>
               )}
               {exception.targetSystem && (
                 <div>
-                  <h3 className="font-medium text-slate-900 dark:text-white">Target System</h3>
-                  <p className="text-slate-600 dark:text-slate-400">{exception.targetSystem}</p>
+                  <h3 className="font-medium text-foreground dark:text-white">Target System</h3>
+                  <p className="text-muted-foreground dark:text-muted-foreground">{exception.targetSystem}</p>
                 </div>
               )}
             </div>
@@ -386,19 +386,19 @@ export default function ExceptionDetailPage() {
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900/60">
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              <div className="rounded-lg border border-border bg-muted/20 p-4 dark:border-border dark:bg-background/60">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground dark:text-muted-foreground">
                   Expected
                 </p>
-                <pre className="mt-2 whitespace-pre-wrap break-words text-sm text-slate-700 dark:text-slate-300">
+                <pre className="mt-2 whitespace-pre-wrap break-words text-sm text-foreground dark:text-muted-foreground">
                   {JSON.stringify(exception.expectedValue ?? null, null, 2)}
                 </pre>
               </div>
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900/60">
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              <div className="rounded-lg border border-border bg-muted/20 p-4 dark:border-border dark:bg-background/60">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground dark:text-muted-foreground">
                   Actual
                 </p>
-                <pre className="mt-2 whitespace-pre-wrap break-words text-sm text-slate-700 dark:text-slate-300">
+                <pre className="mt-2 whitespace-pre-wrap break-words text-sm text-foreground dark:text-muted-foreground">
                   {JSON.stringify(exception.actualValue ?? null, null, 2)}
                 </pre>
               </div>
@@ -412,7 +412,7 @@ export default function ExceptionDetailPage() {
           <CardHeader>
             <CardTitle>Decision Record</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+          <CardContent className="space-y-2 text-sm text-muted-foreground dark:text-muted-foreground">
             {exception.resolution && <p>{exception.resolution}</p>}
             {exception.resolvedAt && (
               <p>Resolved at {new Date(exception.resolvedAt).toLocaleString()}</p>
@@ -433,7 +433,7 @@ export default function ExceptionDetailPage() {
             <CardTitle>Suggested Actions</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="list-disc list-inside space-y-2 text-slate-600 dark:text-slate-400">
+            <ul className="list-disc list-inside space-y-2 text-muted-foreground dark:text-muted-foreground">
               {exception.suggestedActions.map((action, index) => (
                 <li key={index}>{action}</li>
               ))}
@@ -449,7 +449,7 @@ export default function ExceptionDetailPage() {
             <CardTitle>Applied Playbook</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-slate-600 dark:text-slate-400">{exception.playbookApplied}</p>
+            <p className="text-muted-foreground dark:text-muted-foreground">{exception.playbookApplied}</p>
           </CardContent>
         </Card>
       )}
@@ -469,7 +469,7 @@ export default function ExceptionDetailPage() {
           </FreezeBlockedButton>
           <FreezeBlockedButton
             onClick={handleIgnore}
-            className="bg-slate-600 hover:bg-slate-700"
+            className="bg-slate-600 hover:bg-muted"
             isFrozen={isFrozen}
             freezeReason={governanceState?.freeze_reason}
             frozenMessage="Ignoring exceptions is blocked by tenant freeze"
@@ -504,22 +504,22 @@ export default function ExceptionDetailPage() {
           <CardContent>
             <div className="space-y-3">
               {exception.auditTrail.map((entry, index) => (
-                <div key={index} className="border-l-2 border-slate-200 dark:border-slate-700 pl-4">
+                <div key={index} className="border-l-2 border-border dark:border-border pl-4">
                   <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0 text-xs text-slate-500 dark:text-slate-400">
+                    <div className="flex-shrink-0 text-xs text-muted-foreground dark:text-muted-foreground">
                       {new Date(entry.timestamp).toLocaleTimeString()}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-start gap-2">
-                        <span className="font-medium text-slate-900 dark:text-white">
+                        <span className="font-medium text-foreground dark:text-white">
                           {entry.action}
                         </span>
-                        <span className="text-xs text-slate-500 dark:text-slate-400">
+                        <span className="text-xs text-muted-foreground dark:text-muted-foreground">
                           by {entry.user}
                         </span>
                       </div>
                       {entry.details && (
-                        <p className="text-slate-600 dark:text-slate-400 mt-1">{entry.details}</p>
+                        <p className="text-muted-foreground dark:text-muted-foreground mt-1">{entry.details}</p>
                       )}
                     </div>
                   </div>

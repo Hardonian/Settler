@@ -18,14 +18,14 @@ export function LoadingOverlay({ message = 'Loading...', fullScreen = false }: L
     <div
       className={`${
         fullScreen ? 'fixed inset-0' : 'absolute inset-0'
-      } bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50`}
+      } bg-card/80 dark:bg-background/80 backdrop-blur-sm flex items-center justify-center z-50`}
       role="status"
       aria-live="polite"
       aria-label={message}
     >
       <div className="flex flex-col items-center gap-4">
         <LoadingSpinner size="lg" />
-        <p className="text-sm text-slate-600 dark:text-slate-400">{message}</p>
+        <p className="text-sm text-muted-foreground dark:text-muted-foreground">{message}</p>
       </div>
     </div>
   );

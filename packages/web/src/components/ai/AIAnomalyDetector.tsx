@@ -58,8 +58,8 @@ export function AIAnomalyDetector({ userId }: { userId?: string }) {
       <Card>
         <CardContent className="pt-6">
           <div className="animate-pulse space-y-4">
-            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
-            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+            <div className="h-4 bg-slate-200 dark:bg-muted rounded w-3/4"></div>
+            <div className="h-4 bg-slate-200 dark:bg-muted rounded w-1/2"></div>
           </div>
         </CardContent>
       </Card>
@@ -75,7 +75,7 @@ export function AIAnomalyDetector({ userId }: { userId?: string }) {
           <CardContent className="pt-6">
             <div className="text-center py-8">
               <Activity className="w-12 h-12 text-green-600 mx-auto mb-4" />
-              <p className="text-slate-600 dark:text-slate-400">
+              <p className="text-muted-foreground dark:text-muted-foreground">
                 No anomalies detected. Everything looks good! ✅
               </p>
             </div>
@@ -138,7 +138,7 @@ export function AIAnomalyDetector({ userId }: { userId?: string }) {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                    <div className="text-xs text-muted-foreground dark:text-muted-foreground">
                       Detected: {anomaly.detectedAt.toLocaleString()}
                     </div>
                   </CardContent>

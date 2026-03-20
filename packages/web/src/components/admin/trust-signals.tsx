@@ -71,7 +71,7 @@ export function SystemStatusCard({ status }: { status: 'operational' | 'degraded
         <div className="flex items-center gap-3">
           <Icon className={`w-5 h-5 ${config.color}`} />
           <div>
-            <div className="text-sm font-medium text-slate-900 dark:text-white">
+            <div className="text-sm font-medium text-foreground dark:text-white">
               System Status
             </div>
             <div className={`text-xs ${config.color}`}>

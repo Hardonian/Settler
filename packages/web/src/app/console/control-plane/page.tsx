@@ -129,10 +129,10 @@ export default function ControlPlanePage() {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Control Plane</h1>
-        <p className="text-slate-600 dark:text-slate-400 mt-1">
+        <h1 className="text-3xl font-bold text-foreground dark:text-white">Control Plane</h1>
+        <p className="text-muted-foreground dark:text-muted-foreground mt-1">
           Manage API keys, policies, and observability settings.
-          <span className="text-xs text-slate-500 ml-2">
+          <span className="text-xs text-muted-foreground ml-2">
             Workspace-scoped controls for security and performance.
           </span>
         </p>
@@ -182,15 +182,15 @@ export default function ControlPlanePage() {
                   {keys.map((key) => (
                     <div
                       key={key.id}
-                      className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg"
+                      className="flex items-center justify-between p-4 bg-muted/20 dark:bg-card rounded-lg"
                     >
                       <div>
-                        <div className="font-medium text-slate-900 dark:text-white">{key.name}</div>
-                        <code className="text-sm text-slate-600 dark:text-slate-400">
+                        <div className="font-medium text-foreground dark:text-white">{key.name}</div>
+                        <code className="text-sm text-muted-foreground dark:text-muted-foreground">
                           {maskToken(key.keyPrefix + "****")}
                         </code>
                         {key.lastUsedAt && (
-                          <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                          <div className="text-xs text-muted-foreground dark:text-muted-foreground mt-1">
                             Last used: {new Date(key.lastUsedAt).toLocaleString()}
                           </div>
                         )}
@@ -220,11 +220,11 @@ export default function ControlPlanePage() {
                   {policies.map((policy) => (
                     <div
                       key={policy.id}
-                      className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg"
+                      className="flex items-center justify-between p-4 bg-muted/20 dark:bg-card rounded-lg"
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <h3 className="font-medium text-slate-900 dark:text-white">
+                          <h3 className="font-medium text-foreground dark:text-white">
                             {policy.type === "rate_limit" && "Rate Limiting"}
                             {policy.type === "ip_allowlist" && "IP Allowlist"}
                             {policy.type === "webhook_signing" && "Webhook Signing"}
@@ -233,7 +233,7 @@ export default function ControlPlanePage() {
                             {policy.enabled ? "Enabled" : "Disabled"}
                           </Badge>
                         </div>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">
+                        <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                           {policy.type === "rate_limit" &&
                             `Limit: ${policy.config.requestsPerMinute} requests/minute`}
                           {policy.type === "ip_allowlist" &&
@@ -266,26 +266,26 @@ export default function ControlPlanePage() {
               ) : metrics ? (
                 <div className="grid md:grid-cols-3 gap-6">
                   <div>
-                    <div className="text-3xl font-bold text-slate-900 dark:text-white">
+                    <div className="text-3xl font-bold text-foreground dark:text-white">
                       {metrics.requestCount.toLocaleString()}
                     </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                    <div className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">
                       Requests ({metrics.period})
                     </div>
                   </div>
                   <div>
-                    <div className="text-3xl font-bold text-slate-900 dark:text-white">
+                    <div className="text-3xl font-bold text-foreground dark:text-white">
                       {(metrics.errorRate * 100).toFixed(2)}%
                     </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                    <div className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">
                       Error Rate
                     </div>
                   </div>
                   <div>
-                    <div className="text-3xl font-bold text-slate-900 dark:text-white">
+                    <div className="text-3xl font-bold text-foreground dark:text-white">
                       {metrics.p95Latency}ms
                     </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                    <div className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">
                       P95 Latency
                     </div>
                   </div>
@@ -310,7 +310,7 @@ export default function ControlPlanePage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                   Trigger diagnostics to refresh insights and remediation recommendations.
                 </p>
                 <Button variant="outline" size="sm" onClick={runDiagnosticsTrigger}>
@@ -319,7 +319,7 @@ export default function ControlPlanePage() {
                 </Button>
               </div>
               {triggerStatus && (
-                <p className="text-xs text-slate-500 dark:text-slate-400">{triggerStatus}</p>
+                <p className="text-xs text-muted-foreground dark:text-muted-foreground">{triggerStatus}</p>
               )}
 
               {loading ? (
@@ -335,10 +335,10 @@ export default function ControlPlanePage() {
                   {insights.map((insight) => (
                     <div
                       key={insight.id}
-                      className="rounded-lg border border-slate-200 dark:border-slate-700 p-4 bg-white dark:bg-slate-900"
+                      className="rounded-lg border border-border dark:border-border p-4 bg-card dark:bg-background"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <h3 className="font-medium text-slate-900 dark:text-white">
+                        <h3 className="font-medium text-foreground dark:text-white">
                           {insight.title}
                         </h3>
                         <Badge
@@ -351,15 +351,15 @@ export default function ControlPlanePage() {
                           {insight.severity}
                         </Badge>
                       </div>
-                      <p className="text-sm text-slate-600 dark:text-slate-300 mt-2">
+                      <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-2">
                         {insight.evidenceSummary}
                       </p>
-                      <p className="text-sm text-slate-700 dark:text-slate-300 mt-2">
+                      <p className="text-sm text-foreground dark:text-muted-foreground mt-2">
                         <span className="font-medium">Recommended action:</span>{" "}
                         {insight.recommendedAction}
                       </p>
                       <div className="mt-3 flex items-center justify-between">
-                        <span className="text-xs text-slate-500 dark:text-slate-400">
+                        <span className="text-xs text-muted-foreground dark:text-muted-foreground">
                           Scope: {insight.affectedScope} · Confidence{" "}
                           {(insight.confidence * 100).toFixed(0)}%
                         </span>
