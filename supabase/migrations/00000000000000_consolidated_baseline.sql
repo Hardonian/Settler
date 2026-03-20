@@ -3,7 +3,7 @@
 -- ============================================================================
 -- Consolidated from all historical migrations in the repository
 -- Generated: 2026-03-18
--- 
+--
 -- This is the canonical, idempotent schema definition for Settler
 -- Designed to be:
 -- 1. Idempotent - safe to run multiple times (uses IF NOT EXISTS)
@@ -88,7 +88,7 @@ BEGIN
     WHEN OTHERS THEN
       NULL;
   END;
-  
+
   IF v_tenant_id IS NULL THEN
     BEGIN
       v_tenant_id := current_setting('app.current_tenant_id', true)::UUID;
@@ -97,7 +97,7 @@ BEGIN
         NULL;
     END;
   END IF;
-  
+
   RETURN v_tenant_id;
 END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
@@ -123,7 +123,7 @@ BEGIN
   WHERE ba.user_id = auth.uid()
     AND ba.status = 'active'
     AND ba.deleted_at IS NULL;
-  
+
   -- Also check memberships for multi-tenant users
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'memberships') THEN
     RETURN QUERY
@@ -146,9 +146,9 @@ CREATE OR REPLACE FUNCTION create_index_if_not_exists(
 ) RETURNS VOID AS $$
 BEGIN
     IF NOT EXISTS (
-        SELECT 1 FROM pg_indexes 
-        WHERE schemaname = 'public' 
-        AND tablename = p_table_name 
+        SELECT 1 FROM pg_indexes
+        WHERE schemaname = 'public'
+        AND tablename = p_table_name
         AND indexname = p_index_name
     ) THEN
         EXECUTE format('CREATE INDEX %I ON %I %s', p_index_name, p_table_name, p_index_definition);
@@ -249,10 +249,10 @@ CREATE TABLE IF NOT EXISTS public.memberships (
 DO $$
 BEGIN
   IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_tenant_id_fkey' 
+    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_tenant_id_fkey'
     AND conrelid = 'public.memberships'::regclass
   ) THEN
-    ALTER TABLE public.memberships ADD CONSTRAINT memberships_tenant_id_fkey 
+    ALTER TABLE public.memberships ADD CONSTRAINT memberships_tenant_id_fkey
       FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
   END IF;
 END $$;
@@ -260,10 +260,10 @@ END $$;
 DO $$
 BEGIN
   IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_user_id_fkey' 
+    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_user_id_fkey'
     AND conrelid = 'public.memberships'::regclass
   ) THEN
-    ALTER TABLE public.memberships ADD CONSTRAINT memberships_user_id_fkey 
+    ALTER TABLE public.memberships ADD CONSTRAINT memberships_user_id_fkey
       FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
   END IF;
 END $$;
@@ -271,7 +271,7 @@ END $$;
 DO $$
 BEGIN
   IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_tenant_id_user_id_key' 
+    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_tenant_id_user_id_key'
     AND conrelid = 'public.memberships'::regclass
   ) THEN
     ALTER TABLE public.memberships ADD CONSTRAINT memberships_tenant_id_user_id_key UNIQUE (tenant_id, user_id);
@@ -1454,7 +1454,7 @@ CREATE TABLE IF NOT EXISTS public.deterministic_match_results (
   tenant_id uuid NOT NULL,
   snapshot_id uuid NOT NULL,
   run_result_id uuid,
-  stable_match_id varchar(64) NOT NULL,
+  stable_match_id varchar(65) NOT NULL,
   left_record_id uuid NOT NULL,
   left_record_fingerprint varchar(64) NOT NULL,
   left_record_source varchar(255) NOT NULL,
@@ -1489,11 +1489,13 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create triggers for updated_at
+DROP TRIGGER IF EXISTS jobforge_jobs_update_updated_at ON public.jobforge_jobs;
 CREATE TRIGGER jobforge_jobs_update_updated_at
   BEFORE UPDATE ON public.jobforge_jobs
   FOR EACH ROW
   EXECUTE FUNCTION jobforge_update_updated_at();
 
+DROP TRIGGER IF EXISTS jobforge_connector_configs_update_updated_at ON public.jobforge_connector_configs;
 CREATE TRIGGER jobforge_connector_configs_update_updated_at
   BEFORE UPDATE ON public.jobforge_connector_configs
   FOR EACH ROW
@@ -1978,6 +1980,308 @@ CREATE POLICY exports_select ON public.exports
 DROP POLICY IF EXISTS exports_insert ON public.exports;
 CREATE POLICY exports_insert ON public.exports
   FOR INSERT TO authenticated
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Add-Ons RLS
+ALTER TABLE public.add_ons ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS add_ons_select ON public.add_ons;
+CREATE POLICY add_ons_select ON public.add_ons
+  FOR SELECT TO authenticated USING (is_active = true);
+
+-- Add-On Purchases RLS
+ALTER TABLE public.add_on_purchases ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS add_on_purchases_isolation ON public.add_on_purchases;
+CREATE POLICY add_on_purchases_isolation ON public.add_on_purchases
+  FOR ALL TO authenticated
+  USING (billing_account_id IN (SELECT id FROM public.billing_accounts WHERE user_id = auth.uid()))
+  WITH CHECK (billing_account_id IN (SELECT id FROM public.billing_accounts WHERE user_id = auth.uid()));
+
+-- Stripe Events RLS
+ALTER TABLE public.stripe_events ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS stripe_events_isolation ON public.stripe_events;
+CREATE POLICY stripe_events_isolation ON public.stripe_events
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Recon Audits RLS
+ALTER TABLE public.recon_audits ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS recon_audits_isolation ON public.recon_audits;
+CREATE POLICY recon_audits_isolation ON public.recon_audits
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Validation Rules RLS
+ALTER TABLE public.validation_rules ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS validation_rules_isolation ON public.validation_rules;
+CREATE POLICY validation_rules_isolation ON public.validation_rules
+  FOR ALL TO authenticated
+  USING (is_public = true OR is_system = true OR tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Transform Recipes RLS
+ALTER TABLE public.transform_recipes ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS transform_recipes_isolation ON public.transform_recipes;
+CREATE POLICY transform_recipes_isolation ON public.transform_recipes
+  FOR ALL TO authenticated
+  USING (is_public = true OR is_system = true OR tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Drift Events RLS
+ALTER TABLE public.drift_events ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS drift_events_isolation ON public.drift_events;
+CREATE POLICY drift_events_isolation ON public.drift_events
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Connectors RLS
+ALTER TABLE public.connectors ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS connectors_isolation ON public.connectors;
+CREATE POLICY connectors_isolation ON public.connectors
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Connector Credentials RLS
+ALTER TABLE public.connector_credentials ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS connector_credentials_isolation ON public.connector_credentials;
+CREATE POLICY connector_credentials_isolation ON public.connector_credentials
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Connector Accounts RLS
+ALTER TABLE public.connector_accounts ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS connector_accounts_isolation ON public.connector_accounts;
+CREATE POLICY connector_accounts_isolation ON public.connector_accounts
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Sync Runs RLS
+ALTER TABLE public.sync_runs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS sync_runs_isolation ON public.sync_runs;
+CREATE POLICY sync_runs_isolation ON public.sync_runs
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Sync Cursors RLS
+ALTER TABLE public.sync_cursors ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS sync_cursors_isolation ON public.sync_cursors;
+CREATE POLICY sync_cursors_isolation ON public.sync_cursors
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Financial Transactions RLS
+ALTER TABLE public.financial_transactions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS financial_transactions_isolation ON public.financial_transactions;
+CREATE POLICY financial_transactions_isolation ON public.financial_transactions
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Financial Balances RLS
+ALTER TABLE public.financial_balances ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS financial_balances_isolation ON public.financial_balances;
+CREATE POLICY financial_balances_isolation ON public.financial_balances
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Financial Payouts RLS
+ALTER TABLE public.financial_payouts ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS financial_payouts_isolation ON public.financial_payouts;
+CREATE POLICY financial_payouts_isolation ON public.financial_payouts
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Financial Invoices RLS
+ALTER TABLE public.financial_invoices ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS financial_invoices_isolation ON public.financial_invoices;
+CREATE POLICY financial_invoices_isolation ON public.financial_invoices
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Financial Subscriptions RLS
+ALTER TABLE public.financial_subscriptions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS financial_subscriptions_isolation ON public.financial_subscriptions;
+CREATE POLICY financial_subscriptions_isolation ON public.financial_subscriptions
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Financial Tax Estimates RLS
+ALTER TABLE public.financial_tax_estimates ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS financial_tax_estimates_isolation ON public.financial_tax_estimates;
+CREATE POLICY financial_tax_estimates_isolation ON public.financial_tax_estimates
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Raw Events RLS
+ALTER TABLE public.raw_events ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS raw_events_isolation ON public.raw_events;
+CREATE POLICY raw_events_isolation ON public.raw_events
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Webhook Events RLS
+ALTER TABLE public.webhook_events ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS webhook_events_isolation ON public.webhook_events;
+CREATE POLICY webhook_events_isolation ON public.webhook_events
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Ingestions RLS
+ALTER TABLE public.ingestions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS ingestions_isolation ON public.ingestions;
+CREATE POLICY ingestions_isolation ON public.ingestions
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Raw Records RLS
+ALTER TABLE public.raw_records ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS raw_records_isolation ON public.raw_records;
+CREATE POLICY raw_records_isolation ON public.raw_records
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Normalized Transactions RLS
+ALTER TABLE public.normalized_transactions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS normalized_transactions_isolation ON public.normalized_transactions;
+CREATE POLICY normalized_transactions_isolation ON public.normalized_transactions
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Reconciliation Runs RLS
+ALTER TABLE public.reconciliation_runs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS reconciliation_runs_isolation ON public.reconciliation_runs;
+CREATE POLICY reconciliation_runs_isolation ON public.reconciliation_runs
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Reconciliation Matches RLS
+ALTER TABLE public.reconciliation_matches ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS reconciliation_matches_isolation ON public.reconciliation_matches;
+CREATE POLICY reconciliation_matches_isolation ON public.reconciliation_matches
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- JobForge Job Attempts RLS
+ALTER TABLE public.jobforge_job_attempts ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS jobforge_job_attempts_isolation ON public.jobforge_job_attempts;
+CREATE POLICY jobforge_job_attempts_isolation ON public.jobforge_job_attempts
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- JobForge Connector Configs RLS
+ALTER TABLE public.jobforge_connector_configs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS jobforge_connector_configs_isolation ON public.jobforge_connector_configs;
+CREATE POLICY jobforge_connector_configs_isolation ON public.jobforge_connector_configs
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Receipt Items RLS
+ALTER TABLE public.receipt_items ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS receipt_items_isolation ON public.receipt_items;
+CREATE POLICY receipt_items_isolation ON public.receipt_items
+  FOR ALL TO authenticated
+  USING (receipt_id IN (SELECT id FROM public.receipts WHERE tenant_id IN (SELECT public.get_user_tenant_ids())))
+  WITH CHECK (receipt_id IN (SELECT id FROM public.receipts WHERE tenant_id IN (SELECT public.get_user_tenant_ids())));
+
+-- Feature Flag Environments RLS
+ALTER TABLE public.feature_flag_environments ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS feature_flag_environments_isolation ON public.feature_flag_environments;
+CREATE POLICY feature_flag_environments_isolation ON public.feature_flag_environments
+  FOR ALL TO authenticated
+  USING (flag_id IN (SELECT id FROM public.feature_flags WHERE is_global = true OR billing_account_id IN (SELECT id FROM public.billing_accounts WHERE user_id = auth.uid())))
+  WITH CHECK (flag_id IN (SELECT id FROM public.feature_flags WHERE is_global = true OR billing_account_id IN (SELECT id FROM public.billing_accounts WHERE user_id = auth.uid())));
+
+-- Feature Flag Overrides RLS
+ALTER TABLE public.feature_flag_overrides ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS feature_flag_overrides_isolation ON public.feature_flag_overrides;
+CREATE POLICY feature_flag_overrides_isolation ON public.feature_flag_overrides
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Webhook Deliveries RLS
+ALTER TABLE public.webhook_deliveries ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS webhook_deliveries_isolation ON public.webhook_deliveries;
+CREATE POLICY webhook_deliveries_isolation ON public.webhook_deliveries
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Operator Infrastructure Settings RLS
+ALTER TABLE public.operator_infrastructure_settings ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS operator_infrastructure_settings_isolation ON public.operator_infrastructure_settings;
+CREATE POLICY operator_infrastructure_settings_isolation ON public.operator_infrastructure_settings
+  FOR ALL TO service_role
+  USING (true)
+  WITH CHECK (true);
+
+-- System Incidents RLS
+ALTER TABLE public.system_incidents ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS system_incidents_isolation ON public.system_incidents;
+CREATE POLICY system_incidents_isolation ON public.system_incidents
+  FOR ALL TO service_role
+  USING (true)
+  WITH CHECK (true);
+
+-- Audit Notarization Checkpoints RLS
+ALTER TABLE public.audit_notarization_checkpoints ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS audit_notarization_checkpoints_isolation ON public.audit_notarization_checkpoints;
+CREATE POLICY audit_notarization_checkpoints_isolation ON public.audit_notarization_checkpoints
+  FOR ALL TO service_role
+  USING (true)
+  WITH CHECK (true);
+
+-- API Call Logs RLS
+ALTER TABLE public.api_call_logs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS api_call_logs_isolation ON public.api_call_logs;
+CREATE POLICY api_call_logs_isolation ON public.api_call_logs
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Run Snapshots RLS
+ALTER TABLE public.run_snapshots ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS run_snapshots_isolation ON public.run_snapshots;
+CREATE POLICY run_snapshots_isolation ON public.run_snapshots
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
+  WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
+
+-- Execution Provenance RLS
+ALTER TABLE public.execution_provenance ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS execution_provenance_isolation ON public.execution_provenance;
+CREATE POLICY execution_provenance_isolation ON public.execution_provenance
+  FOR ALL TO authenticated
+  USING (snapshot_id IN (SELECT id FROM public.run_snapshots WHERE tenant_id IN (SELECT public.get_user_tenant_ids())))
+  WITH CHECK (snapshot_id IN (SELECT id FROM public.run_snapshots WHERE tenant_id IN (SELECT public.get_user_tenant_ids())));
+
+-- Deterministic Match Results RLS
+ALTER TABLE public.deterministic_match_results ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS deterministic_match_results_isolation ON public.deterministic_match_results;
+CREATE POLICY deterministic_match_results_isolation ON public.deterministic_match_results
+  FOR ALL TO authenticated
+  USING (tenant_id IN (SELECT public.get_user_tenant_ids()))
   WITH CHECK (tenant_id IN (SELECT public.get_user_tenant_ids()));
 
 -- ============================================================================
