@@ -7,7 +7,7 @@ import {
 } from "@/lib/reconciliation/canonical-run-result";
 import { buildReplayLabReport } from "@/lib/replay-lab/engine";
 import { getExecutionGraph, verifyProofChain } from "@/lib/trust-graph/explorer";
-import { RunListItem, RunStatus } from "@settler/types";
+import { RunListItem } from "@settler/types";
 
 /**
  * Domain reader for Reconciliation Runs.
@@ -108,8 +108,12 @@ export async function getRunsList(tenantId: string, limit: number = 20): Promise
       created_at: run.createdAt.toISOString(),
       status: contract.lifecycle.status,
       status_label: contract.lifecycle.statusLabel,
-      policy: "default",
-    };
+      policy: run.reconStrategy || "default",
+      manual: run.templateId === null,
+      matched_records: contract.summary.matched,
+      confidence:
+        contract.summary.total > 0 ? contract.summary.matched / contract.summary.total : 1,
+    } as RunListItem;
   });
 }
 

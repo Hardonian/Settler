@@ -146,6 +146,9 @@ export interface RunListItem {
   status: RunStatus;
   status_label: string;
   policy: string;
+  manual?: boolean;
+  matched_records?: number;
+  confidence?: number;
 }
 
 /**

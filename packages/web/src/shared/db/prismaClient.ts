@@ -83,9 +83,6 @@ let prismaInstance: PrismaClient;
 try {
   // Using a simple constructor. Prisma will read the DATABASE_URL from process.env.
   prismaInstance = globalForPrisma.prisma ?? new PrismaClient();
-  if (nodeEnv === "development") {
-    console.log("[Prisma] Client initialized successfully.");
-  }
 } catch (error) {
   console.error("[Prisma] Failed to initialize Prisma client:", error);
   // Create a stub client for graceful failure during builds or when DB is unavailable.
