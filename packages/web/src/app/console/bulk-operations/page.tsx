@@ -160,7 +160,7 @@ export default function BulkOperationsPage() {
               <CardHeader className="pb-4 border-b border-border/20">
                 <div className="flex items-center gap-3">
                   <Zap className="h-4 w-4 text-primary" />
-                  <CardTitle className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground font-black">
+                  <CardTitle className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-black">
                     Optimization Engine
                   </CardTitle>
                 </div>
@@ -183,7 +183,7 @@ export default function BulkOperationsPage() {
               <CardHeader className="pb-4 border-b border-border/20">
                 <div className="flex items-center gap-3">
                   <Monitor className="h-4 w-4 text-primary" />
-                  <CardTitle className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground font-black">
+                  <CardTitle className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-black">
                     Manual Policy Apply
                   </CardTitle>
                 </div>
@@ -245,7 +245,7 @@ export default function BulkOperationsPage() {
               </div>
 
               <div className="pt-8 border-t border-primary/20 space-y-4">
-                <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed font-bold italic underline italic underline-offset-4">
+                <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed font-bold italic underline underline-offset-4">
                   Bulk actions are irreversible once committed to the trust graph. Always verify
                   policy snapshots in the playground first.
                 </p>
@@ -263,7 +263,7 @@ export default function BulkOperationsPage() {
             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
               Last Audit Event
             </h4>
-            <p className="text-xs font-bold text-foreground italic border-b border-primary/20 pb-4 italic">
+            <p className="text-xs font-bold text-foreground italic border-b border-primary/20 pb-4">
               Bulk Purge Cluster: ds_441
             </p>
             <div className="flex items-center justify-center gap-4 text-[10px] font-black uppercase text-muted-foreground/60">

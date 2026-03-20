@@ -1,21 +1,9 @@
 import { Metadata } from "next";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  BookOpen,
-  Code,
-  Terminal,
-  Search,
-  ArrowRight,
-  Zap,
-  ShieldCheck,
-  Database,
-  Filter,
-  Copy,
-} from "lucide-react";
-import Link from "next/link";
+import { BookOpen, Copy } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Policy Cookbook | Settler",
@@ -180,10 +168,10 @@ export default function CookbookPage() {
             <BookOpen size={40} />
           </div>
           <div className="space-y-6">
-            <h2 className="text-3xl font-bold italic tracking-tight italic underline italic underline-offset-8">
+            <h2 className="text-3xl font-bold italic tracking-tight underline underline-offset-8">
               Contribute a Pattern
             </h2>
-            <p className="text-xl text-muted-foreground font-medium italic underline italic">
+            <p className="text-xl text-muted-foreground font-medium italic underline">
               Have a reconciliation policy that the world should see? Join our open-source
               contributor program and help build the global standard for deterministic financial
               infrastructure.

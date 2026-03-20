@@ -4,10 +4,8 @@ import { Button } from "@/components/ui/button";
 import {
   Activity,
   Terminal as TerminalIcon,
-  Search,
   RefreshCw,
   ShieldCheck,
-  Zap,
   Server,
   Cloud,
   Database,
@@ -90,7 +88,7 @@ export default function DiagnosticsPage() {
                   <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                     <div className="h-full bg-primary w-[1.2%]" />
                   </div>
-                  <p className="text-[10px] text-muted-foreground font-medium italic underline italic">
+                  <p className="text-[10px] text-muted-foreground font-medium italic underline">
                     Worker auto-scaling active (Min: 4, Max: 64)
                   </p>
                 </div>
@@ -218,7 +216,7 @@ export default function DiagnosticsPage() {
                 </div>
               </div>
               <div className="pt-6 border-t border-white/5 space-y-4">
-                <p className="text-[10px] text-slate-500 font-bold leading-relaxed uppercase tracking-widest italic underline pb-4 italic">
+                <p className="text-[10px] text-slate-500 font-bold leading-relaxed uppercase tracking-widest italic underline pb-4">
                   Manual verification triggers a full scan of all Merkle roots for the current
                   tenant. This process may take several minutes.
                 </p>

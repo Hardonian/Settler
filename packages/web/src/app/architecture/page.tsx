@@ -1,14 +1,10 @@
 import { Metadata } from "next";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import {
-  PlatformOverviewDiagram,
-  CapabilityMap,
-  IntegrationAndPackagingMap,
-} from "@/components/public-visual-proof";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { PlatformOverviewDiagram, CapabilityMap } from "@/components/public-visual-proof";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, Database, Network, Zap, Lock, Globe, Layers, ArrowRight } from "lucide-react";
+import { ShieldCheck, Database, Network, Zap, Globe, Layers, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -104,10 +100,10 @@ export default function ArchitecturePage() {
       <section className="py-24 space-y-32 bg-slate-50 dark:bg-slate-950/50 border-y border-border/40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-12">
           <div className="text-center space-y-4 max-w-3xl mx-auto">
-            <h2 className="text-3xl font-bold italic tracking-tight italic underline italic underline-offset-8">
+            <h2 className="text-3xl font-bold italic tracking-tight underline underline-offset-8">
               Global Service Map
             </h2>
-            <p className="text-muted-foreground font-medium italic underline italic underline-offset-4">
+            <p className="text-muted-foreground font-medium italic underline underline-offset-4">
               Orchestration across regional boundaries and data isolation protocols.
             </p>
           </div>
@@ -118,10 +114,10 @@ export default function ArchitecturePage() {
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-12">
           <div className="text-center space-y-4 max-w-3xl mx-auto">
-            <h2 className="text-3xl font-bold italic tracking-tight italic underline italic underline-offset-8">
+            <h2 className="text-3xl font-bold italic tracking-tight underline underline-offset-8">
               Capability Clustering
             </h2>
-            <p className="text-muted-foreground font-medium italic underline italic underline-offset-4">
+            <p className="text-muted-foreground font-medium italic underline underline-offset-4">
               Module boundaries and programmatic access points.
             </p>
           </div>
@@ -138,7 +134,7 @@ export default function ArchitecturePage() {
         </div>
         <div className="max-w-4xl mx-auto px-4 text-center space-y-12 relative z-10">
           <ShieldCheck size={80} className="text-primary mx-auto mb-8 opacity-40 shadow-2xl" />
-          <h2 className="text-4xl md:text-6xl font-bold tracking-tight italic underline italic underline-offset-8">
+          <h2 className="text-4xl md:text-6xl font-bold tracking-tight italic underline underline-offset-8">
             Immutable Evidence by Design
           </h2>
           <p className="text-xl text-slate-400 font-medium leading-relaxed max-w-3xl mx-auto">
