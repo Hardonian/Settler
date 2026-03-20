@@ -6,7 +6,7 @@
 
 "use client";
 
-import { use, useState } from "react";
+import { useState } from "react";
 import { useAdminRuns } from "@/lib/admin/hooks/use-admin-metrics";
 import { ReconciliationRun } from "@/lib/admin/metrics/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,11 +17,10 @@ import Link from "next/link";
 export default function CompareRunsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ run1?: string; run2?: string }>;
+  searchParams: { run1?: string; run2?: string };
 }) {
-  const params = use(searchParams);
-  const [run1Id, setRun1Id] = useState(params.run1 || "");
-  const [run2Id, setRun2Id] = useState(params.run2 || "");
+  const [run1Id, setRun1Id] = useState(searchParams.run1 || "");
+  const [run2Id, setRun2Id] = useState(searchParams.run2 || "");
 
   const { data: runsData } = useAdminRuns({ limit: 1000 });
 

@@ -1,22 +1,21 @@
 /**
  * Admin Run Detail Page
- * 
+ *
  * Detailed view of a reconciliation run with drilldown.
  */
 
-'use client';
+"use client";
 
-import { use } from 'react';
-import { useAdminRuns } from '@/lib/admin/hooks/use-admin-metrics';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, CheckCircle2, XCircle, Clock } from 'lucide-react';
-import Link from 'next/link';
+import { useAdminRuns } from "@/lib/admin/hooks/use-admin-metrics";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, CheckCircle2, XCircle, Clock } from "lucide-react";
+import Link from "next/link";
 
-export default function AdminRunDetailPage({ params }: { params: Promise<{ runId: string }> }) {
-  const { runId } = use(params);
-  
+export default function AdminRunDetailPage({ params }: { params: { runId: string } }) {
+  const { runId } = params;
+
   const { data: runsData } = useAdminRuns({ limit: 1000 });
   const run = runsData?.items?.find((r: { id: string }) => r.id === runId);
 
@@ -38,11 +37,11 @@ export default function AdminRunDetailPage({ params }: { params: Promise<{ runId
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed':
+      case "completed":
         return <CheckCircle2 className="w-5 h-5 text-green-600" />;
-      case 'failed':
+      case "failed":
         return <XCircle className="w-5 h-5 text-red-600" />;
-      case 'running':
+      case "running":
         return <Clock className="w-5 h-5 text-blue-600 animate-spin" />;
       default:
         return <Clock className="w-5 h-5 text-slate-400" />;
@@ -51,24 +50,26 @@ export default function AdminRunDetailPage({ params }: { params: Promise<{ runId
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
-      case 'failed':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
-      case 'running':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+      case "completed":
+        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
+      case "failed":
+        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
+      case "running":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
       default:
-        return 'bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-300';
+        return "bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-300";
     }
   };
 
-  const matchedPercent = run.sourceCount + run.targetCount > 0
-    ? ((run.matchedCount || 0) / (run.sourceCount + run.targetCount)) * 100
-    : 0;
+  const matchedPercent =
+    run.sourceCount + run.targetCount > 0
+      ? ((run.matchedCount || 0) / (run.sourceCount + run.targetCount)) * 100
+      : 0;
 
-  const duration = run.completedAt && run.startedAt
-    ? new Date(run.completedAt).getTime() - new Date(run.startedAt).getTime()
-    : null;
+  const duration =
+    run.completedAt && run.startedAt
+      ? new Date(run.completedAt).getTime() - new Date(run.startedAt).getTime()
+      : null;
 
   return (
     <div className="p-8 space-y-6 bg-slate-50 dark:bg-slate-900 min-h-screen">
@@ -92,9 +93,7 @@ export default function AdminRunDetailPage({ params }: { params: Promise<{ runId
         </div>
         <div className="flex items-center gap-2">
           {getStatusIcon(run.status)}
-          <Badge className={getStatusColor(run.status)}>
-            {run.status}
-          </Badge>
+          <Badge className={getStatusColor(run.status)}>{run.status}</Badge>
         </div>
       </div>
 
@@ -144,7 +143,7 @@ export default function AdminRunDetailPage({ params }: { params: Promise<{ runId
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-slate-900 dark:text-white">
-              {run.confidenceAvg ? (Number(run.confidenceAvg) * 100).toFixed(1) + '%' : 'N/A'}
+              {run.confidenceAvg ? (Number(run.confidenceAvg) * 100).toFixed(1) + "%" : "N/A"}
             </div>
           </CardContent>
         </Card>
@@ -205,9 +204,7 @@ export default function AdminRunDetailPage({ params }: { params: Promise<{ runId
               <div className="text-sm font-medium text-red-900 dark:text-red-300 mb-1">
                 Error Message
               </div>
-              <div className="text-sm text-red-800 dark:text-red-400">
-                {run.errorMessage}
-              </div>
+              <div className="text-sm text-red-800 dark:text-red-400">{run.errorMessage}</div>
             </div>
           )}
           {run.metadata && Object.keys(run.metadata).length > 0 && (
@@ -225,16 +222,10 @@ export default function AdminRunDetailPage({ params }: { params: Promise<{ runId
 
       {/* Actions */}
       <div className="flex gap-4">
-        <Button variant="outline">
-          View Matches
-        </Button>
-        <Button variant="outline">
-          Export Report
-        </Button>
-        <Link href={`/admin/runs/compare?run1=${runId}&run2=${runsData?.items?.[1]?.id || ''}`}>
-          <Button variant="outline">
-            Compare with Previous Run
-          </Button>
+        <Button variant="outline">View Matches</Button>
+        <Button variant="outline">Export Report</Button>
+        <Link href={`/admin/runs/compare?run1=${runId}&run2=${runsData?.items?.[1]?.id || ""}`}>
+          <Button variant="outline">Compare with Previous Run</Button>
         </Link>
       </div>
     </div>
