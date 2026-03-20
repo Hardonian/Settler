@@ -247,7 +247,10 @@ export default function AdminAnalyticsPage() {
           {loading ? (
             <Skeleton className="h-64" />
           ) : workspaces.length === 0 ? (
-            <EmptyState title="No workspaces found" />
+            <EmptyState
+              title="No workspaces found"
+              description="No workspaces have been created yet."
+            />
           ) : (
             <div className="space-y-2">
               {workspaces.map((workspace) => (

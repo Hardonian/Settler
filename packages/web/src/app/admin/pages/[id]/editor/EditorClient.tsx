@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useId } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +21,7 @@ export default function EditorClient({ initialPage, initialBlocks }: EditorClien
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const codeId = useId();
 
   // Basic metadata state
   const [title, setTitle] = useState(initialPage.metadata?.title || "");
@@ -188,15 +189,19 @@ export default function EditorClient({ initialPage, initialBlocks }: EditorClien
 
                 {/* Common Fields */}
                 <div className="space-y-2">
-                  <Label htmlFor={`visibility-${selectedBlock.id}`}>Visibility</Label>
                   <div className="flex items-center gap-2">
-                    <input
-                      id={`visibility-${selectedBlock.id}`}
-                      type="checkbox"
-                      checked={selectedBlock.visible !== false}
-                      onChange={(e) => updateBlock(selectedBlock.id, { visible: e.target.checked })}
-                    />
-                    <span className="text-sm">Visible</span>
+                    <Label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        title="Toggle Visibility"
+                        aria-label="Toggle Visibility"
+                        checked={selectedBlock.visible !== false}
+                        onChange={(e) =>
+                          updateBlock(selectedBlock.id, { visible: e.target.checked })
+                        }
+                      />
+                      <span className="text-sm font-normal">Visible</span>
+                    </Label>
                   </div>
                 </div>
 
@@ -232,10 +237,13 @@ export default function EditorClient({ initialPage, initialBlocks }: EditorClien
                 )}
                 {"code" in selectedBlock && (
                   <div className="space-y-2">
-                    <Label htmlFor={`code-${selectedBlock.id}`}>Code</Label>
+                    <Label htmlFor={codeId}>Code</Label>
                     <textarea
-                      id={`code-${selectedBlock.id}`}
+                      id={codeId}
                       className="w-full min-h-[100px] p-2 border rounded font-mono text-xs"
+                      title="Block Code Content"
+                      aria-label="Block Code Content"
+                      placeholder="Enter code here..."
                       value={(selectedBlock as any).code || ""}
                       onChange={(e) => updateBlock(selectedBlock.id, { code: e.target.value })}
                     />
