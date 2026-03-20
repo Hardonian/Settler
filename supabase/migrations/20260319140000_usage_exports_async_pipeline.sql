@@ -1,3 +1,5 @@
+BEGIN;
+
 -- Usage exports: durable async chunk artifacts + hot-path indexes
 -- Purpose:
 -- 1) Persist chunked usage export artifacts for bounded async delivery.
@@ -115,3 +117,5 @@ BEGIN
   END IF;
 END;
 $$;
+
+COMMIT;
