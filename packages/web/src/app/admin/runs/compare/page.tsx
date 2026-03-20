@@ -69,8 +69,11 @@ export default function CompareRunsPage({
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Run 1</label>
+              <label htmlFor="run1-select" className="block text-sm font-medium mb-2">
+                Run 1
+              </label>
               <select
+                id="run1-select"
                 value={run1Id}
                 onChange={(e) => setRun1Id(e.target.value)}
                 className="w-full border border-slate-200 dark:border-slate-700 rounded px-3 py-2 bg-white dark:bg-slate-900"
@@ -85,8 +88,11 @@ export default function CompareRunsPage({
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Run 2</label>
+              <label htmlFor="run2-select" className="block text-sm font-medium mb-2">
+                Run 2
+              </label>
               <select
+                id="run2-select"
                 value={run2Id}
                 onChange={(e) => setRun2Id(e.target.value)}
                 className="w-full border border-slate-200 dark:border-slate-700 rounded px-3 py-2 bg-white dark:bg-slate-900"

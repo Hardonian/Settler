@@ -123,7 +123,7 @@ export default async function AppPage() {
                   Mismatches
                 </CardDescription>
                 <CardTitle className="text-2xl font-mono text-destructive">
-                  {stats?.metrics?.mismatched_runs ?? 0}
+                  {stats?.metrics?.unmatched_runs ?? 0}
                 </CardTitle>
               </CardHeader>
               <CardContent>
