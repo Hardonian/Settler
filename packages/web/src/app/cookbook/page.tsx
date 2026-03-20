@@ -3,8 +3,8 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Copy } from "lucide-react";
-
+import {
+  BookOpen,
   Terminal,
   Search,
   ArrowRight,
@@ -12,6 +12,9 @@ import { BookOpen, Copy } from "lucide-react";
   ShieldCheck,
   Database,
   Filter,
+  Copy,
+} from "lucide-react";
+
 export const metadata: Metadata = {
   title: "Policy Cookbook | Settler",
   description:
