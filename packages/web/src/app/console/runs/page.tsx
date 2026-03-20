@@ -10,6 +10,7 @@ import {
   Search,
   TimerReset,
   XCircle,
+  Scale,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
+import { StatCard } from "@/components/ui/stat-card";
+import { StatusBadge, type StatusType } from "@/components/ui/status-badge";
 import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
 import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
 import { useGovernanceState } from "@/hooks/use-governance-state";
@@ -64,48 +67,35 @@ interface RunListItem {
 
 const POLL_INTERVAL_MS = 15_000;
 
-function getStatusIcon(status: RunListItem["status"]) {
+/** Map run status to StatusBadge status type */
+function toStatusType(status: RunListItem["status"]): StatusType {
   switch (status) {
     case "completed":
-      return CheckCircle2;
+      return "completed";
     case "failed":
-      return XCircle;
+      return "failed";
     case "running":
-      return RefreshCw;
+      return "running";
     case "pending":
-      return Clock;
+      return "pending";
     default:
-      return AlertCircle;
+      return "unknown";
   }
 }
 
-function getStatusColor(status: RunListItem["status"]) {
-  switch (status) {
-    case "completed":
-      return "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300";
-    case "failed":
-      return "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300";
-    case "running":
-      return "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300";
-    case "pending":
-      return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300";
-    default:
-      return "bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300";
-  }
-}
-
-function getSummaryStateTone(state: RunListItem["summaryState"]) {
+/** Map summary state to StatusBadge status type */
+function summaryToStatusType(state: RunListItem["summaryState"]): StatusType {
   switch (state) {
     case "success":
-      return "text-green-700 dark:text-green-300";
+      return "success";
     case "review_needed":
-      return "text-amber-700 dark:text-amber-300";
+      return "review_needed";
     case "failed":
-      return "text-red-700 dark:text-red-300";
+      return "failed";
     case "in_progress":
-      return "text-blue-700 dark:text-blue-300";
+      return "in_progress";
     default:
-      return "text-slate-600 dark:text-slate-400";
+      return "neutral";
   }
 }
 
@@ -215,13 +205,30 @@ export default function RunsPage() {
   if (loading && runs.length === 0) {
     return (
       <div className="space-y-6">
-        <Skeleton className="h-12 w-72" />
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-96" />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {Array.from({ length: 4 }).map((_, index) => (
-            <Skeleton key={index} className="h-28 w-full" />
+            <Card key={index}>
+              <CardHeader className="pb-1 pt-5 px-5">
+                <Skeleton className="h-3 w-20" />
+                <Skeleton className="h-8 w-24 mt-1" />
+              </CardHeader>
+              <CardContent className="px-5 pb-5">
+                <Skeleton className="h-3 w-40" />
+              </CardContent>
+            </Card>
           ))}
         </div>
-        <Skeleton className="h-96 w-full" />
+        <Card>
+          <CardContent className="py-6 space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-36 w-full rounded-xl" />
+            ))}
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -259,112 +266,83 @@ export default function RunsPage() {
         />
       ) : null}
 
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <ConsolePageHeader
-          title="Runs"
-          description="Track canonical reconciliation execution state, compare persisted outcomes, and open the exact run that produced the current exception queue."
-        />
+      <ConsolePageHeader
+        title="Runs"
+        description="Track reconciliation execution state, compare outcomes, and drill into the exception queue."
+        breadcrumbs={[
+          { label: "Console", href: "/console" },
+          { label: "Runs" },
+        ]}
+        actions={
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+              <input
+                type="checkbox"
+                id="auto-refresh-checkbox"
+                checked={autoRefresh}
+                onChange={(event) => setAutoRefresh(event.target.checked)}
+                className="rounded border-border accent-primary"
+              />
+              Auto-refresh
+            </label>
+            <Button variant="outline" size="sm" onClick={handleRefresh}>
+              <RefreshCw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+              Refresh
+            </Button>
+          </div>
+        }
+      />
 
-        <div className="flex flex-wrap items-center gap-3">
-          <label className="flex items-center gap-2 text-sm text-muted-foreground">
-            <input
-              type="checkbox"
-              id="auto-refresh-checkbox"
-              checked={autoRefresh}
-              onChange={(event) => setAutoRefresh(event.target.checked)}
-              className="rounded border-border"
-            />
-            Auto-refresh active work
-          </label>
-          <Button variant="outline" size="sm" onClick={handleRefresh}>
-            <RefreshCw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-            Refresh now
-          </Button>
-        </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge variant={pollingEnabled ? "info" : "outline"}>
+          {pollingEnabled ? `Polling every ${POLL_INTERVAL_MS / 1000}s` : "Polling paused"}
+        </Badge>
+        <Badge variant={totals.activeRuns > 0 ? "processing" : "outline"}>
+          {totals.activeRuns > 0
+            ? `${totals.activeRuns} run${totals.activeRuns === 1 ? "" : "s"} active`
+            : "All runs terminal"}
+        </Badge>
       </div>
-
-      <Card>
-        <CardContent className="flex flex-col gap-3 py-5 text-sm text-muted-foreground lg:flex-row lg:items-center lg:justify-between">
-          <div className="space-y-1">
-            <p className="font-medium text-foreground">One canonical run model</p>
-            <p>
-              Matched, unmatched, conflict, exception, and review counts come from the same
-              canonical summary contract used by run detail and reconciliation detail.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline">
-              {pollingEnabled ? `Polling every ${POLL_INTERVAL_MS / 1000}s` : "Polling paused"}
-            </Badge>
-            <Badge variant="outline">
-              {totals.activeRuns > 0
-                ? `${totals.activeRuns} run${totals.activeRuns === 1 ? "" : "s"} active`
-                : "All visible runs terminal"}
-            </Badge>
-          </div>
-        </CardContent>
-      </Card>
 
       {runs.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Visible runs</CardDescription>
-              <CardTitle className="text-3xl">{formatCount(totals.totalRuns)}</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              Current tenant-scoped run history after filters.
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Matched rows</CardDescription>
-              <CardTitle className="text-3xl text-green-600 dark:text-green-400">
-                {formatCount(totals.matched)}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              Rows that reconciled under exact or tolerance-supported logic.
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Review required</CardDescription>
-              <CardTitle className="text-3xl text-amber-600 dark:text-amber-400">
-                {formatCount(totals.reviewRequired)}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              Unresolved outcomes still awaiting operator action.
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Exceptioned rows</CardDescription>
-              <CardTitle className="text-3xl text-red-600 dark:text-red-400">
-                {formatCount(totals.exceptions)}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              Rows promoted into the exception workflow.
-            </CardContent>
-          </Card>
+          <StatCard
+            label="Visible runs"
+            value={formatCount(totals.totalRuns)}
+            description="Tenant-scoped run history after filters."
+          />
+          <StatCard
+            label="Matched rows"
+            value={formatCount(totals.matched)}
+            tone="success"
+            description="Reconciled under exact or tolerance logic."
+          />
+          <StatCard
+            label="Review required"
+            value={formatCount(totals.reviewRequired)}
+            tone="warning"
+            description="Unresolved outcomes awaiting operator action."
+            href="/console/exceptions"
+            linkLabel="Open exceptions"
+          />
+          <StatCard
+            label="Exceptioned rows"
+            value={formatCount(totals.exceptions)}
+            tone="danger"
+            description="Rows promoted into the exception workflow."
+            href="/console/exceptions"
+            linkLabel="View exceptions"
+          />
         </div>
       ) : null}
 
       <Card>
-        <CardHeader>
-          <CardTitle>Filters</CardTitle>
-          <CardDescription>
-            Filter the canonical run history by lifecycle state or run name / identifier.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)_auto]">
-            <div className="space-y-2">
+        <CardContent className="py-5">
+          <div className="grid gap-4 md:grid-cols-[200px_minmax(0,1fr)_auto]">
+            <div className="space-y-1.5">
               <label
                 htmlFor="status-filter"
-                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+                className="block text-xs font-medium text-muted-foreground"
               >
                 Status
               </label>
@@ -377,7 +355,7 @@ export default function RunsPage() {
                     status: event.target.value || undefined,
                   }))
                 }
-                className="w-full rounded-md border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-slate-600"
+                className="input-field"
               >
                 <option value="">All statuses</option>
                 <option value="pending">Pending</option>
@@ -386,10 +364,10 @@ export default function RunsPage() {
                 <option value="failed">Failed</option>
               </select>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <label
                 htmlFor="search-filter"
-                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+                className="block text-xs font-medium text-muted-foreground"
               >
                 Search
               </label>
@@ -406,18 +384,19 @@ export default function RunsPage() {
                       search: event.target.value || undefined,
                     }))
                   }
-                  className="w-full rounded-md border border-slate-300 py-2 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-slate-600"
+                  className="input-field pl-9"
                 />
               </div>
             </div>
             <div className="flex items-end">
               <Button
                 variant="ghost"
+                size="sm"
                 onClick={() => setFilters({})}
                 disabled={!filters.search && !filters.status}
               >
-                <TimerReset className="mr-2 h-4 w-4" />
-                Clear filters
+                <TimerReset className="mr-1.5 h-3.5 w-3.5" />
+                Clear
               </Button>
             </div>
           </div>
@@ -426,6 +405,7 @@ export default function RunsPage() {
 
       {runs.length === 0 ? (
         <EmptyState
+          icon={Scale}
           title={
             filters.status || filters.search
               ? "No runs match your filters"
@@ -434,19 +414,23 @@ export default function RunsPage() {
           description={
             filters.status || filters.search
               ? "Try widening the lifecycle filter or clearing your search to review the full tenant run history."
-              : "Runs appear here after a tenant-scoped reconciliation starts. Open Reconciliations to launch or inspect the next workflow."
+              : "Runs appear here after a tenant-scoped reconciliation starts."
           }
-          action={{
-            label: filters.status || filters.search ? "Clear Filters" : "Open Reconciliations",
-            onClick: () => {
-              if (filters.status || filters.search) {
-                setFilters({});
-                return;
-              }
-
-              window.location.href = "/console/reconciliations";
-            },
-          }}
+          hint={
+            filters.status || filters.search
+              ? undefined
+              : "Open Reconciliations to launch your first workflow, or import data via the API."
+          }
+          action={
+            filters.status || filters.search
+              ? { label: "Clear Filters", onClick: () => setFilters({}) }
+              : { label: "Open Reconciliations", href: "/console/reconciliations" }
+          }
+          secondaryAction={
+            filters.status || filters.search
+              ? undefined
+              : { label: "View Docs", href: "/docs/getting-started" }
+          }
         />
       ) : (
         <Card>
@@ -456,139 +440,125 @@ export default function RunsPage() {
               Every row uses the same lifecycle and summary semantics surfaced on run detail.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {runs.map((run) => {
-              const StatusIcon = getStatusIcon(run.status);
-              return (
+          <CardContent className="space-y-3">
+            {runs.map((run) => (
                 <div
                   key={run.id}
-                  className="rounded-xl border border-slate-200 p-4 shadow-sm dark:border-slate-800"
+                  className="rounded-xl border border-border p-5 hover:border-border/80 transition-colors"
                 >
                   <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-                    <div className="min-w-0 flex-1 space-y-3">
+                    <div className="min-w-0 flex-1 space-y-4">
+                      {/* Row 1: Name + status badges */}
                       <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="truncate text-lg font-semibold text-foreground">
+                        <h2 className="truncate text-base font-semibold text-foreground">
                           {run.name}
                         </h2>
-                        <Badge className={getStatusColor(run.status)}>
-                          <StatusIcon
-                            className={`mr-1 h-3.5 w-3.5 ${run.status === "running" ? "animate-spin" : ""}`}
-                          />
-                          {run.statusLabel || run.status}
-                        </Badge>
-                        {run.configDrift?.status === "detected" ? (
-                          <Badge variant="outline" className="text-amber-700 dark:text-amber-300">
-                            Config drift detected
-                          </Badge>
-                        ) : null}
+                        <StatusBadge
+                          status={toStatusType(run.status)}
+                          label={run.statusLabel || undefined}
+                        />
+                        {run.configDrift?.status === "detected" && (
+                          <StatusBadge status="warning" label="Config drift" size="sm" />
+                        )}
                       </div>
 
-                      <div className="grid gap-3 text-sm text-muted-foreground md:grid-cols-2 xl:grid-cols-4">
+                      {/* Row 2: Metadata grid */}
+                      <div className="grid gap-x-6 gap-y-1 text-sm md:grid-cols-4">
                         <div>
-                          <div className="font-medium text-foreground">Run ID</div>
-                          <code className="text-xs">{run.id}</code>
+                          <span className="text-xs text-muted-foreground">Run ID</span>
+                          <div className="font-mono text-xs text-foreground truncate">{run.id}</div>
                         </div>
                         <div>
-                          <div className="font-medium text-foreground">Started</div>
-                          <div>{new Date(run.startedAt).toLocaleString()}</div>
+                          <span className="text-xs text-muted-foreground">Started</span>
+                          <div className="text-foreground">{new Date(run.startedAt).toLocaleString()}</div>
                         </div>
                         <div>
-                          <div className="font-medium text-foreground">Completed</div>
-                          <div>
+                          <span className="text-xs text-muted-foreground">Completed</span>
+                          <div className="text-foreground">
                             {run.completedAt
                               ? new Date(run.completedAt).toLocaleString()
                               : "Still running"}
                           </div>
                         </div>
                         <div>
-                          <div className="font-medium text-foreground">Duration</div>
-                          <div>{formatDuration(run.startedAt, run.completedAt)}</div>
+                          <span className="text-xs text-muted-foreground">Duration</span>
+                          <div className="font-mono text-foreground">{formatDuration(run.startedAt, run.completedAt)}</div>
                         </div>
                       </div>
 
-                      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
-                        <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
-                          <div className="text-xs uppercase tracking-wide text-muted-foreground">
-                            Matched
-                          </div>
-                          <div className="mt-1 text-xl font-semibold text-green-600 dark:text-green-400">
+                      {/* Row 3: Metric chips */}
+                      <div className="grid gap-2 sm:grid-cols-3 xl:grid-cols-6">
+                        <div className="metric-chip">
+                          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Matched</div>
+                          <div className="mt-0.5 text-lg font-semibold text-green-600 dark:text-green-400 tabular-nums">
                             {formatCount(run.summary.matched)}
                           </div>
                         </div>
-                        <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
-                          <div className="text-xs uppercase tracking-wide text-muted-foreground">
-                            Unmatched
-                          </div>
-                          <div className="mt-1 text-xl font-semibold text-amber-600 dark:text-amber-400">
+                        <div className="metric-chip">
+                          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Unmatched</div>
+                          <div className="mt-0.5 text-lg font-semibold text-amber-600 dark:text-amber-400 tabular-nums">
                             {formatCount(run.summary.unmatched)}
                           </div>
                         </div>
-                        <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
-                          <div className="text-xs uppercase tracking-wide text-muted-foreground">
-                            Conflicts
-                          </div>
-                          <div className="mt-1 text-xl font-semibold text-red-600 dark:text-red-400">
+                        <div className="metric-chip">
+                          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Conflicts</div>
+                          <div className="mt-0.5 text-lg font-semibold text-red-600 dark:text-red-400 tabular-nums">
                             {formatCount(run.summary.conflicts)}
                           </div>
                         </div>
-                        <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
-                          <div className="text-xs uppercase tracking-wide text-muted-foreground">
-                            Exceptions
-                          </div>
-                          <div className="mt-1 text-xl font-semibold">
+                        <div className="metric-chip">
+                          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Exceptions</div>
+                          <div className="mt-0.5 text-lg font-semibold tabular-nums">
                             {formatCount(run.summarySemantics.exceptioned)}
                           </div>
                         </div>
-                        <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
-                          <div className="text-xs uppercase tracking-wide text-muted-foreground">
-                            Review required
-                          </div>
-                          <div className="mt-1 text-xl font-semibold">
+                        <div className="metric-chip">
+                          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Review</div>
+                          <div className="mt-0.5 text-lg font-semibold tabular-nums">
                             {formatCount(run.summarySemantics.unresolved)}
                           </div>
                         </div>
-                        <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
-                          <div className="text-xs uppercase tracking-wide text-muted-foreground">
-                            Tolerance matches
-                          </div>
-                          <div className="mt-1 text-xl font-semibold">
+                        <div className="metric-chip">
+                          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Tolerance</div>
+                          <div className="mt-0.5 text-lg font-semibold tabular-nums">
                             {formatCount(run.summarySemantics.matchedWithTolerance)}
                           </div>
                         </div>
                       </div>
 
+                      {/* Row 4: Summary state + record counts */}
                       <div className="flex flex-wrap items-center gap-3 text-sm">
-                        <span className={getSummaryStateTone(run.summaryState)}>
-                          Summary state: {run.summaryState.replaceAll("_", " ")}
-                        </span>
+                        <StatusBadge
+                          status={summaryToStatusType(run.summaryState)}
+                          label={run.summaryState.replaceAll("_", " ")}
+                          size="sm"
+                        />
                         <span className="text-muted-foreground">
-                          Processed {formatCount(run.summarySemantics.processed)} of{" "}
-                          {formatCount(run.summary.total)} records
+                          {formatCount(run.summarySemantics.processed)} / {formatCount(run.summary.total)} records
                         </span>
-                        <span className="text-muted-foreground">
-                          Source {formatCount(run.summary.sourceCount)} / Target{" "}
-                          {formatCount(run.summary.targetCount)}
+                        <span className="text-muted-foreground text-xs">
+                          Source {formatCount(run.summary.sourceCount)} &middot; Target {formatCount(run.summary.targetCount)}
                         </span>
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap gap-3 xl:w-56 xl:flex-col">
-                      <Button asChild>
-                        <Link href={`/console/runs/${run.id}`}>Open run detail</Link>
+                    {/* Actions */}
+                    <div className="flex flex-wrap gap-2 xl:w-48 xl:flex-col xl:gap-2">
+                      <Button asChild size="sm">
+                        <Link href={`/console/runs/${run.id}`}>Open detail</Link>
                       </Button>
-                      <Button asChild variant="outline">
+                      <Button asChild variant="outline" size="sm">
                         <Link href={`/console/reconciliations?runId=${run.id}`}>
-                          Inspect reconciliation
+                          Reconciliation
                         </Link>
                       </Button>
-                      <Button asChild variant="ghost">
-                        <Link href={`/console/exceptions?runId=${run.id}`}>Open exceptions</Link>
+                      <Button asChild variant="ghost" size="sm">
+                        <Link href={`/console/exceptions?runId=${run.id}`}>Exceptions</Link>
                       </Button>
                     </div>
                   </div>
                 </div>
-              );
-            })}
+              ))}
           </CardContent>
         </Card>
       )}

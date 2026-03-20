@@ -151,8 +151,8 @@ export function ConsoleLayout({
       aria-label="Console navigation"
     >
       {navSections.map(({ section, items }, idx) => (
-        <div key={section} className={cn(idx > 0 && "pt-4 mt-3 border-t border-border")}>
-          <h3 className="px-3 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+        <div key={section} className={cn(idx > 0 && "pt-5 mt-4 border-t border-border/60")}>
+          <h3 className="px-3 pb-2 text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-widest">
             {section}
           </h3>
           <div className="space-y-0.5">
@@ -189,8 +189,8 @@ export function ConsoleLayout({
       </div>
 
       <div className="flex">
-        <aside className="hidden md:flex w-[var(--sidebar-width)] min-h-screen bg-card border-r border-border fixed left-0 top-0 pt-16 z-30 flex-col">
-          <div className="p-4 border-b border-border">
+        <aside className="hidden md:flex w-[var(--sidebar-width)] min-h-screen bg-card/80 backdrop-blur-sm border-r border-border/60 fixed left-0 top-0 pt-16 z-30 flex-col">
+          <div className="px-4 py-3 border-b border-border/60">
             <BackendHealthBadge />
           </div>
           <div className="flex-1 overflow-y-auto">

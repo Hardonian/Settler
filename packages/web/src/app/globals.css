@@ -85,6 +85,44 @@
   .data-row {
     @apply flex items-center justify-between py-3 border-b border-border last:border-0;
   }
+
+  /* Status dot — error/danger red */
+  .status-dot-error {
+    @apply w-2.5 h-2.5 rounded-full bg-red-500 flex-shrink-0;
+  }
+
+  /* Status dot — info/processing blue */
+  .status-dot-info {
+    @apply w-2.5 h-2.5 rounded-full bg-blue-500 flex-shrink-0;
+  }
+
+  /* Status dot — neutral/unknown gray */
+  .status-dot-neutral {
+    @apply w-2.5 h-2.5 rounded-full bg-neutral-100 flex-shrink-0;
+  }
+
+  /* Stat mini — inline metric in tables or rows */
+  .stat-mini {
+    @apply font-mono text-sm tabular-nums font-medium;
+  }
+
+  /* Contextual inline metric chip — used inside run/exception rows */
+  .metric-chip {
+    @apply rounded-lg border border-border bg-card px-3 py-2;
+  }
+
+  /* Filter bar — horizontal filter/search strip */
+  .filter-bar {
+    @apply flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4;
+  }
+
+  /* Premium form input — token-based styling for standalone inputs/selects */
+  .input-field {
+    @apply w-full rounded-[var(--ui-radius-md)] border border-border bg-background px-3 py-2 text-sm text-foreground
+           placeholder:text-muted-foreground
+           focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 focus:ring-offset-background
+           transition-colors duration-100;
+  }
 }
 
 @layer base {
