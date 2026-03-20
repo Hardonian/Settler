@@ -133,7 +133,7 @@ export function IntegrationSandbox({ integrationId, onTestComplete }: Integratio
                   {testResult.message}
                 </p>
                 {testResult.data && (
-                  <pre className="mt-2 text-xs bg-white dark:bg-slate-800 p-2 rounded overflow-auto">
+                  <pre className="mt-2 text-xs bg-white dark:bg-card/80 p-2 rounded overflow-auto">
                     {JSON.stringify(testResult.data, null, 2)}
                   </pre>
                 )}

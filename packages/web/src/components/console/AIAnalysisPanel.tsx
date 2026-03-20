@@ -154,7 +154,7 @@ export function AnalysisPanel() {
             <div className="space-y-4">
               <Progress value={usagePercent} className="h-3" />
               <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-600 dark:text-slate-400">
+                <span className="text-muted-foreground">
                   Resets {new Date(tokenUsage.resetDate).toLocaleDateString()}
                 </span>
                 <span className="font-medium">
@@ -239,7 +239,7 @@ export function AnalysisPanel() {
                       </div>
                       <div className="flex-1">
                         <h3 className="font-semibold mb-1">{analysisType.title}</h3>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+                        <p className="text-sm text-muted-foreground mb-3">
                           {analysisType.description}
                         </p>
                         <Button
@@ -284,19 +284,19 @@ export function AnalysisPanel() {
                   key={analysis.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="p-4 border rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                  className="p-4 border rounded-lg hover:bg-muted/10 dark:hover:bg-card/80 cursor-pointer"
                   onClick={() => setSelectedAnalysis(analysis)}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <Badge variant="outline">{analysis.type}</Badge>
-                        <span className="text-xs text-slate-500">
+                        <span className="text-xs text-muted-foreground">
                           {analysis.tokensUsed} tokens
                         </span>
                       </div>
                       <p className="font-medium mb-1">{analysis.result.summary}</p>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                      <p className="text-sm text-muted-foreground">
                         {analysis.result.insights.length} insights •{' '}
                         {analysis.result.recommendations.length} recommendations
                       </p>
@@ -340,7 +340,7 @@ export function AnalysisPanel() {
                 <Card key={package_.tokens} className="cursor-pointer hover:border-blue-500">
                   <CardContent className="p-4 text-center">
                     <div className="text-2xl font-bold mb-1">{package_.tokens}</div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+                    <div className="text-sm text-muted-foreground mb-2">
                       tokens
                     </div>
                     <div className="text-lg font-semibold">${package_.price}</div>
@@ -366,13 +366,13 @@ export function AnalysisPanel() {
             <div className="space-y-4">
               <div>
                 <h3 className="font-semibold mb-2">Summary</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-muted-foreground">
                   {selectedAnalysis.result.summary}
                 </p>
               </div>
               <div>
                 <h3 className="font-semibold mb-2">Key Insights</h3>
-                <ul className="list-disc list-inside space-y-1 text-sm text-slate-600 dark:text-slate-400">
+                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                   {selectedAnalysis.result.insights.map((insight, idx) => (
                     <li key={idx}>{insight}</li>
                   ))}
@@ -380,7 +380,7 @@ export function AnalysisPanel() {
               </div>
               <div>
                 <h3 className="font-semibold mb-2">Recommendations</h3>
-                <ul className="list-disc list-inside space-y-1 text-sm text-slate-600 dark:text-slate-400">
+                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                   {selectedAnalysis.result.recommendations.map((rec, idx) => (
                     <li key={idx}>{rec}</li>
                   ))}

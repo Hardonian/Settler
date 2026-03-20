@@ -61,10 +61,10 @@ const ReviewQueue: React.FC = () => {
           <div className="snap-center shrink-0 w-[85%] bg-surface-dark border border-border-dark rounded-xl p-4 relative overflow-hidden opacity-60 scale-95">
             <div className="flex justify-between items-start mb-3">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-slate-500"></span>
+                <span className="w-2 h-2 rounded-full bg-muted/100"></span>
                 <span className="text-xs font-mono text-muted-foreground">REC-9023</span>
               </div>
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-muted text-muted-foreground border border-slate-600">
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-muted text-muted-foreground border border-border">
                 LOW
               </span>
             </div>

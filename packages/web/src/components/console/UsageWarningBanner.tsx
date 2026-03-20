@@ -110,7 +110,7 @@ export function UsageWarningBanner() {
         </div>
         <button
           onClick={handleDismiss}
-          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+          className="text-muted-foreground/60 hover:text-muted-foreground dark:hover:text-muted-foreground/40"
           aria-label="Dismiss warning"
         >
           <X className="h-4 w-4" />

@@ -102,27 +102,27 @@ export default function BenchmarksPage() {
         {/* Latency breakdown */}
         <div className="mb-16">
           <h2 className="mb-6 text-2xl font-bold text-foreground">Latency by Stage</h2>
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
+          <div className="rounded-2xl border border-border/40 dark:border-border bg-white dark:bg-card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800">
-                    <th className="text-left p-4 font-semibold text-slate-700 dark:text-slate-300">Stage</th>
-                    <th className="text-center p-4 font-semibold text-slate-700 dark:text-slate-300">p50</th>
-                    <th className="text-center p-4 font-semibold text-slate-700 dark:text-slate-300">p95</th>
-                    <th className="text-center p-4 font-semibold text-slate-700 dark:text-slate-300">p99</th>
+                  <tr className="border-b border-border/40 dark:border-border bg-muted/20">
+                    <th className="text-left p-4 font-semibold text-muted-foreground">Stage</th>
+                    <th className="text-center p-4 font-semibold text-muted-foreground">p50</th>
+                    <th className="text-center p-4 font-semibold text-muted-foreground">p95</th>
+                    <th className="text-center p-4 font-semibold text-muted-foreground">p99</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-border/30">
                   {latencyBreakdown.map((row) => (
                     <tr
                       key={row.stage}
-                      className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                      className="hover:bg-muted/10 dark:hover:bg-card/80/50 transition-colors"
                     >
-                      <td className="p-4 font-medium text-slate-900 dark:text-white">{row.stage}</td>
-                      <td className="p-4 text-center text-slate-600 dark:text-slate-400 font-mono">{row.p50}</td>
-                      <td className="p-4 text-center text-slate-600 dark:text-slate-400 font-mono">{row.p95}</td>
-                      <td className="p-4 text-center text-slate-600 dark:text-slate-400 font-mono">{row.p99}</td>
+                      <td className="p-4 font-medium text-foreground">{row.stage}</td>
+                      <td className="p-4 text-center text-muted-foreground font-mono">{row.p50}</td>
+                      <td className="p-4 text-center text-muted-foreground font-mono">{row.p95}</td>
+                      <td className="p-4 text-center text-muted-foreground font-mono">{row.p99}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -138,21 +138,21 @@ export default function BenchmarksPage() {
             {throughputScenarios.map((scenario) => (
               <div
                 key={scenario.scenario}
-                className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5"
+                className="rounded-2xl border border-border/40 dark:border-border bg-white dark:bg-card p-5"
               >
-                <h3 className="font-bold text-slate-900 dark:text-white mb-3">{scenario.scenario}</h3>
+                <h3 className="font-bold text-foreground mb-3">{scenario.scenario}</h3>
                 <dl className="grid grid-cols-3 gap-2 text-sm">
                   <div>
-                    <dt className="text-xs text-slate-500 dark:text-slate-500 mb-0.5">Volume</dt>
-                    <dd className="font-medium text-slate-900 dark:text-white">{scenario.volume}</dd>
+                    <dt className="text-xs text-muted-foreground mb-0.5">Volume</dt>
+                    <dd className="font-medium text-foreground">{scenario.volume}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-slate-500 dark:text-slate-500 mb-0.5">Throughput</dt>
-                    <dd className="font-medium text-slate-900 dark:text-white">{scenario.throughput}</dd>
+                    <dt className="text-xs text-muted-foreground mb-0.5">Throughput</dt>
+                    <dd className="font-medium text-foreground">{scenario.throughput}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-slate-500 dark:text-slate-500 mb-0.5">Evidence</dt>
-                    <dd className="font-medium text-slate-900 dark:text-white">{scenario.evidenceSize}</dd>
+                    <dt className="text-xs text-muted-foreground mb-0.5">Evidence</dt>
+                    <dd className="font-medium text-foreground">{scenario.evidenceSize}</dd>
                   </div>
                 </dl>
               </div>
@@ -167,12 +167,12 @@ export default function BenchmarksPage() {
             Settler enforces determinism at the engine level. The following are verified in CI on
             every merge:
           </p>
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+          <div className="rounded-2xl border border-border/40 dark:border-border bg-white dark:bg-card p-6">
             <ul className="space-y-3">
               {deterministicChecks.map((check) => (
                 <li key={check} className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-700 dark:text-slate-300">{check}</span>
+                  <span className="text-sm text-muted-foreground">{check}</span>
                 </li>
               ))}
             </ul>

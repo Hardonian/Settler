@@ -280,7 +280,7 @@ export async function InvestorDashboardContent() {
           <div className="flex items-center gap-4">
             <div className="text-4xl font-bold">{data.evidence_index}%</div>
             <div className="flex-1">
-              <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-4">
+              <div className="w-full bg-border dark:bg-border rounded-full h-4">
                 <div
                   className="bg-green-600 h-4 rounded-full transition-all"
                   style={{ width: `${data.evidence_index}%` }}

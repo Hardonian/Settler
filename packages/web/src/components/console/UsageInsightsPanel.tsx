@@ -43,7 +43,7 @@ export function UsageInsightsPanel() {
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground/60" />
           </div>
         </CardContent>
       </Card>
@@ -58,7 +58,7 @@ export function UsageInsightsPanel() {
           <CardDescription>We'll show recommendations based on your usage patterns</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-muted-foreground">
             Start using Settler to see personalized recommendations.
           </p>
         </CardContent>
@@ -116,7 +116,7 @@ export function UsageInsightsPanel() {
         )}
 
         {highlightInsights.length === 0 && promoteInsights.length === 0 && (
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-muted-foreground">
             No specific recommendations at this time. Keep using Settler to see personalized insights.
           </p>
         )}

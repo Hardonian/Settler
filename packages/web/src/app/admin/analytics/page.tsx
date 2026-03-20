@@ -118,7 +118,7 @@ export default function AdminAnalyticsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold mb-2">Admin Analytics</h1>
-          <p className="text-slate-600 dark:text-slate-400">
+          <p className="text-muted-foreground">
             Internal analytics dashboard (admin only)
           </p>
         </div>
@@ -185,7 +185,7 @@ export default function AdminAnalyticsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-sm text-slate-600 dark:text-slate-400">
+              <div className="text-sm text-muted-foreground">
                 ARR: ${(kpis.arr / 1000).toFixed(0)}K
               </div>
             </CardContent>
@@ -197,7 +197,7 @@ export default function AdminAnalyticsPage() {
               <CardTitle className="text-3xl">{(kpis.churn * 100).toFixed(2)}%</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-sm text-slate-600 dark:text-slate-400">
+              <div className="text-sm text-muted-foreground">
                 Trial → Paid: {(kpis.trialToPaidConversion * 100).toFixed(1)}%
               </div>
             </CardContent>
@@ -212,7 +212,7 @@ export default function AdminAnalyticsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-sm text-slate-600 dark:text-slate-400">
+              <div className="text-sm text-muted-foreground">
                 Runs/day: {kpis.runsPerDay.toLocaleString()}
               </div>
             </CardContent>
@@ -224,7 +224,7 @@ export default function AdminAnalyticsPage() {
               <CardTitle className="text-3xl">{(kpis.errorRate * 100).toFixed(2)}%</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-sm text-slate-600 dark:text-slate-400">
+              <div className="text-sm text-muted-foreground">
                 COGS: ${(kpis.cogsEstimate / 1000).toFixed(1)}K
               </div>
             </CardContent>
@@ -256,14 +256,14 @@ export default function AdminAnalyticsPage() {
               {workspaces.map((workspace) => (
                 <div
                   key={workspace.id}
-                  className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer"
+                  className="flex items-center justify-between p-4 bg-muted/20 rounded-lg hover:bg-muted/30 dark:hover:bg-slate-700 cursor-pointer"
                   onClick={() => (window.location.href = `/admin/workspaces/${workspace.id}`)}
                 >
                   <div>
-                    <div className="font-medium text-slate-900 dark:text-white">
+                    <div className="font-medium text-foreground">
                       {workspace.name}
                     </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
+                    <div className="text-sm text-muted-foreground">
                       {workspace.plan} • ${workspace.mrr}/month • {workspace.status}
                     </div>
                   </div>

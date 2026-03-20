@@ -97,7 +97,7 @@ export function MeaningfulChangesFeed({ limit = 50 }: MeaningfulChangesFeedProps
       <Card>
         <CardContent className="py-12 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-slate-600 dark:text-slate-400">Loading changes...</p>
+          <p className="mt-4 text-muted-foreground">Loading changes...</p>
         </CardContent>
       </Card>
     );
@@ -175,9 +175,9 @@ export function MeaningfulChangesFeed({ limit = 50 }: MeaningfulChangesFeedProps
       {changes.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <CheckCircle2 className="w-12 h-12 mx-auto mb-4 text-slate-400" />
+            <CheckCircle2 className="w-12 h-12 mx-auto mb-4 text-muted-foreground/60" />
             <h3 className="text-lg font-semibold mb-2">No changes detected</h3>
-            <p className="text-slate-600 dark:text-slate-400">
+            <p className="text-muted-foreground">
               All systems are in sync. Changes will appear here when detected.
             </p>
           </CardContent>
@@ -209,10 +209,10 @@ export function MeaningfulChangesFeed({ limit = 50 }: MeaningfulChangesFeedProps
                 <div className="space-y-4">
                   {/* Impact */}
                   {change.impact.currency && (
-                    <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
+                    <div className="p-4 bg-muted/10 rounded-lg">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm text-slate-600 dark:text-slate-400">Impact</p>
+                          <p className="text-sm text-muted-foreground">Impact</p>
                           <p className="text-2xl font-bold">
                             {formatCurrency(
                               change.impact.currency.amount,
@@ -221,7 +221,7 @@ export function MeaningfulChangesFeed({ limit = 50 }: MeaningfulChangesFeedProps
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm text-slate-600 dark:text-slate-400">Risk Score</p>
+                          <p className="text-sm text-muted-foreground">Risk Score</p>
                           <p className="text-2xl font-bold">
                             {Math.round(change.impact.riskScore * 100)}%
                           </p>
@@ -262,7 +262,7 @@ export function MeaningfulChangesFeed({ limit = 50 }: MeaningfulChangesFeedProps
                   )}
 
                   {/* Metadata */}
-                  <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
                     <span>
                       Source: {change.event.sourceId}
                     </span>

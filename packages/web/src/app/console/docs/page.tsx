@@ -386,10 +386,10 @@ export default function DocsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+        <h1 className="text-3xl font-bold text-foreground mb-2">
           Developer Documentation
         </h1>
-        <p className="text-slate-600 dark:text-slate-400">
+        <p className="text-muted-foreground">
           Complete guides for SDKs, CLI, and API endpoints. Get started in minutes.
         </p>
       </div>
@@ -422,14 +422,14 @@ export default function DocsPage() {
                       <Badge variant="outline">{sdk.name}</Badge>
                       <CopyButton text={sdk.install} size="sm" />
                     </div>
-                    <pre className="p-3 bg-slate-900 text-slate-100 rounded text-sm overflow-x-auto">
+                    <pre className="p-3 bg-card text-foreground rounded text-sm overflow-x-auto">
                       <code>{sdk.install}</code>
                     </pre>
                   </div>
                   <div>
                     <p className="text-sm font-medium mb-2">Initialize:</p>
                     <div className="relative">
-                      <pre className="p-3 bg-slate-900 text-slate-100 rounded text-sm overflow-x-auto">
+                      <pre className="p-3 bg-card text-foreground rounded text-sm overflow-x-auto">
                         <code>{sdk.import}</code>
                       </pre>
                       <CopyButton text={sdk.import} className="absolute top-1 right-1" size="sm" />
@@ -438,7 +438,7 @@ export default function DocsPage() {
                   <div>
                     <p className="text-sm font-medium mb-2">Example:</p>
                     <div className="relative">
-                      <pre className="p-3 bg-slate-900 text-slate-100 rounded text-sm overflow-x-auto">
+                      <pre className="p-3 bg-card text-foreground rounded text-sm overflow-x-auto">
                         <code>{sdk.example}</code>
                       </pre>
                       <CopyButton text={sdk.example} className="absolute top-1 right-1" size="sm" />
@@ -476,7 +476,7 @@ export default function DocsPage() {
                 </TabsList>
                 <TabsContent value="npm" className="mt-2">
                   <div className="relative">
-                    <pre className="p-3 bg-slate-900 text-slate-100 rounded text-sm overflow-x-auto">
+                    <pre className="p-3 bg-card text-foreground rounded text-sm overflow-x-auto">
                       <code>{cliCommands.installation.npm}</code>
                     </pre>
                     <CopyButton
@@ -488,7 +488,7 @@ export default function DocsPage() {
                 </TabsContent>
                 <TabsContent value="brew" className="mt-2">
                   <div className="relative">
-                    <pre className="p-3 bg-slate-900 text-slate-100 rounded text-sm overflow-x-auto">
+                    <pre className="p-3 bg-card text-foreground rounded text-sm overflow-x-auto">
                       <code>{cliCommands.installation.brew}</code>
                     </pre>
                     <CopyButton
@@ -500,7 +500,7 @@ export default function DocsPage() {
                 </TabsContent>
                 <TabsContent value="curl" className="mt-2">
                   <div className="relative">
-                    <pre className="p-3 bg-slate-900 text-slate-100 rounded text-sm overflow-x-auto">
+                    <pre className="p-3 bg-card text-foreground rounded text-sm overflow-x-auto">
                       <code>{cliCommands.installation.curl}</code>
                     </pre>
                     <CopyButton
@@ -515,7 +515,7 @@ export default function DocsPage() {
             <div>
               <p className="text-sm font-medium mb-2">Authenticate:</p>
               <div className="relative">
-                <pre className="p-3 bg-slate-900 text-slate-100 rounded text-sm overflow-x-auto">
+                <pre className="p-3 bg-card text-foreground rounded text-sm overflow-x-auto">
                   <code>{cliCommands.auth.login}</code>
                 </pre>
                 <CopyButton
@@ -528,7 +528,7 @@ export default function DocsPage() {
             <div>
               <p className="text-sm font-medium mb-2">Try it:</p>
               <div className="relative">
-                <pre className="p-3 bg-slate-900 text-slate-100 rounded text-sm overflow-x-auto">
+                <pre className="p-3 bg-card text-foreground rounded text-sm overflow-x-auto">
                   <code>{cliCommands.receipts.parse}</code>
                 </pre>
                 <CopyButton
@@ -572,8 +572,8 @@ export default function DocsPage() {
 
       {/* API Reference Section */}
       <div>
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">API Reference</h2>
-        <p className="text-slate-600 dark:text-slate-400 mb-6">
+        <h2 className="text-2xl font-bold text-foreground mb-4">API Reference</h2>
+        <p className="text-muted-foreground mb-6">
           Complete API endpoint documentation with examples in multiple languages.
         </p>
       </div>
@@ -607,7 +607,7 @@ export default function DocsPage() {
                         </span>
                         <code className="text-sm font-mono">{endpoint.path}</code>
                       </div>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                      <p className="text-sm text-muted-foreground">
                         {endpoint.description}
                       </p>
                     </div>
@@ -632,7 +632,7 @@ export default function DocsPage() {
                       </TabsList>
                       <TabsContent value={selectedLanguage} className="mt-4">
                         <div className="relative group">
-                          <pre className="p-4 bg-slate-900 text-slate-100 rounded-lg overflow-x-auto text-sm">
+                          <pre className="p-4 bg-card text-foreground rounded-lg overflow-x-auto text-sm">
                             <code>{endpoint.example[selectedLanguage]}</code>
                           </pre>
                           <CopyButton
@@ -655,10 +655,10 @@ export default function DocsPage() {
 
       {/* CLI Commands Reference */}
       <div className="mt-12">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
+        <h2 className="text-2xl font-bold text-foreground mb-4">
           CLI Commands Reference
         </h2>
-        <p className="text-slate-600 dark:text-slate-400 mb-6">
+        <p className="text-muted-foreground mb-6">
           Complete command-line interface documentation.
         </p>
       </div>
@@ -676,7 +676,7 @@ export default function DocsPage() {
               <div key={cmd}>
                 <p className="text-sm font-medium mb-1 capitalize">{cmd}:</p>
                 <div className="relative">
-                  <pre className="p-3 bg-slate-900 text-slate-100 rounded text-sm overflow-x-auto">
+                  <pre className="p-3 bg-card text-foreground rounded text-sm overflow-x-auto">
                     <code>{example}</code>
                   </pre>
                   <CopyButton text={example} className="absolute top-1 right-1" size="sm" />
@@ -698,7 +698,7 @@ export default function DocsPage() {
               <div key={cmd}>
                 <p className="text-sm font-medium mb-1 capitalize">{cmd}:</p>
                 <div className="relative">
-                  <pre className="p-3 bg-slate-900 text-slate-100 rounded text-sm overflow-x-auto">
+                  <pre className="p-3 bg-card text-foreground rounded text-sm overflow-x-auto">
                     <code>{example}</code>
                   </pre>
                   <CopyButton text={example} className="absolute top-1 right-1" size="sm" />
@@ -720,7 +720,7 @@ export default function DocsPage() {
               <div key={cmd}>
                 <p className="text-sm font-medium mb-1 capitalize">{cmd}:</p>
                 <div className="relative">
-                  <pre className="p-3 bg-slate-900 text-slate-100 rounded text-sm overflow-x-auto">
+                  <pre className="p-3 bg-card text-foreground rounded text-sm overflow-x-auto">
                     <code>{example}</code>
                   </pre>
                   <CopyButton text={example} className="absolute top-1 right-1" size="sm" />
@@ -742,7 +742,7 @@ export default function DocsPage() {
               <div key={cmd}>
                 <p className="text-sm font-medium mb-1 capitalize">{cmd}:</p>
                 <div className="relative">
-                  <pre className="p-3 bg-slate-900 text-slate-100 rounded text-sm overflow-x-auto">
+                  <pre className="p-3 bg-card text-foreground rounded text-sm overflow-x-auto">
                     <code>{example}</code>
                   </pre>
                   <CopyButton text={example} className="absolute top-1 right-1" size="sm" />
@@ -754,7 +754,7 @@ export default function DocsPage() {
       </div>
 
       {/* Additional Resources */}
-      <Card className="mt-8 border-slate-200 dark:border-slate-800">
+      <Card className="mt-8 border-border/40 dark:border-border">
         <CardHeader>
           <CardTitle>Additional Resources</CardTitle>
           <CardDescription>Explore more documentation and examples</CardDescription>
@@ -765,21 +765,21 @@ export default function DocsPage() {
               <Link href="/docs">
                 <Package className="w-5 h-5 mb-2" />
                 <span className="font-semibold">Full Documentation</span>
-                <span className="text-xs text-slate-500 mt-1">Complete API reference</span>
+                <span className="text-xs text-muted-foreground mt-1">Complete API reference</span>
               </Link>
             </Button>
             <Button asChild variant="outline" className="h-auto flex-col items-start py-4">
               <Link href="/console/playground">
                 <Code className="w-5 h-5 mb-2" />
                 <span className="font-semibold">Interactive Playground</span>
-                <span className="text-xs text-slate-500 mt-1">Test APIs in browser</span>
+                <span className="text-xs text-muted-foreground mt-1">Test APIs in browser</span>
               </Link>
             </Button>
             <Button asChild variant="outline" className="h-auto flex-col items-start py-4">
               <Link href="/cookbook">
                 <FileText className="w-5 h-5 mb-2" />
                 <span className="font-semibold">Cookbooks</span>
-                <span className="text-xs text-slate-500 mt-1">Code examples & patterns</span>
+                <span className="text-xs text-muted-foreground mt-1">Code examples & patterns</span>
               </Link>
             </Button>
           </div>

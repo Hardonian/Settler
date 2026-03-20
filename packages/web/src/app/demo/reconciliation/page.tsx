@@ -102,7 +102,7 @@ export default function ReconciliationDemoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+    <div className="min-h-screen bg-gradient-to-br from-background via-blue-50 to-indigo-50 dark:from-background dark:via-card dark:to-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Header */}
         <div className="mb-8">
@@ -114,11 +114,11 @@ export default function ReconciliationDemoPage() {
           </Link>
           <div className="flex items-center gap-4 mb-4">
             <Badge variant="outline">Demo Mode</Badge>
-            <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
+            <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
               Reconciliation Engine Demo
             </h1>
           </div>
-          <p className="text-lg text-slate-600 dark:text-slate-300">
+          <p className="text-lg text-muted-foreground">
             Watch transactions from Stripe, Shopify, QuickBooks, and bank payouts get matched
             automatically using deterministic rules.
           </p>
@@ -168,7 +168,7 @@ export default function ReconciliationDemoPage() {
                     key={step}
                     variants={staggerItem}
                     className={`flex items-center gap-2 ${
-                      index <= currentStep ? "text-slate-900 dark:text-white" : "text-slate-400"
+                      index <= currentStep ? "text-foreground" : "text-muted-foreground/60"
                     }`}
                   >
                     {index < currentStep ? (
@@ -181,7 +181,7 @@ export default function ReconciliationDemoPage() {
                         <RefreshCw className="w-5 h-5 text-blue-500" />
                       </motion.div>
                     ) : (
-                      <div className="w-5 h-5 rounded-full border-2 border-slate-300" />
+                      <div className="w-5 h-5 rounded-full border-2 border-border/60" />
                     )}
                     <span>{step}</span>
                   </motion.div>
@@ -212,22 +212,22 @@ export default function ReconciliationDemoPage() {
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h3 className="font-semibold mb-2 text-slate-900 dark:text-white">
+                      <h3 className="font-semibold mb-2 text-foreground">
                         Source Transactions ({sourceTransactions.length})
                       </h3>
                       <div className="space-y-2">
                         {enrichedSources.slice(0, 5).map((tx) => (
                           <div
                             key={tx.id}
-                            className="p-3 bg-slate-50 dark:bg-slate-800 rounded border text-sm"
+                            className="p-3 bg-muted/20 rounded border text-sm"
                           >
                             <div className="flex justify-between items-start mb-1">
                               <span className="font-medium">{tx.source}</span>
-                              <span className="text-slate-600 dark:text-slate-400">
+                              <span className="text-muted-foreground">
                                 ${tx.amount.toFixed(2)}
                               </span>
                             </div>
-                            <div className="text-xs text-slate-500 dark:text-slate-500">
+                            <div className="text-xs text-muted-foreground">
                               {new Date(tx.timestamp).toLocaleDateString()}
                             </div>
                           </div>
@@ -235,22 +235,22 @@ export default function ReconciliationDemoPage() {
                       </div>
                     </div>
                     <div>
-                      <h3 className="font-semibold mb-2 text-slate-900 dark:text-white">
+                      <h3 className="font-semibold mb-2 text-foreground">
                         Target Transactions ({targetTransactions.length})
                       </h3>
                       <div className="space-y-2">
                         {enrichedTargets.slice(0, 5).map((tx) => (
                           <div
                             key={tx.id}
-                            className="p-3 bg-slate-50 dark:bg-slate-800 rounded border text-sm"
+                            className="p-3 bg-muted/20 rounded border text-sm"
                           >
                             <div className="flex justify-between items-start mb-1">
                               <span className="font-medium">{tx.source}</span>
-                              <span className="text-slate-600 dark:text-slate-400">
+                              <span className="text-muted-foreground">
                                 ${tx.amount.toFixed(2)}
                               </span>
                             </div>
-                            <div className="text-xs text-slate-500 dark:text-slate-500">
+                            <div className="text-xs text-muted-foreground">
                               {new Date(tx.timestamp).toLocaleDateString()}
                             </div>
                           </div>
@@ -305,7 +305,7 @@ export default function ReconciliationDemoPage() {
                               className={`p-4 border rounded-lg cursor-pointer transition-colors ${
                                 selectedMatch?.id === match.id
                                   ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                                  : "hover:border-slate-300 dark:hover:border-slate-700"
+                                  : "hover:border-border/60 dark:hover:border-border"
                               }`}
                               onClick={() => setSelectedMatch(match)}
                             >
@@ -317,7 +317,7 @@ export default function ReconciliationDemoPage() {
                                     </span>
                                     {getConfidenceBadge(match.confidence)}
                                   </div>
-                                  <div className="text-sm text-slate-600 dark:text-slate-400">
+                                  <div className="text-sm text-muted-foreground">
                                     Rule: {match.rule_used.replace(/_/g, " ")}
                                   </div>
                                 </div>
@@ -335,18 +335,18 @@ export default function ReconciliationDemoPage() {
                                   variants={fadeUp}
                                   className="mt-4 pt-4 border-t space-y-2"
                                 >
-                                  <div className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                                  <div className="text-xs font-medium text-muted-foreground">
                                     Evidence:
                                   </div>
                                   {match.evidence.map((ev, idx) => (
-                                    <div key={idx} className="text-xs text-slate-600 dark:text-slate-300">
+                                    <div key={idx} className="text-xs text-muted-foreground">
                                       <span className="font-medium">{ev.field}:</span> {String(ev.source_value)} = {String(ev.target_value)} ({ev.match_type})
                                     </div>
                                   ))}
-                                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                                  <div className="text-xs text-muted-foreground mt-2">
                                     Audit Trail ID: {match.audit_trail_id}
                                   </div>
-                                  <div className="text-xs text-slate-500 dark:text-slate-400">
+                                  <div className="text-xs text-muted-foreground">
                                     Hash: {match.deterministic_hash.substring(0, 16)}...
                                   </div>
                                 </motion.div>
@@ -371,22 +371,22 @@ export default function ReconciliationDemoPage() {
                       <div className="space-y-6">
                         {unmatchedSources.length > 0 && (
                           <div>
-                            <h3 className="font-semibold mb-3 text-slate-900 dark:text-white">
+                            <h3 className="font-semibold mb-3 text-foreground">
                               Unmatched Sources ({unmatchedSources.length})
                             </h3>
                             <div className="space-y-2">
                               {unmatchedSources.map((tx) => (
                                 <div
                                   key={tx.id}
-                                  className="p-3 bg-slate-50 dark:bg-slate-800 rounded border text-sm flex justify-between"
+                                  className="p-3 bg-muted/20 rounded border text-sm flex justify-between"
                                 >
                                   <div>
                                     <span className="font-medium">{tx.source}</span>
-                                    <span className="text-slate-500 dark:text-slate-400 ml-2">
+                                    <span className="text-muted-foreground ml-2">
                                       {new Date(tx.timestamp).toLocaleDateString()}
                                     </span>
                                   </div>
-                                  <span className="text-slate-600 dark:text-slate-400">
+                                  <span className="text-muted-foreground">
                                     ${tx.amount.toFixed(2)}
                                   </span>
                                 </div>
@@ -396,22 +396,22 @@ export default function ReconciliationDemoPage() {
                         )}
                         {unmatchedTargets.length > 0 && (
                           <div>
-                            <h3 className="font-semibold mb-3 text-slate-900 dark:text-white">
+                            <h3 className="font-semibold mb-3 text-foreground">
                               Unmatched Targets ({unmatchedTargets.length})
                             </h3>
                             <div className="space-y-2">
                               {unmatchedTargets.map((tx) => (
                                 <div
                                   key={tx.id}
-                                  className="p-3 bg-slate-50 dark:bg-slate-800 rounded border text-sm flex justify-between"
+                                  className="p-3 bg-muted/20 rounded border text-sm flex justify-between"
                                 >
                                   <div>
                                     <span className="font-medium">{tx.source}</span>
-                                    <span className="text-slate-500 dark:text-slate-400 ml-2">
+                                    <span className="text-muted-foreground ml-2">
                                       {new Date(tx.timestamp).toLocaleDateString()}
                                     </span>
                                   </div>
-                                  <span className="text-slate-600 dark:text-slate-400">
+                                  <span className="text-muted-foreground">
                                     ${tx.amount.toFixed(2)}
                                   </span>
                                 </div>
@@ -435,7 +435,7 @@ export default function ReconciliationDemoPage() {
                           <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                             {matches.filter((m: any) => m.confidence === "exact").length}
                           </div>
-                          <div className="text-sm text-slate-600 dark:text-slate-400">
+                          <div className="text-sm text-muted-foreground">
                             Exact Matches
                           </div>
                         </div>
@@ -443,7 +443,7 @@ export default function ReconciliationDemoPage() {
                           <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                             {matches.filter((m: any) => m.confidence === "high").length}
                           </div>
-                          <div className="text-sm text-slate-600 dark:text-slate-400">
+                          <div className="text-sm text-muted-foreground">
                             High Confidence
                           </div>
                         </div>
@@ -451,7 +451,7 @@ export default function ReconciliationDemoPage() {
                           <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                             {matches.filter((m: any) => m.confidence === "medium" || m.confidence === "low").length}
                           </div>
-                          <div className="text-sm text-slate-600 dark:text-slate-400">
+                          <div className="text-sm text-muted-foreground">
                             Review Needed
                           </div>
                         </div>
@@ -459,7 +459,7 @@ export default function ReconciliationDemoPage() {
                           <div className="text-2xl font-bold text-red-600 dark:text-red-400">
                             {unmatchedSources.length + unmatchedTargets.length}
                           </div>
-                          <div className="text-sm text-slate-600 dark:text-slate-400">
+                          <div className="text-sm text-muted-foreground">
                             Unmatched
                           </div>
                         </div>

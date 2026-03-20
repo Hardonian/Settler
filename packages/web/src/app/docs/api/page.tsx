@@ -43,7 +43,7 @@ export default function DocsApiPage() {
       <Navigation />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-24 border-b border-border/40 overflow-hidden bg-slate-900 text-white shadow-2xl">
+      <section className="relative pt-32 pb-24 border-b border-border/40 overflow-hidden bg-card text-white shadow-2xl">
         <div className="absolute inset-0 bg-grid-white/[0.05] [mask-image:radial-gradient(white,transparent_85%)]" />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 relative z-10 space-y-10">
           <div className="flex flex-col items-center text-center space-y-6">
@@ -53,7 +53,7 @@ export default function DocsApiPage() {
             <h1 className="text-4xl md:text-7xl font-bold tracking-tight italic">
               API Documentation
             </h1>
-            <p className="text-xl text-slate-400 font-medium max-w-2xl mx-auto leading-relaxed italic underline">
+            <p className="text-xl text-muted-foreground/60 font-medium max-w-2xl mx-auto leading-relaxed italic underline">
               Interact with the Settler control plane and ingestion layers programmatically. Built
               on REST and secured with HMAC-SHA256 signatures.
             </p>
@@ -68,7 +68,7 @@ export default function DocsApiPage() {
             </Button>
             <Button
               variant="ghost"
-              className="h-14 px-8 font-bold text-slate-300 hover:text-white border border-white/10 hover:bg-white/5"
+              className="h-14 px-8 font-bold text-muted-foreground/40 hover:text-white border border-white/10 hover:bg-white/5"
             >
               View Postman Collection
             </Button>
@@ -90,7 +90,7 @@ export default function DocsApiPage() {
                   <Link
                     key={item}
                     href={`#${item.toLowerCase()}`}
-                    className="block text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors italic"
+                    className="block text-sm font-bold text-muted-foreground hover:text-primary transition-colors italic"
                   >
                     {item}
                   </Link>
@@ -106,7 +106,7 @@ export default function DocsApiPage() {
                   <Link
                     key={ep.path}
                     href={`#${ep.title.toLowerCase().replace(/ /g, "-")}`}
-                    className="block text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors italic"
+                    className="block text-sm font-bold text-muted-foreground hover:text-primary transition-colors italic"
                   >
                     {ep.title}
                   </Link>
@@ -138,20 +138,20 @@ export default function DocsApiPage() {
                 generated from your API key secret.
               </p>
             </div>
-            <Card className="bg-slate-950 border-white/5 shadow-2xl overflow-hidden glass">
+            <Card className="bg-card border-white/5 shadow-2xl overflow-hidden glass">
               <CardHeader className="bg-white/5 border-b border-white/5 p-4 flex flex-row items-center justify-between">
-                <span className="text-[10px] font-mono text-slate-400 tracking-widest font-black">
+                <span className="text-[10px] font-mono text-muted-foreground/60 tracking-widest font-black">
                   X-SETTLER-SIGNATURE HEADER
                 </span>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-slate-500 hover:text-white"
+                  className="h-8 w-8 text-muted-foreground hover:text-white"
                 >
                   <Copy size={14} />
                 </Button>
               </CardHeader>
-              <CardContent className="p-8 font-mono text-sm text-slate-300 leading-relaxed overflow-x-auto text-nowrap">
+              <CardContent className="p-8 font-mono text-sm text-muted-foreground/40 leading-relaxed overflow-x-auto text-nowrap">
                 <span className="text-indigo-400">Authorization:</span> Bearer{" "}
                 <span className="text-teal-400">set_prod_821sL...</span>
                 <br />
@@ -234,8 +234,8 @@ export default function DocsApiPage() {
                     <h4 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/60">
                       Success Response
                     </h4>
-                    <Card className="bg-slate-900 border-white/5 h-full flex flex-col glass">
-                      <CardContent className="flex-1 p-6 font-mono text-sm text-slate-400 overflow-hidden text-nowrap">
+                    <Card className="bg-card border-white/5 h-full flex flex-col glass">
+                      <CardContent className="flex-1 p-6 font-mono text-sm text-muted-foreground/60 overflow-hidden text-nowrap">
                         {`{`}
                         <br />
                         &nbsp;&nbsp;<span className="text-teal-400">&quot;status&quot;</span>:{" "}

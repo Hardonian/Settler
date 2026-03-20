@@ -52,7 +52,7 @@ export function UsageMeter() {
           <CardTitle>Usage</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-slate-600">Loading usage data...</p>
+          <p className="text-sm text-muted-foreground">Loading usage data...</p>
         </CardContent>
       </Card>
     );
@@ -65,7 +65,7 @@ export function UsageMeter() {
           <CardTitle>Usage</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-slate-600">No usage data available.</p>
+          <p className="text-sm text-muted-foreground">No usage data available.</p>
         </CardContent>
       </Card>
     );
@@ -86,7 +86,7 @@ export function UsageMeter() {
             <div key={item.feature} className="space-y-2">
               <div className="flex justify-between items-center text-sm">
                 <span className="font-medium capitalize">{item.feature.replace(/_/g, " ")}</span>
-                <span className="text-slate-600">
+                <span className="text-muted-foreground">
                   {isUnlimited ? (
                     "Unlimited"
                   ) : (

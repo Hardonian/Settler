@@ -146,8 +146,8 @@ async function WebhookInboxContent() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Webhook Inbox</h1>
-        <p className="text-slate-600 dark:text-slate-400">
+        <h1 className="text-3xl font-bold text-foreground mb-2">Webhook Inbox</h1>
+        <p className="text-muted-foreground">
           Monitor Stripe webhook events and debug issues
         </p>
       </div>
@@ -201,8 +201,8 @@ async function WebhookInboxContent() {
         <CardContent>
           {events.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-slate-500 dark:text-slate-400 mb-2">No webhook events found</p>
-              <p className="text-sm text-slate-400 dark:text-slate-500">
+              <p className="text-muted-foreground mb-2">No webhook events found</p>
+              <p className="text-sm text-muted-foreground/60 dark:text-muted-foreground">
                 Webhook events will appear here once Stripe sends events to your endpoint.
               </p>
             </div>
@@ -214,7 +214,7 @@ async function WebhookInboxContent() {
                 return (
                   <div
                     key={event.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
+                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/10 dark:hover:bg-card transition-colors"
                   >
                     <div className="flex items-center gap-4 flex-1">
                       <div
@@ -224,14 +224,14 @@ async function WebhookInboxContent() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-slate-900 dark:text-white">
+                          <span className="font-medium text-foreground">
                             {event.type}
                           </span>
                           <Badge variant="outline" className="text-xs">
                             {event.status}
                           </Badge>
                         </div>
-                        <div className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
+                        <div className="text-sm text-muted-foreground space-y-1">
                           <div>
                             Event ID: <code className="text-xs">{event.eventId}</code>
                           </div>
@@ -276,7 +276,7 @@ export default function AdminWebhooksPage() {
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-slate-600 dark:text-slate-400">Loading webhook events...</p>
+              <p className="text-muted-foreground">Loading webhook events...</p>
             </div>
           </div>
         }

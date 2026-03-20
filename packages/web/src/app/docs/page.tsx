@@ -137,7 +137,7 @@ export default function DocsLandingPage() {
                       href={link.href}
                       className="flex items-center justify-between group/link p-2 rounded-lg hover:bg-muted/40 transition-colors"
                     >
-                      <span className="text-sm font-bold text-slate-700 dark:text-slate-300 group-hover/link:text-primary transition-colors">
+                      <span className="text-sm font-bold text-muted-foreground group-hover/link:text-primary transition-colors">
                         {link.name}
                       </span>
                       <ArrowRight

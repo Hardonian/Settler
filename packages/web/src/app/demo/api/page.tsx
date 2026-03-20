@@ -196,7 +196,7 @@ Content-Type: multipart/form-data
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+    <div className="min-h-screen bg-gradient-to-br from-background via-blue-50 to-indigo-50 dark:from-background dark:via-card dark:to-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Header */}
         <div className="mb-8">
@@ -208,11 +208,11 @@ Content-Type: multipart/form-data
           </Link>
           <div className="flex items-center gap-4 mb-4">
             <Badge variant="outline">Demo Mode</Badge>
-            <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
+            <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
               API Playground
             </h1>
           </div>
-          <p className="text-lg text-slate-600 dark:text-slate-300">
+          <p className="text-lg text-muted-foreground">
             Explore the API with feature flags and plan tiers. See how responses change based on
             configuration.
           </p>
@@ -235,13 +235,13 @@ Content-Type: multipart/form-data
                     className={`w-full p-3 rounded-lg border text-left transition-colors ${
                       planTier === tier
                         ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                        : "hover:border-slate-300 dark:hover:border-slate-700"
+                        : "hover:border-border/60 dark:hover:border-border"
                     }`}
                   >
-                    <div className="font-semibold capitalize text-slate-900 dark:text-white">
+                    <div className="font-semibold capitalize text-foreground">
                       {tier}
                     </div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    <div className="text-xs text-muted-foreground mt-1">
                       {tier === "free" && "Basic features, limited records"}
                       {tier === "pro" && "Full features, standard limits"}
                       {tier === "enterprise" && "Advanced features, unlimited"}
@@ -261,11 +261,11 @@ Content-Type: multipart/form-data
                 {Object.entries(featureFlags).map(([flag, enabled]) => (
                   <div key={flag} className="flex items-center justify-between">
                     <Label htmlFor={flag} className="cursor-pointer flex-1">
-                      <div className="font-medium text-slate-900 dark:text-white">
+                      <div className="font-medium text-foreground">
                         {flag.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
                       </div>
                       {flag === "webhooks_enabled" && (
-                        <div className="text-xs text-slate-500 dark:text-slate-400">
+                        <div className="text-xs text-muted-foreground">
                           Always disabled in demo
                         </div>
                       )}
@@ -316,7 +316,7 @@ Content-Type: multipart/form-data
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="bg-slate-900 text-green-400 p-4 rounded font-mono text-xs overflow-x-auto">
+                <div className="bg-card text-green-400 p-4 rounded font-mono text-xs overflow-x-auto">
                   <pre>{getRequestExample(selectedEndpoint)}</pre>
                 </div>
               </CardContent>
@@ -331,7 +331,7 @@ Content-Type: multipart/form-data
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="bg-slate-900 text-green-400 p-4 rounded font-mono text-xs overflow-x-auto max-h-96">
+                <div className="bg-card text-green-400 p-4 rounded font-mono text-xs overflow-x-auto max-h-96">
                   <pre>{JSON.stringify(response, null, 2)}</pre>
                 </div>
               </CardContent>
@@ -344,7 +344,7 @@ Content-Type: multipart/form-data
               !featureFlags.export_enabled) && (
               <Card elevation="sm" className="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
                 <CardContent className="p-4">
-                  <div className="text-sm text-slate-600 dark:text-slate-300">
+                  <div className="text-sm text-muted-foreground">
                     <strong>Notice:</strong> Some features are limited or disabled based on your
                     current plan tier and feature flags. Upgrade to Pro or Enterprise, or enable
                     feature flags to see full functionality.
@@ -358,7 +358,7 @@ Content-Type: multipart/form-data
         {/* Trust Notice */}
         <Card elevation="sm" className="mt-6 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
           <CardContent className="p-6">
-            <p className="text-sm text-slate-600 dark:text-slate-300">
+            <p className="text-sm text-muted-foreground">
               <strong>Read-only simulation.</strong> This playground simulates API responses based
               on deterministic demo data. No actual API calls are made, and no data is written to
               the database.

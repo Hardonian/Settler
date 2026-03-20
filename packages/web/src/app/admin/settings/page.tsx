@@ -23,11 +23,11 @@ export default function AdminSettingsPage() {
   ];
 
   return (
-    <div className="p-8 space-y-6 bg-slate-50 dark:bg-slate-900 min-h-screen">
+    <div className="p-8 space-y-6 bg-muted/10 min-h-screen">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Settings</h1>
-        <p className="text-slate-500 dark:text-slate-400 mt-1">
+        <h1 className="text-3xl font-bold text-foreground">Settings</h1>
+        <p className="text-muted-foreground mt-1">
           Feature flags and plan-tier gates
         </p>
       </div>
@@ -45,21 +45,21 @@ export default function AdminSettingsPage() {
             {featureFlags.map((flag) => (
               <div
                 key={flag.key}
-                className="flex items-start justify-between p-4 border border-slate-200 dark:border-slate-800 rounded-lg"
+                className="flex items-start justify-between p-4 border border-border/40 dark:border-border rounded-lg"
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-medium text-slate-900 dark:text-white">
+                    <span className="font-medium text-foreground">
                       {flag.name}
                     </span>
                     {flag.enabled && (
                       <Badge variant="success" size="sm">Enabled</Badge>
                     )}
                   </div>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                  <p className="text-sm text-muted-foreground">
                     {flag.description}
                   </p>
-                  <code className="text-xs text-slate-400 dark:text-slate-500 mt-1 block">
+                  <code className="text-xs text-muted-foreground/60 dark:text-muted-foreground mt-1 block">
                     {flag.key}
                   </code>
                 </div>
@@ -80,36 +80,36 @@ export default function AdminSettingsPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg">
+            <div className="p-4 border border-border/40 dark:border-border rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-medium text-slate-900 dark:text-white">
+                <span className="font-medium text-foreground">
                   Base Plan
                 </span>
                 <Badge variant="outline">Active</Badge>
               </div>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
+              <p className="text-sm text-muted-foreground">
                 Core reconciliation features, deterministic matching
               </p>
             </div>
-            <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg">
+            <div className="p-4 border border-border/40 dark:border-border rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-medium text-slate-900 dark:text-white">
+                <span className="font-medium text-foreground">
                   Pro Plan
                 </span>
                 <Badge variant="outline">Available</Badge>
               </div>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
+              <p className="text-sm text-muted-foreground">
                 AI assist, advanced matching, priority support
               </p>
             </div>
-            <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg">
+            <div className="p-4 border border-border/40 dark:border-border rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-medium text-slate-900 dark:text-white">
+                <span className="font-medium text-foreground">
                   Enterprise Plan
                 </span>
                 <Badge variant="outline">Available</Badge>
               </div>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
+              <p className="text-sm text-muted-foreground">
                 Custom integrations, dedicated support, SLA guarantees
               </p>
             </div>
@@ -126,7 +126,7 @@ export default function AdminSettingsPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+          <div className="space-y-2 text-sm text-muted-foreground">
             <p>
               AI Assist is an optional layer that provides suggestions and explanations.
               All recommendations are clearly labeled and include:

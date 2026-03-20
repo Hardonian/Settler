@@ -10,7 +10,7 @@ import { fadeUp, staggerContainer, staggerItem } from "@/lib/motion/variants";
 
 export default function DemoPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+    <div className="min-h-screen bg-gradient-to-br from-background via-blue-50 to-indigo-50 dark:from-background dark:via-card dark:to-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
         {/* Header */}
         <motion.div
@@ -26,13 +26,13 @@ export default function DemoPage() {
           </motion.div>
           <motion.h1
             variants={staggerItem}
-            className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 dark:from-white dark:via-slate-100 dark:to-white bg-clip-text text-transparent"
+            className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-background via-card to-background dark:from-white dark:via-muted/20 dark:to-white bg-clip-text text-transparent"
           >
             Run the Settler Demo Path
           </motion.h1>
           <motion.p
             variants={staggerItem}
-            className="text-lg sm:text-xl md:text-2xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto"
+            className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto"
           >
             See one concrete path: run reconciliation, inspect a mismatch, review evidence, and replay the run.
             All demo data is deterministic and reproducible—no authentication required.
@@ -44,10 +44,10 @@ export default function DemoPage() {
           initial="hidden"
           animate="visible"
           variants={fadeUp}
-          className="mb-10 rounded-lg border bg-white/80 p-6 dark:bg-slate-900/60"
+          className="mb-10 rounded-lg border bg-white/80 p-6 dark:bg-card/60"
         >
-          <h2 className="text-xl font-semibold text-slate-900 dark:text-white">How this demo works</h2>
-          <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-slate-700 dark:text-slate-300">
+          <h2 className="text-xl font-semibold text-foreground">How this demo works</h2>
+          <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
             <li>Open the reconciliation demo and run deterministic matching across sample systems.</li>
             <li>Inspect mismatches and policy outcomes in the results view.</li>
             <li>Review attached evidence and trace context.</li>
@@ -140,22 +140,22 @@ export default function DemoPage() {
           initial="hidden"
           animate="visible"
           variants={fadeUp}
-          className="bg-white dark:bg-slate-800 rounded-lg border p-6 sm:p-8"
+          className="bg-white dark:bg-card/80 rounded-lg border p-6 sm:p-8"
         >
           <div className="flex items-start gap-4">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0">
               <Shield className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">
+              <h3 className="text-lg font-semibold mb-2 text-foreground">
                 Deterministic & Reproducible
               </h3>
-              <p className="text-slate-600 dark:text-slate-300 mb-4">
+              <p className="text-muted-foreground mb-4">
                 All demo data is static and deterministic. Same inputs always produce same
                 outputs. Every transformation includes audit trail IDs and SHA-256 hashes for
                 verification.
               </p>
-              <ul className="list-disc list-inside space-y-1 text-sm text-slate-600 dark:text-slate-400">
+              <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                 <li>No randomness—all results are reproducible</li>
                 <li>Complete audit trails with deterministic hashes</li>
                 <li>No database writes—read-only simulation</li>

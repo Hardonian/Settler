@@ -16,7 +16,7 @@ export default async function NewExperimentPage() {
                         <ArrowLeft size={16} className="mr-2" /> Back to Experiments
                     </Button>
                 </Link>
-                <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Create New Experiment</h1>
+                <h1 className="text-3xl font-bold text-foreground">Create New Experiment</h1>
             </div>
 
             <Card>

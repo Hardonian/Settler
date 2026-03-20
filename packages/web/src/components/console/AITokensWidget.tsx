@@ -49,8 +49,8 @@ export function AITokensWidget() {
       <Card>
         <CardContent className="py-8">
           <div className="animate-pulse space-y-4">
-            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
-            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+            <div className="h-4 bg-border dark:bg-border rounded w-3/4"></div>
+            <div className="h-4 bg-border dark:bg-border rounded w-1/2"></div>
           </div>
         </CardContent>
       </Card>
@@ -123,7 +123,7 @@ export function AITokensWidget() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium">Included</span>
-                <span className="text-sm text-slate-600 dark:text-slate-400">
+                <span className="text-sm text-muted-foreground">
                   {tokenInfo.includedTokens.toLocaleString()} tokens/month
                 </span>
               </div>
@@ -135,7 +135,7 @@ export function AITokensWidget() {
                   </span>
                 </div>
               )}
-              <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+              <div className="w-full bg-border dark:bg-border rounded-full h-2">
                 <div
                   className="bg-purple-600 h-2 rounded-full transition-all"
                   style={{ width: `${usagePercent}%` }}
@@ -143,14 +143,14 @@ export function AITokensWidget() {
               </div>
             </div>
 
-            <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4">
+            <div className="bg-muted/10 rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium">Add-On Pricing</span>
                 <span className="text-sm font-bold text-purple-600 dark:text-purple-400">
                   ${pricePer1M}/1M tokens
                 </span>
               </div>
-              <p className="text-xs text-slate-600 dark:text-slate-400">
+              <p className="text-xs text-muted-foreground">
                 Tokens never expire. Purchase additional tokens as needed.
               </p>
             </div>

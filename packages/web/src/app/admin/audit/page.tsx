@@ -50,12 +50,12 @@ export default function AdminAuditPage() {
     }) || [];
 
   return (
-    <div className="p-8 space-y-6 bg-slate-50 dark:bg-slate-900 min-h-screen">
+    <div className="p-8 space-y-6 bg-muted/10 min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Audit Trail</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Audit Trail</h1>
+          <p className="text-muted-foreground mt-1">
             Complete audit log explorer and export
           </p>
         </div>
@@ -65,7 +65,7 @@ export default function AdminAuditPage() {
               <Download className="w-4 h-4 mr-2" />
               Export
             </Button>
-            <div className="absolute right-0 top-full mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-lg p-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+            <div className="absolute right-0 top-full mt-1 bg-white dark:bg-card border border-border/40 dark:border-border rounded-lg shadow-lg p-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
               <button
                 onClick={() => {
                   if (filteredItems.length > 0) {
@@ -73,7 +73,7 @@ export default function AdminAuditPage() {
                     downloadFile(csv, `audit-${new Date().toISOString().split("T")[0]}.csv`);
                   }
                 }}
-                className="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded flex items-center gap-2"
+                className="w-full text-left px-3 py-2 text-sm hover:bg-muted/30 dark:hover:bg-card/80 rounded flex items-center gap-2"
               >
                 <FileDown className="w-4 h-4" />
                 Export as CSV
@@ -84,7 +84,7 @@ export default function AdminAuditPage() {
                     exportAuditToJSON(filteredItems);
                   }
                 }}
-                className="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded flex items-center gap-2"
+                className="w-full text-left px-3 py-2 text-sm hover:bg-muted/30 dark:hover:bg-card/80 rounded flex items-center gap-2"
               >
                 <FileDown className="w-4 h-4" />
                 Export as JSON
@@ -99,7 +99,7 @@ export default function AdminAuditPage() {
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
               <Input
                 placeholder="Search..."
                 value={searchQuery}
@@ -133,7 +133,7 @@ export default function AdminAuditPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+            <div className="text-center py-8 text-muted-foreground">
               Loading audit trail...
             </div>
           ) : filteredItems.length === 0 ? (
@@ -157,14 +157,14 @@ export default function AdminAuditPage() {
 
 function AuditRow({ item }: { item: AuditItem }) {
   return (
-    <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+    <div className="p-4 border border-border/40 dark:border-border rounded-lg hover:bg-muted/10 dark:hover:bg-card/80 transition-colors">
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <Badge variant="outline">{item.auditType}</Badge>
-            <span className="font-medium text-slate-900 dark:text-white">{item.action}</span>
+            <span className="font-medium text-foreground">{item.action}</span>
           </div>
-          <div className="text-sm text-slate-500 dark:text-slate-400 space-y-1">
+          <div className="text-sm text-muted-foreground space-y-1">
             {item.entityType && (
               <div>
                 <span className="font-medium">Entity:</span> {item.entityType}
@@ -190,10 +190,10 @@ function AuditRow({ item }: { item: AuditItem }) {
           </div>
           {item.changes && Object.keys(item.changes).length > 0 && (
             <details className="mt-2">
-              <summary className="text-sm text-slate-600 dark:text-slate-400 cursor-pointer">
+              <summary className="text-sm text-muted-foreground cursor-pointer">
                 View Changes
               </summary>
-              <pre className="mt-2 text-xs bg-slate-100 dark:bg-slate-800 p-3 rounded overflow-auto">
+              <pre className="mt-2 text-xs bg-muted/40 p-3 rounded overflow-auto">
                 {JSON.stringify(item.changes, null, 2)}
               </pre>
             </details>

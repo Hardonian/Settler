@@ -79,9 +79,9 @@ export default function EditorClient({ initialPage, initialBlocks }: EditorClien
   const selectedBlock = blocks.find((b) => b.id === selectedBlockId);
 
   return (
-    <div className="flex h-screen bg-slate-100 dark:bg-slate-900">
+    <div className="flex h-screen bg-muted/30">
       {/* Top Bar */}
-      <header className="fixed top-0 left-64 right-0 h-16 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 z-20">
+      <header className="fixed top-0 left-64 right-0 h-16 bg-white dark:bg-card border-b border-border/40 dark:border-border flex items-center justify-between px-6 z-20">
         <div className="flex items-center gap-4">
           <Link href="/admin/pages">
             <Button variant="ghost" size="sm">
@@ -90,7 +90,7 @@ export default function EditorClient({ initialPage, initialBlocks }: EditorClien
           </Link>
           <div className="flex flex-col">
             <h1 className="font-semibold text-sm">Editing: {initialPage.slug}</h1>
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-muted-foreground">
               {isPending ? "Saving..." : "Unsaved changes"}
             </span>
           </div>
@@ -110,7 +110,7 @@ export default function EditorClient({ initialPage, initialBlocks }: EditorClien
       <div className="flex-1 flex pt-16 h-full">
         {/* Preview Area */}
         <div className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-5xl mx-auto bg-white dark:bg-black shadow-lg min-h-[800px] rounded-lg border border-slate-200 dark:border-slate-800 relative">
+          <div className="max-w-5xl mx-auto bg-white dark:bg-black shadow-lg min-h-[800px] rounded-lg border border-border/40 dark:border-border relative">
             <PageRenderer blocks={blocks} className="" />
 
             {/* Overlay for selection */}
@@ -127,7 +127,7 @@ export default function EditorClient({ initialPage, initialBlocks }: EditorClien
                   {/* Block Controls */}
                   <div
                     className={`
-                                absolute right-2 top-2 bg-white dark:bg-slate-800 shadow-sm rounded-md border border-slate-200 dark:border-slate-700 p-1 flex gap-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity
+                                absolute right-2 top-2 bg-white dark:bg-card/80 shadow-sm rounded-md border border-border/40 dark:border-border p-1 flex gap-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity
                                 ${selectedBlockId === block.id ? "opacity-100" : ""}
                             `}
                   >
@@ -136,7 +136,7 @@ export default function EditorClient({ initialPage, initialBlocks }: EditorClien
                         e.stopPropagation();
                         moveBlock(block.id, "up");
                       }}
-                      className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded"
+                      className="p-1 hover:bg-muted/30 dark:hover:bg-slate-700 rounded"
                       aria-label="Move Up"
                     >
                       <ArrowUp size={14} />
@@ -146,7 +146,7 @@ export default function EditorClient({ initialPage, initialBlocks }: EditorClien
                         e.stopPropagation();
                         moveBlock(block.id, "down");
                       }}
-                      className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded"
+                      className="p-1 hover:bg-muted/30 dark:hover:bg-slate-700 rounded"
                       aria-label="Move Down"
                     >
                       <ArrowDown size={14} />
@@ -172,7 +172,7 @@ export default function EditorClient({ initialPage, initialBlocks }: EditorClien
         </div>
 
         {/* Right Sidebar - Properties */}
-        <div className="w-80 bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 flex flex-col h-full overflow-hidden">
+        <div className="w-80 bg-white dark:bg-card border-l border-border/40 dark:border-border flex flex-col h-full overflow-hidden">
           {selectedBlock ? (
             <div className="flex-1 overflow-y-auto p-6">
               <h3 className="font-bold text-lg mb-4 capitalize">{selectedBlock.type} Settings</h3>
@@ -183,7 +183,7 @@ export default function EditorClient({ initialPage, initialBlocks }: EditorClien
                   <Input
                     value={selectedBlock.id}
                     disabled
-                    className="bg-slate-50 font-mono text-xs"
+                    className="bg-muted/10 font-mono text-xs"
                   />
                 </div>
 
@@ -250,7 +250,7 @@ export default function EditorClient({ initialPage, initialBlocks }: EditorClien
                   </div>
                 )}
 
-                <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
+                <div className="pt-4 border-t border-border/40 dark:border-border">
                   <Button
                     variant="destructive"
                     size="sm"
@@ -263,7 +263,7 @@ export default function EditorClient({ initialPage, initialBlocks }: EditorClien
               </div>
             </div>
           ) : (
-            <div className="flex-1 p-6 text-center text-slate-500 flex flex-col items-center justify-center">
+            <div className="flex-1 p-6 text-center text-muted-foreground flex flex-col items-center justify-center">
               <div className="mb-4">
                 <Label>Page Title</Label>
                 <Input value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1" />
@@ -273,8 +273,8 @@ export default function EditorClient({ initialPage, initialBlocks }: EditorClien
           )}
 
           {/* Block Toolbox */}
-          <div className="border-t border-slate-200 dark:border-slate-800 p-4 bg-slate-50 dark:bg-slate-900">
-            <h4 className="text-xs font-semibold text-slate-500 uppercase mb-3">Add Block</h4>
+          <div className="border-t border-border/40 dark:border-border p-4 bg-muted/10">
+            <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-3">Add Block</h4>
             <div className="grid grid-cols-2 gap-2">
               {[
                 "hero",

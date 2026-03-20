@@ -110,7 +110,7 @@ export function ReconciliationView({
       <Card>
         <CardContent className="py-12 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-slate-600 dark:text-slate-400">Loading reconciliation...</p>
+          <p className="mt-4 text-muted-foreground">Loading reconciliation...</p>
         </CardContent>
       </Card>
     );
@@ -134,11 +134,11 @@ export function ReconciliationView({
     return (
       <Card>
         <CardContent className="py-12 text-center">
-          <RefreshCw className="w-12 h-12 mx-auto mb-4 text-slate-400" />
+          <RefreshCw className="w-12 h-12 mx-auto mb-4 text-muted-foreground/60" />
           <h3 className="text-lg font-semibold mb-2">
             {reconciliationId ? "Results not available yet" : "Select a completed run"}
           </h3>
-          <p className="text-slate-600 dark:text-slate-400 mb-4">
+          <p className="text-muted-foreground mb-4">
             {reconciliationId
               ? "This run has not produced a visible result set yet, or the result is outside your current tenant scope."
               : "This surface explains completed reconciliation outcomes. Start a run from your connected job or API workflow, then open that run here."}
@@ -199,22 +199,22 @@ export function ReconciliationView({
             </div>
           )}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Total Delta</p>
+            <div className="p-4 bg-muted/10 rounded-lg">
+              <p className="text-sm text-muted-foreground mb-1">Total Delta</p>
               <p className="text-2xl font-bold">
                 {formatCurrency(summary.totalDelta, summary.currency)}
               </p>
             </div>
-            <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Unmatched</p>
+            <div className="p-4 bg-muted/10 rounded-lg">
+              <p className="text-sm text-muted-foreground mb-1">Unmatched</p>
               <p className="text-2xl font-bold">{summary.mismatchCount}</p>
             </div>
-            <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Started</p>
+            <div className="p-4 bg-muted/10 rounded-lg">
+              <p className="text-sm text-muted-foreground mb-1">Started</p>
               <p className="text-sm font-medium">{new Date(summary.startedAt).toLocaleString()}</p>
             </div>
-            <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Completed</p>
+            <div className="p-4 bg-muted/10 rounded-lg">
+              <p className="text-sm text-muted-foreground mb-1">Completed</p>
               <p className="text-sm font-medium">
                 {summary.completedAt
                   ? new Date(summary.completedAt).toLocaleString()
@@ -258,8 +258,8 @@ export function ReconciliationView({
         <CardContent>
           {items.length === 0 ? (
             <div className="py-12 text-center">
-              <CheckCircle2 className="w-12 h-12 mx-auto mb-4 text-slate-400" />
-              <p className="text-slate-600 dark:text-slate-400">No items to display</p>
+              <CheckCircle2 className="w-12 h-12 mx-auto mb-4 text-muted-foreground/60" />
+              <p className="text-muted-foreground">No items to display</p>
             </div>
           ) : (
             <Table>
@@ -288,11 +288,11 @@ export function ReconciliationView({
                     </TableCell>
                     <TableCell className="max-w-sm">
                       <div className="space-y-1">
-                        <p className="text-sm text-slate-900 dark:text-white">
+                        <p className="text-sm text-foreground">
                           {item.explanation.summary}
                         </p>
                         {item.explanation.suggestedNextStep && (
-                          <p className="text-xs text-slate-500 dark:text-slate-400">
+                          <p className="text-xs text-muted-foreground">
                             Next: {item.explanation.suggestedNextStep}
                           </p>
                         )}

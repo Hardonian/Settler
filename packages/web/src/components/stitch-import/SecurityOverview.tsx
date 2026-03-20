@@ -62,8 +62,8 @@ const SecurityOverview: React.FC = () => {
 
       {/* Header */}
       <div>
-        <h2 className="text-xl font-bold text-slate-900">Security-First Architecture</h2>
-        <p className="mt-1 text-sm text-slate-600">
+        <h2 className="text-xl font-bold text-foreground">Security-First Architecture</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
           Defense-in-depth strategy ensuring confidentiality, integrity, and availability across all
           reconciliation workloads.
         </p>
@@ -74,7 +74,7 @@ const SecurityOverview: React.FC = () => {
         {certifications.map((cert) => (
           <span
             key={cert}
-            className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700"
+            className="inline-flex items-center gap-1.5 rounded-full border border-border/40 bg-muted/10 px-3 py-1 text-xs font-semibold text-foreground/80"
           >
             <BadgeCheck className="h-3.5 w-3.5 text-green-600" aria-hidden="true" />
             {cert}
@@ -87,42 +87,42 @@ const SecurityOverview: React.FC = () => {
         {pillars.map(({ icon: Icon, title, description, color }) => (
           <div
             key={title}
-            className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+            className="rounded-xl border border-border/30 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
           >
             <div className={`mb-3 inline-flex rounded-lg p-2.5 ${color}`}>
               <Icon className="h-5 w-5" aria-hidden="true" />
             </div>
-            <h3 className="text-sm font-bold text-slate-900">{title}</h3>
-            <p className="mt-1 text-sm leading-relaxed text-slate-500">{description}</p>
+            <h3 className="text-sm font-bold text-foreground">{title}</h3>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{description}</p>
           </div>
         ))}
       </div>
 
       {/* Technical details */}
       <div>
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
+        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Technical Details
         </h3>
         <div className="space-y-2">
           {technicalDetails.map(({ icon: Icon, title, body }) => (
             <details
               key={title}
-              className="group rounded-xl border border-slate-200 bg-white open:bg-slate-50 transition-colors"
+              className="group rounded-xl border border-border/40 bg-white open:bg-muted/10 transition-colors"
             >
               <summary className="flex cursor-pointer list-none items-center justify-between p-4">
                 <div className="flex items-center gap-3">
                   <Icon
-                    className="h-5 w-5 text-slate-400 transition-colors group-open:text-primary"
+                    className="h-5 w-5 text-muted-foreground/60 transition-colors group-open:text-primary"
                     aria-hidden="true"
                   />
-                  <span className="text-sm font-semibold text-slate-900">{title}</span>
+                  <span className="text-sm font-semibold text-foreground">{title}</span>
                 </div>
                 <ChevronDown
-                  className="h-5 w-5 text-slate-400 transition-transform duration-200 group-open:rotate-180"
+                  className="h-5 w-5 text-muted-foreground/60 transition-transform duration-200 group-open:rotate-180"
                   aria-hidden="true"
                 />
               </summary>
-              <div className="px-4 pb-4 pt-0 pl-12 text-sm leading-relaxed text-slate-600">
+              <div className="px-4 pb-4 pt-0 pl-12 text-sm leading-relaxed text-muted-foreground">
                 {body}
               </div>
             </details>

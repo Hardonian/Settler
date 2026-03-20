@@ -62,7 +62,7 @@ export default function StatusPage() {
       <section>
         <h2>Rate Limit Headers</h2>
         <p>API responses include rate limit headers:</p>
-        <pre className="bg-slate-900 dark:bg-slate-950 rounded-lg p-4">
+        <pre className="bg-card dark:bg-card rounded-lg p-4">
           <code>{`X-RateLimit-Limit: 60
 X-RateLimit-Remaining: 45
 X-RateLimit-Reset: 1640000000`}</code>

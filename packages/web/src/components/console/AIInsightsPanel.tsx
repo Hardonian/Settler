@@ -94,8 +94,8 @@ export function InsightsPanel() {
       <Card>
         <CardContent className="py-8">
           <div className="animate-pulse space-y-2">
-            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
-            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+            <div className="h-4 bg-border dark:bg-border rounded w-3/4"></div>
+            <div className="h-4 bg-border dark:bg-border rounded w-1/2"></div>
           </div>
         </CardContent>
       </Card>
@@ -113,7 +113,7 @@ export function InsightsPanel() {
           <CardDescription>Actionable recommendations</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+          <div className="text-center py-8 text-muted-foreground">
             <Sparkles className="w-12 h-12 mx-auto mb-2 opacity-50" />
             <p>No insights available yet</p>
             <p className="text-sm mt-1">We'll generate insights as you use Settler</p>
@@ -183,12 +183,12 @@ export function InsightsPanel() {
                       </Badge>
                     )}
                   </div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+                  <p className="text-sm text-muted-foreground mb-2">
                     {insight.description}
                   </p>
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                      <p className="text-xs font-medium text-muted-foreground">
                         Impact: {insight.impact}
                       </p>
                       {insight.estimatedSavings !== undefined && insight.estimatedSavings > 0 && (

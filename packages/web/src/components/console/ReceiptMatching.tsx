@@ -239,7 +239,7 @@ export function ReceiptMatching() {
 
           {/* Data availability info */}
           {reconciliationRunId && !matching && (
-            <div className="text-sm text-slate-500 dark:text-slate-400">
+            <div className="text-sm text-muted-foreground">
               {loading ? (
                 <span className="flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />

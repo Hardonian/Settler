@@ -312,11 +312,11 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 leading-[1.4]">
+          <h2 className="text-2xl font-bold text-foreground flex items-center gap-2 leading-[1.4]">
             <Terminal className="w-6 h-6" />
             CLI Playground
           </h2>
-          <p className="text-slate-600 dark:text-slate-300 leading-[1.5]">
+          <p className="text-muted-foreground leading-[1.5]">
             Build and test API requests with an interactive code editor and response viewer.
           </p>
         </div>
@@ -464,7 +464,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
               </CardHeader>
               <CardContent>
                 {history.length === 0 ? (
-                  <div className="text-center py-8 text-slate-500 dark:text-slate-400 text-sm leading-[1.5]">
+                  <div className="text-center py-8 text-muted-foreground text-sm leading-[1.5]">
                     No requests yet
                   </div>
                 ) : (
@@ -472,7 +472,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
                     {history.map((item) => (
                       <div
                         key={item.id}
-                        className="p-3 border rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer group"
+                        className="p-3 border rounded-lg hover:bg-muted/10 dark:hover:bg-card cursor-pointer group"
                         onClick={() => loadHistoryItem(item)}
                       >
                         <div className="flex items-start justify-between gap-2">
@@ -485,10 +485,10 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
                                 {item.name}
                               </span>
                             </div>
-                            <code className="text-xs text-slate-500 dark:text-slate-300 truncate block leading-[1.5]">
+                            <code className="text-xs text-muted-foreground dark:text-muted-foreground/40 truncate block leading-[1.5]">
                               {item.url}
                             </code>
-                            <span className="text-xs text-slate-400 dark:text-slate-500 mt-1 block leading-[1.5]">
+                            <span className="text-xs text-muted-foreground/60 dark:text-muted-foreground mt-1 block leading-[1.5]">
                               {item.timestamp.toLocaleTimeString()}
                             </span>
                           </div>
@@ -567,7 +567,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300 leading-[1.5]">
+                <ul className="space-y-2 text-sm text-muted-foreground leading-[1.5]">
                   <li className="flex items-center gap-2">
                     <span className="text-green-600">✓</span>
                     Unlimited playground requests

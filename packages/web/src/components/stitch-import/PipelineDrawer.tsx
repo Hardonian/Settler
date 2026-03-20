@@ -54,7 +54,7 @@ const PipelineDrawer: React.FC = () => {
           {/* Flow Visualization */}
           <div className="rounded-xl bg-card dark:bg-[#192633] p-4 border border-border dark:border-border flex flex-col items-center gap-4 relative">
             {/* Connecting Line */}
-            <div className="absolute left-[24px] top-8 bottom-8 w-0.5 bg-slate-200 dark:bg-muted"></div>
+            <div className="absolute left-[24px] top-8 bottom-8 w-0.5 bg-border dark:bg-muted"></div>
             {/* Step 1 */}
             <div className="relative w-full flex items-center gap-4 z-10">
               <div className="h-12 w-12 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-500 shrink-0 bg-card dark:bg-[#192633]">
@@ -116,7 +116,7 @@ const PipelineDrawer: React.FC = () => {
             <h3 className="text-sm font-semibold text-foreground dark:text-white">
               Deployment History
             </h3>
-            <div className="flex flex-col rounded-xl border border-border dark:border-border bg-card dark:bg-[#192633] divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="flex flex-col rounded-xl border border-border dark:border-border bg-card dark:bg-[#192633] divide-y divide-border/30 dark:divide-border">
               {/* History Item 1 */}
               <div className="flex items-center justify-between p-3">
                 <div className="flex items-center gap-3">

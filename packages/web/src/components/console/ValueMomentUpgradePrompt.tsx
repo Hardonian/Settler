@@ -104,10 +104,10 @@ export function ValueMomentUpgradePrompt() {
               <Sparkles className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             </div>
             <div className="flex-1">
-              <CardTitle className="text-lg text-slate-900 dark:text-white">
+              <CardTitle className="text-lg text-foreground">
                 {activeMoment.title}
               </CardTitle>
-              <CardDescription className="mt-2 text-slate-700 dark:text-slate-300">
+              <CardDescription className="mt-2 text-muted-foreground">
                 {activeMoment.description}
               </CardDescription>
             </div>
@@ -115,7 +115,7 @@ export function ValueMomentUpgradePrompt() {
           {activeMoment.dismissible && (
             <button
               onClick={handleDismiss}
-              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+              className="text-muted-foreground/60 hover:text-muted-foreground dark:hover:text-muted-foreground/40"
               aria-label="Dismiss"
             >
               <X className="h-5 w-5" />
@@ -138,7 +138,7 @@ export function ValueMomentUpgradePrompt() {
             <Link href="/pricing">View Pricing</Link>
           </Button>
         </div>
-        <div className="mt-4 flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
+        <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
           <Zap className="h-3 w-3" />
           <span>14-day free trial • No credit card required</span>
         </div>

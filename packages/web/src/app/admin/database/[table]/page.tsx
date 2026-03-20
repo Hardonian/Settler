@@ -93,20 +93,20 @@ export default function AdminTablePage() {
           ← Back to Database Browser
         </Link>
         <h1 className="text-2xl font-bold">{displayName}</h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           {schema}.{table}
         </p>
-        <p className="text-sm text-slate-500 mt-1">{count} total records</p>
+        <p className="text-sm text-muted-foreground mt-1">{count} total records</p>
       </div>
 
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-slate-200">
-          <thead className="bg-slate-50">
+          <thead className="bg-muted/10">
             <tr>
               {columns.map((key) => (
                 <th
                   key={key}
-                  className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase"
+                  className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase"
                 >
                   {key}
                 </th>
@@ -115,9 +115,9 @@ export default function AdminTablePage() {
           </thead>
           <tbody className="bg-white divide-y divide-slate-200">
             {data.map((record) => (
-              <tr key={record.id} className="hover:bg-slate-50">
+              <tr key={record.id} className="hover:bg-muted/10">
                 {columns.map((key) => (
-                  <td key={key} className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
+                  <td key={key} className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                     {typeof record[key] === "object"
                       ? JSON.stringify(record[key]).substring(0, 50) + "..."
                       : String(record[key] || "").substring(0, 100)}
@@ -134,17 +134,17 @@ export default function AdminTablePage() {
           <button
             onClick={() => setOffset(Math.max(0, offset - limit))}
             disabled={offset === 0}
-            className="px-4 py-2 bg-slate-200 rounded disabled:opacity-50"
+            className="px-4 py-2 bg-border rounded disabled:opacity-50"
           >
             Previous
           </button>
-          <span className="text-sm text-slate-600">
+          <span className="text-sm text-muted-foreground">
             Showing {offset + 1}-{Math.min(offset + limit, count)} of {count}
           </span>
           <button
             onClick={() => setOffset(offset + limit)}
             disabled={offset + limit >= count}
-            className="px-4 py-2 bg-slate-200 rounded disabled:opacity-50"
+            className="px-4 py-2 bg-border rounded disabled:opacity-50"
           >
             Next
           </button>

@@ -12,7 +12,7 @@ import { ToggleLeft, Code, Zap, Gift } from 'lucide-react';
 
 export default function FeatureFlagsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-background to-white">
       <Navigation />
       
       <main className="container mx-auto px-4 py-16">

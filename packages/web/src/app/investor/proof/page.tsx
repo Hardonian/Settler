@@ -91,10 +91,10 @@ async function InvestorProofContent() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+        <h1 className="text-3xl font-bold text-foreground mb-2">
           Settler: Product Proof
         </h1>
-        <p className="text-slate-600 dark:text-slate-400">
+        <p className="text-muted-foreground">
           Measurable value, defensible technology, scalable operations
         </p>
       </div>
@@ -109,7 +109,7 @@ async function InvestorProofContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-slate-600 dark:text-slate-400">
+            <div className="text-sm text-muted-foreground">
               Last 30 days
             </div>
           </CardContent>
@@ -123,7 +123,7 @@ async function InvestorProofContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-slate-600 dark:text-slate-400">
+            <div className="text-sm text-muted-foreground">
               Last 30 days
             </div>
           </CardContent>
@@ -137,7 +137,7 @@ async function InvestorProofContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-slate-600 dark:text-slate-400">
+            <div className="text-sm text-muted-foreground">
               Last 30 days
             </div>
           </CardContent>
@@ -151,7 +151,7 @@ async function InvestorProofContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-slate-600 dark:text-slate-400">
+            <div className="text-sm text-muted-foreground">
               Current
             </div>
           </CardContent>
@@ -185,28 +185,28 @@ async function InvestorProofContent() {
         <CardContent className="space-y-4">
           <div>
             <h3 className="font-semibold mb-2">1. Data Normalization Engine</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-sm text-muted-foreground">
               Universal adapter system that normalizes data from 50+ sources into a consistent schema.
               This requires deep domain knowledge of each integration's quirks and edge cases.
             </p>
           </div>
           <div>
             <h3 className="font-semibold mb-2">2. Intelligent Matching Algorithms</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-sm text-muted-foreground">
               Multi-strategy matching (exact, fuzzy, probabilistic) with confidence scoring.
               Continuously improved through production data feedback loops.
             </p>
           </div>
           <div>
             <h3 className="font-semibold mb-2">3. Real-time Processing Infrastructure</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-sm text-muted-foreground">
               Event-driven architecture that processes millions of records with sub-second latency.
               Built on proven infrastructure (Supabase, Postgres, Edge Functions).
             </p>
           </div>
           <div>
             <h3 className="font-semibold mb-2">4. Schema Drift Detection</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-sm text-muted-foreground">
               Automatic detection of schema changes in source systems, preventing silent failures.
               Requires contract versioning and migration systems.
             </p>
@@ -228,21 +228,21 @@ async function InvestorProofContent() {
         <CardContent className="space-y-4">
           <div>
             <h3 className="font-semibold mb-2">Horizontal Scaling</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-sm text-muted-foreground">
               Stateless reconciliation jobs can run in parallel across multiple workers.
               Database connection pooling and query optimization handle increased load.
             </p>
           </div>
           <div>
             <h3 className="font-semibold mb-2">Cost Efficiency</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-sm text-muted-foreground">
               Serverless architecture means costs scale linearly with usage.
               No fixed infrastructure costs for idle capacity.
             </p>
           </div>
           <div>
             <h3 className="font-semibold mb-2">Multi-tenancy</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-sm text-muted-foreground">
               Tenant isolation at the database level ensures security and performance.
               Each tenant's data is logically separated but physically co-located for efficiency.
             </p>
@@ -264,31 +264,31 @@ async function InvestorProofContent() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+              <div className="text-sm text-muted-foreground mb-1">
                 Average Revenue Per User (ARPU)
               </div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">
+              <div className="text-2xl font-bold text-foreground">
                 $299/mo
               </div>
             </div>
             <div>
-              <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+              <div className="text-sm text-muted-foreground mb-1">
                 Customer Acquisition Cost (CAC)
               </div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">
+              <div className="text-2xl font-bold text-foreground">
                 $150
               </div>
             </div>
             <div>
-              <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+              <div className="text-sm text-muted-foreground mb-1">
                 Lifetime Value (LTV)
               </div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">
+              <div className="text-2xl font-bold text-foreground">
                 $3,588
               </div>
             </div>
             <div>
-              <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+              <div className="text-sm text-muted-foreground mb-1">
                 LTV:CAC Ratio
               </div>
               <div className="text-2xl font-bold text-green-600">
@@ -297,7 +297,7 @@ async function InvestorProofContent() {
             </div>
           </div>
           <div className="pt-4 border-t">
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-sm text-muted-foreground">
               <strong>Note:</strong> These are calculated from actual subscription data and pricing tiers.
               Gross margins are approximately 75% due to serverless infrastructure.
             </p>
@@ -322,7 +322,7 @@ async function InvestorProofContent() {
             <Badge>Encryption in Transit</Badge>
             <Badge>Audit Logging</Badge>
           </div>
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-muted-foreground">
             All customer data is encrypted, access is logged, and compliance certifications are maintained.
             Regular security audits and penetration testing ensure ongoing protection.
           </p>
@@ -339,7 +339,7 @@ export default function InvestorProofPage() {
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" />
-            <p className="text-slate-600 dark:text-slate-400">Loading proof data...</p>
+            <p className="text-muted-foreground">Loading proof data...</p>
           </div>
         </div>
       }

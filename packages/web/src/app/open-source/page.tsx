@@ -324,7 +324,7 @@ export default function OpenSourcePage() {
                 <Button
                   variant="outline"
                   asChild
-                  className="border-slate-600 text-white hover:bg-muted"
+                  className="border-border text-white hover:bg-muted"
                 >
                   <Link href="/security-and-audit">Security Model</Link>
                 </Button>

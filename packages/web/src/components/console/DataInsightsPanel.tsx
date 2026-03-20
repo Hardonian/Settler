@@ -92,10 +92,10 @@ export function DataInsightsPanel({ dataType = "receipts" }: { dataType?: "recei
       <CardContent className="space-y-6 pt-6">
         {/* Summary */}
         <div>
-          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+          <h3 className="text-sm font-semibold text-muted-foreground mb-2">
             Summary
           </h3>
-          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+          <p className="text-sm text-muted-foreground leading-relaxed">
             {insights.summary}
           </p>
         </div>
@@ -103,7 +103,7 @@ export function DataInsightsPanel({ dataType = "receipts" }: { dataType?: "recei
         {/* Trends */}
         {insights.trends && insights.trends.length > 0 && (
           <div>
-            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
               Key Metrics
             </h3>
@@ -111,12 +111,12 @@ export function DataInsightsPanel({ dataType = "receipts" }: { dataType?: "recei
               {insights.trends.map((trend, i) => (
                 <div
                   key={i}
-                  className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700"
+                  className="bg-muted/20 rounded-lg p-3 border border-border/40 dark:border-border"
                 >
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                  <p className="text-xs text-muted-foreground mb-1">
                     {trend.label}
                   </p>
-                  <p className="text-lg font-bold text-slate-900 dark:text-white">
+                  <p className="text-lg font-bold text-foreground">
                     {trend.value}
                   </p>
                   {trend.change && (
@@ -133,7 +133,7 @@ export function DataInsightsPanel({ dataType = "receipts" }: { dataType?: "recei
         {/* Recommendations */}
         {insights.recommendations && insights.recommendations.length > 0 && (
           <div>
-            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
               <Lightbulb className="h-4 w-4" />
               Recommendations
             </h3>
@@ -141,7 +141,7 @@ export function DataInsightsPanel({ dataType = "receipts" }: { dataType?: "recei
               {insights.recommendations.map((rec, i) => (
                 <li
                   key={i}
-                  className="text-sm text-slate-600 dark:text-slate-400 flex items-start gap-2"
+                  className="text-sm text-muted-foreground flex items-start gap-2"
                 >
                   <span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
                   <span>{rec}</span>

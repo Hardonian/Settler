@@ -121,7 +121,7 @@ if err != nil {
 }`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+    <div className="min-h-screen bg-gradient-to-br from-background via-blue-50 to-indigo-50 dark:from-background dark:via-card dark:to-black">
       <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
@@ -137,10 +137,10 @@ if err != nil {
             <Badge variant="outline">Go 1.21+</Badge>
             <Badge variant="outline">Context Support</Badge>
           </div>
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-foreground mb-4">
             Go SDK
           </h1>
-          <p className="text-xl text-slate-600 dark:text-slate-400 mb-8">
+          <p className="text-xl text-muted-foreground mb-8">
             Production-grade Go SDK with context support and concurrent safety.
           </p>
         </div>

@@ -11,7 +11,7 @@ export default function GettingStartedPage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <h1 className="text-4xl font-bold mb-6">Getting Started</h1>
       <div className="prose prose-slate dark:prose-invert max-w-none">
-        <p className="text-lg text-slate-600 dark:text-slate-400 mb-8">
+        <p className="text-lg text-muted-foreground mb-8">
           Welcome to Settler! This guide will help you get up and running in minutes.
         </p>
         

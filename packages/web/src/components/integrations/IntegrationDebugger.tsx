@@ -63,7 +63,7 @@ export function IntegrationDebugger({ integrationId }: IntegrationDebuggerProps)
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
+          <label className="text-sm font-medium text-muted-foreground mb-2 block">
             Error Message
           </label>
           <div className="flex items-center gap-2">
@@ -105,9 +105,9 @@ export function IntegrationDebugger({ integrationId }: IntegrationDebuggerProps)
             </TabsContent>
 
             <TabsContent value="documentation" className="mt-4">
-              <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
-                <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Documentation</h4>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+              <div className="bg-muted/20 rounded-lg p-4">
+                <h4 className="font-semibold text-foreground mb-2">Documentation</h4>
+                <p className="text-sm text-muted-foreground">
                   {debugResult.documentation}
                 </p>
                 <Button asChild size="sm" variant="outline" className="mt-3">
@@ -122,16 +122,16 @@ export function IntegrationDebugger({ integrationId }: IntegrationDebuggerProps)
                   debugResult.relatedErrors.map((error, index) => (
                     <div
                       key={index}
-                      className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700"
+                      className="p-3 bg-muted/20 rounded-lg border border-border/40 dark:border-border"
                     >
                       <div className="flex items-start gap-2">
                         <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                        <p className="text-sm text-slate-700 dark:text-slate-300">{error}</p>
+                        <p className="text-sm text-muted-foreground">{error}</p>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                  <p className="text-sm text-muted-foreground">
                     No related errors found
                   </p>
                 )}

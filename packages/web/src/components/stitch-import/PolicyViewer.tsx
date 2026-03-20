@@ -82,7 +82,7 @@ export default function PolicyViewer({ initialPolicies }: { initialPolicies: Pol
                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Status</p>
                       <Badge className={cn(
                          "text-[10px] font-bold uppercase",
-                         policy.status === "active" ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-slate-500/10 text-slate-600 border-slate-500/20"
+                         policy.status === "active" ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-muted/100/10 text-muted-foreground border-slate-500/20"
                       )}>
                         {policy.status.toUpperCase()}
                       </Badge>

@@ -15,7 +15,7 @@ export default function EdgeNodesPage() {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold mb-2">Edge Nodes</h1>
-          <p className="text-slate-600">Manage and monitor your edge node deployments</p>
+          <p className="text-muted-foreground">Manage and monitor your edge node deployments</p>
         </div>
         <Button asChild>
           <Link href="/edge-ai/nodes/new">
@@ -26,17 +26,17 @@ export default function EdgeNodesPage() {
       </div>
 
       {/* Empty state — no nodes registered yet */}
-      <Card className="border-slate-200 dark:border-slate-700">
+      <Card className="border-border/40 dark:border-border">
         <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-          <Server className="w-14 h-14 text-slate-400 mb-4" />
-          <CardTitle className="text-xl mb-2 text-slate-900 dark:text-white">
+          <Server className="w-14 h-14 text-muted-foreground/60 mb-4" />
+          <CardTitle className="text-xl mb-2 text-foreground">
             No Edge Nodes Registered
           </CardTitle>
           <CardDescription className="max-w-sm mb-6">
             Edge node management is available once nodes are deployed and connected. Deploy your
             first node to start monitoring edge reconciliation jobs.
           </CardDescription>
-          <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-6">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
             <Info className="w-4 h-4 shrink-0" />
             <span>Node metrics will appear here after the first heartbeat is received.</span>
           </div>

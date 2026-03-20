@@ -43,8 +43,8 @@ export default async function PagesList() {
     <div className="p-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Pages</h1>
-          <p className="text-slate-500 mt-1">Manage your website content and structure</p>
+          <h1 className="text-3xl font-bold text-foreground">Pages</h1>
+          <p className="text-muted-foreground mt-1">Manage your website content and structure</p>
         </div>
         <Link href="/admin/pages/new">
           <Button className="gap-2">
@@ -73,13 +73,13 @@ export default async function PagesList() {
                 {pages.map((page: any) => (
                     <TableRow key={page.id}>
                     <TableCell className="font-medium">{page.title}</TableCell>
-                    <TableCell className="font-mono text-xs text-slate-500">{page.slug}</TableCell>
+                    <TableCell className="font-mono text-xs text-muted-foreground">{page.slug}</TableCell>
                     <TableCell>
                         <Badge variant={page.status === 'published' ? 'default' : 'secondary'} className={page.status === 'published' ? 'bg-green-100 text-green-700 hover:bg-green-200' : ''}>
                         {page.status}
                         </Badge>
                     </TableCell>
-                    <TableCell className="text-slate-500">{new Date(page.lastUpdated).toLocaleDateString()}</TableCell>
+                    <TableCell className="text-muted-foreground">{new Date(page.lastUpdated).toLocaleDateString()}</TableCell>
                     <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                         <Link href={`/admin/pages/${page.id}/editor`}>
@@ -95,7 +95,7 @@ export default async function PagesList() {
                 </TableBody>
             </Table>
           ) : (
-             <div className="text-center py-12 text-slate-500">
+             <div className="text-center py-12 text-muted-foreground">
                  No pages found. Create one to get started.
              </div>
           )}

@@ -50,7 +50,7 @@ export default function AdminRunsPage() {
       case "running":
         return <Clock className="w-5 h-5 text-blue-600 animate-spin" />;
       default:
-        return <PlayCircle className="w-5 h-5 text-slate-400" />;
+        return <PlayCircle className="w-5 h-5 text-muted-foreground/60" />;
     }
   };
 
@@ -63,17 +63,17 @@ export default function AdminRunsPage() {
       case "running":
         return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
       default:
-        return "bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-300";
+        return "bg-muted/30 text-foreground/90 dark:bg-card/30 dark:text-muted-foreground/40";
     }
   };
 
   return (
-    <div className="p-8 space-y-6 bg-slate-50 dark:bg-slate-900 min-h-screen">
+    <div className="p-8 space-y-6 bg-muted/10 min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Reconciliation Runs</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">History, status, and drilldown</p>
+          <h1 className="text-3xl font-bold text-foreground">Reconciliation Runs</h1>
+          <p className="text-muted-foreground mt-1">History, status, and drilldown</p>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
@@ -86,7 +86,7 @@ export default function AdminRunsPage() {
                     : "bg-red-500"
               }`}
             />
-            <span className="text-sm text-slate-600 dark:text-slate-400">{connectionState}</span>
+            <span className="text-sm text-muted-foreground">{connectionState}</span>
           </div>
           <div className="flex gap-2">
             <div className="relative group">
@@ -94,7 +94,7 @@ export default function AdminRunsPage() {
                 <Download className="w-4 h-4 mr-2" />
                 Export
               </Button>
-              <div className="absolute right-0 top-full mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-lg p-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+              <div className="absolute right-0 top-full mt-1 bg-white dark:bg-card border border-border/40 dark:border-border rounded-lg shadow-lg p-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
                 <button
                   onClick={() => {
                     if (filteredRuns.length > 0) {
@@ -102,7 +102,7 @@ export default function AdminRunsPage() {
                       downloadFile(csv, `runs-${new Date().toISOString().split("T")[0]}.csv`);
                     }
                   }}
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded flex items-center gap-2"
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-muted/30 dark:hover:bg-card/80 rounded flex items-center gap-2"
                 >
                   <FileDown className="w-4 h-4" />
                   Export as CSV
@@ -113,7 +113,7 @@ export default function AdminRunsPage() {
                       exportRunsToJSON(filteredRuns);
                     }
                   }}
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded flex items-center gap-2"
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-muted/30 dark:hover:bg-card/80 rounded flex items-center gap-2"
                 >
                   <FileDown className="w-4 h-4" />
                   Export as JSON
@@ -130,7 +130,7 @@ export default function AdminRunsPage() {
         <CardContent className="pt-6">
           <div className="flex gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
               <Input
                 placeholder="Search runs..."
                 value={searchQuery}
@@ -141,7 +141,7 @@ export default function AdminRunsPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="border border-slate-200 dark:border-slate-700 rounded px-3 py-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+              className="border border-border/40 dark:border-border rounded px-3 py-2 bg-white dark:bg-card text-foreground"
             >
               <option value="all">All Status</option>
               <option value="pending">Pending</option>
@@ -160,7 +160,7 @@ export default function AdminRunsPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+            <div className="text-center py-8 text-muted-foreground">
               Loading runs...
             </div>
           ) : filteredRuns.length === 0 ? (
@@ -203,38 +203,38 @@ function RunRow({
 
   return (
     <Link href={`/admin/runs/${run.id}`}>
-      <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+      <div className="p-4 border border-border/40 dark:border-border rounded-lg hover:bg-muted/10 dark:hover:bg-card/80 transition-colors">
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               {statusIcon}
-              <span className="font-medium text-slate-900 dark:text-white">
+              <span className="font-medium text-foreground">
                 {run.name || `Run ${run.id.slice(0, 8)}`}
               </span>
               <Badge className={statusColor}>{run.status}</Badge>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
-                <span className="text-slate-500 dark:text-slate-400">Matched:</span>
-                <span className="ml-2 font-semibold text-slate-900 dark:text-white">
+                <span className="text-muted-foreground">Matched:</span>
+                <span className="ml-2 font-semibold text-foreground">
                   {run.matchedCount} ({matchedPercent.toFixed(1)}%)
                 </span>
               </div>
               <div>
-                <span className="text-slate-500 dark:text-slate-400">Unmatched:</span>
-                <span className="ml-2 font-semibold text-slate-900 dark:text-white">
+                <span className="text-muted-foreground">Unmatched:</span>
+                <span className="ml-2 font-semibold text-foreground">
                   {(run.unmatchedSourceCount || 0) + (run.unmatchedTargetCount || 0)}
                 </span>
               </div>
               <div>
-                <span className="text-slate-500 dark:text-slate-400">Confidence:</span>
-                <span className="ml-2 font-semibold text-slate-900 dark:text-white">
+                <span className="text-muted-foreground">Confidence:</span>
+                <span className="ml-2 font-semibold text-foreground">
                   {run.confidenceAvg ? (Number(run.confidenceAvg) * 100).toFixed(1) + "%" : "N/A"}
                 </span>
               </div>
               <div>
-                <span className="text-slate-500 dark:text-slate-400">Started:</span>
-                <span className="ml-2 font-semibold text-slate-900 dark:text-white">
+                <span className="text-muted-foreground">Started:</span>
+                <span className="ml-2 font-semibold text-foreground">
                   {new Date(run.startedAt).toLocaleString()}
                 </span>
               </div>

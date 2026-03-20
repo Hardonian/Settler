@@ -60,7 +60,7 @@ const PipelineTable: React.FC = () => {
                 </div>
               </div>
             </div>
-            <button className="text-muted-foreground hover:text-muted-foreground dark:hover:text-slate-200">
+            <button className="text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground/30">
               <MoreVertical className="h-6 w-6" />
             </button>
           </div>
@@ -88,7 +88,7 @@ const PipelineTable: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="flex items-end justify-between border-t border-slate-100 dark:border-border pt-3 mt-1">
+          <div className="flex items-end justify-between border-t border-border/30 dark:border-border pt-3 mt-1">
             <div className="flex flex-col gap-1 w-full mr-4">
               <span className="text-[10px] text-muted-foreground">Error Trend (24h)</span>
               {/* Sparkline (SVG) */}
@@ -107,7 +107,7 @@ const PipelineTable: React.FC = () => {
               </svg>
             </div>
             <div className="flex gap-2 shrink-0">
-              <button className="flex items-center justify-center h-8 px-3 rounded-lg bg-muted/40 dark:bg-card text-xs font-medium text-muted-foreground dark:text-muted-foreground hover:bg-slate-200 dark:hover:bg-muted transition-colors">
+              <button className="flex items-center justify-center h-8 px-3 rounded-lg bg-muted/40 dark:bg-card text-xs font-medium text-muted-foreground dark:text-muted-foreground hover:bg-border dark:hover:bg-muted transition-colors">
                 History
               </button>
               <button className="flex items-center justify-center h-8 px-3 rounded-lg bg-primary/10 text-xs font-medium text-primary hover:bg-primary/20 transition-colors gap-1">
@@ -137,7 +137,7 @@ const PipelineTable: React.FC = () => {
                 </div>
               </div>
             </div>
-            <button className="text-muted-foreground hover:text-muted-foreground dark:hover:text-slate-200">
+            <button className="text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground/30">
               <MoreVertical className="h-6 w-6" />
             </button>
           </div>
@@ -165,7 +165,7 @@ const PipelineTable: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="flex items-end justify-between border-t border-slate-100 dark:border-border pt-3 mt-1 pl-2">
+          <div className="flex items-end justify-between border-t border-border/30 dark:border-border pt-3 mt-1 pl-2">
             <div className="flex flex-col gap-1 w-full mr-4">
               <span className="text-[10px] text-muted-foreground">Error Trend (24h)</span>
               <svg
@@ -194,7 +194,7 @@ const PipelineTable: React.FC = () => {
         <div className="group relative overflow-hidden rounded-xl bg-card dark:bg-[#192633] border border-border dark:border-border p-4 shadow-sm opacity-75 hover:opacity-100 transition-all">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-200 dark:bg-muted text-muted-foreground dark:text-muted-foreground">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-border dark:bg-muted text-muted-foreground dark:text-muted-foreground">
                 <PauseCircle className="h-6 w-6" />
               </div>
               <div>
@@ -209,11 +209,11 @@ const PipelineTable: React.FC = () => {
                 </div>
               </div>
             </div>
-            <button className="text-muted-foreground hover:text-muted-foreground dark:hover:text-slate-200">
+            <button className="text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground/30">
               <MoreVertical className="h-6 w-6" />
             </button>
           </div>
-          <div className="flex items-center justify-between border-t border-slate-100 dark:border-border pt-3 mt-3">
+          <div className="flex items-center justify-between border-t border-border/30 dark:border-border pt-3 mt-3">
             <span className="text-xs text-muted-foreground italic">Configuration frozen at v1.2.0</span>
             <button className="text-primary hover:text-primary/80 text-xs font-medium flex items-center gap-1">
               <Play className="h-3.5 w-3.5" /> Resume
@@ -239,11 +239,11 @@ const PipelineTable: React.FC = () => {
                 </div>
               </div>
             </div>
-            <button className="text-muted-foreground hover:text-muted-foreground dark:hover:text-slate-200">
+            <button className="text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground/30">
               <MoreVertical className="h-6 w-6" />
             </button>
           </div>
-          <div className="flex items-end justify-between border-t border-slate-100 dark:border-border pt-3 mt-1">
+          <div className="flex items-end justify-between border-t border-border/30 dark:border-border pt-3 mt-1">
             <div className="flex flex-col gap-1 w-full mr-4">
               <span className="text-[10px] text-muted-foreground">Error Trend (24h)</span>
               <svg
@@ -261,7 +261,7 @@ const PipelineTable: React.FC = () => {
               </svg>
             </div>
             <div className="flex gap-2 shrink-0">
-              <button className="flex items-center justify-center h-8 px-3 rounded-lg bg-muted/40 dark:bg-card text-xs font-medium text-muted-foreground dark:text-muted-foreground hover:bg-slate-200 dark:hover:bg-muted transition-colors">
+              <button className="flex items-center justify-center h-8 px-3 rounded-lg bg-muted/40 dark:bg-card text-xs font-medium text-muted-foreground dark:text-muted-foreground hover:bg-border dark:hover:bg-muted transition-colors">
                 History
               </button>
               <button className="flex items-center justify-center h-8 px-3 rounded-lg bg-primary/10 text-xs font-medium text-primary hover:bg-primary/20 transition-colors gap-1">

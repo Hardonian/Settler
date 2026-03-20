@@ -83,10 +83,10 @@ export function FunnelCTA({ userId, variant = 'card', className }: FunnelCTAProp
       <div className={`bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 ${className}`}>
         <div className="flex items-center justify-between">
           <div>
-            <div className="font-semibold text-slate-900 dark:text-white mb-1">
+            <div className="font-semibold text-foreground mb-1">
               {isGate ? 'Unlock This Feature' : nextAction.label}
             </div>
-            <div className="text-sm text-slate-600 dark:text-slate-400">
+            <div className="text-sm text-muted-foreground">
               {isGate
                 ? 'Upgrade your plan to access this feature'
                 : 'Continue your journey with Settler'}
@@ -109,7 +109,7 @@ export function FunnelCTA({ userId, variant = 'card', className }: FunnelCTAProp
     <Card className={className}>
       <CardHeader>
         <div className="flex items-center gap-2">
-          {isGate && <Lock className="w-5 h-5 text-slate-400" />}
+          {isGate && <Lock className="w-5 h-5 text-muted-foreground/60" />}
           {!isGate && <Sparkles className="w-5 h-5 text-blue-600" />}
           <CardTitle>
             {isGate ? 'Unlock This Feature' : 'Next Step'}

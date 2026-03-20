@@ -286,7 +286,7 @@ export function ResultsPanel() {
                         </span>
                         <div className="font-mono text-sm font-bold mt-1">100.00 USD</div>
                       </div>
-                      <div className="h-px bg-slate-200 dark:bg-card" />
+                      <div className="h-px bg-border dark:bg-card" />
                       <div>
                         <span className="text-[10px] font-bold text-muted-foreground uppercase">
                           Status

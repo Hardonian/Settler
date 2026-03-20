@@ -127,7 +127,7 @@ export function EmptyState({
       <CardContent className="py-12 text-center">
         {icon && <div className="mb-4 flex justify-center">{icon}</div>}
         <h3 className="text-lg font-semibold mb-2">{defaultTitle}</h3>
-        <p className="text-slate-600 dark:text-slate-400 mb-4 max-w-md mx-auto">
+        <p className="text-muted-foreground mb-4 max-w-md mx-auto">
           {defaultDescription}
         </p>
         

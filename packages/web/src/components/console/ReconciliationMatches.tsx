@@ -223,7 +223,7 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
                       </TableCell>
                       <TableCell>
                         {match.matchReason ? (
-                          <span className="text-sm text-slate-600 dark:text-slate-400">
+                          <span className="text-sm text-muted-foreground">
                             {match.matchReason}
                           </span>
                         ) : match.matchType === 'unmatched' ? (
@@ -231,7 +231,7 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
                             No matching transaction found. Check source data or adjust matching rules.
                           </span>
                         ) : (
-                          <span className="text-sm text-slate-400">-</span>
+                          <span className="text-sm text-muted-foreground/60">-</span>
                         )}
                       </TableCell>
                       <TableCell>

@@ -69,12 +69,12 @@ export default function AdminExceptionsPage() {
   };
 
   return (
-    <div className="p-8 space-y-6 bg-slate-50 dark:bg-slate-900 min-h-screen">
+    <div className="p-8 space-y-6 bg-muted/10 min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Exceptions</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Exceptions</h1>
+          <p className="text-muted-foreground mt-1">
             Queue management and triage workflow
           </p>
         </div>
@@ -89,7 +89,7 @@ export default function AdminExceptionsPage() {
                     : "bg-red-500"
               }`}
             />
-            <span className="text-sm text-slate-600 dark:text-slate-400">{connectionState}</span>
+            <span className="text-sm text-muted-foreground">{connectionState}</span>
           </div>
           {selectedExceptions.size > 0 && (
             <Button variant="outline" size="sm">
@@ -101,7 +101,7 @@ export default function AdminExceptionsPage() {
               <Download className="w-4 h-4 mr-2" />
               Export
             </Button>
-            <div className="absolute right-0 top-full mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-lg p-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+            <div className="absolute right-0 top-full mt-1 bg-white dark:bg-card border border-border/40 dark:border-border rounded-lg shadow-lg p-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
               <button
                 onClick={() => {
                   if (filteredExceptions.length > 0) {
@@ -109,7 +109,7 @@ export default function AdminExceptionsPage() {
                     downloadFile(csv, `exceptions-${new Date().toISOString().split("T")[0]}.csv`);
                   }
                 }}
-                className="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded flex items-center gap-2"
+                className="w-full text-left px-3 py-2 text-sm hover:bg-muted/30 dark:hover:bg-card/80 rounded flex items-center gap-2"
               >
                 <FileDown className="w-4 h-4" />
                 Export as CSV
@@ -120,7 +120,7 @@ export default function AdminExceptionsPage() {
                     exportExceptionsToJSON(filteredExceptions);
                   }
                 }}
-                className="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded flex items-center gap-2"
+                className="w-full text-left px-3 py-2 text-sm hover:bg-muted/30 dark:hover:bg-card/80 rounded flex items-center gap-2"
               >
                 <FileDown className="w-4 h-4" />
                 Export as JSON
@@ -135,7 +135,7 @@ export default function AdminExceptionsPage() {
         <CardContent className="pt-6">
           <div className="flex gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
               <Input
                 placeholder="Search exceptions..."
                 value={searchQuery}
@@ -146,7 +146,7 @@ export default function AdminExceptionsPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="border border-slate-200 dark:border-slate-700 rounded px-3 py-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+              className="border border-border/40 dark:border-border rounded px-3 py-2 bg-white dark:bg-card text-foreground"
             >
               <option value="all">All Status</option>
               <option value="new">New</option>
@@ -157,7 +157,7 @@ export default function AdminExceptionsPage() {
             <select
               value={severityFilter}
               onChange={(e) => setSeverityFilter(e.target.value)}
-              className="border border-slate-200 dark:border-slate-700 rounded px-3 py-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+              className="border border-border/40 dark:border-border rounded px-3 py-2 bg-white dark:bg-card text-foreground"
             >
               <option value="all">All Severity</option>
               <option value="critical">Critical</option>
@@ -175,7 +175,7 @@ export default function AdminExceptionsPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+            <div className="text-center py-8 text-muted-foreground">
               Loading exceptions...
             </div>
           ) : filteredExceptions.length === 0 ? (
@@ -216,7 +216,7 @@ function ExceptionRow({
 }) {
   return (
     <div
-      className={`p-4 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
+      className={`p-4 border border-border/40 dark:border-border rounded-lg hover:bg-muted/10 dark:hover:bg-card/80 transition-colors cursor-pointer ${
         selected ? "bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700" : ""
       }`}
       onClick={onSelect}
@@ -231,11 +231,11 @@ function ExceptionRow({
               onClick={(e) => e.stopPropagation()}
               className="rounded"
             />
-            <span className="font-medium text-slate-900 dark:text-white">{exception.reason}</span>
+            <span className="font-medium text-foreground">{exception.reason}</span>
             <Badge className={severityColor}>{exception.severity}</Badge>
             <Badge variant="outline">{exception.status}</Badge>
           </div>
-          <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <span>Source: {exception.source}</span>
             <span>•</span>
             <span>Created: {new Date(exception.createdAt).toLocaleString()}</span>

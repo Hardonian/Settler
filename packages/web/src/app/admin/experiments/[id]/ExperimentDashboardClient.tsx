@@ -54,7 +54,7 @@ export default function ExperimentDashboardClient({ experiment }: ExperimentDash
               <ArrowLeft size={16} className="mr-2" /> Back
             </Button>
           </Link>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
             {experiment.name}
             <Badge
               variant={status === "running" ? "default" : "secondary"}
@@ -63,7 +63,7 @@ export default function ExperimentDashboardClient({ experiment }: ExperimentDash
               {status}
             </Badge>
           </h1>
-          <p className="text-slate-500 mt-1">Target Page: {experiment.targetPage?.slug}</p>
+          <p className="text-muted-foreground mt-1">Target Page: {experiment.targetPage?.slug}</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={toggleStatus} disabled={isPending}>
@@ -108,11 +108,11 @@ export default function ExperimentDashboardClient({ experiment }: ExperimentDash
                       setSplit({ ...split, [variant.key]: parseInt(e.target.value) || 0 })
                     }
                   />
-                  <span className="text-slate-500">%</span>
+                  <span className="text-muted-foreground">%</span>
                 </div>
               </div>
             ))}
-            <div className="pt-4 border-t text-sm text-slate-500 flex justify-between">
+            <div className="pt-4 border-t text-sm text-muted-foreground flex justify-between">
               <span>Total:</span>
               <span
                 className={
@@ -133,7 +133,7 @@ export default function ExperimentDashboardClient({ experiment }: ExperimentDash
             <CardDescription>Live metrics from the experiment</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-center py-8 text-slate-500">
+            <div className="text-center py-8 text-muted-foreground">
               Analytics integration pending...
               {/* Hook up real analytics here in next phase */}
             </div>

@@ -73,13 +73,13 @@ export function CodeEditor({
   };
 
   return (
-    <div className={cn('relative border rounded-lg bg-slate-900 dark:bg-slate-950 border-slate-700 dark:border-slate-800 overflow-hidden', className)}>
+    <div className={cn('relative border rounded-lg bg-card dark:bg-card border-border dark:border-border overflow-hidden', className)}>
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 bg-slate-800 dark:bg-slate-900 border-b border-slate-700 dark:border-slate-800">
+      <div className="flex items-center justify-between px-4 py-2 bg-card border-b border-border dark:border-border">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono text-slate-300 dark:text-slate-400 uppercase leading-[1.5]">{language}</span>
+          <span className="text-xs font-mono text-muted-foreground/40 dark:text-muted-foreground/60 uppercase leading-[1.5]">{language}</span>
           {showLineNumbers && (
-            <span className="text-xs text-slate-400 dark:text-slate-500 leading-[1.5]">{lineCount} lines</span>
+            <span className="text-xs text-muted-foreground/60 dark:text-muted-foreground leading-[1.5]">{lineCount} lines</span>
           )}
         </div>
         <div className="flex items-center gap-2">
@@ -137,7 +137,7 @@ export function CodeEditor({
       <div className="relative" style={{ height }}>
         {showLineNumbers && (
           <div 
-            className="absolute left-0 top-0 bottom-0 w-12 bg-slate-950 dark:bg-black border-r border-slate-700 dark:border-slate-800 text-right text-xs text-slate-400 dark:text-slate-500 py-3 font-mono select-none leading-[1.5]"
+            className="absolute left-0 top-0 bottom-0 w-12 bg-card dark:bg-black border-r border-border dark:border-border text-right text-xs text-muted-foreground/60 dark:text-muted-foreground py-3 font-mono select-none leading-[1.5]"
             aria-hidden="true"
           >
             {Array.from({ length: Math.max(lineCount, 1) }, (_, i) => (
@@ -180,7 +180,7 @@ export function CodeEditor({
           readOnly={readOnly}
           placeholder={placeholder}
           className={cn(
-            'w-full h-full bg-transparent text-slate-100 dark:text-slate-200 font-mono text-sm p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900 dark:focus:ring-offset-slate-950',
+            'w-full h-full bg-transparent text-foreground dark:text-muted-foreground/30 font-mono text-sm p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900 dark:focus:ring-offset-slate-950',
             showLineNumbers && 'pl-16',
             readOnly && 'cursor-default'
           )}

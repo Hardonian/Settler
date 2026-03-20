@@ -113,10 +113,10 @@ export function EnhancedPlayground() {
     <ConsoleErrorBoundary>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2 leading-[1.4]">
+          <h1 className="text-3xl font-bold text-foreground mb-2 leading-[1.4]">
             API Playground
           </h1>
-          <p className="text-slate-600 dark:text-slate-300 leading-[1.5]">
+          <p className="text-muted-foreground leading-[1.5]">
             Test Settler APIs and generate code snippets instantly.
           </p>
         </div>
@@ -139,7 +139,7 @@ export function EnhancedPlayground() {
                   onChange={(e) => setApiKey(e.target.value)}
                   className="font-mono"
                 />
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-[1.5]">
+                <p className="text-xs text-muted-foreground mt-1 leading-[1.5]">
                   Your API key is never stored or sent to our servers
                 </p>
               </div>
@@ -162,7 +162,7 @@ export function EnhancedPlayground() {
                     id="method"
                     value={method}
                     onChange={(e) => setMethod(e.target.value as typeof method)}
-                    className="w-full px-3 py-2 border rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 leading-[1.5]"
+                    className="w-full px-3 py-2 border rounded-md bg-white dark:bg-card/80 text-foreground leading-[1.5]"
                   >
                     <option value="GET">GET</option>
                     <option value="POST">POST</option>

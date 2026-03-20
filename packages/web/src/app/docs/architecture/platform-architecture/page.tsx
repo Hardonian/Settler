@@ -18,7 +18,7 @@ export default function DocsPlatformArchitecturePage() {
       <Navigation />
 
       {/* Header Section */}
-      <section className="relative pt-32 pb-24 border-b border-border/40 overflow-hidden bg-slate-50 dark:bg-slate-950/20 shadow-2xl">
+      <section className="relative pt-32 pb-24 border-b border-border/40 overflow-hidden bg-muted/10 dark:bg-card/20 shadow-2xl">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 relative z-10 space-y-10">
           <div className="flex flex-col items-center text-center space-y-6">
             <Badge
@@ -57,7 +57,7 @@ export default function DocsPlatformArchitecturePage() {
                   <Link
                     key={item}
                     href={`#${item.toLowerCase().replace(/ /g, "-")}`}
-                    className="block text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors italic"
+                    className="block text-sm font-bold text-muted-foreground hover:text-primary transition-colors italic"
                   >
                     {item}
                   </Link>
@@ -136,11 +136,11 @@ export default function DocsPlatformArchitecturePage() {
                 reconciliation logic.
               </p>
             </div>
-            <Card className="bg-slate-950 border-white/5 shadow-2xl overflow-hidden glass group">
+            <Card className="bg-card border-white/5 shadow-2xl overflow-hidden glass group">
               <CardHeader className="bg-white/5 border-b border-white/5 p-4 flex flex-row items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <Terminal size={14} className="text-slate-500" />
-                  <span className="text-[10px] font-mono text-slate-400 tracking-widest font-black italic">
+                  <Terminal size={14} className="text-muted-foreground" />
+                  <span className="text-[10px] font-mono text-muted-foreground/60 tracking-widest font-black italic">
                     RUNTIME_INIT OUTPUT
                   </span>
                 </div>
@@ -148,7 +148,7 @@ export default function DocsPlatformArchitecturePage() {
                   STRICT_REPRO_ENABLED
                 </Badge>
               </CardHeader>
-              <CardContent className="p-8 font-mono text-sm text-slate-400 leading-relaxed overflow-x-auto whitespace-pre">
+              <CardContent className="p-8 font-mono text-sm text-muted-foreground/60 leading-relaxed overflow-x-auto whitespace-pre">
                 <span className="text-success">[SEC]</span> Initializing secure enclave sandbox...
                 <br />
                 <span className="text-success">[RES]</span> Resource limits: CPU=2.0c, MEM=512MB
@@ -204,13 +204,13 @@ export default function DocsPlatformArchitecturePage() {
       </div>
 
       {/* Footer CTA */}
-      <section className="py-32 px-4 border-t border-border/40 bg-slate-900 text-white text-center space-y-12 relative overflow-hidden shadow-2xl">
+      <section className="py-32 px-4 border-t border-border/40 bg-card text-white text-center space-y-12 relative overflow-hidden shadow-2xl">
         <div className="absolute inset-0 bg-grid-white/[0.05]" />
         <div className="max-w-4xl mx-auto space-y-12 relative z-10">
           <h2 className="text-4xl md:text-6xl font-bold tracking-tight italic underline underline-offset-8">
             Ready to Inspect the Source?
           </h2>
-          <p className="text-xl text-slate-400 font-medium italic underline">
+          <p className="text-xl text-muted-foreground/60 font-medium italic underline">
             The Settler engine core is open-source. Audit our determinism primitives and
             cryptographic foundation on GitHub.
           </p>

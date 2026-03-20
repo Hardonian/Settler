@@ -57,7 +57,7 @@ export default function LaunchStatusPage() {
       <Navigation />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-24 border-b border-border/40 overflow-hidden bg-slate-50 dark:bg-slate-950/20 shadow-2xl">
+      <section className="relative pt-32 pb-24 border-b border-border/40 overflow-hidden bg-muted/10 dark:bg-card/20 shadow-2xl">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 relative z-10 space-y-8 text-center">
           <div className="flex flex-col items-center space-y-6">
             <Badge
@@ -115,7 +115,7 @@ export default function LaunchStatusPage() {
                     <div className="flex items-center gap-3 mb-4">
                       <item.icon
                         size={18}
-                        className={`${item.status === "Shipped" ? "text-success" : "text-slate-400"}`}
+                        className={`${item.status === "Shipped" ? "text-success" : "text-muted-foreground/60"}`}
                       />
                       <Badge
                         variant="outline"
@@ -136,12 +136,12 @@ export default function LaunchStatusPage() {
       </section>
 
       {/* Release Notes CTA */}
-      <section className="py-32 bg-slate-950 text-white overflow-hidden relative border-t border-white/5 shadow-2xl">
+      <section className="py-32 bg-card text-white overflow-hidden relative border-t border-white/5 shadow-2xl">
         <div className="max-w-4xl mx-auto px-4 text-center space-y-12 relative z-10">
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight italic underline underline-offset-8">
             Subscribe to System Updates
           </h2>
-          <p className="text-xl text-slate-400 font-medium italic underline">
+          <p className="text-xl text-muted-foreground/60 font-medium italic underline">
             Get technical deep-dives on new feature releases and cryptographic enhancements
             delivered directly to your inbox.
           </p>

@@ -104,7 +104,7 @@ export function ShareButton({
                   onCheckedChange={setIsPublic}
                 />
               </div>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-muted-foreground">
                 {isPublic
                   ? "Anyone with the link can view this artifact."
                   : "Only you and people you share the link with can view this artifact."}
@@ -174,7 +174,7 @@ export function ShareButton({
                 </Button>
               </div>
 
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 This link expires in 30 days. You can create a new one anytime.
               </p>
             </div>

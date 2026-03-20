@@ -74,7 +74,7 @@ export function IntegrationAnalytics() {
             <CardTitle className="text-3xl">${totalRevenue.toLocaleString()}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <DollarSign className="w-4 h-4" />
               <span>All integrations</span>
             </div>
@@ -87,7 +87,7 @@ export function IntegrationAnalytics() {
             <CardTitle className="text-3xl">${totalMRR.toLocaleString()}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <TrendingUp className="w-4 h-4" />
               <span>MRR</span>
             </div>
@@ -100,7 +100,7 @@ export function IntegrationAnalytics() {
             <CardTitle className="text-3xl">{totalCustomers}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Users className="w-4 h-4" />
               <span>Using integrations</span>
             </div>
@@ -115,7 +115,7 @@ export function IntegrationAnalytics() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Activity className="w-4 h-4" />
               <span>ARPU</span>
             </div>
@@ -145,16 +145,16 @@ export function IntegrationAnalytics() {
           {loading ? (
             <div className="space-y-3">
               <div className="animate-pulse">
-                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/4 mb-2"></div>
-                <div className="h-20 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                <div className="h-4 bg-border dark:bg-border rounded w-1/4 mb-2"></div>
+                <div className="h-20 bg-border dark:bg-border rounded"></div>
               </div>
               <div className="animate-pulse">
-                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/4 mb-2"></div>
-                <div className="h-20 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                <div className="h-4 bg-border dark:bg-border rounded w-1/4 mb-2"></div>
+                <div className="h-20 bg-border dark:bg-border rounded"></div>
               </div>
               <div className="animate-pulse">
-                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/4 mb-2"></div>
-                <div className="h-20 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                <div className="h-4 bg-border dark:bg-border rounded w-1/4 mb-2"></div>
+                <div className="h-20 bg-border dark:bg-border rounded"></div>
               </div>
             </div>
           ) : error ? (
@@ -175,11 +175,11 @@ export function IntegrationAnalytics() {
               {revenue.map((item) => (
                 <div
                   key={item.integrationId}
-                  className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-lg"
+                  className="flex items-center justify-between p-4 border border-border/40 dark:border-border rounded-lg"
                 >
                   <div className="flex-1">
-                    <h4 className="font-semibold text-slate-900 dark:text-white">{item.name}</h4>
-                    <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400 mt-1">
+                    <h4 className="font-semibold text-foreground">{item.name}</h4>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
                       <span>{item.customerCount} customers</span>
                       <span>ARPU: ${item.averageRevenuePerUser.toFixed(2)}</span>
                       <span className={item.growthRate >= 0 ? "text-green-600" : "text-red-600"}>
@@ -189,10 +189,10 @@ export function IntegrationAnalytics() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                    <div className="text-2xl font-bold text-foreground">
                       ${item.totalRevenue.toLocaleString()}
                     </div>
-                    <div className="text-sm text-slate-500 dark:text-slate-400">
+                    <div className="text-sm text-muted-foreground">
                       ${item.monthlyRecurringRevenue.toLocaleString()}/mo
                     </div>
                   </div>

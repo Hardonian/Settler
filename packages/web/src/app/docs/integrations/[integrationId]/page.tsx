@@ -124,9 +124,9 @@ export default function IntegrationDocsPage() {
         />
         <section className="py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl mx-auto text-center">
-            <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+            <Card className="bg-white dark:bg-card border-border/40 dark:border-border">
               <CardContent className="p-8">
-                <p className="text-slate-600 dark:text-slate-300 mb-6">
+                <p className="text-muted-foreground mb-6">
                   The integration "{integrationId}" was not found. Please check the integration name
                   or request a new integration.
                 </p>
@@ -175,7 +175,7 @@ export default function IntegrationDocsPage() {
                   ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
                   : integration.status === "beta"
                     ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"
-                    : "bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300"
+                    : "bg-muted/30 text-foreground/80 dark:bg-card dark:text-muted-foreground/40"
               }
             >
               {integration.status === "available" ? "Available" : "Beta"}
@@ -183,7 +183,7 @@ export default function IntegrationDocsPage() {
           </div>
 
           <div className="space-y-6">
-            <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+            <Card className="bg-white dark:bg-card border-border/40 dark:border-border">
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <BookOpen className="w-5 h-5" />
@@ -191,11 +191,11 @@ export default function IntegrationDocsPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-600 dark:text-slate-300">{integration.docs.overview}</p>
+                <p className="text-muted-foreground">{integration.docs.overview}</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+            <Card className="bg-white dark:bg-card border-border/40 dark:border-border">
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <Settings className="w-5 h-5" />
@@ -204,21 +204,21 @@ export default function IntegrationDocsPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <h3 className="font-semibold mb-2 text-slate-900 dark:text-white">Setup</h3>
-                  <p className="text-slate-600 dark:text-slate-300">{integration.docs.setup}</p>
+                  <h3 className="font-semibold mb-2 text-foreground">Setup</h3>
+                  <p className="text-muted-foreground">{integration.docs.setup}</p>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-2 text-slate-900 dark:text-white">
+                  <h3 className="font-semibold mb-2 text-foreground">
                     Configuration
                   </h3>
-                  <p className="text-slate-600 dark:text-slate-300">
+                  <p className="text-muted-foreground">
                     {integration.docs.configuration}
                   </p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+            <Card className="bg-white dark:bg-card border-border/40 dark:border-border">
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <Code2 className="w-5 h-5" />
@@ -226,7 +226,7 @@ export default function IntegrationDocsPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-600 dark:text-slate-300">{integration.docs.examples}</p>
+                <p className="text-muted-foreground">{integration.docs.examples}</p>
               </CardContent>
             </Card>
           </div>

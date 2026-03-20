@@ -37,7 +37,7 @@ const TIER_NAMES: Record<SubscriptionTier, string> = {
 };
 
 const TIER_COLORS: Record<SubscriptionTier, string> = {
-  unauthenticated: 'bg-slate-500',
+  unauthenticated: 'bg-muted/100',
   free: 'bg-blue-500',
   pro: 'bg-purple-500',
   enterprise: 'bg-gradient-to-r from-purple-600 to-pink-600',
@@ -92,8 +92,8 @@ export function FeatureGate({
           </CardHeader>
           <CardContent className="space-y-4">
             {featureDescription && (
-              <div className="p-3 bg-slate-50 dark:bg-slate-900 rounded-lg">
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+              <div className="p-3 bg-muted/10 rounded-lg">
+                <p className="text-sm text-muted-foreground">
                   {featureDescription}
                 </p>
               </div>
@@ -103,7 +103,7 @@ export function FeatureGate({
               <Badge variant="outline" className="text-xs">
                 Current: {TIER_NAMES[currentTier]}
               </Badge>
-              <ArrowRight className="w-4 h-4 text-slate-400" />
+              <ArrowRight className="w-4 h-4 text-muted-foreground/60" />
               <Badge className={cn('text-xs text-white', TIER_COLORS[requiredTier])}>
                 {TIER_NAMES[requiredTier]}
               </Badge>
@@ -126,8 +126,8 @@ export function FeatureGate({
             </Button>
 
             {!isUnauthenticated && (
-              <p className="text-xs text-center text-slate-500">
-                <Link href="/pricing" className="underline hover:text-slate-700 dark:hover:text-slate-300">
+              <p className="text-xs text-center text-muted-foreground">
+                <Link href="/pricing" className="underline hover:text-foreground/80 dark:hover:text-muted-foreground/40">
                   View pricing plans
                 </Link>
               </p>
@@ -162,7 +162,7 @@ export function UsageLimit({ current, limit, label, tier: _tier, className }: Us
         <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
           Unlimited
         </Badge>
-        <span className="text-slate-600 dark:text-slate-400">{label}</span>
+        <span className="text-muted-foreground">{label}</span>
       </div>
     );
   }
@@ -170,17 +170,17 @@ export function UsageLimit({ current, limit, label, tier: _tier, className }: Us
   return (
     <div className={cn('space-y-1', className)}>
       <div className="flex items-center justify-between text-sm">
-        <span className="text-slate-600 dark:text-slate-400">{label}</span>
+        <span className="text-muted-foreground">{label}</span>
         <span className={cn(
           'font-medium',
           isAtLimit && 'text-red-600 dark:text-red-400',
           isNearLimit && !isAtLimit && 'text-amber-600 dark:text-amber-400',
-          !isNearLimit && 'text-slate-700 dark:text-slate-300'
+          !isNearLimit && 'text-muted-foreground'
         )}>
           {current.toLocaleString()} / {limit.toLocaleString()}
         </span>
       </div>
-      <div className="h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+      <div className="h-2 bg-border dark:bg-card/80 rounded-full overflow-hidden">
         <div
           className={cn(
             'h-full transition-all duration-300',

@@ -42,7 +42,7 @@ export default function CompareRunsPage({
   };
 
   return (
-    <div className="p-8 space-y-6 bg-slate-50 dark:bg-slate-900 min-h-screen">
+    <div className="p-8 space-y-6 bg-muted/10 min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -53,8 +53,8 @@ export default function CompareRunsPage({
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Compare Runs</h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-1">
+            <h1 className="text-3xl font-bold text-foreground">Compare Runs</h1>
+            <p className="text-muted-foreground mt-1">
               Side-by-side comparison of reconciliation runs
             </p>
           </div>
@@ -76,7 +76,7 @@ export default function CompareRunsPage({
                 id="run1-select"
                 value={run1Id}
                 onChange={(e) => setRun1Id(e.target.value)}
-                className="w-full border border-slate-200 dark:border-slate-700 rounded px-3 py-2 bg-white dark:bg-slate-900"
+                className="w-full border border-border/40 dark:border-border rounded px-3 py-2 bg-white dark:bg-card"
               >
                 <option value="">Select run...</option>
                 {runsData?.items?.map((run: ReconciliationRun) => (
@@ -95,7 +95,7 @@ export default function CompareRunsPage({
                 id="run2-select"
                 value={run2Id}
                 onChange={(e) => setRun2Id(e.target.value)}
-                className="w-full border border-slate-200 dark:border-slate-700 rounded px-3 py-2 bg-white dark:bg-slate-900"
+                className="w-full border border-border/40 dark:border-border rounded px-3 py-2 bg-white dark:bg-card"
               >
                 <option value="">Select run...</option>
                 {runsData?.items?.map((run: ReconciliationRun) => (
@@ -177,7 +177,7 @@ export default function CompareRunsPage({
 
       {(!run1 || !run2) && (
         <Card>
-          <CardContent className="py-12 text-center text-slate-500 dark:text-slate-400">
+          <CardContent className="py-12 text-center text-muted-foreground">
             Select two runs to compare
           </CardContent>
         </Card>
@@ -197,9 +197,9 @@ function MetricRow({
 }) {
   return (
     <div className="flex items-center justify-between">
-      <span className="text-sm text-slate-500 dark:text-slate-400">{label}:</span>
+      <span className="text-sm text-muted-foreground">{label}:</span>
       <div className="flex items-center gap-2">
-        <span className="font-semibold text-slate-900 dark:text-white">{value}</span>
+        <span className="font-semibold text-foreground">{value}</span>
         {diff && diff.trend !== "neutral" && (
           <div
             className={`flex items-center gap-1 text-xs ${
@@ -214,7 +214,7 @@ function MetricRow({
             <span>{diff.percent.toFixed(1)}%</span>
           </div>
         )}
-        {diff && diff.trend === "neutral" && <Minus className="w-3 h-3 text-slate-400" />}
+        {diff && diff.trend === "neutral" && <Minus className="w-3 h-3 text-muted-foreground/60" />}
       </div>
     </div>
   );

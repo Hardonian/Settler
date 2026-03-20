@@ -63,10 +63,10 @@ const ArchitectureOverview: React.FC = () => {
                 </div>
                 {/* Micro-interaction / Detail hint */}
                 <div className="mt-3 flex gap-2">
-                  <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider font-semibold rounded bg-slate-200 dark:bg-card text-muted-foreground dark:text-muted-foreground">
+                  <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider font-semibold rounded bg-border dark:bg-card text-muted-foreground dark:text-muted-foreground">
                     REST API
                   </span>
-                  <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider font-semibold rounded bg-slate-200 dark:bg-card text-muted-foreground dark:text-muted-foreground">
+                  <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider font-semibold rounded bg-border dark:bg-card text-muted-foreground dark:text-muted-foreground">
                     Webhooks
                   </span>
                 </div>
@@ -136,7 +136,7 @@ const ArchitectureOverview: React.FC = () => {
             </div>
           </div>
           {/* Divider */}
-          <div className="h-px bg-slate-200 dark:bg-card my-8 mx-5"></div>
+          <div className="h-px bg-border dark:bg-card my-8 mx-5"></div>
           {/* Security Section */}
           <div className="px-5">
             <div className="flex items-center justify-between mb-4">
@@ -206,7 +206,7 @@ const ArchitectureOverview: React.FC = () => {
           </div>
           {/* CTA Section */}
           <div className="mt-8 px-5 pb-6">
-            <div className="rounded-xl bg-gradient-to-br from-surface-dark to-slate-900 border border-border p-5 relative overflow-hidden">
+            <div className="rounded-xl bg-gradient-to-br from-surface-dark to-background border border-border p-5 relative overflow-hidden">
               {/* Abstract Background Pattern */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl -mr-10 -mt-10"></div>
               <h3 className="relative text-white font-semibold text-sm mb-1">

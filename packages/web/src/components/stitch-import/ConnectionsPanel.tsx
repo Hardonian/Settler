@@ -189,7 +189,7 @@ export function ConnectionsPanel() {
                 </Badge>
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-border">
+              <div className="flex items-center justify-between pt-4 border-t border-border/30 dark:border-border">
                 <div className="flex gap-8">
                   <div className="flex flex-col">
                     <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
@@ -332,7 +332,7 @@ export function ConnectionsPanel() {
                   <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider">
                     Schema Preview
                   </h3>
-                  <div className="border border-border dark:border-border rounded-xl overflow-hidden divide-y divide-slate-100 dark:divide-slate-800">
+                  <div className="border border-border dark:border-border rounded-xl overflow-hidden divide-y divide-border/30 dark:divide-border">
                     <div className="bg-card dark:bg-background px-4 py-3 flex justify-between items-center cursor-pointer hover:bg-muted/20 dark:hover:bg-card/50 transition-colors">
                       <span className="text-sm font-bold font-mono text-foreground dark:text-muted-foreground">
                         Charges

@@ -234,7 +234,7 @@ export function UsageAnalyticsDashboard() {
     return (
       <Card>
         <CardContent className="py-12 text-center">
-          <p className="text-slate-600 dark:text-slate-400">Unable to load analytics data.</p>
+          <p className="text-muted-foreground">Unable to load analytics data.</p>
         </CardContent>
       </Card>
     );
@@ -246,13 +246,13 @@ export function UsageAnalyticsDashboard() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold">Usage Analytics</h2>
-            <p className="text-slate-600 dark:text-slate-400">Detailed usage insights and trends</p>
+            <p className="text-muted-foreground">Detailed usage insights and trends</p>
           </div>
           <div className="flex items-center gap-2">
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value as "7d" | "30d" | "90d")}
-              className="px-3 py-2 border rounded-md bg-white dark:bg-slate-800"
+              className="px-3 py-2 border rounded-md bg-white dark:bg-card/80"
             >
               <option value="7d">Last 7 days</option>
               <option value="30d">Last 30 days</option>
@@ -296,7 +296,7 @@ export function UsageAnalyticsDashboard() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="text-sm text-slate-600 dark:text-slate-400">
+              <div className="text-sm text-muted-foreground">
                 Status: <span className="font-medium capitalize">{activeExport.status}</span> ·
                 Rows: {activeExport.processedRows.toLocaleString()} /{" "}
                 {activeExport.totalRows.toLocaleString()}
@@ -365,7 +365,7 @@ export function UsageAnalyticsDashboard() {
               <CardTitle className="text-2xl">${analytics.costEstimate.toFixed(2)}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <DollarSign className="w-4 h-4" />
                 <span>Based on usage</span>
               </div>
@@ -380,7 +380,7 @@ export function UsageAnalyticsDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-sm text-slate-600 dark:text-slate-400">Projected calls</div>
+              <div className="text-sm text-muted-foreground">Projected calls</div>
             </CardContent>
           </Card>
         </div>
@@ -393,8 +393,8 @@ export function UsageAnalyticsDashboard() {
           </CardHeader>
           <CardContent>
             <div className="h-64 flex items-center justify-center border-2 border-dashed rounded-lg">
-              <p className="text-slate-500">Chart visualization would go here</p>
-              <p className="text-xs text-slate-400 mt-2">
+              <p className="text-muted-foreground">Chart visualization would go here</p>
+              <p className="text-xs text-muted-foreground/60 mt-2">
                 Data: {analytics.trends.daily.length} data points
               </p>
             </div>
@@ -420,14 +420,14 @@ export function UsageAnalyticsDashboard() {
                       <span className="font-medium capitalize">
                         {service.replace("settler-", "").replace("-", " ")}
                       </span>
-                      <span className="text-sm text-slate-600 dark:text-slate-400">
+                      <span className="text-sm text-muted-foreground">
                         {count.toLocaleString()} calls
                         {limit &&
                           ` / ${limit.limit === -1 ? "∞" : limit.limit.toLocaleString()} limit`}
                       </span>
                     </div>
                     {limit && limit.limit > 0 && (
-                      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                      <div className="w-full bg-border dark:bg-border rounded-full h-2">
                         <div
                           className={`h-2 rounded-full ${
                             usagePercent > 90

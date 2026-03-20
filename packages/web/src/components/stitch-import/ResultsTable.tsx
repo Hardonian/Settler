@@ -25,15 +25,15 @@ const ResultsTable: React.FC = () => {
           <span>All Status</span>
           <ChevronDown className="h-4 w-4" />
         </button>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-200 dark:bg-surface-dark border border-border dark:border-border text-foreground dark:text-muted-foreground text-sm font-medium">
+        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-border dark:bg-surface-dark border border-border dark:border-border text-foreground dark:text-muted-foreground text-sm font-medium">
           <Calendar className="h-4 w-4 text-muted-foreground" />
           <span>Last 24h</span>
         </button>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-200 dark:bg-surface-dark border border-border dark:border-border text-foreground dark:text-muted-foreground text-sm font-medium">
+        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-border dark:bg-surface-dark border border-border dark:border-border text-foreground dark:text-muted-foreground text-sm font-medium">
           <GitBranch className="h-4 w-4 text-muted-foreground" />
           <span>Payments_v2</span>
         </button>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-200 dark:bg-surface-dark border border-border dark:border-border text-foreground dark:text-muted-foreground text-sm font-medium">
+        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-border dark:bg-surface-dark border border-border dark:border-border text-foreground dark:text-muted-foreground text-sm font-medium">
           <Filter className="h-4 w-4 text-muted-foreground" />
           <span>More</span>
         </button>

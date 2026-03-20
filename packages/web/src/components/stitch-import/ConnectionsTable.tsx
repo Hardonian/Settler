@@ -40,7 +40,7 @@ const ConnectionsTable: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wide">Healthy</span>
           </div>
         </div>
-        <div className="flex items-center justify-between text-xs border-t border-slate-100 pt-3 mt-1">
+        <div className="flex items-center justify-between text-xs border-t border-border/30 pt-3 mt-1">
           <div className="flex gap-6">
             <div className="flex flex-col">
               <span className="text-muted-foreground font-medium mb-0.5 uppercase text-[10px] tracking-wider">
@@ -81,7 +81,7 @@ const ConnectionsTable: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wide">Error</span>
           </div>
         </div>
-        <div className="flex items-center justify-between text-xs border-t border-slate-100 pt-3 mt-1 pl-2">
+        <div className="flex items-center justify-between text-xs border-t border-border/30 pt-3 mt-1 pl-2">
           <div className="flex gap-6">
             <div className="flex flex-col">
               <span className="text-muted-foreground font-medium mb-0.5 uppercase text-[10px] tracking-wider">
@@ -119,13 +119,13 @@ const ConnectionsTable: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wide">Syncing</span>
           </div>
         </div>
-        <div className="flex items-center justify-between text-xs border-t border-slate-100 pt-3 mt-1">
+        <div className="flex items-center justify-between text-xs border-t border-border/30 pt-3 mt-1">
           <div className="flex gap-6">
             <div className="flex flex-col">
               <span className="text-muted-foreground font-medium mb-0.5 uppercase text-[10px] tracking-wider">
                 Error Rate
               </span>
-              <span className="font-mono font-medium text-muted-foreground bg-muted/20 px-1.5 py-0.5 rounded w-fit border border-slate-100">
+              <span className="font-mono font-medium text-muted-foreground bg-muted/20 px-1.5 py-0.5 rounded w-fit border border-border/30">
                 --
               </span>
             </div>
@@ -133,7 +133,7 @@ const ConnectionsTable: React.FC = () => {
               <span className="text-muted-foreground font-medium mb-0.5 uppercase text-[10px] tracking-wider">
                 Freshness
               </span>
-              <span className="font-mono font-medium text-muted-foreground bg-muted/20 px-1.5 py-0.5 rounded w-fit border border-slate-100">
+              <span className="font-mono font-medium text-muted-foreground bg-muted/20 px-1.5 py-0.5 rounded w-fit border border-border/30">
                 --
               </span>
             </div>
@@ -159,7 +159,7 @@ const ConnectionsTable: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wide">Healthy</span>
           </div>
         </div>
-        <div className="flex items-center justify-between text-xs border-t border-slate-100 pt-3 mt-1">
+        <div className="flex items-center justify-between text-xs border-t border-border/30 pt-3 mt-1">
           <div className="flex gap-6">
             <div className="flex flex-col">
               <span className="text-muted-foreground font-medium mb-0.5 uppercase text-[10px] tracking-wider">

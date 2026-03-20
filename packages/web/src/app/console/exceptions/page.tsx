@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { DataTable, DataTableColumn } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -69,6 +70,103 @@ function severityToBadgeVariant(
   }
 }
 
+function buildColumns(runId: string | null): DataTableColumn<Exception>[] {
+  return [
+    {
+      key: "type",
+      header: "Type",
+      cell: (row) => (
+        <div className="space-y-1.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-medium text-foreground text-sm">
+              {row.type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+            </span>
+            <StatusBadge
+              status={exceptionStatusToStatusType(row.status)}
+              label={row.status.charAt(0).toUpperCase() + row.status.slice(1)}
+              size="sm"
+            />
+            <Badge variant={severityToBadgeVariant(row.severity)} size="sm">
+              {row.severity}
+            </Badge>
+          </div>
+          {row.reasonTags && row.reasonTags.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {row.reasonTags.map((tag) => (
+                <Badge key={`${row.id}-${tag}`} variant="outline" size="sm">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: "description",
+      header: "Description",
+      cellClassName: "text-xs text-muted-foreground max-w-[280px]",
+      cell: (row) => (
+        <div>
+          <p className="line-clamp-2">{row.description}</p>
+          {row.statusDetail && (
+            <p className="mt-1 text-[11px] opacity-70">{row.statusDetail}</p>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: "detected",
+      header: "Detected",
+      headerClassName: "whitespace-nowrap",
+      cellClassName: "text-xs text-muted-foreground whitespace-nowrap",
+      cell: (row) =>
+        new Date(row.detectedAt).toLocaleString([], {
+          month: "short",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+    },
+    {
+      key: "amount",
+      header: "Amount",
+      cellClassName: "font-mono text-xs",
+      cell: (row) =>
+        row.amount != null && row.currency
+          ? `${row.currency} ${row.amount.toLocaleString()}`
+          : "—",
+    },
+    {
+      key: "run",
+      header: "Run",
+      headerClassName: "w-[100px]",
+      cell: (row) =>
+        row.runId ? (
+          <Link
+            href={`/console/runs/${row.runId}`}
+            className="font-mono text-[11px] text-primary hover:underline"
+          >
+            {row.runId.slice(0, 8)}…
+          </Link>
+        ) : (
+          <span className="text-muted-foreground text-xs">—</span>
+        ),
+    },
+    {
+      key: "actions",
+      header: "",
+      headerClassName: "w-[100px]",
+      cellClassName: "text-right",
+      cell: (row) => (
+        <Button asChild variant="outline" size="sm">
+          <Link href={`/console/exceptions/${row.id}`}>View details</Link>
+        </Button>
+      ),
+    },
+  ];
+}
+
 export default function ExceptionsPage() {
   const searchParams = useSearchParams();
   const runId = searchParams.get("runId");
@@ -81,7 +179,6 @@ export default function ExceptionsPage() {
   const [autoRefresh, setAutoRefresh] = useState(true);
 
   useEffect(() => {
-    // Initialize filters from URL params
     if (typeFilter && !filters.type) {
       setFilters((prev) => ({ ...prev, type: typeFilter }));
     }
@@ -98,24 +195,16 @@ export default function ExceptionsPage() {
   const loadExceptions = useCallback(async () => {
     setLoading(true);
     const queryParams = new URLSearchParams();
-
     Object.entries(filters).forEach(([key, value]) => {
-      if (value) {
-        queryParams.append(key, value as string);
-      }
+      if (value) queryParams.append(key, value as string);
     });
+    if (runId) queryParams.set("runId", runId);
 
-    if (runId) {
-      queryParams.set("runId", runId);
-    }
-
-    const endpoint = `/api/exceptions?${queryParams.toString()}`;
     const result = await safeFetch<{
       items?: Exception[];
       data?: Exception[];
       exceptions?: Exception[];
-      pagination?: unknown;
-    }>(endpoint);
+    }>(`/api/exceptions?${queryParams.toString()}`);
 
     if (result.success && result.data) {
       const items = result.data.items ?? result.data.data ?? result.data.exceptions ?? [];
@@ -133,19 +222,12 @@ export default function ExceptionsPage() {
   }, [loadExceptions]);
 
   useEffect(() => {
-    if (!pollingEnabled) {
-      return undefined;
-    }
-
-    const interval = setInterval(() => {
-      void loadExceptions();
-    }, POLL_INTERVAL_MS);
+    if (!pollingEnabled) return undefined;
+    const interval = setInterval(() => void loadExceptions(), POLL_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [loadExceptions, pollingEnabled]);
 
-  const handleRefresh = async () => {
-    await loadExceptions();
-  };
+  const handleRefresh = async () => void loadExceptions();
 
   if (loading && exceptions.length === 0) {
     return (
@@ -165,8 +247,8 @@ export default function ExceptionsPage() {
         </Card>
         <Card>
           <CardContent className="py-6 space-y-3">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-24 w-full rounded-xl" />
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-10 w-full rounded-xl" />
             ))}
           </CardContent>
         </Card>
@@ -207,6 +289,8 @@ export default function ExceptionsPage() {
       </div>
     );
   }
+
+  const columns = buildColumns(runId);
 
   return (
     <div className="space-y-6">
@@ -250,7 +334,7 @@ export default function ExceptionsPage() {
         }
       />
 
-      {/* Filters */}
+      {/* Filter panel */}
       <Card>
         <CardContent className="py-5">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -334,96 +418,22 @@ export default function ExceptionsPage() {
         </CardContent>
       </Card>
 
-      {/* Exceptions List */}
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Exception Queue</CardTitle>
-              <CardDescription>{exceptions.length} exception{exceptions.length !== 1 ? "s" : ""} found</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {exceptions.map((exception) => (
-              <div
-                key={exception.id}
-                className="rounded-xl border border-border overflow-hidden hover:border-border/80 transition-colors"
-              >
-                <div className="px-5 py-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="flex-1 min-w-0 space-y-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-medium text-foreground">
-                        {exception.type
-                          .replace(/_/g, " ")
-                          .replace(/\b\w/g, (c) => c.toUpperCase())}
-                      </h3>
-                      <StatusBadge
-                        status={exceptionStatusToStatusType(exception.status)}
-                        label={exception.status.charAt(0).toUpperCase() + exception.status.slice(1)}
-                        size="sm"
-                      />
-                      <Badge variant={severityToBadgeVariant(exception.severity)} size="sm">
-                        {exception.severity}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {exception.description}
-                    </p>
-                    {exception.statusDetail && (
-                      <p className="text-xs text-muted-foreground/70">{exception.statusDetail}</p>
-                    )}
-                    {exception.reasonTags && exception.reasonTags.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {exception.reasonTags.map((tag) => (
-                          <Badge key={`${exception.id}-${tag}`} variant="outline" size="sm">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-shrink-0">
-                    <Button asChild variant="outline" size="sm">
-                      <Link href={`/console/exceptions/${exception.id}`}>View details</Link>
-                    </Button>
-                  </div>
-                </div>
-                <div className="px-5 py-2.5 border-t border-border/60 bg-card/50">
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                    <span>Detected {new Date(exception.detectedAt).toLocaleString()}</span>
-                    {exception.amount != null && exception.currency && (
-                      <span className="font-mono">
-                        {exception.currency} {exception.amount.toLocaleString()}
-                      </span>
-                    )}
-                    {exception.sourceTransactionId && (
-                      <span>
-                        Source: <code className="text-[11px]">{exception.sourceTransactionId.slice(0, 8)}...</code>
-                      </span>
-                    )}
-                    {exception.targetTransactionId && (
-                      <span>
-                        Target: <code className="text-[11px]">{exception.targetTransactionId.slice(0, 8)}...</code>
-                      </span>
-                    )}
-                    {exception.fieldPath && <span>Field: {exception.fieldPath}</span>}
-                    {exception.runId && (
-                      <Link
-                        href={`/console/runs/${exception.runId}`}
-                        className="hover:text-foreground transition-colors"
-                      >
-                        Run: <code className="text-[11px]">{exception.runId.slice(0, 8)}...</code>
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      {/* DataTable */}
+      <DataTable
+        columns={columns}
+        data={exceptions}
+        getRowKey={(row) => row.id}
+        isLoading={loading && exceptions.length > 0}
+        error={error && exceptions.length > 0 ? error : null}
+        title="Exception Queue"
+        description={`${exceptions.length} exception${exceptions.length !== 1 ? "s" : ""} found`}
+        emptyState={{
+          title: "No exceptions match filters",
+          description: "Try adjusting the filters above to see more results.",
+          action: { label: "Clear Filters", onClick: () => setFilters({}) },
+        }}
+        showCount
+      />
     </div>
   );
 }

@@ -129,14 +129,14 @@ console.log(report.data.summary);`);
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-col items-center justify-center p-8 bg-slate-50 dark:bg-slate-900 rounded-lg border border-dashed border-slate-300 dark:border-slate-700">
+                  <div className="flex flex-col items-center justify-center p-8 bg-muted/10 rounded-lg border border-dashed border-border">
                     {!demoResult && !demoLoading && !demoError && (
                       <div className="text-center">
                         <div className="mb-4 inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
                           <Play className="w-8 h-8" />
                         </div>
                         <h3 className="text-lg font-medium mb-2">Ready to Start?</h3>
-                        <p className="text-slate-500 mb-6 max-w-md">
+                        <p className="text-muted-foreground mb-6 max-w-md">
                           We'll load 1 month of transaction data (Stripe Charges, Payouts, Refunds)
                           and reconcile it against a simulated Bank Ledger.
                         </p>
@@ -153,10 +153,10 @@ console.log(report.data.summary);`);
                     {demoLoading && (
                       <div className="text-center py-12">
                         <RefreshCw className="w-12 h-12 animate-spin text-blue-500 mx-auto mb-4" />
-                        <p className="text-lg font-medium text-slate-700 dark:text-slate-300">
+                        <p className="text-lg font-medium text-muted-foreground">
                           Reconciling 150+ transactions...
                         </p>
-                        <p className="text-sm text-slate-500">Applying deterministic rules...</p>
+                        <p className="text-sm text-muted-foreground">Applying deterministic rules...</p>
                       </div>
                     )}
 
@@ -174,12 +174,12 @@ console.log(report.data.summary);`);
                       <div className="w-full space-y-8 animate-in fade-in duration-500">
                         {/* Summary Cards */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          <Card className="bg-white dark:bg-slate-800">
+                          <Card className="bg-white dark:bg-card/80">
                             <CardContent className="pt-6 text-center">
-                              <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                              <div className="text-2xl font-bold text-foreground">
                                 {demoResult.summary.totalSource + demoResult.summary.totalTarget}
                               </div>
-                              <div className="text-xs text-slate-500 uppercase tracking-wide mt-1">
+                              <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">
                                 Total Records
                               </div>
                             </CardContent>
@@ -227,13 +227,13 @@ console.log(report.data.summary);`);
                               {demoResult.matches.map((m) => (
                                 <div
                                   key={m.id}
-                                  className="bg-white dark:bg-slate-800 p-3 rounded border border-slate-200 dark:border-slate-700 text-sm flex justify-between items-center"
+                                  className="bg-white dark:bg-card/80 p-3 rounded border border-border/40 dark:border-border text-sm flex justify-between items-center"
                                 >
                                   <div>
                                     <div className="font-medium">
                                       Amount: ${m.amount?.toFixed(2)}
                                     </div>
-                                    <div className="text-xs text-slate-500">
+                                    <div className="text-xs text-muted-foreground">
                                       ID: {m.sourceId.slice(0, 8)}... ↔ {m.targetId.slice(0, 8)}...
                                     </div>
                                   </div>
@@ -254,16 +254,16 @@ console.log(report.data.summary);`);
                               {demoResult.unmatchedSource.map((u) => (
                                 <div
                                   key={u.id}
-                                  className="bg-white dark:bg-slate-800 p-3 rounded border border-red-200 dark:border-red-900/50 text-sm flex justify-between items-center"
+                                  className="bg-white dark:bg-card/80 p-3 rounded border border-red-200 dark:border-red-900/50 text-sm flex justify-between items-center"
                                 >
                                   <div>
                                     <div className="font-medium">
                                       ${u.amount?.toFixed(2)} {u.currency}
                                     </div>
-                                    <div className="text-xs text-slate-500">
+                                    <div className="text-xs text-muted-foreground">
                                       {u.description || "Unknown Transaction"}
                                     </div>
-                                    <div className="text-[10px] text-slate-400 font-mono mt-1">
+                                    <div className="text-[10px] text-muted-foreground/60 font-mono mt-1">
                                       {u.source} • {new Date(u.occurredAt).toLocaleDateString()}
                                     </div>
                                   </div>
@@ -277,7 +277,7 @@ console.log(report.data.summary);`);
                                 </div>
                               ))}
                               {demoResult.unmatchedSource.length === 0 && (
-                                <div className="text-center text-slate-500 py-8 italic">
+                                <div className="text-center text-muted-foreground py-8 italic">
                                   No unmatched items!
                                 </div>
                               )}
@@ -317,7 +317,7 @@ console.log(report.data.summary);`);
                       <textarea
                         value={code}
                         onChange={(e) => setCode(e.target.value)}
-                        className="w-full h-[400px] p-4 font-mono text-sm border border-slate-300 dark:border-slate-700 rounded-md bg-slate-900 dark:bg-slate-950 text-blue-300 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent resize-none leading-[1.5]"
+                        className="w-full h-[400px] p-4 font-mono text-sm border border-border rounded-md bg-card dark:bg-card text-blue-300 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent resize-none leading-[1.5]"
                         spellCheck={false}
                       />
                       <Button
@@ -328,7 +328,7 @@ console.log(report.data.summary);`);
                         {isRunning ? "Running..." : "Run Code"}
                       </Button>
                     </div>
-                    <div className="bg-slate-900 dark:bg-slate-950 rounded-md p-4 h-[400px] overflow-auto border border-slate-300 dark:border-slate-700">
+                    <div className="bg-card dark:bg-card rounded-md p-4 h-[400px] overflow-auto border border-border">
                       <pre className="font-mono text-sm text-green-400 whitespace-pre-wrap">
                         {output}
                       </pre>
@@ -341,7 +341,7 @@ console.log(report.data.summary);`);
         </div>
       </section>
 
-      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50">
+      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-card/80/50">
         <div className="max-w-7xl mx-auto text-center">
           <TrustBadges />
         </div>

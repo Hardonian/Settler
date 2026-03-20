@@ -122,7 +122,7 @@ export function TenantsObservabilityDashboard() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-electric-cyan mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-400">Loading tenant observability...</p>
+          <p className="text-muted-foreground">Loading tenant observability...</p>
         </div>
       </div>
     );
@@ -138,7 +138,7 @@ export function TenantsObservabilityDashboard() {
             <CardTitle className="text-3xl">{aggregateMetrics.totalTenants}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-slate-600 dark:text-slate-400">
+            <div className="text-sm text-muted-foreground">
               {aggregateMetrics.activeTenants} active
             </div>
           </CardContent>
@@ -229,7 +229,7 @@ export function TenantsObservabilityDashboard() {
               <tbody>
                 {tenants.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center p-8 text-slate-500">
+                    <td colSpan={7} className="text-center p-8 text-muted-foreground">
                       No tenants found
                     </td>
                   </tr>
@@ -237,14 +237,14 @@ export function TenantsObservabilityDashboard() {
                   tenants.map((tenant) => (
                     <tr
                       key={tenant.id}
-                      className="border-b hover:bg-slate-50 dark:hover:bg-slate-900"
+                      className="border-b hover:bg-muted/10 dark:hover:bg-card"
                     >
                       <td className="p-4 font-medium">{tenant.name}</td>
                       <td className="p-4 font-mono text-xs">{tenant.slug}</td>
                       <td className="p-4">
                         <Badge className={getStatusColor(tenant.status)}>{tenant.status}</Badge>
                       </td>
-                      <td className="p-4 text-xs text-slate-600 dark:text-slate-400">
+                      <td className="p-4 text-xs text-muted-foreground">
                         {new Date(tenant.createdAt).toLocaleDateString()}
                       </td>
                       <td className="p-4">

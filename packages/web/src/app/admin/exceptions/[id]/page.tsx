@@ -42,7 +42,7 @@ export default function ExceptionDetailPage({ params }: { params: { id: string }
     return (
       <div className="p-8">
         <div className="text-center py-12">
-          <p className="text-slate-500 dark:text-slate-400">Exception not found</p>
+          <p className="text-muted-foreground">Exception not found</p>
           <Link href="/admin/exceptions">
             <Button variant="outline" className="mt-4">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -55,7 +55,7 @@ export default function ExceptionDetailPage({ params }: { params: { id: string }
   }
 
   return (
-    <div className="p-8 space-y-6 bg-slate-50 dark:bg-slate-900 min-h-screen">
+    <div className="p-8 space-y-6 bg-muted/10 min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -66,8 +66,8 @@ export default function ExceptionDetailPage({ params }: { params: { id: string }
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Exception Details</h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-1">{exception.reason}</p>
+            <h1 className="text-3xl font-bold text-foreground">Exception Details</h1>
+            <p className="text-muted-foreground mt-1">{exception.reason}</p>
           </div>
         </div>
         <Badge
@@ -107,27 +107,27 @@ export default function ExceptionDetailPage({ params }: { params: { id: string }
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Source:</span>
-              <span className="ml-2 font-medium text-slate-900 dark:text-white">
+              <span className="text-muted-foreground">Source:</span>
+              <span className="ml-2 font-medium text-foreground">
                 {exception.source}
               </span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Status:</span>
-              <span className="ml-2 font-medium text-slate-900 dark:text-white">
+              <span className="text-muted-foreground">Status:</span>
+              <span className="ml-2 font-medium text-foreground">
                 {exception.status}
               </span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Created:</span>
-              <span className="ml-2 font-medium text-slate-900 dark:text-white">
+              <span className="text-muted-foreground">Created:</span>
+              <span className="ml-2 font-medium text-foreground">
                 {new Date(exception.createdAt).toLocaleString()}
               </span>
             </div>
             {exception.ruleId && (
               <div>
-                <span className="text-slate-500 dark:text-slate-400">Rule ID:</span>
-                <span className="ml-2 font-mono text-xs text-slate-900 dark:text-white">
+                <span className="text-muted-foreground">Rule ID:</span>
+                <span className="ml-2 font-mono text-xs text-foreground">
                   {exception.ruleId}
                 </span>
               </div>
@@ -136,10 +136,10 @@ export default function ExceptionDetailPage({ params }: { params: { id: string }
 
           {exception.evidence && (
             <div>
-              <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <h3 className="text-sm font-medium text-muted-foreground mb-2">
                 Evidence
               </h3>
-              <pre className="text-xs bg-slate-100 dark:bg-slate-800 p-3 rounded overflow-auto">
+              <pre className="text-xs bg-muted/40 p-3 rounded overflow-auto">
                 {JSON.stringify(exception.evidence, null, 2)}
               </pre>
             </div>

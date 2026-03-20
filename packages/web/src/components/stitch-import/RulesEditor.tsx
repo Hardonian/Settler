@@ -194,7 +194,7 @@ const RulesEditor: React.FC = () => {
             <span className="inline-flex items-center rounded-md bg-yellow-400/10 px-2 py-1 text-xs font-medium text-yellow-500 ring-1 ring-inset ring-yellow-400/20">
               Draft Mode
             </span>
-            <span className="inline-flex items-center rounded-md bg-slate-400/10 px-2 py-1 text-xs font-medium text-slate-400 ring-1 ring-inset ring-slate-400/20">
+            <span className="inline-flex items-center rounded-md bg-slate-400/10 px-2 py-1 text-xs font-medium text-muted-foreground/60 ring-1 ring-inset ring-slate-400/20">
               Config ID: 9921
             </span>
           </div>
