@@ -96,9 +96,10 @@ describe("reconciliation runtime config route", () => {
       })
       .expect(400);
 
-    expect(response.body.error).toBe("Bad Request");
-    expect(response.body.message).toContain("config.amountTolerance");
-    expect(response.body.message).toContain("config.dateWindowDays");
+    expect(response.headers["content-type"]).toMatch(/application\/problem\+json/);
+    expect(response.body.code).toBe("VALIDATION_ERROR");
+    expect(response.body.detail).toContain("config.amountTolerance");
+    expect(response.body.detail).toContain("config.dateWindowDays");
     expect(runReconciliationMock).not.toHaveBeenCalled();
   });
 });

@@ -7,6 +7,8 @@ import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
 import { enforceFreezeState } from "../../middleware/governance";
 import { logError, logInfo } from "../../utils/logger";
+import { isApiError, ValidationError } from "../../utils/typed-errors";
+import { sendProblemJson } from "../../utils/problem-json";
 import { runReconciliation } from "../../services/ingestion/reconciliation-matcher";
 import { query } from "../../db";
 import { ReconciliationConfig } from "../../services/ingestion/types";
@@ -29,11 +31,14 @@ router.post("/run", enforceFreezeState(), async (req: AuthRequest, res: Response
     const userId = req.userId!;
 
     if (!ingestionId) {
-      return res.status(400).json({
-        error: "Bad Request",
-        message: "ingestionId is required",
-        traceId: req.traceId,
+      sendProblemJson(req, res, {
+        status: 400,
+        title: "Validation Error",
+        detail: "ingestionId is required",
+        code: "VALIDATION_ERROR",
+        extra: { field: "ingestionId" },
       });
+      return;
     }
 
     const rawConfig = (config ?? {}) as Record<string, unknown>;
@@ -90,11 +95,14 @@ router.post("/run", enforceFreezeState(), async (req: AuthRequest, res: Response
     }
 
     if (invalidConfigFields.length > 0) {
-      return res.status(400).json({
-        error: "Bad Request",
-        message: `Invalid config fields: ${invalidConfigFields.join(", ")}`,
-        traceId: req.traceId,
+      sendProblemJson(req, res, {
+        status: 400,
+        title: "Validation Error",
+        detail: `Invalid config fields: ${invalidConfigFields.join(", ")}`,
+        code: "VALIDATION_ERROR",
+        extra: { fields: invalidConfigFields },
       });
+      return;
     }
 
     // Extract jobId and templateId from request if available
@@ -121,6 +129,23 @@ router.post("/run", enforceFreezeState(), async (req: AuthRequest, res: Response
     });
   } catch (error) {
     logError("Failed to run reconciliation", error, { traceId: req.traceId });
+    if (isApiError(error)) {
+      const extra: Record<string, unknown> = {};
+      if (error instanceof ValidationError && error.field) {
+        extra.field = error.field;
+      }
+      if (error.details !== undefined) {
+        extra.details = error.details;
+      }
+      sendProblemJson(req, res, {
+        status: error.statusCode,
+        title: error.errorCode.replace(/_/g, " "),
+        detail: error.message,
+        code: error.errorCode,
+        ...(Object.keys(extra).length > 0 ? { extra } : {}),
+      });
+      return;
+    }
     return res.status(500).json({
       error: "Internal Server Error",
       message: "Failed to run reconciliation",
