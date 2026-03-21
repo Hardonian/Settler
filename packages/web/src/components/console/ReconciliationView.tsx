@@ -198,6 +198,63 @@ export function ReconciliationView({
               run reaches a terminal state.
             </div>
           )}
+          {summary.executionConfig && (
+            <div className="mb-4 rounded-lg border border-border bg-muted/20 p-4 text-sm">
+              <p className="font-medium text-foreground mb-2">Configuration used for this run</p>
+              <p className="text-muted-foreground mb-3">
+                Tolerances and fuzzy settings below are frozen on the run record. Changing workspace
+                rules does not rewrite history for past runs.
+              </p>
+              <dl className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-muted-foreground">
+                <div>
+                  <dt className="text-xs uppercase tracking-wide">Amount tolerance</dt>
+                  <dd className="font-mono text-foreground">
+                    {summary.executionConfig.amountTolerance}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase tracking-wide">Date window (days)</dt>
+                  <dd className="font-mono text-foreground">
+                    {summary.executionConfig.dateWindowDays}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase tracking-wide">Description similarity min</dt>
+                  <dd className="font-mono text-foreground">
+                    {summary.executionConfig.fuzzyDescriptionThreshold}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase tracking-wide">Require exact amount</dt>
+                  <dd className="font-mono text-foreground">
+                    {summary.executionConfig.requireExactAmount ? "Yes" : "No"}
+                  </dd>
+                </div>
+              </dl>
+              {(summary.configVersion || summary.configSource) && (
+                <p className="mt-3 text-xs text-muted-foreground">
+                  {summary.configSource && (
+                    <span>
+                      Rule source: <span className="font-mono">{summary.configSource}</span>
+                    </span>
+                  )}
+                  {summary.configSource && summary.configVersion && " · "}
+                  {summary.configVersion && (
+                    <span>
+                      Version: <span className="font-mono">{summary.configVersion}</span>
+                    </span>
+                  )}
+                  {typeof summary.matchingRulesCount === "number" && (
+                    <span>
+                      {" "}
+                      · Rules loaded:{" "}
+                      <span className="font-mono">{summary.matchingRulesCount}</span>
+                    </span>
+                  )}
+                </p>
+              )}
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="p-4 bg-muted/10 rounded-lg">
               <p className="text-sm text-muted-foreground mb-1">Total Delta</p>

@@ -102,6 +102,20 @@ export interface ReconciliationItem {
 
 import type { ReconciliationProofCapsule } from '@settler/protocol';
 
+/** Snapshot of tolerances and fuzzy settings used for a specific run (from run metadata). */
+export interface ReconciliationExecutionConfigSnapshot {
+  amountTolerance: number;
+  dateWindowDays: number;
+  fuzzyDescriptionThreshold: number;
+  requireExactAmount: boolean;
+}
+
+export interface ReconciliationConfigResolutionEntry {
+  field: string;
+  source: 'request' | 'tenant_template' | 'system_default';
+  value: unknown;
+}
+
 export interface ReconciliationSummary {
   id: ReconciliationId;
   tenantId: TenantId;
@@ -114,6 +128,13 @@ export interface ReconciliationSummary {
   startedAt: Date;
   completedAt?: Date;
   proofCapsule?: ReconciliationProofCapsule;
+  /** Present for ingestion-backed runs: settings that were applied at execution time. */
+  executionConfig?: ReconciliationExecutionConfigSnapshot;
+  /** Which fields came from the API request vs tenant rules vs engine defaults. */
+  configResolution?: ReconciliationConfigResolutionEntry[];
+  matchingRulesCount?: number;
+  configVersion?: string;
+  configSource?: string;
 }
 
 // ============================================================================

@@ -5,8 +5,10 @@
  */
 
 import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
 import { query, transaction } from "../../db";
 import { logError, logInfo, logWarn } from "../../utils/logger";
+import { NotFoundError, ValidationError } from "../../utils/typed-errors";
 import { MatchResult, ReconciliationConfig } from "./types";
 import { mlMatchingEngine } from "../matching/ml-matching-engine";
 import { enhancedCrossCustomerIntelligence } from "../matching/enhanced-cross-customer-intelligence";
@@ -34,6 +36,57 @@ const DEFAULT_TOLERANCES = {
   amount: 0.01,
   dateDays: 7,
 } as const;
+
+const UUID_SCHEMA = z.string().uuid();
+
+function pickDefined<T>(...values: (T | undefined)[]): T | undefined {
+  for (const v of values) {
+    if (v !== undefined) return v;
+  }
+  return undefined;
+}
+
+function recordResolution(
+  field: string,
+  requested: unknown,
+  stored: unknown,
+  effective: unknown
+): { field: string; source: "request" | "tenant_template" | "system_default"; value: unknown } {
+  if (requested !== undefined) {
+    return { field, source: "request", value: requested };
+  }
+  if (stored !== undefined) {
+    return { field, source: "tenant_template", value: stored };
+  }
+  return { field, source: "system_default", value: effective };
+}
+
+async function assertIngestionReadyForReconciliation(
+  ingestionId: string,
+  tenantId: string
+): Promise<void> {
+  const parsed = UUID_SCHEMA.safeParse(ingestionId);
+  if (!parsed.success) {
+    throw new ValidationError("ingestionId must be a valid UUID", "ingestionId");
+  }
+
+  const rows = await query(
+    `SELECT id, status FROM ingestions WHERE id = $1 AND tenant_id = $2 LIMIT 1`,
+    [ingestionId, tenantId]
+  );
+
+  if (rows.length === 0) {
+    throw new NotFoundError("Ingestion not found for this tenant", "ingestion", ingestionId);
+  }
+
+  const status = String((rows[0] as { status?: string }).status ?? "").toLowerCase();
+  if (status !== "completed") {
+    throw new ValidationError(
+      `Ingestion must be in "completed" status before reconciliation (current: ${status || "unknown"})`,
+      "ingestionId"
+    );
+  }
+}
 
 /**
  * Calculate Levenshtein distance (edit distance) between two strings
@@ -436,6 +489,8 @@ export async function runReconciliation(
   const runId = uuidv4();
   const traceId = uuidv4();
 
+  await assertIngestionReadyForReconciliation(ingestionId, tenantId);
+
   // Load matching rules config from canonical loader
   let matchingConfig: LoaderReconciliationConfig;
   try {
@@ -473,13 +528,58 @@ export async function runReconciliation(
     };
   }
 
-  // Merge user-provided config with loader config (user config takes precedence)
+  // Merge: explicit request wins, then tenant/template loader, then engine defaults.
+  const effectiveAmountTolerance = pickDefined(
+    config.amountTolerance,
+    matchingConfig.amountTolerance,
+    DEFAULT_CONFIG.amountTolerance
+  ) as number;
+  const effectiveDateWindowDays = pickDefined(
+    config.dateWindowDays,
+    matchingConfig.dateToleranceDays,
+    DEFAULT_CONFIG.dateWindowDays
+  ) as number;
+  const effectiveFuzzyDescriptionThreshold = pickDefined(
+    config.fuzzyDescriptionThreshold,
+    DEFAULT_CONFIG.fuzzyDescriptionThreshold
+  ) as number;
+  const effectiveRequireExactAmount = pickDefined(
+    config.requireExactAmount,
+    DEFAULT_CONFIG.requireExactAmount
+  ) as boolean;
+
   const effectiveConfig: Required<ReconciliationConfig> = {
-    ...DEFAULT_CONFIG,
-    amountTolerance: config.amountTolerance ?? matchingConfig.amountTolerance,
-    dateWindowDays: config.dateWindowDays ?? matchingConfig.dateToleranceDays,
-    fuzzyDescriptionThreshold: config.fuzzyDescriptionThreshold ?? 0.8,
-    requireExactAmount: config.requireExactAmount ?? false,
+    dateWindowDays: effectiveDateWindowDays,
+    amountTolerance: effectiveAmountTolerance,
+    fuzzyDescriptionThreshold: effectiveFuzzyDescriptionThreshold,
+    requireExactAmount: effectiveRequireExactAmount,
+  };
+
+  const configResolution = {
+    amountTolerance: recordResolution(
+      "amountTolerance",
+      config.amountTolerance,
+      matchingConfig.amountTolerance,
+      effectiveAmountTolerance
+    ),
+    dateWindowDays: recordResolution(
+      "dateWindowDays",
+      config.dateWindowDays,
+      matchingConfig.dateToleranceDays,
+      effectiveDateWindowDays
+    ),
+    fuzzyDescriptionThreshold: recordResolution(
+      "fuzzyDescriptionThreshold",
+      config.fuzzyDescriptionThreshold,
+      undefined,
+      effectiveFuzzyDescriptionThreshold
+    ),
+    requireExactAmount: recordResolution(
+      "requireExactAmount",
+      config.requireExactAmount,
+      undefined,
+      effectiveRequireExactAmount
+    ),
   };
 
   const runMetadata = {
@@ -489,6 +589,7 @@ export async function runReconciliation(
     templateId: templateId ?? null,
     requestedConfig: config,
     effectiveConfig,
+    configResolution,
     matchingConfig: {
       amountTolerance: matchingConfig.amountTolerance,
       dateToleranceDays: matchingConfig.dateToleranceDays,

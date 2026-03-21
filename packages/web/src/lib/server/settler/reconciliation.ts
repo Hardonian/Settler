@@ -10,9 +10,56 @@ import type {
   ReconciliationSummary,
   ReconciliationItem,
   TenantId,
+  ReconciliationExecutionConfigSnapshot,
+  ReconciliationConfigResolutionEntry,
 } from "@/lib/domain/types";
 import { calculateImpact, generateExplanation } from "@/lib/judgment/rules";
 import { safeLogger } from "@/lib/observability/safe-logger";
+
+function asExecutionConfig(
+  raw: unknown
+): ReconciliationExecutionConfigSnapshot | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const o = raw as Record<string, unknown>;
+  const amountTolerance = o.amountTolerance;
+  const dateWindowDays = o.dateWindowDays;
+  const fuzzyDescriptionThreshold = o.fuzzyDescriptionThreshold;
+  const requireExactAmount = o.requireExactAmount;
+  if (
+    typeof amountTolerance !== "number" ||
+    typeof dateWindowDays !== "number" ||
+    typeof fuzzyDescriptionThreshold !== "number" ||
+    typeof requireExactAmount !== "boolean"
+  ) {
+    return undefined;
+  }
+  return {
+    amountTolerance,
+    dateWindowDays,
+    fuzzyDescriptionThreshold,
+    requireExactAmount,
+  };
+}
+
+function asConfigResolution(raw: unknown): ReconciliationConfigResolutionEntry[] | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const o = raw as Record<string, unknown>;
+  const entries: ReconciliationConfigResolutionEntry[] = [];
+  for (const [field, v] of Object.entries(o)) {
+    if (!v || typeof v !== "object") continue;
+    const entry = v as Record<string, unknown>;
+    const source = entry.source;
+    if (
+      source !== "request" &&
+      source !== "tenant_template" &&
+      source !== "system_default"
+    ) {
+      continue;
+    }
+    entries.push({ field, source, value: entry.value });
+  }
+  return entries.length > 0 ? entries : undefined;
+}
 
 function mapStatus(raw: string | null | undefined): "running" | "completed" | "failed" {
   const value = (raw || "").toLowerCase();
@@ -56,6 +103,17 @@ export async function getReconciliationSummary(
     });
 
     if (run) {
+      const meta =
+        run.metadata && typeof run.metadata === "object"
+          ? (run.metadata as Record<string, unknown>)
+          : {};
+      const effectiveConfig = asExecutionConfig(meta.effectiveConfig);
+      const configResolution = asConfigResolution(meta.configResolution);
+      const matchingConfig =
+        meta.matchingConfig && typeof meta.matchingConfig === "object"
+          ? (meta.matchingConfig as Record<string, unknown>)
+          : {};
+
       return {
         id: run.id,
         tenantId,
@@ -66,6 +124,17 @@ export async function getReconciliationSummary(
         mismatchCount: run.unmatchedSourceCount + run.unmatchedTargetCount,
         startedAt: run.startedAt,
         completedAt: run.completedAt || undefined,
+        ...(effectiveConfig ? { executionConfig: effectiveConfig } : {}),
+        ...(configResolution ? { configResolution } : {}),
+        ...(typeof matchingConfig.matchingRulesCount === "number"
+          ? { matchingRulesCount: matchingConfig.matchingRulesCount as number }
+          : {}),
+        ...(typeof matchingConfig.configVersion === "string"
+          ? { configVersion: matchingConfig.configVersion as string }
+          : {}),
+        ...(typeof matchingConfig.configSource === "string"
+          ? { configSource: matchingConfig.configSource as string }
+          : {}),
       };
     }
 
