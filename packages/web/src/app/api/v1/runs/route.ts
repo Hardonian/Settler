@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
   }
 
   const started = Date.now();
-  const limited = applyRateLimit(ctx, "read");
+  const limited = await applyRateLimit(ctx, "read");
   if (limited) {
     await recordRequestMetrics(ctx, {
       route: "/api/v1/runs",
@@ -234,7 +234,7 @@ export async function POST(request: NextRequest) {
   }
 
   const started = Date.now();
-  const limited = applyRateLimit(ctx, "write");
+  const limited = await applyRateLimit(ctx, "write");
   if (limited) {
     await recordRequestMetrics(ctx, {
       route: "/api/v1/runs",
@@ -258,7 +258,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const idem = getIdempotent(ctx.tenantId, idempotencyKey, parsed);
+    const idem = await getIdempotent(ctx.tenantId, idempotencyKey, parsed);
     if ((idem as { conflict?: boolean }).conflict) {
       return NextResponse.json(
         { error: "Idempotency key reuse with different request", code: "SETTLER_CONFLICT" },
@@ -279,7 +279,7 @@ export async function POST(request: NextRequest) {
       mode: parsed.async ? "async" : "sync",
       created_at: run.createdAt.toISOString(),
     };
-    storeIdempotent(ctx.tenantId, idempotencyKey, idem.reqHash, payload);
+    await storeIdempotent(ctx.tenantId, idempotencyKey, idem.reqHash, payload);
 
     await recordRequestMetrics(ctx, {
       route: "/api/v1/runs",

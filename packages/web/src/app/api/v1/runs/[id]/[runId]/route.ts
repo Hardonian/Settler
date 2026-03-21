@@ -33,7 +33,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 
   const started = Date.now();
-  const limited = applyRateLimit(ctx, "read");
+  const limited = await applyRateLimit(ctx, "read");
   if (limited) {
     await recordRequestMetrics(ctx, {
       route: `/api/v1/runs/${params.id}`,

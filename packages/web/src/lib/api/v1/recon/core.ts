@@ -3,9 +3,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { authenticateApiKey } from "@/shared/auth/apiKey";
 import { prisma } from "@/shared/db/prismaClient";
 import { encrypt } from "@/lib/security/encryption";
+import { getRedisClient } from "@/lib/redis/client";
 import { z } from "zod";
 
 export const runtime = "nodejs";
+
+// ─── TTLs ─────────────────────────────────────────────────────────────────────
+const RATE_LIMIT_WINDOW_SEC = 60;
+const IDEMPOTENCY_TTL_SEC = 60 * 60 * 24; // 24 h
+const DATASET_TTL_SEC = 60 * 60 * 24 * 7; // 7 d
 
 type ProblemCode =
   | "SETTLER_AUTH_REQUIRED"
@@ -37,14 +43,15 @@ export const DatasetCreateSchema = z
   })
   .strict();
 
-const routeBuckets = new Map<string, { count: number; resetAt: number }>();
-const idempotencyStore = new Map<string, { hash: string; response: Record<string, unknown> }>();
-const datasetStore = new Map<
+// ─── In-memory fallbacks (single-instance only) ───────────────────────────────
+const _routeBuckets = new Map<string, { count: number; resetAt: number }>();
+const _idempotencyStore = new Map<string, { hash: string; response: Record<string, unknown> }>();
+const _datasetStore = new Map<
   string,
   Array<{ id: string; name: string; source: string; createdAt: string }>
 >();
 
-type ApiContext = { requestId: string; tenantId: string; userId: string; ip: string };
+export type ApiContext = { requestId: string; tenantId: string; userId: string; ip: string };
 
 type RunMetricsPayload = {
   runId: string;
@@ -134,14 +141,48 @@ export async function buildContext(request: NextRequest): Promise<ApiContext | N
   return { requestId, tenantId: auth.tenantId, userId: auth.userId, ip };
 }
 
-export function applyRateLimit(ctx: ApiContext, routeClass: "read" | "write"): NextResponse | null {
-  const now = Date.now();
+// ─── Rate limiting (Redis-backed, in-memory fallback) ─────────────────────────
+export async function applyRateLimit(
+  ctx: ApiContext,
+  routeClass: "read" | "write"
+): Promise<NextResponse | null> {
   const envKey = `SETTLER_RATE_LIMIT_${routeClass.toUpperCase()}`;
   const limit = Number(process.env[envKey] || (routeClass === "write" ? 30 : 120));
+  const redisKey = `rl:v1:${ctx.tenantId}:${ctx.ip}:${routeClass}`;
+
+  const redis = await getRedisClient();
+
+  if (redis) {
+    try {
+      const count: number = await redis.incr(redisKey);
+      if (count === 1) {
+        await redis.expire(redisKey, RATE_LIMIT_WINDOW_SEC);
+      }
+      if (count > limit) {
+        const ttl: number = Math.max(await redis.ttl(redisKey), 1);
+        const res = problem(
+          429,
+          "SETTLER_RATE_LIMITED",
+          "Rate limited",
+          "Too many requests for this tenant and IP.",
+          ctx.requestId,
+          "rate-limit"
+        );
+        res.headers.set("retry-after", String(ttl));
+        return res;
+      }
+      return null;
+    } catch {
+      // Fall through to in-memory fallback
+    }
+  }
+
+  // In-memory fallback (single-instance; not suitable for multi-replica deployments without Redis)
+  const now = Date.now();
   const key = `${ctx.tenantId}:${ctx.ip}:${routeClass}`;
-  const current = routeBuckets.get(key);
+  const current = _routeBuckets.get(key);
   if (!current || current.resetAt < now) {
-    routeBuckets.set(key, { count: 1, resetAt: now + 60_000 });
+    _routeBuckets.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_SEC * 1000 });
     return null;
   }
   if (current.count >= limit) {
@@ -157,7 +198,7 @@ export function applyRateLimit(ctx: ApiContext, routeClass: "read" | "write"): N
     return res;
   }
   current.count += 1;
-  routeBuckets.set(key, current);
+  _routeBuckets.set(key, current);
   return null;
 }
 
@@ -178,21 +219,99 @@ export function setCachingHeaders(res: NextResponse, payload: unknown, immutable
   return res;
 }
 
-export function getIdempotent(tenantId: string, key: string, body: unknown) {
+// ─── Idempotency (Redis-backed, in-memory fallback) ───────────────────────────
+export async function getIdempotent(tenantId: string, key: string, body: unknown) {
   const reqHash = createHash("sha256").update(JSON.stringify(body)).digest("hex");
-  const lookup = idempotencyStore.get(`${tenantId}:${key}`);
+  const redisKey = `idem:v1:${tenantId}:${key}`;
+
+  const redis = await getRedisClient();
+
+  if (redis) {
+    try {
+      const stored = await redis.get<{ hash: string; response: Record<string, unknown> }>(redisKey);
+      if (!stored) return { reqHash, replay: null };
+      if (stored.hash !== reqHash) return { reqHash, conflict: true };
+      return { reqHash, replay: stored.response };
+    } catch {
+      // Fall through to in-memory fallback
+    }
+  }
+
+  const lookup = _idempotencyStore.get(`${tenantId}:${key}`);
   if (!lookup) return { reqHash, replay: null };
   if (lookup.hash !== reqHash) return { reqHash, conflict: true };
   return { reqHash, replay: lookup.response };
 }
 
-export function storeIdempotent(
+export async function storeIdempotent(
   tenantId: string,
   key: string,
   reqHash: string,
   response: Record<string, unknown>
 ) {
-  idempotencyStore.set(`${tenantId}:${key}`, { hash: reqHash, response });
+  const redisKey = `idem:v1:${tenantId}:${key}`;
+  const redis = await getRedisClient();
+
+  if (redis) {
+    try {
+      await redis.set(redisKey, { hash: reqHash, response }, { ex: IDEMPOTENCY_TTL_SEC });
+      return;
+    } catch {
+      // Fall through to in-memory fallback
+    }
+  }
+
+  _idempotencyStore.set(`${tenantId}:${key}`, { hash: reqHash, response });
+}
+
+// ─── Dataset store (Redis-backed, in-memory fallback) ─────────────────────────
+type DatasetEntry = { id: string; name: string; source: string; createdAt: string };
+
+export async function listDatasets(tenantId: string): Promise<DatasetEntry[]> {
+  const redisKey = `datasets:v1:${tenantId}`;
+  const redis = await getRedisClient();
+
+  if (redis) {
+    try {
+      const stored = await redis.get<DatasetEntry[]>(redisKey);
+      return stored ?? [];
+    } catch {
+      // Fall through to in-memory fallback
+    }
+  }
+
+  return _datasetStore.get(tenantId) ?? [];
+}
+
+export async function addDataset(
+  tenantId: string,
+  payload: { name: string; source: string }
+): Promise<DatasetEntry> {
+  const entry: DatasetEntry = {
+    id: randomUUID(),
+    name: payload.name,
+    source: payload.source,
+    createdAt: new Date().toISOString(),
+  };
+
+  const redisKey = `datasets:v1:${tenantId}`;
+  const redis = await getRedisClient();
+
+  if (redis) {
+    try {
+      const current = (await redis.get<DatasetEntry[]>(redisKey)) ?? [];
+      current.unshift(entry);
+      await redis.set(redisKey, current, { ex: DATASET_TTL_SEC });
+      return entry;
+    } catch {
+      // Fall through to in-memory fallback
+    }
+  }
+
+  const current = _datasetStore.get(tenantId) ?? [];
+  current.unshift(entry);
+  _datasetStore.set(tenantId, current);
+  return entry;
 }
 
 export async function createRun(ctx: ApiContext, body: z.infer<typeof RunCreateSchema>) {
@@ -200,10 +319,12 @@ export async function createRun(ctx: ApiContext, body: z.infer<typeof RunCreateS
     // Synchronous execution is not yet implemented. Callers must use async: true
     // and poll /runs/:id for status. Returning 501 prevents a fake "succeeded"
     // result from being written without any actual reconciliation work.
-    throw Object.assign(new Error("Synchronous run mode is not yet supported. Set async: true and poll for completion."), {
-      code: "SETTLER_NOT_IMPLEMENTED",
-      status: 501,
-    });
+    throw Object.assign(
+      new Error(
+        "Synchronous run mode is not yet supported. Set async: true and poll for completion."
+      ),
+      { code: "SETTLER_NOT_IMPLEMENTED", status: 501 }
+    );
   }
 
   const sourceConfigEncrypted = encrypt(JSON.stringify(body.sourceConfig));
@@ -304,23 +425,6 @@ export async function getLatestResult(ctx: ApiContext, runId: string) {
   });
 }
 
-export function listDatasets(tenantId: string) {
-  return datasetStore.get(tenantId) || [];
-}
-
-export function addDataset(tenantId: string, payload: { name: string; source: string }) {
-  const current = datasetStore.get(tenantId) || [];
-  const entry = {
-    id: randomUUID(),
-    name: payload.name,
-    source: payload.source,
-    createdAt: new Date().toISOString(),
-  };
-  current.unshift(entry);
-  datasetStore.set(tenantId, current);
-  return entry;
-}
-
 export function ok(res: NextResponse, requestId: string) {
   return withSecurityHeaders(res, requestId);
 }
@@ -337,7 +441,10 @@ export function fail(error: unknown, request: NextRequest, requestId: string) {
     );
   }
   // Typed errors with an explicit status (e.g. 501 Not Implemented)
-  if (error instanceof Error && typeof (error as NodeJS.ErrnoException & { status?: number }).status === "number") {
+  if (
+    error instanceof Error &&
+    typeof (error as NodeJS.ErrnoException & { status?: number }).status === "number"
+  ) {
     const typedError = error as Error & { code?: ProblemCode; status: number };
     const knownCodes: ProblemCode[] = [
       "SETTLER_AUTH_REQUIRED",
@@ -353,15 +460,15 @@ export function fail(error: unknown, request: NextRequest, requestId: string) {
       typedError.code && knownCodes.includes(typedError.code as ProblemCode)
         ? (typedError.code as ProblemCode)
         : "SETTLER_INTERNAL";
-    return problem(typedError.status, code, "Request failed", typedError.message, requestId, request.nextUrl.pathname);
+    return problem(
+      typedError.status,
+      code,
+      "Request failed",
+      typedError.message,
+      requestId,
+      request.nextUrl.pathname
+    );
   }
   const message = error instanceof Error ? error.message : "Unhandled API error";
-  return problem(
-    500,
-    "SETTLER_INTERNAL",
-    "Internal error",
-    message,
-    requestId,
-    request.nextUrl.pathname
-  );
+  return problem(500, "SETTLER_INTERNAL", "Internal error", message, requestId, request.nextUrl.pathname);
 }
