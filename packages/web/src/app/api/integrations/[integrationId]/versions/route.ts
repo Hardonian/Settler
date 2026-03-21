@@ -4,38 +4,22 @@ import { appLogger } from "@/lib/utils/logger";
 import { withSecurity } from "@/lib/middleware/api-security";
 
 export const dynamic = "force-dynamic";
-export const runtime = "nodejs"; // Ensure Node.js runtime
+export const runtime = "nodejs";
 
 export const GET = withSecurity(
   withUniversalBillingGate(
-    async function GET(request: NextRequest, { params }: { params: { integrationId: string } }) {
+    async function GET(_request: NextRequest, { params }: { params: { integrationId: string } }) {
       try {
         const { integrationId } = params;
-        const searchParams = request.nextUrl.searchParams;
-        const currentVersion = searchParams.get("current") || "1.0.0";
 
-        // Mock version data (in production, fetch from integration registry)
-        void integrationId;
-
-        const versionInfo = {
-          current: currentVersion,
-          latest: "2.1.0",
-          changelog: [
-            "Improved error handling for API rate limits",
-            "Added support for webhook retries",
-            "Enhanced data validation",
-            "Performance optimizations",
-          ],
-          breakingChanges: currentVersion.startsWith("1.")
-            ? [
-                "API response format changed (migration required)",
-                "Webhook signature format updated",
-              ]
-            : [],
-          requiresMigration: currentVersion.startsWith("1."),
-        };
-
-        return NextResponse.json(versionInfo);
+        // Version registry is not yet implemented.
+        // Return an honest response indicating the feature is unavailable.
+        return NextResponse.json({
+          integrationId,
+          available: false,
+          message:
+            "Integration version tracking is not yet available. Adapter versions are managed through deployment configuration.",
+        });
       } catch (error) {
         appLogger.error("Error in versions GET", error);
         return NextResponse.json(

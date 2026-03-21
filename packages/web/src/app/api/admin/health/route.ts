@@ -89,13 +89,15 @@ export const GET = withSecurity(
         },
       });
 
-      // Get system components status
+      // Get system components status — derive from real checks
+      const dbHealth = await checkDatabaseHealth();
       const components = {
-        web: "operational", // Would check actual web server
-        api: "operational", // Would check API server
-        db: await checkDatabaseHealth(),
-        stripeWebhooks: webhookFailures < 10 ? "operational" : "degraded",
-        providerConnectors: "operational", // Would check connector health
+        web: "operational" as const, // This request succeeded, so web is up
+        api: "operational" as const, // This route is running, so API is up
+        db: dbHealth,
+        stripeWebhooks: webhookFailures < 10 ? ("operational" as const) : ("degraded" as const),
+        // Connector health is not independently monitored — derive from recent webhook failures
+        providerConnectors: webhookFailures < 50 ? ("operational" as const) : ("degraded" as const),
       };
 
       return NextResponse.json({

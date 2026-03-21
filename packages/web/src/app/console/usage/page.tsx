@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -12,29 +15,119 @@ import {
   Globe,
   Clock,
   Layers,
+  Loader2,
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Usage & Billing | Settler",
-  description: "Monitor your reconciliation volume, resource consumption, and plan limits.",
-};
+interface BillingData {
+  billingAccount: { id: string; email: string; status: string } | null;
+  subscription: {
+    planName: string;
+    planCode: string;
+    status: string;
+    currentPeriodStart: string;
+    currentPeriodEnd: string;
+    cancelAtPeriodEnd: boolean;
+  } | null;
+  usage: {
+    reconcile: { current: number; limit: number };
+    exceptions: { current: number; limit: number };
+  };
+  stripeConfigured?: boolean;
+}
+
+interface UsageData {
+  totalCalls: number;
+  byService: Record<string, number>;
+  byOperation: Record<string, number>;
+  errorRate: number;
+  period: { start: string; end: string };
+  limits: {
+    reconcile?: { current: number; limit: number; remaining: number };
+    receipts?: { current: number; limit: number; remaining: number };
+    featureFlags?: { current: number; limit: number; remaining: number };
+    playground?: { current: number; limit: number; remaining: number };
+  };
+}
+
+function formatNumber(n: number): string {
+  return n.toLocaleString();
+}
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
 
 export default function UsagePage() {
-  // Real-world dashboard pattern for usage
-  const quota = {
-    reconciliations: { current: 12540, limit: 100000 },
-    storage: { current: 4.2, limit: 50 }, // GB
-    retention: { current: 30, limit: 30 }, // Days
-    compute: { current: 840, limit: 2000 }, // CPU Hours
-  };
+  const [billing, setBilling] = useState<BillingData | null>(null);
+  const [usage, setUsage] = useState<UsageData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const plan = {
-    name: "Commercial",
-    status: "active",
-    nextBilling: "April 15, 2026",
-    amount: "$99.00/mo",
-  };
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [billingRes, usageRes] = await Promise.all([
+          fetch("/api/console/billing"),
+          fetch("/api/console/usage?days=30"),
+        ]);
+
+        if (billingRes.ok) {
+          setBilling(await billingRes.json());
+        }
+        if (usageRes.ok) {
+          setUsage(await usageRes.json());
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load usage data");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center gap-3 text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          <span className="text-sm font-medium">Loading usage data...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center space-y-2">
+          <AlertTriangle className="h-8 w-8 text-destructive mx-auto" />
+          <p className="text-sm text-muted-foreground">{error}</p>
+          <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const reconUsage = billing?.usage?.reconcile ??
+    usage?.limits?.reconcile ?? { current: 0, limit: 0 };
+  const reconPercent = reconUsage.limit > 0 ? (reconUsage.current / reconUsage.limit) * 100 : 0;
+
+  const receiptsUsage = usage?.limits?.receipts ?? { current: 0, limit: 0, remaining: 0 };
+  const receiptsPercent =
+    receiptsUsage.limit > 0 ? (receiptsUsage.current / receiptsUsage.limit) * 100 : 0;
+
+  const planName = billing?.subscription?.planName ?? "Free";
+  const planStatus = billing?.subscription?.status ?? "inactive";
+  const periodEnd = billing?.subscription?.currentPeriodEnd;
 
   return (
     <div className="space-y-8 pb-8">
@@ -72,6 +165,7 @@ export default function UsagePage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="p-8 space-y-10">
+              {/* Reconciliations */}
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -86,13 +180,20 @@ export default function UsagePage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-lg font-bold font-mono">12,540</span>
-                    <span className="text-xs text-muted-foreground font-medium ml-2">/ 100k</span>
+                    <span className="text-lg font-bold font-mono">
+                      {formatNumber(reconUsage.current)}
+                    </span>
+                    {reconUsage.limit > 0 && (
+                      <span className="text-xs text-muted-foreground font-medium ml-2">
+                        / {formatNumber(reconUsage.limit)}
+                      </span>
+                    )}
                   </div>
                 </div>
-                <Progress value={12.5} className="h-2" />
+                <Progress value={reconPercent} className="h-2" />
               </div>
 
+              {/* Receipts */}
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -100,20 +201,27 @@ export default function UsagePage() {
                       <Database className="h-4 w-4" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold">Evidence Snapshot Storage</h3>
+                      <h3 className="text-sm font-bold">Receipt Processing</h3>
                       <p className="text-xs text-muted-foreground font-medium">
-                        Merkle-tree proofs and raw ingestion buffers
+                        Parsed and validated receipt documents
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-lg font-bold font-mono">4.2 GB</span>
-                    <span className="text-xs text-muted-foreground font-medium ml-2">/ 50 GB</span>
+                    <span className="text-lg font-bold font-mono">
+                      {formatNumber(receiptsUsage.current)}
+                    </span>
+                    {receiptsUsage.limit > 0 && (
+                      <span className="text-xs text-muted-foreground font-medium ml-2">
+                        / {formatNumber(receiptsUsage.limit)}
+                      </span>
+                    )}
                   </div>
                 </div>
-                <Progress value={8.4} className="h-2" />
+                <Progress value={receiptsPercent} className="h-2" />
               </div>
 
+              {/* API Calls */}
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -121,59 +229,57 @@ export default function UsagePage() {
                       <Globe className="h-4 w-4" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold">API Egress Traffic</h3>
+                      <h3 className="text-sm font-bold">API Calls (30d)</h3>
                       <p className="text-xs text-muted-foreground font-medium">
-                        External Webhook and Result payload delivery
+                        Total API calls in the current period
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-lg font-bold font-mono">148 MB</span>
-                    <span className="text-xs text-muted-foreground font-medium ml-2">/ 10 GB</span>
+                    <span className="text-lg font-bold font-mono">
+                      {formatNumber(usage?.totalCalls ?? 0)}
+                    </span>
                   </div>
                 </div>
-                <Progress value={1.5} className="h-2" />
+                {usage?.errorRate !== undefined && usage.errorRate > 0 && (
+                  <p className="text-xs text-destructive font-medium">
+                    Error rate: {usage.errorRate.toFixed(2)}%
+                  </p>
+                )}
               </div>
 
               <div className="pt-4 flex items-center gap-2 text-[10px] uppercase font-black tracking-widest text-muted-foreground/60">
                 <Clock className="h-3 w-3" />
-                Last synchronized: March 20, 2026 02:45 UTC
+                {usage?.period
+                  ? `Period: ${formatDate(usage.period.start)} — ${formatDate(usage.period.end)}`
+                  : "Live usage data"}
               </div>
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Service breakdown */}
+          {usage?.byService && Object.keys(usage.byService).length > 0 && (
             <Card className="border-border/40">
-              <CardHeader className="pb-2">
-                <CardDescription className="text-xs font-bold uppercase tracking-wider">
-                  Active Policy Count
-                </CardDescription>
-                <CardTitle className="text-2xl font-mono">
-                  4 <span className="text-muted-foreground text-sm">/ 10</span>
-                </CardTitle>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-sm font-bold">Usage by Service</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                  <div className="h-full bg-primary w-[40%]" />
+                <div className="space-y-3">
+                  {Object.entries(usage.byService)
+                    .sort(([, a], [, b]) => b - a)
+                    .slice(0, 6)
+                    .map(([service, count]) => (
+                      <div key={service} className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-muted-foreground capitalize">
+                          {service.replace(/_/g, " ")}
+                        </span>
+                        <span className="text-xs font-bold font-mono">{formatNumber(count)}</span>
+                      </div>
+                    ))}
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-border/40">
-              <CardHeader className="pb-2">
-                <CardDescription className="text-xs font-bold uppercase tracking-wider">
-                  Historical Replays
-                </CardDescription>
-                <CardTitle className="text-2xl font-mono">
-                  82 <span className="text-muted-foreground text-sm">/ 500</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                  <div className="h-full bg-primary w-[16.4%]" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          )}
         </div>
 
         {/* Plan & Billing Sidebar */}
@@ -187,22 +293,40 @@ export default function UsagePage() {
                 Plan Details
               </CardTitle>
               <CardDescription className="font-bold text-primary italic underline underline-offset-4">
-                {plan.name} License
+                {planName} License
               </CardDescription>
             </CardHeader>
             <CardContent className="relative z-10 space-y-6">
               <div className="space-y-1">
                 <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                  Next Billing Cycle
+                  Status
                 </p>
-                <p className="text-sm font-bold text-foreground">{plan.nextBilling}</p>
+                <Badge
+                  variant={
+                    planStatus === "active" || planStatus === "trialing" ? "default" : "outline"
+                  }
+                  className="text-xs"
+                >
+                  {planStatus === "trialing" ? "Trial" : planStatus}
+                </Badge>
               </div>
-              <div className="space-y-1">
-                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                  Estimated Amount
-                </p>
-                <p className="text-xl font-bold text-foreground font-mono">{plan.amount}</p>
-              </div>
+
+              {periodEnd && (
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                    Current Period Ends
+                  </p>
+                  <p className="text-sm font-bold text-foreground">{formatDate(periodEnd)}</p>
+                </div>
+              )}
+
+              {!billing?.subscription && (
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">
+                    No active subscription. Upgrade to unlock higher limits.
+                  </p>
+                </div>
+              )}
 
               <div className="pt-6 border-t border-primary/20 space-y-4">
                 <div className="flex items-center gap-2">
@@ -225,8 +349,8 @@ export default function UsagePage() {
                 </div>
               </div>
 
-              <Button variant="default" className="w-full h-11 font-bold shadow-lg">
-                Manage Payment Method
+              <Button variant="default" className="w-full h-11 font-bold shadow-lg" asChild>
+                <Link href="/dashboard/billing">Manage Billing</Link>
               </Button>
             </CardContent>
           </Card>
@@ -240,54 +364,17 @@ export default function UsagePage() {
             </CardHeader>
             <CardContent className="p-6 pt-8">
               <UsageLimitIndicator
-                current={quota.reconciliations.current}
-                limit={quota.reconciliations.limit}
+                current={reconUsage.current}
+                limit={reconUsage.limit}
                 type="reconciliations"
-                userPlan="commercial"
+                userPlan={
+                  (billing?.subscription?.planCode ?? "free") as
+                    | "free"
+                    | "trial"
+                    | "commercial"
+                    | "enterprise"
+                }
               />
-
-              <div className="mt-8 pt-8 border-t border-border/40 space-y-6">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">
-                    Recent Invoices
-                  </h4>
-                  <Link
-                    href="/console/billing/history"
-                    className="text-[10px] font-bold text-primary hover:underline"
-                  >
-                    View All
-                  </Link>
-                </div>
-                <div className="space-y-3">
-                  {[
-                    { id: "INV-621", date: "Mar 01, 2026", amount: "$99.00", status: "Paid" },
-                    { id: "INV-584", date: "Feb 01, 2026", amount: "$99.00", status: "Paid" },
-                  ].map((inv) => (
-                    <div
-                      key={inv.id}
-                      className="flex items-center justify-between p-3 rounded-lg border border-border/20 bg-muted/40 group hover:bg-primary/5 transition-colors"
-                    >
-                      <div className="flex flex-col">
-                        <span className="text-[11px] font-bold text-foreground group-hover:text-primary transition-colors">
-                          {inv.id}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground font-medium">
-                          {inv.date}
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs font-bold font-mono text-foreground">{inv.amount}</p>
-                        <Badge
-                          variant="outline"
-                          className="text-[9px] font-black uppercase text-success border-success/30 bg-success/5 h-4"
-                        >
-                          PAID
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </CardContent>
           </Card>
         </div>
