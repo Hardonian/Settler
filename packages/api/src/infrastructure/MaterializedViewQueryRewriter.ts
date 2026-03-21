@@ -74,7 +74,7 @@ export function analyzeQuery(query: string): QueryAnalysis {
   let match;
   const tableRegex = /FROM\s+([a-zA-Z_][a-zA-Z0-9_]*)/gi;
   while ((match = tableRegex.exec(normalizedQuery)) !== null) {
-    sourceTables.push(match[1].toLowerCase());
+    sourceTables.push(match[1]!.toLowerCase());
   }
 
   // Detect aggregations
@@ -82,7 +82,7 @@ export function analyzeQuery(query: string): QueryAnalysis {
   for (const pattern of AGGREGATION_PATTERNS) {
     const aggMatches = normalizedQuery.match(pattern);
     if (aggMatches) {
-      aggregations.push(...aggMatches.map((m) => m.split("(")[0].trim().toLowerCase()));
+      aggregations.push(...aggMatches.map((m) => m.split("(")[0]!.trim().toLowerCase()));
     }
   }
 
