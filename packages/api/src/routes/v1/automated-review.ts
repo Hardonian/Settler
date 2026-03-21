@@ -28,7 +28,8 @@ const router: Router = Router();
  */
 router.post("/run/:runId", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
-    const { runId } = req.params;
+    const runIdParam = req.params["runId"];
+    const runId = Array.isArray(runIdParam) ? (runIdParam[0] ?? "") : (runIdParam ?? "");
     const tenantId = req.tenantId!;
 
     if (!runId) {
@@ -75,7 +76,8 @@ router.post("/run/:runId", enforceFreezeState(), async (req: AuthRequest, res: R
  */
 router.post("/match/:matchId", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
-    const { matchId } = req.params;
+    const matchIdParam = req.params["matchId"];
+    const matchId = Array.isArray(matchIdParam) ? (matchIdParam[0] ?? "") : (matchIdParam ?? "");
     const tenantId = req.tenantId!;
 
     if (!matchId) {
@@ -114,7 +116,8 @@ router.post("/match/:matchId", enforceFreezeState(), async (req: AuthRequest, re
  */
 router.get("/run/:runId/statistics", async (req: AuthRequest, res: Response) => {
   try {
-    const { runId } = req.params;
+    const runIdParam2 = req.params["runId"];
+    const runId = Array.isArray(runIdParam2) ? (runIdParam2[0] ?? "") : (runIdParam2 ?? "");
     const tenantId = req.tenantId!;
 
     if (!runId) {
@@ -150,7 +153,8 @@ router.get("/run/:runId/statistics", async (req: AuthRequest, res: Response) => 
  */
 router.get("/run/:runId/quality", async (req: AuthRequest, res: Response) => {
   try {
-    const { runId } = req.params;
+    const runIdParam3 = req.params["runId"];
+    const runId = Array.isArray(runIdParam3) ? (runIdParam3[0] ?? "") : (runIdParam3 ?? "");
     const tenantId = req.tenantId!;
 
     if (!runId) {
@@ -188,7 +192,8 @@ router.get("/run/:runId/quality", async (req: AuthRequest, res: Response) => {
  */
 router.get("/run/:runId/report", async (req: AuthRequest, res: Response) => {
   try {
-    const { runId } = req.params;
+    const runIdParam4 = req.params["runId"];
+    const runId = Array.isArray(runIdParam4) ? (runIdParam4[0] ?? "") : (runIdParam4 ?? "");
     const tenantId = req.tenantId!;
 
     if (!runId) {

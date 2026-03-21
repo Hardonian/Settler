@@ -81,7 +81,7 @@ export class ExportJobQueue {
           [tenantId, idempotencyKey]
         );
 
-        if (existing.length > 0) {
+        if (existing.length > 0 && existing[0]) {
           logInfo("Returning existing job for idempotency key", {
             tenantId,
             idempotencyKey,
@@ -98,7 +98,7 @@ export class ExportJobQueue {
             existing[0].id,
           ]);
 
-          if (existingJob.length > 0) {
+          if (existingJob.length > 0 && existingJob[0]) {
             return {
               id: existingJob[0].id,
               tenantId: existingJob[0].tenant_id,
@@ -293,7 +293,7 @@ export class ExportJobQueue {
     const { status, type, limit = 100, offset = 0 } = options;
 
     let whereClause = "WHERE tenant_id = $1";
-    const params: (string | number)[] = [tenantId];
+    const params: (string | number | string[])[] = [tenantId];
 
     if (status) {
       if (Array.isArray(status)) {

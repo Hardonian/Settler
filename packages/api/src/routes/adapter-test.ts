@@ -28,7 +28,8 @@ router.post(
   validateRequest(testConnectionSchema),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { adapter } = req.params;
+      const adapterParam = req.params["adapter"];
+      const adapter = Array.isArray(adapterParam) ? (adapterParam[0] ?? "") : (adapterParam ?? "");
       if (!adapter) {
         res.status(400).json({ error: "Adapter parameter required" });
         return;
@@ -58,7 +59,9 @@ router.post(
         });
       }
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to test adapter connection", 500, { userId: req.userId });
+      handleRouteError(res, error, "Failed to test adapter connection", 500, {
+        userId: req.userId,
+      });
     }
   }
 );

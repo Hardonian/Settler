@@ -146,13 +146,13 @@ export default function JobDetailPage() {
 
   if (!jobId) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+      <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-indigo-50/30 dark:from-background dark:via-muted/20 dark:to-background">
         <Navigation />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
           <Card>
             <CardContent className="pt-6">
               <div className="text-center py-12">
-                <p className="text-slate-600 dark:text-slate-400 mb-4">Invalid job ID</p>
+                <p className="text-muted-foreground mb-4">Invalid job ID</p>
                 <Button asChild>
                   <Link href="/dashboard/jobs">Back to Jobs</Link>
                 </Button>
@@ -167,10 +167,10 @@ export default function JobDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+      <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-indigo-50/30 dark:from-background dark:via-muted/20 dark:to-background">
         <Navigation />
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
         <Footer />
       </div>
@@ -179,13 +179,13 @@ export default function JobDetailPage() {
 
   if (!job) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+      <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-indigo-50/30 dark:from-background dark:via-muted/20 dark:to-background">
         <Navigation />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
           <Card>
             <CardContent className="pt-6">
               <div className="text-center py-12">
-                <p className="text-slate-600 dark:text-slate-400 mb-4">Job not found</p>
+                <p className="text-muted-foreground mb-4">Job not found</p>
                 <Button asChild>
                   <Link href="/dashboard/jobs">Back to Jobs</Link>
                 </Button>
@@ -199,7 +199,7 @@ export default function JobDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+    <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-indigo-50/30 dark:from-background dark:via-muted/20 dark:to-background">
       <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
@@ -215,12 +215,10 @@ export default function JobDetailPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
           <div>
             <div className="flex items-center gap-3 mb-3">
-              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
-                {job.name}
-              </h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground">{job.name}</h1>
               <Badge className={getStatusBadge(job.status)}>{job.status}</Badge>
             </div>
-            <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
+            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1.5">
                 <Clock className="w-4 h-4" />
                 Created {new Date(job.createdAt).toLocaleDateString()}
@@ -334,21 +332,17 @@ export default function JobDetailPage() {
             <CardContent>
               <div className="space-y-2">
                 <div>
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    Platform:
-                  </span>
-                  <span className="ml-2 text-sm text-slate-600 dark:text-slate-400 capitalize">
+                  <span className="text-sm font-medium text-foreground">Platform:</span>
+                  <span className="ml-2 text-sm text-muted-foreground capitalize">
                     {job.source.adapter}
                   </span>
                 </div>
                 {Object.entries(job.source.config).map(([key, value]) => (
                   <div key={key}>
-                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300 capitalize">
+                    <span className="text-sm font-medium text-foreground capitalize">
                       {key.replace(/_/g, " ")}:
                     </span>
-                    <span className="ml-2 text-sm text-slate-600 dark:text-slate-400">
-                      {String(value)}
-                    </span>
+                    <span className="ml-2 text-sm text-muted-foreground">{String(value)}</span>
                   </div>
                 ))}
               </div>
@@ -363,21 +357,17 @@ export default function JobDetailPage() {
             <CardContent>
               <div className="space-y-2">
                 <div>
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    Platform:
-                  </span>
-                  <span className="ml-2 text-sm text-slate-600 dark:text-slate-400 capitalize">
+                  <span className="text-sm font-medium text-foreground">Platform:</span>
+                  <span className="ml-2 text-sm text-muted-foreground capitalize">
                     {job.target.adapter}
                   </span>
                 </div>
                 {Object.entries(job.target.config).map(([key, value]) => (
                   <div key={key}>
-                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300 capitalize">
+                    <span className="text-sm font-medium text-foreground capitalize">
                       {key.replace(/_/g, " ")}:
                     </span>
-                    <span className="ml-2 text-sm text-slate-600 dark:text-slate-400">
-                      {String(value)}
-                    </span>
+                    <span className="ml-2 text-sm text-muted-foreground">{String(value)}</span>
                   </div>
                 ))}
               </div>

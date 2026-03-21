@@ -226,11 +226,11 @@ export default function TablePage() {
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold">{displayName}</h1>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-muted-foreground">
               {schema}.{table}
             </p>
-            <p className="text-sm text-slate-500 mt-1">{count} total records</p>
-            <p className="text-xs text-slate-400 mt-2">
+            <p className="text-sm text-muted-foreground mt-1">{count} total records</p>
+            <p className="text-xs text-muted-foreground mt-2">
               Use this to test API calls, webhooks, and SDK operations for this service.
             </p>
           </div>
@@ -249,7 +249,7 @@ export default function TablePage() {
         </div>
 
         {editing && (
-          <div className="mb-6 p-4 bg-slate-50 rounded">
+          <div className="mb-6 p-4 bg-muted/50 rounded">
             <h2 className="text-lg font-semibold mb-4">
               {selectedRecord ? "Edit Record" : "Create New Record"}
             </h2>
@@ -279,7 +279,7 @@ export default function TablePage() {
                   setEditing(false);
                   setEditForm({});
                 }}
-                className="px-4 py-2 bg-slate-300 rounded hover:bg-slate-400"
+                className="px-4 py-2 bg-muted text-muted-foreground rounded hover:bg-muted/80"
               >
                 Cancel
               </button>
@@ -288,29 +288,29 @@ export default function TablePage() {
         )}
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200">
-            <thead className="bg-slate-50">
+          <table className="min-w-full divide-y divide-border">
+            <thead className="bg-muted/50">
               <tr>
                 {columns.map((key) => (
                   <th
                     key={key}
-                    className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase"
+                    className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase"
                   >
                     {key}
                   </th>
                 ))}
                 {canEdit && (
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Actions
                   </th>
                 )}
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-slate-200">
+            <tbody className="bg-white divide-y divide-border">
               {data.map((record) => (
-                <tr key={record.id} className="hover:bg-slate-50">
+                <tr key={record.id} className="hover:bg-muted/50">
                   {columns.map((key) => (
-                    <td key={key} className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
+                    <td key={key} className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                       {typeof record[key] === "object"
                         ? JSON.stringify(record[key]).substring(0, 50) + "..."
                         : String(record[key] || "").substring(0, 100)}
@@ -347,17 +347,17 @@ export default function TablePage() {
             <button
               onClick={() => setOffset(Math.max(0, offset - limit))}
               disabled={offset === 0}
-              className="px-4 py-2 bg-slate-200 rounded disabled:opacity-50"
+              className="px-4 py-2 bg-muted text-foreground rounded disabled:opacity-50"
             >
               Previous
             </button>
-            <span className="text-sm text-slate-600">
+            <span className="text-sm text-muted-foreground">
               Showing {offset + 1}-{Math.min(offset + limit, count)} of {count}
             </span>
             <button
               onClick={() => setOffset(offset + limit)}
               disabled={offset + limit >= count}
-              className="px-4 py-2 bg-slate-200 rounded disabled:opacity-50"
+              className="px-4 py-2 bg-muted text-foreground rounded disabled:opacity-50"
             >
               Next
             </button>

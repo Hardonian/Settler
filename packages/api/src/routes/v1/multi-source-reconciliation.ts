@@ -87,7 +87,8 @@ router.post("/jobs", enforceFreezeState(), async (req: AuthRequest, res: Respons
  */
 router.get("/jobs/:jobId", async (req: AuthRequest, res: Response) => {
   try {
-    const { jobId } = req.params;
+    const jobIdParam = req.params["jobId"];
+    const jobId = Array.isArray(jobIdParam) ? (jobIdParam[0] ?? "") : (jobIdParam ?? "");
     const tenantId = req.tenantId!;
 
     if (!jobId) {

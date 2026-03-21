@@ -94,7 +94,8 @@ router.get("/", async (req: AuthRequest, res: Response) => {
  */
 router.get("/:ruleId", async (req: AuthRequest, res: Response) => {
   try {
-    const { ruleId } = req.params;
+    const ruleIdParam = req.params["ruleId"];
+    const ruleId = Array.isArray(ruleIdParam) ? (ruleIdParam[0] ?? "") : (ruleIdParam ?? "");
     const tenantId = req.tenantId!;
 
     if (!ruleId) {
@@ -135,7 +136,8 @@ router.get("/:ruleId", async (req: AuthRequest, res: Response) => {
  */
 router.post("/:ruleId/test", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
-    const { ruleId } = req.params;
+    const ruleIdParam2 = req.params["ruleId"];
+    const ruleId = Array.isArray(ruleIdParam2) ? (ruleIdParam2[0] ?? "") : (ruleIdParam2 ?? "");
     const tenantId = req.tenantId!;
     const { sourceData, targetData } = req.body;
 

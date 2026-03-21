@@ -173,7 +173,7 @@ async function DashboardMetrics() {
     };
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+      <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-indigo-50/30 dark:from-background dark:via-muted/20 dark:to-background">
         <Navigation />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
           <div className="text-center mb-12">
@@ -282,7 +282,9 @@ async function DashboardMetrics() {
               <h3 className="text-xl font-semibold text-foreground dark:text-white mb-4">
                 Most Engaged Post Today
               </h3>
-              <p className="text-lg text-foreground dark:text-muted-foreground mb-2">{topPost.title}</p>
+              <p className="text-lg text-foreground dark:text-muted-foreground mb-2">
+                {topPost.title}
+              </p>
               <div className="flex gap-6 text-sm text-muted-foreground dark:text-muted-foreground">
                 <span>{topPost.views || 0} views</span>
                 <span>{topPost.upvotes || 0} upvotes</span>
@@ -319,7 +321,9 @@ async function DashboardMetrics() {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground dark:text-muted-foreground">Open Issues</span>
+                    <span className="text-muted-foreground dark:text-muted-foreground">
+                      Open Issues
+                    </span>
                     <span className="font-semibold text-foreground dark:text-white">
                       {externalMetrics.github.openIssues.toLocaleString()}
                     </span>
@@ -346,7 +350,9 @@ async function DashboardMetrics() {
                 ) : (
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground dark:text-muted-foreground">Version</span>
+                      <span className="text-muted-foreground dark:text-muted-foreground">
+                        Version
+                      </span>
                       <span className="font-semibold text-foreground dark:text-white">
                         {externalMetrics.npm.version}
                       </span>
@@ -406,7 +412,9 @@ function MetricCard({
       <div className="flex items-center gap-3 mb-4">
         <Icon
           className={`w-6 h-6 ${
-            passed ? "text-green-600 dark:text-green-400" : "text-muted-foreground dark:text-muted-foreground"
+            passed
+              ? "text-green-600 dark:text-green-400"
+              : "text-muted-foreground dark:text-muted-foreground"
           }`}
         />
         <h3 className="text-lg font-semibold text-foreground dark:text-white">{title}</h3>
@@ -433,7 +441,7 @@ export default function DashboardPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+        <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-indigo-50/30 dark:from-background dark:via-muted/20 dark:to-background">
           <Navigation />
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="text-center">

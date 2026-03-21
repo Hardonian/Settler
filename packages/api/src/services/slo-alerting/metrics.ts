@@ -248,7 +248,7 @@ export async function getLatestMetric(
       return null;
     }
 
-    const row = results[0];
+    const row = results[0]!;
     return {
       id: row.id as string,
       tenantId: row.tenant_id as string,
@@ -304,7 +304,7 @@ export async function bulkInsertMetrics(
   try {
     // Use batch insert with multiple VALUES
     const values: string[] = [];
-    const params: unknown[] = [];
+    const params: (string | number | boolean | null | Date | string[])[] = [];
     let paramIndex = 1;
 
     for (const metric of metrics) {

@@ -130,7 +130,8 @@ router.get(
   validateRequest(getRunSchema),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { runId } = req.params;
+      const runIdParam = req.params["runId"];
+      const runId = Array.isArray(runIdParam) ? (runIdParam[0] ?? "") : (runIdParam ?? "");
       const tenantId = req.tenantId!;
 
       // Get run with job context - tenant-scoped
@@ -251,13 +252,14 @@ router.post(
   validateRequest(getRunSchema),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { runId } = req.params;
+      const runIdParam2 = req.params["runId"];
+      const runId2 = Array.isArray(runIdParam2) ? (runIdParam2[0] ?? "") : (runIdParam2 ?? "");
       const tenantId = req.tenantId!;
       const userId = req.userId!;
 
       const originalRun = await prisma.reconResult.findFirst({
         where: {
-          id: runId,
+          id: runId2,
           tenantId,
         },
         include: {
@@ -266,7 +268,7 @@ router.post(
       });
 
       if (!originalRun) {
-        throw new NotFoundError("Run not found or access denied", "run", runId);
+        throw new NotFoundError("Run not found or access denied", "run", runId2);
       }
 
       if (originalRun.status !== "failed") {
@@ -293,14 +295,14 @@ router.post(
 
       // Track event
       trackEventAsync(userId, "RunRetried", {
-        originalRunId: runId,
+        originalRunId: runId2,
         newExecutionId: newRun.id,
         jobId: newRun.reconJobId,
       });
 
       logInfo("Run retry initiated", {
         tenantId,
-        originalRunId: runId,
+        originalRunId: runId2,
         newExecutionId: newRun.id,
         jobId: newRun.reconJobId,
         triggeredBy: userId,

@@ -33,7 +33,8 @@ router.get(
   validateRequest(getEnhancedReportSchema),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { jobId } = req.params;
+      const jobIdParam = req.params["jobId"];
+      const jobId = Array.isArray(jobIdParam) ? (jobIdParam[0] ?? "") : (jobIdParam ?? "");
       const { startDate, endDate, format } = req.query as {
         startDate?: string;
         endDate?: string;

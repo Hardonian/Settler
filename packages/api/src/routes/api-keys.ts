@@ -94,7 +94,8 @@ router.get(
   requirePermission(Permission.USERS_WRITE),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { id } = req.params;
+      const idParam = req.params["id"];
+      const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
       if (!id) {
         res.status(400).json({ error: "API key ID required" });
         return;
@@ -226,7 +227,8 @@ router.patch(
   validateRequest(updateApiKeySchema),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { id } = req.params;
+      const idParam2 = req.params["id"];
+      const id = Array.isArray(idParam2) ? (idParam2[0] ?? "") : (idParam2 ?? "");
       if (!id) {
         res.status(400).json({ error: "API key ID required" });
         return;
@@ -314,7 +316,8 @@ router.post(
   validateRequest(regenerateApiKeySchema),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { id } = req.params;
+      const idParam3 = req.params["id"];
+      const id = Array.isArray(idParam3) ? (idParam3[0] ?? "") : (idParam3 ?? "");
       if (!id) {
         res.status(400).json({ error: "API key ID required" });
         return;
@@ -426,7 +429,8 @@ router.delete(
   requirePermission(Permission.USERS_DELETE),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { id } = req.params;
+      const idParam4 = req.params["id"];
+      const id = Array.isArray(idParam4) ? (idParam4[0] ?? "") : (idParam4 ?? "");
       if (!id) {
         res.status(400).json({ error: "API key ID required" });
         return;

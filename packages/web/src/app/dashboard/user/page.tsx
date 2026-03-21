@@ -41,7 +41,7 @@ async function UserDashboardContent() {
   // Show welcome dashboard for first-time users
   if (data.isFirstVisit) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+      <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-indigo-50/30 dark:from-background dark:via-muted/20 dark:to-background">
         <Navigation />
         <WelcomeDashboard
           userName={data.user.firstName || undefined}
@@ -53,7 +53,7 @@ async function UserDashboardContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+    <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-indigo-50/30 dark:from-background dark:via-muted/20 dark:to-background">
       <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
@@ -105,7 +105,7 @@ async function UserDashboardContent() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2 text-xs md:text-sm text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
                 <Activity className="w-4 h-4" />
                 <span>All time</span>
               </div>
@@ -133,7 +133,7 @@ async function UserDashboardContent() {
               <CardTitle className="text-2xl md:text-3xl">{data.metrics.timeSaved}h</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2 text-xs md:text-sm text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
                 <Clock className="w-4 h-4" />
                 <span>This month</span>
               </div>
@@ -146,7 +146,7 @@ async function UserDashboardContent() {
               <CardTitle className="text-2xl md:text-3xl">{data.metrics.jobsCreated}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2 text-xs md:text-sm text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
                 <CheckCircle2 className="w-4 h-4" />
                 <span>Active</span>
               </div>
@@ -203,13 +203,13 @@ async function UserDashboardContent() {
                 {data.recentJobs.map((job) => (
                   <div
                     key={job.id}
-                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 md:p-5 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors gap-4"
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 md:p-5 border border-border rounded-lg hover:bg-muted/50 transition-colors gap-4"
                   >
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-slate-900 dark:text-white mb-2 text-base md:text-lg">
+                      <h3 className="font-semibold text-foreground mb-2 text-base md:text-lg">
                         {job.name}
                       </h3>
-                      <div className="flex flex-wrap items-center gap-3 md:gap-4 text-xs md:text-sm text-slate-600 dark:text-slate-400">
+                      <div className="flex flex-wrap items-center gap-3 md:gap-4 text-xs md:text-sm text-muted-foreground">
                         <span className="flex items-center gap-1.5">
                           <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
                           {job.matchedCount} matched
@@ -260,9 +260,7 @@ async function UserDashboardContent() {
                 <Link href="/console/playground" className="flex flex-col items-center">
                   <span className="text-xl mb-2">🚀</span>
                   <span className="font-semibold text-sm md:text-base mb-1">Create New Job</span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">
-                    Set up a reconciliation
-                  </span>
+                  <span className="text-xs text-muted-foreground">Set up a reconciliation</span>
                 </Link>
               </Button>
               <Button
@@ -273,9 +271,7 @@ async function UserDashboardContent() {
                 <Link href="/cookbook" className="flex flex-col items-center">
                   <span className="text-xl mb-2">📚</span>
                   <span className="font-semibold text-sm md:text-base mb-1">Browse Cookbooks</span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">
-                    Ready-to-use workflows
-                  </span>
+                  <span className="text-xs text-muted-foreground">Ready-to-use workflows</span>
                 </Link>
               </Button>
               <Button
@@ -288,9 +284,7 @@ async function UserDashboardContent() {
                   <span className="font-semibold text-sm md:text-base mb-1">
                     View Documentation
                   </span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">
-                    Learn how to use Settler
-                  </span>
+                  <span className="text-xs text-muted-foreground">Learn how to use Settler</span>
                 </Link>
               </Button>
             </div>
@@ -307,7 +301,7 @@ export default function UserDashboardPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+        <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-indigo-50/30 dark:from-background dark:via-muted/20 dark:to-background">
           <Navigation />
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 pt-20 md:pt-24">
             {/* Usage Limits Skeleton */}

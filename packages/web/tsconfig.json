@@ -27,7 +27,7 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "types": ["node"],
-    "typeRoots": ["./node_modules/@types", "/opt/node22/lib/node_modules/@types"],
+    "typeRoots": ["./node_modules/@types"],
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",

@@ -28,7 +28,10 @@ router.get(
   validateRequest(getStatusSchema),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { executionId } = req.params;
+      const executionIdParam = req.params["executionId"];
+      const executionId = Array.isArray(executionIdParam)
+        ? (executionIdParam[0] ?? "")
+        : (executionIdParam ?? "");
       const userId = req.userId!;
 
       if (!executionId || !userId) {

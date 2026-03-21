@@ -149,10 +149,10 @@ export default function JobsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+      <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-indigo-50/30 dark:from-background dark:via-muted/20 dark:to-background">
         <Navigation />
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
         <Footer />
       </div>
@@ -160,16 +160,16 @@ export default function JobsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+    <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-indigo-50/30 dark:from-background dark:via-muted/20 dark:to-background">
       <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
               Reconciliation Jobs
             </h1>
-            <p className="text-slate-600 dark:text-slate-400 text-sm md:text-base leading-relaxed">
+            <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
               View and manage all your reconciliation jobs
             </p>
           </div>
@@ -184,7 +184,7 @@ export default function JobsPage() {
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search jobs..."
               value={searchQuery}
@@ -193,11 +193,11 @@ export default function JobsPage() {
             />
           </div>
           <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-slate-400" />
+            <Filter className="h-4 w-4 text-muted-foreground" />
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm"
+              className="px-3 py-2 border border-input rounded-md bg-background text-foreground text-sm"
             >
               <option value="all">All Status</option>
               <option value="completed">Completed</option>
@@ -213,7 +213,7 @@ export default function JobsPage() {
           <Card>
             <CardContent className="pt-6">
               <div className="text-center py-12">
-                <p className="text-slate-600 dark:text-slate-400 mb-4">
+                <p className="text-muted-foreground mb-4">
                   {searchQuery || statusFilter !== "all"
                     ? "No jobs found matching your filters"
                     : "No jobs yet"}
@@ -238,12 +238,10 @@ export default function JobsPage() {
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-3">
-                        <h3 className="font-semibold text-slate-900 dark:text-white text-lg">
-                          {job.name}
-                        </h3>
+                        <h3 className="font-semibold text-foreground text-lg">{job.name}</h3>
                         <Badge className={getStatusBadge(job.status)}>{job.status}</Badge>
                       </div>
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 dark:text-slate-400 mb-3">
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-3">
                         <span className="flex items-center gap-1.5">
                           <span className="font-medium">Source:</span> {job.source}
                         </span>
@@ -266,9 +264,7 @@ export default function JobsPage() {
                             {job.unmatchedCount} unmatched
                           </span>
                         )}
-                        <span className="text-slate-600 dark:text-slate-400">
-                          {job.accuracy}% accuracy
-                        </span>
+                        <span className="text-muted-foreground">{job.accuracy}% accuracy</span>
                       </div>
                     </div>
                     <Button

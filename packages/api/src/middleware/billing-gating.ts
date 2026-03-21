@@ -213,19 +213,19 @@ function isPilotSubscription(subscription: SubscriptionForPilot | null): boolean
   if (!subscription) {
     return false;
   }
-  
+
   // Check if status is trialing
   if (subscription.status === "trialing") {
     return true;
   }
-  
+
   // Check if trial_end exists and is in the future
   if (subscription.trial_end) {
     const trialEnd = new Date(subscription.trial_end);
     const now = new Date();
     return trialEnd > now;
   }
-  
+
   return false;
 }
 
@@ -236,7 +236,7 @@ function isPilotExpired(subscription: SubscriptionForPilot | null): boolean {
   if (!subscription) {
     return false;
   }
-  
+
   // Check if trial_end exists and is in the past
   if (subscription.trial_end) {
     const trialEnd = new Date(subscription.trial_end);
@@ -246,7 +246,7 @@ function isPilotExpired(subscription: SubscriptionForPilot | null): boolean {
     gracePeriodEnd.setDate(gracePeriodEnd.getDate() + 7);
     return now > gracePeriodEnd;
   }
-  
+
   return false;
 }
 
@@ -257,12 +257,12 @@ function getPilotDaysRemaining(subscription: SubscriptionForPilot | null): numbe
   if (!subscription || !subscription.trial_end) {
     return null;
   }
-  
+
   const trialEnd = new Date(subscription.trial_end);
   const now = new Date();
   const diffMs = trialEnd.getTime() - now.getTime();
   const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-  
+
   return diffDays > 0 ? diffDays : 0;
 }
 
@@ -394,10 +394,13 @@ export function featureGate(featureName: string) {
       if (isPilotExpired(subscription)) {
         return res.status(403).json({
           error: "Pilot Expired",
-          message: "Your pilot has expired. Please upgrade to a paid plan to continue using Settler.",
+          message:
+            "Your pilot has expired. Please upgrade to a paid plan to continue using Settler.",
           upgrade_required: true,
           pilot_expired: true,
-          days_expired: getPilotDaysRemaining(subscription) ? Math.abs(getPilotDaysRemaining(subscription) || 0) : null,
+          days_expired: getPilotDaysRemaining(subscription)
+            ? Math.abs(getPilotDaysRemaining(subscription) || 0)
+            : null,
         });
       }
 
@@ -405,7 +408,10 @@ export function featureGate(featureName: string) {
       const daysRemaining = getPilotDaysRemaining(subscription);
       if (isPilotSubscription(subscription) && daysRemaining !== null && daysRemaining <= 7) {
         // Add warning header but allow access
-        res.setHeader("X-Pilot-Warning", `Your pilot expires in ${daysRemaining} day${daysRemaining !== 1 ? "s" : ""}. Please upgrade to continue.`);
+        res.setHeader(
+          "X-Pilot-Warning",
+          `Your pilot expires in ${daysRemaining} day${daysRemaining !== 1 ? "s" : ""}. Please upgrade to continue.`
+        );
       }
 
       // Get feature gate configuration
@@ -448,7 +454,7 @@ export function featureGate(featureName: string) {
       if (gate.requiresUsage) {
         // Pilots have unlimited usage (within reason)
         const isPilot = isPilotSubscription(subscription);
-        
+
         if (!isPilot) {
           const currentUsage = await getCurrentUsage(
             billingAccount.id,
@@ -500,10 +506,10 @@ export async function checkUsageQuotaForEvent(
   userId: string,
   eventType: string,
   quantity: number = 1
-): Promise<{ 
-  allowed: boolean; 
-  currentUsage?: number; 
-  limit?: number; 
+): Promise<{
+  allowed: boolean;
+  currentUsage?: number;
+  limit?: number;
   reason?: string;
   pilot_expired?: boolean;
   is_pilot?: boolean;
@@ -543,9 +549,9 @@ export async function checkUsageQuotaForEvent(
     // Get current usage
     const currentUsage = await getCurrentUsage(billingAccount.id, eventType, subscription);
 
-      // Get plan limits (map legacy plan names)
-      const planId = subscription.plan_id || "free";
-      const planLimits = PLAN_LIMITS[planId] || PLAN_LIMITS.free;
+    // Get plan limits (map legacy plan names)
+    const planId = subscription.plan_id || "free";
+    const planLimits = PLAN_LIMITS[planId] || PLAN_LIMITS.free;
     if (!planLimits) {
       logError(
         "Plan limits not found",
@@ -593,7 +599,8 @@ export function checkIntegrationAccess(integrationIdOrParam: string) {
       // Extract integration ID from route params if ":id" pattern used
       let integrationId = integrationIdOrParam;
       if (integrationIdOrParam === ":id" && req.params && req.params.id) {
-        integrationId = req.params.id;
+        const rawId = req.params.id;
+        integrationId = Array.isArray(rawId) ? (rawId[0] ?? "") : rawId;
       }
 
       // Check if integration is standard (included in base plan)
@@ -684,7 +691,10 @@ export function checkPilotStatus() {
       const daysRemaining = getPilotDaysRemaining(subscription);
       if (isPilotSubscription(subscription) && daysRemaining !== null) {
         if (daysRemaining <= 7) {
-          res.setHeader("X-Pilot-Warning", `Your pilot expires in ${daysRemaining} day${daysRemaining !== 1 ? "s" : ""}. Please upgrade to continue.`);
+          res.setHeader(
+            "X-Pilot-Warning",
+            `Your pilot expires in ${daysRemaining} day${daysRemaining !== 1 ? "s" : ""}. Please upgrade to continue.`
+          );
         }
         res.setHeader("X-Pilot-Days-Remaining", daysRemaining.toString());
       }

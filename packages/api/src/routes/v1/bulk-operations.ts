@@ -77,7 +77,10 @@ router.post("/", enforceFreezeState(), async (req: AuthRequest, res: Response) =
  */
 router.get("/:operationId", async (req: AuthRequest, res: Response) => {
   try {
-    const { operationId } = req.params;
+    const operationIdParam = req.params["operationId"];
+    const operationId = Array.isArray(operationIdParam)
+      ? (operationIdParam[0] ?? "")
+      : (operationIdParam ?? "");
     const tenantId = req.tenantId!;
 
     if (!operationId) {

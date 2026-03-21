@@ -55,7 +55,8 @@ router.post(
   enforceFreezeState(), // CRITICAL: Enforce freeze state for all incoming webhooks
   async (req: Request, res: Response) => {
     try {
-      const { adapter } = req.params;
+      const adapterParam = req.params["adapter"];
+      const adapter = Array.isArray(adapterParam) ? (adapterParam[0] ?? "") : (adapterParam ?? "");
       // We can safely use req.tenantId here because the middleware above guarantees it
       const tenantId = (req as AuthRequest).tenantId!;
 

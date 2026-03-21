@@ -100,7 +100,7 @@ export default function UsageDashboardPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -122,14 +122,14 @@ export default function UsageDashboardPage() {
     <div className="container mx-auto px-4 py-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">Usage Dashboard</h1>
-          <p className="text-slate-600 dark:text-slate-400 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Usage Dashboard</h1>
+          <p className="text-muted-foreground mt-1">
             Monitor your usage across all features and integrations
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-slate-400" />
-          <span className="text-sm text-slate-600 dark:text-slate-400">
+          <Calendar className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm text-muted-foreground">
             {new Date(data.period.start).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
@@ -165,7 +165,7 @@ export default function UsageDashboardPage() {
                   label="Reconciliation Jobs"
                   unit="jobs"
                 />
-                <div className="flex items-center gap-2 mt-2 text-sm text-slate-600 dark:text-slate-400">
+                <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
                   <TrendIcon trend={data.usage.reconciliation_jobs.trend} />
                   <span>
                     {data.usage.reconciliation_jobs.trend > 0 ? "+" : ""}
@@ -187,7 +187,7 @@ export default function UsageDashboardPage() {
                   label="API Requests"
                   unit="requests"
                 />
-                <div className="flex items-center gap-2 mt-2 text-sm text-slate-600 dark:text-slate-400">
+                <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
                   <TrendIcon trend={data.usage.api_requests.trend} />
                   <span>
                     {data.usage.api_requests.trend > 0 ? "+" : ""}
@@ -209,7 +209,7 @@ export default function UsageDashboardPage() {
                   label="Webhook Events"
                   unit="events"
                 />
-                <div className="flex items-center gap-2 mt-2 text-sm text-slate-600 dark:text-slate-400">
+                <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
                   <TrendIcon trend={data.usage.webhook_events.trend} />
                   <span>
                     {data.usage.webhook_events.trend > 0 ? "+" : ""}
@@ -231,7 +231,7 @@ export default function UsageDashboardPage() {
                   label="AI Requests"
                   unit="requests"
                 />
-                <div className="flex items-center gap-2 mt-2 text-sm text-slate-600 dark:text-slate-400">
+                <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
                   <TrendIcon trend={data.usage.ai_requests.trend} />
                   <span>
                     {data.usage.ai_requests.trend > 0 ? "+" : ""}
@@ -255,12 +255,12 @@ export default function UsageDashboardPage() {
                   <div key={integration.integration_id} className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="font-medium">{integration.name}</span>
-                      <span className="text-sm text-slate-600 dark:text-slate-400">
+                      <span className="text-sm text-muted-foreground">
                         {integration.usage.toLocaleString()} jobs (
                         {integration.percentage.toFixed(1)}%)
                       </span>
                     </div>
-                    <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                    <div className="w-full bg-muted rounded-full h-2">
                       <div
                         className="bg-blue-600 h-2 rounded-full"
                         style={{ width: `${integration.percentage}%` }}
@@ -286,7 +286,7 @@ export default function UsageDashboardPage() {
                     key={day.date}
                     className="flex items-center justify-between py-2 border-b last:border-0"
                   >
-                    <span className="text-sm text-slate-600 dark:text-slate-400">
+                    <span className="text-sm text-muted-foreground">
                       {formatDate(new Date(day.date))}
                     </span>
                     <div className="flex gap-4 text-sm">

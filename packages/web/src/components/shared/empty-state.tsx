@@ -23,7 +23,7 @@ export function NoResultsEmptyState({
 }) {
   return (
     <EmptyState
-      icon={<Search className="w-12 h-12" />}
+      icon={Search}
       title="No results found"
       description={
         searchQuery
@@ -45,7 +45,7 @@ export function NoDataEmptyState({
 }) {
   return (
     <EmptyState
-      icon={<Inbox className="w-12 h-12" />}
+      icon={Inbox}
       title={`No ${entityName} yet`}
       description={`Get started by creating your first ${entityName.toLowerCase()}.`}
       action={
@@ -65,7 +65,7 @@ export function NoDataEmptyState({
 export function ErrorEmptyState({ message, onRetry }: { message?: string; onRetry?: () => void }) {
   return (
     <EmptyState
-      icon={<AlertCircle className="w-12 h-12 text-red-500" />}
+      icon={AlertCircle}
       title="Unable to load data"
       description={message || "An error occurred while loading. Please try again."}
       action={

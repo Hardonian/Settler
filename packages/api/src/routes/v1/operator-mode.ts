@@ -72,7 +72,8 @@ router.get(
   requirePermission(Permission.ADMIN_READ),
   async (req: AuthRequest, res: Response) => {
     try {
-      const runId = req.params.run_id;
+      const runIdParam = req.params["run_id"];
+      const runId = Array.isArray(runIdParam) ? (runIdParam[0] ?? "") : (runIdParam ?? "");
       if (!runId) {
         res.status(400).json({
           replay_status: "failed",
@@ -352,7 +353,14 @@ router.get(
   requirePermission(Permission.ADMIN_READ),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { tenantId, usageType } = req.params;
+      const tenantIdParam = req.params["tenantId"];
+      const tenantId = Array.isArray(tenantIdParam)
+        ? (tenantIdParam[0] ?? "")
+        : (tenantIdParam ?? "");
+      const usageTypeParam = req.params["usageType"];
+      const usageType = Array.isArray(usageTypeParam)
+        ? (usageTypeParam[0] ?? "")
+        : (usageTypeParam ?? "");
 
       if (!tenantId || !usageType) {
         res.status(400).json({
@@ -480,7 +488,10 @@ router.post(
   enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { connectorType } = req.params;
+      const connectorTypeParam = req.params["connectorType"];
+      const connectorType = Array.isArray(connectorTypeParam)
+        ? (connectorTypeParam[0] ?? "")
+        : (connectorTypeParam ?? "");
       if (!connectorType) {
         res.status(400).json({
           error: "Bad Request",
@@ -517,8 +528,11 @@ router.post(
   enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { connectorType } = req.params;
-      if (!connectorType) {
+      const connectorTypeParam2 = req.params["connectorType"];
+      const connectorType2 = Array.isArray(connectorTypeParam2)
+        ? (connectorTypeParam2[0] ?? "")
+        : (connectorTypeParam2 ?? "");
+      if (!connectorType2) {
         res.status(400).json({
           error: "Bad Request",
           message: "connectorType is required",
@@ -526,10 +540,10 @@ router.post(
         return;
       }
 
-      await enableConnector(connectorType);
+      await enableConnector(connectorType2);
 
       res.json({
-        message: `Connector ${connectorType} enabled`,
+        message: `Connector ${connectorType2} enabled`,
       });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to enable connector", 500, {
@@ -545,7 +559,8 @@ router.post(
   enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { jobType } = req.params;
+      const jobTypeParam = req.params["jobType"];
+      const jobType = Array.isArray(jobTypeParam) ? (jobTypeParam[0] ?? "") : (jobTypeParam ?? "");
       if (!jobType) {
         res.status(400).json({
           error: "Bad Request",
@@ -582,8 +597,11 @@ router.post(
   enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { jobType } = req.params;
-      if (!jobType) {
+      const jobTypeParam2 = req.params["jobType"];
+      const jobType2 = Array.isArray(jobTypeParam2)
+        ? (jobTypeParam2[0] ?? "")
+        : (jobTypeParam2 ?? "");
+      if (!jobType2) {
         res.status(400).json({
           error: "Bad Request",
           message: "jobType is required",
@@ -591,10 +609,10 @@ router.post(
         return;
       }
 
-      await resumeBackgroundJob(jobType);
+      await resumeBackgroundJob(jobType2);
 
       res.json({
-        message: `Background job ${jobType} resumed`,
+        message: `Background job ${jobType2} resumed`,
       });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to resume background job", 500, {
@@ -634,7 +652,10 @@ router.post(
   enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { backupId } = req.params;
+      const backupIdParam = req.params["backupId"];
+      const backupId = Array.isArray(backupIdParam)
+        ? (backupIdParam[0] ?? "")
+        : (backupIdParam ?? "");
       if (!backupId) {
         res.status(400).json({
           error: "Bad Request",

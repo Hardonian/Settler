@@ -40,7 +40,7 @@ function getStatusTone(status: RecentRun["status"]) {
     case "pending":
       return "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300";
     default:
-      return "bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-300";
+      return "bg-muted text-muted-foreground";
   }
 }
 
@@ -135,7 +135,7 @@ export default function ReconciliationsPage() {
             evidence.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+        <CardContent className="space-y-3 text-sm text-muted-foreground">
           <p>
             Use Runs to monitor execution state, then open a completed run here to inspect outcomes.
           </p>
@@ -196,16 +196,11 @@ export default function ReconciliationsPage() {
                 const StatusIcon = getStatusIcon(run.status);
 
                 return (
-                  <div
-                    key={run.id}
-                    className="rounded-xl border border-slate-200 p-4 dark:border-slate-700"
-                  >
+                  <div key={run.id} className="rounded-xl border border-border p-4">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                       <div className="space-y-2">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-semibold text-slate-900 dark:text-white">
-                            {run.name}
-                          </h3>
+                          <h3 className="font-semibold text-foreground">{run.name}</h3>
                           <Badge className={getStatusTone(run.status)}>
                             <StatusIcon
                               className={`mr-1 h-3.5 w-3.5 ${
@@ -215,14 +210,14 @@ export default function ReconciliationsPage() {
                             {run.statusLabel || run.status}
                           </Badge>
                         </div>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">
+                        <p className="text-sm text-muted-foreground">
                           Started {new Date(run.startedAt).toLocaleString()}
                           {run.completedAt
                             ? ` • Completed ${new Date(run.completedAt).toLocaleString()}`
                             : ""}
                         </p>
                         {run.summary && (
-                          <p className="text-sm text-slate-600 dark:text-slate-400">
+                          <p className="text-sm text-muted-foreground">
                             {run.summary.matched} matched • {run.summary.unmatched} unmatched •{" "}
                             {run.summary.conflicts} conflicts
                           </p>

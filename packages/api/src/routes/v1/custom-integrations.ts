@@ -70,7 +70,10 @@ router.get("/", async (req: AuthRequest, res: Response) => {
 
 router.get("/:integrationId", async (req: AuthRequest, res: Response) => {
   try {
-    const { integrationId } = req.params;
+    const integrationIdParam = req.params["integrationId"];
+    const integrationId = Array.isArray(integrationIdParam)
+      ? (integrationIdParam[0] ?? "")
+      : (integrationIdParam ?? "");
     const tenantId = req.tenantId!;
 
     if (!integrationId) {
@@ -104,7 +107,10 @@ router.get("/:integrationId", async (req: AuthRequest, res: Response) => {
 
 router.patch("/:integrationId", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
-    const { integrationId } = req.params;
+    const integrationIdParam2 = req.params["integrationId"];
+    const integrationId = Array.isArray(integrationIdParam2)
+      ? (integrationIdParam2[0] ?? "")
+      : (integrationIdParam2 ?? "");
     const tenantId = req.tenantId!;
     const updates = req.body;
 

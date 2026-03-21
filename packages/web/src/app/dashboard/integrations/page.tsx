@@ -320,7 +320,7 @@ export default function IntegrationsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -338,10 +338,8 @@ export default function IntegrationsPage() {
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-6 md:space-y-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex-1">
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">
-            Integrations
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400 mt-1.5 text-sm md:text-base leading-relaxed max-w-2xl">
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Integrations</h1>
+          <p className="text-muted-foreground mt-1.5 text-sm md:text-base leading-relaxed max-w-2xl">
             Connect 20+ platforms in minutes. Pre-built adapters for payment processors, e-commerce
             platforms, accounting systems, bank feeds, and more.
           </p>
@@ -357,7 +355,7 @@ export default function IntegrationsPage() {
 
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search integrations..."
             value={searchQuery}
@@ -369,9 +367,7 @@ export default function IntegrationsPage() {
 
       {bankFeeds.length > 0 && (
         <div className="space-y-4 md:space-y-6">
-          <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-100">
-            Bank Feeds
-          </h2>
+          <h2 className="text-lg md:text-xl font-semibold text-foreground">Bank Feeds</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {bankFeeds.map((integration) => (
               <IntegrationCard
@@ -399,9 +395,7 @@ export default function IntegrationsPage() {
 
       {accounting.length > 0 && (
         <div className="space-y-4 md:space-y-6">
-          <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-100">
-            Accounting Systems
-          </h2>
+          <h2 className="text-lg md:text-xl font-semibold text-foreground">Accounting Systems</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {accounting.map((integration) => (
               <IntegrationCard
@@ -429,9 +423,7 @@ export default function IntegrationsPage() {
 
       {subscriptions.length > 0 && (
         <div className="space-y-4 md:space-y-6">
-          <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-100">
-            Subscription Billing
-          </h2>
+          <h2 className="text-lg md:text-xl font-semibold text-foreground">Subscription Billing</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {subscriptions.map((integration) => (
               <IntegrationCard
@@ -459,7 +451,7 @@ export default function IntegrationsPage() {
 
       {standard.length > 0 && (
         <div className="space-y-4 md:space-y-6">
-          <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-100">
+          <h2 className="text-lg md:text-xl font-semibold text-foreground">
             Standard Integrations
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
@@ -489,9 +481,7 @@ export default function IntegrationsPage() {
 
       {addOns.length > 0 && (
         <div className="space-y-4 md:space-y-6">
-          <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-100">
-            Premium Add-Ons
-          </h2>
+          <h2 className="text-lg md:text-xl font-semibold text-foreground">Premium Add-Ons</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {addOns.map((integration) => (
               <IntegrationCard
@@ -519,9 +509,7 @@ export default function IntegrationsPage() {
 
       {filteredIntegrations.length === 0 && (
         <div className="text-center py-12 md:py-16">
-          <p className="text-slate-500 dark:text-slate-400">
-            No integrations found matching your search.
-          </p>
+          <p className="text-muted-foreground">No integrations found matching your search.</p>
         </div>
       )}
     </div>

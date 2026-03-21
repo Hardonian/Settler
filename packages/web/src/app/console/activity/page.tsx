@@ -109,7 +109,7 @@ export default function ActivityPage() {
       case "pending":
         return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300";
       default:
-        return "bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300";
+        return "bg-muted text-muted-foreground";
     }
   };
 
@@ -117,16 +117,16 @@ export default function ActivityPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Activity Feed</h1>
-          <p className="text-slate-600 dark:text-slate-400 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Activity Feed</h1>
+          <p className="text-muted-foreground mt-1">
             Real-time updates on reconciliations, file uploads, webhooks, and billing.
-            <span className="text-xs text-slate-500 ml-2">
+            <span className="text-xs text-muted-foreground/70 ml-2">
               Auto-refreshes every 5 seconds when enabled.
             </span>
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+          <label className="flex items-center gap-2 text-sm text-muted-foreground">
             <input
               type="checkbox"
               checked={autoRefresh}
@@ -169,22 +169,20 @@ export default function ActivityPage() {
                 return (
                   <div
                     key={event.id}
-                    className="flex items-start gap-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                    className="flex items-start gap-4 p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
                   >
                     <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
                       <EventIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <p className="font-medium text-slate-900 dark:text-white">
-                          {event.message}
-                        </p>
+                        <p className="font-medium text-foreground">{event.message}</p>
                         <Badge className={getStatusColor(event.status)}>
                           <StatusIcon className="w-3 h-3 mr-1" />
                           {event.status}
                         </Badge>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <span>{formatTimeAgo(event.timestamp)}</span>
                         {event.metadata && (
                           <span className="text-xs">

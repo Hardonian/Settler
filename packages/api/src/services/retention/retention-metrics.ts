@@ -211,7 +211,7 @@ export class RetentionMetricsService {
       });
 
       return results.map((row) => ({
-        date: row.runDate.toISOString().split("T")[0],
+        date: row.runDate.toISOString().split("T")[0] ?? "",
         prunedArtifactCount: row._sum.prunedCount || 0,
         storageReclaimedBytes: Number(row._sum.storageBytes || 0n),
         violationsCount: row._sum.violations || 0,

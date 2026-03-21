@@ -1,22 +1,22 @@
 /**
  * Invite Acceptance Page
- * 
+ *
  * Allows users to accept workspace invites via token
  */
 
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Loader2, CheckCircle2, XCircle } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 
 export default function InviteAcceptancePage() {
   const params = useParams();
   const router = useRouter();
   const token = params.token as string;
-  
+
   const [loading, setLoading] = useState(true);
   const [accepting, setAccepting] = useState(false);
   const [invite, setInvite] = useState<{
@@ -39,11 +39,11 @@ export default function InviteAcceptancePage() {
         setInvite(data.invite);
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Invalid or expired invite');
+        setError(errorData.error || "Invalid or expired invite");
       }
     } catch (error) {
-      console.error('[Invite] Error loading invite:', error);
-      setError('Failed to load invite');
+      console.error("[Invite] Error loading invite:", error);
+      setError("Failed to load invite");
     } finally {
       setLoading(false);
     }
@@ -53,7 +53,7 @@ export default function InviteAcceptancePage() {
     setAccepting(true);
     try {
       const response = await fetch(`/api/invite/${token}`, {
-        method: 'POST',
+        method: "POST",
       });
 
       if (response.ok) {
@@ -64,11 +64,11 @@ export default function InviteAcceptancePage() {
         }, 2000);
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Failed to accept invite');
+        setError(errorData.error || "Failed to accept invite");
       }
     } catch (error) {
-      console.error('[Invite] Error accepting invite:', error);
-      setError('Failed to accept invite');
+      console.error("[Invite] Error accepting invite:", error);
+      setError("Failed to accept invite");
     } finally {
       setAccepting(false);
     }
@@ -84,7 +84,7 @@ export default function InviteAcceptancePage() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-900">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <Card className="max-w-md">
           <CardHeader>
             <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
@@ -93,8 +93,8 @@ export default function InviteAcceptancePage() {
             </div>
           </CardHeader>
           <CardContent>
-            <p className="text-slate-600 dark:text-slate-400 mb-4">{error}</p>
-            <Button onClick={() => router.push('/signup')} className="w-full">
+            <p className="text-muted-foreground mb-4">{error}</p>
+            <Button onClick={() => router.push("/signup")} className="w-full">
               Sign Up
             </Button>
           </CardContent>
@@ -105,7 +105,7 @@ export default function InviteAcceptancePage() {
 
   if (success) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-900">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <Card className="max-w-md">
           <CardHeader>
             <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
@@ -114,7 +114,7 @@ export default function InviteAcceptancePage() {
             </div>
           </CardHeader>
           <CardContent>
-            <p className="text-slate-600 dark:text-slate-400 mb-4">
+            <p className="text-muted-foreground mb-4">
               You've been added to {invite?.workspace.name}. Redirecting...
             </p>
           </CardContent>
@@ -124,54 +124,42 @@ export default function InviteAcceptancePage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="flex items-center justify-center min-h-screen bg-background">
       <Card className="max-w-md">
         <CardHeader>
           <CardTitle>Workspace Invitation</CardTitle>
-          <CardDescription>
-            You've been invited to join a workspace
-          </CardDescription>
+          <CardDescription>You've been invited to join a workspace</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {invite && (
             <>
-              <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Workspace</p>
-                <p className="font-semibold text-slate-900 dark:text-white">
-                  {invite.workspace.name}
-                </p>
+              <div className="p-4 bg-muted/50 rounded-lg">
+                <p className="text-sm text-muted-foreground mb-1">Workspace</p>
+                <p className="font-semibold text-foreground">{invite.workspace.name}</p>
               </div>
-              <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Role</p>
-                <p className="font-semibold text-slate-900 dark:text-white capitalize">
-                  {invite.role}
-                </p>
+              <div className="p-4 bg-muted/50 rounded-lg">
+                <p className="text-sm text-muted-foreground mb-1">Role</p>
+                <p className="font-semibold text-foreground capitalize">{invite.role}</p>
               </div>
-              <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Email</p>
-                <p className="font-semibold text-slate-900 dark:text-white">
-                  {invite.email}
-                </p>
+              <div className="p-4 bg-muted/50 rounded-lg">
+                <p className="text-sm text-muted-foreground mb-1">Email</p>
+                <p className="font-semibold text-foreground">{invite.email}</p>
               </div>
             </>
           )}
-          <Button
-            onClick={handleAccept}
-            disabled={accepting}
-            className="w-full"
-          >
+          <Button onClick={handleAccept} disabled={accepting} className="w-full">
             {accepting ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 Accepting...
               </>
             ) : (
-              'Accept Invitation'
+              "Accept Invitation"
             )}
           </Button>
           <Button
             variant="outline"
-            onClick={() => router.push('/')}
+            onClick={() => router.push("/")}
             className="w-full"
             disabled={accepting}
           >

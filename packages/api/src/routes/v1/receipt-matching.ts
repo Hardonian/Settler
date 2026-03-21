@@ -66,7 +66,10 @@ router.post("/match", enforceFreezeState(), async (req: AuthRequest, res: Respon
  */
 router.get("/matches/:reconciliationRunId", async (req: AuthRequest, res: Response) => {
   try {
-    const { reconciliationRunId } = req.params;
+    const reconciliationRunIdParam = req.params["reconciliationRunId"];
+    const reconciliationRunId = Array.isArray(reconciliationRunIdParam)
+      ? (reconciliationRunIdParam[0] ?? "")
+      : (reconciliationRunIdParam ?? "");
     const tenantId = req.tenantId!;
 
     if (!reconciliationRunId) {
@@ -102,7 +105,8 @@ router.post(
   enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { linkId } = req.params;
+      const linkIdParam = req.params["linkId"];
+      const linkId = Array.isArray(linkIdParam) ? (linkIdParam[0] ?? "") : (linkIdParam ?? "");
       const tenantId = req.tenantId!;
       const userId = req.userId!;
 

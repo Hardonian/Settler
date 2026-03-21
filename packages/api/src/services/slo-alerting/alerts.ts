@@ -84,7 +84,7 @@ export async function evaluateAndAlert(
               tenantId,
               metricType,
               "percentile_breach",
-              check.severity,
+              check.severity as AlertSeverity,
               `${percentileType} (${check.value.toFixed(0)}ms) ${check.severity === "critical" ? "critically exceeds" : "exceeds"} threshold (${rule.threshold}ms)`,
               check.value,
               rule.threshold,
@@ -134,13 +134,13 @@ async function createAlert(
 
   if (existingAlert.length > 0) {
     // Update existing alert instead of creating new one
-    const alertId = existingAlert[0].id as string;
+    const alertId = existingAlert[0]!.id as string;
 
     await query(
       `UPDATE slo_alerts 
        SET current_value = $1, updated_at = now()
        WHERE id = $2`,
-      [currentValue, alertId]
+      [currentValue ?? null, alertId]
     );
 
     return getAlertById(tenantId, alertId) as Promise<SLOAlert>;
@@ -261,7 +261,7 @@ export async function getAlertById(tenantId: string, alertId: string): Promise<S
     return null;
   }
 
-  return mapRowToAlert(results[0]);
+  return mapRowToAlert(results[0]!);
 }
 
 /**
@@ -279,7 +279,7 @@ export async function getActiveAlerts(
     FROM slo_alerts
     WHERE tenant_id = $1 AND status = 'firing'
   `;
-  const params: unknown[] = [tenantId];
+  const params: (string | number | boolean | null | Date | string[])[] = [tenantId];
 
   if (metricType) {
     queryStr += ` AND metric_type = $2`;
@@ -305,7 +305,7 @@ export async function getAlertHistory(
   } = {}
 ): Promise<SLOAlert[]> {
   const conditions: string[] = ["tenant_id = $1"];
-  const params: unknown[] = [tenantId];
+  const params: (string | number | boolean | null | Date | string[])[] = [tenantId];
   let paramIndex = 2;
 
   if (options.metricType) {

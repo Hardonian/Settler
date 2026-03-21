@@ -84,14 +84,8 @@ export class ExportJobWorker extends EventEmitter {
     this.workerId = workerId || `export-worker-${uuidv4()}`;
     this.config = { ...DEFAULT_WORKER_CONFIG, ...config };
 
-    // Create dedicated connection pool for worker
+    // Create dedicated connection pool for worker using global config
     this.pool = new Pool({
-      host: config?.pollIntervalMs ? undefined : config?.maxRetries ? undefined : undefined, // Use default
-      host: config.database?.host || config.database?.host,
-      port: config.database?.port || 5432,
-      database: config.database?.name || config.database?.name,
-      user: config.database?.user || config.database?.user,
-      password: config.database?.password || config.database?.password,
       max: this.config.maxConcurrentJobs + 2, // Jobs + heartbeat + poll
     });
 

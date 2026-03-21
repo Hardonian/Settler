@@ -247,7 +247,7 @@ export default function ApiKeysPage() {
               </div>
 
               <div className="pt-6 border-t border-primary/20">
-                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-semibold mb-6">
+                <p className="text-xs text-muted-foreground leading-relaxed font-semibold mb-6">
                   Protect your keys. They grant broad access to your reconciliation flows. Never
                   commit keys to source control.
                 </p>

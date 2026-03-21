@@ -41,7 +41,7 @@ export function trackAPILatency(req: Request, res: Response, next: NextFunction)
     }
 
     // Call original end
-    return originalEnd.apply(res, args);
+    return originalEnd.apply(res, args as [any, BufferEncoding, (() => void)?]);
   };
 
   next();

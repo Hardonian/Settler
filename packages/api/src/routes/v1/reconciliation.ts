@@ -362,7 +362,12 @@ router.get("/runs/:runId/workbench", async (req: AuthRequest, res: Response) => 
 
 router.get("/runs/:runId/compare/:otherRunId", async (req: AuthRequest, res: Response) => {
   try {
-    const { runId, otherRunId } = req.params;
+    const runIdParam = req.params["runId"];
+    const runId = Array.isArray(runIdParam) ? (runIdParam[0] ?? "") : (runIdParam ?? "");
+    const otherRunIdParam = req.params["otherRunId"];
+    const otherRunId = Array.isArray(otherRunIdParam)
+      ? (otherRunIdParam[0] ?? "")
+      : (otherRunIdParam ?? "");
     const tenantId = req.tenantId!;
 
     const fetchRunItems = async (targetRunId: string) => {

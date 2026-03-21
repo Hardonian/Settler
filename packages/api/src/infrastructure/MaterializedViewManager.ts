@@ -202,7 +202,8 @@ export async function getViewStatus(
       };
     }
 
-    const lastRefreshed = result[0].lastrefresh ? new Date(result[0].lastrefresh) : null;
+    const row0 = result[0]!;
+    const lastRefreshed = row0.lastrefresh ? new Date(row0.lastrefresh) : null;
 
     let staleness: "fresh" | "stale" | "unknown" = "unknown";
     if (lastRefreshed) {
@@ -213,7 +214,7 @@ export async function getViewStatus(
     return {
       viewName,
       exists: true,
-      rowCount: parseInt(result[0].rowcount || "0"),
+      rowCount: parseInt(row0.rowcount || "0"),
       lastRefreshedAt: lastRefreshed,
       staleness,
     };

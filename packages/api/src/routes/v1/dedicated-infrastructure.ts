@@ -79,7 +79,10 @@ router.get("/", async (req: AuthRequest, res: Response) => {
 
 router.get("/:infrastructureId", async (req: AuthRequest, res: Response) => {
   try {
-    const { infrastructureId } = req.params;
+    const infrastructureIdParam = req.params["infrastructureId"];
+    const infrastructureId = Array.isArray(infrastructureIdParam)
+      ? (infrastructureIdParam[0] ?? "")
+      : (infrastructureIdParam ?? "");
     const tenantId = req.tenantId!;
 
     if (!infrastructureId) {
@@ -116,7 +119,10 @@ router.delete(
   enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { infrastructureId } = req.params;
+      const infrastructureIdParam2 = req.params["infrastructureId"];
+      const infrastructureId = Array.isArray(infrastructureIdParam2)
+        ? (infrastructureIdParam2[0] ?? "")
+        : (infrastructureIdParam2 ?? "");
       const tenantId = req.tenantId!;
 
       if (!infrastructureId) {

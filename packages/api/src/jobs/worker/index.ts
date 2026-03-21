@@ -29,23 +29,24 @@ function parseArgs(): WorkerArgs {
   const args: WorkerArgs = {};
 
   process.argv.forEach((arg, index) => {
-    if (arg === "--worker-id" && process.argv[index + 1]) {
-      args.workerId = process.argv[index + 1];
+    const nextArg = process.argv[index + 1];
+    if (arg === "--worker-id" && nextArg) {
+      args.workerId = nextArg;
     }
-    if (arg === "--poll-interval" && process.argv[index + 1]) {
-      args.pollIntervalMs = parseInt(process.argv[index + 1], 10);
+    if (arg === "--poll-interval" && nextArg) {
+      args.pollIntervalMs = parseInt(nextArg, 10);
     }
-    if (arg === "--max-concurrent" && process.argv[index + 1]) {
-      args.maxConcurrentJobs = parseInt(process.argv[index + 1], 10);
+    if (arg === "--max-concurrent" && nextArg) {
+      args.maxConcurrentJobs = parseInt(nextArg, 10);
     }
-    if (arg === "--lock-timeout" && process.argv[index + 1]) {
-      args.lockTimeoutMs = parseInt(process.argv[index + 1], 10);
+    if (arg === "--lock-timeout" && nextArg) {
+      args.lockTimeoutMs = parseInt(nextArg, 10);
     }
-    if (arg === "--heartbeat-interval" && process.argv[index + 1]) {
-      args.heartbeatIntervalMs = parseInt(process.argv[index + 1], 10);
+    if (arg === "--heartbeat-interval" && nextArg) {
+      args.heartbeatIntervalMs = parseInt(nextArg, 10);
     }
-    if (arg === "--max-retries" && process.argv[index + 1]) {
-      args.maxRetries = parseInt(process.argv[index + 1], 10);
+    if (arg === "--max-retries" && nextArg) {
+      args.maxRetries = parseInt(nextArg, 10);
     }
   });
 
@@ -87,7 +88,7 @@ async function main(): Promise<void> {
   // Log stats periodically
   setInterval(() => {
     const stats = worker.getStats();
-    logInfo("Worker stats", stats);
+    logInfo("Worker stats", stats as unknown as Record<string, unknown>);
   }, 30000);
 
   // Handle graceful shutdown

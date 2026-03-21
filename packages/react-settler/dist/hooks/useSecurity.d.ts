@@ -7,7 +7,7 @@ export declare function setAuditLogHandler(handler: (entry: AuditLogEntry) => vo
  * useSecurity Hook
  */
 export declare function useSecurity(): {
-    securityContext: any;
+    securityContext: import("@settler/protocol").SecurityContext | undefined;
     auditLog: (event: AuditEvent, action: string, result: "success" | "failure" | "warning", metadata?: Record<string, unknown>) => void;
     hasPermission: (permission: string) => boolean;
     hasRole: (role: string) => boolean;
