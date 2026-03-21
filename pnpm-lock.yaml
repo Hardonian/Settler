@@ -166,6 +166,9 @@ importers:
       '@settler/edge-ai-core':
         specifier: workspace:*
         version: link:../edge-ai-core
+      '@settler/reconciliation-core':
+        specifier: workspace:*
+        version: link:../reconciliation-core
       '@settler/sdk':
         specifier: workspace:*
         version: link:../sdk
@@ -647,6 +650,34 @@ importers:
         specifier: ^5.3.3
         version: 5.9.3
 
+  packages/reconciliation-core:
+    dependencies:
+      '@prisma/client':
+        specifier: ^7.1.0
+        version: 7.5.0(prisma@7.5.0(@types/react@18.3.28)(better-sqlite3@12.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(typescript@5.9.3)
+      '@settler/types':
+        specifier: workspace:*
+        version: link:../types
+      zod:
+        specifier: ^3.22.4
+        version: 3.25.76
+    devDependencies:
+      '@types/jest':
+        specifier: ^29.5.11
+        version: 29.5.14
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.12.0
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@24.12.0)
+      ts-jest:
+        specifier: ^29.4.6
+        version: 29.4.6(@babel/core@7.29.0)(@jest/transform@29.7.0)(@jest/types@30.3.0)(babel-jest@29.7.0(@babel/core@7.29.0))(jest-util@30.3.0)(jest@29.7.0(@types/node@24.12.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
+
   packages/sdk:
     dependencies:
       '@types/node':
@@ -747,6 +778,9 @@ importers:
       '@settler/react-settler':
         specifier: workspace:*
         version: link:../react-settler
+      '@settler/reconciliation-core':
+        specifier: workspace:*
+        version: link:../reconciliation-core
       '@settler/sdk':
         specifier: workspace:*
         version: link:../sdk

@@ -46,6 +46,7 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@sentry/nextjs": "^7.91.0",
     "@settler/api": "workspace:*",
+    "@settler/reconciliation-core": "workspace:*",
     "@settler/protocol": "workspace:*",
     "@settler/react-settler": "workspace:*",
     "@settler/sdk": "workspace:*",

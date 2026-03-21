@@ -22,6 +22,13 @@ import { z } from "zod";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
 import { withSecurity } from "@/lib/middleware/api-security";
+import type { CanonicalReconciliationListItem } from "@settler/reconciliation-core";
+import {
+  decodeMergedRunsCursor,
+  encodeMergedRunsCursor,
+  fetchMergedReconciliationRunsPage,
+  MergedRunsCursorError,
+} from "@settler/reconciliation-core";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -195,80 +202,89 @@ export const GET = withSecurity(
           });
         }
 
-        // List reconciliation jobs for this tenant with their latest result
-        const cursor = request.nextUrl.searchParams.get("cursor") ?? undefined;
+        const cursorParam = request.nextUrl.searchParams.get("cursor") ?? undefined;
         const limit = Math.min(Number(request.nextUrl.searchParams.get("limit") || 50), 500);
+        const runKindRaw = request.nextUrl.searchParams.get("run_kind") ?? "recon_job";
+        const runKind =
+          runKindRaw === "all" || runKindRaw === "recon_job" || runKindRaw === "ingestion_run"
+            ? runKindRaw
+            : "recon_job";
 
-        const jobs = await prisma.reconJob.findMany({
-          where: { tenantId, deletedAt: null },
-          orderBy: { createdAt: "desc" },
-          take: limit,
-          ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-          select: {
-            id: true,
-            name: true,
-            status: true,
-            sourceAdapter: true,
-            targetAdapter: true,
-            createdAt: true,
-            updatedAt: true,
-            results: {
-              orderBy: { startedAt: "desc" },
-              take: 1,
-              select: {
-                id: true,
-                status: true,
-                startedAt: true,
-                completedAt: true,
-                sourceCount: true,
-                targetCount: true,
-                matchedCount: true,
-                unmatchedSourceCount: true,
-                unmatchedTargetCount: true,
-                conflictCount: true,
-                errorMessage: true,
+        let cursorState = null;
+        if (cursorParam) {
+          try {
+            cursorState = decodeMergedRunsCursor(cursorParam);
+          } catch (e) {
+            return NextResponse.json(
+              {
+                error: "Invalid cursor",
+                code: "RECONCILIATION_CURSOR_INVALID",
+                detail: e instanceof MergedRunsCursorError ? e.message : "Invalid cursor",
               },
-            },
-          },
+              { status: 400 }
+            );
+          }
+        }
+
+        const page = await fetchMergedReconciliationRunsPage({
+          prisma,
+          tenantId,
+          limit,
+          cursorState,
+          runKind,
+          encodeCursor: encodeMergedRunsCursor,
         });
 
-        const reconciliations = jobs.map((job: (typeof jobs)[number]) => {
-          const latest = job.results[0] ?? null;
-          return {
-            id: job.id,
-            name: job.name,
-            status: job.status,
-            sourceAdapter: job.sourceAdapter,
-            targetAdapter: job.targetAdapter,
-            createdAt: job.createdAt.toISOString(),
-            updatedAt: job.updatedAt.toISOString(),
-            latestResult: latest
-              ? {
-                  id: latest.id,
-                  status: latest.status,
-                  startedAt: latest.startedAt.toISOString(),
-                  completedAt: latest.completedAt?.toISOString() ?? null,
-                  counts: {
-                    source: latest.sourceCount,
-                    target: latest.targetCount,
-                    matched: latest.matchedCount,
-                    unmatchedSource: latest.unmatchedSourceCount,
-                    unmatchedTarget: latest.unmatchedTargetCount,
-                    conflicts: latest.conflictCount,
-                  },
-                  errorMessage: latest.errorMessage ?? null,
-                }
-              : null,
-          };
+        const toLegacyReconciliation = (r: CanonicalReconciliationListItem) => ({
+          id: r.id,
+          name: r.name,
+          status: r.lifecycle.status,
+          sourceAdapter: r.adapters.sourceAdapter ?? "",
+          targetAdapter: r.adapters.targetAdapter ?? "",
+          createdAt: r.timestamps.createdAt,
+          updatedAt: r.timestamps.updatedAt,
+          latestResult: r.reconResultId
+            ? {
+                id: r.reconResultId,
+                status: r.lifecycle.status,
+                startedAt: r.timestamps.startedAt ?? r.timestamps.createdAt,
+                completedAt: r.timestamps.completedAt,
+                counts: {
+                  source: r.summary.sourceCount,
+                  target: r.summary.targetCount,
+                  matched: r.summary.matched,
+                  unmatchedSource: r.summary.unmatchedSourceCount,
+                  unmatchedTarget: r.summary.unmatchedTargetCount,
+                  conflicts: r.summary.conflicts,
+                },
+                errorMessage: null,
+              }
+            : null,
         });
 
-        return NextResponse.json(
-          {
-            reconciliations,
-            next_cursor: jobs.length === limit ? (jobs[jobs.length - 1]?.id ?? null) : null,
+        const reconciliations =
+          runKind === "ingestion_run"
+            ? []
+            : page.runs.filter((r) => r.runKind === "recon_job").map(toLegacyReconciliation);
+
+        const body: Record<string, unknown> = {
+          contract_version: 1,
+          next_cursor: page.next_cursor,
+          pagination: page.pagination,
+          response_meta: {
+            ...page.response_meta,
+            default_run_kind: "recon_job",
+            requested_run_kind: runKind,
           },
-          { status: 200 }
-        );
+        };
+
+        if (runKind === "all") {
+          body.runs = page.runs;
+        }
+
+        body.reconciliations = reconciliations;
+
+        return NextResponse.json(body, { status: 200 });
       } catch (error) {
         if (error instanceof TenantMembershipError) {
           return NextResponse.json(

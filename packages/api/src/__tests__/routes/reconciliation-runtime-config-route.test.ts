@@ -12,6 +12,39 @@ jest.mock("../../services/ingestion/reconciliation-matcher", () => ({
   runReconciliation: (...args: unknown[]) => runReconciliationMock(...args),
 }));
 
+jest.mock("../../infrastructure/db/prisma", () => ({
+  prisma: {},
+}));
+
+jest.mock("@settler/reconciliation-core", () => ({
+  decodeMergedRunsCursor: jest.fn(() => null),
+  encodeMergedRunsCursor: jest.fn((s: unknown) =>
+    Buffer.from(JSON.stringify(s), "utf8").toString("base64url")
+  ),
+  fetchMergedReconciliationRunsPage: jest.fn(async () => ({
+    runs: [],
+    next_cursor: null,
+    pagination: {
+      limit: 50,
+      returned: 0,
+      has_more: false,
+      job_stream_has_more: false,
+      ingestion_stream_has_more: false,
+      job_stream_exhausted: true,
+      ingestion_stream_exhausted: true,
+    },
+    response_meta: {
+      contract_version: 1,
+      included_run_kinds: ["recon_job", "ingestion_run"],
+      ordering: "test",
+      consistency: "read_committed",
+    },
+  })),
+  MergedRunsCursorError: class MergedRunsCursorError extends Error {},
+  resolveReconciliationRunForTenant: jest.fn(async () => ({ kind: "not_found" })),
+  serializeV1ReconciliationRunDetail: jest.fn(() => ({ contract_version: 1 })),
+}));
+
 jest.mock("../../utils/logger", () => ({
   logError: jest.fn(),
   logInfo: jest.fn(),
@@ -103,4 +136,3 @@ describe("reconciliation runtime config route", () => {
     expect(runReconciliationMock).not.toHaveBeenCalled();
   });
 });
-
