@@ -362,7 +362,20 @@
       "glob": "^10.5.0",
       "minimatch": ">=10.2.1",
       "eslint": "^9.26.0"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp",
+      "bcrypt",
+      "better-sqlite3",
+      "prisma",
+      "@prisma/engines",
+      "@prisma/client",
+      "protobufjs",
+      "isolated-vm",
+      "msgpackr-extract",
+      "unrs-resolver"
+    ]
   },
   "dependencies": {
     "turbo": "^2.6.2"
