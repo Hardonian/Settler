@@ -10,6 +10,7 @@ import request from "supertest";
 import express from "express";
 import approvalsRouter from "../v1/approvals";
 import { query } from "../../db";
+import { clearGovernanceCache } from "../../utils/governance-cache";
 
 // Mock dependencies
 jest.mock("../../db");
@@ -36,6 +37,7 @@ describe("Approvals Freeze Protection", () => {
   };
 
   beforeEach(() => {
+    clearGovernanceCache();
     app = express();
     app.use(express.json());
 

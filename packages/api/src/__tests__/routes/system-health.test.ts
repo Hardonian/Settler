@@ -2,16 +2,15 @@
  * System Health Route Tests
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
 import request from "supertest";
 import express, { Express } from "express";
 import { systemHealthRouter } from "../../routes/v1/system-health";
 import { authMiddleware } from "../../middleware/auth";
 
 // Mock the HealthCheckService
-vi.mock("../../infrastructure/observability/health", () => ({
-  HealthCheckService: vi.fn().mockImplementation(() => ({
-    checkAll: vi.fn().mockResolvedValue({
+jest.mock("../../infrastructure/observability/health", () => ({
+  HealthCheckService: jest.fn().mockImplementation(() => ({
+    checkAll: jest.fn().mockResolvedValue({
       status: "healthy",
       checks: {
         database: { status: "healthy", latency: 5, timestamp: new Date().toISOString() },
@@ -27,7 +26,7 @@ vi.mock("../../infrastructure/observability/health", () => ({
 }));
 
 // Mock auth middleware
-vi.mock("../../middleware/auth", () => ({
+jest.mock("../../middleware/auth", () => ({
   authMiddleware: (req: any, _res: any, next: any) => {
     req.userId = "test-user-id";
     req.tenantId = "test-tenant-id";
@@ -36,7 +35,7 @@ vi.mock("../../middleware/auth", () => ({
 }));
 
 // Mock authorization
-vi.mock("../../middleware/authorization", () => ({
+jest.mock("../../middleware/authorization", () => ({
   requirePermission: () => (_req: any, _res: any, next: any) => next(),
 }));
 

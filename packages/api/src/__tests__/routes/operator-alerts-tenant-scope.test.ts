@@ -8,6 +8,11 @@ jest.mock("../../middleware/authorization", () => ({
   requirePermission: () => (_req: unknown, _res: unknown, next: () => void) => next(),
 }));
 
+jest.mock("../../middleware/governance", () => ({
+  enforceFreezeState: () => (_req: unknown, _res: unknown, next: () => void) => next(),
+  bypassFreeze: (_req: unknown, _res: unknown, next: () => void) => next(),
+}));
+
 jest.mock("../../services/capabilities/registry", () => ({
   getAlertRoutingProvider: () => ({
     checkThresholds,

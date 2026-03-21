@@ -232,7 +232,7 @@ export const GET = withSecurity(
           },
         });
 
-        const reconciliations = jobs.map((job) => {
+        const reconciliations = jobs.map((job: (typeof jobs)[number]) => {
           const latest = job.results[0] ?? null;
           return {
             id: job.id,
@@ -265,8 +265,7 @@ export const GET = withSecurity(
         return NextResponse.json(
           {
             reconciliations,
-            next_cursor:
-              jobs.length === limit ? (jobs[jobs.length - 1]?.id ?? null) : null,
+            next_cursor: jobs.length === limit ? (jobs[jobs.length - 1]?.id ?? null) : null,
           },
           { status: 200 }
         );

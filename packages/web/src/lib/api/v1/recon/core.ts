@@ -228,7 +228,10 @@ export async function getIdempotent(tenantId: string, key: string, body: unknown
 
   if (redis) {
     try {
-      const stored = await redis.get<{ hash: string; response: Record<string, unknown> }>(redisKey);
+      const stored = (await redis.get(redisKey)) as {
+        hash: string;
+        response: Record<string, unknown>;
+      } | null;
       if (!stored) return { reqHash, replay: null };
       if (stored.hash !== reqHash) return { reqHash, conflict: true };
       return { reqHash, replay: stored.response };
@@ -273,7 +276,7 @@ export async function listDatasets(tenantId: string): Promise<DatasetEntry[]> {
 
   if (redis) {
     try {
-      const stored = await redis.get<DatasetEntry[]>(redisKey);
+      const stored = (await redis.get(redisKey)) as DatasetEntry[] | null;
       return stored ?? [];
     } catch {
       // Fall through to in-memory fallback
@@ -299,7 +302,7 @@ export async function addDataset(
 
   if (redis) {
     try {
-      const current = (await redis.get<DatasetEntry[]>(redisKey)) ?? [];
+      const current = ((await redis.get(redisKey)) as DatasetEntry[] | null) ?? [];
       current.unshift(entry);
       await redis.set(redisKey, current, { ex: DATASET_TTL_SEC });
       return entry;
@@ -470,5 +473,12 @@ export function fail(error: unknown, request: NextRequest, requestId: string) {
     );
   }
   const message = error instanceof Error ? error.message : "Unhandled API error";
-  return problem(500, "SETTLER_INTERNAL", "Internal error", message, requestId, request.nextUrl.pathname);
+  return problem(
+    500,
+    "SETTLER_INTERNAL",
+    "Internal error",
+    message,
+    requestId,
+    request.nextUrl.pathname
+  );
 }

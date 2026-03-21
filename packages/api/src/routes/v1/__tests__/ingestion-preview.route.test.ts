@@ -12,6 +12,11 @@ jest.mock("../../../middleware/usage-enforcement", () => ({
   checkIngestionLimit: () => (_req: unknown, _res: unknown, next: () => void) => next(),
 }));
 
+jest.mock("../../../middleware/governance", () => ({
+  enforceFreezeState: () => (_req: unknown, _res: unknown, next: () => void) => next(),
+  bypassFreeze: (_req: unknown, _res: unknown, next: () => void) => next(),
+}));
+
 jest.mock("../../../services/operator-mode/kill-switches", () => ({
   isConnectorDisabled: jest.fn().mockResolvedValue(false),
   isBackgroundJobPaused: jest.fn().mockResolvedValue(false),
@@ -145,5 +150,4 @@ describe("ingestion preview route", () => {
     expect(mockQuery.mock.calls[0]?.[1]).toEqual(["ing-retry", "tenant-retry"]);
     expect(response.body.mode).toBe("dry_run");
   });
-
 });

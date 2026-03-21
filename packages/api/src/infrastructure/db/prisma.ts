@@ -12,6 +12,10 @@ const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
  */
 const prismaOptions: any = {
   log: config.nodeEnv === "development" ? ["query", "error", "warn"] : ["error"],
+  // Prisma 7 "client" engine requires an adapter or accelerateUrl.
+  // In test environments we provide a stub so the constructor doesn't throw —
+  // tests that exercise DB operations must mock prisma themselves.
+  ...(config.nodeEnv === "test" && { accelerateUrl: "prisma://localhost/?api_key=test" }),
 };
 
 export const prisma = globalForPrisma.prisma || new PrismaClient(prismaOptions);
