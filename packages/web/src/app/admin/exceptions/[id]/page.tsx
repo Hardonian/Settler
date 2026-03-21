@@ -20,23 +20,9 @@ export default function ExceptionDetailPage({ params }: { params: { id: string }
   const { data: exceptionsData } = useAdminExceptions({ limit: 1000 });
   const exception = exceptionsData?.items?.find((ex: { id: string }) => ex.id === id);
 
-  // Mock AI recommendation (would come from API in real implementation)
-  const aiRecommendation: AIRecommendation | null = exception
-    ? {
-        type: "mismatch",
-        confidence: 0.85,
-        explanation:
-          "Amount mismatch detected between source and target transactions. The difference suggests a potential fee or tax adjustment.",
-        signals: [
-          { name: "Amount Difference", value: "$5.00", weight: 0.9 },
-          { name: "Date Proximity", value: "1 day", weight: 0.7 },
-          { name: "Source Pattern", value: "Stripe", weight: 0.6 },
-        ],
-        deterministicBaseline: "Match rejected due to amount mismatch. Manual review required.",
-        aiEnhancement: "Likely a processing fee. Consider matching with fee adjustment.",
-        suggestedAction: "Create adjustment entry for $5.00 fee and match transactions.",
-      }
-    : null;
+  // AI recommendations require the AI analysis pipeline to be configured.
+  // When available, these would come from /api/ai/data-insights.
+  const aiRecommendation: AIRecommendation | null = null;
 
   if (!exception) {
     return (
@@ -108,15 +94,11 @@ export default function ExceptionDetailPage({ params }: { params: { id: string }
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-muted-foreground">Source:</span>
-              <span className="ml-2 font-medium text-foreground">
-                {exception.source}
-              </span>
+              <span className="ml-2 font-medium text-foreground">{exception.source}</span>
             </div>
             <div>
               <span className="text-muted-foreground">Status:</span>
-              <span className="ml-2 font-medium text-foreground">
-                {exception.status}
-              </span>
+              <span className="ml-2 font-medium text-foreground">{exception.status}</span>
             </div>
             <div>
               <span className="text-muted-foreground">Created:</span>
@@ -127,18 +109,14 @@ export default function ExceptionDetailPage({ params }: { params: { id: string }
             {exception.ruleId && (
               <div>
                 <span className="text-muted-foreground">Rule ID:</span>
-                <span className="ml-2 font-mono text-xs text-foreground">
-                  {exception.ruleId}
-                </span>
+                <span className="ml-2 font-mono text-xs text-foreground">{exception.ruleId}</span>
               </div>
             )}
           </div>
 
           {exception.evidence && (
             <div>
-              <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                Evidence
-              </h3>
+              <h3 className="text-sm font-medium text-muted-foreground mb-2">Evidence</h3>
               <pre className="text-xs bg-muted/40 p-3 rounded overflow-auto">
                 {JSON.stringify(exception.evidence, null, 2)}
               </pre>

@@ -64,6 +64,12 @@ export const GET = withSecurity(
           return NextResponse.json({ error: "Table name required" }, { status: 400 });
         }
 
+        // Defense-in-depth: validate table and schema names to prevent injection
+        const identifierPattern = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+        if (!identifierPattern.test(table) || !identifierPattern.test(schema)) {
+          return NextResponse.json({ error: "Invalid table or schema name" }, { status: 400 });
+        }
+
         const tableName = `${schema}.${table}`;
 
         // Get single record by ID

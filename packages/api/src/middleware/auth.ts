@@ -202,11 +202,16 @@ async function validateApiKey(req: AuthRequest, apiKey: string): Promise<void> {
   req.userId = keyRecord.user_id;
   req.tenantId = keyRecord.tenant_id;
   req.apiKeyId = keyRecord.id;
-  req.apiKey = apiKey;
+  // Do not store the raw API key on the request object to prevent accidental logging.
+  // req.apiKeyId is sufficient for downstream authorization and audit purposes.
 }
 
 async function validateJWT(req: AuthRequest, token: string): Promise<void> {
-  if (!config.jwt.secret || config.jwt.secret === "your-secret-key-change-in-production") {
+  if (
+    !config.jwt.secret ||
+    config.jwt.secret === "your-secret-key-change-in-production" ||
+    config.jwt.secret === "dev-secret-change-in-production"
+  ) {
     throw new Error("JWT authentication not configured");
   }
 

@@ -1,7 +1,8 @@
 /**
  * Performance Monitoring API
  *
- * Provides performance metrics and monitoring data for system health.
+ * Returns real performance metrics where available,
+ * and explicitly marks unavailable metrics as such.
  */
 
 // ROUTE_CLASS: admin-internal
@@ -15,41 +16,15 @@ import { withSecurity } from "@/lib/middleware/api-security";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-interface PerformanceMetrics {
-  api: {
-    averageResponseTime: number;
-    p95ResponseTime: number;
-    p99ResponseTime: number;
-    errorRate: number;
-    requestRate: number;
-  };
-  database: {
-    connectionPoolUsage: number;
-    averageQueryTime: number;
-    slowQueries: number;
-  };
-  cache: {
-    hitRate: number;
-    missRate: number;
-    evictionRate: number;
-  };
-  system: {
-    uptime: number;
-    memoryUsage: number;
-    cpuUsage: number;
-  };
-}
-
 export const GET = withSecurity(
   async function GET(_request: NextRequest) {
     try {
-      // Get API metrics (from usage_events or logs)
-      // Note: Simplified implementation - in production, use proper metrics collection
+      // Count recent API usage events (real data)
       const recentUsage = await prisma.usageEvent
         .findMany({
           where: {
             timestamp: {
-              gte: new Date(Date.now() - 24 * 60 * 60 * 1000), // Last 24 hours
+              gte: new Date(Date.now() - 24 * 60 * 60 * 1000),
             },
             eventType: "api_call",
           },
@@ -58,50 +33,39 @@ export const GET = withSecurity(
           },
           take: 1000,
         })
-        .catch(() => {
-          // If table doesn't exist or query fails, return empty array
-          return [];
-        });
+        .catch(() => []);
 
-      // Calculate API metrics (simplified - in production, use proper metrics collection)
-      const apiMetrics = {
-        averageResponseTime: 85, // ms (placeholder - should come from metrics)
-        p95ResponseTime: 180, // ms
-        p99ResponseTime: 350, // ms
-        errorRate: 0.5, // %
-        requestRate: recentUsage.length / 24, // requests per hour
-      };
-
-      // Database metrics (simplified)
+      // Measure real DB latency
       const dbStartTime = Date.now();
       await prisma.$queryRaw`SELECT 1`;
       const dbQueryTime = Date.now() - dbStartTime;
 
-      const databaseMetrics = {
-        connectionPoolUsage: 45, // % (placeholder)
-        averageQueryTime: dbQueryTime, // ms
-        slowQueries: 0, // count (placeholder)
-      };
+      // Real system metrics from Node.js runtime
+      const mem = process.memoryUsage();
 
-      // Cache metrics (simplified - would come from Redis)
-      const cacheMetrics = {
-        hitRate: 82, // % (placeholder)
-        missRate: 18, // %
-        evictionRate: 2, // % (placeholder)
-      };
-
-      // System metrics (simplified - would come from infrastructure monitoring)
-      const systemMetrics = {
-        uptime: process.uptime(), // seconds
-        memoryUsage: process.memoryUsage().heapUsed / 1024 / 1024, // MB
-        cpuUsage: 0, // % (would need system monitoring)
-      };
-
-      const metrics: PerformanceMetrics = {
-        api: apiMetrics,
-        database: databaseMetrics,
-        cache: cacheMetrics,
-        system: systemMetrics,
+      const metrics = {
+        api: {
+          requestsLast24h: recentUsage.length,
+          requestRate: Math.round((recentUsage.length / 24) * 100) / 100,
+          // Response time percentiles require APM integration (Sentry/OTLP)
+          responseTimePercentilesAvailable: false,
+        },
+        database: {
+          latencyMs: dbQueryTime,
+          // Connection pool and slow query metrics require pg_stat instrumentation
+          poolMetricsAvailable: false,
+        },
+        system: {
+          uptimeSeconds: Math.round(process.uptime()),
+          heapUsedMB: Math.round(mem.heapUsed / 1024 / 1024),
+          heapTotalMB: Math.round(mem.heapTotal / 1024 / 1024),
+          rssMB: Math.round(mem.rss / 1024 / 1024),
+        },
+        cache: {
+          // Cache metrics require Redis INFO integration
+          available: false,
+          message: "Connect Redis and enable METRICS_ENABLED to surface cache hit/miss rates.",
+        },
       };
 
       return NextResponse.json({
@@ -118,10 +82,9 @@ export const GET = withSecurity(
         {
           status: "error",
           error: "Failed to retrieve performance metrics",
-          message: "Unable to retrieve performance metrics. Please try again later.",
           retryable: true,
         },
-        { status: 200 }
+        { status: 503 }
       );
     }
   },

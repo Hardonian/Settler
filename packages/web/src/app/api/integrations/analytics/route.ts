@@ -3,9 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
 import { withSecurity } from "@/lib/middleware/api-security";
+import { prisma } from "@/shared/db/prismaClient";
 
 export const dynamic = "force-dynamic";
-export const runtime = "nodejs"; // Ensure Node.js runtime for Supabase
+export const runtime = "nodejs";
 
 export const GET = withSecurity(
   withUniversalBillingGate(
@@ -16,68 +17,37 @@ export const GET = withSecurity(
           data: { user },
         } = await supabase.auth.getUser();
 
-        // Check admin access (in production, use proper admin check)
         if (!user) {
           return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        // const searchParams = request.nextUrl.searchParams;
-        // const _range = searchParams.get("range") || "30d";
+        // Query real add-on purchase counts grouped by integration
+        const addOnPurchases = await prisma.addOnPurchase
+          .groupBy({
+            by: ["addOnId"],
+            _count: { id: true },
+            where: { status: "active" },
+          })
+          .catch(() => []);
 
-        // Mock revenue data (in production, calculate from actual subscription/addon data)
-        const revenue: Array<{
-          integrationId: string;
-          name: string;
-          totalRevenue: number;
-          monthlyRecurringRevenue: number;
-          customerCount: number;
-          averageRevenuePerUser: number;
-          growthRate: number;
-        }> = [
-          {
-            integrationId: "stripe",
-            name: "Stripe",
-            totalRevenue: 125000,
-            monthlyRecurringRevenue: 15000,
-            customerCount: 450,
-            averageRevenuePerUser: 33.33,
-            growthRate: 12.5,
-          },
-          {
-            integrationId: "shopify",
-            name: "Shopify",
-            totalRevenue: 98000,
-            monthlyRecurringRevenue: 12000,
-            customerCount: 380,
-            averageRevenuePerUser: 31.58,
-            growthRate: 8.3,
-          },
-          {
-            integrationId: "paypal",
-            name: "PayPal",
-            totalRevenue: 75000,
-            monthlyRecurringRevenue: 9000,
-            customerCount: 320,
-            averageRevenuePerUser: 28.13,
-            growthRate: 15.2,
-          },
-          {
-            integrationId: "tiktok-shop",
-            name: "TikTok Shop",
-            totalRevenue: 45000,
-            monthlyRecurringRevenue: 5500,
-            customerCount: 180,
-            averageRevenuePerUser: 30.56,
-            growthRate: 25.0,
-          },
-        ];
+        // Map real add-on data to integration analytics
+        const revenue = addOnPurchases.map(
+          (purchase: { addOnId: string; _count: { id: number } }) => ({
+            integrationId: purchase.addOnId,
+            customerCount: purchase._count.id,
+          })
+        );
 
-        return NextResponse.json({ revenue });
+        return NextResponse.json({
+          revenue,
+          dataSource: "live",
+          message:
+            revenue.length === 0 ? "No active integration add-on purchases found." : undefined,
+        });
       } catch (error) {
         appLogger.error("Error in integrations/analytics GET", error);
         return NextResponse.json(
           {
-            // Standardized error format: { error: string, code?: string, details?: unknown }
             error: "Failed to fetch integration analytics",
             code: "INTEGRATION_ANALYTICS_ERROR",
             details: error instanceof Error ? error.message : undefined,

@@ -47,17 +47,34 @@ const workflows = [
 export default async function AppPage() {
   const stats = await getDashboardStats();
 
-  // Mock health state that feels real (consistent with /api/status logic)
-  const healthData: any = {
-    status: "healthy",
-    checks: {
-      database: { status: "healthy", latency: 4, timestamp: new Date().toISOString() },
-      reconciliation: { status: "healthy", latency: 12, timestamp: new Date().toISOString() },
-      "trust-graph": { status: "healthy", latency: 8, timestamp: new Date().toISOString() },
-      storage: { status: "healthy", timestamp: new Date().toISOString() },
-    },
-    timestamp: new Date().toISOString(),
-  };
+  // Fetch real health status from the console health endpoint
+  let healthData: any;
+  try {
+    const baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "http://localhost:3000";
+    const res = await fetch(`${baseUrl}/api/console/health`, {
+      cache: "no-store",
+      next: { revalidate: 0 },
+    });
+    if (res.ok) {
+      healthData = await res.json();
+    }
+  } catch {
+    // Health endpoint unavailable — fall through to unknown state
+  }
+
+  if (!healthData) {
+    healthData = {
+      status: "unknown",
+      checks: {
+        database: { status: "unknown", timestamp: new Date().toISOString() },
+        reconciliation: { status: "unknown", timestamp: new Date().toISOString() },
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
 
   return (
     <div className="space-y-8 pb-8">

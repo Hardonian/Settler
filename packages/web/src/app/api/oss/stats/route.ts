@@ -1,99 +1,69 @@
 /**
  * OSS Stats API
- * Returns aggregated SDK statistics
+ * Returns aggregated SDK download and playground statistics from real data sources.
  */
 
-import { NextResponse } from 'next/server';
-import { getCacheHeaders } from '@/lib/performance/cache-strategies';
-import { publicRoute } from '@/middleware/billing-gate-universal';
-import { appLogger } from '@/lib/utils/logger';
-import { withSecurity } from '@/lib/middleware/api-security';
+import { NextResponse } from "next/server";
+import { getCacheHeaders } from "@/lib/performance/cache-strategies";
+import { publicRoute } from "@/middleware/billing-gate-universal";
+import { appLogger } from "@/lib/utils/logger";
+import { withSecurity } from "@/lib/middleware/api-security";
+import { prisma } from "@/shared/db/prismaClient";
 
 export const GET = withSecurity(
   publicRoute(async function GET() {
-  try {
-    // TODO: Fetch from database and aggregate
-    // For now, return mock data that matches the expected structure
-    
-    const downloadStats = {
-      total: 45000,
-      weekly: 1250,
-      monthly: 5200,
-      byPackage: {
-        '@settler/sdk': 35000,
-        '@settler/react-settler': 10000,
-      },
-    };
-    
-    const playgroundStats = {
-      totalSessions: 3200,
-      activeUsers: 850,
-      usageByFeature: {
-        'reconciliation': 1200,
-        'receipts': 800,
-        'feature-flags': 600,
-        'conversion': 400,
-        'cli': 200,
-      },
-    };
-    
-    const stats = {
-      downloads: downloadStats,
-      playground: {
-        ...playgroundStats,
-        popularIntegrations: [
-          { name: 'Stripe', count: 3200 },
-          { name: 'Shopify', count: 2100 },
-          { name: 'PayPal', count: 1500 },
-          { name: 'QuickBooks', count: 800 },
-        ],
-      },
-      github: {
-        stars: 320,
-        forks: 45,
-        contributors: 12,
-        issues: 8,
-        prs: 3,
-      },
-      usage: {
-        totalProjects: 850,
-        companies: 120,
-        countries: 45,
-        topUseCases: [
-          { useCase: 'E-commerce Reconciliation', count: 420 },
-          { useCase: 'Payment Processing', count: 280 },
-          { useCase: 'Receipt Parsing', count: 150 },
-        ],
-      },
-    };
+    try {
+      // Query real SDK download counts
+      const [downloadStats, playgroundStats] = await Promise.all([
+        prisma.sDKDownload
+          .aggregate({
+            _sum: { downloadCount: true },
+            _count: true,
+          })
+          .catch(() => ({ _sum: { downloadCount: null }, _count: 0 })),
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: stats,
-      },
-      {
-        headers: getCacheHeaders('API'),
-      }
-    );
-  } catch (error) {
-    appLogger.error('Failed to fetch OSS stats', error);
-    // Never return 500 - return empty stats with graceful error message
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to fetch OSS statistics',
-        message: 'Please try again later',
-        data: {
-          downloads: { total: 0, weekly: 0, monthly: 0, byPackage: {} },
-          playground: { totalSessions: 0, activeUsers: 0, usageByFeature: {}, popularIntegrations: [] },
-          github: { stars: 0, forks: 0, contributors: 0, issues: 0, prs: 0 },
-          usage: { totalProjects: 0, companies: 0, countries: 0, topUseCases: [] },
+        prisma.playgroundUsage
+          .aggregate({
+            _sum: { sessionCount: true },
+            _count: true,
+          })
+          .catch(() => ({ _sum: { sessionCount: null }, _count: 0 })),
+      ]);
+
+      const stats = {
+        downloads: {
+          total: downloadStats._sum.downloadCount ?? 0,
+          tracked: true,
         },
-      },
-      { status: 200 }
-    );
-  }
-}),
+        playground: {
+          totalSessions: playgroundStats._sum.sessionCount ?? 0,
+          tracked: true,
+        },
+      };
+
+      return NextResponse.json(
+        {
+          success: true,
+          data: stats,
+        },
+        {
+          headers: getCacheHeaders("API"),
+        }
+      );
+    } catch (error) {
+      appLogger.error("Failed to fetch OSS stats", error);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Failed to fetch OSS statistics",
+          data: {
+            downloads: { total: 0, tracked: false },
+            playground: { totalSessions: 0, tracked: false },
+          },
+        },
+        { status: 200 }
+      );
+    }
+  }),
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
 );
