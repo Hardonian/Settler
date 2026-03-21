@@ -151,7 +151,7 @@ export const GET = withSecurity(
         error: 'Failed to generate insights',
         message: 'Please try again later or contact support if the issue persists',
       },
-      { status: 200 }
+      { status: 500 }
     );
   }
 }, { feature: 'GET API' }),

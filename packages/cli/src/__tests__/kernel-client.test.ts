@@ -1,5 +1,5 @@
 declare const describe: (name: string, fn: () => void) => void;
-declare const test: (name: string, fn: () => Promise<void> | void) => void;
+declare const test: (name: string, fn: () => Promise<void> | void, timeout?: number) => void;
 declare const expect: any;
 
 import fs from "node:fs";
@@ -255,8 +255,7 @@ REQUEST=$(cat)
 if echo "$REQUEST" | grep -q '"operation":"handshake"'; then
   echo '{"ok":true,"operation":"handshake","protocol_version":"v1","kernel_version":"0.1.0","result":{"operation":"handshake","protocol_version":"v1","kernel_version":"0.1.0","supported_operations":["canonicalize_hash"]}}'
 else
-  sleep 6
-  echo '{"ok":true,"operation":"canonicalize_hash","protocol_version":"v1","kernel_version":"0.1.0","result":{"schema_version":"v1","canonical_json":"{}","input_hash":"a","normalized_hash":"b","rule_hash":"c"}}'
+  exec sleep 6
 fi
 `,
       { mode: 0o755 }

@@ -24,12 +24,7 @@ export const GET = withSecurity(
     return NextResponse.json({ stats });
   } catch (error) {
     appLogger.error("Error in referrals GET", error);
-    // Never return 500 - return empty stats with graceful error message
-    return NextResponse.json({ 
-      stats: { referrals: 0, signups: 0, rewards: [] },
-      error: "Unable to fetch referral stats at this time",
-      message: "Please try again later"
-    }, { status: 200 });
+    return NextResponse.json({ error: "Failed to fetch referral stats" }, { status: 500 });
   }
 }, { feature: 'GET API' }),
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
@@ -63,12 +58,7 @@ export const POST = withSecurity(
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   } catch (error) {
     appLogger.error("Error in referrals POST", error);
-    // Never return 500 - return graceful error response
-    return NextResponse.json({ 
-      success: false,
-      error: "Unable to process referral action at this time",
-      message: "Please try again later"
-    }, { status: 200 });
+    return NextResponse.json({ error: "Failed to process referral action" }, { status: 500 });
   }
 }, { feature: 'POST API' }),
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }

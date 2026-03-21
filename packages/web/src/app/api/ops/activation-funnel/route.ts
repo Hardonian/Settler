@@ -171,12 +171,8 @@ export const GET = withSecurity(
         stack: error instanceof Error ? error.stack : undefined,
       });
       return NextResponse.json(
-        {
-          error: "Failed to retrieve activation funnel metrics",
-          message: "Unable to retrieve metrics. Please try again later.",
-          retryable: true,
-        },
-        { status: 200 }
+        { error: "Failed to retrieve activation funnel metrics" },
+        { status: 500 }
       );
     }
     // Note: Using shared Prisma singleton - don't disconnect (handles connection pooling)

@@ -51,7 +51,9 @@ function writeLog(level: LogLevel, message: string, context: Record<string, unkn
     return;
   }
 
-  process.stdout.write(`${payload}\n`);
+  // console.log preserves structured JSON and is available on all runtimes.
+  // process.stdout.write is Node-only and is not safe here.
+  console.log(payload);
 }
 
 export const serverLogger = {

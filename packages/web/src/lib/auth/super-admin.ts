@@ -26,13 +26,6 @@ export async function isSuperAdmin(): Promise<boolean> {
       return true;
     }
     
-    // Fallback: Check user metadata for admin flag
-    // This allows setting super admin via Supabase user metadata
-    const userMetadata = user.user_metadata as Record<string, unknown> | undefined;
-    if (userMetadata?.role === 'SUPER_ADMIN' || userMetadata?.role === 'super_admin') {
-      return true;
-    }
-
     return false;
   } catch (error) {
     console.error('[isSuperAdmin] Error checking super admin status:', error);

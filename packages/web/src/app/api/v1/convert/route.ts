@@ -226,15 +226,10 @@ export const POST = withSecurity(
       originalUnit: from,
     });
   } catch (error) {
-    // Never return 500 - always return 200 with error info for playground
     appLogger.error('Convert API error', error);
     return NextResponse.json(
-      {
-        error: 'Failed to perform conversion',
-        message: error instanceof Error ? error.message : 'Unknown error',
-        demo: true,
-      },
-      { status: 200 }
+      { error: 'Failed to perform conversion' },
+      { status: 500 }
     );
   }
 }),

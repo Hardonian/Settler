@@ -85,12 +85,10 @@ export const POST = withSecurity(
    
       } catch (error) {
     appLogger.error("Error in onboarding-assistant POST", error);
-    // Never return 500 - return graceful error response
-    return NextResponse.json({ 
-      response: "I'm having trouble processing your question right now. Please try again in a moment or check our documentation for help.",
-      error: "Unable to process request",
-      message: "Please try again later"
-    }, { status: 200 });
+    return NextResponse.json(
+      { error: "Onboarding assistant temporarily unavailable. Please try again later." },
+      { status: 503 }
+    );
   }
 }, { feature: 'POST API' }),
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }

@@ -65,12 +65,8 @@ export const POST = withSecurity(
       } catch (error) {
     appLogger.error("Error in troubleshooting POST", error);
     return NextResponse.json(
-      {
-        success: false,
-        error: 'An error occurred',
-        message: 'Please try again later or contact support if the issue persists',
-      },
-      { status: 200 }
+      { error: "Troubleshooting service temporarily unavailable. Please try again later." },
+      { status: 503 }
     );
   }
 }, { feature: 'POST API' }),

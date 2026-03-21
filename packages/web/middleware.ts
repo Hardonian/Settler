@@ -13,7 +13,8 @@ import { addSecurityHeaders } from "./src/middleware/security-headers";
 import { generateTraceId } from "./src/lib/observability/trace";
 import { isAppAuthRequiredRoute } from "./src/lib/auth/route-gating";
 import { getAppEnvStatus } from "./src/lib/env/runtime-access";
-import { serverLogger } from "./src/lib/observability/server-logger";
+// Use edge-safe logger — middleware runs on Edge Runtime where Node-only APIs are unavailable.
+import { edgeLogger as serverLogger } from "./src/lib/observability/edge-logger";
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   // CRITICAL: Wrap entire middleware in try-catch to prevent any 500 errors

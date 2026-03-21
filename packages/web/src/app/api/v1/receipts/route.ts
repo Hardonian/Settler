@@ -395,8 +395,6 @@ export async function POST(request: NextRequest) {
     } catch (error: unknown) {
       // Track error metrics
       const duration = Date.now() - startTime;
-      await trackApiMetric("/api/v1/receipts", "POST", 200, duration); // Return 200 instead of 500
-
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       logger.error("Receipt parse request failed", {
         correlationId,
@@ -404,6 +402,7 @@ export async function POST(request: NextRequest) {
         duration,
         stack: error instanceof Error ? error.stack : undefined,
       });
+      await trackApiMetric("/api/v1/receipts", "POST", 500, duration);
 
       // Update upload status to failed (with retry) - only if we have an upload record
       // Note: upload variable may not exist if error occurred before creation
@@ -425,22 +424,13 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Never return 500 - return demo response for playground
-      const demoReceipt = {
-        id: `demo_error_${Date.now()}`,
-        merchant: "Demo Merchant",
-        date: new Date().toISOString().split("T")[0],
-        total: 0,
-        currency: "USD",
-        items: [],
-        demo: true,
-        error: errorMessage.includes("OCR_FAILED")
-          ? "Could not extract text from image"
-          : "Failed to parse receipt",
-        message: "This is a demo response. Sign in to parse real receipts.",
-      };
-
-      const response = NextResponse.json(demoReceipt, { status: 200 });
+      const userMessage = errorMessage.includes("OCR_FAILED")
+        ? "Could not extract text from the image. Please try a clearer image."
+        : "Failed to process receipt. Please try again.";
+      const response = NextResponse.json(
+        { error: userMessage },
+        { status: 500 }
+      );
       return addCorrelationHeaders(response, correlationId);
     }
   } catch (error) {
@@ -451,20 +441,10 @@ export async function POST(request: NextRequest) {
       stack: error instanceof Error ? error.stack : undefined,
     });
 
-    // Never return 500 - return demo response for playground
-    const demoReceipt = {
-      id: `demo_error_${Date.now()}`,
-      merchant: "Demo Merchant",
-      date: new Date().toISOString().split("T")[0],
-      total: 0,
-      currency: "USD",
-      items: [],
-      demo: true,
-      error: "Failed to process receipt request",
-      message: "This is a demo response. Sign in to parse real receipts.",
-    };
-
-    const response = NextResponse.json(demoReceipt, { status: 200 });
+    const response = NextResponse.json(
+      { error: "Failed to process receipt request" },
+      { status: 500 }
+    );
     return addCorrelationHeaders(response, correlationId);
   }
 }
