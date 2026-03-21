@@ -13,8 +13,8 @@ import {
 } from "../services/retention/retention-policy";
 import { retentionMetricsService } from "../services/retention/retention-metrics";
 import { getTTLWorker, TTLWorkerConfig } from "../services/retention/ttl-worker";
-import { requireAuth } from "../middleware/auth";
-import { requireTenantContext } from "../middleware/tenant";
+import { authMiddleware as requireAuth } from "../middleware/auth";
+import { tenantMiddleware as requireTenantContext } from "../middleware/tenant";
 import { logInfo, logError } from "../utils/logger";
 
 const router: Router = Router();
@@ -153,7 +153,10 @@ router.get("/metrics/tenants", async (_req: Request, res: Response) => {
  */
 router.get("/metrics/tenants/:tenantId", async (req: Request, res: Response) => {
   try {
-    const { tenantId } = req.params;
+    const tenantIdParam = req.params["tenantId"];
+    const tenantId = Array.isArray(tenantIdParam)
+      ? (tenantIdParam[0] ?? "")
+      : (tenantIdParam ?? "");
     const metrics = await retentionMetricsService.getMetricsByTenant(tenantId);
 
     res.json({
@@ -232,7 +235,10 @@ router.get("/policies", async (_req: Request, res: Response) => {
  */
 router.get("/policies/:tenantId", async (req: Request, res: Response) => {
   try {
-    const { tenantId } = req.params;
+    const tenantIdParam2 = req.params["tenantId"];
+    const tenantId = Array.isArray(tenantIdParam2)
+      ? (tenantIdParam2[0] ?? "")
+      : (tenantIdParam2 ?? "");
     const policy = await retentionPolicyService.getTenantRetentionPolicy(tenantId);
 
     res.json({
@@ -279,7 +285,10 @@ router.get("/policies/:tenantId", async (req: Request, res: Response) => {
  */
 router.put("/policies/:tenantId", async (req: Request, res: Response) => {
   try {
-    const { tenantId } = req.params;
+    const tenantIdParam3 = req.params["tenantId"];
+    const tenantId = Array.isArray(tenantIdParam3)
+      ? (tenantIdParam3[0] ?? "")
+      : (tenantIdParam3 ?? "");
     const body = retentionPolicySchema.parse(req.body);
 
     const policy = await retentionPolicyService.setTenantRetentionPolicy(tenantId, body);
@@ -339,7 +348,10 @@ router.put("/policies/:tenantId", async (req: Request, res: Response) => {
  */
 router.delete("/policies/:tenantId", async (req: Request, res: Response) => {
   try {
-    const { tenantId } = req.params;
+    const tenantIdParam4 = req.params["tenantId"];
+    const tenantId = Array.isArray(tenantIdParam4)
+      ? (tenantIdParam4[0] ?? "")
+      : (tenantIdParam4 ?? "");
     const policy = await retentionPolicyService.resetTenantRetentionPolicy(tenantId);
 
     logInfo("Reset retention policy to default", { tenantId });

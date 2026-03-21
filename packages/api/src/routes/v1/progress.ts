@@ -22,7 +22,8 @@ const router: Router = Router();
  */
 router.get("/reconciliation-runs/:runId", async (req: AuthRequest, res: Response) => {
   try {
-    const { runId } = req.params;
+    const runIdParam = req.params["runId"];
+    const runId = Array.isArray(runIdParam) ? (runIdParam[0] ?? "") : (runIdParam ?? "");
     const tenantId = req.tenantId!;
 
     if (!runId) {
@@ -63,7 +64,10 @@ router.get("/reconciliation-runs/:runId", async (req: AuthRequest, res: Response
  */
 router.get("/reconciliation-results/:resultId", async (req: AuthRequest, res: Response) => {
   try {
-    const { resultId } = req.params;
+    const resultIdParam = req.params["resultId"];
+    const resultId = Array.isArray(resultIdParam)
+      ? (resultIdParam[0] ?? "")
+      : (resultIdParam ?? "");
     const tenantId = req.tenantId!;
 
     if (!resultId) {
@@ -144,7 +148,8 @@ router.post("/checkpoints", async (req: AuthRequest, res: Response) => {
  */
 router.get("/checkpoints/jobs/:jobId", async (req: AuthRequest, res: Response) => {
   try {
-    const { jobId } = req.params;
+    const jobIdParam = req.params["jobId"];
+    const jobId = Array.isArray(jobIdParam) ? (jobIdParam[0] ?? "") : (jobIdParam ?? "");
     const tenantId = req.tenantId!;
 
     if (!jobId) {
@@ -185,7 +190,10 @@ router.get("/checkpoints/jobs/:jobId", async (req: AuthRequest, res: Response) =
  */
 router.post("/checkpoints/:checkpointId/resume", async (req: AuthRequest, res: Response) => {
   try {
-    const { checkpointId } = req.params;
+    const checkpointIdParam = req.params["checkpointId"];
+    const checkpointId = Array.isArray(checkpointIdParam)
+      ? (checkpointIdParam[0] ?? "")
+      : (checkpointIdParam ?? "");
     const tenantId = req.tenantId!;
 
     if (!checkpointId) {

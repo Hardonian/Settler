@@ -156,8 +156,8 @@ function ReceiptsPageContent() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Receipts</h1>
-        <p className="text-slate-600 dark:text-slate-400">
+        <h1 className="text-3xl font-bold text-foreground mb-2">Receipts</h1>
+        <p className="text-muted-foreground">
           Browse and view receipts parsed by the Receipts API.
         </p>
       </div>
@@ -165,9 +165,9 @@ function ReceiptsPageContent() {
       {receipts.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <Receipt className="w-12 h-12 mx-auto mb-4 text-slate-400" />
+            <Receipt className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
             <h3 className="text-lg font-semibold mb-2">No receipts yet</h3>
-            <p className="text-slate-600 dark:text-slate-400 mb-4">
+            <p className="text-muted-foreground mb-4">
               Start parsing receipts using the Receipts API.
             </p>
             <Button asChild>
@@ -240,7 +240,7 @@ function ReceiptsPageContent() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Date</p>
+                  <p className="text-sm font-medium text-muted-foreground">Date</p>
                   <p>
                     {selectedReceipt.date
                       ? format(new Date(selectedReceipt.date), "PPp")
@@ -248,13 +248,11 @@ function ReceiptsPageContent() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                    Payment Method
-                  </p>
+                  <p className="text-sm font-medium text-muted-foreground">Payment Method</p>
                   <p>{selectedReceipt.paymentMethod || "—"}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Subtotal</p>
+                  <p className="text-sm font-medium text-muted-foreground">Subtotal</p>
                   <p>
                     {selectedReceipt.subtotal && selectedReceipt.currency
                       ? `${selectedReceipt.currency} ${selectedReceipt.subtotal.toFixed(2)}`
@@ -262,7 +260,7 @@ function ReceiptsPageContent() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Tax</p>
+                  <p className="text-sm font-medium text-muted-foreground">Tax</p>
                   <p>
                     {selectedReceipt.tax && selectedReceipt.currency
                       ? `${selectedReceipt.currency} ${selectedReceipt.tax.toFixed(2)}`
@@ -270,7 +268,7 @@ function ReceiptsPageContent() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Total</p>
+                  <p className="text-sm font-medium text-muted-foreground">Total</p>
                   <p className="text-lg font-semibold">
                     {selectedReceipt.total && selectedReceipt.currency
                       ? `${selectedReceipt.currency} ${selectedReceipt.total.toFixed(2)}`
@@ -278,9 +276,7 @@ function ReceiptsPageContent() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                    Confidence
-                  </p>
+                  <p className="text-sm font-medium text-muted-foreground">Confidence</p>
                   <p>
                     {selectedReceipt.confidenceScore
                       ? `${(selectedReceipt.confidenceScore * 100).toFixed(0)}%`
@@ -291,7 +287,7 @@ function ReceiptsPageContent() {
 
               {selectedReceipt.items.length > 0 && (
                 <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
+                  <p className="text-sm font-medium text-muted-foreground mb-2">
                     Items ({selectedReceipt.items.length})
                   </p>
                   <div className="border rounded-lg overflow-hidden">

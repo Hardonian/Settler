@@ -60,18 +60,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Install dependencies
-        run: |
-          cd packages/web
-          npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Type check
-        run: |
-          cd packages/web
-          npm run typecheck
+        run: pnpm run typecheck
 
   lint:
     name: Lint
@@ -84,18 +83,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Install dependencies
-        run: |
-          cd packages/web
-          npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: |
-          cd packages/web
-          npm run lint
+        run: pnpm run lint
 
   build:
     name: Build
@@ -108,15 +106,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Install dependencies
-        run: |
-          cd packages/web
-          npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: |
-          cd packages/web
-          npx turbo run build
+        run: pnpm run build

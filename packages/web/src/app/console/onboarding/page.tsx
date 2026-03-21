@@ -97,7 +97,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-12 px-4">
+    <div className="min-h-screen bg-background py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <motion.div
@@ -106,10 +106,8 @@ export default function OnboardingPage() {
           transition={{ duration: 0.3 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            Welcome to Settler
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Welcome to Settler</h1>
+          <p className="text-muted-foreground">
             Reconciliation starts automatically - no setup needed
           </p>
         </motion.div>
@@ -180,7 +178,7 @@ export default function OnboardingPage() {
                   <div>
                     <Label htmlFor="workspace-slug">Workspace URL</Label>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-slate-500">settler.dev/</span>
+                      <span className="text-muted-foreground">settler.dev/</span>
                       <Input
                         id="workspace-slug"
                         value={context.workspaceSlug}
@@ -228,7 +226,7 @@ export default function OnboardingPage() {
                   exit="exit"
                   className="space-y-4"
                 >
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <p className="text-sm text-muted-foreground">
                     Invite your team members to collaborate. You can skip this step and add them
                     later.
                   </p>
@@ -294,7 +292,7 @@ export default function OnboardingPage() {
                   exit="exit"
                   className="space-y-4"
                 >
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <p className="text-sm text-muted-foreground">
                     Connect a data source or upload a sample file to get started.
                   </p>
                   <div className="grid grid-cols-2 gap-4">
@@ -306,7 +304,9 @@ export default function OnboardingPage() {
                     >
                       <Database className="w-8 h-8 mb-2" />
                       <span className="font-semibold">Connect Data Source</span>
-                      <span className="text-xs text-slate-500 mt-1">Stripe, Shopify, etc.</span>
+                      <span className="text-xs text-muted-foreground mt-1">
+                        Stripe, Shopify, etc.
+                      </span>
                     </AnimatedButton>
                     <AnimatedButton
                       variant="outline"
@@ -316,7 +316,7 @@ export default function OnboardingPage() {
                     >
                       <Database className="w-8 h-8 mb-2" />
                       <span className="font-semibold">Upload Sample File</span>
-                      <span className="text-xs text-slate-500 mt-1">CSV, JSON, etc.</span>
+                      <span className="text-xs text-muted-foreground mt-1">CSV, JSON, etc.</span>
                     </AnimatedButton>
                   </div>
                   <AnimatedButton
@@ -340,7 +340,7 @@ export default function OnboardingPage() {
                   exit="exit"
                   className="space-y-4"
                 >
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <p className="text-sm text-muted-foreground">
                     Open the reconciliation workspace to inspect how completed runs appear in the
                     console. Triggering a real run happens through your connected jobs or API
                     workflow.
@@ -377,7 +377,7 @@ export default function OnboardingPage() {
                   exit="exit"
                   className="space-y-4"
                 >
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <p className="text-sm text-muted-foreground">
                     Great! You're all set. View your results in the dashboard.
                   </p>
                   <AnimatedButton
@@ -405,7 +405,7 @@ export default function OnboardingPage() {
                       className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
                         step.status === "current"
                           ? "bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800"
-                          : "bg-slate-50 dark:bg-slate-800/50"
+                          : "bg-muted/50"
                       }`}
                     >
                       {step.status === "completed" ? (
@@ -413,11 +413,13 @@ export default function OnboardingPage() {
                       ) : step.status === "current" ? (
                         <Circle className="w-5 h-5 text-blue-600 dark:text-blue-400 fill-current" />
                       ) : (
-                        <Circle className="w-5 h-5 text-slate-400" />
+                        <Circle className="w-5 h-5 text-muted-foreground" />
                       )}
                       <div className="flex-1">
                         <div className="font-medium text-sm">{step.title}</div>
-                        {step.optional && <span className="text-xs text-slate-500">Optional</span>}
+                        {step.optional && (
+                          <span className="text-xs text-muted-foreground">Optional</span>
+                        )}
                       </div>
                     </div>
                   ))}

@@ -6,30 +6,24 @@
  * If not installed, tracing functions will be no-ops.
  */
 
- 
- 
- 
- 
- 
- 
 /* eslint-disable no-console */
 
 import { config } from "../../config";
 
 // Optional OpenTelemetry imports - gracefully handle if packages aren't installed
- 
+
 let NodeSDK: any;
- 
+
 let getNodeAutoInstrumentations: any;
- 
+
 let Resource: any;
- 
+
 let SemanticResourceAttributes: any;
- 
+
 let OTLPTraceExporter: any;
- 
+
 let trace: any;
- 
+
 let SpanStatusCode: any;
 
 let loadPromise: Promise<void> | null = null;
@@ -47,35 +41,25 @@ function loadOpenTelemetry(): Promise<void> {
     import("@opentelemetry/exporter-trace-otlp-http"),
     import("@opentelemetry/api"),
   ])
-    .then(
-      ([
-        sdkNode,
-        autoInstrumentations,
-        resources,
-        semanticConventions,
-        traceExporter,
-        api,
-      ]) => {
-        NodeSDK = sdkNode.NodeSDK;
-        getNodeAutoInstrumentations = autoInstrumentations.getNodeAutoInstrumentations;
-        Resource = resources.Resource;
-        SemanticResourceAttributes = semanticConventions.SemanticResourceAttributes;
-        OTLPTraceExporter = traceExporter.OTLPTraceExporter;
-        trace = api.trace;
-        SpanStatusCode = api.SpanStatusCode;
-      }
-    )
+    .then(([sdkNode, autoInstrumentations, resources, semanticConventions, traceExporter, api]) => {
+      NodeSDK = sdkNode.NodeSDK;
+      getNodeAutoInstrumentations = autoInstrumentations.getNodeAutoInstrumentations;
+      Resource = resources.resourceFromAttributes;
+      SemanticResourceAttributes = semanticConventions.SemanticResourceAttributes;
+      OTLPTraceExporter = traceExporter.OTLPTraceExporter;
+      trace = api.trace;
+      SpanStatusCode = api.SpanStatusCode;
+    })
     .catch(() => {
       // OpenTelemetry packages not installed - tracing will be disabled
       // Note: Can't use logger here as it may depend on tracing - use console for initialization only
-       
+
       console.warn("OpenTelemetry packages not found, tracing disabled");
     });
 
   return loadPromise;
 }
 
- 
 let sdk: any = null;
 
 export function initializeTracing(): void {
@@ -88,7 +72,7 @@ export function initializeTracing(): void {
       // Check if OpenTelemetry packages are available
       if (!NodeSDK || !Resource || !SemanticResourceAttributes) {
         // Note: Can't use logger here as it may depend on tracing - use console for initialization only
-         
+
         console.warn("OpenTelemetry packages not installed, tracing disabled");
         return;
       }
@@ -97,37 +81,34 @@ export function initializeTracing(): void {
 
       if (!otlpEndpoint) {
         // Note: Can't use logger here as it may depend on tracing - use console for initialization only
-         
+
         console.warn("OTLP_ENDPOINT not set, tracing disabled");
         return;
       }
 
       try {
-         
         sdk = new NodeSDK({
-           
-          resource: new Resource({
-             
+          resource: Resource({
             [SemanticResourceAttributes.SERVICE_NAME]: config.observability.serviceName,
-             
-            [SemanticResourceAttributes.SERVICE_VERSION]: process.env.npm_package_version || "1.0.0",
+
+            [SemanticResourceAttributes.SERVICE_VERSION]:
+              process.env.npm_package_version || "1.0.0",
           }),
-           
+
           traceExporter: new OTLPTraceExporter({
             url: `${otlpEndpoint}/v1/traces`,
           }),
-           
+
           instrumentations: [getNodeAutoInstrumentations()],
         });
 
-         
         sdk.start();
         // Note: Can't use logger here as it may depend on tracing - use console for initialization only
-         
+
         console.log("OpenTelemetry tracing initialized");
       } catch (error) {
         // Note: Can't use logger here as it may depend on tracing - use console for initialization only
-         
+
         console.warn("Failed to initialize OpenTelemetry tracing:", error);
       }
     })
@@ -148,13 +129,12 @@ export function shutdownTracing(): Promise<void> {
  */
 export async function traceFunction<T>(
   name: string,
-   
+
   fn: (span: any) => Promise<T>,
   attributes?: Record<string, string | number | boolean>
 ): Promise<T> {
   // If tracing is not available, just execute the function
   if (!trace || !SpanStatusCode) {
-     
     return fn(null as any);
   }
 
@@ -305,14 +285,13 @@ export async function traceQueue<T>(
  */
 export async function traceBusiness<T>(
   operation: string,
-   
+
   fn: (span: any) => Promise<T>,
   attributes?: Record<string, string | number | boolean>,
   tenantId?: string
 ): Promise<T> {
   // If tracing is not available, just execute the function
   if (!trace || !SpanStatusCode) {
-     
     return fn(null as any);
   }
 

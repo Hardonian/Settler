@@ -61,7 +61,8 @@ router.get(
   validateRequest(exportReportSchema),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { jobId } = req.params;
+      const jobIdParam = req.params["jobId"];
+      const jobId = Array.isArray(jobIdParam) ? (jobIdParam[0] ?? "") : (jobIdParam ?? "");
       const queryParams = exportReportSchema.parse({ params: req.params, query: req.query });
       const {
         format,
@@ -242,7 +243,8 @@ router.post(
   validateRequest(scheduleExportSchema),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { jobId } = req.params;
+      const jobIdParam2 = req.params["jobId"];
+      const jobId = Array.isArray(jobIdParam2) ? (jobIdParam2[0] ?? "") : (jobIdParam2 ?? "");
       const { format, schedule, destination } = req.body;
       const userId = req.userId!;
 

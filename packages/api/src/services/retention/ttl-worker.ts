@@ -406,7 +406,7 @@ export class TTLWorker {
       const fileSize = existing.fileSizeBytes || 0;
 
       // Check for violation (deleted after expiration date)
-      const violation = artifact.expires_at && new Date(artifact.expires_at) < new Date();
+      const violation = !!(artifact.expires_at && new Date(artifact.expires_at) < new Date());
 
       // Delete the export record using transaction
       await prisma.$transaction([

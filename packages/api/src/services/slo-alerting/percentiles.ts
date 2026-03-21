@@ -32,8 +32,8 @@ export function calculatePercentiles(values: number[]): PercentileValues {
   const count = sorted.length;
   const sum = sorted.reduce((acc, v) => acc + v, 0);
   const avg = sum / count;
-  const min = sorted[0];
-  const max = sorted[count - 1];
+  const min = sorted[0] ?? 0;
+  const max = sorted[count - 1] ?? 0;
 
   // Calculate percentiles
   const p50 = getPercentile(sorted, 50);
@@ -62,7 +62,7 @@ function getPercentile(sorted: number[], percentile: number): number {
   const n = sorted.length;
 
   if (n === 0) return 0;
-  if (n === 1) return sorted[0];
+  if (n === 1) return sorted[0] ?? 0;
 
   // Calculate the index
   const index = (percentile / 100) * (n - 1);
@@ -71,11 +71,11 @@ function getPercentile(sorted: number[], percentile: number): number {
   const weight = index - lower;
 
   if (lower === upper) {
-    return sorted[lower];
+    return sorted[lower] ?? 0;
   }
 
   // Linear interpolation
-  return sorted[lower] * (1 - weight) + sorted[upper] * weight;
+  return (sorted[lower] ?? 0) * (1 - weight) + (sorted[upper] ?? 0) * weight;
 }
 
 /**
@@ -340,7 +340,7 @@ export function calculatePercentilesApproximate(
   const step = Math.floor(values.length / sampleSize);
 
   for (let i = 0; i < sampleSize && i * step < values.length; i++) {
-    sampled.push(values[i * step]);
+    sampled.push(values[i * step] ?? 0);
   }
 
   return calculatePercentiles(sampled);

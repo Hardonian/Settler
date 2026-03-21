@@ -73,7 +73,10 @@ router.get(
   async (req: TenantRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
-      const { resultId } = req.params;
+      const resultIdParam = req.params["resultId"];
+      const resultId = Array.isArray(resultIdParam)
+        ? (resultIdParam[0] ?? "")
+        : (resultIdParam ?? "");
 
       if (!resultId) {
         return res.status(400).json({

@@ -35,15 +35,15 @@ export default function ContactSupportPage() {
     return (
       <AnimatedPageWrapper aria-label="Contact support confirmation">
         <Navigation />
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black pt-32 pb-20">
+        <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-indigo-50/30 dark:from-background dark:via-muted/20 dark:to-background pt-32 pb-20">
           <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
             <Card className="text-center">
               <CardContent className="pt-12 pb-12">
                 <CheckCircle2 className="w-16 h-16 text-green-600 dark:text-green-400 mx-auto mb-6" />
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
+                <h2 className="text-2xl font-bold text-foreground mb-4">
                   Message Sent Successfully
                 </h2>
-                <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
+                <p className="text-muted-foreground mb-8 leading-relaxed">
                   We&apos;ve received your message and will get back to you within 24 hours. For
                   urgent issues, please check our{" "}
                   <Link
@@ -82,13 +82,11 @@ export default function ContactSupportPage() {
     <AnimatedPageWrapper aria-label="Contact support page">
       <Navigation />
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black pt-32 pb-20">
+      <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-indigo-50/30 dark:from-background dark:via-muted/20 dark:to-background pt-32 pb-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900 dark:text-white">
-              Contact Support
-            </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed px-4">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">Contact Support</h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-4">
               Have a question or need help? We&apos;re here to assist you. Our support team
               typically responds within 24 hours.
             </p>
@@ -145,7 +143,7 @@ export default function ContactSupportPage() {
                         required
                         value={formData.category}
                         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                        className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
                       >
                         <option value="general">General Question</option>
                         <option value="technical">Technical Issue</option>
@@ -180,7 +178,7 @@ export default function ContactSupportPage() {
                         rows={6}
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white resize-none"
+                        className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground resize-none"
                         placeholder="Please provide as much detail as possible..."
                       />
                     </div>
@@ -215,10 +213,8 @@ export default function ContactSupportPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <h3 className="font-semibold text-slate-900 dark:text-white mb-2">
-                      Support Articles
-                    </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-3 leading-relaxed">
+                    <h3 className="font-semibold text-foreground mb-2">Support Articles</h3>
+                    <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
                       Browse our comprehensive knowledge base for answers to common questions.
                     </p>
                     <Button asChild variant="outline" size="sm" className="w-full">
@@ -227,10 +223,8 @@ export default function ContactSupportPage() {
                   </div>
 
                   <div>
-                    <h3 className="font-semibold text-slate-900 dark:text-white mb-2">
-                      Community Forum
-                    </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-3 leading-relaxed">
+                    <h3 className="font-semibold text-foreground mb-2">Community Forum</h3>
+                    <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
                       Ask questions and get help from other Settler users in our community.
                     </p>
                     <Button asChild variant="outline" size="sm" className="w-full">
@@ -239,10 +233,8 @@ export default function ContactSupportPage() {
                   </div>
 
                   <div>
-                    <h3 className="font-semibold text-slate-900 dark:text-white mb-2">
-                      Documentation
-                    </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-3 leading-relaxed">
+                    <h3 className="font-semibold text-foreground mb-2">Documentation</h3>
+                    <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
                       Read our detailed API documentation and integration guides.
                     </p>
                     <Button asChild variant="outline" size="sm" className="w-full">

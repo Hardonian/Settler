@@ -234,8 +234,7 @@ export default function RunPage() {
           <div>
             <h1 className="text-3xl font-bold text-foreground dark:text-white">{run.name}</h1>
             <p className="text-muted-foreground dark:text-muted-foreground mt-1">
-              Run ID:{" "}
-              <code className="bg-muted/40 dark:bg-card px-2 py-1 rounded">{run.id}</code>
+              Run ID: <code className="bg-muted/40 dark:bg-card px-2 py-1 rounded">{run.id}</code>
             </p>
           </div>
         </div>
@@ -274,7 +273,7 @@ export default function RunPage() {
                 <span>Progress</span>
                 <span>{run.progress}%</span>
               </div>
-              <div className="w-full bg-slate-200 dark:bg-muted rounded-full h-2">
+              <div className="w-full bg-muted rounded-full h-2">
                 <div
                   className="bg-blue-600 h-2 rounded-full transition-all"
                   style={{ width: `${run.progress}%` }}
@@ -286,15 +285,21 @@ export default function RunPage() {
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
                   <div>
                     <div className="text-2xl font-bold">{run.summary.sourceCount}</div>
-                    <div className="text-sm text-muted-foreground dark:text-muted-foreground">Source Rows</div>
+                    <div className="text-sm text-muted-foreground dark:text-muted-foreground">
+                      Source Rows
+                    </div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold">{run.summary.targetCount}</div>
-                    <div className="text-sm text-muted-foreground dark:text-muted-foreground">Target Rows</div>
+                    <div className="text-sm text-muted-foreground dark:text-muted-foreground">
+                      Target Rows
+                    </div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-green-600">{run.summary.matched}</div>
-                    <div className="text-sm text-muted-foreground dark:text-muted-foreground">Matched</div>
+                    <div className="text-sm text-muted-foreground dark:text-muted-foreground">
+                      Matched
+                    </div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-amber-600">
@@ -314,11 +319,15 @@ export default function RunPage() {
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-red-600">{run.summary.conflicts}</div>
-                    <div className="text-sm text-muted-foreground dark:text-muted-foreground">Conflicts</div>
+                    <div className="text-sm text-muted-foreground dark:text-muted-foreground">
+                      Conflicts
+                    </div>
                   </div>
                 </div>
                 {run.summaryMath?.note ? (
-                  <p className="text-xs text-muted-foreground dark:text-muted-foreground">{run.summaryMath.note}</p>
+                  <p className="text-xs text-muted-foreground dark:text-muted-foreground">
+                    {run.summaryMath.note}
+                  </p>
                 ) : null}
               </div>
             )}
@@ -352,11 +361,15 @@ export default function RunPage() {
               <p>No persisted result has been recorded yet.</p>
             )}
             {run.resultContext.latestResultStartedAt && (
-              <p>Evaluated at {new Date(run.resultContext.latestResultStartedAt).toLocaleString()}.</p>
+              <p>
+                Evaluated at {new Date(run.resultContext.latestResultStartedAt).toLocaleString()}.
+              </p>
             )}
             {run.resultContext.comparison && (
               <div className="rounded-md border border-border dark:border-border p-3">
-                <p className="font-medium text-foreground dark:text-white">Compared to prior result</p>
+                <p className="font-medium text-foreground dark:text-white">
+                  Compared to prior result
+                </p>
                 <p className="mt-1">
                   Previous result{" "}
                   <code className="bg-muted/40 dark:bg-card px-1.5 py-0.5 rounded break-all">
@@ -373,9 +386,9 @@ export default function RunPage() {
                   {formatSignedDelta(run.resultContext.comparison.deltaConflicts)}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground dark:text-muted-foreground">
-                  Snapshot{" "}
-                  {run.resultContext.comparison.snapshotChanged ? "changed" : "unchanged"} • Input
-                  hash {run.resultContext.comparison.inputHashChanged ? "changed" : "unchanged"}
+                  Snapshot {run.resultContext.comparison.snapshotChanged ? "changed" : "unchanged"}{" "}
+                  • Input hash{" "}
+                  {run.resultContext.comparison.inputHashChanged ? "changed" : "unchanged"}
                 </p>
               </div>
             )}
@@ -405,21 +418,23 @@ export default function RunPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold text-blue-600">{run.exceptions.investigating}</p>
-                <p className="text-sm text-muted-foreground dark:text-muted-foreground">Investigating</p>
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
+                  Investigating
+                </p>
               </div>
               <div>
                 <p className="text-2xl font-bold text-green-600">{run.exceptions.resolved}</p>
                 <p className="text-sm text-muted-foreground dark:text-muted-foreground">Resolved</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-foreground dark:text-slate-200">
-                  {run.exceptions.ignored}
-                </p>
+                <p className="text-2xl font-bold text-foreground">{run.exceptions.ignored}</p>
                 <p className="text-sm text-muted-foreground dark:text-muted-foreground">Ignored</p>
               </div>
               <div>
                 <p className="text-2xl font-bold text-red-600">{run.exceptions.reviewRequired}</p>
-                <p className="text-sm text-muted-foreground dark:text-muted-foreground">Needs Review</p>
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
+                  Needs Review
+                </p>
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -657,7 +672,9 @@ export default function RunPage() {
                 </div>
               </div>
             )}
-            <p className="text-sm text-muted-foreground dark:text-muted-foreground">{run.config.summaryBasis}</p>
+            <p className="text-sm text-muted-foreground dark:text-muted-foreground">
+              {run.config.summaryBasis}
+            </p>
           </CardContent>
         </Card>
       )}

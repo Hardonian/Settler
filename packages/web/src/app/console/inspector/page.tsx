@@ -108,10 +108,10 @@ export default function InspectorPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Inspector</h1>
-          <p className="text-slate-600 dark:text-slate-400 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Inspector</h1>
+          <p className="text-muted-foreground mt-1">
             Inspect webhook deliveries and reconciliation runs with detailed logs.
-            <span className="text-xs text-slate-500 ml-2">
+            <span className="text-xs text-muted-foreground ml-2">
               All sensitive data is automatically redacted.
             </span>
           </p>
@@ -151,17 +151,17 @@ export default function InspectorPage() {
                   {webhookAttempts.map((attempt) => (
                     <div
                       key={attempt.id}
-                      className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700"
+                      className="p-4 bg-muted/50 rounded-lg border border-border"
                     >
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center gap-2 min-w-0 flex-1">
-                          <code className="text-sm bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded truncate">
+                          <code className="text-sm bg-muted px-2 py-1 rounded truncate">
                             {attempt.url}
                           </code>
                           <Badge variant={attempt.status >= 400 ? "destructive" : "default"}>
                             {attempt.status}
                           </Badge>
-                          <div className="flex items-center gap-1 text-sm text-slate-600 dark:text-slate-400">
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
                             <Clock className="w-4 h-4" />
                             {attempt.latency}ms
                           </div>
@@ -177,7 +177,7 @@ export default function InspectorPage() {
                       </div>
                       <div className="grid md:grid-cols-2 gap-4 mt-4">
                         <div>
-                          <div className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                          <div className="text-xs font-semibold text-muted-foreground mb-1">
                             Payload (redacted)
                           </div>
                           <pre className="text-xs bg-slate-900 text-green-400 p-2 rounded overflow-x-auto">
@@ -189,7 +189,7 @@ export default function InspectorPage() {
                           </pre>
                         </div>
                         <div>
-                          <div className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                          <div className="text-xs font-semibold text-muted-foreground mb-1">
                             Response
                           </div>
                           <pre className="text-xs bg-slate-900 text-green-400 p-2 rounded overflow-x-auto">
@@ -228,11 +228,11 @@ export default function InspectorPage() {
                   {runAttempts.map((attempt) => (
                     <div
                       key={attempt.id}
-                      className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700"
+                      className="p-4 bg-muted/50 rounded-lg border border-border"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4 min-w-0 flex-1">
-                          <code className="text-sm bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded truncate">
+                          <code className="text-sm bg-muted px-2 py-1 rounded truncate">
                             {attempt.runId}
                           </code>
                           <Badge variant={attempt.status === "failed" ? "destructive" : "default"}>
@@ -243,7 +243,7 @@ export default function InspectorPage() {
                             )}
                             {attempt.status}
                           </Badge>
-                          <div className="flex items-center gap-1 text-sm text-slate-600 dark:text-slate-400">
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
                             <Clock className="w-4 h-4" />
                             {attempt.latency}ms
                           </div>

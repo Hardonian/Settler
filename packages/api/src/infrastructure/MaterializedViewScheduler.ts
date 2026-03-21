@@ -63,7 +63,7 @@ function parseCronToNextRun(cronConfig: CronRefreshConfig): Date {
   if (minute === "*") {
     next.setMinutes(next.getMinutes() + 1);
   } else {
-    const minuteVal = parseInt(minute);
+    const minuteVal = parseInt(minute!);
     if (minuteVal <= next.getMinutes()) {
       next.setHours(next.getHours() + 1);
       next.setMinutes(minuteVal);

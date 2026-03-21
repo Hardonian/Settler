@@ -284,7 +284,7 @@ export function quickDriftCheck(
     Math.abs(changes.p99)
   );
 
-  const preset = SENSITIVITY_PRESETS[sensitivity];
+  const preset = SENSITIVITY_PRESETS[sensitivity]!;
   const threshold = preset.deviationThreshold;
 
   if (maxDeviation > threshold * 2) {
@@ -323,10 +323,11 @@ export function detectSpikes(
       window.reduce((sum, v) => sum + Math.pow(v - avg, 2), 0) / window.length
     );
 
-    const zScore = stdDev > 0 ? Math.abs(values[i] - avg) / stdDev : 0;
+    const valueAtI = values[i] ?? 0;
+    const zScore = stdDev > 0 ? Math.abs(valueAtI - avg) / stdDev : 0;
 
     if (zScore > thresholdMultiplier) {
-      spikes.push({ index: i, value: values[i] });
+      spikes.push({ index: i, value: valueAtI });
     }
   }
 

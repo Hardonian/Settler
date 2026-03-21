@@ -30,7 +30,8 @@ router.get(
   validateRequest(getConfidenceScoreSchema),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { matchId } = req.params;
+      const matchIdParam = req.params["matchId"];
+      const matchId = Array.isArray(matchIdParam) ? (matchIdParam[0] ?? "") : (matchIdParam ?? "");
       const userId = req.userId!;
 
       if (!matchId || !userId) {
@@ -114,7 +115,8 @@ router.get(
   requirePermission(Permission.REPORTS_READ),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { jobId } = req.params;
+      const jobIdParam = req.params["jobId"];
+      const jobId = Array.isArray(jobIdParam) ? (jobIdParam[0] ?? "") : (jobIdParam ?? "");
       const userId = req.userId!;
 
       if (!jobId) {

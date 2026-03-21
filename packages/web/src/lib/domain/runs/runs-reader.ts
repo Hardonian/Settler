@@ -225,10 +225,7 @@ export async function getDashboardStats() {
  * Used to power sparklines on the runs dashboard.
  * Returns an empty array if the tenant has no runs or data is unavailable.
  */
-export async function getRunsSparklineData(
-  tenantId: string,
-  days = 14
-): Promise<number[]> {
+export async function getRunsSparklineData(tenantId: string, days = 14): Promise<number[]> {
   if (!tenantId || tenantId === "—") return [];
 
   const since = new Date();
@@ -281,14 +278,18 @@ export async function getRunsPageStats(tenantId: string) {
       }),
     ]);
 
-    const totalMatched = results.reduce((s, r) => s + (r.matchedCount ?? 0), 0);
+    type ResultRow = {
+      matchedCount: number | null;
+      sourceCount: number | null;
+      targetCount: number | null;
+    };
+    const totalMatched = results.reduce((s: number, r: ResultRow) => s + (r.matchedCount ?? 0), 0);
     const totalRecords = results.reduce(
-      (s, r) => s + (r.sourceCount ?? 0) + (r.targetCount ?? 0),
+      (s: number, r: ResultRow) => s + (r.sourceCount ?? 0) + (r.targetCount ?? 0),
       0
     );
     // Confidence = matched / total half-records (each record has source + target)
-    const avgConfidence =
-      totalRecords > 0 ? totalMatched / (totalRecords / 2) : null;
+    const avgConfidence = totalRecords > 0 ? totalMatched / (totalRecords / 2) : null;
 
     return { totalRuns, totalMatched, avgConfidence };
   } catch {

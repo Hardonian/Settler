@@ -223,7 +223,8 @@ router.get(
   validateRequest(getJobSchema),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { id } = req.params;
+      const idParam = req.params["id"];
+      const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
       const userId = req.userId!;
 
       if (!id || !userId) {
@@ -274,7 +275,8 @@ router.post(
   enforceFreezeState(),
   validateRequest(getJobSchema),
   async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const idParam2 = req.params["id"];
+    const id = Array.isArray(idParam2) ? (idParam2[0] ?? "") : (idParam2 ?? "");
     const userId = req.userId!;
 
     if (!id || !userId) {
@@ -430,7 +432,8 @@ router.delete(
   validateRequest(getJobSchema),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { id } = req.params;
+      const idParam3 = req.params["id"];
+      const id = Array.isArray(idParam3) ? (idParam3[0] ?? "") : (idParam3 ?? "");
       const userId = req.userId!;
 
       if (!id || !userId) {

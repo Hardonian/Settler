@@ -161,7 +161,8 @@ router.get(
   requirePermission(Permission.REPORTS_READ),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { id } = req.params;
+      const idParam = req.params["id"];
+      const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
       const tenantId = req.tenantId!;
 
       const exception = await prisma.reconciliationMatch.findFirst({
@@ -216,7 +217,8 @@ router.post(
   validateRequest(resolveExceptionSchema),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { id } = req.params;
+      const idParam2 = req.params["id"];
+      const id = Array.isArray(idParam2) ? (idParam2[0] ?? "") : (idParam2 ?? "");
       const { resolution, notes } = req.body;
       const userId = req.userId!;
 
@@ -255,12 +257,14 @@ router.post(
         resolvedBy: userId,
       });
 
-      res.json({
+      return res.json({
         message: "Exception resolved successfully",
         resolution,
       });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to resolve exception", 500, { userId: req.userId });
+      return handleRouteError(res, error, "Failed to resolve exception", 500, {
+        userId: req.userId,
+      });
     }
   }
 );

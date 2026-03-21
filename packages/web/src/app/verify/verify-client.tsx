@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useMemo, useState } from 'react';
-import type { EvidenceManifest, NamedFile, VerificationResult } from '@/types/verification';
-import { verifyBundle } from '@/lib/verify';
+import { useMemo, useState } from "react";
+import type { EvidenceManifest, NamedFile, VerificationResult } from "@/types/verification";
+import { verifyBundle } from "@/lib/verify";
 
 const bytesFromFile = async (file: File): Promise<number[]> => {
   const buffer = await file.arrayBuffer();
@@ -14,11 +14,11 @@ export default function VerifyClient() {
   const [bundleFiles, setBundleFiles] = useState<FileList | null>(null);
   const [result, setResult] = useState<VerificationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [status, setStatus] = useState<'idle' | 'running' | 'complete'>('idle');
+  const [status, setStatus] = useState<"idle" | "running" | "complete">("idle");
 
   const filesLabel = useMemo(() => {
     if (!bundleFiles || bundleFiles.length === 0) {
-      return 'No bundle files selected.';
+      return "No bundle files selected.";
     }
     return `${bundleFiles.length} file(s) selected.`;
   }, [bundleFiles]);
@@ -27,10 +27,10 @@ export default function VerifyClient() {
     setError(null);
     setResult(null);
     if (!manifestFile || !bundleFiles) {
-      setError('Select a manifest and bundle files before verifying.');
+      setError("Select a manifest and bundle files before verifying.");
       return;
     }
-    setStatus('running');
+    setStatus("running");
     try {
       const manifestText = await manifestFile.text();
       const manifest = JSON.parse(manifestText) as EvidenceManifest;
@@ -45,60 +45,58 @@ export default function VerifyClient() {
 
       const verification = await verifyBundle(manifest, files);
       if (!verification) {
-        setError('WASM verifier unavailable. Use the CLI verifier for offline checks.');
-        setStatus('complete');
+        setError("WASM verifier unavailable. Use the CLI verifier for offline checks.");
+        setStatus("complete");
         return;
       }
       setResult(verification);
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Verification failed.');
+      setError(caught instanceof Error ? caught.message : "Verification failed.");
     } finally {
-      setStatus('complete');
+      setStatus("complete");
     }
   };
 
   return (
-    <section className="space-y-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6">
+    <section className="space-y-6 bg-card border border-border rounded-2xl p-6">
       <div>
-        <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
-          Upload evidence bundle
-        </h2>
-        <p className="text-sm text-slate-600 dark:text-slate-300">
+        <h2 className="text-xl font-semibold text-foreground mb-2">Upload evidence bundle</h2>
+        <p className="text-sm text-muted-foreground">
           Select the manifest.json and any referenced files from your evidence bundle.
         </p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <label className="flex flex-col gap-2 text-sm text-slate-700 dark:text-slate-300">
+        <label className="flex flex-col gap-2 text-sm text-foreground">
           Manifest file
           <input
             type="file"
             accept="application/json"
             onChange={(event) => setManifestFile(event.target.files?.[0] ?? null)}
-            className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 p-2"
+            className="rounded-lg border border-input bg-background p-2"
           />
-          <span className="text-xs text-slate-500">
-            {manifestFile ? manifestFile.name : 'No manifest selected.'}
+          <span className="text-xs text-muted-foreground">
+            {manifestFile ? manifestFile.name : "No manifest selected."}
           </span>
         </label>
-        <label className="flex flex-col gap-2 text-sm text-slate-700 dark:text-slate-300">
+        <label className="flex flex-col gap-2 text-sm text-foreground">
           Bundle files
           <input
             type="file"
             multiple
             onChange={(event) => setBundleFiles(event.target.files)}
-            className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 p-2"
+            className="rounded-lg border border-input bg-background p-2"
           />
-          <span className="text-xs text-slate-500">{filesLabel}</span>
+          <span className="text-xs text-muted-foreground">{filesLabel}</span>
         </label>
       </div>
       <div className="flex flex-wrap gap-3">
         <button
           type="button"
           onClick={runVerification}
-          disabled={status === 'running'}
-          className="px-4 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={status === "running"}
+          className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {status === 'running' ? 'Verifying…' : 'Run verification'}
+          {status === "running" ? "Verifying…" : "Run verification"}
         </button>
         <button
           type="button"
@@ -107,9 +105,9 @@ export default function VerifyClient() {
             setBundleFiles(null);
             setResult(null);
             setError(null);
-            setStatus('idle');
+            setStatus("idle");
           }}
-          className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200"
+          className="px-4 py-2 rounded-lg border border-input text-foreground"
         >
           Reset
         </button>
@@ -120,25 +118,19 @@ export default function VerifyClient() {
         </div>
       )}
       {result && (
-        <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4">
+        <div className="rounded-lg border border-border bg-muted/50 p-4">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-              Verification result
-            </h3>
+            <h3 className="text-lg font-semibold text-foreground">Verification result</h3>
             <span
               className={
-                result.success
-                  ? 'text-green-600 font-semibold'
-                  : 'text-red-600 font-semibold'
+                result.success ? "text-green-600 font-semibold" : "text-red-600 font-semibold"
               }
             >
-              {result.success ? 'Pass' : 'Fail'}
+              {result.success ? "Pass" : "Fail"}
             </span>
           </div>
           {result.mismatches.length === 0 ? (
-            <p className="text-sm text-slate-600 dark:text-slate-300">
-              No mismatches detected.
-            </p>
+            <p className="text-sm text-muted-foreground">No mismatches detected.</p>
           ) : (
             <ul className="space-y-3">
               {result.mismatches.map((mismatch, index) => (
@@ -148,21 +140,17 @@ export default function VerifyClient() {
                 >
                   <p className="font-semibold">{mismatch.path}</p>
                   <p>{mismatch.reason}</p>
-                  <p className="text-xs">
-                    Expected: {mismatch.expected ?? 'unknown'}
-                  </p>
-                  <p className="text-xs">
-                    Actual: {mismatch.actual ?? 'unknown'}
-                  </p>
+                  <p className="text-xs">Expected: {mismatch.expected ?? "unknown"}</p>
+                  <p className="text-xs">Actual: {mismatch.actual ?? "unknown"}</p>
                 </li>
               ))}
             </ul>
           )}
         </div>
       )}
-      <div className="text-xs text-slate-500">
-        Verification runs locally in your browser when the wasm verifier is
-        available. Otherwise, use the CLI verifier to surface discrepancies.
+      <div className="text-xs text-muted-foreground">
+        Verification runs locally in your browser when the wasm verifier is available. Otherwise,
+        use the CLI verifier to surface discrepancies.
       </div>
     </section>
   );

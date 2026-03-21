@@ -115,7 +115,10 @@ router.get("/requests", async (req: AuthRequest, res: Response) => {
  */
 router.get("/requests/:approvalId", async (req: AuthRequest, res: Response) => {
   try {
-    const { approvalId } = req.params;
+    const approvalIdParam = req.params["approvalId"];
+    const approvalId = Array.isArray(approvalIdParam)
+      ? (approvalIdParam[0] ?? "")
+      : (approvalIdParam ?? "");
     const tenantId = req.tenantId!;
 
     if (!approvalId) {
@@ -159,7 +162,10 @@ router.post(
   enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { approvalId } = req.params;
+      const approvalIdParam2 = req.params["approvalId"];
+      const approvalId = Array.isArray(approvalIdParam2)
+        ? (approvalIdParam2[0] ?? "")
+        : (approvalIdParam2 ?? "");
       const tenantId = req.tenantId!;
       const userId = req.userId!;
 
@@ -200,7 +206,10 @@ router.post(
   enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { approvalId } = req.params;
+      const approvalIdParam3 = req.params["approvalId"];
+      const approvalId = Array.isArray(approvalIdParam3)
+        ? (approvalIdParam3[0] ?? "")
+        : (approvalIdParam3 ?? "");
       const { comments } = req.body;
       const tenantId = req.tenantId!;
       const userId = req.userId!;

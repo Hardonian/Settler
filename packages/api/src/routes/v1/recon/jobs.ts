@@ -103,7 +103,8 @@ router.get(
   async (req: TenantRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
-      const { jobId } = req.params;
+      const jobIdParam = req.params["jobId"];
+      const jobId = Array.isArray(jobIdParam) ? (jobIdParam[0] ?? "") : (jobIdParam ?? "");
 
       if (!jobId) {
         return res.status(400).json({
@@ -140,16 +141,17 @@ router.post(
   async (req: TenantRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
-      const { jobId } = req.params;
+      const jobIdParam2 = req.params["jobId"];
+      const jobId2 = Array.isArray(jobIdParam2) ? (jobIdParam2[0] ?? "") : (jobIdParam2 ?? "");
 
-      if (!jobId) {
+      if (!jobId2) {
         return res.status(400).json({
           error: "Bad request",
           message: "Job ID is required",
         });
       }
 
-      const result = await reconEngine.executeReconJob(jobId, tenantId, {
+      const result = await reconEngine.executeReconJob(jobId2, tenantId, {
         dryRun: req.body.dryRun,
         skipValidation: req.body.skipValidation,
         skipTransformation: req.body.skipTransformation,

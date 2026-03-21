@@ -126,7 +126,7 @@ export async function getSLOConfig(
       return null;
     }
 
-    const row = results[0];
+    const row = results[0]!;
     return {
       id: row.id as string,
       tenantId: row.tenant_id as string,
@@ -261,7 +261,7 @@ export async function updateAlertRule(
 ): Promise<void> {
   try {
     const sets: string[] = [];
-    const params: unknown[] = [tenantId, ruleId];
+    const params: (string | number | boolean | null | Date | string[])[] = [tenantId, ruleId];
     let paramIndex = 3;
 
     if (updates.name !== undefined) {

@@ -60,16 +60,17 @@ function buildLinePath(
   const max = Math.max(...values);
   const range = max - min || 1;
   const stepX = width / (values.length - 1);
-  const scaleY = (v: number) =>
-    padV + ((max - v) / range) * (height - padV * 2);
+  const scaleY = (v: number) => padV + ((max - v) / range) * (height - padV * 2);
 
   const points = values.map((v, i) => [i * stepX, scaleY(v)] as [number, number]);
 
-  const line = points.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+  const line = points
+    .map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`)
+    .join(" ");
   const area = [
-    `M${points[0][0].toFixed(1)},${height}`,
+    `M${points[0]![0].toFixed(1)},${height}`,
     ...points.map(([x, y]) => `L${x.toFixed(1)},${y.toFixed(1)}`),
-    `L${points[points.length - 1][0].toFixed(1)},${height}`,
+    `L${points[points.length - 1]![0].toFixed(1)},${height}`,
     "Z",
   ].join(" ");
 
@@ -106,17 +107,11 @@ export function Sparkline({
     const min = Math.min(...values);
     const max = Math.max(...values);
     const range = max - min || 1;
-    const barW = Math.max(2, (width / values.length) - 1);
+    const barW = Math.max(2, width / values.length - 1);
     const gap = (width - barW * values.length) / (values.length - 1 || 1);
 
     return (
-      <svg
-        width={width}
-        height={height}
-        aria-label={label}
-        role="img"
-        className={className}
-      >
+      <svg width={width} height={height} aria-label={label} role="img" className={className}>
         {values.map((v, i) => {
           const barH = Math.max(2, ((v - min) / range) * (height - 2) + 2);
           const x = i * (barW + gap);
@@ -151,9 +146,7 @@ export function Sparkline({
       className={cn("overflow-visible", className)}
     >
       {/* Area fill */}
-      {area && (
-        <path d={area} fill={fill} />
-      )}
+      {area && <path d={area} fill={fill} />}
       {/* Line */}
       {line && (
         <path
@@ -166,17 +159,16 @@ export function Sparkline({
         />
       )}
       {/* Terminal dot */}
-      {values.length > 0 && (() => {
-        const lastVal = values[values.length - 1];
-        const min = Math.min(...values);
-        const max = Math.max(...values);
-        const range = max - min || 1;
-        const x = width;
-        const y = 3 + ((max - lastVal) / range) * (height - 6);
-        return (
-          <circle cx={x} cy={y} r={2} fill={stroke} />
-        );
-      })()}
+      {values.length > 0 &&
+        (() => {
+          const lastVal = values[values.length - 1] ?? 0;
+          const min = Math.min(...values);
+          const max = Math.max(...values);
+          const range = max - min || 1;
+          const x = width;
+          const y = 3 + ((max - lastVal) / range) * (height - 6);
+          return <circle cx={x} cy={y} r={2} fill={stroke} />;
+        })()}
     </svg>
   );
 }

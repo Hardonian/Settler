@@ -186,13 +186,13 @@ export default function ExceptionsPage() {
 
   if (!jobId) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+      <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-indigo-50/30 dark:from-background dark:via-muted/20 dark:to-background">
         <Navigation />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
           <Card>
             <CardContent className="pt-6">
               <div className="text-center py-12">
-                <p className="text-slate-600 dark:text-slate-400 mb-4">Invalid job ID</p>
+                <p className="text-muted-foreground mb-4">Invalid job ID</p>
                 <Button asChild>
                   <Link href="/dashboard/jobs">Back to Jobs</Link>
                 </Button>
@@ -206,7 +206,7 @@ export default function ExceptionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+    <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-indigo-50/30 dark:from-background dark:via-muted/20 dark:to-background">
       <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
@@ -221,10 +221,10 @@ export default function ExceptionsPage() {
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
               Exceptions Review
             </h1>
-            <p className="text-slate-600 dark:text-slate-400">
+            <p className="text-muted-foreground">
               Review and resolve unmatched transactions and conflicts
             </p>
           </div>
@@ -280,7 +280,7 @@ export default function ExceptionsPage() {
             <Card>
               <CardHeader className="pb-3">
                 <CardDescription>Pending Review</CardDescription>
-                <CardTitle className="text-2xl md:text-3xl text-slate-900 dark:text-white">
+                <CardTitle className="text-2xl md:text-3xl text-foreground">
                   {summary.totalUnreviewed}
                 </CardTitle>
               </CardHeader>
@@ -291,7 +291,7 @@ export default function ExceptionsPage() {
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search transactions..."
               value={searchQuery}
@@ -300,11 +300,11 @@ export default function ExceptionsPage() {
             />
           </div>
           <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-slate-400" />
+            <Filter className="h-4 w-4 text-muted-foreground" />
             <select
               value={matchTypeFilter}
               onChange={(e) => setMatchTypeFilter(e.target.value)}
-              className="px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm"
+              className="px-3 py-2 border border-input rounded-md bg-background text-foreground text-sm"
             >
               <option value="all">All Types</option>
               <option value="unmatched">Unmatched</option>
@@ -313,7 +313,7 @@ export default function ExceptionsPage() {
             <select
               value={reviewedFilter}
               onChange={(e) => setReviewedFilter(e.target.value)}
-              className="px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm"
+              className="px-3 py-2 border border-input rounded-md bg-background text-foreground text-sm"
             >
               <option value="all">All Status</option>
               <option value="false">Unreviewed</option>
@@ -325,13 +325,13 @@ export default function ExceptionsPage() {
         {/* Exceptions List */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : filteredExceptions.length === 0 ? (
           <Card>
             <CardContent className="pt-6">
               <div className="text-center py-12">
-                <p className="text-slate-600 dark:text-slate-400 mb-4">
+                <p className="text-muted-foreground mb-4">
                   {searchQuery || matchTypeFilter !== "all" || reviewedFilter !== "all"
                     ? "No exceptions found matching your filters"
                     : "No exceptions found"}
@@ -383,16 +383,14 @@ export default function ExceptionsPage() {
                             Reviewed
                           </Badge>
                         )}
-                        <span className="text-sm text-slate-600 dark:text-slate-400">
+                        <span className="text-sm text-muted-foreground">
                           Confidence: {Math.round(exception.confidence * 100)}%
                         </span>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                          <h4 className="font-semibold text-slate-900 dark:text-white mb-2">
-                            Source Transaction
-                          </h4>
+                          <h4 className="font-semibold text-foreground mb-2">Source Transaction</h4>
                           <div className="text-sm space-y-1">
                             <p>
                               <span className="font-medium">Amount:</span>{" "}
@@ -418,7 +416,7 @@ export default function ExceptionsPage() {
 
                         {exception.targetTransaction ? (
                           <div>
-                            <h4 className="font-semibold text-slate-900 dark:text-white mb-2">
+                            <h4 className="font-semibold text-foreground mb-2">
                               Target Transaction
                             </h4>
                             <div className="text-sm space-y-1">
@@ -445,10 +443,10 @@ export default function ExceptionsPage() {
                           </div>
                         ) : (
                           <div>
-                            <h4 className="font-semibold text-slate-900 dark:text-white mb-2">
+                            <h4 className="font-semibold text-foreground mb-2">
                               No Target Transaction
                             </h4>
-                            <p className="text-sm text-slate-600 dark:text-slate-400">
+                            <p className="text-sm text-muted-foreground">
                               This transaction has no matching target transaction.
                             </p>
                           </div>

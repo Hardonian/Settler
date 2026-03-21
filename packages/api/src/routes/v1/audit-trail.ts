@@ -111,7 +111,10 @@ router.post("/exports", async (req: AuthRequest, res: Response) => {
  */
 router.get("/exports/:exportId", async (req: AuthRequest, res: Response) => {
   try {
-    const { exportId } = req.params;
+    const exportIdParam = req.params["exportId"];
+    const exportId = Array.isArray(exportIdParam)
+      ? (exportIdParam[0] ?? "")
+      : (exportIdParam ?? "");
     const tenantId = req.tenantId!;
 
     if (!exportId) {

@@ -67,24 +67,13 @@ router.post("/agreements", async (req: AuthRequest, res: Response) => {
 router.post("/metrics", async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
-    const {
-      slaAgreementId,
-      metricType,
-      measuredValue,
-      measurementDate,
-      measurementPeriod,
-    } = req.body;
+    const { slaAgreementId, metricType, measuredValue, measurementDate, measurementPeriod } =
+      req.body;
 
-    if (
-      !slaAgreementId ||
-      !metricType ||
-      measuredValue === undefined ||
-      !measurementDate
-    ) {
+    if (!slaAgreementId || !metricType || measuredValue === undefined || !measurementDate) {
       return res.status(400).json({
         error: "Bad Request",
-        message:
-          "slaAgreementId, metricType, measuredValue, and measurementDate are required",
+        message: "slaAgreementId, metricType, measuredValue, and measurementDate are required",
         traceId: req.traceId,
       });
     }
@@ -131,8 +120,7 @@ router.get("/violations", async (req: AuthRequest, res: Response) => {
 
     const violations = await getSLAViolations(tenantId, {
       resolved: resolved === "true" ? true : resolved === "false" ? false : undefined,
-      acknowledged:
-        acknowledged === "true" ? true : acknowledged === "false" ? false : undefined,
+      acknowledged: acknowledged === "true" ? true : acknowledged === "false" ? false : undefined,
       severity: severity as string | undefined,
       limit: parseInt(limit as string),
       offset: parseInt(offset as string),
@@ -163,7 +151,10 @@ router.get("/violations", async (req: AuthRequest, res: Response) => {
  */
 router.post("/violations/:violationId/acknowledge", async (req: AuthRequest, res: Response) => {
   try {
-    const { violationId } = req.params;
+    const violationIdParam = req.params["violationId"];
+    const violationId = Array.isArray(violationIdParam)
+      ? (violationIdParam[0] ?? "")
+      : (violationIdParam ?? "");
     const tenantId = req.tenantId!;
     const userId = req.userId!;
 

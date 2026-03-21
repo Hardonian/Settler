@@ -3,7 +3,25 @@
  * Consolidated from multiple duplicate implementations across the codebase
  */
 
-import { memoize } from 'lodash';
+/**
+ * Simple memoize implementation to avoid lodash dependency
+ */
+function memoize<T extends (...args: string[]) => unknown>(
+  fn: T,
+  resolver: (...args: Parameters<T>) => string
+): T {
+  const cache = new Map<string, ReturnType<T>>();
+  const memoized = (...args: Parameters<T>): ReturnType<T> => {
+    const key = resolver(...args);
+    if (cache.has(key)) {
+      return cache.get(key) as ReturnType<T>;
+    }
+    const result = fn(...args) as ReturnType<T>;
+    cache.set(key, result);
+    return result;
+  };
+  return memoized as T;
+}
 
 /**
  * Calculate the Levenshtein distance between two strings using
@@ -25,8 +43,8 @@ function levenshteinDistance(str1: string, str2: string): number {
   }
 
   // Use two rows instead of full matrix for O(min(m,n)) space
-  let prevRow: number[] = new Array(len2 + 1);
-  let currRow: number[] = new Array(len2 + 1);
+  const prevRow: number[] = new Array(len2 + 1) as number[];
+  const currRow: number[] = new Array(len2 + 1) as number[];
 
   // Initialize first row
   for (let j = 0; j <= len2; j++) {
@@ -40,17 +58,21 @@ function levenshteinDistance(str1: string, str2: string): number {
     for (let j = 1; j <= len2; j++) {
       const cost = str1[i - 1] === str2[j - 1] ? 0 : 1;
       currRow[j] = Math.min(
-        prevRow[j] + 1,     // deletion
-        currRow[j - 1] + 1, // insertion
-        prevRow[j - 1] + cost // substitution
+        (prevRow[j] ?? 0) + 1, // deletion
+        (currRow[j - 1] ?? 0) + 1, // insertion
+        (prevRow[j - 1] ?? 0) + cost // substitution
       );
     }
 
     // Swap rows
-    [prevRow, currRow] = [currRow, prevRow];
+    const tmp = prevRow.slice();
+    prevRow.length = 0;
+    prevRow.push(...currRow);
+    currRow.length = 0;
+    currRow.push(...tmp);
   }
 
-  return prevRow[len2];
+  return prevRow[len2] ?? 0;
 }
 
 /**
@@ -61,9 +83,6 @@ const memoizedLevenshteinDistance = memoize(
   levenshteinDistance,
   (str1: string, str2: string) => `${str1}::${str2}`
 );
-
-// Configure memoization cache size limit
-(memoizedLevenshteinDistance as typeof memoizedLevenshteinDistance & { cache: { maxSize?: number } }).cache = { maxSize: 1000 };
 
 /**
  * Calculate similarity score between two strings (0-1)
@@ -83,8 +102,4 @@ function calculateSimilarity(str1: string, str2: string): number {
   return 1 - distance / maxLen;
 }
 
-export {
-  levenshteinDistance,
-  memoizedLevenshteinDistance,
-  calculateSimilarity
-};
+export { levenshteinDistance, memoizedLevenshteinDistance, calculateSimilarity };

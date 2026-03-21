@@ -227,7 +227,10 @@ router.post(
   createRawBodyMiddleware(),
   async (req: RawBodyRequest, res: Response) => {
     try {
-      const adapter = (req.params.adapter || "").toLowerCase();
+      const adapterParam = req.params["adapter"];
+      const adapter = (
+        Array.isArray(adapterParam) ? (adapterParam[0] ?? "") : (adapterParam ?? "")
+      ).toLowerCase();
       const signature = req.headers["x-webhook-signature"] as string | undefined;
       const timestampHeader = req.headers["x-webhook-timestamp"] as string | undefined;
       const idempotencyKey = req.headers["x-idempotency-key"] as string | undefined;
@@ -385,7 +388,8 @@ router.delete(
   validateRequest(getWebhookSchema),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { id } = req.params;
+      const idParam = req.params["id"];
+      const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
       const userId = req.userId!;
 
       await new Promise<void>((resolve, reject) => {

@@ -314,8 +314,8 @@ export async function calculateSystemHealth(): Promise<{
   averageHealthScore: number;
 }> {
   const tenantsWithViews = Array.from(
-    new Set(Array.from(viewMetrics.keys()).map((k) => k.split("_")[0]))
-  );
+    new Set(Array.from(viewMetrics.keys()).map((k) => k.split("_")[0] ?? ""))
+  ).filter((t) => t !== "");
 
   let totalHealthScore = 0;
   let healthyCount = 0;
@@ -376,11 +376,11 @@ export async function getViewDatabaseStats(): Promise<{
     }
 
     return {
-      totalMaterializedViews: parseInt(result[0].count || "0"),
-      totalSizeBytes: parseInt(result[0].total_size || "0"),
-      totalRows: parseInt(result[0].total_rows || "0"),
-      oldestRefresh: result[0].oldest_refresh ? new Date(result[0].oldest_refresh) : null,
-      newestRefresh: result[0].newest_refresh ? new Date(result[0].newest_refresh) : null,
+      totalMaterializedViews: parseInt(result[0]!.count || "0"),
+      totalSizeBytes: parseInt(result[0]!.total_size || "0"),
+      totalRows: parseInt(result[0]!.total_rows || "0"),
+      oldestRefresh: result[0]!.oldest_refresh ? new Date(result[0]!.oldest_refresh) : null,
+      newestRefresh: result[0]!.newest_refresh ? new Date(result[0]!.newest_refresh) : null,
     };
   } catch (error) {
     logError("Failed to get view database stats", { error });
@@ -398,8 +398,8 @@ export async function getViewDatabaseStats(): Promise<{
  * Run comprehensive health check
  */
 export async function runHealthCheck(): Promise<{
-  systemHealth: ReturnType<typeof calculateSystemHealth>;
-  dbStats: ReturnType<typeof getViewDatabaseStats>;
+  systemHealth: Awaited<ReturnType<typeof calculateSystemHealth>>;
+  dbStats: Awaited<ReturnType<typeof getViewDatabaseStats>>;
   alerts: MonitorAlert[];
 }> {
   const [systemHealth, dbStats] = await Promise.all([
@@ -410,7 +410,7 @@ export async function runHealthCheck(): Promise<{
   // Check all tenants with active views
   const allAlerts: MonitorAlert[] = [];
   for (const [tenantId] of viewMetrics) {
-    const tenantAlerts = await checkViewHealth(tenantId.split("_")[0]);
+    const tenantAlerts = await checkViewHealth(tenantId.split("_")[0]!);
     allAlerts.push(...tenantAlerts);
   }
 
@@ -436,7 +436,7 @@ export function clearOldMetrics(daysOld: number = 30): void {
   // Clear old alerts
   const cutoffDate = new Date(cutoff);
   for (let i = alerts.length - 1; i >= 0; i--) {
-    if (alerts[i].createdAt < cutoffDate) {
+    if (alerts[i]!.createdAt < cutoffDate) {
       alerts.splice(i, 1);
     }
   }

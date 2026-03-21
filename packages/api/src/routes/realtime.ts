@@ -57,7 +57,8 @@ function recordReconnectAttempt(key: string, now: number): boolean {
 }
 
 router.get("/reconciliations/:jobId", async (req: AuthRequest, res: Response): Promise<void> => {
-  const { jobId } = req.params;
+  const jobIdParam = req.params["jobId"];
+  const jobId = Array.isArray(jobIdParam) ? (jobIdParam[0] ?? "") : (jobIdParam ?? "");
   const tenantId = req.tenantId;
   const userId = req.userId;
 

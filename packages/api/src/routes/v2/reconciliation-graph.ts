@@ -22,7 +22,7 @@ const router: Router = Router();
  */
 router.post("/:jobId/nodes", async (req: Request, res: Response) => {
   try {
-    const { jobId } = req.params;
+    const jobId = req.params.jobId as string;
     if (!jobId) {
       return res.status(400).json({ error: "Job ID is required" });
     }
@@ -91,7 +91,7 @@ router.post("/:jobId/nodes", async (req: Request, res: Response) => {
  */
 router.post("/:jobId/edges", async (req: Request, res: Response) => {
   try {
-    const { jobId } = req.params;
+    const jobId = req.params.jobId as string;
     if (!jobId) {
       return res.status(400).json({ error: "Job ID is required" });
     }
@@ -124,7 +124,7 @@ router.post("/:jobId/edges", async (req: Request, res: Response) => {
  */
 router.get("/:jobId/query", async (req: Request, res: Response) => {
   try {
-    const { jobId } = req.params;
+    const jobId = req.params.jobId as string;
     if (!jobId) {
       return res.status(400).json({ error: "Job ID is required" });
     }
@@ -184,7 +184,7 @@ router.get("/:jobId/query", async (req: Request, res: Response) => {
  */
 router.get("/:jobId/state", async (req: Request, res: Response) => {
   try {
-    const { jobId } = req.params;
+    const jobId = req.params.jobId as string;
     if (!jobId) {
       return res.status(400).json({ error: "Job ID is required" });
     }
@@ -217,7 +217,8 @@ router.get("/:jobId/state", async (req: Request, res: Response) => {
  * Server-Sent Events stream for real-time updates
  */
 router.get("/:jobId/stream", (req: Request, res: Response) => {
-  const { jobId } = req.params;
+  const jobIdParam = req.params["jobId"];
+  const jobId = Array.isArray(jobIdParam) ? (jobIdParam[0] ?? "") : (jobIdParam ?? "");
   if (!jobId) {
     res.status(400).json({ error: "Job ID is required" });
     return;

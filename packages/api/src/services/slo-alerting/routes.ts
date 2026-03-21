@@ -385,7 +385,8 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
-      const { alertId } = req.params;
+      const alertIdParam = req.params["alertId"];
+      const alertId = Array.isArray(alertIdParam) ? (alertIdParam[0] ?? "") : (alertIdParam ?? "");
       const userId = req.userId!;
 
       await alerts.acknowledgeAlert(tenantId, alertId, userId);
@@ -408,10 +409,13 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
-      const { alertId } = req.params;
+      const alertIdParam2 = req.params["alertId"];
+      const alertId2 = Array.isArray(alertIdParam2)
+        ? (alertIdParam2[0] ?? "")
+        : (alertIdParam2 ?? "");
       const userId = req.userId;
 
-      await alerts.resolveAlert(tenantId, alertId, userId);
+      await alerts.resolveAlert(tenantId, alertId2, userId);
 
       res.json({ message: "Alert resolved" });
     } catch (error) {
@@ -494,7 +498,8 @@ router.delete(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
-      const { ruleId } = req.params;
+      const ruleIdParam = req.params["ruleId"];
+      const ruleId = Array.isArray(ruleIdParam) ? (ruleIdParam[0] ?? "") : (ruleIdParam ?? "");
 
       await config.deleteAlertRule(tenantId, ruleId);
 
