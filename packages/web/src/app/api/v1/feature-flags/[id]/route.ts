@@ -99,15 +99,10 @@ export const PATCH = withSecurity(
       updatedAt: flag.updatedAt,
     });
   } catch (error) {
-    // Never return 500 - always return 200 with error info for playground
     appLogger.error('Error updating feature flag', error);
     return NextResponse.json(
-      {
-        error: 'Failed to update feature flag',
-        message: error instanceof Error ? error.message : 'Unknown error',
-        demo: true,
-      },
-      { status: 200 }
+      { error: 'Failed to update feature flag' },
+      { status: 500 }
     );
   }
 }, { feature: 'PATCH API' }),

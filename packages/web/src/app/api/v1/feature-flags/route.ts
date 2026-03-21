@@ -100,15 +100,10 @@ export const POST = withSecurity(
         updatedAt: flag.updatedAt,
       });
     } catch (error) {
-      // Never return 500 - always return 200 with error info for playground
       appLogger.error("Error creating feature flag", error);
       return NextResponse.json(
-        {
-          error: "Failed to create feature flag",
-          message: error instanceof Error ? error.message : "Unknown error",
-          demo: true,
-        },
-        { status: 200 }
+        { error: "Failed to create feature flag" },
+        { status: 500 }
       );
     }
   },
@@ -191,15 +186,11 @@ export const GET = withSecurity(
         })),
       });
     } catch (error) {
-      // Never return 500 - always return 200 with empty array for playground
       const { appLogger } = await import("@/lib/utils/logger");
       appLogger.error("Error listing feature flags", error);
       return NextResponse.json(
-        {
-          flags: [],
-          message: "Failed to list feature flags, returning empty list",
-        },
-        { status: 200 }
+        { error: "Failed to list feature flags" },
+        { status: 500 }
       );
     }
   },

@@ -53,15 +53,8 @@ export const GET = withSecurity(
     } catch (error) {
       appLogger.error("Failed to fetch OSS stats", error);
       return NextResponse.json(
-        {
-          success: false,
-          error: "Failed to fetch OSS statistics",
-          data: {
-            downloads: { total: 0, tracked: false },
-            playground: { totalSessions: 0, tracked: false },
-          },
-        },
-        { status: 200 }
+        { success: false, error: "Failed to fetch OSS statistics" },
+        { status: 500 }
       );
     }
   }),

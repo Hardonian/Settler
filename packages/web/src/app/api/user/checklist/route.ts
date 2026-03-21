@@ -29,12 +29,7 @@ export const GET = withSecurity(
 
     if (error) {
       appLogger.error("Error fetching checklist", error);
-      // Never return 500 - return empty checklist with graceful error message
-      return NextResponse.json({ 
-        completedItems: [],
-        error: "Unable to fetch checklist at this time",
-        message: "Please try again later"
-      }, { status: 200 });
+      return NextResponse.json({ error: "Failed to fetch checklist" }, { status: 500 });
     }
 
     type ChecklistItemRow = {
@@ -49,12 +44,7 @@ export const GET = withSecurity(
     return NextResponse.json({ completedItems });
   } catch (error) {
     appLogger.error("Error in checklist GET", error);
-    // Never return 500 - return empty checklist with graceful error message
-    return NextResponse.json({ 
-      completedItems: [],
-      error: "Unable to fetch checklist at this time",
-      message: "Please try again later"
-    }, { status: 200 });
+    return NextResponse.json({ error: "Failed to fetch checklist" }, { status: 500 });
   }
 }, { feature: 'GET API' }),
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
@@ -91,23 +81,13 @@ export const POST = withSecurity(
 
     if (error) {
       appLogger.error("Error updating checklist", error);
-      // Never return 500 - return graceful error response
-      return NextResponse.json({ 
-        success: false,
-        error: "Unable to update checklist at this time",
-        message: "Please try again later"
-      }, { status: 200 });
+      return NextResponse.json({ error: "Failed to update checklist" }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, item: data });
   } catch (error) {
     appLogger.error("Error in checklist POST", error);
-    // Never return 500 - return graceful error response
-    return NextResponse.json({ 
-      success: false,
-      error: "Unable to update checklist at this time",
-      message: "Please try again later"
-    }, { status: 200 });
+    return NextResponse.json({ error: "Failed to update checklist" }, { status: 500 });
   }
 }, { feature: 'POST API' }),
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }

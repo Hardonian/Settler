@@ -435,11 +435,19 @@ async function spawnKernelRequest(
   return await new Promise((resolve, reject) => {
     const startedAt = Date.now();
     const child = spawn(runner.cmd, runner.args, { stdio: ["pipe", "pipe", "pipe"] });
+    // Track whether promise has already settled to avoid double-reject after SIGKILL.
+    let settled = false;
+
     const timer = setTimeout(() => {
+      if (settled) return;
+      settled = true;
       telemetry.timeout += 1;
       child.kill("SIGKILL");
+      // Unref so the timer does not keep the event loop alive after the test.
       reject(new KernelInvocationError("TIMEOUT"));
     }, timeoutMs);
+    // Unref the timer so it doesn't prevent process/test teardown.
+    (timer as unknown as { unref?: () => void }).unref?.();
 
     let stdout = "";
     let stderr = "";
@@ -452,12 +460,17 @@ async function spawnKernelRequest(
     });
 
     child.on("error", () => {
+      if (settled) return;
+      settled = true;
       clearTimeout(timer);
       reject(new KernelInvocationError("SPAWN_FAILED"));
     });
 
     child.on("close", (code) => {
       clearTimeout(timer);
+      // If already settled (e.g. by timeout), ignore the post-SIGKILL close event.
+      if (settled) return;
+      settled = true;
       const safeStderr = redactStderr(stderr);
       let parsed: KernelEnvelope;
       try {

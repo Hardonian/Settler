@@ -22,12 +22,8 @@ export const GET = withSecurity(
   } catch (error) {
     appLogger.error('[Feedback Loops] Error fetching insights', error);
     return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to fetch insights',
-        message: 'Please try again later or contact support if the issue persists',
-      },
-      { status: 200 }
+      { error: 'Failed to fetch insights' },
+      { status: 500 }
     );
   }
 }, { feature: 'GET API' }),

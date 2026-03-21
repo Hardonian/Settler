@@ -8,6 +8,7 @@
 
 "use server";
 
+import { randomBytes } from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/server";
 import { success, error, type ActionResult } from "@/lib/actions/types";
 
@@ -82,7 +83,7 @@ export async function impersonateUser(
 
     return success(
       {
-        sessionToken: `impersonation_${targetUserId}_${Date.now()}`,
+        sessionToken: `impersonation_${randomBytes(32).toString("hex")}`,
       },
       "Impersonation session created"
     );

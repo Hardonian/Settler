@@ -93,23 +93,10 @@ export const GET = withSecurity(
           updatedAt: receipt.updatedAt,
         });
       } catch (error) {
-        // Never return 500 - always return 200 with demo response for playground
         appLogger.error("Error fetching receipt", error);
         return NextResponse.json(
-          {
-            id: `demo_error_${Date.now()}`,
-            vendor: "Demo Merchant",
-            date: new Date().toISOString().split("T")[0],
-            currency: "USD",
-            subtotal: 0,
-            tax: 0,
-            total: 0,
-            items: [],
-            demo: true,
-            error: "Failed to fetch receipt",
-            message: error instanceof Error ? error.message : "Unknown error",
-          },
-          { status: 200 }
+          { error: "Failed to fetch receipt" },
+          { status: 500 }
         );
       }
     },

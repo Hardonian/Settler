@@ -347,19 +347,9 @@ export const GET = withSecurity(
         duration,
       });
 
-      // Return empty array on error (graceful degradation)
       return NextResponse.json(
-        {
-          data: [],
-          pagination: {
-            total: 0,
-            limit: 100,
-            offset: 0,
-            hasMore: false,
-          },
-          error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
-        },
-        { status: 200 }
+        { error: "Failed to retrieve reconciliation jobs" },
+        { status: 500 }
       );
     }
   },

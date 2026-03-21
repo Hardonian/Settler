@@ -96,19 +96,8 @@ export const GET = withSecurity(
       } catch (error) {
         appLogger.error("Ops overview error", error);
         return NextResponse.json(
-          {
-            health: {
-              status: "critical" as const,
-              message: "Failed to load overview data",
-            },
-            totalCustomers: 0,
-            activeCustomers: 0,
-            totalUsage: 0,
-            errorRate: 0,
-            pendingJobs: 0,
-            failedWebhooks: 0,
-          },
-          { status: 200 }
+          { error: "Failed to load ops overview data" },
+          { status: 500 }
         );
       }
     },

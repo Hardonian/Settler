@@ -34,8 +34,10 @@ export const GET = withSecurity(
       );
     }
 
-    // Check if user is admin (simplified - would use proper role check)
-    const isAdmin = user.user_metadata?.role === 'admin';
+    // Check admin via database-backed role (not user_metadata which is user-controllable).
+    const { getUserRole, UserRole } = await import('@/shared/auth/roles');
+    const userRole = await getUserRole(user.id);
+    const isAdmin = userRole === UserRole.SUPER_ADMIN || userRole === UserRole.ADMIN;
     const billingAccountId = request.nextUrl.searchParams.get('billingAccountId');
 
     if (billingAccountId) {
@@ -72,10 +74,9 @@ export const GET = withSecurity(
       error: errorMessage,
       stack: error instanceof Error ? error.stack : undefined,
     });
-    // Return 200 with null instead of 500 to prevent UI crash
     const response = NextResponse.json(
-      { error: 'Failed to fetch metrics', metrics: null },
-      { status: 200 }
+      { error: 'Failed to fetch metrics' },
+      { status: 500 }
     );
     return addCorrelationHeaders(response, correlationId);
   }

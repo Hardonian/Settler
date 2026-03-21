@@ -103,20 +103,10 @@ export const POST = withSecurity(
       metadata: result.metadata,
     });
   } catch (error) {
-    // Never return 500 - always return 200 with demo evaluation for playground
     appLogger.error('Error evaluating feature flag', error);
     return NextResponse.json(
-      {
-        value: false,
-        source: 'demo',
-        environment: 'production',
-        metadata: {
-          demo: true,
-          error: 'Failed to evaluate feature flag',
-          message: error instanceof Error ? error.message : 'Unknown error',
-        },
-      },
-      { status: 200 }
+      { error: 'Failed to evaluate feature flag' },
+      { status: 500 }
     );
   }
 }, { feature: 'Feature Flags Evaluation', allowPublic: true }),
