@@ -17,6 +17,7 @@ import {
   resolveTenantMembershipScope,
   TenantMembershipError,
 } from "@/lib/supabase/tenant-membership";
+import { prisma } from "@/shared/db/prismaClient";
 import { z } from "zod";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
@@ -194,8 +195,81 @@ export const GET = withSecurity(
           });
         }
 
-        // List all reconciliations (placeholder - would need list function)
-        return NextResponse.json({ reconciliations: [] }, { status: 200 });
+        // List reconciliation jobs for this tenant with their latest result
+        const cursor = request.nextUrl.searchParams.get("cursor") ?? undefined;
+        const limit = Math.min(Number(request.nextUrl.searchParams.get("limit") || 50), 500);
+
+        const jobs = await prisma.reconJob.findMany({
+          where: { tenantId, deletedAt: null },
+          orderBy: { createdAt: "desc" },
+          take: limit,
+          ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
+          select: {
+            id: true,
+            name: true,
+            status: true,
+            sourceAdapter: true,
+            targetAdapter: true,
+            createdAt: true,
+            updatedAt: true,
+            results: {
+              orderBy: { startedAt: "desc" },
+              take: 1,
+              select: {
+                id: true,
+                status: true,
+                startedAt: true,
+                completedAt: true,
+                sourceCount: true,
+                targetCount: true,
+                matchedCount: true,
+                unmatchedSourceCount: true,
+                unmatchedTargetCount: true,
+                conflictCount: true,
+                errorMessage: true,
+              },
+            },
+          },
+        });
+
+        const reconciliations = jobs.map((job) => {
+          const latest = job.results[0] ?? null;
+          return {
+            id: job.id,
+            name: job.name,
+            status: job.status,
+            sourceAdapter: job.sourceAdapter,
+            targetAdapter: job.targetAdapter,
+            createdAt: job.createdAt.toISOString(),
+            updatedAt: job.updatedAt.toISOString(),
+            latestResult: latest
+              ? {
+                  id: latest.id,
+                  status: latest.status,
+                  startedAt: latest.startedAt.toISOString(),
+                  completedAt: latest.completedAt?.toISOString() ?? null,
+                  counts: {
+                    source: latest.sourceCount,
+                    target: latest.targetCount,
+                    matched: latest.matchedCount,
+                    unmatchedSource: latest.unmatchedSourceCount,
+                    unmatchedTarget: latest.unmatchedTargetCount,
+                    conflicts: latest.conflictCount,
+                  },
+                  errorMessage: latest.errorMessage ?? null,
+                }
+              : null,
+          };
+        });
+
+        return NextResponse.json(
+          {
+            reconciliations,
+            next_cursor:
+              jobs.length === limit ? (jobs[jobs.length - 1]?.id ?? null) : null,
+          },
+          { status: 200 }
+        );
       } catch (error) {
         if (error instanceof TenantMembershipError) {
           return NextResponse.json(

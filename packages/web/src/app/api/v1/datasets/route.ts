@@ -14,14 +14,14 @@ export const runtime = "nodejs";
 export async function GET(request: NextRequest) {
   const ctx = await buildContext(request);
   if (ctx instanceof NextResponse) return ctx;
-  const limited = applyRateLimit(ctx, "read");
+  const limited = await applyRateLimit(ctx, "read");
   if (limited) return limited;
 
   try {
     const url = new URL(request.url);
     const limit = Math.min(Number(url.searchParams.get("limit") || 50), 100);
     const cursor = Number(url.searchParams.get("cursor") || 0);
-    const all = listDatasets(ctx.tenantId);
+    const all = await listDatasets(ctx.tenantId);
     const data = all.slice(cursor, cursor + limit);
     const nextCursor = cursor + limit < all.length ? String(cursor + limit) : undefined;
     return ok(
@@ -36,12 +36,12 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const ctx = await buildContext(request);
   if (ctx instanceof NextResponse) return ctx;
-  const limited = applyRateLimit(ctx, "write");
+  const limited = await applyRateLimit(ctx, "write");
   if (limited) return limited;
 
   try {
     const parsed = DatasetCreateSchema.parse(await request.json());
-    const dataset = addDataset(ctx.tenantId, parsed);
+    const dataset = await addDataset(ctx.tenantId, parsed);
     return ok(NextResponse.json(dataset, { status: 201 }), ctx.requestId);
   } catch (error) {
     return fail(error, request, ctx.requestId);

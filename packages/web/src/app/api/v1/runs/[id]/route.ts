@@ -14,7 +14,7 @@ export const runtime = "nodejs";
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const ctx = await buildContext(request);
   if (ctx instanceof NextResponse) return ctx;
-  const limited = applyRateLimit(ctx, "read");
+  const limited = await applyRateLimit(ctx, "read");
   if (limited) return limited;
 
   try {

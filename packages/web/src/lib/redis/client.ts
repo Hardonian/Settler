@@ -1,86 +1,67 @@
 /**
  * Redis Client (Upstash)
- * 
+ *
  * Provides Redis client for rate limiting, caching, and queues.
  * Gracefully falls back to in-memory store if Redis unavailable.
  */
 
-// Optional Redis import - gracefully handles if package not installed
- 
-type Redis = any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type RedisClient = any;
 
-let redisClient: Redis | null = null;
-let redisAvailable = false;
+let redisInstance: RedisClient | null = null;
+let initializationPromise: Promise<RedisClient | null> | null = null;
 
-/**
- * Initialize Redis client
- * Falls back gracefully if Redis not configured
- */
-function initRedis(): Redis | null {
-  if (redisClient) {
-    return redisClient;
-  }
-
+async function initRedis(): Promise<RedisClient | null> {
   const restUrl = process.env.UPSTASH_REDIS_REST_URL;
   const restToken = process.env.UPSTASH_REDIS_REST_TOKEN;
 
   if (!restUrl || !restToken) {
-    console.warn('[Redis] Upstash Redis not configured, using in-memory fallback');
-    redisAvailable = false;
+    console.warn("[Redis] Upstash Redis not configured — using in-memory fallback");
     return null;
   }
 
-  // Use dynamic import with promise handling
-  return import('@upstash/redis')
-    .then(({ Redis: RedisClient }) => {
-      redisClient = new RedisClient({
-        url: restUrl,
-        token: restToken,
-      });
-      redisAvailable = true;
-      return redisClient;
-    })
-    .catch((error) => {
-      console.warn('[Redis] Failed to initialize Redis client (package may not be installed), using in-memory fallback:', error);
-      redisAvailable = false;
-      return null;
-    });
-}
-
-/**
- * Get Redis client (lazy initialization)
- */
-export function getRedisClient(): Redis | null {
-  return initRedis();
-}
-
-/**
- * Check if Redis is available
- */
-export function isRedisAvailable(): boolean {
-  if (redisClient === null) {
-    initRedis();
+  try {
+    const { Redis } = await import("@upstash/redis");
+    const client = new Redis({ url: restUrl, token: restToken });
+    console.info("[Redis] Connected to Upstash Redis");
+    return client;
+  } catch (error) {
+    console.warn("[Redis] Failed to initialise Redis client — using in-memory fallback:", error);
+    return null;
   }
-  return redisAvailable;
 }
 
 /**
- * Safe Redis operation wrapper
- * Falls back gracefully if Redis unavailable
+ * Get Redis client (lazy, singleton, async).
+ * Resolves to null if Redis is not configured or unavailable.
+ */
+export async function getRedisClient(): Promise<RedisClient | null> {
+  if (redisInstance !== null) return redisInstance;
+  if (initializationPromise) return initializationPromise;
+
+  initializationPromise = initRedis().then((client) => {
+    redisInstance = client;
+    return client;
+  });
+
+  return initializationPromise;
+}
+
+/**
+ * Safe Redis operation wrapper.
+ * Falls back gracefully if Redis unavailable.
  */
 export async function safeRedisOperation<T>(
-  operation: (client: Redis) => Promise<T>,
+  operation: (client: RedisClient) => Promise<T>,
   fallback: () => T | Promise<T>
 ): Promise<T> {
-  const client = getRedisClient();
-  if (!client) {
-    return fallback();
-  }
+  const client = await getRedisClient();
+  if (!client) return fallback();
 
   try {
     return await operation(client);
   } catch (error) {
-    console.warn('[Redis] Operation failed, using fallback:', error);
+    console.warn("[Redis] Operation failed — using fallback:", error);
     return fallback();
   }
 }
