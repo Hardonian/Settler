@@ -104,6 +104,7 @@ const nextConfig = {
     "@settler/react-settler",
     "@settler/protocol",
     "@settler/types",
+    "@settler/reconciliation-core",
   ],
   webpack: (config, { isServer }) => {
     // Ensure webpack can resolve path aliases in dynamic imports

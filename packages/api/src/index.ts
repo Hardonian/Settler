@@ -80,6 +80,7 @@ import {
   isLedgerUsingFallback,
   getLedgerDisabledReason,
 } from "./domain/services/LedgerService";
+import { setReconciliationCollisionLogger } from "@settler/reconciliation-core";
 
 const app: Express = express();
 const PORT = config.port;
@@ -373,6 +374,16 @@ async function startServer() {
 
     await initDatabase();
     logInfo("Database initialized");
+
+    setReconciliationCollisionLogger((entry) => {
+      logWarn("reconciliation_uuid_collision", {
+        event: "reconciliation_uuid_collision",
+        tenant_id: entry.tenantId,
+        duplicate_uuid: entry.duplicateUuid,
+        recon_job_id: entry.reconJobId,
+        reconciliation_run_id: entry.reconciliationRunId,
+      });
+    });
 
     // Initialize Ledger Service (with graceful fallback)
     // This allows the app to boot even if TigerBeetle is not available

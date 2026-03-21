@@ -9,6 +9,16 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Added
 
+- Shared `@settler/reconciliation-core` package for canonical reconciliation mapping, dual-stream merged run listing with real cursor pagination, and cross-model run resolution.
+- Express `GET /api/v1/reconciliation/runs` merged list; canonical detail on `GET /api/v1/reconciliation/runs/:id` with `legacy_v1` adapter field group.
+- Operator runbook for `RECONCILIATION_UUID_COLLISION` (`docs/ops/reconciliation-uuid-collision-runbook.md`) and architecture note `docs/architecture/reconciliation-read-contract.md`.
+- Index `idx_reconciliation_runs_tenant_greatest_started_created` for merged ingestion-run ordering.
+
+### Changed
+
+- `GET /api/console/reconciliation` list: default `run_kind=recon_job` preserves legacy `reconciliations[]` shape; `run_kind=all` adds canonical `runs` plus real `next_cursor` (dual-stream).
+- Workbench-style v1 routes return **409** `RECONCILIATION_WRONG_RUN_KIND` when the id resolves to a `recon_job` instead of `reconciliation_runs`.
+
 - Added policy-as-code substrate modules (`/policies`, `/runner`, `/economic`, `/evidence`) with deterministic compilation and runtime execution funnel via `executeWithPolicy()`.
 - Added deterministic demo and replay commands that generate evidence artifacts under `examples/demo-output` and replay fixtures under `examples/demo-output-fixtures`.
 - Added verification gates for policy boundaries and replay checks (`verify:policy`) and strengthened route smoke verification requirements.

@@ -17,8 +17,98 @@ import {
   compareWorkbenchRuns,
   ReviewState,
 } from "./reconciliation-trust-contract";
+import { prisma } from "../../infrastructure/db/prisma";
+import {
+  decodeMergedRunsCursor,
+  encodeMergedRunsCursor,
+  fetchMergedReconciliationRunsPage,
+  MergedRunsCursorError,
+  resolveReconciliationRunForTenant,
+  serializeV1ReconciliationRunDetail,
+} from "@settler/reconciliation-core";
 
 const router: Router = Router();
+
+function paramString(value: string | string[] | undefined): string {
+  if (Array.isArray(value)) {
+    return value[0] ?? "";
+  }
+  return value ?? "";
+}
+
+const WRONG_RUN_KIND = "RECONCILIATION_WRONG_RUN_KIND";
+const CURSOR_INVALID = "RECONCILIATION_CURSOR_INVALID";
+
+type IngestionWorkbenchGate =
+  | { ok: true }
+  | { ok: false; problem: Parameters<typeof sendProblemJson>[2] }
+  | { ok: false; notFound: true };
+
+async function gateIngestionRunForWorkbench(
+  runId: string,
+  tenantId: string
+): Promise<IngestionWorkbenchGate> {
+  const resolution = await resolveReconciliationRunForTenant(prisma, tenantId, runId);
+  if (resolution.kind === "ambiguous_uuid_collision") {
+    return {
+      ok: false,
+      problem: {
+        status: 409,
+        title: "UUID collision",
+        detail:
+          "The same UUID exists as both a recon job and an ingestion-scoped reconciliation run. Resolve the duplicate rows before using workbench APIs.",
+        code: "RECONCILIATION_UUID_COLLISION",
+        extra: {
+          duplicate_uuid: runId,
+          recon_job_id: resolution.jobId,
+          reconciliation_run_id: resolution.ingestionRunId,
+        },
+      },
+    };
+  }
+  if (resolution.kind === "not_found") {
+    return { ok: false, notFound: true };
+  }
+  if (resolution.kind === "recon_job") {
+    return {
+      ok: false,
+      problem: {
+        status: 409,
+        title: "Wrong run kind for workbench",
+        detail:
+          "This UUID refers to a persisted recon job (recon_jobs). Workbench, compare, and export endpoints apply to ingestion reconciliation runs (reconciliation_runs) only.",
+        code: WRONG_RUN_KIND,
+        extra: {
+          requested_run_id: runId,
+          resolved_run_kind: "recon_job",
+          hint: "Use GET /api/v1/reconciliation/runs/:id for canonical job/run detail.",
+        },
+      },
+    };
+  }
+  return { ok: true };
+}
+
+function respondIngestionWorkbenchGate(
+  req: AuthRequest,
+  res: Response,
+  gate: IngestionWorkbenchGate
+): boolean {
+  if (gate.ok) return true;
+  if ("notFound" in gate && gate.notFound) {
+    res.status(404).json({
+      error: "Not Found",
+      message: "Reconciliation run not found",
+      traceId: req.traceId,
+    });
+    return false;
+  }
+  if ("problem" in gate) {
+    sendProblemJson(req, res, gate.problem);
+    return false;
+  }
+  return false;
+}
 
 /**
  * POST /api/v1/reconciliation/run
@@ -155,26 +245,91 @@ router.post("/run", enforceFreezeState(), async (req: AuthRequest, res: Response
 });
 
 /**
+ * GET /api/v1/reconciliation/runs
+ * Merged list: recon jobs + ingestion reconciliation runs with dual-stream cursor pagination.
+ */
+router.get("/runs", async (req: AuthRequest, res: Response) => {
+  try {
+    const tenantId = req.tenantId!;
+    const limitRaw = parseInt(String(req.query.limit || "50"), 10);
+    const limit = Number.isFinite(limitRaw) ? Math.min(Math.max(limitRaw, 1), 500) : 50;
+    const cursorParam = typeof req.query.cursor === "string" ? req.query.cursor : undefined;
+    const runKindParam = typeof req.query.run_kind === "string" ? req.query.run_kind : "all";
+    const runKind =
+      runKindParam === "recon_job" || runKindParam === "ingestion_run" || runKindParam === "all"
+        ? runKindParam
+        : "all";
+
+    let cursorState = null;
+    if (cursorParam) {
+      try {
+        cursorState = decodeMergedRunsCursor(cursorParam);
+      } catch (e) {
+        sendProblemJson(req, res, {
+          status: 400,
+          title: "Invalid cursor",
+          detail: e instanceof MergedRunsCursorError ? e.message : "Invalid cursor",
+          code: CURSOR_INVALID,
+        });
+        return;
+      }
+    }
+
+    const page = await fetchMergedReconciliationRunsPage({
+      prisma,
+      tenantId,
+      limit,
+      cursorState,
+      runKind,
+      encodeCursor: encodeMergedRunsCursor,
+    });
+
+    return res.json({
+      contract_version: 1,
+      runs: page.runs,
+      next_cursor: page.next_cursor,
+      pagination: page.pagination,
+      response_meta: page.response_meta,
+      traceId: req.traceId,
+    });
+  } catch (error) {
+    logError("Failed to list reconciliation runs", error, { traceId: req.traceId });
+    return res.status(500).json({
+      error: "Internal Server Error",
+      message: "Failed to list reconciliation runs",
+      traceId: req.traceId,
+    });
+  }
+});
+
+/**
  * GET /api/v1/reconciliation/runs/:runId
- * Get reconciliation run details
+ * Canonical reconciliation run detail (recon job or ingestion run), with legacy field names under legacy_v1.
  */
 router.get("/runs/:runId", async (req: AuthRequest, res: Response) => {
   try {
-    const { runId } = req.params;
+    const runId = paramString(req.params.runId);
     const tenantId = req.tenantId!;
 
-    const results = await query(
-      `SELECT
-        id, ingestion_id, status, started_at, completed_at,
-        source_count, target_count, matched_count,
-        unmatched_source_count, unmatched_target_count,
-        confidence_avg, error_message, trace_id, metadata
-      FROM reconciliation_runs
-      WHERE id = $1 AND tenant_id = $2`,
-      [runId || "", tenantId]
-    );
+    const resolution = await resolveReconciliationRunForTenant(prisma, tenantId, runId);
 
-    if (results.length === 0) {
+    if (resolution.kind === "ambiguous_uuid_collision") {
+      sendProblemJson(req, res, {
+        status: 409,
+        title: "UUID collision",
+        detail:
+          "The same UUID exists as both a recon job and an ingestion-scoped reconciliation run. This is a data anomaly; do not treat either row as authoritative until resolved.",
+        code: "RECONCILIATION_UUID_COLLISION",
+        extra: {
+          duplicate_uuid: runId,
+          recon_job_id: resolution.jobId,
+          reconciliation_run_id: resolution.ingestionRunId,
+        },
+      });
+      return;
+    }
+
+    if (resolution.kind === "not_found") {
       return res.status(404).json({
         error: "Not Found",
         message: "Reconciliation run not found",
@@ -182,24 +337,8 @@ router.get("/runs/:runId", async (req: AuthRequest, res: Response) => {
       });
     }
 
-    const run = results[0] as Record<string, unknown>;
-
-    return res.json({
-      id: run.id as string,
-      ingestionId: run.ingestion_id as string | null,
-      status: run.status as string,
-      startedAt: run.started_at as Date,
-      completedAt: run.completed_at as Date | null,
-      sourceCount: run.source_count as number,
-      targetCount: run.target_count as number,
-      matchedCount: run.matched_count as number,
-      unmatchedSourceCount: run.unmatched_source_count as number,
-      unmatchedTargetCount: run.unmatched_target_count as number,
-      confidenceAvg: run.confidence_avg as number | null,
-      errorMessage: run.error_message as string | null,
-      traceId: run.trace_id as string | null,
-      metadata: typeof run.metadata === "string" ? JSON.parse(run.metadata) : run.metadata,
-    });
+    const body = serializeV1ReconciliationRunDetail(resolution.detail);
+    return res.json({ ...body, traceId: req.traceId });
   } catch (error) {
     logError("Failed to get reconciliation run", error, {
       traceId: req.traceId,
@@ -214,12 +353,15 @@ router.get("/runs/:runId", async (req: AuthRequest, res: Response) => {
 
 /**
  * GET /api/v1/reconciliation/runs/:runId/matches
- * Get reconciliation matches
+ * Get reconciliation matches (ingestion reconciliation_runs only)
  */
 router.get("/runs/:runId/matches", async (req: AuthRequest, res: Response) => {
   try {
-    const { runId } = req.params;
+    const runId = paramString(req.params.runId);
     const tenantId = req.tenantId!;
+    const gate = await gateIngestionRunForWorkbench(runId, tenantId);
+    if (!respondIngestionWorkbenchGate(req, res, gate)) return;
+
     const limit = parseInt(req.query.limit as string) || 100;
     const offset = parseInt(req.query.offset as string) || 0;
     const matchType = req.query.matchType as string | undefined;
@@ -260,12 +402,14 @@ router.get("/runs/:runId/matches", async (req: AuthRequest, res: Response) => {
       `SELECT COUNT(*) as count
       FROM reconciliation_matches
       WHERE run_id = $1 AND tenant_id = $2`,
-      [runId || "", tenantId]
+      [runId, tenantId]
     );
 
     const total = (totalResults[0] as { count: string }).count;
 
     return res.json({
+      contract_version: 1,
+      run_kind: "ingestion_run",
       matches: matches.map((m: Record<string, unknown>) => ({
         id: m.id as string,
         matchType: m.match_type as string,
@@ -299,6 +443,7 @@ router.get("/runs/:runId/matches", async (req: AuthRequest, res: Response) => {
         offset,
         total: parseInt(total),
       },
+      traceId: req.traceId,
     });
   } catch (error) {
     logError("Failed to get reconciliation matches", error, {
@@ -314,15 +459,18 @@ router.get("/runs/:runId/matches", async (req: AuthRequest, res: Response) => {
 
 router.get("/runs/:runId/workbench", async (req: AuthRequest, res: Response) => {
   try {
-    const { runId } = req.params;
+    const runId = paramString(req.params.runId);
     const tenantId = req.tenantId!;
+    const gate = await gateIngestionRunForWorkbench(runId, tenantId);
+    if (!respondIngestionWorkbenchGate(req, res, gate)) return;
+
     const limit = parseInt(req.query.limit as string) || 100;
     const offset = parseInt(req.query.offset as string) || 0;
     const queue = req.query.queue as string | undefined;
 
     const runs = await query(
       `SELECT metadata FROM reconciliation_runs WHERE id = $1 AND tenant_id = $2 LIMIT 1`,
-      [runId || "", tenantId]
+      [runId, tenantId]
     );
 
     if (runs.length === 0) {
@@ -353,7 +501,7 @@ router.get("/runs/:runId/workbench", async (req: AuthRequest, res: Response) => 
       WHERE rm.run_id = $1 AND rm.tenant_id = $2
       ORDER BY rm.confidence ASC, st.date DESC
       LIMIT $3 OFFSET $4`,
-      [runId || "", tenantId, limit.toString(), offset.toString()]
+      [runId, tenantId, limit.toString(), offset.toString()]
     );
 
     const items = rows
@@ -387,13 +535,14 @@ router.get("/runs/:runId/workbench", async (req: AuthRequest, res: Response) => 
 
 router.get("/runs/:runId/compare/:otherRunId", async (req: AuthRequest, res: Response) => {
   try {
-    const runIdParam = req.params["runId"];
-    const runId = Array.isArray(runIdParam) ? (runIdParam[0] ?? "") : (runIdParam ?? "");
-    const otherRunIdParam = req.params["otherRunId"];
-    const otherRunId = Array.isArray(otherRunIdParam)
-      ? (otherRunIdParam[0] ?? "")
-      : (otherRunIdParam ?? "");
+    const runId = paramString(req.params.runId);
+    const otherRunId = paramString(req.params.otherRunId);
     const tenantId = req.tenantId!;
+
+    const gateA = await gateIngestionRunForWorkbench(runId, tenantId);
+    if (!respondIngestionWorkbenchGate(req, res, gateA)) return;
+    const gateB = await gateIngestionRunForWorkbench(otherRunId, tenantId);
+    if (!respondIngestionWorkbenchGate(req, res, gateB)) return;
 
     const fetchRunItems = async (targetRunId: string) => {
       const runRows = await query(
@@ -428,9 +577,9 @@ router.get("/runs/:runId/compare/:otherRunId", async (req: AuthRequest, res: Res
       return rows.map((row) => buildWorkbenchItem(row as never, runMetadata));
     };
 
-    const fromItems = await fetchRunItems(runId || "");
-    const toItems = await fetchRunItems(otherRunId || "");
-    const comparison = compareWorkbenchRuns(fromItems, toItems, runId || "", otherRunId || "");
+    const fromItems = await fetchRunItems(runId);
+    const toItems = await fetchRunItems(otherRunId);
+    const comparison = compareWorkbenchRuns(fromItems, toItems, runId, otherRunId);
 
     return res.json(comparison);
   } catch (error) {
@@ -445,12 +594,14 @@ router.get("/runs/:runId/compare/:otherRunId", async (req: AuthRequest, res: Res
 
 router.get("/runs/:runId/workbench/export", async (req: AuthRequest, res: Response) => {
   try {
-    const { runId } = req.params;
+    const runId = paramString(req.params.runId);
     const tenantId = req.tenantId!;
+    const gate = await gateIngestionRunForWorkbench(runId, tenantId);
+    if (!respondIngestionWorkbenchGate(req, res, gate)) return;
 
     const runRows = await query(
       `SELECT metadata FROM reconciliation_runs WHERE id = $1 AND tenant_id = $2 LIMIT 1`,
-      [runId || "", tenantId]
+      [runId, tenantId]
     );
 
     if (runRows.length === 0) {
@@ -479,7 +630,7 @@ router.get("/runs/:runId/workbench/export", async (req: AuthRequest, res: Respon
       LEFT JOIN normalized_transactions tt ON tt.id = rm.target_transaction_id
       WHERE rm.run_id = $1 AND rm.tenant_id = $2
       ORDER BY st.date DESC`,
-      [runId || "", tenantId]
+      [runId, tenantId]
     );
 
     const items = rows.map((row) => buildWorkbenchItem(row as never, runMetadata));
@@ -505,7 +656,7 @@ router.get("/runs/:runId/workbench/export", async (req: AuthRequest, res: Respon
  */
 router.patch("/matches/:matchId", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
-    const { matchId } = req.params;
+    const matchId = paramString(req.params.matchId);
     const { reviewed, reviewState } = req.body as { reviewed?: boolean; reviewState?: ReviewState };
     const tenantId = req.tenantId!;
     const userId = req.userId!;
@@ -528,7 +679,7 @@ router.patch("/matches/:matchId", enforceFreezeState(), async (req: AuthRequest,
         metadata = jsonb_set(COALESCE(metadata, '{}'::jsonb), '{review_state}', to_jsonb($3::text), true),
         updated_at = NOW()
       WHERE id = $4 AND tenant_id = $5`,
-      [reviewed === true, userId || "", normalizedReviewState, matchId || "", tenantId]
+      [reviewed === true, userId || "", normalizedReviewState, matchId, tenantId]
     );
 
     return res.json({
