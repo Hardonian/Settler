@@ -96,7 +96,6 @@ export default async function BuilderCatchAllPage({ params }: PageProps) {
 
     // Render the Builder.io content
     const { BuilderComponent } = await import("@builder.io/react");
-    // @ts-expect-error: @builder.io/react class component types don't align with React 18 TS typings.
     return <BuilderComponent content={content} model={builderModels.page} apiKey={apiKey} />;
   } catch {
     notFound();

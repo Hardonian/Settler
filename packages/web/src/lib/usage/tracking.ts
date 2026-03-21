@@ -198,7 +198,7 @@ export async function getCurrentUsage(
     const periodStart = getPeriodStart(period);
 
     // Try Redis first for fast reads
-    const redis = getRedisClient();
+    const redis = await getRedisClient();
     const redisKey = getRedisKey(billingAccountId, service, period, periodStart);
 
     let current = 0;
@@ -331,7 +331,7 @@ export async function checkAndIncrementUsage(
     }
 
     const periodStart = getPeriodStart(period);
-    const redis = getRedisClient();
+    const redis = await getRedisClient();
     const redisKey = getRedisKey(billingAccountId, service, period, periodStart);
 
     // Try atomic increment in Redis first

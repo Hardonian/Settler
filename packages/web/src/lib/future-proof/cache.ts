@@ -74,7 +74,7 @@ export async function cacheGet<T>(key: string): Promise<T | null> {
   // Try Redis first if available
   try {
     const { getRedisClient, safeRedisOperation } = await import("@/lib/redis/client");
-    const client = getRedisClient();
+    const client = await getRedisClient();
     if (client) {
       return await safeRedisOperation(
         async (redis) => {
@@ -99,7 +99,7 @@ export async function cacheSet<T>(key: string, value: T, ttlSeconds = 300): Prom
   // Try Redis first if available
   try {
     const { getRedisClient, safeRedisOperation } = await import("@/lib/redis/client");
-    const client = getRedisClient();
+    const client = await getRedisClient();
     if (client) {
       await safeRedisOperation(
         async (redis) => {
@@ -124,7 +124,7 @@ export async function cacheSet<T>(key: string, value: T, ttlSeconds = 300): Prom
 export async function cacheDelete(key: string): Promise<void> {
   try {
     const { getRedisClient, safeRedisOperation } = await import("@/lib/redis/client");
-    const client = getRedisClient();
+    const client = await getRedisClient();
     if (client) {
       await safeRedisOperation(
         async (redis) => {

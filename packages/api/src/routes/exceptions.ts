@@ -155,6 +155,71 @@ router.get(
   }
 );
 
+// Get exception statistics — must be defined BEFORE /:id to avoid shadowing
+router.get(
+  "/exceptions/stats",
+  requirePermission(Permission.REPORTS_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = req.tenantId!;
+      const { jobId } = req.query as { jobId?: string };
+
+      const where: any = {
+        tenantId,
+        matchType: "unmatched",
+        run: {
+          is: jobId ? { reconJobId: jobId } : {},
+        },
+      };
+
+      const total = await prisma.reconciliationMatch.count({ where });
+      const open = await prisma.reconciliationMatch.count({
+        where: { ...where, reviewed: false },
+      });
+      const resolved = await prisma.reconciliationMatch.count({
+        where: { ...where, reviewed: true },
+      });
+
+      // TRUTHFUL STATE: Return available stats and mark unavailable fields
+      // Note: inProgress and dismissed require additional tracking fields in the schema
+      const byCategory: Record<string, number> = {};
+
+      // Category breakdown would require grouping by a category field
+      // Marked as unavailable until schema supports it
+      const categoryAvailable = false;
+
+      res.json({
+        data: {
+          total,
+          open,
+          inProgress: null, // Not tracked - requires additional state
+          resolved,
+          dismissed: null, // Not tracked - requires additional state
+          byCategory,
+        },
+        _meta: {
+          categoryBreakdown: {
+            available: categoryAvailable,
+            message: "Category breakdown requires match category field",
+          },
+          inProgress: {
+            available: false,
+            message: "In-progress state not currently tracked",
+          },
+          dismissed: {
+            available: false,
+            message: "Dismissed state not currently tracked",
+          },
+        },
+      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to get exception statistics", 500, {
+        userId: req.userId,
+      });
+    }
+  }
+);
+
 // Get exception details
 router.get(
   "/exceptions/:id",
@@ -315,71 +380,6 @@ router.post(
       });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to bulk resolve exceptions", 500, {
-        userId: req.userId,
-      });
-    }
-  }
-);
-
-// Get exception statistics
-router.get(
-  "/exceptions/stats",
-  requirePermission(Permission.REPORTS_READ),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = req.tenantId!;
-      const { jobId } = req.query as { jobId?: string };
-
-      const where: any = {
-        tenantId,
-        matchType: "unmatched",
-        run: {
-          is: jobId ? { reconJobId: jobId } : {},
-        },
-      };
-
-      const total = await prisma.reconciliationMatch.count({ where });
-      const open = await prisma.reconciliationMatch.count({
-        where: { ...where, reviewed: false },
-      });
-      const resolved = await prisma.reconciliationMatch.count({
-        where: { ...where, reviewed: true },
-      });
-
-      // TRUTHFUL STATE: Return available stats and mark unavailable fields
-      // Note: inProgress and dismissed require additional tracking fields in the schema
-      const byCategory: Record<string, number> = {};
-
-      // Category breakdown would require grouping by a category field
-      // Marked as unavailable until schema supports it
-      const categoryAvailable = false;
-
-      res.json({
-        data: {
-          total,
-          open,
-          inProgress: null, // Not tracked - requires additional state
-          resolved,
-          dismissed: null, // Not tracked - requires additional state
-          byCategory,
-        },
-        _meta: {
-          categoryBreakdown: {
-            available: categoryAvailable,
-            message: "Category breakdown requires match category field",
-          },
-          inProgress: {
-            available: false,
-            message: "In-progress state not currently tracked",
-          },
-          dismissed: {
-            available: false,
-            message: "Dismissed state not currently tracked",
-          },
-        },
-      });
-    } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get exception statistics", 500, {
         userId: req.userId,
       });
     }

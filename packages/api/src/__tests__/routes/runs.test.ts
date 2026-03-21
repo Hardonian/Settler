@@ -2,20 +2,19 @@
  * Runs Route Tests
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
 import request from "supertest";
 import express, { Express } from "express";
 import { runsRouter } from "../../routes/v1/runs";
 import { authMiddleware } from "../../middleware/auth";
 
 // Mock database
-const mockQuery = vi.fn();
-vi.mock("../../db", () => ({
+const mockQuery = jest.fn();
+jest.mock("../../db", () => ({
   query: (...args: any[]) => mockQuery(...args),
 }));
 
 // Mock auth middleware
-vi.mock("../../middleware/auth", () => ({
+jest.mock("../../middleware/auth", () => ({
   authMiddleware: (req: any, _res: any, next: any) => {
     req.userId = "test-user-id";
     req.tenantId = "test-tenant-id";
@@ -24,13 +23,19 @@ vi.mock("../../middleware/auth", () => ({
 }));
 
 // Mock authorization
-vi.mock("../../middleware/authorization", () => ({
+jest.mock("../../middleware/authorization", () => ({
   requirePermission: () => (_req: any, _res: any, next: any) => next(),
 }));
 
 // Mock validation
-vi.mock("../../middleware/validation", () => ({
+jest.mock("../../middleware/validation", () => ({
   validateRequest: () => (_req: any, _res: any, next: any) => next(),
+}));
+
+// Mock governance
+jest.mock("../../middleware/governance", () => ({
+  enforceFreezeState: () => (_req: any, _res: any, next: any) => next(),
+  bypassFreeze: (_req: any, _res: any, next: any) => next(),
 }));
 
 describe("Runs Routes", () => {
@@ -41,7 +46,7 @@ describe("Runs Routes", () => {
     app.use(express.json());
     app.use(authMiddleware);
     app.use("/api/v1", runsRouter);
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe("GET /api/v1/runs", () => {
@@ -97,7 +102,7 @@ describe("Runs Routes", () => {
 
       const response = await request(app).get("/api/v1/runs/run-1").expect(200);
 
-      expect(response.body.data.id).toBe("run-1");
+      expect(response.body.data.run_id).toBe("run-1");
     });
 
     it("should return 404 when run not found", async () => {

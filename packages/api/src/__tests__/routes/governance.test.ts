@@ -2,20 +2,19 @@
  * Governance Route Tests
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
 import request from "supertest";
 import express, { Express } from "express";
 import { governanceRouter } from "../../routes/v1/governance";
 import { authMiddleware } from "../../middleware/auth";
 
 // Mock database
-const mockQuery = vi.fn();
-vi.mock("../../db", () => ({
+const mockQuery = jest.fn();
+jest.mock("../../db", () => ({
   query: (...args: any[]) => mockQuery(...args),
 }));
 
 // Mock auth middleware
-vi.mock("../../middleware/auth", () => ({
+jest.mock("../../middleware/auth", () => ({
   authMiddleware: (req: any, _res: any, next: any) => {
     req.userId = "test-user-id";
     req.tenantId = "test-tenant-id";
@@ -24,7 +23,7 @@ vi.mock("../../middleware/auth", () => ({
 }));
 
 // Mock authorization
-vi.mock("../../middleware/authorization", () => ({
+jest.mock("../../middleware/authorization", () => ({
   requirePermission: () => (_req: any, _res: any, next: any) => next(),
 }));
 
@@ -36,7 +35,7 @@ describe("Governance Routes", () => {
     app.use(express.json());
     app.use(authMiddleware);
     app.use("/api/v1", governanceRouter);
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe("GET /api/v1/governance/freeze", () => {

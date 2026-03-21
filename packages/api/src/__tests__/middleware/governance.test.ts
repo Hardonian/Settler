@@ -2,13 +2,13 @@
  * Governance Middleware Tests
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Request, Response } from "express";
 import { enforceFreezeState, checkTenantFrozen } from "../../middleware/governance";
+import { clearGovernanceCache } from "../../utils/governance-cache";
 
 // Mock database
-const mockQuery = vi.fn();
-vi.mock("../../db", () => ({
+const mockQuery = jest.fn();
+jest.mock("../../db", () => ({
   query: (...args: any[]) => mockQuery(...args),
 }));
 
@@ -18,6 +18,7 @@ describe("Governance Middleware", () => {
   let nextFn: any;
 
   beforeEach(() => {
+    clearGovernanceCache();
     mockReq = {
       tenantId: "test-tenant-id",
       userId: "test-user-id",
@@ -25,12 +26,12 @@ describe("Governance Middleware", () => {
     };
 
     mockRes = {
-      status: vi.fn().mockReturnThis(),
-      json: vi.fn().mockReturnThis(),
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis(),
     };
 
-    nextFn = vi.fn();
-    vi.clearAllMocks();
+    nextFn = jest.fn();
+    jest.clearAllMocks();
   });
 
   describe("checkTenantFrozen", () => {
@@ -58,12 +59,12 @@ describe("Governance Middleware", () => {
       expect(result.frozen).toBe(false);
     });
 
-    it("should default to unfrozen on database error", async () => {
+    it("should default to frozen on database error (fail-closed security posture)", async () => {
       mockQuery.mockRejectedValueOnce(new Error("Database error"));
 
       const result = await checkTenantFrozen("test-tenant-id");
 
-      expect(result.frozen).toBe(false);
+      expect(result.frozen).toBe(true);
     });
   });
 

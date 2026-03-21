@@ -21,7 +21,7 @@ interface SheetProps {
 
 export function Sheet({ open = false, onOpenChange, children }: SheetProps) {
   const [internalOpen, setInternalOpen] = React.useState(open);
-  
+
   const isControlled = onOpenChange !== undefined;
   const isOpen = isControlled ? open : internalOpen;
   const handleOpenChange = (newOpen: boolean) => {
@@ -56,22 +56,21 @@ interface SheetTriggerProps {
 
 export function SheetTrigger({ children, asChild }: SheetTriggerProps) {
   const { onOpenChange } = React.useContext(SheetContext);
-  
+
   // Clone element if asChild is true to avoid wrapper div
   if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children as React.ReactElement<any>, {
+    const typedChildren = children as React.ReactElement<{
+      onClick?: (e: React.MouseEvent) => void;
+    }>;
+    return React.cloneElement(typedChildren, {
       onClick: (e: React.MouseEvent) => {
-        children.props.onClick?.(e);
+        typedChildren.props.onClick?.(e);
         onOpenChange(true);
-      }
+      },
     });
   }
 
-  return (
-    <div onClick={() => onOpenChange(true)}>
-      {children}
-    </div>
-  );
+  return <div onClick={() => onOpenChange(true)}>{children}</div>;
 }
 
 interface SheetContentProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -86,9 +85,11 @@ export function SheetContent({ side = "right", className, children, ...props }: 
 
   const sideClasses = {
     left: "inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left",
-    right: "inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",
+    right:
+      "inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",
     top: "inset-x-0 top-0 border-b data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
-    bottom: "inset-x-0 bottom-0 border-t data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
+    bottom:
+      "inset-x-0 bottom-0 border-t data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
   };
 
   return (

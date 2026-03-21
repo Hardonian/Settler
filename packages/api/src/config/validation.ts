@@ -96,6 +96,7 @@ export const env = cleanEnv(process.env, {
   JWT_ACCESS_EXPIRY: str({ default: "15m" }),
   JWT_REFRESH_EXPIRY: str({ default: "7d" }),
   JWT_REFRESH_SECRET: str({
+    devDefault: "dev-refresh-secret-change-in-production",
     desc: "Optional separate secret for refresh tokens",
   }),
 
