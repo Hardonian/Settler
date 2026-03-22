@@ -5,25 +5,23 @@
  * No auth required. Read-only, deterministic.
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import {
-  getShowcaseDataset,
-  getDefaultShowcaseTenant,
-} from "@/lib/demo/showcase-data";
+import { NextRequest } from "next/server";
+import { getShowcaseDataset, getDefaultShowcaseTenant } from "@/lib/demo/showcase-data";
+import { checkDemoRateLimit, demoJsonResponse } from "@/lib/demo/demo-response";
 
 export const runtime = "nodejs";
 
 export async function GET(request: NextRequest) {
+  const limited = checkDemoRateLimit(request);
+  if (limited) return limited;
+
   const { searchParams } = new URL(request.url);
-  const tenantId =
-    searchParams.get("tenantId") || getDefaultShowcaseTenant().id;
+  const tenantId = searchParams.get("tenantId") || getDefaultShowcaseTenant().id;
   const statusFilter = searchParams.get("status")?.toLowerCase();
   const severityFilter = searchParams.get("severity")?.toLowerCase();
   const runIdFilter = searchParams.get("runId");
 
-  let exceptions = getShowcaseDataset().exceptions.filter(
-    (e) => e.tenantId === tenantId
-  );
+  let exceptions = getShowcaseDataset().exceptions.filter((e) => e.tenantId === tenantId);
 
   if (statusFilter) {
     exceptions = exceptions.filter((e) => e.status === statusFilter);
@@ -35,5 +33,5 @@ export async function GET(request: NextRequest) {
     exceptions = exceptions.filter((e) => e.runId === runIdFilter);
   }
 
-  return NextResponse.json(exceptions);
+  return demoJsonResponse(exceptions);
 }

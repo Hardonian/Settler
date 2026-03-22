@@ -5,12 +5,16 @@
  * No auth required. Read-only, deterministic.
  */
 
-import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getShowcaseDataset } from "@/lib/demo/showcase-data";
+import { checkDemoRateLimit, demoJsonResponse } from "@/lib/demo/demo-response";
 
 export const runtime = "nodejs";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const limited = checkDemoRateLimit(request);
+  if (limited) return limited;
+
   const { tenants } = getShowcaseDataset();
-  return NextResponse.json(tenants);
+  return demoJsonResponse(tenants);
 }
