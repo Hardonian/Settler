@@ -1,10 +1,10 @@
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Settler icon mark: geometric layered S on dark navy circle -->
-  <circle cx="32" cy="32" r="32" fill="#0B1E3D"/>
-  <!-- Top C-shape (teal) — upper arc of S, opens right -->
-  <path d="M44 19C40 14 33 12 26 14C19 17 15 23 15 30" stroke="#2DA8A8" stroke-width="6" stroke-linecap="round" fill="none"/>
-  <path d="M40 22C37 18 31 17 26 18.5C20 21 18 26 18 30" stroke="#1ECFCF" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.55"/>
-  <!-- Bottom C-shape (white) — lower arc of S, opens left -->
-  <path d="M20 45C24 50 31 52 38 50C45 47 49 41 49 34" stroke="#E2EBF0" stroke-width="6" stroke-linecap="round" fill="none"/>
-  <path d="M24 42C27 46 33 47 38 45.5C44 43 46 38 46 34" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.6"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <path d="M18 33.5L27 42.5L46 23.5" stroke="white" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

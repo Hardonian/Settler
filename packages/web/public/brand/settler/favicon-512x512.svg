@@ -1,10 +1,10 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Settler favicon 512: geometric layered S mark on dark navy circle -->
-  <circle cx="256" cy="256" r="256" fill="#0B1E3D"/>
-  <!-- Top C-shape (teal) — upper arc of S, opens right -->
-  <path d="M352 152C320 112 264 96 208 112C152 136 120 184 120 240" stroke="#2DA8A8" stroke-width="48" stroke-linecap="round" fill="none"/>
-  <path d="M320 176C296 144 248 136 208 148C160 168 144 208 144 240" stroke="#1ECFCF" stroke-width="24" stroke-linecap="round" fill="none" opacity="0.55"/>
-  <!-- Bottom C-shape (white) — lower arc of S, opens left -->
-  <path d="M160 360C192 400 248 416 304 400C360 376 392 328 392 272" stroke="#E2EBF0" stroke-width="48" stroke-linecap="round" fill="none"/>
-  <path d="M192 336C216 368 264 376 304 364C352 344 368 304 368 272" stroke="#FFFFFF" stroke-width="24" stroke-linecap="round" fill="none" opacity="0.6"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <path d="M149 267L218 336L363 191" stroke="white" stroke-width="42" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

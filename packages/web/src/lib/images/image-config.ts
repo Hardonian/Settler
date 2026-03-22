@@ -17,16 +17,15 @@ export interface ImageConfig {
   alt: string;
   category: ImageCategory;
   mimeType: string;
-  webpPath?: string; // Optional WebP version for better performance
+  webpPath?: string;
 }
 
 /**
  * Settler brand images configuration
- * All active brand images are located in /public/brand/settler/
  *
- * SVG variants are preferred for UI rendering (scalable, small file size).
- * PNG variants are canonical brand assets for favicon, app icons, OG images,
- * email templates, and external platforms that require raster images.
+ * Canonical brand logo: /public/assets/images/Settler-logo.png
+ * Icon mark SVGs: /public/brand/settler/ (checkmark icon on indigo-blue gradient)
+ * Favicon SVGs: /public/brand/settler/ (matching checkmark icon)
  */
 const SETTLER_IMAGES_CONFIG = {
   // Favicons — SVG for modern browsers, PNG fallbacks for email/platform use
@@ -54,7 +53,6 @@ const SETTLER_IMAGES_CONFIG = {
     category: "favicon" as const,
     mimeType: "image/svg+xml",
   },
-  // Canonical PNG favicon — for platforms that do not support SVG favicons
   faviconPng: {
     path: "/brand/settler/favicon.png",
     width: 512,
@@ -63,7 +61,6 @@ const SETTLER_IMAGES_CONFIG = {
     category: "favicon" as const,
     mimeType: "image/png",
   },
-  // App icon — used for PWA install prompts and app store listings
   appIcon: {
     path: "/brand/settler/app-icon.png",
     width: 512,
@@ -78,7 +75,7 @@ const SETTLER_IMAGES_CONFIG = {
     path: "/opengraph-image",
     width: 1200,
     height: 630,
-    alt: "Settler - Financial Infrastructure for Developers",
+    alt: "Settler - Deterministic Reconciliation",
     category: "social" as const,
     mimeType: "image/png",
   },
@@ -86,73 +83,77 @@ const SETTLER_IMAGES_CONFIG = {
     path: "/opengraph-image",
     width: 1200,
     height: 630,
-    alt: "Settler - Financial Infrastructure for Developers",
+    alt: "Settler - Deterministic Reconciliation",
     category: "social" as const,
     mimeType: "image/png",
   },
 
-  // Logos — SVG preferred for UI; PNG available for external/raster contexts
+  // Logos — canonical PNG lockup is the source of truth
   logoMain: {
-    path: "/brand/settler/logo-horizontal.svg",
-    width: 160,
-    height: 40,
+    path: "/assets/images/Settler-logo.png",
+    width: 1303,
+    height: 339,
     alt: "Settler Logo",
+    category: "logo" as const,
+    mimeType: "image/png",
+    webpPath: "/assets/images/Settler-logo.webp",
+  },
+  logoHorizontalLight: {
+    path: "/assets/images/Settler-logo.png",
+    width: 1303,
+    height: 339,
+    alt: "Settler Logo",
+    category: "logo" as const,
+    mimeType: "image/png",
+    webpPath: "/assets/images/Settler-logo.webp",
+  },
+  logoHorizontalDark: {
+    path: "/assets/images/Settler-logo.png",
+    width: 1303,
+    height: 339,
+    alt: "Settler Logo",
+    category: "logo" as const,
+    mimeType: "image/png",
+    webpPath: "/assets/images/Settler-logo.webp",
+  },
+  logoStackedLight: {
+    path: "/assets/images/Settler-logo.png",
+    width: 1303,
+    height: 339,
+    alt: "Settler Logo — Stacked",
+    category: "logo" as const,
+    mimeType: "image/png",
+    webpPath: "/assets/images/Settler-logo.webp",
+  },
+  logoSquareLight: {
+    path: "/brand/settler/logo-square.svg",
+    width: 64,
+    height: 64,
+    alt: "Settler Square Logo",
     category: "logo" as const,
     mimeType: "image/svg+xml",
   },
-  // Canonical PNG logos (for email templates, OG images, external platforms)
-  logoHorizontalLight: {
-    path: "/brand/settler/logo-horizontal-light.png",
-    width: 1200,
-    height: 314,
-    alt: "Settler Logo — Horizontal Light",
-    category: "logo" as const,
-    mimeType: "image/png",
-  },
-  logoHorizontalDark: {
-    path: "/brand/settler/logo-horizontal-dark.png",
-    width: 1200,
-    height: 314,
-    alt: "Settler Logo — Horizontal Dark",
-    category: "logo" as const,
-    mimeType: "image/png",
-  },
-  logoStackedLight: {
-    path: "/brand/settler/logo-stacked-light.png",
-    width: 960,
-    height: 540,
-    alt: "Settler Logo — Stacked Light",
-    category: "logo" as const,
-    mimeType: "image/png",
-  },
-  logoSquareLight: {
-    path: "/brand/settler/square-logo-light.png",
-    width: 512,
-    height: 512,
-    alt: "Settler Square Logo",
-    category: "logo" as const,
-    mimeType: "image/png",
-  },
   logoIconLight: {
-    path: "/brand/settler/icon-light.png",
-    width: 512,
-    height: 512,
+    path: "/brand/settler/logo-icon.svg",
+    width: 64,
+    height: 64,
     alt: "Settler Icon Mark",
     category: "logo" as const,
-    mimeType: "image/png",
+    mimeType: "image/svg+xml",
   },
   logoWordmarkLight: {
-    path: "/brand/settler/wordmark-light.png",
-    width: 1200,
-    height: 314,
+    path: "/assets/images/Settler-logo.png",
+    width: 1303,
+    height: 339,
     alt: "Settler Wordmark",
     category: "logo" as const,
     mimeType: "image/png",
+    webpPath: "/assets/images/Settler-logo.webp",
   },
   logoSEO: {
     path: "/opengraph-image",
-    width: 1073,
-    height: 357,
+    width: 1200,
+    height: 630,
     alt: "Settler SEO Logo",
     category: "logo" as const,
     mimeType: "image/png",
@@ -193,7 +194,6 @@ export function getImageUrl(
 ): string {
   const config = getImageConfig(key);
   const base = baseUrl || process.env.NEXT_PUBLIC_SITE_URL || "https://settler.dev";
-  // Use WebP if available and preferred (for better performance)
   const imagePath = preferWebP && config.webpPath ? config.webpPath : config.path;
   return `${base}${imagePath}`;
 }
