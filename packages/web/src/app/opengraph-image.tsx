@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-export const alt = 'Settler - Financial Infrastructure for Developers';
+export const alt = 'Settler - Deterministic Reconciliation';
 export const size = {
   width: 1200,
   height: 630,
@@ -50,30 +50,34 @@ export default async function Image() {
             zIndex: 10,
           }}
         >
-          {/* Logo Mark */}
+          {/* Checkmark Icon — matches canonical Settler logo mark */}
           <div
             style={{
               width: 80,
               height: 80,
               borderRadius: 20,
-              background: 'linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)',
+              background: 'linear-gradient(135deg, #6366F1 0%, #3B82F6 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               marginBottom: 40,
-              boxShadow: '0 0 40px rgba(37, 99, 235, 0.5)',
+              boxShadow: '0 0 40px rgba(99, 102, 241, 0.5)',
             }}
           >
-            <div
-              style={{
-                color: 'white',
-                fontSize: 48,
-                fontWeight: 800,
-                fontFamily: 'sans-serif',
-              }}
+            <svg
+              width="48"
+              height="48"
+              viewBox="0 0 48 48"
+              fill="none"
             >
-              S
-            </div>
+              <path
+                d="M12 25L20 33L36 17"
+                stroke="white"
+                strokeWidth="5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </div>
 
           <div
@@ -102,7 +106,7 @@ export default async function Image() {
               fontFamily: 'sans-serif',
             }}
           >
-            The API Infrastructure for Financial Evidence
+            Deterministic Reconciliation Infrastructure
           </div>
         </div>
 
@@ -115,7 +119,7 @@ export default async function Image() {
             zIndex: 10,
           }}
         >
-          {['Reconciliation', 'Receipts', 'Feature Flags'].map((tag) => (
+          {['Reconciliation', 'Audit Evidence', 'Policy Controls'].map((tag) => (
             <div
               key={tag}
               style={{
