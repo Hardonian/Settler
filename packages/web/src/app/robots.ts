@@ -20,7 +20,7 @@ export default function robots(): MetadataRoute.Robots {
           "/billing/",
           "/review/",
           "/invite/",
-          "/demo/console",
+          "/demo/",
           "/_next/",
           "/static/",
         ],

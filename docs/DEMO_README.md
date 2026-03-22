@@ -37,10 +37,10 @@ If `DATABASE_URL` is not set, JSON files are written to `demo/data/` for manual 
 
 ## Demo accounts
 
-| Account | Email | Role |
-|---------|-------|------|
-| Admin (use this for demos) | `demo@settler.dev` | Admin |
-| Viewer (share with leads) | `viewer@settler.dev` | Viewer |
+| Account                    | Email                | Role   |
+| -------------------------- | -------------------- | ------ |
+| Admin (use this for demos) | `demo@settler.dev`   | Admin  |
+| Viewer (share with leads)  | `viewer@settler.dev` | Viewer |
 
 **Creating the demo user in Supabase Auth:**
 
@@ -57,13 +57,13 @@ Set a memorable password and keep it in your team password manager. See
 
 ## Key URLs to show
 
-| Surface | URL | Story |
-|---------|-----|-------|
-| Reconciliation runs | `/app/runs` | Overview of all runs, statuses, match rates |
-| Run detail (healthy) | `/app/runs/<run-1-id>` | Match explorer: exact + fuzzy + unmatched |
-| Connectors | `/app/sources` | 3 healthy, 1 degraded (Shopify auth expired) |
-| Audit trail | `/app/audit` | Who did what, when |
-| Exports | `/app/exports` | CSV and reconciliation report downloads |
+| Surface              | URL                    | Story                                        |
+| -------------------- | ---------------------- | -------------------------------------------- |
+| Reconciliation runs  | `/app/runs`            | Overview of all runs, statuses, match rates  |
+| Run detail (healthy) | `/app/runs/<run-1-id>` | Match explorer: exact + fuzzy + unmatched    |
+| Connectors           | `/app/sources`         | 3 healthy, 1 degraded (Shopify auth expired) |
+| Audit trail          | `/app/audit`           | Who did what, when                           |
+| Exports              | `/app/exports`         | CSV and reconciliation report downloads      |
 
 ---
 
@@ -81,16 +81,16 @@ Done. Value communicated in under a minute.
 
 All demo and lead assets are in `docs/demo/`:
 
-| File | Purpose |
-|------|---------|
-| `DEMO_NARRATIVE.md` | 30 sec / 2 min / 5 min walkthrough scripts |
-| `LEAD_EXPLAINER.md` | Copy-paste explainer for email or DM |
-| `PRODUCT_SNAPSHOT.md` | One-page product summary |
-| `VALUE_SUMMARY.md` | 5-bullet value summary |
-| `WHAT_TO_SHOW_FIRST.md` | Persona-based cheat sheet |
-| `ACCESS_SHARING.md` | How to share and revoke access safely |
-| `FOLLOW_UP_EMAIL.md` | Post-demo email template |
-| `FAQ.md` | Mini FAQ for common prospect questions |
+| File                    | Purpose                                    |
+| ----------------------- | ------------------------------------------ |
+| `DEMO_NARRATIVE.md`     | 30 sec / 2 min / 5 min walkthrough scripts |
+| `LEAD_EXPLAINER.md`     | Copy-paste explainer for email or DM       |
+| `PRODUCT_SNAPSHOT.md`   | One-page product summary                   |
+| `VALUE_SUMMARY.md`      | 5-bullet value summary                     |
+| `WHAT_TO_SHOW_FIRST.md` | Persona-based cheat sheet                  |
+| `ACCESS_SHARING.md`     | How to share and revoke access safely      |
+| `FOLLOW_UP_EMAIL.md`    | Post-demo email template                   |
+| `FAQ.md`                | Mini FAQ for common prospect questions     |
 
 ---
 
@@ -110,5 +110,5 @@ All demo and lead assets are in `docs/demo/`:
 
 ---
 
-*For the full demo narrative, see `docs/demo/DEMO_NARRATIVE.md`.*
-*For the lead explainer you can paste into an email, see `docs/demo/LEAD_EXPLAINER.md`.*
+_For the full demo narrative, see `docs/demo/DEMO_NARRATIVE.md`._
+_For the lead explainer you can paste into an email, see `docs/demo/LEAD_EXPLAINER.md`._
