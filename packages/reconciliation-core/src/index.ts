@@ -5,3 +5,5 @@ export * from "./merged-runs-query.js";
 export * from "./run-resolution.js";
 export * from "./uuid-collision-log.js";
 export * from "./v1-serializer.js";
+export * from "./run-capabilities.js";
+export * from "./console-reconciliation-list.js";

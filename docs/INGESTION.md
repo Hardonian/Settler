@@ -220,6 +220,8 @@ curl -X POST https://api.settler.dev/api/v1/reconciliation/run \
 
 ### Viewing Matches
 
+`{runId}` must be an **ingestion** reconciliation run id (`reconciliation_runs`). Persisted **recon jobs** (`recon_jobs` ids) return **409** `RECONCILIATION_WRONG_RUN_KIND` on this route; use `GET /api/v1/reconciliation/runs/{id}` for canonical detail and console results surfaces for job-shaped outcomes.
+
 ```bash
 curl https://api.settler.dev/api/v1/reconciliation/runs/{runId}/matches \
   -H "Authorization: Bearer YOUR_API_KEY"

@@ -32,11 +32,14 @@ Shared package: `packages/reconciliation-core` (`@settler/reconciliation-core`).
 ### `GET /api/v1/reconciliation/runs/:id`
 
 - Resolves **exactly one** backing row per tenant, or returns typed errors.
-- **Body**: `contract_version`, `run_kind`, `canonical` (full detail DTO), `legacy_v1` (field names matching the historical SQL-shaped detail for ingestion runs where applicable), `traceId`.
+- **Body**: `contract_version`, `run_kind`, `capabilities` (booleans derived from `run_kind`: `matches`, `workbench`, `compare`, `export`, `consoleResults`), `canonical` (full detail DTO), `legacy_v1` (field names matching the historical SQL-shaped detail for ingestion runs where applicable), `traceId`.
+- **UI / clients**: branch on `run_kind` or `capabilities` before calling ingestion-only child routes; do not send `recon_job` ids to matches/workbench/compare/export.
 
 ### Workbench / matches / compare / export
 
 These operate on **`reconciliation_runs` only**. If `:id` resolves to a `recon_job`, the API returns **409** `RECONCILIATION_WRONG_RUN_KIND` with a hint to use the canonical detail route.
+
+`GET .../matches` and workbench routes clamp `limit` to **1–500** (default 100) and reject negative `offset` by normalizing to `0`.
 
 ### UUID collision
 
@@ -47,6 +50,22 @@ If the same UUID exists in **both** `recon_jobs` and `reconciliation_runs` for a
 - **Default** `run_kind=recon_job` preserves historical “jobs only” `reconciliations[]` shape for list calls without query params.
 - **`run_kind=all`**: response includes `runs` (canonical merged list) plus `reconciliations` (job-shaped projection for backward compatibility) and real `next_cursor`.
 - **`run_kind=ingestion_run`**: only ingestion stream; `reconciliations` is `[]`.
+
+List JSON (no `id` query) is built via **`buildConsoleReconciliationListBody`** in `@settler/reconciliation-core` so Next and any other consumer stay aligned with the same `runs` / `reconciliations` projection rules.
+
+### DB-backed integration tests (optional)
+
+With PostgreSQL containing `public.recon_jobs` and `public.reconciliation_runs` (golden schema), run:
+
+```bash
+RUN_DB_TESTS=true RUN_RECON_MERGED_LIST_DB=1 pnpm --filter @settler/api exec jest src/__tests__/integration/reconciliation-merged-list.db.test.ts --runInBand --forceExit
+```
+
+`RUN_RECON_MERGED_LIST_DB=1` is required in addition to `RUN_DB_TESTS=true` so generic DB suites do not fail when those tables are absent.
+
+GitHub Actions runs the same proof on PRs touching reconciliation core, API DB tests, Prisma schema/migrations, or `scripts/ci/reconciliation-merged-list-schema.sql` (workflow **Reconciliation merged list (DB)**).
+
+**Prisma ↔ Postgres:** `ReconJob`, `ReconResult`, and `ReconciliationRun` use `@map` to snake_case columns (`recon_job_id`, `tenant_id`, …) so the client matches existing PostgreSQL naming. CI applies `snapshot_id` and `proof_capsule` on `recon_results` when missing (`prisma/migrations/20260322120000_recon_results_prisma_column_map_parity`).
 
 ## Cursor format (v1)
 
@@ -67,9 +86,12 @@ Pagination is **read-committed**: concurrent inserts may appear or move between 
 ```bash
 pnpm --filter @settler/types build
 pnpm --filter @settler/reconciliation-core build
-pnpm --filter @settler/reconciliation-core test
+cd packages/reconciliation-core && pnpm exec jest --runInBand --forceExit
 pnpm --filter @settler/web typecheck:ci
-pnpm --filter @settler/api exec jest src/__tests__/routes/reconciliation-runtime-config-route.test.ts --runInBand --forceExit
+pnpm --filter @settler/api typecheck
+pnpm --filter @settler/api exec jest src/__tests__/routes/reconciliation-runtime-config-route.test.ts src/__tests__/routes/reconciliation-v1-contract.test.ts --runInBand --forceExit
+# Optional merged-list DB proof (requires DB + both tables):
+# RUN_DB_TESTS=true RUN_RECON_MERGED_LIST_DB=1 pnpm --filter @settler/api run test:recon-merged-db
 ```
 
-Note: `pnpm --filter @settler/api typecheck` may fail in some workspaces due to duplicate `@types/pg` resolution on `PrismaPg` adapter typing; reconciliation route changes compile under the same constraints as before.
+Typecheck note: the workspace pins a single `@types/pg` version via root `pnpm.overrides` and reuses the API `db` module’s `Pool` class for `PrismaPg` so adapter and app pools share one `Pool` type identity.

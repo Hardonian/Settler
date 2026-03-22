@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import pg from "pg";
 import { config } from "../../config";
+import { Pool } from "../../db";
 
 // Global variable to prevent multiple instances of Prisma Client in development
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
@@ -23,7 +23,7 @@ function buildPrismaOptions(): any {
     };
   }
 
-  const pool = new pg.Pool({
+  const pool = new Pool({
     host: config.database.host,
     port: config.database.port,
     database: config.database.name,

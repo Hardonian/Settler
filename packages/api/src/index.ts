@@ -80,7 +80,10 @@ import {
   isLedgerUsingFallback,
   getLedgerDisabledReason,
 } from "./domain/services/LedgerService";
-import { setReconciliationCollisionLogger } from "@settler/reconciliation-core";
+import {
+  setReconciliationCollisionLogger,
+  type UuidCollisionLogInput,
+} from "@settler/reconciliation-core";
 
 const app: Express = express();
 const PORT = config.port;
@@ -375,7 +378,7 @@ async function startServer() {
     await initDatabase();
     logInfo("Database initialized");
 
-    setReconciliationCollisionLogger((entry) => {
+    setReconciliationCollisionLogger((entry: UuidCollisionLogInput) => {
       logWarn("reconciliation_uuid_collision", {
         event: "reconciliation_uuid_collision",
         tenant_id: entry.tenantId,

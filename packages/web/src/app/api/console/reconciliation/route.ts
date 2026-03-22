@@ -22,8 +22,8 @@ import { z } from "zod";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
 import { withSecurity } from "@/lib/middleware/api-security";
-import type { CanonicalReconciliationListItem } from "@settler/reconciliation-core";
 import {
+  buildConsoleReconciliationListBody,
   decodeMergedRunsCursor,
   encodeMergedRunsCursor,
   fetchMergedReconciliationRunsPage,
@@ -235,54 +235,7 @@ export const GET = withSecurity(
           encodeCursor: encodeMergedRunsCursor,
         });
 
-        const toLegacyReconciliation = (r: CanonicalReconciliationListItem) => ({
-          id: r.id,
-          name: r.name,
-          status: r.lifecycle.status,
-          sourceAdapter: r.adapters.sourceAdapter ?? "",
-          targetAdapter: r.adapters.targetAdapter ?? "",
-          createdAt: r.timestamps.createdAt,
-          updatedAt: r.timestamps.updatedAt,
-          latestResult: r.reconResultId
-            ? {
-                id: r.reconResultId,
-                status: r.lifecycle.status,
-                startedAt: r.timestamps.startedAt ?? r.timestamps.createdAt,
-                completedAt: r.timestamps.completedAt,
-                counts: {
-                  source: r.summary.sourceCount,
-                  target: r.summary.targetCount,
-                  matched: r.summary.matched,
-                  unmatchedSource: r.summary.unmatchedSourceCount,
-                  unmatchedTarget: r.summary.unmatchedTargetCount,
-                  conflicts: r.summary.conflicts,
-                },
-                errorMessage: null,
-              }
-            : null,
-        });
-
-        const reconciliations =
-          runKind === "ingestion_run"
-            ? []
-            : page.runs.filter((r) => r.runKind === "recon_job").map(toLegacyReconciliation);
-
-        const body: Record<string, unknown> = {
-          contract_version: 1,
-          next_cursor: page.next_cursor,
-          pagination: page.pagination,
-          response_meta: {
-            ...page.response_meta,
-            default_run_kind: "recon_job",
-            requested_run_kind: runKind,
-          },
-        };
-
-        if (runKind === "all") {
-          body.runs = page.runs;
-        }
-
-        body.reconciliations = reconciliations;
+        const body = buildConsoleReconciliationListBody(page, runKind);
 
         return NextResponse.json(body, { status: 200 });
       } catch (error) {
