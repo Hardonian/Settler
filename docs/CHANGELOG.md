@@ -9,6 +9,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Added
 
+- `capabilities` object on `GET /api/v1/reconciliation/runs/:id` (matches/workbench/compare/export/consoleResults), sourced from `@settler/reconciliation-core` so UI and API clients share one definition of run-kind affordances.
+- Jest contract coverage for v1 reconciliation gates and cursor errors (`reconciliation-v1-contract.test.ts`); expanded merged-pagination unit tests (limit bounds, multi-page exhaustion).
 - Shared `@settler/reconciliation-core` package for canonical reconciliation mapping, dual-stream merged run listing with real cursor pagination, and cross-model run resolution.
 - Express `GET /api/v1/reconciliation/runs` merged list; canonical detail on `GET /api/v1/reconciliation/runs/:id` with `legacy_v1` adapter field group.
 - Operator runbook for `RECONCILIATION_UUID_COLLISION` (`docs/ops/reconciliation-uuid-collision-runbook.md`) and architecture note `docs/architecture/reconciliation-read-contract.md`.
@@ -18,6 +20,9 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 - `GET /api/console/reconciliation` list: default `run_kind=recon_job` preserves legacy `reconciliations[]` shape; `run_kind=all` adds canonical `runs` plus real `next_cursor` (dual-stream).
 - Workbench-style v1 routes return **409** `RECONCILIATION_WRONG_RUN_KIND` when the id resolves to a `recon_job` instead of `reconciliation_runs`.
+- `ReconciliationMatches` prefetches canonical run detail when `run_kind` is unknown, uses `capabilitiesForRunKind` to skip matches for `recon_job`, and surfaces typed collision/not-found states instead of a generic failure.
+- Root `pnpm.overrides` pins `@types/pg` to **8.18.0**; API `pretypecheck`/`prebuild` builds `@settler/reconciliation-core` so workspace typecheck resolves the package; Turbo `typecheck` depends on `^build` so dependent `dist` exists before consumer `tsc`.
+- v1 `matches` and `workbench` list endpoints clamp `limit` to 1–500 (was unbounded for matches).
 
 - Added policy-as-code substrate modules (`/policies`, `/runner`, `/economic`, `/evidence`) with deterministic compilation and runtime execution funnel via `executeWithPolicy()`.
 - Added deterministic demo and replay commands that generate evidence artifacts under `examples/demo-output` and replay fixtures under `examples/demo-output-fixtures`.

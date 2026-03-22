@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +18,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, Info } from "lucide-react";
+import { capabilitiesForRunKind, type ReconciliationRunKind } from "@settler/reconciliation-core";
 
 interface Match {
   id: string;
@@ -48,20 +49,97 @@ interface Match {
 
 interface ReconciliationMatchesProps {
   runId: string;
+  /** When known (e.g. from canonical list/detail), avoids a detail prefetch before matches. */
+  runKind?: ReconciliationRunKind | null;
 }
 
-export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
+type LoadBlockReason =
+  | null
+  | { kind: "wrong_run_kind" }
+  | { kind: "uuid_collision"; detail: string }
+  | { kind: "not_found" }
+  | { kind: "other"; message: string };
+
+export function ReconciliationMatches({ runId, runKind: runKindProp }: ReconciliationMatchesProps) {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "matched" | "unmatched" | "unreviewed">("all");
+  const [resolvedRunKind, setResolvedRunKind] = useState<ReconciliationRunKind | null>(
+    runKindProp ?? null
+  );
+  const [blockReason, setBlockReason] = useState<LoadBlockReason>(null);
 
   useEffect(() => {
-    loadMatches();
-  }, [runId, filter]);
+    setResolvedRunKind(runKindProp ?? null);
+    setBlockReason(null);
+  }, [runId, runKindProp]);
 
-  const loadMatches = async () => {
+  const loadMatches = useCallback(async () => {
     try {
       setLoading(true);
+      setBlockReason(null);
+
+      let runKind = resolvedRunKind;
+      if (runKind == null) {
+        const detailRes = await fetch(`/api/v1/reconciliation/runs/${runId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("apiKey")}`,
+          },
+        });
+
+        if (detailRes.status === 404) {
+          setBlockReason({ kind: "not_found" });
+          setMatches([]);
+          return;
+        }
+
+        if (detailRes.status === 409) {
+          const problem = (await detailRes.json().catch(() => ({}))) as {
+            code?: string;
+            detail?: string;
+          };
+          if (problem.code === "RECONCILIATION_UUID_COLLISION") {
+            setBlockReason({
+              kind: "uuid_collision",
+              detail:
+                problem.detail ||
+                "This id exists as both a recon job and an ingestion reconciliation run.",
+            });
+          } else if (problem.code === "RECONCILIATION_WRONG_RUN_KIND") {
+            setBlockReason({ kind: "wrong_run_kind" });
+          } else {
+            setBlockReason({
+              kind: "other",
+              message: problem.detail || "Unable to resolve run for matches.",
+            });
+          }
+          setMatches([]);
+          return;
+        }
+
+        if (!detailRes.ok) {
+          setBlockReason({ kind: "other", message: "Failed to load run detail for matches." });
+          setMatches([]);
+          return;
+        }
+
+        const detailBody = (await detailRes.json()) as { run_kind?: ReconciliationRunKind };
+        if (detailBody.run_kind !== "recon_job" && detailBody.run_kind !== "ingestion_run") {
+          setBlockReason({ kind: "other", message: "Unexpected run_kind in detail response." });
+          setMatches([]);
+          return;
+        }
+        runKind = detailBody.run_kind;
+        setResolvedRunKind(runKind);
+      }
+
+      const caps = capabilitiesForRunKind(runKind);
+      if (!caps.matches) {
+        setBlockReason({ kind: "wrong_run_kind" });
+        setMatches([]);
+        return;
+      }
+
       const params = new URLSearchParams();
       if (filter === "unmatched") {
         params.append("matchType", "unmatched");
@@ -78,6 +156,17 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
         }
       );
 
+      if (response.status === 409) {
+        const problem = (await response.json().catch(() => ({}))) as { code?: string };
+        if (problem.code === "RECONCILIATION_WRONG_RUN_KIND") {
+          setBlockReason({ kind: "wrong_run_kind" });
+        } else {
+          setBlockReason({ kind: "other", message: "Conflict loading matches." });
+        }
+        setMatches([]);
+        return;
+      }
+
       if (!response.ok) {
         throw new Error("Failed to load matches");
       }
@@ -86,10 +175,18 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
       setMatches(data.matches || []);
     } catch (error: unknown) {
       console.error("Failed to load matches:", error);
+      setBlockReason({
+        kind: "other",
+        message: error instanceof Error ? error.message : "Failed to load matches",
+      });
     } finally {
       setLoading(false);
     }
-  };
+  }, [runId, filter, resolvedRunKind]);
+
+  useEffect(() => {
+    void loadMatches();
+  }, [loadMatches]);
 
   const toggleReviewed = async (matchId: string, reviewed: boolean) => {
     try {
@@ -131,9 +228,36 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
     return "text-red-600";
   };
 
-  const matchedCount = matches.filter((m: any) => m.target !== null).length;
-  const unmatchedCount = matches.filter((m: any) => m.target === null).length;
-  const reviewedCount = matches.filter((m: any) => m.reviewed).length;
+  const blockedCopy = (() => {
+    if (!blockReason) return null;
+    if (blockReason.kind === "wrong_run_kind") {
+      return {
+        title: "Matches not available for this run type",
+        body: "Row-level matches are stored on ingestion reconciliation runs (reconciliation_runs). Recon jobs use job results and the console results view instead—do not call the v1 matches route with a recon_job id.",
+      };
+    }
+    if (blockReason.kind === "uuid_collision") {
+      return {
+        title: "Id collision",
+        body: blockReason.detail,
+      };
+    }
+    if (blockReason.kind === "not_found") {
+      return {
+        title: "Run not found",
+        body: "No reconciliation run exists for this id in your tenant, or you do not have access.",
+      };
+    }
+    return {
+      title: "Unable to load matches",
+      body: blockReason.message,
+    };
+  })();
+
+  const matchedCount = matches.filter((m) => m.target !== null).length;
+  const unmatchedCount = matches.filter((m) => m.target === null).length;
+  const reviewedCount = matches.filter((m) => m.reviewed).length;
+  const filtersDisabled = loading || Boolean(blockedCopy);
 
   return (
     <Card>
@@ -142,13 +266,16 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
           <div>
             <CardTitle>Reconciliation Matches</CardTitle>
             <CardDescription>
-              {matchedCount} matched, {unmatchedCount} unmatched, {reviewedCount} reviewed
+              {blockedCopy
+                ? blockedCopy.title
+                : `${matchedCount} matched, ${unmatchedCount} unmatched, ${reviewedCount} reviewed`}
             </CardDescription>
           </div>
           <div className="flex gap-2">
             <Button
               variant={filter === "all" ? "default" : "outline"}
               size="sm"
+              disabled={filtersDisabled}
               onClick={() => setFilter("all")}
             >
               All
@@ -156,6 +283,7 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
             <Button
               variant={filter === "matched" ? "default" : "outline"}
               size="sm"
+              disabled={filtersDisabled}
               onClick={() => setFilter("matched")}
             >
               Matched
@@ -163,6 +291,7 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
             <Button
               variant={filter === "unmatched" ? "default" : "outline"}
               size="sm"
+              disabled={filtersDisabled}
               onClick={() => setFilter("unmatched")}
             >
               Unmatched
@@ -170,6 +299,7 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
             <Button
               variant={filter === "unreviewed" ? "default" : "outline"}
               size="sm"
+              disabled={filtersDisabled}
               onClick={() => setFilter("unreviewed")}
             >
               Unreviewed
@@ -178,11 +308,20 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
         </div>
       </CardHeader>
       <CardContent>
+        {blockedCopy && !loading ? (
+          <div className="flex gap-3 rounded-lg border border-border bg-muted/30 p-4 text-sm">
+            <Info className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden />
+            <div>
+              <p className="font-medium text-foreground">{blockedCopy.title}</p>
+              <p className="mt-1 text-muted-foreground">{blockedCopy.body}</p>
+            </div>
+          </div>
+        ) : null}
         {loading ? (
           <div className="flex items-center justify-center p-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
           </div>
-        ) : (
+        ) : !blockedCopy ? (
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -223,12 +362,11 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
                       </TableCell>
                       <TableCell>
                         {match.matchReason ? (
-                          <span className="text-sm text-muted-foreground">
-                            {match.matchReason}
-                          </span>
-                        ) : match.matchType === 'unmatched' ? (
+                          <span className="text-sm text-muted-foreground">{match.matchReason}</span>
+                        ) : match.matchType === "unmatched" ? (
                           <span className="text-sm text-amber-600 dark:text-amber-400">
-                            No matching transaction found. Check source data or adjust matching rules.
+                            No matching transaction found. Check source data or adjust matching
+                            rules.
                           </span>
                         ) : (
                           <span className="text-sm text-muted-foreground/60">-</span>
@@ -300,7 +438,7 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
               </TableBody>
             </Table>
           </div>
-        )}
+        ) : null}
       </CardContent>
     </Card>
   );

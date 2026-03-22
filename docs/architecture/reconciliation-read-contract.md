@@ -32,11 +32,14 @@ Shared package: `packages/reconciliation-core` (`@settler/reconciliation-core`).
 ### `GET /api/v1/reconciliation/runs/:id`
 
 - Resolves **exactly one** backing row per tenant, or returns typed errors.
-- **Body**: `contract_version`, `run_kind`, `canonical` (full detail DTO), `legacy_v1` (field names matching the historical SQL-shaped detail for ingestion runs where applicable), `traceId`.
+- **Body**: `contract_version`, `run_kind`, `capabilities` (booleans derived from `run_kind`: `matches`, `workbench`, `compare`, `export`, `consoleResults`), `canonical` (full detail DTO), `legacy_v1` (field names matching the historical SQL-shaped detail for ingestion runs where applicable), `traceId`.
+- **UI / clients**: branch on `run_kind` or `capabilities` before calling ingestion-only child routes; do not send `recon_job` ids to matches/workbench/compare/export.
 
 ### Workbench / matches / compare / export
 
 These operate on **`reconciliation_runs` only**. If `:id` resolves to a `recon_job`, the API returns **409** `RECONCILIATION_WRONG_RUN_KIND` with a hint to use the canonical detail route.
+
+`GET .../matches` and workbench routes clamp `limit` to **1–500** (default 100) and reject negative `offset` by normalizing to `0`.
 
 ### UUID collision
 
@@ -67,9 +70,10 @@ Pagination is **read-committed**: concurrent inserts may appear or move between 
 ```bash
 pnpm --filter @settler/types build
 pnpm --filter @settler/reconciliation-core build
-pnpm --filter @settler/reconciliation-core test
+cd packages/reconciliation-core && pnpm exec jest --runInBand --forceExit
 pnpm --filter @settler/web typecheck:ci
-pnpm --filter @settler/api exec jest src/__tests__/routes/reconciliation-runtime-config-route.test.ts --runInBand --forceExit
+pnpm --filter @settler/api typecheck
+pnpm --filter @settler/api exec jest src/__tests__/routes/reconciliation-runtime-config-route.test.ts src/__tests__/routes/reconciliation-v1-contract.test.ts --runInBand --forceExit
 ```
 
-Note: `pnpm --filter @settler/api typecheck` may fail in some workspaces due to duplicate `@types/pg` resolution on `PrismaPg` adapter typing; reconciliation route changes compile under the same constraints as before.
+Typecheck note: the workspace pins a single `@types/pg` version via root `pnpm.overrides` and reuses the API `db` module’s `Pool` class for `PrismaPg` so adapter and app pools share one `Pool` type identity.
