@@ -63,6 +63,10 @@ RUN_DB_TESTS=true RUN_RECON_MERGED_LIST_DB=1 pnpm --filter @settler/api exec jes
 
 `RUN_RECON_MERGED_LIST_DB=1` is required in addition to `RUN_DB_TESTS=true` so generic DB suites do not fail when those tables are absent.
 
+GitHub Actions runs the same proof on PRs touching reconciliation core, API DB tests, Prisma schema/migrations, or `scripts/ci/reconciliation-merged-list-schema.sql` (workflow **Reconciliation merged list (DB)**).
+
+**Prisma ↔ Postgres:** `ReconJob`, `ReconResult`, and `ReconciliationRun` use `@map` to snake_case columns (`recon_job_id`, `tenant_id`, …) so the client matches existing PostgreSQL naming. CI applies `snapshot_id` and `proof_capsule` on `recon_results` when missing (`prisma/migrations/20260322120000_recon_results_prisma_column_map_parity`).
+
 ## Cursor format (v1)
 
 Base64url JSON:

@@ -225,27 +225,27 @@ model UsageCounter {
 
 model ReconJob {
   id                String    @id @default(uuid())
-  tenantId           String    @db.Uuid
-  userId             String    @db.Uuid
+  tenantId           String    @map("tenant_id") @db.Uuid
+  userId             String    @map("user_id") @db.Uuid
   name               String
   description        String?
-  templateId         String?   @db.Uuid
-  sourceAdapter      String
-  sourceConfigEncrypted String @db.Text
-  targetAdapter      String
-  targetConfigEncrypted String @db.Text
-  mappingTemplateId  String?   @db.Uuid
-  transformRecipeId  String?   @db.Uuid
-  validationRules    Json      @default("[]")
-  reconStrategy      String    @default("deterministic")
-  scheduleCron       String?
-  scheduleTimezone   String    @default("UTC")
+  templateId         String?   @map("template_id") @db.Uuid
+  sourceAdapter      String    @map("source_adapter")
+  sourceConfigEncrypted String @map("source_config_encrypted") @db.Text
+  targetAdapter      String    @map("target_adapter")
+  targetConfigEncrypted String @map("target_config_encrypted") @db.Text
+  mappingTemplateId  String?   @map("mapping_template_id") @db.Uuid
+  transformRecipeId  String?   @map("transform_recipe_id") @db.Uuid
+  validationRules    Json      @default("[]") @map("validation_rules")
+  reconStrategy      String    @default("deterministic") @map("recon_strategy")
+  scheduleCron       String?   @map("schedule_cron")
+  scheduleTimezone   String    @default("UTC") @map("schedule_timezone")
   status             String    @default("active")
   version            Int       @default(1)
   metadata           Json      @default("{}")
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
-  deletedAt          DateTime?
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  deletedAt          DateTime? @map("deleted_at")
 
   template           ReconTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
   mappingTemplate    MappingTemplate? @relation(fields: [mappingTemplateId], references: [id], onDelete: SetNull)
@@ -262,36 +262,36 @@ model ReconJob {
 
 model ReconResult {
   id                    String    @id @default(uuid())
-  reconJobId            String    @db.Uuid
-  tenantId              String    @db.Uuid
-  executionId           String?   @db.Uuid
-  snapshotId            String?   @db.Uuid
-  inputHash             String?
+  reconJobId            String    @map("recon_job_id") @db.Uuid
+  tenantId              String    @map("tenant_id") @db.Uuid
+  executionId           String?   @map("execution_id") @db.Uuid
+  snapshotId            String?   @map("snapshot_id") @db.Uuid
+  inputHash             String?   @map("input_hash")
   status                String    @default("running")
-  startedAt             DateTime  @default(now())
-  completedAt           DateTime?
-  sourceCount           Int       @default(0)
-  targetCount           Int       @default(0)
-  matchedCount          Int       @default(0)
-  unmatchedSourceCount  Int       @default(0)
-  unmatchedTargetCount  Int       @default(0)
-  conflictCount         Int       @default(0)
-  totalAmountSource     Decimal?  @db.Decimal(15, 2)
-  totalAmountTarget     Decimal?  @db.Decimal(15, 2)
-  totalAmountMatched    Decimal?  @db.Decimal(15, 2)
-  totalAmountUnmatched  Decimal?  @db.Decimal(15, 2)
+  startedAt             DateTime  @default(now()) @map("started_at")
+  completedAt           DateTime? @map("completed_at")
+  sourceCount           Int       @default(0) @map("source_count")
+  targetCount           Int       @default(0) @map("target_count")
+  matchedCount          Int       @default(0) @map("matched_count")
+  unmatchedSourceCount  Int       @default(0) @map("unmatched_source_count")
+  unmatchedTargetCount  Int       @default(0) @map("unmatched_target_count")
+  conflictCount         Int       @default(0) @map("conflict_count")
+  totalAmountSource     Decimal?  @map("total_amount_source") @db.Decimal(15, 2)
+  totalAmountTarget     Decimal?  @map("total_amount_target") @db.Decimal(15, 2)
+  totalAmountMatched    Decimal?  @map("total_amount_matched") @db.Decimal(15, 2)
+  totalAmountUnmatched  Decimal?  @map("total_amount_unmatched") @db.Decimal(15, 2)
   currency              String?
-  confidenceAvg         Decimal?  @db.Decimal(5, 4)
-  confidenceMin         Decimal?  @db.Decimal(5, 4)
-  confidenceMax         Decimal?  @db.Decimal(5, 4)
-  durationMs            BigInt?
-  errorMessage          String?   @db.Text
-  errorStack            String?   @db.Text
+  confidenceAvg         Decimal?  @map("confidence_avg") @db.Decimal(5, 4)
+  confidenceMin         Decimal?  @map("confidence_min") @db.Decimal(5, 4)
+  confidenceMax         Decimal?  @map("confidence_max") @db.Decimal(5, 4)
+  durationMs            BigInt?   @map("duration_ms")
+  errorMessage          String?   @map("error_message") @db.Text
+  errorStack            String?   @map("error_stack") @db.Text
   summary               Json      @default("{}")
   metadata              Json      @default("{}")
-  proofCapsule          Json?     @default("{}")
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  proofCapsule          Json?     @default("{}") @map("proof_capsule")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   reconJob              ReconJob @relation(fields: [reconJobId], references: [id], onDelete: Cascade)
   snapshot              RunSnapshot? @relation(fields: [snapshotId], references: [id], onDelete: SetNull)
@@ -1363,24 +1363,24 @@ model NormalizedTransaction {
 
 model ReconciliationRun {
   id                String    @id @default(uuid())
-  ingestionId       String?   @db.Uuid
-  tenantId          String    @db.Uuid
-  userId            String    @db.Uuid
+  ingestionId       String?   @map("ingestion_id") @db.Uuid
+  tenantId          String    @map("tenant_id") @db.Uuid
+  userId            String    @map("user_id") @db.Uuid
   name              String?
   status            String    @default("pending") // pending, running, completed, failed
-  startedAt         DateTime  @default(now())
-  completedAt       DateTime?
-  sourceCount       Int       @default(0)
-  targetCount       Int       @default(0)
-  matchedCount      Int       @default(0)
-  unmatchedSourceCount Int    @default(0)
-  unmatchedTargetCount Int    @default(0)
-  confidenceAvg     Decimal?  @db.Decimal(5, 4)
-  errorMessage      String?   @db.Text
-  traceId           String?
+  startedAt         DateTime  @default(now()) @map("started_at")
+  completedAt       DateTime? @map("completed_at")
+  sourceCount       Int       @default(0) @map("source_count")
+  targetCount       Int       @default(0) @map("target_count")
+  matchedCount      Int       @default(0) @map("matched_count")
+  unmatchedSourceCount Int    @default(0) @map("unmatched_source_count")
+  unmatchedTargetCount Int    @default(0) @map("unmatched_target_count")
+  confidenceAvg     Decimal?  @map("confidence_avg") @db.Decimal(5, 4)
+  errorMessage      String?   @map("error_message") @db.Text
+  traceId           String?   @map("trace_id")
   metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
 
   ingestion         Ingestion? @relation(fields: [ingestionId], references: [id], onDelete: SetNull)
   matches           ReconciliationMatch[]
