@@ -3,11 +3,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SettlerLogo } from "@/components/brand/SettlerLogo";
+import { BrandLockup } from "@/components/brand/BrandLockup";
 import { ShieldCheck, ArrowRight, Zap, History, Globe } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Login | Settler",
+  title: "Login | Settler.dev",
   description: "Secure access to your reconciliation control plane.",
 };
 
@@ -18,8 +18,12 @@ export default function LoginPage() {
       <div className="flex flex-col flex-1 justify-center px-8 lg:px-12 xl:px-24 bg-background">
         <div className="w-full max-w-sm mx-auto space-y-12">
           <div className="space-y-6">
-            <Link href="/" className="inline-block hover:opacity-80 transition-opacity">
-              <SettlerLogo className="h-10 w-auto" />
+            <Link
+              href="/"
+              className="inline-block hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+              aria-label="Settler.dev homepage"
+            >
+              <BrandLockup orientation="stacked" className="max-w-[220px]" priority />
             </Link>
             <div className="space-y-2">
               <h1 className="text-3xl font-bold italic tracking-tight">Welcome Back</h1>

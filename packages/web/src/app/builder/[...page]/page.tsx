@@ -51,13 +51,13 @@ export async function generateMetadata({ params }: PageProps) {
       openGraph: {
         title: content.data?.title || "Settler",
         description: content.data?.description || "",
-        images: [content.data?.ogImage || "/opengraph-image"],
+        images: [content.data?.ogImage || "/opengraph-image.png"],
       },
       twitter: {
         card: "summary_large_image" as const,
         title: content.data?.title || "Settler",
         description: content.data?.description || "",
-        images: [content.data?.ogImage || "/opengraph-image"],
+        images: [content.data?.ogImage || "/opengraph-image.png"],
       },
     };
   } catch {

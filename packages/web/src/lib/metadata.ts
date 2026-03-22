@@ -72,7 +72,7 @@ export function generateMetadata({
       type: "website",
       locale: "en_US",
       url: canonicalUrl,
-      siteName: "Settler",
+      siteName: "Settler.dev",
       title: fullTitle,
       description,
       images: [

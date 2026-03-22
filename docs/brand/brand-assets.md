@@ -1,37 +1,33 @@
 # Settler Brand Assets (Canonical)
 
-## Canonical active path
+## Source of truth
 
-All active product branding assets must be sourced from:
+The horizontal lockup PNG is the master asset:
 
-- `packages/web/public/brand/settler/`
+- `packages/web/public/assets/images/Settler-logo.png`
+
+Regenerate all derived rasters from it:
+
+```bash
+cd packages/web && pnpm run generate:brand-assets
+```
+
+This writes circular mark PNGs, wordmark crop, `opengraph-image.png`, `twitter-image.png`, `icon.png`, and `apple-icon.png`.
 
 ## Active asset map
 
-- Header/footer logo (light): `/brand/settler/logo-horizontal.svg`
-- Header/footer logo (dark): `/brand/settler/logo-horizontal-dark.svg`
-- Icon/logo mark: `/brand/settler/logo-icon.svg`
-- PWA icon 192: `/brand/settler/favicon-192x192.svg`
-- PWA icon 512: `/brand/settler/favicon-512x512.svg`
-- OpenGraph default image: `/opengraph-image`
-- Twitter card default image: `/opengraph-image`
+- **Horizontal lockup (nav, footer, marketing):** `/assets/images/Settler-logo.png` (optional WebP: `Settler-logo.webp`)
+- **Wordmark-only (derived):** `/brand/settler/wordmark.png`
+- **Mark / favicon / PWA icons (derived, circular navy backdrop):** `/brand/settler/favicon-192x192.png`, `favicon-512x512.png`, `favicon.png`, `app-icon.png`
+- **App Router metadata files:** `/icon.png`, `/apple-icon.png`, `/opengraph-image.png`, `/twitter-image.png` (served from `src/app/`)
+- **Social preview default:** `/opengraph-image.png` and `/twitter-image.png`
 
 ## Component governance
 
-- Use `packages/web/src/components/brand/SettlerLogo.tsx` for rendered product logos.
-- Do not directly reference `/logo.svg` or `/logo-dark.svg` in UI components.
-- Metadata/icon tags must resolve through `packages/web/src/lib/images/image-config.ts`.
+- Prefer `BrandLogo`, `BrandLockup`, `BrandMark`, and `BrandWordmark` from `packages/web/src/components/brand/`.
+- `SettlerLogo` remains as a thin compatibility wrapper over those components.
+- Metadata and manifest paths must stay aligned with `packages/web/src/lib/images/image-config.ts`.
 
-## Legacy asset status
+## Legacy
 
-Legacy logo and favicon files in root `public/` and `public/assets/images/` are superseded for active runtime usage.
-They are retained only for historical/reference compatibility and must not be used for new UI or metadata wiring.
-
-## Future updates
-
-When updating branding:
-
-1. Replace files in `public/brand/settler/`.
-2. Keep `SettlerLogo` variants aligned with updated files.
-3. Update `image-config.ts` only if dimensions/format change.
-4. Verify: header, footer, app metadata, manifest, service worker cache list, and social preview metadata.
+Root-level `public/logo.svg`, `public/favicon.svg`, and old indigo checkmark SVGs under `public/brand/settler/` were removed. Requests to `/favicon.ico` and `/favicon.svg` redirect to `/icon.png` via Next.js redirects.
