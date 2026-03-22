@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, RefreshCw, FileText, Code, Shield } from "lucide-react";
+import { ArrowRight, BarChart3, RefreshCw, FileText, Code, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 import { fadeUp, staggerContainer, staggerItem } from "@/lib/motion/variants";
 
@@ -53,6 +53,36 @@ export default function DemoPage() {
             <li>Review attached evidence and trace context.</li>
             <li>Replay with the same inputs to verify reproducible output.</li>
           </ol>
+        </motion.div>
+
+        {/* Showcase Console — Featured */}
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
+          className="mb-10 rounded-xl border-2 border-blue-300 dark:border-blue-700 bg-white dark:bg-card p-6 sm:p-8"
+        >
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center flex-shrink-0">
+              <BarChart3 className="w-7 h-7 text-white" />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-bold text-foreground mb-1">
+                Interactive Showcase Console
+              </h2>
+              <p className="text-muted-foreground text-sm">
+                Explore a fully populated console with 5 realistic tenant scenarios — see dashboards, runs,
+                exceptions, integrations, alerts, and audit trails with commercially realistic data.
+                No account required.
+              </p>
+            </div>
+            <Button asChild size="lg" className="flex-shrink-0">
+              <Link href="/demo/console">
+                Open Showcase Console
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Link>
+            </Button>
+          </div>
         </motion.div>
 
         {/* Demo Cards */}
