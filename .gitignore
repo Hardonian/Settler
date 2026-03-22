@@ -85,6 +85,7 @@ __pycache__/
 .tmp/
 .tmp-*
 .tooling/
+.kilocode/
 *.zip
 Gemini_Generated_Image_*.png
 Video_Generation_*.mp4
