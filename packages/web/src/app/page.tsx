@@ -108,8 +108,8 @@ export default function HomePage() {
               },
               {
                 role: "Buyer / evaluator",
-                href: "/pricing",
-                desc: "Packaging and open-source vs enterprise posture.",
+                href: "/demo/console",
+                desc: "Interactive showcase console with realistic reconciliation scenarios.",
               },
             ].map((item) => (
               <UiLink
@@ -125,12 +125,12 @@ export default function HomePage() {
         </Section>
 
         <CTASection
-          title="Start with product truth"
-          description="Explore the platform, capabilities, and architecture to evaluate what exists now and what is planned next."
-          primaryHref="/docs/architecture/platform-architecture"
-          primaryLabel="Read architecture overview"
-          secondaryHref="/docs/launch/README"
-          secondaryLabel="View launch status"
+          title="See it in action"
+          description="Explore the interactive showcase console with realistic reconciliation data. No account required."
+          primaryHref="/demo/console"
+          primaryLabel="Open showcase console"
+          secondaryHref="/docs"
+          secondaryLabel="Read documentation"
         />
       </main>
       <Footer />

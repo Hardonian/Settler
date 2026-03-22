@@ -414,12 +414,12 @@ export default function RunsPage() {
           description={
             filters.status || filters.search
               ? "Try widening the lifecycle filter or clearing your search to review the full tenant run history."
-              : "Runs appear here after a tenant-scoped reconciliation starts."
+              : "Reconciliation runs appear here once you connect data sources and execute your first match. Each run compares records from a source system (e.g., Stripe) against a target system (e.g., your bank), identifies matches, flags mismatches, and produces an auditable result."
           }
           hint={
             filters.status || filters.search
               ? undefined
-              : "Open Reconciliations to launch your first workflow, or import data via the API."
+              : "Start by connecting an integration, or try the Playground to see reconciliation in action with sample data."
           }
           action={
             filters.status || filters.search
@@ -429,7 +429,7 @@ export default function RunsPage() {
           secondaryAction={
             filters.status || filters.search
               ? undefined
-              : { label: "View Docs", href: "/docs/getting-started" }
+              : { label: "Try Demo", href: "/demo/console" }
           }
         />
       ) : (

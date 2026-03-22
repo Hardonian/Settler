@@ -71,10 +71,10 @@ export function WelcomeBanner({ userName, onDismiss }: WelcomeBannerProps) {
               </h3>
             </div>
             <p className="text-green-800 dark:text-green-200 mb-2">
-              Welcome! Your first step: Get your API key
+              Your reconciliation workspace is ready. Connect your data sources, run your first match, and review results.
             </p>
             <p className="text-sm text-green-700 dark:text-green-300 mb-4">
-              Create your API key to start using Settler. It takes just 30 seconds.
+              Start by creating an API key, then try the playground to see how Settler matches records and surfaces mismatches.
             </p>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="sm" className="bg-green-600 hover:bg-green-700 text-white">
