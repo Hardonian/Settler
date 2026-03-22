@@ -107,7 +107,8 @@ export const POST = withSecurity(
         },
       });
 
-      // Track usage: Job creation counts as 1 transaction (will track actual transactions when job executes)
+      // Track usage: Job creation counts as 1 transaction
+      let usageTrackingFailed = false;
       try {
         const { trackReconciliationTransaction } = await import("@/middleware/usage-tracking");
         await trackReconciliationTransaction(
@@ -118,8 +119,15 @@ export const POST = withSecurity(
           body.sourceAdapter
         );
       } catch (usageError) {
-        // Don't fail job creation if usage tracking fails
-        appLogger.error("[Recon Jobs API] Usage tracking failed", usageError);
+        usageTrackingFailed = true;
+        appLogger.error(
+          "[Recon Jobs API] Usage tracking failed — job created but billing event not recorded",
+          {
+            jobId: job.id,
+            tenantId: billingAccount.tenantId,
+            error: usageError instanceof Error ? usageError.message : String(usageError),
+          }
+        );
       }
 
       const metadata = job.metadata as Record<string, unknown> | null;
@@ -137,7 +145,11 @@ export const POST = withSecurity(
         message: "Reconciliation job created successfully. Processing will begin shortly.",
       };
 
-      return NextResponse.json(jobResponse, { status: 201 });
+      const response = NextResponse.json(jobResponse, { status: 201 });
+      if (usageTrackingFailed) {
+        response.headers.set("X-Usage-Tracking", "failed");
+      }
+      return response;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       appLogger.error("[Recon Jobs API] Error", error, { errorMessage });
