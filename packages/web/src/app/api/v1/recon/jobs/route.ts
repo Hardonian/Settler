@@ -22,14 +22,18 @@ export const maxDuration = 60;
 export const POST = withSecurity(
   async function POST(request: NextRequest) {
     try {
-      // Try to authenticate, but don't fail if unauthenticated (for playground)
-      let isAuthenticated = false;
-
+      // Authenticate — production endpoints require valid API key
       const auth = await authenticateApiKey(request);
-      if (auth) {
-        isAuthenticated = true;
+      if (!auth) {
+        return NextResponse.json(
+          {
+            error: "Authentication required",
+            code: "SETTLER_UNAUTHORIZED",
+            message: "A valid API key is required. For demo access, use /api/demo/* endpoints.",
+          },
+          { status: 401 }
+        );
       }
-      // Unauthenticated access allowed for playground (graceful degradation)
 
       // Parse request body
       let body;
@@ -43,24 +47,7 @@ export const POST = withSecurity(
       if (!body.name && !body.sourceAdapter) {
         return NextResponse.json({ error: "name or sourceAdapter is required" }, { status: 400 });
       }
-
-      // For unauthenticated users, return demo response
-      if (!isAuthenticated) {
-        const demoJobId = `demo_${Date.now()}`;
-        const demoResponse = {
-          id: demoJobId,
-          jobId: demoJobId,
-          name: body.name || "Demo Reconciliation Job",
-          status: "queued",
-          sourceAdapter: body.sourceAdapter || "stripe",
-          targetAdapter: body.targetAdapter || "shopify",
-          createdAt: new Date().toISOString(),
-          message: "This is a demo response. Sign in to create real reconciliation jobs.",
-          demo: true,
-        };
-
-        return NextResponse.json(demoResponse, { status: 201 });
-      }
+      const isAuthenticated = true;
 
       // CRITICAL: Enforce active subscription requirement
       const subscriptionCheck = await requireActiveSubscription(request, auth?.userId);
@@ -167,7 +154,7 @@ export const POST = withSecurity(
       );
     }
   },
-  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: false }
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
 );
 
 /**
@@ -192,18 +179,16 @@ export const GET = withSecurity(
       const limit = Math.min(parseInt(searchParams.get("limit") || "100", 10), 1000);
       const offset = Math.max(parseInt(searchParams.get("offset") || "0", 10), 0);
 
-      // Try to authenticate, but don't fail if unauthenticated
-      let isAuthenticated = false;
+      // Authenticate — production endpoints require valid API key or session
       let tenantId: string | null = null;
       let userId: string | null = null;
 
       const auth = await authenticateApiKey(request);
       if (auth) {
-        isAuthenticated = true;
         tenantId = auth.tenantId || null;
         userId = auth.userId || null;
       } else {
-        // Try Supabase auth as fallback (graceful degradation)
+        // Try Supabase auth as fallback for console users
         try {
           const { createClient } = await import("@/lib/supabase/server");
           const supabase = await createClient();
@@ -211,9 +196,7 @@ export const GET = withSecurity(
             data: { user },
           } = await supabase.auth.getUser();
           if (user) {
-            isAuthenticated = true;
             userId = user.id;
-            // Get tenant from billing account
             const { prisma } = await import("@/shared/db/prismaClient");
             const billingAccount = await prisma.billingAccount.findFirst({
               where: { userId: user.id },
@@ -222,25 +205,20 @@ export const GET = withSecurity(
             tenantId = billingAccount?.tenantId || null;
           }
         } catch {
-          // Unauthenticated access allowed for playground
+          // Auth failed — reject below
         }
       }
 
-      // For unauthenticated users, return demo response
-      if (!isAuthenticated || !tenantId) {
-        const demoJobs = [
+      if (!tenantId) {
+        return NextResponse.json(
           {
-            id: "demo_1",
-            name: "Demo Monthly Reconciliation",
-            status: "completed",
-            sourceAdapter: "stripe",
-            targetAdapter: "shopify",
-            createdAt: new Date(Date.now() - 86400000).toISOString(),
-            demo: true,
+            error: "Authentication required",
+            code: "SETTLER_UNAUTHORIZED",
+            message:
+              "A valid API key or session is required. For demo access, use /api/demo/* endpoints.",
           },
-        ];
-
-        return NextResponse.json(demoJobs, { status: 200 });
+          { status: 401 }
+        );
       }
 
       // For authenticated users, fetch actual jobs from database
@@ -353,5 +331,5 @@ export const GET = withSecurity(
       );
     }
   },
-  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
 );

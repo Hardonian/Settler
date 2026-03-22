@@ -37,12 +37,10 @@ function createRng(seed: number): SeededRng {
       return min + Math.floor(next() * (max - min + 1));
     },
     pick<T>(arr: readonly T[]): T {
-      return arr[Math.floor(next() * arr.length)];
+      return arr[Math.floor(next() * arr.length)]!;
     },
     uuid() {
-      const h = Array.from({ length: 32 }, () =>
-        Math.floor(next() * 16).toString(16)
-      ).join("");
+      const h = Array.from({ length: 32 }, () => Math.floor(next() * 16).toString(16)).join("");
       return `${h.slice(0, 8)}-${h.slice(8, 12)}-4${h.slice(13, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
     },
   };
@@ -274,9 +272,7 @@ const ACTOR_NAMES = [
 
 function relativeDate(daysAgo: number, rng: SeededRng): string {
   const now = new Date();
-  const d = new Date(
-    now.getTime() - daysAgo * 86400000 + rng.nextInt(0, 86400000)
-  );
+  const d = new Date(now.getTime() - daysAgo * 86400000 + rng.nextInt(0, 86400000));
   return d.toISOString();
 }
 
@@ -307,20 +303,14 @@ function generateRuns(
     const conflicts = rng.nextInt(0, Math.max(1, Math.round(unmatched * 0.1)));
     const isFailed = rng.next() < profile.failRate;
     const isRunning = !isFailed && i === 0 && rng.next() < 0.15;
-    const status: ShowcaseRun["status"] = isFailed
-      ? "failed"
-      : isRunning
-        ? "running"
-        : "completed";
+    const status: ShowcaseRun["status"] = isFailed ? "failed" : isRunning ? "running" : "completed";
     const daysAgo = i * 2 + rng.nextInt(0, 1);
     const startedAt = relativeDate(daysAgo, rng);
     const durationMs = rng.nextInt(3000, 45000);
     const completedAt =
       status === "running"
         ? null
-        : new Date(
-            new Date(startedAt).getTime() + durationMs
-          ).toISOString();
+        : new Date(new Date(startedAt).getTime() + durationMs).toISOString();
 
     const exceptioned = rng.nextInt(0, Math.max(1, unmatchedSource));
     const unresolved = rng.nextInt(0, exceptioned);
@@ -371,7 +361,7 @@ function generateRuns(
         resolved,
       },
       summaryState,
-      isTerminal: status !== "running" && status !== "pending",
+      isTerminal: status !== "running",
       progress:
         status === "completed" || status === "failed"
           ? 100
@@ -403,9 +393,7 @@ function generateExceptions(
   const exceptions: ShowcaseException[] = [];
   for (const run of runs) {
     if (run.status === "pending") continue;
-    const count = Math.round(
-      run.summarySemantics.exceptioned * density
-    );
+    const count = Math.round(run.summarySemantics.exceptioned * density);
     for (let i = 0; i < count; i++) {
       const type = rng.pick(EXCEPTION_TYPES);
       const templates = EXCEPTION_DESCRIPTIONS[type] || ["Exception detected"];
@@ -492,11 +480,7 @@ function generateExceptions(
   return exceptions;
 }
 
-function generateAlerts(
-  tenantId: string,
-  count: number,
-  rng: SeededRng
-): ShowcaseAlert[] {
+function generateAlerts(tenantId: string, count: number, rng: SeededRng): ShowcaseAlert[] {
   const alerts: ShowcaseAlert[] = [];
   const alertTemplates: Array<{
     type: ShowcaseAlert["type"];
@@ -548,7 +532,7 @@ function generateAlerts(
     },
   ];
   for (let i = 0; i < count; i++) {
-    const tpl = alertTemplates[i % alertTemplates.length];
+    const tpl = alertTemplates[i % alertTemplates.length]!;
     alerts.push({
       id: rng.uuid(),
       tenantId,
@@ -593,12 +577,8 @@ function generateIntegrations(
       name: adapter.charAt(0).toUpperCase() + adapter.slice(1).replace(/-/g, " "),
       adapter,
       status,
-      lastSyncAt:
-        status === "disconnected"
-          ? null
-          : relativeDate(rng.nextInt(0, 2), rng),
-      recordsSynced:
-        status === "pending" ? 0 : rng.nextInt(500, 50000),
+      lastSyncAt: status === "disconnected" ? null : relativeDate(rng.nextInt(0, 2), rng),
+      recordsSynced: status === "pending" ? 0 : rng.nextInt(500, 50000),
       errorCount:
         status === "degraded"
           ? rng.nextInt(1, 15)
@@ -610,11 +590,7 @@ function generateIntegrations(
   });
 }
 
-function generateAuditTrail(
-  tenantId: string,
-  count: number,
-  rng: SeededRng
-): ShowcaseAuditEntry[] {
+function generateAuditTrail(tenantId: string, count: number, rng: SeededRng): ShowcaseAuditEntry[] {
   const entries: ShowcaseAuditEntry[] = [];
   for (let i = 0; i < count; i++) {
     const action = rng.pick(AUDIT_ACTIONS);
@@ -660,30 +636,17 @@ function generateMetrics(
   rng: SeededRng
 ): ShowcaseMetrics {
   const completedRuns = runs.filter((r) => r.status === "completed");
-  const totalRecords = completedRuns.reduce(
-    (s, r) => s + r.summary.total,
-    0
-  );
-  const totalMatched = completedRuns.reduce(
-    (s, r) => s + r.summary.matched,
-    0
-  );
-  const matchRate =
-    totalRecords > 0
-      ? Math.round((totalMatched / totalRecords) * 10000) / 100
-      : 0;
+  const totalRecords = completedRuns.reduce((s, r) => s + r.summary.total, 0);
+  const totalMatched = completedRuns.reduce((s, r) => s + r.summary.matched, 0);
+  const matchRate = totalRecords > 0 ? Math.round((totalMatched / totalRecords) * 10000) / 100 : 0;
   const openExceptions = exceptions.filter(
     (e) => e.status === "pending" || e.status === "investigating"
   ).length;
-  const resolvedExceptions = exceptions.filter(
-    (e) => e.status === "resolved"
-  ).length;
+  const resolvedExceptions = exceptions.filter((e) => e.status === "resolved").length;
   const avgDuration =
     completedRuns.length > 0
       ? completedRuns.reduce((s, r) => {
-          const d =
-            new Date(r.completedAt!).getTime() -
-            new Date(r.startedAt).getTime();
+          const d = new Date(r.completedAt!).getTime() - new Date(r.startedAt).getTime();
           return s + d;
         }, 0) / completedRuns.length
       : 0;
@@ -704,19 +667,13 @@ function generateMetrics(
     tenantId,
     matchRate,
     exceptionRate:
-      totalRecords > 0
-        ? Math.round(
-            (exceptions.length / totalRecords) * 10000
-          ) / 100
-        : 0,
+      totalRecords > 0 ? Math.round((exceptions.length / totalRecords) * 10000) / 100 : 0,
     avgRunDurationMs: Math.round(avgDuration),
     totalRecordsProcessed: totalRecords,
     totalRunsCompleted: completedRuns.length,
     openExceptions,
     resolvedExceptions,
-    activeIntegrations: integrations.filter(
-      (i) => i.status === "connected"
-    ).length,
+    activeIntegrations: integrations.filter((i) => i.status === "connected").length,
     trendMatchRate,
     trendExceptions,
     trendVolume,
@@ -881,24 +838,11 @@ export function getShowcaseDataset(): ShowcaseDataset {
     );
     allRuns.push(...runs);
 
-    const exceptions = generateExceptions(
-      tenantId,
-      runs,
-      scenario.exceptionDensity,
-      rng
-    );
+    const exceptions = generateExceptions(tenantId, runs, scenario.exceptionDensity, rng);
     allExceptions.push(...exceptions);
 
-    const adapters = [
-      scenario.sourceAdapter,
-      scenario.targetAdapter,
-      ...scenario.extraAdapters,
-    ];
-    const integrations = generateIntegrations(
-      tenantId,
-      [...new Set(adapters)],
-      rng
-    );
+    const adapters = [scenario.sourceAdapter, scenario.targetAdapter, ...scenario.extraAdapters];
+    const integrations = generateIntegrations(tenantId, [...new Set(adapters)], rng);
     allIntegrations.push(...integrations);
 
     const alerts = generateAlerts(tenantId, scenario.alertCount, rng);
@@ -907,13 +851,7 @@ export function getShowcaseDataset(): ShowcaseDataset {
     const audit = generateAuditTrail(tenantId, scenario.auditCount, rng);
     allAudit.push(...audit);
 
-    const metrics = generateMetrics(
-      tenantId,
-      runs,
-      exceptions,
-      integrations,
-      rng
-    );
+    const metrics = generateMetrics(tenantId, runs, exceptions, integrations, rng);
     allMetrics.push(metrics);
   }
 
@@ -932,7 +870,7 @@ export function getShowcaseDataset(): ShowcaseDataset {
 
 /** Get the default showcase tenant (Acme Commerce) */
 export function getDefaultShowcaseTenant(): ShowcaseTenant {
-  return getShowcaseDataset().tenants[0];
+  return getShowcaseDataset().tenants[0]!;
 }
 
 /** Get data scoped to a single tenant */

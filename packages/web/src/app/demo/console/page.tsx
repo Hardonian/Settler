@@ -22,13 +22,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatCard } from "@/components/ui/stat-card";
 import { StatusBadge, type StatusType } from "@/components/ui/status-badge";
 import type {
@@ -48,6 +42,8 @@ interface DemoData {
   integrations: ShowcaseIntegration[];
   metrics: ShowcaseMetrics | null;
 }
+
+type LoadError = { message: string } | null;
 
 function formatCount(n: number): string {
   if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
@@ -98,9 +94,7 @@ function integrationStatusColor(status: string): string {
   }
 }
 
-function alertSeverityVariant(
-  severity: string
-): "destructive" | "warning" | "outline" {
+function alertSeverityVariant(severity: string): "destructive" | "warning" | "outline" {
   switch (severity) {
     case "critical":
       return "destructive";
@@ -119,9 +113,7 @@ function MiniSparkline({ data, color = "text-blue-500" }: { data: number[]; colo
   const h = 32;
   const w = 120;
   const step = w / (data.length - 1);
-  const points = data
-    .map((v, i) => `${i * step},${h - ((v - min) / range) * h}`)
-    .join(" ");
+  const points = data.map((v, i) => `${i * step},${h - ((v - min) / range) * h}`).join(" ");
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className={`w-[120px] h-8 ${color}`} aria-hidden="true">
       <polyline
@@ -140,9 +132,11 @@ export default function DemoConsolePage() {
   const [data, setData] = useState<DemoData | null>(null);
   const [selectedTenant, setSelectedTenant] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<LoadError>(null);
 
   const loadData = useCallback(async (tenantId?: string) => {
     setLoading(true);
+    setError(null);
     try {
       const tenantParam = tenantId ? `?tenantId=${tenantId}` : "";
       const [tenantsRes, runsRes, exceptionsRes, alertsRes, integrationsRes, metricsRes] =
@@ -154,6 +148,25 @@ export default function DemoConsolePage() {
           fetch(`/api/demo/integrations${tenantParam}`),
           fetch(`/api/demo/metrics${tenantParam}`),
         ]);
+
+      // Check for rate limiting or server errors
+      const responses = [
+        tenantsRes,
+        runsRes,
+        exceptionsRes,
+        alertsRes,
+        integrationsRes,
+        metricsRes,
+      ];
+      const failedResponse = responses.find((r) => !r.ok);
+      if (failedResponse) {
+        if (failedResponse.status === 429) {
+          setError({ message: "Rate limit reached. Please wait a moment before refreshing." });
+          return;
+        }
+        setError({ message: `Failed to load demo data (HTTP ${failedResponse.status}).` });
+        return;
+      }
 
       const [tenants, runs, exceptions, alerts, integrations, metrics] = await Promise.all([
         tenantsRes.json(),
@@ -168,8 +181,10 @@ export default function DemoConsolePage() {
       if (!tenantId && tenants.length > 0) {
         setSelectedTenant(tenants[0].id);
       }
-    } catch {
-      // Demo mode — gracefully degrade
+    } catch (err) {
+      setError({
+        message: err instanceof Error ? err.message : "Failed to load demo data. Please try again.",
+      });
     } finally {
       setLoading(false);
     }
@@ -199,6 +214,27 @@ export default function DemoConsolePage() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30 p-6 text-center">
+          <AlertTriangle className="w-8 h-8 text-red-500 mx-auto mb-3" />
+          <h2 className="text-lg font-semibold text-red-900 dark:text-red-100 mb-1">
+            Unable to Load Demo
+          </h2>
+          <p className="text-sm text-red-700 dark:text-red-300 mb-4">{error.message}</p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void loadData(selectedTenant || undefined)}
+          >
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (!data) return null;
 
   const currentTenant = data.tenants.find((t) => t.id === selectedTenant);
@@ -223,7 +259,8 @@ export default function DemoConsolePage() {
               Showcase Mode — Live Product Demo
             </p>
             <p className="text-xs text-blue-700 dark:text-blue-300">
-              All data is deterministic and read-only. Switch tenants to explore different reconciliation scenarios.
+              All data is deterministic and read-only. Switch tenants to explore different
+              reconciliation scenarios.
             </p>
           </div>
         </div>
@@ -256,7 +293,10 @@ export default function DemoConsolePage() {
         </div>
 
         <div className="flex-shrink-0">
-          <label htmlFor="tenant-select" className="block text-xs font-medium text-muted-foreground mb-1">
+          <label
+            htmlFor="tenant-select"
+            className="block text-xs font-medium text-muted-foreground mb-1"
+          >
             Scenario
           </label>
           <select
@@ -287,7 +327,9 @@ export default function DemoConsolePage() {
                 <p className="text-sm font-medium text-red-900 dark:text-red-100">{alert.title}</p>
                 <p className="text-xs text-red-700 dark:text-red-300 mt-0.5">{alert.message}</p>
               </div>
-              <Badge variant="destructive" className="flex-shrink-0">Critical</Badge>
+              <Badge variant="destructive" className="flex-shrink-0">
+                Critical
+              </Badge>
             </div>
           ))}
         </div>
@@ -300,7 +342,9 @@ export default function DemoConsolePage() {
             label="Match Rate"
             value={`${metrics.matchRate}%`}
             icon={CheckCircle2}
-            tone={metrics.matchRate >= 95 ? "success" : metrics.matchRate >= 90 ? "warning" : "danger"}
+            tone={
+              metrics.matchRate >= 95 ? "success" : metrics.matchRate >= 90 ? "warning" : "danger"
+            }
             description={`${metrics.totalRunsCompleted} runs completed`}
           />
           <StatCard
@@ -313,7 +357,13 @@ export default function DemoConsolePage() {
             label="Open Exceptions"
             value={metrics.openExceptions}
             icon={AlertTriangle}
-            tone={metrics.openExceptions > 10 ? "danger" : metrics.openExceptions > 0 ? "warning" : "success"}
+            tone={
+              metrics.openExceptions > 10
+                ? "danger"
+                : metrics.openExceptions > 0
+                  ? "warning"
+                  : "success"
+            }
             description={`${metrics.resolvedExceptions} resolved`}
           />
           <StatCard
@@ -330,7 +380,9 @@ export default function DemoConsolePage() {
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Match Rate Trend</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Match Rate Trend
+              </CardTitle>
             </CardHeader>
             <CardContent className="flex items-center justify-between">
               <span className="text-2xl font-bold tabular-nums">{metrics.matchRate}%</span>
@@ -339,7 +391,9 @@ export default function DemoConsolePage() {
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Exception Trend</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Exception Trend
+              </CardTitle>
             </CardHeader>
             <CardContent className="flex items-center justify-between">
               <span className="text-2xl font-bold tabular-nums">{metrics.openExceptions}</span>
@@ -348,10 +402,14 @@ export default function DemoConsolePage() {
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Volume Trend</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Volume Trend
+              </CardTitle>
             </CardHeader>
             <CardContent className="flex items-center justify-between">
-              <span className="text-2xl font-bold tabular-nums">{formatCount(metrics.totalRecordsProcessed)}</span>
+              <span className="text-2xl font-bold tabular-nums">
+                {formatCount(metrics.totalRecordsProcessed)}
+              </span>
               <MiniSparkline data={metrics.trendVolume} color="text-blue-500" />
             </CardContent>
           </Card>
@@ -431,12 +489,23 @@ export default function DemoConsolePage() {
                 >
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <p className="text-sm text-foreground line-clamp-2">{exc.description}</p>
-                    <Badge variant={exc.severity === "critical" ? "destructive" : exc.severity === "high" ? "warning" : "outline"} className="flex-shrink-0">
+                    <Badge
+                      variant={
+                        exc.severity === "critical"
+                          ? "destructive"
+                          : exc.severity === "high"
+                            ? "warning"
+                            : "outline"
+                      }
+                      className="flex-shrink-0"
+                    >
                       {exc.severity}
                     </Badge>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Badge variant="outline" className="text-[10px]">{exc.type.replace(/_/g, " ")}</Badge>
+                    <Badge variant="outline" className="text-[10px]">
+                      {exc.type.replace(/_/g, " ")}
+                    </Badge>
                     <span>${exc.amount.toFixed(2)}</span>
                     <span>{exc.statusDetail}</span>
                   </div>
@@ -457,7 +526,8 @@ export default function DemoConsolePage() {
         <CardHeader>
           <CardTitle>Connected Integrations</CardTitle>
           <CardDescription>
-            Data sources and destinations configured for this tenant. Status reflects last sync health.
+            Data sources and destinations configured for this tenant. Status reflects last sync
+            health.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -467,7 +537,9 @@ export default function DemoConsolePage() {
                 key={integration.id}
                 className="flex items-center gap-3 rounded-lg border border-border p-3"
               >
-                <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${integrationStatusColor(integration.status)}`} />
+                <div
+                  className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${integrationStatusColor(integration.status)}`}
+                />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground">{integration.name}</p>
                   <p className="text-xs text-muted-foreground">
@@ -523,7 +595,9 @@ export default function DemoConsolePage() {
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   {alert.acknowledged && (
-                    <Badge variant="outline" className="text-[10px]">Ack</Badge>
+                    <Badge variant="outline" className="text-[10px]">
+                      Ack
+                    </Badge>
                   )}
                   <Badge variant={alertSeverityVariant(alert.severity)}>{alert.severity}</Badge>
                 </div>
@@ -547,20 +621,37 @@ export default function DemoConsolePage() {
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-1">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Deterministic Engine</p>
-              <p className="text-sm text-foreground">Same inputs always produce identical outputs. Every run is replayable.</p>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                Deterministic Engine
+              </p>
+              <p className="text-sm text-foreground">
+                Same inputs always produce identical outputs. Every run is replayable.
+              </p>
             </div>
             <div className="space-y-1">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Audit Trail</p>
-              <p className="text-sm text-foreground">Every operator action, rule change, and exception resolution is logged with actor and timestamp.</p>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                Audit Trail
+              </p>
+              <p className="text-sm text-foreground">
+                Every operator action, rule change, and exception resolution is logged with actor
+                and timestamp.
+              </p>
             </div>
             <div className="space-y-1">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Tenant Isolation</p>
-              <p className="text-sm text-foreground">All data is scoped to your tenant. No cross-tenant data leakage is possible.</p>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                Tenant Isolation
+              </p>
+              <p className="text-sm text-foreground">
+                All data is scoped to your tenant. No cross-tenant data leakage is possible.
+              </p>
             </div>
             <div className="space-y-1">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Evidence Manifests</p>
-              <p className="text-sm text-foreground">Each run produces hash-linked evidence that can be independently verified.</p>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                Evidence Manifests
+              </p>
+              <p className="text-sm text-foreground">
+                Each run produces hash-linked evidence that can be independently verified.
+              </p>
             </div>
           </div>
         </CardContent>
@@ -572,8 +663,8 @@ export default function DemoConsolePage() {
           Ready to reconcile your own data?
         </h2>
         <p className="text-sm text-muted-foreground mb-4 max-w-lg mx-auto">
-          Start a free trial to connect your payment processors, banks, and accounting systems.
-          See real reconciliation results in minutes.
+          Start a free trial to connect your payment processors, banks, and accounting systems. See
+          real reconciliation results in minutes.
         </p>
         <div className="flex justify-center gap-3">
           <Button asChild>

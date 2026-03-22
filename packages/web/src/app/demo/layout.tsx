@@ -7,6 +7,11 @@ export const metadata: Metadata = {
   title: "Demo Preview - Settler",
   description:
     "Interactive demo of Settler's reconciliation engine, receipt ingestion, and API playground. No authentication required.",
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: { index: false, follow: false },
+  },
 };
 
 export default function DemoLayout({ children }: { children: React.ReactNode }) {
