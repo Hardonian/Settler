@@ -58,11 +58,7 @@ export function IngestionDashboard({ ingestionId }: { ingestionId: string }) {
       setError(null);
 
       // Load ingestion details
-      const ingestionRes = await fetch(`/api/v1/ingestion/${ingestionId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("apiKey")}`,
-        },
-      });
+      const ingestionRes = await fetch(`/api/console/v1/ingestion/${ingestionId}`);
 
       if (!ingestionRes.ok) {
         throw new Error("Failed to load ingestion");
@@ -72,11 +68,9 @@ export function IngestionDashboard({ ingestionId }: { ingestionId: string }) {
       setIngestion(ingestionData);
 
       // Load transactions
-      const transactionsRes = await fetch(`/api/v1/ingestion/${ingestionId}/transactions`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("apiKey")}`,
-        },
-      });
+      const transactionsRes = await fetch(
+        `/api/console/v1/ingestion/${ingestionId}/transactions`
+      );
 
       if (transactionsRes.ok) {
         const transactionsData = await transactionsRes.json();

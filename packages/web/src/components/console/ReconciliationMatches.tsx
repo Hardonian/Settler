@@ -81,11 +81,7 @@ export function ReconciliationMatches({ runId, runKind: runKindProp }: Reconcili
 
       let runKind = resolvedRunKind;
       if (runKind == null) {
-        const detailRes = await fetch(`/api/v1/reconciliation/runs/${runId}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("apiKey")}`,
-          },
-        });
+        const detailRes = await fetch(`/api/console/v1/reconciliation/runs/${runId}`);
 
         if (detailRes.status === 404) {
           setBlockReason({ kind: "not_found" });
@@ -148,12 +144,7 @@ export function ReconciliationMatches({ runId, runKind: runKindProp }: Reconcili
       }
 
       const response = await fetch(
-        `/api/v1/reconciliation/runs/${runId}/matches?${params.toString()}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("apiKey")}`,
-          },
-        }
+        `/api/console/v1/reconciliation/runs/${runId}/matches?${params.toString()}`
       );
 
       if (response.status === 409) {
@@ -190,10 +181,9 @@ export function ReconciliationMatches({ runId, runKind: runKindProp }: Reconcili
 
   const toggleReviewed = async (matchId: string, reviewed: boolean) => {
     try {
-      const response = await fetch(`/api/v1/reconciliation/matches/${matchId}`, {
+      const response = await fetch(`/api/console/v1/reconciliation/matches/${matchId}`, {
         method: "PATCH",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("apiKey")}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ reviewed: !reviewed }),

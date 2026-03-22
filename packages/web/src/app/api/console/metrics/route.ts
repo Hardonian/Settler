@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/shared/db/prismaClient";
 import { getExecutiveMetrics, getBillingAccountMetrics } from "@/lib/metrics/service";
 import {
   getCorrelationId,
@@ -41,11 +42,18 @@ export const GET = withSecurity(
         // Check admin via database-backed role (not user_metadata which is user-controllable).
         const { getUserRole, UserRole } = await import("@/shared/auth/roles");
         const userRole = await getUserRole(user.id);
-        const isAdmin = userRole === UserRole.SUPER_ADMIN || userRole === UserRole.TENANT_ADMIN;
+        const isSuperAdmin = userRole === UserRole.SUPER_ADMIN;
         const billingAccountId = request.nextUrl.searchParams.get("billingAccountId");
 
         if (billingAccountId) {
-          // Get metrics for specific billing account
+          const ownsAccount = await prisma.billingAccount.findFirst({
+            where: { id: billingAccountId, userId: user.id },
+            select: { id: true },
+          });
+          if (!ownsAccount && !isSuperAdmin) {
+            return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+          }
+
           const metrics = await getBillingAccountMetrics(billingAccountId);
 
           if (!metrics) {
@@ -55,8 +63,8 @@ export const GET = withSecurity(
           return NextResponse.json(metrics);
         }
 
-        // Get global metrics (admin only)
-        if (!isAdmin) {
+        // Platform-wide executive metrics: super-admin only
+        if (!isSuperAdmin) {
           return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
 

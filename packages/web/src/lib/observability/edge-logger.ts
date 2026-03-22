@@ -11,33 +11,16 @@
  *  - Structured JSON output, matching server-logger shape
  */
 
+import { redactStructuredLogValue } from "./log-redaction";
+
 type LogLevel = "info" | "warn" | "error";
-
-const REDACTED = "[REDACTED]";
-const SECRET_KEY_PATTERN = /(secret|token|password|key|authorization|cookie)/i;
-
-function redactValue(value: unknown): unknown {
-  if (value === null || value === undefined) return value;
-  if (typeof value === "string") return value;
-  if (Array.isArray(value)) return value.map(redactValue);
-  if (typeof value === "object") {
-    return Object.entries(value as Record<string, unknown>).reduce<Record<string, unknown>>(
-      (acc, [key, nested]) => {
-        acc[key] = SECRET_KEY_PATTERN.test(key) ? REDACTED : redactValue(nested);
-        return acc;
-      },
-      {}
-    );
-  }
-  return value;
-}
 
 function writeEdgeLog(
   level: LogLevel,
   message: string,
   context: Record<string, unknown> = {}
 ): void {
-  const sanitizedContext = redactValue(context) as Record<string, unknown>;
+  const sanitizedContext = redactStructuredLogValue(context) as Record<string, unknown>;
   const entry = {
     level,
     message,
