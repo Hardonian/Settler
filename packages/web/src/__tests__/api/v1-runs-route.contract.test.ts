@@ -2,6 +2,18 @@
 
 import { GET, POST } from "@/app/api/v1/runs/route";
 
+// Prevent real Redis connection during unit tests
+jest.mock("@/lib/redis/client", () => ({
+  getRedisClient: jest.fn(async () => null),
+}));
+
+// Stub encryption — route contract tests verify API behaviour, not crypto
+jest.mock("@/lib/security/encryption", () => ({
+  encrypt: jest.fn((data: string) => `stub:${data}`),
+  decrypt: jest.fn((data: string) => data.replace(/^stub:/, "")),
+  isEncryptionAvailable: jest.fn(() => true),
+}));
+
 const authByKey: Record<string, { userId: string; tenantId?: string }> = {
   rk_tenant_a: { userId: "user-a", tenantId: "tenant-a" },
   rk_tenant_b: { userId: "user-b", tenantId: "tenant-b" },

@@ -175,6 +175,7 @@
   "localClutterPatterns": [
     "^\\.env\\.local$",
     "^\\.DS_Store$",
+    "^\\.kilocode$",
     "^target$",
     "^Thumbs\\.db$",
     "^npm-debug\\.log",
