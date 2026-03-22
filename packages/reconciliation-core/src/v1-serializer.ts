@@ -3,6 +3,7 @@
  */
 
 import type { CanonicalReconciliationRunDetail } from "./canonical-reconciliation.js";
+import { capabilitiesForRunKind } from "./run-capabilities.js";
 
 export function serializeV1ReconciliationRunDetail(
   detail: CanonicalReconciliationRunDetail
@@ -45,6 +46,7 @@ export function serializeV1ReconciliationRunDetail(
   return {
     contract_version: 1,
     run_kind: detail.runKind,
+    capabilities: capabilitiesForRunKind(detail.runKind),
     canonical: detail,
     legacy_v1: legacy,
   };

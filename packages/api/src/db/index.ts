@@ -1,6 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { Pool, PoolClient } from "pg";
+
+/** Re-export so Prisma adapter wiring shares the same `Pool` type identity as this module. */
+export { Pool, PoolClient };
 import { config } from "../config";
 import { logError, logWarn } from "../utils/logger";
 import { TenantContext } from "../infrastructure/tenancy/TenantContext";

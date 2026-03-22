@@ -264,11 +264,16 @@ router.get("/runs", async (req: AuthRequest, res: Response) => {
     if (cursorParam) {
       try {
         cursorState = decodeMergedRunsCursor(cursorParam);
-      } catch (e) {
+      } catch (e: unknown) {
         sendProblemJson(req, res, {
           status: 400,
           title: "Invalid cursor",
-          detail: e instanceof MergedRunsCursorError ? e.message : "Invalid cursor",
+          detail:
+            e instanceof MergedRunsCursorError
+              ? e.message
+              : e instanceof Error
+                ? e.message
+                : "Invalid cursor",
           code: CURSOR_INVALID,
         });
         return;
@@ -362,8 +367,10 @@ router.get("/runs/:runId/matches", async (req: AuthRequest, res: Response) => {
     const gate = await gateIngestionRunForWorkbench(runId, tenantId);
     if (!respondIngestionWorkbenchGate(req, res, gate)) return;
 
-    const limit = parseInt(req.query.limit as string) || 100;
-    const offset = parseInt(req.query.offset as string) || 0;
+    const limitRaw = parseInt(String(req.query.limit || "100"), 10);
+    const limit = Number.isFinite(limitRaw) ? Math.min(Math.max(limitRaw, 1), 500) : 100;
+    const offsetRaw = parseInt(String(req.query.offset || "0"), 10);
+    const offset = Number.isFinite(offsetRaw) && offsetRaw >= 0 ? offsetRaw : 0;
     const matchType = req.query.matchType as string | undefined;
     const reviewed = req.query.reviewed as string | undefined;
 
@@ -464,8 +471,10 @@ router.get("/runs/:runId/workbench", async (req: AuthRequest, res: Response) => 
     const gate = await gateIngestionRunForWorkbench(runId, tenantId);
     if (!respondIngestionWorkbenchGate(req, res, gate)) return;
 
-    const limit = parseInt(req.query.limit as string) || 100;
-    const offset = parseInt(req.query.offset as string) || 0;
+    const limitRaw = parseInt(String(req.query.limit || "100"), 10);
+    const limit = Number.isFinite(limitRaw) ? Math.min(Math.max(limitRaw, 1), 500) : 100;
+    const offsetRaw = parseInt(String(req.query.offset || "0"), 10);
+    const offset = Number.isFinite(offsetRaw) && offsetRaw >= 0 ? offsetRaw : 0;
     const queue = req.query.queue as string | undefined;
 
     const runs = await query(
