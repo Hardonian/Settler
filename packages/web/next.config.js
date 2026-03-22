@@ -304,6 +304,16 @@ const nextConfig = {
   // Redirects for route consistency
   async redirects() {
     return [
+      {
+        source: "/favicon.ico",
+        destination: "/icon.png",
+        permanent: false,
+      },
+      {
+        source: "/favicon.svg",
+        destination: "/icon.png",
+        permanent: false,
+      },
       // Root redirect to home page
       {
         source: "/",

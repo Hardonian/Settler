@@ -32,14 +32,14 @@ export const metadata: Metadata = {
     "rules-based reconciliation",
     "audit evidence",
   ],
-  authors: [{ name: "Settler" }],
-  creator: "Settler",
-  publisher: "Settler",
+  authors: [{ name: "Settler.dev" }],
+  creator: "Settler.dev",
+  publisher: "Settler.dev",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Settler",
+    title: "Settler.dev",
   },
   formatDetection: {
     telephone: false,
@@ -67,14 +67,14 @@ export const metadata: Metadata = {
         type: SETTLER_IMAGES.favicon512.mimeType,
         sizes: "512x512",
       },
-      { url: "/brand/settler/logo-icon.svg", type: "image/svg+xml", sizes: "64x64" },
-      // PNG fallback for platforms without SVG favicon support
       { url: SETTLER_IMAGES.faviconPng.path, type: "image/png", sizes: "512x512" },
     ],
     apple: [
-      { url: SETTLER_IMAGES.favicon.path, type: SETTLER_IMAGES.favicon.mimeType, sizes: "180x180" },
-      // PNG fallback for Apple touch icon
-      { url: SETTLER_IMAGES.appIcon.path, type: "image/png", sizes: "512x512" },
+      {
+        url: SETTLER_IMAGES.appleTouchIcon.path,
+        type: SETTLER_IMAGES.appleTouchIcon.mimeType,
+        sizes: "180x180",
+      },
     ],
   },
   openGraph: {
@@ -125,7 +125,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  themeColor: "#0b6b7a",
+  themeColor: "#1b3f5f",
   viewportFit: "cover",
 };
 
@@ -143,7 +143,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Settler" />
+        <meta name="apple-mobile-web-app-title" content="Settler.dev" />
         <OrganizationSchema />
         <WebSiteSchema />
         <SoftwareApplicationSchema />

@@ -149,9 +149,9 @@ export function Navigation() {
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                 "rounded"
               )}
-              aria-label="Settler homepage"
+              aria-label="Settler.dev homepage"
             >
-              <SettlerLogo variant="horizontal" className="h-8 w-auto" priority alt="Settler" />
+              <SettlerLogo variant="horizontal" className="h-8 w-auto" priority alt="Settler.dev" />
             </Link>
 
             {/* Desktop Navigation */}

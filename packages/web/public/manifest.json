@@ -1,24 +1,24 @@
 {
   "name": "Settler.dev \u2014 Deterministic Reconciliation",
-  "short_name": "Settler",
+  "short_name": "Settler.dev",
   "description": "Settler is a deterministic reconciliation system for auditable run evidence, policy-aware controls, and operator diagnostics.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#061a2f",
-  "theme_color": "#0b6b7a",
+  "theme_color": "#1b3f5f",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/brand/settler/favicon-192x192.svg",
+      "src": "/brand/settler/favicon-192x192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "/brand/settler/favicon-512x512.svg",
+      "src": "/brand/settler/favicon-512x512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/brand/settler/favicon.png",
@@ -43,9 +43,9 @@
       "url": "/console",
       "icons": [
         {
-          "src": "/brand/settler/favicon-192x192.svg",
+          "src": "/brand/settler/favicon-192x192.png",
           "sizes": "192x192",
-          "type": "image/svg+xml"
+          "type": "image/png"
         }
       ]
     },
@@ -56,9 +56,9 @@
       "url": "/docs",
       "icons": [
         {
-          "src": "/brand/settler/favicon-192x192.svg",
+          "src": "/brand/settler/favicon-192x192.png",
           "sizes": "192x192",
-          "type": "image/svg+xml"
+          "type": "image/png"
         }
       ]
     }

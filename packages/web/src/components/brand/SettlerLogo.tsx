@@ -1,60 +1,34 @@
-import Image from "next/image";
+import { BrandLockup } from "./BrandLockup";
+import { BrandMark } from "./BrandMark";
+import { BrandWordmark } from "./BrandWordmark";
 
-type SettlerLogoVariant = "horizontal" | "icon" | "wordmark" | "stacked" | "square";
+export type SettlerLogoVariant = "horizontal" | "icon" | "wordmark" | "stacked" | "square";
 
-interface SettlerLogoProps {
+export type SettlerLogoProps = {
   variant?: SettlerLogoVariant;
+  /** Reserved for future theme-specific assets; lockup reads well on light and dark UI. */
   theme?: "auto" | "light" | "dark";
   className?: string;
   priority?: boolean;
   alt?: string;
-}
+};
 
-const LOGO_CONFIG = {
-  horizontal: {
-    src: "/assets/images/Settler-logo.png",
-    width: 1303,
-    height: 339,
-  },
-  icon: {
-    src: "/brand/settler/logo-icon.svg",
-    width: 64,
-    height: 64,
-  },
-  wordmark: {
-    src: "/assets/images/Settler-logo.png",
-    width: 1303,
-    height: 339,
-  },
-  stacked: {
-    src: "/assets/images/Settler-logo.png",
-    width: 1303,
-    height: 339,
-  },
-  square: {
-    src: "/brand/settler/logo-square.svg",
-    width: 64,
-    height: 64,
-  },
-} as const;
-
+/** Compatibility alias for the canonical `BrandLogo` / `BrandLockup` components. */
 export function SettlerLogo({
   variant = "horizontal",
   theme: _theme = "auto",
   className,
   priority = false,
-  alt = "Settler",
+  alt = "Settler.dev",
 }: SettlerLogoProps) {
-  const config = LOGO_CONFIG[variant];
-
-  return (
-    <Image
-      src={config.src}
-      alt={alt}
-      width={config.width}
-      height={config.height}
-      className={className}
-      priority={priority}
-    />
-  );
+  if (variant === "icon" || variant === "square") {
+    return <BrandMark alt="" className={className} priority={priority} />;
+  }
+  if (variant === "wordmark") {
+    return <BrandWordmark alt={alt} className={className} priority={priority} />;
+  }
+  if (variant === "stacked") {
+    return <BrandLockup orientation="stacked" alt={alt} className={className} priority={priority} />;
+  }
+  return <BrandLockup alt={alt} className={className} priority={priority} />;
 }

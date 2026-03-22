@@ -23,41 +23,39 @@ export interface ImageConfig {
 /**
  * Settler brand images configuration
  *
- * Canonical brand logo: /public/assets/images/Settler-logo.png
- * Icon mark SVGs: /public/brand/settler/ (checkmark icon on indigo-blue gradient)
- * Favicon SVGs: /public/brand/settler/ (matching checkmark icon)
+ * Canonical horizontal lockup: /public/assets/images/Settler-logo.png
+ * Derived circular mark + wordmark: regenerate with `node ./scripts/generate-brand-assets.mjs`
  */
 const SETTLER_IMAGES_CONFIG = {
-  // Favicons — SVG for modern browsers, PNG fallbacks for email/platform use
   favicon: {
-    path: "/brand/settler/favicon-192x192.svg",
+    path: "/brand/settler/favicon-192x192.png",
     width: 192,
     height: 192,
-    alt: "Settler Favicon",
+    alt: "Settler.dev",
     category: "favicon" as const,
-    mimeType: "image/svg+xml",
+    mimeType: "image/png",
   },
   favicon192: {
-    path: "/brand/settler/favicon-192x192.svg",
+    path: "/brand/settler/favicon-192x192.png",
     width: 192,
     height: 192,
-    alt: "Settler Icon 192x192",
+    alt: "Settler.dev icon 192",
     category: "favicon" as const,
-    mimeType: "image/svg+xml",
+    mimeType: "image/png",
   },
   favicon512: {
-    path: "/brand/settler/favicon-512x512.svg",
+    path: "/brand/settler/favicon-512x512.png",
     width: 512,
     height: 512,
-    alt: "Settler Icon 512x512",
+    alt: "Settler.dev icon 512",
     category: "favicon" as const,
-    mimeType: "image/svg+xml",
+    mimeType: "image/png",
   },
   faviconPng: {
     path: "/brand/settler/favicon.png",
     width: 512,
     height: 512,
-    alt: "Settler App Icon",
+    alt: "Settler.dev",
     category: "favicon" as const,
     mimeType: "image/png",
   },
@@ -65,35 +63,42 @@ const SETTLER_IMAGES_CONFIG = {
     path: "/brand/settler/app-icon.png",
     width: 512,
     height: 512,
-    alt: "Settler App Icon",
+    alt: "Settler.dev",
+    category: "favicon" as const,
+    mimeType: "image/png",
+  },
+  appleTouchIcon: {
+    path: "/apple-icon.png",
+    width: 180,
+    height: 180,
+    alt: "Settler.dev",
     category: "favicon" as const,
     mimeType: "image/png",
   },
 
-  // Social Media Images
+  // Social Media Images (static files in app/)
   ogImage: {
-    path: "/opengraph-image",
+    path: "/opengraph-image.png",
     width: 1200,
     height: 630,
-    alt: "Settler - Deterministic Reconciliation",
+    alt: "Settler.dev — Deterministic Reconciliation",
     category: "social" as const,
     mimeType: "image/png",
   },
   twitterCard: {
-    path: "/opengraph-image",
+    path: "/twitter-image.png",
     width: 1200,
     height: 630,
-    alt: "Settler - Deterministic Reconciliation",
+    alt: "Settler.dev — Deterministic Reconciliation",
     category: "social" as const,
     mimeType: "image/png",
   },
 
-  // Logos — canonical PNG lockup is the source of truth
   logoMain: {
     path: "/assets/images/Settler-logo.png",
     width: 1303,
     height: 339,
-    alt: "Settler Logo",
+    alt: "Settler.dev",
     category: "logo" as const,
     mimeType: "image/png",
     webpPath: "/assets/images/Settler-logo.webp",
@@ -102,7 +107,7 @@ const SETTLER_IMAGES_CONFIG = {
     path: "/assets/images/Settler-logo.png",
     width: 1303,
     height: 339,
-    alt: "Settler Logo",
+    alt: "Settler.dev",
     category: "logo" as const,
     mimeType: "image/png",
     webpPath: "/assets/images/Settler-logo.webp",
@@ -111,7 +116,7 @@ const SETTLER_IMAGES_CONFIG = {
     path: "/assets/images/Settler-logo.png",
     width: 1303,
     height: 339,
-    alt: "Settler Logo",
+    alt: "Settler.dev",
     category: "logo" as const,
     mimeType: "image/png",
     webpPath: "/assets/images/Settler-logo.webp",
@@ -120,46 +125,44 @@ const SETTLER_IMAGES_CONFIG = {
     path: "/assets/images/Settler-logo.png",
     width: 1303,
     height: 339,
-    alt: "Settler Logo — Stacked",
+    alt: "Settler.dev",
     category: "logo" as const,
     mimeType: "image/png",
     webpPath: "/assets/images/Settler-logo.webp",
   },
   logoSquareLight: {
-    path: "/brand/settler/logo-square.svg",
-    width: 64,
-    height: 64,
-    alt: "Settler Square Logo",
-    category: "logo" as const,
-    mimeType: "image/svg+xml",
-  },
-  logoIconLight: {
-    path: "/brand/settler/logo-icon.svg",
-    width: 64,
-    height: 64,
-    alt: "Settler Icon Mark",
-    category: "logo" as const,
-    mimeType: "image/svg+xml",
-  },
-  logoWordmarkLight: {
-    path: "/assets/images/Settler-logo.png",
-    width: 1303,
-    height: 339,
-    alt: "Settler Wordmark",
+    path: "/brand/settler/favicon-192x192.png",
+    width: 192,
+    height: 192,
+    alt: "Settler.dev mark",
     category: "logo" as const,
     mimeType: "image/png",
-    webpPath: "/assets/images/Settler-logo.webp",
+  },
+  logoIconLight: {
+    path: "/brand/settler/favicon-192x192.png",
+    width: 192,
+    height: 192,
+    alt: "Settler.dev mark",
+    category: "logo" as const,
+    mimeType: "image/png",
+  },
+  logoWordmarkLight: {
+    path: "/brand/settler/wordmark.png",
+    width: 903,
+    height: 339,
+    alt: "Settler.dev",
+    category: "logo" as const,
+    mimeType: "image/png",
   },
   logoSEO: {
-    path: "/opengraph-image",
+    path: "/opengraph-image.png",
     width: 1200,
     height: 630,
-    alt: "Settler SEO Logo",
+    alt: "Settler.dev",
     category: "logo" as const,
     mimeType: "image/png",
   },
 
-  // Thumbnails
   thumbnail: {
     path: "/assets/images/thumbnails/settler-thumbnail.jpg",
     width: 1200,

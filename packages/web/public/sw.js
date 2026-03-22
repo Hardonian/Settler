@@ -3,7 +3,7 @@
  * Provides offline support, caching, and security features
  */
 
-const CACHE_NAME = "settler-v2";
+const CACHE_NAME = "settler-v3";
 const API_CACHE_NAME = "settler-api-v1";
 const STATIC_CACHE_NAME = "settler-static-v1";
 const OFFLINE_URL = "/offline";
@@ -12,8 +12,8 @@ const OFFLINE_URL = "/offline";
 const STATIC_ASSETS = [
   "/",
   "/manifest.json",
-  "/brand/settler/favicon-192x192.svg",
-  "/brand/settler/favicon-512x512.svg",
+  "/brand/settler/favicon-192x192.png",
+  "/brand/settler/favicon-512x512.png",
   "/offline",
 ];
 

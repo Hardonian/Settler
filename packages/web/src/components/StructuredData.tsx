@@ -20,7 +20,7 @@ export function OrganizationSchema() {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Settler',
+    name: 'Settler.dev',
     url: 'https://settler.dev',
     logo: getImageUrl('logoMain'),
     description:
@@ -75,7 +75,7 @@ export function WebSiteSchema() {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Settler',
+    name: 'Settler.dev',
     url: 'https://settler.dev',
     description:
       'Open-source reconciliation engine for deterministic, inspectable financial data matching.',
