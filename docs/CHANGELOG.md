@@ -11,6 +11,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 - `capabilities` object on `GET /api/v1/reconciliation/runs/:id` (matches/workbench/compare/export/consoleResults), sourced from `@settler/reconciliation-core` so UI and API clients share one definition of run-kind affordances.
 - Jest contract coverage for v1 reconciliation gates and cursor errors (`reconciliation-v1-contract.test.ts`); expanded merged-pagination unit tests (limit bounds, multi-page exhaustion).
+- Shared `buildConsoleReconciliationListBody` for Next `GET /api/console/reconciliation` list responses; optional DB integration suite `reconciliation-merged-list.db.test.ts` (`RUN_RECON_MERGED_LIST_DB=1` + `RUN_DB_TESTS=true`).
 - Shared `@settler/reconciliation-core` package for canonical reconciliation mapping, dual-stream merged run listing with real cursor pagination, and cross-model run resolution.
 - Express `GET /api/v1/reconciliation/runs` merged list; canonical detail on `GET /api/v1/reconciliation/runs/:id` with `legacy_v1` adapter field group.
 - Operator runbook for `RECONCILIATION_UUID_COLLISION` (`docs/ops/reconciliation-uuid-collision-runbook.md`) and architecture note `docs/architecture/reconciliation-read-contract.md`.

@@ -51,6 +51,18 @@ If the same UUID exists in **both** `recon_jobs` and `reconciliation_runs` for a
 - **`run_kind=all`**: response includes `runs` (canonical merged list) plus `reconciliations` (job-shaped projection for backward compatibility) and real `next_cursor`.
 - **`run_kind=ingestion_run`**: only ingestion stream; `reconciliations` is `[]`.
 
+List JSON (no `id` query) is built via **`buildConsoleReconciliationListBody`** in `@settler/reconciliation-core` so Next and any other consumer stay aligned with the same `runs` / `reconciliations` projection rules.
+
+### DB-backed integration tests (optional)
+
+With PostgreSQL containing `public.recon_jobs` and `public.reconciliation_runs` (golden schema), run:
+
+```bash
+RUN_DB_TESTS=true RUN_RECON_MERGED_LIST_DB=1 pnpm --filter @settler/api exec jest src/__tests__/integration/reconciliation-merged-list.db.test.ts --runInBand --forceExit
+```
+
+`RUN_RECON_MERGED_LIST_DB=1` is required in addition to `RUN_DB_TESTS=true` so generic DB suites do not fail when those tables are absent.
+
 ## Cursor format (v1)
 
 Base64url JSON:
@@ -74,6 +86,8 @@ cd packages/reconciliation-core && pnpm exec jest --runInBand --forceExit
 pnpm --filter @settler/web typecheck:ci
 pnpm --filter @settler/api typecheck
 pnpm --filter @settler/api exec jest src/__tests__/routes/reconciliation-runtime-config-route.test.ts src/__tests__/routes/reconciliation-v1-contract.test.ts --runInBand --forceExit
+# Optional merged-list DB proof (requires DB + both tables):
+# RUN_DB_TESTS=true RUN_RECON_MERGED_LIST_DB=1 pnpm --filter @settler/api run test:recon-merged-db
 ```
 
 Typecheck note: the workspace pins a single `@types/pg` version via root `pnpm.overrides` and reuses the API `db` module’s `Pool` class for `PrismaPg` so adapter and app pools share one `Pool` type identity.
