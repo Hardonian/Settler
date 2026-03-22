@@ -1,8 +1,8 @@
 /**
- * Reconciliation Jobs API - POST /api/v1/recon/jobs
+ * Reconciliation Jobs API
  *
- * Creates reconciliation jobs. Handles unauthenticated users gracefully
- * for playground access with demo/mock responses.
+ * Production endpoints for creating and listing reconciliation jobs.
+ * All handlers require authentication — unauthenticated requests receive 401.
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -47,8 +47,6 @@ export const POST = withSecurity(
       if (!body.name && !body.sourceAdapter) {
         return NextResponse.json({ error: "name or sourceAdapter is required" }, { status: 400 });
       }
-      const isAuthenticated = true;
-
       // CRITICAL: Enforce active subscription requirement
       const subscriptionCheck = await requireActiveSubscription(request, auth?.userId);
       if (!subscriptionCheck.allowed) {
@@ -60,8 +58,8 @@ export const POST = withSecurity(
         return NextResponse.json({ error: "Billing account required" }, { status: 402 });
       }
 
-      // Enforce usage limits (for authenticated users)
-      if (isAuthenticated && auth.billingAccountId) {
+      // Enforce usage limits
+      if (auth.billingAccountId) {
         const { enforceUsageLimit } = await import("@/middleware/usage-enforcement");
         const usageCheck = await enforceUsageLimit(request, auth, 1);
         if (!usageCheck.allowed && usageCheck.response) {
@@ -148,7 +146,6 @@ export const POST = withSecurity(
         {
           error: "Failed to create reconciliation job",
           message: errorMessage,
-          demo: false,
         },
         { status: 500 }
       );
@@ -159,14 +156,7 @@ export const POST = withSecurity(
 
 /**
  * GET /api/v1/recon/jobs
- * List reconciliation jobs (demo for unauthenticated users)
- *
- * Enterprise-ready with:
- * - Type-safe Prisma queries
- * - Comprehensive error handling
- * - Tenant isolation
- * - Pagination support
- * - Filtering by status
+ * List reconciliation jobs for the authenticated tenant.
  */
 export const GET = withSecurity(
   async function GET(request: NextRequest) {
