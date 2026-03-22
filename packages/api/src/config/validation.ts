@@ -74,6 +74,8 @@ export const env = cleanEnv(process.env, {
     devDefault: "postgres",
   } as const),
   DB_SSL: bool({ default: false }),
+  /** When DB_SSL=true, verify server certificate (recommended). Set false only for self-signed dev DBs. */
+  DB_SSL_REJECT_UNAUTHORIZED: bool({ default: true }),
   DB_POOL_MIN: num({ default: 5 }),
   DB_POOL_MAX: num({ default: 20 }),
   DB_CONNECTION_TIMEOUT: num({ default: 2000 }),
@@ -96,9 +98,9 @@ export const env = cleanEnv(process.env, {
   JWT_ACCESS_EXPIRY: str({ default: "15m" }),
   JWT_REFRESH_EXPIRY: str({ default: "7d" }),
   JWT_REFRESH_SECRET: str({
-    devDefault: "dev-refresh-secret-change-in-production",
-    desc: "Optional separate secret for refresh tokens",
-  }),
+    default: undefined,
+    desc: "Separate secret for refresh tokens; falls back to JWT_SECRET when unset (dev only — production requires a distinct value)",
+  } as const),
 
   // Encryption Configuration
   // Runtime-only: provide default during build, will be validated at runtime
@@ -165,7 +167,10 @@ export const env = cleanEnv(process.env, {
 
 // Validate encryption key length in production and preview
 // Skip validation during build - these variables will be validated at runtime
-if (!isBuild && (env.NODE_ENV === "production" || env.NODE_ENV === "preview")) {
+if (
+  !isBuild &&
+  (env.NODE_ENV === "production" || env.NODE_ENV === "preview" || env.NODE_ENV === "staging")
+) {
   // Check for placeholder values that shouldn't be used at runtime
   if (
     env.ENCRYPTION_KEY === BUILD_PLACEHOLDER ||
@@ -184,6 +189,14 @@ if (!isBuild && (env.NODE_ENV === "production" || env.NODE_ENV === "preview")) {
   ) {
     throw new Error(
       `JWT_SECRET must be set to a secure random value in ${env.NODE_ENV}. Current value: ${env.JWT_SECRET === BUILD_PLACEHOLDER ? "build placeholder (not set)" : "dev secret"}`
+    );
+  }
+
+  const refreshMissing = !env.JWT_REFRESH_SECRET || env.JWT_REFRESH_SECRET.trim() === "";
+  const refreshEqualsAccess = env.JWT_REFRESH_SECRET === env.JWT_SECRET;
+  if (refreshMissing || refreshEqualsAccess) {
+    throw new Error(
+      `JWT_REFRESH_SECRET must be set to a strong random value in ${env.NODE_ENV}, distinct from JWT_SECRET.`
     );
   }
 
@@ -215,6 +228,7 @@ export const validatedConfig = {
     user: env.DB_USER,
     password: env.DB_PASSWORD,
     ssl: env.DB_SSL,
+    sslRejectUnauthorized: env.DB_SSL_REJECT_UNAUTHORIZED,
     poolMin: env.DB_POOL_MIN,
     poolMax: env.DB_POOL_MAX,
     connectionTimeout: env.DB_CONNECTION_TIMEOUT,

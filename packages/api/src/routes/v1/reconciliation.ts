@@ -58,11 +58,6 @@ async function gateIngestionRunForWorkbench(
         detail:
           "The same UUID exists as both a recon job and an ingestion-scoped reconciliation run. Resolve the duplicate rows before using workbench APIs.",
         code: "RECONCILIATION_UUID_COLLISION",
-        extra: {
-          duplicate_uuid: runId,
-          recon_job_id: resolution.jobId,
-          reconciliation_run_id: resolution.ingestionRunId,
-        },
       },
     };
   }
@@ -76,13 +71,8 @@ async function gateIngestionRunForWorkbench(
         status: 409,
         title: "Wrong run kind for workbench",
         detail:
-          "This UUID refers to a persisted recon job (recon_jobs). Workbench, compare, and export endpoints apply to ingestion reconciliation runs (reconciliation_runs) only.",
+          "This UUID refers to a persisted recon job (recon_jobs). Workbench, compare, and export endpoints apply to ingestion reconciliation runs (reconciliation_runs) only. Use GET /api/v1/reconciliation/runs/:id for canonical job/run detail.",
         code: WRONG_RUN_KIND,
-        extra: {
-          requested_run_id: runId,
-          resolved_run_kind: "recon_job",
-          hint: "Use GET /api/v1/reconciliation/runs/:id for canonical job/run detail.",
-        },
       },
     };
   }
@@ -325,11 +315,6 @@ router.get("/runs/:runId", async (req: AuthRequest, res: Response) => {
         detail:
           "The same UUID exists as both a recon job and an ingestion-scoped reconciliation run. This is a data anomaly; do not treat either row as authoritative until resolved.",
         code: "RECONCILIATION_UUID_COLLISION",
-        extra: {
-          duplicate_uuid: runId,
-          recon_job_id: resolution.jobId,
-          reconciliation_run_id: resolution.ingestionRunId,
-        },
       });
       return;
     }

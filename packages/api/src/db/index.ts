@@ -22,9 +22,7 @@ export const pool = new Pool({
   statement_timeout: config.database.statementTimeout,
   query_timeout: config.database.statementTimeout,
   ssl: config.database.ssl
-    ? {
-        rejectUnauthorized: config.nodeEnv === "production" || config.nodeEnv === "preview",
-      }
+    ? { rejectUnauthorized: config.database.sslRejectUnauthorized !== false }
     : false,
 });
 

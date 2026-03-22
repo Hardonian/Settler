@@ -29,7 +29,9 @@ function buildPrismaOptions(): any {
     database: config.database.name,
     user: config.database.user,
     password: config.database.password,
-    ssl: config.database.ssl ? { rejectUnauthorized: false } : false,
+    ssl: config.database.ssl
+      ? { rejectUnauthorized: config.database.sslRejectUnauthorized !== false }
+      : false,
     min: config.database.poolMin,
     max: config.database.poolMax,
     connectionTimeoutMillis: config.database.connectionTimeout,
