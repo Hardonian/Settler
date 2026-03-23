@@ -519,7 +519,7 @@ export default function RunsPage() {
                           </div>
                         </div>
                         <div className="metric-chip">
-                          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Tolerance</div>
+                          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">In-tolerance</div>
                           <div className="mt-0.5 text-lg font-semibold tabular-nums">
                             {formatCount(run.summarySemantics.matchedWithTolerance)}
                           </div>
@@ -530,7 +530,7 @@ export default function RunsPage() {
                       <div className="flex flex-wrap items-center gap-3 text-sm">
                         <StatusBadge
                           status={summaryToStatusType(run.summaryState)}
-                          label={run.summaryState.replaceAll("_", " ")}
+                          label={run.summaryState.replaceAll("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                           size="sm"
                         />
                         <span className="text-muted-foreground">

@@ -325,7 +325,7 @@ export default function OnboardingPage() {
                     disabled={isPending}
                     className="w-full"
                   >
-                    Skip for Now (Demo Mode)
+                    Skip for Now
                   </AnimatedButton>
                 </motion.div>
               )}

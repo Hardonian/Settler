@@ -84,8 +84,8 @@ const exceptionTypes = [
     example: "Two charges on the same card ending 4242 within 60 seconds for the same amount.",
   },
   {
-    type: "Timing Variance",
-    code: "timing_variance",
+    type: "Timing Difference",
+    code: "timing_difference",
     meaning: "Records match by amount and reference, but the dates differ by more than the configured settlement window.",
     example: "Processor date is March 1, bank posting date is March 5 (exceeds 3-day SLA).",
   },

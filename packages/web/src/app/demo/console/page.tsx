@@ -15,6 +15,7 @@ import {
   AlertTriangle,
   ArrowRight,
   CheckCircle2,
+  Clock,
   Link2,
   PlayCircle,
   Shield,
@@ -23,6 +24,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Sparkline } from "@/components/ui/sparkline";
 import { StatCard } from "@/components/ui/stat-card";
 import { StatusBadge, type StatusType } from "@/components/ui/status-badge";
 import type {
@@ -41,6 +43,7 @@ interface DemoData {
   alerts: ShowcaseAlert[];
   integrations: ShowcaseIntegration[];
   metrics: ShowcaseMetrics | null;
+  fetchedAt: Date;
 }
 
 type LoadError = { message: string } | null;
@@ -81,20 +84,20 @@ function runStatusToStatus(status: string): StatusType {
   }
 }
 
-function integrationStatusColor(status: string): string {
+function integrationStatusToStatusType(status: string): StatusType {
   switch (status) {
     case "connected":
-      return "bg-green-500";
+      return "healthy";
     case "degraded":
-      return "bg-amber-500";
+      return "degraded";
     case "disconnected":
-      return "bg-red-500";
+      return "failed";
     default:
-      return "bg-gray-400";
+      return "unknown";
   }
 }
 
-function alertSeverityVariant(severity: string): "destructive" | "warning" | "outline" {
+function alertSeverityVariant(severity: string): "destructive" | "warning" | "secondary" | "outline" {
   switch (severity) {
     case "critical":
       return "destructive";
@@ -103,29 +106,6 @@ function alertSeverityVariant(severity: string): "destructive" | "warning" | "ou
     default:
       return "outline";
   }
-}
-
-function MiniSparkline({ data, color = "text-blue-500" }: { data: number[]; color?: string }) {
-  if (!data.length) return null;
-  const max = Math.max(...data);
-  const min = Math.min(...data);
-  const range = max - min || 1;
-  const h = 32;
-  const w = 120;
-  const step = w / (data.length - 1);
-  const points = data.map((v, i) => `${i * step},${h - ((v - min) / range) * h}`).join(" ");
-  return (
-    <svg viewBox={`0 0 ${w} ${h}`} className={`w-[120px] h-8 ${color}`} aria-hidden="true">
-      <polyline
-        points={points}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
 }
 
 export default function DemoConsolePage() {
@@ -177,7 +157,7 @@ export default function DemoConsolePage() {
         metricsRes.json(),
       ]);
 
-      setData({ tenants, runs, exceptions, alerts, integrations, metrics });
+      setData({ tenants, runs, exceptions, alerts, integrations, metrics, fetchedAt: new Date() });
       if (!tenantId && tenants.length > 0) {
         setSelectedTenant(tenants[0].id);
       }
@@ -280,7 +260,7 @@ export default function DemoConsolePage() {
       <div className="flex flex-col md:flex-row justify-between md:items-start gap-4">
         <div>
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">
-            Reconciliation Console
+            Reconciliation Console · Showcase
           </p>
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
             {currentTenant?.name || "Dashboard"}
@@ -290,6 +270,10 @@ export default function DemoConsolePage() {
               {currentTenant.industry} — {currentTenant.scenarioLabel}
             </p>
           )}
+          <p className="flex items-center gap-1 text-xs text-muted-foreground mt-2">
+            <Clock className="w-3 h-3" aria-hidden="true" />
+            Sample data loaded {data.fetchedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          </p>
         </div>
 
         <div className="flex-shrink-0">
@@ -381,36 +365,36 @@ export default function DemoConsolePage() {
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Match Rate Trend
+                Match Rate — 30-day trend
               </CardTitle>
             </CardHeader>
             <CardContent className="flex items-center justify-between">
               <span className="text-2xl font-bold tabular-nums">{metrics.matchRate}%</span>
-              <MiniSparkline data={metrics.trendMatchRate} color="text-green-500" />
+              <Sparkline values={metrics.trendMatchRate} label="Match rate trend last 30 days" tone="success" width={120} height={32} />
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Exception Trend
+                Open Exceptions — 30-day trend
               </CardTitle>
             </CardHeader>
             <CardContent className="flex items-center justify-between">
               <span className="text-2xl font-bold tabular-nums">{metrics.openExceptions}</span>
-              <MiniSparkline data={metrics.trendExceptions} color="text-amber-500" />
+              <Sparkline values={metrics.trendExceptions} label="Open exceptions trend last 30 days" tone="warning" width={120} height={32} />
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Volume Trend
+                Volume — 30-day trend
               </CardTitle>
             </CardHeader>
             <CardContent className="flex items-center justify-between">
               <span className="text-2xl font-bold tabular-nums">
                 {formatCount(metrics.totalRecordsProcessed)}
               </span>
-              <MiniSparkline data={metrics.trendVolume} color="text-blue-500" />
+              <Sparkline values={metrics.trendVolume} label="Record volume trend last 30 days" width={120} height={32} />
             </CardContent>
           </Card>
         </div>
@@ -537,26 +521,16 @@ export default function DemoConsolePage() {
                 key={integration.id}
                 className="flex items-center gap-3 rounded-lg border border-border p-3"
               >
-                <div
-                  className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${integrationStatusColor(integration.status)}`}
-                />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground">{integration.name}</p>
                   <p className="text-xs text-muted-foreground">
                     {integration.category} — {formatCount(integration.recordsSynced)} records
                   </p>
                 </div>
-                <Badge
-                  variant={
-                    integration.status === "connected"
-                      ? "success"
-                      : integration.status === "degraded"
-                        ? "warning"
-                        : "outline"
-                  }
-                >
-                  {integration.status}
-                </Badge>
+                <StatusBadge
+                  status={integrationStatusToStatusType(integration.status)}
+                  size="sm"
+                />
               </div>
             ))}
           </div>
@@ -595,8 +569,8 @@ export default function DemoConsolePage() {
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   {alert.acknowledged && (
-                    <Badge variant="outline" className="text-[10px]">
-                      Ack
+                    <Badge variant="secondary" className="text-[10px]">
+                      Acknowledged
                     </Badge>
                   )}
                   <Badge variant={alertSeverityVariant(alert.severity)}>{alert.severity}</Badge>
