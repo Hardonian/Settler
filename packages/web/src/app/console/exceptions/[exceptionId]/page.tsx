@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,10 +10,22 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { safeFetch } from "@/lib/safe-fetch";
-import { RefreshCw, CheckCircle2, XCircle, Clock, AlertCircle, Copy } from "lucide-react";
+import {
+  RefreshCw,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  AlertCircle,
+  Copy,
+  ChevronDown,
+  ChevronUp,
+  ExternalLink,
+} from "lucide-react";
 import Link from "next/link";
 import { useGovernanceState } from "@/hooks/use-governance-state";
 import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
+
+// ─── Types ─────────────────────────────────────────────────────────────────────
 
 interface ExceptionDetail {
   id: string;
@@ -48,143 +61,334 @@ interface ExceptionDetail {
   }[];
 }
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const severityClasses: Record<ExceptionDetail["severity"], string> = {
+  critical: "bg-red-100 text-red-700 border border-red-300 dark:bg-red-900 dark:text-red-300",
+  high: "bg-orange-100 text-orange-700 border border-orange-300 dark:bg-orange-900 dark:text-orange-300",
+  medium:
+    "bg-yellow-100 text-yellow-700 border border-yellow-300 dark:bg-yellow-900 dark:text-yellow-300",
+  low: "bg-green-100 text-green-700 border border-green-300 dark:bg-green-900 dark:text-green-300",
+};
+
+const severityLabel: Record<ExceptionDetail["severity"], string> = {
+  critical: "CRITICAL",
+  high: "HIGH",
+  medium: "MEDIUM",
+  low: "LOW",
+};
+
+const statusClasses: Record<ExceptionDetail["status"], string> = {
+  resolved: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
+  ignored: "bg-muted/40 text-foreground dark:bg-background dark:text-muted-foreground",
+  investigating: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+  pending: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
+};
+
+const statusIcon: Record<ExceptionDetail["status"], typeof Clock> = {
+  resolved: CheckCircle2,
+  ignored: XCircle,
+  investigating: RefreshCw,
+  pending: Clock,
+};
+
+// ─── Small components ─────────────────────────────────────────────────────────
+
+function SeverityBadge({ severity }: { severity: ExceptionDetail["severity"] }) {
+  return (
+    <Badge className={`font-mono text-xs px-3 py-1 ${severityClasses[severity]}`}>
+      {severityLabel[severity]}
+    </Badge>
+  );
+}
+
+function StatusBadge({ status }: { status: ExceptionDetail["status"] }) {
+  const Icon = statusIcon[status];
+  return (
+    <Badge className={`gap-1 ${statusClasses[status]}`}>
+      <Icon className="w-3 h-3" />
+      {status.charAt(0).toUpperCase() + status.slice(1)}
+    </Badge>
+  );
+}
+
+function CopyableId({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <span className="font-mono text-xs break-all text-foreground dark:text-muted-foreground">
+        {value}
+      </span>
+      <button
+        type="button"
+        onClick={() => navigator.clipboard.writeText(value)}
+        className="shrink-0 p-0.5 rounded hover:bg-muted/60 text-muted-foreground hover:text-foreground"
+        title={`Copy ${label}`}
+      >
+        <Copy className="w-3 h-3" />
+      </button>
+    </div>
+  );
+}
+
+function CollapsibleJson({ label, value }: { label: string; value: unknown }) {
+  const [open, setOpen] = useState(false);
+
+  const isEmpty =
+    value === null ||
+    value === undefined ||
+    (typeof value === "object" && Object.keys(value as object).length === 0);
+
+  if (isEmpty) {
+    return (
+      <p className="text-xs text-muted-foreground italic">
+        {label}: <span className="not-italic">empty</span>
+      </p>
+    );
+  }
+
+  const json = (() => {
+    try {
+      return JSON.stringify(value, null, 2);
+    } catch {
+      return String(value);
+    }
+  })();
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+      >
+        {open ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+        {label}
+      </button>
+      {open && (
+        <div className="relative mt-2">
+          <button
+            type="button"
+            onClick={() => navigator.clipboard.writeText(json)}
+            className="absolute top-2 right-2 text-xs text-muted-foreground hover:text-foreground bg-muted/60 rounded px-1.5 py-0.5"
+          >
+            Copy
+          </button>
+          <pre className="text-xs bg-muted/40 dark:bg-background/60 p-3 rounded overflow-auto max-h-64 border border-border">
+            {json}
+          </pre>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Data fetching ─────────────────────────────────────────────────────────────
+
+async function fetchExceptionDetail(exceptionId: string): Promise<ExceptionDetail> {
+  const result = await safeFetch<{ exception?: ExceptionDetail } | ExceptionDetail>(
+    `/api/exceptions/${exceptionId}`
+  );
+
+  if (!result.success || !result.data) {
+    throw new Error(result.error?.message || "Failed to load exception detail");
+  }
+
+  const payload = result.data;
+  const detail: ExceptionDetail | null =
+    payload && typeof payload === "object" && "exception" in payload
+      ? ((payload.exception ?? null) as ExceptionDetail | null)
+      : (payload as ExceptionDetail);
+
+  if (!detail) {
+    throw new Error("Exception not found");
+  }
+
+  return detail;
+}
+
+// ─── Action helpers ────────────────────────────────────────────────────────────
+
+type ExceptionAction = "resolve" | "ignore" | "reopen";
+
+async function performExceptionAction(
+  exceptionId: string,
+  action: ExceptionAction
+): Promise<{ success: boolean; message?: string }> {
+  const result = await safeFetch<{ success: boolean; message?: string }>(
+    `/api/exceptions/${exceptionId}?action=${action}`,
+    { method: "POST" }
+  );
+
+  if (!result.success) {
+    return {
+      success: false,
+      message: result.error?.message || `Failed to ${action} exception`,
+    };
+  }
+
+  return { success: true };
+}
+
+// ─── Action bar ────────────────────────────────────────────────────────────────
+
+function ActionBar({
+  exception,
+  isFrozen,
+  freezeReason,
+  onActionComplete,
+}: {
+  exception: ExceptionDetail;
+  isFrozen: boolean;
+  freezeReason?: string;
+  onActionComplete: () => void;
+}) {
+  const [pending, setPending] = useState<ExceptionAction | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  const execute = async (action: ExceptionAction) => {
+    setPending(action);
+    setActionError(null);
+
+    const result = await performExceptionAction(exception.id, action);
+    setPending(null);
+
+    if (!result.success) {
+      setActionError(result.message || `Failed to ${action} exception`);
+    } else {
+      onActionComplete();
+    }
+  };
+
+  const isActive = exception.status === "pending" || exception.status === "investigating";
+  const isTerminal = exception.status === "resolved" || exception.status === "ignored";
+
+  return (
+    <div className="space-y-3">
+      {actionError && (
+        <div className="rounded-md bg-red-50 dark:bg-red-950 border border-red-300 dark:border-red-700 px-3 py-2 text-sm text-red-700 dark:text-red-300">
+          {actionError}
+        </div>
+      )}
+
+      {isActive && (
+        <div className="flex flex-wrap gap-3">
+          <FreezeBlockedButton
+            onClick={() => void execute("resolve")}
+            className="bg-green-600 hover:bg-green-700 disabled:opacity-50"
+            isFrozen={isFrozen}
+            freezeReason={freezeReason}
+            frozenMessage="Exception resolution blocked by tenant freeze"
+            disabled={pending !== null}
+          >
+            <CheckCircle2 className="mr-2 w-4 h-4" />
+            {pending === "resolve" ? "Marking resolved…" : "Mark Resolved"}
+          </FreezeBlockedButton>
+
+          <FreezeBlockedButton
+            onClick={() => void execute("ignore")}
+            className="bg-slate-600 hover:bg-muted disabled:opacity-50"
+            isFrozen={isFrozen}
+            freezeReason={freezeReason}
+            frozenMessage="Ignoring exceptions is blocked by tenant freeze"
+            disabled={pending !== null}
+          >
+            <XCircle className="mr-2 w-4 h-4" />
+            {pending === "ignore" ? "Ignoring…" : "Ignore Exception"}
+          </FreezeBlockedButton>
+        </div>
+      )}
+
+      {isTerminal && (
+        <div className="flex flex-wrap gap-3">
+          <FreezeBlockedButton
+            onClick={() => void execute("reopen")}
+            className="bg-yellow-600 hover:bg-yellow-700 disabled:opacity-50"
+            isFrozen={isFrozen}
+            freezeReason={freezeReason}
+            frozenMessage="Reopening exceptions is blocked by tenant freeze"
+            disabled={pending !== null}
+          >
+            <AlertCircle className="mr-2 w-4 h-4" />
+            {pending === "reopen" ? "Reopening…" : "Reopen Exception"}
+          </FreezeBlockedButton>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Main page ─────────────────────────────────────────────────────────────────
+
 export default function ExceptionDetailPage() {
   const params = useParams();
   const exceptionId =
     params && typeof params.exceptionId === "string" ? params.exceptionId : undefined;
-  const [exception, setException] = useState<ExceptionDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+
+  const queryClient = useQueryClient();
   const { isFrozen, governanceState } = useGovernanceState();
 
-  useEffect(() => {
-    if (!exceptionId) {
-      setError("Missing exception ID");
-      setLoading(false);
-      return;
-    }
+  const {
+    data: exception,
+    isLoading,
+    error,
+    refetch,
+    isFetching,
+  } = useQuery<ExceptionDetail, Error>({
+    queryKey: ["exception", exceptionId],
+    queryFn: () => fetchExceptionDetail(exceptionId!),
+    enabled: !!exceptionId,
+    staleTime: 20 * 1000,
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      if (!data) return false;
+      return data.status === "pending" || data.status === "investigating" ? 15_000 : false;
+    },
+    retry: (failureCount, err) => {
+      if (err.message === "Exception not found") return false;
+      return failureCount < 2;
+    },
+  });
 
-    loadExceptionDetail();
+  const handleActionComplete = () => {
+    void queryClient.invalidateQueries({ queryKey: ["exception", exceptionId] });
+    void refetch();
+  };
 
-    // Poll for updates if exception is still active
-    if (exception?.status === "pending" || exception?.status === "investigating") {
-      const interval = setInterval(loadExceptionDetail, 15000); // Poll every 15 seconds
-      return () => clearInterval(interval);
-    }
-    return undefined;
-  }, [exceptionId, exception?.status]);
-
-  const loadExceptionDetail = async () => {
-    if (!exceptionId) {
-      return;
-    }
-
-    setLoading(true);
-    const result = await safeFetch<{ exception?: ExceptionDetail } | ExceptionDetail>(
-      `/api/exceptions/${exceptionId}`
+  if (!exceptionId) {
+    return (
+      <div className="p-6">
+        <EmptyState
+          title="Invalid exception URL"
+          description="No exception ID was found in this URL."
+          action={{
+            label: "Go to Exceptions List",
+            onClick: () => (window.location.href = "/console/exceptions"),
+          }}
+        />
+      </div>
     );
+  }
 
-    if (result.success && result.data) {
-      const payload = result.data;
-      const nextException: ExceptionDetail | null =
-        payload && typeof payload === "object" && "exception" in payload
-          ? (payload.exception ?? null)
-          : (payload as ExceptionDetail);
-      setException(nextException);
-      setError(null);
-    } else {
-      setError(result.error?.message || "Failed to load exception detail");
-      setException(null);
-    }
-    setLoading(false);
-  };
-
-  const handleResolve = async () => {
-    const result = await safeFetch(`/api/exceptions/${exceptionId}?action=resolve`, {
-      method: "POST",
-    });
-
-    if (result.success) {
-      await loadExceptionDetail();
-    } else {
-      alert(result.error?.message || "Failed to resolve exception");
-    }
-  };
-
-  const handleIgnore = async () => {
-    if (
-      window.confirm(
-        "Are you sure you want to ignore this exception? This action cannot be undone."
-      )
-    ) {
-      const result = await safeFetch(`/api/exceptions/${exceptionId}?action=ignore`, {
-        method: "POST",
-      });
-
-      if (result.success) {
-        await loadExceptionDetail();
-      } else {
-        alert(result.error?.message || "Failed to ignore exception");
-      }
-    }
-  };
-
-  const handleReopen = async () => {
-    const result = await safeFetch(`/api/exceptions/${exceptionId}?action=reopen`, {
-      method: "POST",
-    });
-
-    if (result.success) {
-      await loadExceptionDetail();
-    } else {
-      alert(result.error?.message || "Failed to reopen exception");
-    }
-  };
-
-  const getStatusIcon = (status: ExceptionDetail["status"]) => {
-    switch (status) {
-      case "resolved":
-        return CheckCircle2;
-      case "ignored":
-        return XCircle;
-      case "investigating":
-        return RefreshCw;
-      default:
-        return Clock;
-    }
-  };
-
-  const getStatusColor = (status: ExceptionDetail["status"]) => {
-    switch (status) {
-      case "resolved":
-        return "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300";
-      case "ignored":
-        return "bg-muted/40 text-foreground dark:bg-background dark:text-muted-foreground";
-      case "investigating":
-        return "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300";
-      default:
-        return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300";
-    }
-  };
-
-  const getSeverityColor = (severity: ExceptionDetail["severity"]) => {
-    switch (severity) {
-      case "critical":
-        return "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300";
-      case "high":
-        return "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300";
-      case "medium":
-        return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300";
-      default:
-        return "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300";
-    }
-  };
-
-  if (loading && !exception) {
+  if (isLoading) {
     return (
       <div className="p-6 space-y-6">
         <Skeleton className="h-12 w-64" />
         <Skeleton className="h-64" />
+      </div>
+    );
+  }
+
+  if (error?.message === "Exception not found") {
+    return (
+      <div className="p-6">
+        <EmptyState
+          title="Exception not found"
+          description="This exception no longer exists or you do not have access."
+          action={{
+            label: "Go to Exceptions List",
+            onClick: () => (window.location.href = "/console/exceptions"),
+          }}
+        />
       </div>
     );
   }
@@ -194,8 +398,8 @@ export default function ExceptionDetailPage() {
       <div className="p-6">
         <ErrorState
           title="Failed to load exception"
-          message={error}
-          onRetry={loadExceptionDetail}
+          message={error.message}
+          onRetry={() => void refetch()}
         />
       </div>
     );
@@ -206,7 +410,7 @@ export default function ExceptionDetailPage() {
       <div className="p-6">
         <EmptyState
           title="Exception not found"
-          description="The exception you're looking for doesn't exist or you don't have access"
+          description="This exception no longer exists or you do not have access."
           action={{
             label: "Go to Exceptions List",
             onClick: () => (window.location.href = "/console/exceptions"),
@@ -216,189 +420,202 @@ export default function ExceptionDetailPage() {
     );
   }
 
-  const StatusIcon = getStatusIcon(exception.status);
-
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+      {/* ── Header ── */}
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground dark:text-white">Exception Detail</h1>
-          <p className="text-muted-foreground dark:text-muted-foreground mt-1">
-            Exception ID:{" "}
-            <code className="bg-muted/40 dark:bg-card px-2 py-1 rounded">{exception.id}</code>
+          <div className="flex items-center gap-3 flex-wrap mb-2">
+            <SeverityBadge severity={exception.severity} />
+            <StatusBadge status={exception.status} />
+            {exception.confidenceScore !== undefined && (
+              <Badge className="bg-muted/40 text-foreground dark:bg-background dark:text-muted-foreground">
+                Confidence: {Math.round(exception.confidenceScore * 100)}%
+              </Badge>
+            )}
+          </div>
+          <h1 className="text-2xl font-bold text-foreground dark:text-white">
+            {exception.description}
+          </h1>
+          <p className="text-xs text-muted-foreground mt-1">
+            ID:{" "}
+            <code className="bg-muted/40 dark:bg-card px-1.5 py-0.5 rounded font-mono">
+              {exception.id}
+            </code>
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={loadExceptionDetail}>
-            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
+        <div className="flex items-center gap-2 shrink-0">
+          <Button variant="outline" size="sm" onClick={() => void refetch()} disabled={isFetching}>
+            <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? "animate-spin" : ""}`} />
             Refresh
           </Button>
           <Link
             href="/console/exceptions"
-            className="text-sm text-muted-foreground dark:text-muted-foreground hover:underline"
+            className="text-sm text-muted-foreground hover:underline"
           >
             ← Back to List
           </Link>
         </div>
       </div>
 
-      {/* Status and Severity Badges */}
-      <div className="flex items-center gap-4 mb-6">
-        <Badge className={getStatusColor(exception.status)}>
-          <StatusIcon className="w-4 h-4 mr-1" />
-          {exception.status.charAt(0).toUpperCase() + exception.status.slice(1)}
-        </Badge>
-        <Badge className={getSeverityColor(exception.severity)}>
-          {exception.severity.charAt(0).toUpperCase() + exception.severity.slice(1)}
-        </Badge>
-        {exception.confidenceScore !== undefined && (
-          <Badge className="bg-muted/40 text-foreground dark:bg-background dark:text-muted-foreground">
-            Confidence: {Math.round(exception.confidenceScore * 100)}%
-          </Badge>
-        )}
-      </div>
+      {/* ── Status detail banner ── */}
+      {exception.statusDetail && (
+        <div className="rounded-lg border border-border bg-muted/20 p-4 text-sm text-foreground dark:border-border dark:bg-background/60 dark:text-muted-foreground">
+          {exception.statusDetail}
+        </div>
+      )}
 
-      {/* Exception Info Card */}
+      {/* ── Summary strip ── */}
       <Card>
-        <CardHeader>
-          <CardTitle>Exception Information</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {exception.statusDetail && (
-              <div className="rounded-lg border border-border bg-muted/20 p-4 text-sm text-foreground dark:border-border dark:bg-background/60 dark:text-muted-foreground">
-                {exception.statusDetail}
+        <CardContent className="py-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-3 text-sm">
+            <div>
+              <span className="text-xs text-muted-foreground block">Type</span>
+              <span className="font-medium font-mono">
+                {exception.type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+              </span>
+            </div>
+            {exception.amount !== undefined && exception.currency && (
+              <div>
+                <span className="text-xs text-muted-foreground block">Amount</span>
+                <span className="font-medium font-mono">
+                  {exception.currency} {exception.amount.toLocaleString()}
+                </span>
               </div>
             )}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <span className="text-xs text-muted-foreground block">Detected</span>
+              <span>{new Date(exception.detectedAt).toLocaleString()}</span>
+            </div>
+            {exception.fieldPath && (
               <div>
-                <h3 className="font-medium text-foreground dark:text-white">Type</h3>
-                <p className="text-muted-foreground dark:text-muted-foreground">
-                  {exception.type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
-                </p>
+                <span className="text-xs text-muted-foreground block">Field</span>
+                <span className="font-mono text-xs">{exception.fieldPath}</span>
               </div>
-              {exception.reasonTags && exception.reasonTags.length > 0 && (
-                <div>
-                  <h3 className="font-medium text-foreground dark:text-white">Decision Drivers</h3>
-                  <div className="mt-1 flex flex-wrap gap-1.5">
-                    {exception.reasonTags.map((tag) => (
-                      <Badge key={`${exception.id}-${tag}`} variant="outline">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ── Provenance / lineage ── */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Provenance &amp; Origin</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-0">
+            {/* Run link */}
+            <div className="flex items-start gap-2 py-1.5 border-b border-border">
+              <span className="text-xs text-muted-foreground w-40 shrink-0">
+                Reconciliation run
+              </span>
+              {exception.runId ? (
+                <Link
+                  href={`/console/runs/${exception.runId}`}
+                  className="flex items-center gap-1 text-xs text-blue-600 hover:underline dark:text-blue-400 font-mono"
+                >
+                  {exception.runId}
+                  <ExternalLink className="w-3 h-3" />
+                </Link>
+              ) : (
+                <span className="text-xs text-muted-foreground italic">unavailable</span>
               )}
-              <div>
-                <h3 className="font-medium text-foreground dark:text-white">Description</h3>
-                <p className="text-muted-foreground dark:text-muted-foreground">{exception.description}</p>
-              </div>
-              <div>
-                <h3 className="font-medium text-foreground dark:text-white">Detected</h3>
-                <p className="text-muted-foreground dark:text-muted-foreground">
-                  {new Date(exception.detectedAt).toLocaleString()}
-                </p>
-              </div>
-              {exception.runId && (
-                <div>
-                  <h3 className="font-medium text-foreground dark:text-white">Run</h3>
-                  <Link
-                    href={`/console/runs/${exception.runId}`}
-                    className="text-sm text-blue-600 hover:underline dark:text-blue-400"
-                  >
-                    {exception.runId}
-                  </Link>
-                </div>
+            </div>
+
+            {/* Source system */}
+            <div className="flex items-start gap-2 py-1.5 border-b border-border">
+              <span className="text-xs text-muted-foreground w-40 shrink-0">Source system</span>
+              {exception.sourceSystem ? (
+                <span className="text-xs text-foreground">{exception.sourceSystem}</span>
+              ) : (
+                <span className="text-xs text-muted-foreground italic">unavailable</span>
               )}
-              {exception.fieldPath && (
-                <div>
-                  <h3 className="font-medium text-foreground dark:text-white">Field</h3>
-                  <p className="text-muted-foreground dark:text-muted-foreground font-mono">
-                    {exception.fieldPath}
-                  </p>
-                </div>
+            </div>
+
+            {/* Target system */}
+            <div className="flex items-start gap-2 py-1.5 border-b border-border">
+              <span className="text-xs text-muted-foreground w-40 shrink-0">Target system</span>
+              {exception.targetSystem ? (
+                <span className="text-xs text-foreground">{exception.targetSystem}</span>
+              ) : (
+                <span className="text-xs text-muted-foreground italic">unavailable</span>
               )}
-              {exception.amount && exception.currency && (
-                <div>
-                  <h3 className="font-medium text-foreground dark:text-white">Amount</h3>
-                  <p className="text-muted-foreground dark:text-muted-foreground font-mono">
-                    {exception.currency} {exception.amount.toLocaleString()}
-                  </p>
-                </div>
+            </div>
+
+            {/* Source transaction */}
+            <div className="flex items-start gap-2 py-1.5 border-b border-border">
+              <span className="text-xs text-muted-foreground w-40 shrink-0">
+                Source transaction
+              </span>
+              {exception.sourceTransactionId ? (
+                <CopyableId value={exception.sourceTransactionId} label="source transaction ID" />
+              ) : (
+                <span className="text-xs text-muted-foreground italic">
+                  No source transaction attached
+                </span>
               )}
-              {exception.sourceTransactionId && (
-                <div>
-                  <h3 className="font-medium text-foreground dark:text-white">Source Transaction</h3>
-                  <p className="text-muted-foreground dark:text-muted-foreground font-mono">
-                    {exception.sourceTransactionId}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() =>
-                        navigator.clipboard.writeText(exception.sourceTransactionId || "")
-                      }
-                      title="Copy to clipboard"
-                    >
-                      <Copy className="w-3 h-3 ml-1" />
-                    </Button>
-                  </p>
-                </div>
-              )}
-              {exception.targetTransactionId && (
-                <div>
-                  <h3 className="font-medium text-foreground dark:text-white">Target Transaction</h3>
-                  <p className="text-muted-foreground dark:text-muted-foreground font-mono">
-                    {exception.targetTransactionId}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() =>
-                        navigator.clipboard.writeText(exception.targetTransactionId || "")
-                      }
-                      title="Copy to clipboard"
-                    >
-                      <Copy className="w-3 h-3 ml-1" />
-                    </Button>
-                  </p>
-                </div>
-              )}
-              {exception.sourceSystem && (
-                <div>
-                  <h3 className="font-medium text-foreground dark:text-white">Source System</h3>
-                  <p className="text-muted-foreground dark:text-muted-foreground">{exception.sourceSystem}</p>
-                </div>
-              )}
-              {exception.targetSystem && (
-                <div>
-                  <h3 className="font-medium text-foreground dark:text-white">Target System</h3>
-                  <p className="text-muted-foreground dark:text-muted-foreground">{exception.targetSystem}</p>
-                </div>
+            </div>
+
+            {/* Target transaction */}
+            <div className="flex items-start gap-2 py-1.5">
+              <span className="text-xs text-muted-foreground w-40 shrink-0">
+                Target transaction
+              </span>
+              {exception.targetTransactionId ? (
+                <CopyableId value={exception.targetTransactionId} label="target transaction ID" />
+              ) : (
+                <span className="text-xs text-muted-foreground italic">
+                  No target transaction attached
+                </span>
               )}
             </div>
           </div>
         </CardContent>
       </Card>
 
+      {/* ── Decision drivers (reason tags) ── */}
+      {exception.reasonTags && exception.reasonTags.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Decision Drivers</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-1.5">
+              {exception.reasonTags.map((tag) => (
+                <Badge
+                  key={`${exception.id}-${tag}`}
+                  variant="outline"
+                  className="font-mono text-xs"
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* ── Evidence comparison ── */}
       {(exception.expectedValue !== undefined || exception.actualValue !== undefined) && (
         <Card>
           <CardHeader>
-            <CardTitle>Observed Difference</CardTitle>
+            <CardTitle className="text-base">Observed Difference</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               <div className="rounded-lg border border-border bg-muted/20 p-4 dark:border-border dark:bg-background/60">
-                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground dark:text-muted-foreground">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
                   Expected
                 </p>
-                <pre className="mt-2 whitespace-pre-wrap break-words text-sm text-foreground dark:text-muted-foreground">
+                <pre className="whitespace-pre-wrap break-words text-sm text-foreground dark:text-muted-foreground">
                   {JSON.stringify(exception.expectedValue ?? null, null, 2)}
                 </pre>
               </div>
               <div className="rounded-lg border border-border bg-muted/20 p-4 dark:border-border dark:bg-background/60">
-                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground dark:text-muted-foreground">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
                   Actual
                 </p>
-                <pre className="mt-2 whitespace-pre-wrap break-words text-sm text-foreground dark:text-muted-foreground">
+                <pre className="whitespace-pre-wrap break-words text-sm text-foreground dark:text-muted-foreground">
                   {JSON.stringify(exception.actualValue ?? null, null, 2)}
                 </pre>
               </div>
@@ -407,12 +624,50 @@ export default function ExceptionDetailPage() {
         </Card>
       )}
 
+      {/* ── Suggested next steps ── */}
+      {exception.suggestedActions && exception.suggestedActions.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Suggested Next Steps</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2">
+              {exception.suggestedActions.map((action, index) => (
+                <li
+                  key={index}
+                  className="flex items-start gap-2 text-sm text-muted-foreground dark:text-muted-foreground"
+                >
+                  <span className="text-muted-foreground mt-0.5 shrink-0">•</span>
+                  {action}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* ── Operator action bar ── */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Operator Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ActionBar
+            exception={exception}
+            isFrozen={isFrozen}
+            freezeReason={governanceState?.freeze_reason}
+            onActionComplete={handleActionComplete}
+          />
+        </CardContent>
+      </Card>
+
+      {/* ── Decision record ── */}
       {(exception.resolution || exception.resolvedAt || exception.ignoredAt) && (
         <Card>
           <CardHeader>
-            <CardTitle>Decision Record</CardTitle>
+            <CardTitle className="text-base">Decision Record</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-muted-foreground dark:text-muted-foreground">
+          <CardContent className="space-y-1.5 text-sm text-muted-foreground dark:text-muted-foreground">
             {exception.resolution && <p>{exception.resolution}</p>}
             {exception.resolvedAt && (
               <p>Resolved at {new Date(exception.resolvedAt).toLocaleString()}</p>
@@ -427,91 +682,37 @@ export default function ExceptionDetailPage() {
         </Card>
       )}
 
-      {exception.suggestedActions?.length ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Suggested Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="list-disc list-inside space-y-2 text-muted-foreground dark:text-muted-foreground">
-              {exception.suggestedActions.map((action, index) => (
-                <li key={index}>{action}</li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      ) : null}
-
-      {/* Playbook Applied */}
+      {/* ── Applied playbook ── */}
       {exception.playbookApplied && (
         <Card>
           <CardHeader>
-            <CardTitle>Applied Playbook</CardTitle>
+            <CardTitle className="text-base">Applied Playbook</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground dark:text-muted-foreground">{exception.playbookApplied}</p>
+            <p className="text-sm text-muted-foreground dark:text-muted-foreground">
+              {exception.playbookApplied}
+            </p>
           </CardContent>
         </Card>
       )}
 
-      {/* Action Buttons */}
-      {(exception.status === "pending" || exception.status === "investigating") && (
-        <div className="flex flex-wrap gap-4">
-          <FreezeBlockedButton
-            onClick={handleResolve}
-            className="bg-green-600 hover:bg-green-700"
-            isFrozen={isFrozen}
-            freezeReason={governanceState?.freeze_reason}
-            frozenMessage="Exception resolution blocked by tenant freeze"
-          >
-            <CheckCircle2 className="mr-2" />
-            Mark Resolved
-          </FreezeBlockedButton>
-          <FreezeBlockedButton
-            onClick={handleIgnore}
-            className="bg-slate-600 hover:bg-muted"
-            isFrozen={isFrozen}
-            freezeReason={governanceState?.freeze_reason}
-            frozenMessage="Ignoring exceptions is blocked by tenant freeze"
-          >
-            <XCircle className="mr-2" />
-            Ignore Exception
-          </FreezeBlockedButton>
-        </div>
-      )}
-
-      {(exception.status === "resolved" || exception.status === "ignored") && (
-        <div className="flex flex-wrap gap-4">
-          <FreezeBlockedButton
-            onClick={handleReopen}
-            className="bg-yellow-600 hover:bg-yellow-700"
-            isFrozen={isFrozen}
-            freezeReason={governanceState?.freeze_reason}
-            frozenMessage="Reopening exceptions is blocked by tenant freeze"
-          >
-            <AlertCircle className="mr-2" />
-            Reopen Exception
-          </FreezeBlockedButton>
-        </div>
-      )}
-
-      {/* Audit Trail */}
+      {/* ── Audit trail ── */}
       {exception.auditTrail.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Audit Trail</CardTitle>
+            <CardTitle className="text-base">Activity &amp; Audit Trail</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {exception.auditTrail.map((entry, index) => (
                 <div key={index} className="border-l-2 border-border dark:border-border pl-4">
                   <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0 text-xs text-muted-foreground dark:text-muted-foreground">
-                      {new Date(entry.timestamp).toLocaleTimeString()}
+                    <div className="shrink-0 text-xs text-muted-foreground dark:text-muted-foreground">
+                      {new Date(entry.timestamp).toLocaleString()}
                     </div>
                     <div className="flex-1">
-                      <div className="flex items-start gap-2">
-                        <span className="font-medium text-foreground dark:text-white">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-sm text-foreground dark:text-white">
                           {entry.action}
                         </span>
                         <span className="text-xs text-muted-foreground dark:text-muted-foreground">
@@ -519,13 +720,28 @@ export default function ExceptionDetailPage() {
                         </span>
                       </div>
                       {entry.details && (
-                        <p className="text-muted-foreground dark:text-muted-foreground mt-1">{entry.details}</p>
+                        <p className="text-xs text-muted-foreground dark:text-muted-foreground mt-0.5">
+                          {entry.details}
+                        </p>
                       )}
                     </div>
                   </div>
                 </div>
               ))}
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* ── Raw evidence (collapsible) ── */}
+      {(exception.expectedValue !== undefined || exception.actualValue !== undefined) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Evidence Payload</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <CollapsibleJson label="Expected value (raw)" value={exception.expectedValue ?? null} />
+            <CollapsibleJson label="Actual value (raw)" value={exception.actualValue ?? null} />
           </CardContent>
         </Card>
       )}
