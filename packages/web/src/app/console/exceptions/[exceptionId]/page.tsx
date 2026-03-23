@@ -20,12 +20,28 @@ import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
+  ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
 import { useGovernanceState } from "@/hooks/use-governance-state";
 import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
+
+interface ExceptionProvenance {
+  runId: string | null;
+  fieldPath: string | null;
+  ruleId: string | null;
+  detectorId: string | null;
+  sourceAdapter: string | null;
+  targetAdapter: string | null;
+  sourceTransactionId: string | null;
+  targetTransactionId: string | null;
+  ingestionId: string | null;
+  matchReason: string | null;
+  confidenceScore: number | null;
+  rationale_codes: string[] | null;
+}
 
 interface ExceptionDetail {
   id: string;
@@ -53,6 +69,7 @@ interface ExceptionDetail {
   playbookApplied?: string;
   confidenceScore?: number;
   suggestedActions?: string[];
+  provenance?: ExceptionProvenance;
   auditTrail: {
     timestamp: string;
     action: string;
@@ -112,24 +129,6 @@ function StatusBadge({ status }: { status: ExceptionDetail["status"] }) {
   );
 }
 
-function CopyableId({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="flex items-center gap-1.5">
-      <span className="font-mono text-xs break-all text-foreground dark:text-muted-foreground">
-        {value}
-      </span>
-      <button
-        type="button"
-        onClick={() => navigator.clipboard.writeText(value)}
-        className="shrink-0 p-0.5 rounded hover:bg-muted/60 text-muted-foreground hover:text-foreground"
-        title={`Copy ${label}`}
-      >
-        <Copy className="w-3 h-3" />
-      </button>
-    </div>
-  );
-}
-
 function CollapsibleJson({ label, value }: { label: string; value: unknown }) {
   const [open, setOpen] = useState(false);
 
@@ -178,6 +177,56 @@ function CollapsibleJson({ label, value }: { label: string; value: unknown }) {
           </pre>
         </div>
       )}
+    </div>
+  );
+}
+
+function ProvenanceRow({
+  label,
+  value,
+  mono = false,
+  link,
+}: {
+  label: string;
+  value: string | null | undefined;
+  mono?: boolean;
+  link?: string;
+}) {
+  if (!value) {
+    return (
+      <div className="flex items-start gap-2 py-1.5 border-b border-border last:border-0">
+        <span className="text-xs text-muted-foreground w-44 shrink-0">{label}</span>
+        <span className="text-xs text-muted-foreground italic">unavailable</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-start gap-2 py-1.5 border-b border-border last:border-0">
+      <span className="text-xs text-muted-foreground w-44 shrink-0">{label}</span>
+      <div className="flex items-center gap-1.5 min-w-0">
+        {link ? (
+          <Link
+            href={link}
+            className="text-xs text-blue-600 hover:underline dark:text-blue-400 font-mono break-all"
+          >
+            {value}
+            <ExternalLink className="inline w-3 h-3 ml-1" />
+          </Link>
+        ) : (
+          <span className={`text-xs text-foreground break-all ${mono ? "font-mono" : ""}`}>
+            {value}
+          </span>
+        )}
+        <button
+          type="button"
+          onClick={() => navigator.clipboard.writeText(value)}
+          className="shrink-0 p-0.5 rounded hover:bg-muted/60 text-muted-foreground hover:text-foreground"
+          title="Copy to clipboard"
+        >
+          <Copy className="w-3 h-3" />
+        </button>
+      </div>
     </div>
   );
 }
@@ -424,37 +473,44 @@ export default function ExceptionDetailPage() {
     <div className="p-6 space-y-6">
       {/* ── Header ── */}
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-3 flex-wrap mb-2">
-            <SeverityBadge severity={exception.severity} />
-            <StatusBadge status={exception.status} />
-            {exception.confidenceScore !== undefined && (
-              <Badge className="bg-muted/40 text-foreground dark:bg-background dark:text-muted-foreground">
-                Confidence: {Math.round(exception.confidenceScore * 100)}%
-              </Badge>
-            )}
+        <div className="flex items-start gap-3">
+          <Link href="/console/exceptions">
+            <Button variant="ghost" size="sm" className="mt-0.5">
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              Back
+            </Button>
+          </Link>
+          <div>
+            <div className="flex items-center gap-3 flex-wrap mb-2">
+              <SeverityBadge severity={exception.severity} />
+              <StatusBadge status={exception.status} />
+              {(exception.provenance?.confidenceScore ?? exception.confidenceScore) !== undefined &&
+                (exception.provenance?.confidenceScore ?? exception.confidenceScore) !== null && (
+                  <Badge className="bg-muted/40 text-foreground dark:bg-background dark:text-muted-foreground">
+                    Confidence:{" "}
+                    {Math.round(
+                      (exception.provenance?.confidenceScore ?? exception.confidenceScore)! * 100
+                    )}
+                    %
+                  </Badge>
+                )}
+            </div>
+            <h1 className="text-2xl font-bold text-foreground dark:text-white">
+              {exception.description}
+            </h1>
+            <p className="text-xs text-muted-foreground mt-1">
+              Exception ID:{" "}
+              <code className="bg-muted/40 dark:bg-card px-1.5 py-0.5 rounded font-mono">
+                {exception.id}
+              </code>
+            </p>
           </div>
-          <h1 className="text-2xl font-bold text-foreground dark:text-white">
-            {exception.description}
-          </h1>
-          <p className="text-xs text-muted-foreground mt-1">
-            ID:{" "}
-            <code className="bg-muted/40 dark:bg-card px-1.5 py-0.5 rounded font-mono">
-              {exception.id}
-            </code>
-          </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <Button variant="outline" size="sm" onClick={() => void refetch()} disabled={isFetching}>
             <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? "animate-spin" : ""}`} />
             Refresh
           </Button>
-          <Link
-            href="/console/exceptions"
-            className="text-sm text-muted-foreground hover:underline"
-          >
-            ← Back to List
-          </Link>
         </div>
       </div>
 
@@ -502,74 +558,63 @@ export default function ExceptionDetailPage() {
         <CardHeader>
           <CardTitle className="text-base">Provenance &amp; Origin</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-0">
-            {/* Run link */}
-            <div className="flex items-start gap-2 py-1.5 border-b border-border">
-              <span className="text-xs text-muted-foreground w-40 shrink-0">
-                Reconciliation run
-              </span>
-              {exception.runId ? (
-                <Link
-                  href={`/console/runs/${exception.runId}`}
-                  className="flex items-center gap-1 text-xs text-blue-600 hover:underline dark:text-blue-400 font-mono"
-                >
-                  {exception.runId}
-                  <ExternalLink className="w-3 h-3" />
-                </Link>
-              ) : (
-                <span className="text-xs text-muted-foreground italic">unavailable</span>
-              )}
-            </div>
+        <CardContent className="space-y-0">
+          {(() => {
+            const prov = exception.provenance;
+            const runId = prov?.runId ?? exception.runId ?? null;
+            const sourceAdapter = prov?.sourceAdapter ?? exception.sourceSystem ?? null;
+            const targetAdapter = prov?.targetAdapter ?? exception.targetSystem ?? null;
+            const srcTxn = prov?.sourceTransactionId ?? exception.sourceTransactionId ?? null;
+            const tgtTxn = prov?.targetTransactionId ?? exception.targetTransactionId ?? null;
 
-            {/* Source system */}
-            <div className="flex items-start gap-2 py-1.5 border-b border-border">
-              <span className="text-xs text-muted-foreground w-40 shrink-0">Source system</span>
-              {exception.sourceSystem ? (
-                <span className="text-xs text-foreground">{exception.sourceSystem}</span>
-              ) : (
-                <span className="text-xs text-muted-foreground italic">unavailable</span>
-              )}
-            </div>
-
-            {/* Target system */}
-            <div className="flex items-start gap-2 py-1.5 border-b border-border">
-              <span className="text-xs text-muted-foreground w-40 shrink-0">Target system</span>
-              {exception.targetSystem ? (
-                <span className="text-xs text-foreground">{exception.targetSystem}</span>
-              ) : (
-                <span className="text-xs text-muted-foreground italic">unavailable</span>
-              )}
-            </div>
-
-            {/* Source transaction */}
-            <div className="flex items-start gap-2 py-1.5 border-b border-border">
-              <span className="text-xs text-muted-foreground w-40 shrink-0">
-                Source transaction
-              </span>
-              {exception.sourceTransactionId ? (
-                <CopyableId value={exception.sourceTransactionId} label="source transaction ID" />
-              ) : (
-                <span className="text-xs text-muted-foreground italic">
-                  No source transaction attached
-                </span>
-              )}
-            </div>
-
-            {/* Target transaction */}
-            <div className="flex items-start gap-2 py-1.5">
-              <span className="text-xs text-muted-foreground w-40 shrink-0">
-                Target transaction
-              </span>
-              {exception.targetTransactionId ? (
-                <CopyableId value={exception.targetTransactionId} label="target transaction ID" />
-              ) : (
-                <span className="text-xs text-muted-foreground italic">
-                  No target transaction attached
-                </span>
-              )}
-            </div>
-          </div>
+            return (
+              <>
+                <ProvenanceRow
+                  label="Reconciliation run"
+                  value={runId}
+                  mono
+                  link={runId ? `/console/runs/${runId}` : undefined}
+                />
+                <ProvenanceRow label="Source adapter" value={sourceAdapter} />
+                <ProvenanceRow label="Target adapter" value={targetAdapter} />
+                <ProvenanceRow label="Source transaction" value={srcTxn} mono />
+                <ProvenanceRow label="Target transaction" value={tgtTxn} mono />
+                <ProvenanceRow
+                  label="Field path"
+                  value={prov?.fieldPath ?? exception.fieldPath ?? null}
+                  mono
+                />
+                <ProvenanceRow label="Rule ID" value={prov?.ruleId ?? null} mono />
+                <ProvenanceRow label="Detector ID" value={prov?.detectorId ?? null} mono />
+                <ProvenanceRow label="Ingestion ID" value={prov?.ingestionId ?? null} mono />
+                <ProvenanceRow label="Match reason" value={prov?.matchReason ?? null} />
+                <ProvenanceRow
+                  label="Confidence"
+                  value={
+                    prov?.confidenceScore !== null && prov?.confidenceScore !== undefined
+                      ? `${(prov.confidenceScore * 100).toFixed(1)}%`
+                      : exception.confidenceScore !== undefined
+                        ? `${Math.round(exception.confidenceScore * 100)}%`
+                        : null
+                  }
+                />
+                {prov?.rationale_codes && prov.rationale_codes.length > 0 && (
+                  <div className="flex items-start gap-2 py-1.5 border-b border-border last:border-0">
+                    <span className="text-xs text-muted-foreground w-44 shrink-0">
+                      Rationale codes
+                    </span>
+                    <div className="flex flex-wrap gap-1">
+                      {prov.rationale_codes.map((code) => (
+                        <Badge key={code} variant="outline" className="font-mono text-xs">
+                          {code}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </CardContent>
       </Card>
 
@@ -655,7 +700,7 @@ export default function ExceptionDetailPage() {
           <ActionBar
             exception={exception}
             isFrozen={isFrozen}
-            freezeReason={governanceState?.freeze_reason}
+            freezeReason={governanceState?.freeze_reason ?? undefined}
             onActionComplete={handleActionComplete}
           />
         </CardContent>

@@ -112,6 +112,7 @@ export const GET = withSecurity(
 
         // Transform to frontend format
         const metadata = (exception.metadata as Record<string, unknown>) || {};
+        const driftMetricsObj = (exception.driftMetrics as Record<string, unknown>) || {};
         const status = getExceptionWorkflowState({
           acknowledged: exception.acknowledged,
           metadata,
@@ -148,6 +149,46 @@ export const GET = withSecurity(
           timestamp: entry.timestamp,
         }));
 
+        // Build structured provenance block — aligned with admin API contract
+        const provenance = {
+          runId: exception.reconJobId || null,
+          fieldPath: exception.fieldPath || null,
+          ruleId:
+            (metadata.ruleId as string | undefined) ??
+            (metadata.rule_id as string | undefined) ??
+            null,
+          detectorId:
+            (metadata.detectorId as string | undefined) ??
+            (metadata.detector_id as string | undefined) ??
+            null,
+          sourceAdapter:
+            (metadata.sourceAdapter as string | undefined) ??
+            (metadata.sourceSystem as string | undefined) ??
+            null,
+          targetAdapter:
+            (metadata.targetAdapter as string | undefined) ??
+            (metadata.targetSystem as string | undefined) ??
+            null,
+          sourceTransactionId: (metadata.sourceTransactionId as string | undefined) ?? null,
+          targetTransactionId: (metadata.targetTransactionId as string | undefined) ?? null,
+          ingestionId: (metadata.ingestionId as string | undefined) ?? null,
+          matchReason:
+            (metadata.matchReason as string | undefined) ??
+            (driftMetricsObj.matchReason as string | undefined) ??
+            null,
+          confidenceScore:
+            typeof driftMetricsObj.confidenceScore === "number"
+              ? (driftMetricsObj.confidenceScore as number)
+              : typeof metadata.confidenceScore === "number"
+                ? (metadata.confidenceScore as number)
+                : null,
+          rationale_codes: Array.isArray(metadata.rationale_codes)
+            ? (metadata.rationale_codes as unknown[]).filter(
+                (c): c is string => typeof c === "string"
+              )
+            : null,
+        };
+
         const result = {
           id: exception.id,
           type: exception.driftType || "unknown",
@@ -168,14 +209,12 @@ export const GET = withSecurity(
           }),
           amount: metadata.amount as number | undefined,
           currency: metadata.currency as string | undefined,
-          sourceTransactionId: metadata.sourceTransactionId as string | undefined,
-          targetTransactionId: metadata.targetTransactionId as string | undefined,
-          sourceSystem:
-            (metadata.sourceSystem as string | undefined) ||
-            (metadata.sourceAdapter as string | undefined),
-          targetSystem:
-            (metadata.targetSystem as string | undefined) ||
-            (metadata.targetAdapter as string | undefined),
+          sourceTransactionId: provenance.sourceTransactionId ?? undefined,
+          targetTransactionId: provenance.targetTransactionId ?? undefined,
+          sourceSystem: provenance.sourceAdapter ?? undefined,
+          targetSystem: provenance.targetAdapter ?? undefined,
+          // Structured provenance block — all fields explicit, null when unavailable
+          provenance,
           // Additional details
           runId: exception.reconJobId,
           expectedValue: exception.expectedValue,
@@ -205,13 +244,7 @@ export const GET = withSecurity(
             status === "ignored" && typeof resolution.ignoredBy === "string"
               ? resolution.ignoredBy
               : undefined,
-          confidenceScore:
-            typeof (exception.driftMetrics as Record<string, unknown> | null)?.confidenceScore ===
-            "number"
-              ? ((exception.driftMetrics as Record<string, unknown>).confidenceScore as number)
-              : typeof metadata.confidenceScore === "number"
-                ? (metadata.confidenceScore as number)
-                : undefined,
+          confidenceScore: provenance.confidenceScore ?? undefined,
           suggestedActions,
           playbookApplied:
             typeof metadata.playbookApplied === "string"
