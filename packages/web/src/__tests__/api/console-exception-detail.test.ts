@@ -25,6 +25,7 @@ const resolveTenantForMutationMock = jest.fn();
 const getTraceIdMock = jest.fn();
 const driftEventFindFirstMock = jest.fn();
 const driftEventUpdateMock = jest.fn();
+const reconciliationRunFindFirstMock = jest.fn();
 
 jest.mock("@/lib/middleware/api-security", () => ({
   withSecurity: (handler: unknown) => handler,
@@ -61,6 +62,9 @@ jest.mock("@/shared/db/prismaClient", () => ({
     driftEvent: {
       findFirst: (...args: unknown[]) => driftEventFindFirstMock(...args),
       update: (...args: unknown[]) => driftEventUpdateMock(...args),
+    },
+    reconciliationRun: {
+      findFirst: (...args: unknown[]) => reconciliationRunFindFirstMock(...args),
     },
   },
 }));
@@ -128,6 +132,7 @@ beforeEach(() => {
   getTraceIdMock.mockReset();
   driftEventFindFirstMock.mockReset();
   driftEventUpdateMock.mockReset();
+  reconciliationRunFindFirstMock.mockReset();
 
   resolveTenantMembershipScopeMock.mockResolvedValue({
     tenantIds: [TENANT_UUID],
@@ -136,6 +141,16 @@ beforeEach(() => {
   });
   resolveTenantForMutationMock.mockReturnValue(TENANT_UUID);
   getTraceIdMock.mockResolvedValue("trace-test-001");
+
+  reconciliationRunFindFirstMock.mockResolvedValue({
+    id: RUN_UUID,
+    name: "Test reconciliation run",
+    status: "completed",
+    createdAt: new Date("2026-02-01T08:00:00.000Z"),
+    startedAt: new Date("2026-02-01T08:05:00.000Z"),
+    completedAt: new Date("2026-02-01T08:10:00.000Z"),
+    ingestionId: "99999999-aaaa-4bbb-8ccc-dddddddddddd",
+  });
 });
 
 // ─── GET tests ────────────────────────────────────────────────────────────────
@@ -204,6 +219,17 @@ describe("GET /api/exceptions/[exceptionId]", () => {
 
     expect(payload.provenance).toBeDefined();
     expect(payload.provenance.runId).toBe(RUN_UUID);
+    expect(payload.provenance.run).toMatchObject({
+      id: RUN_UUID,
+      name: "Test reconciliation run",
+      status: "completed",
+      recordFound: true,
+      href: `/console/runs/${RUN_UUID}`,
+      ingestionId: "99999999-aaaa-4bbb-8ccc-dddddddddddd",
+    });
+    expect(payload.provenance.run.createdAt).toBe("2026-02-01T08:00:00.000Z");
+    expect(payload.provenance.run.startedAt).toBe("2026-02-01T08:05:00.000Z");
+    expect(payload.provenance.run.completedAt).toBe("2026-02-01T08:10:00.000Z");
     expect(payload.provenance.fieldPath).toBe("amount");
     // These are null when absent — not fabricated
     expect(payload.provenance.ruleId).toBeNull();
@@ -400,8 +426,49 @@ describe("GET /api/exceptions/[exceptionId]", () => {
     const payload = await res.json();
 
     expect(payload.provenance.runId).toBeNull();
+    expect(payload.provenance.run).toBeNull();
     expect(payload.provenance.fieldPath).toBeNull();
     expect(payload.runId).toBeNull();
+    expect(reconciliationRunFindFirstMock).not.toHaveBeenCalled();
+  });
+
+  test("joins ReconciliationRun with tenantId — same id in another tenant does not leak", async () => {
+    driftEventFindFirstMock.mockResolvedValue(makeException());
+    reconciliationRunFindFirstMock.mockResolvedValue(null);
+
+    const res = await GET(makeRequest(EXCEPTION_UUID), makeParams(EXCEPTION_UUID) as any);
+    const payload = await res.json();
+
+    expect(reconciliationRunFindFirstMock).toHaveBeenCalledTimes(1);
+    const runCall = reconciliationRunFindFirstMock.mock.calls[0]?.[0];
+    expect(runCall?.where?.id).toBe(RUN_UUID);
+    expect(runCall?.where?.tenantId).toBe(TENANT_UUID);
+
+    expect(payload.provenance.run).toMatchObject({
+      id: RUN_UUID,
+      recordFound: false,
+      name: null,
+      status: null,
+    });
+  });
+
+  test("returns run context for unusual persisted run status without error", async () => {
+    driftEventFindFirstMock.mockResolvedValue(makeException());
+    reconciliationRunFindFirstMock.mockResolvedValue({
+      id: RUN_UUID,
+      name: null,
+      status: "cancelled",
+      createdAt: new Date("2026-02-01T08:00:00.000Z"),
+      startedAt: new Date("2026-02-01T08:05:00.000Z"),
+      completedAt: null,
+      ingestionId: null,
+    });
+
+    const res = await GET(makeRequest(EXCEPTION_UUID), makeParams(EXCEPTION_UUID) as any);
+    expect(res.status).toBe(200);
+    const payload = await res.json();
+    expect(payload.provenance.run?.status).toBe("cancelled");
+    expect(payload.provenance.run?.recordFound).toBe(true);
   });
 
   test("handles null expectedValue and actualValue without throwing", async () => {

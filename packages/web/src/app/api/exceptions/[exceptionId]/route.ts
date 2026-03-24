@@ -78,7 +78,7 @@ export const GET = withSecurity(
           null;
         const tenantId = resolveTenantForMutation(tenantIds, requestedTenantId);
 
-        // Fetch exception - workspace scoped
+        // Fetch exception - workspace scoped (DriftEvent = console "exception")
         const exception = await prisma.driftEvent.findFirst({
           where: {
             id: exceptionId,
@@ -128,6 +128,66 @@ export const GET = withSecurity(
           acknowledgedBy: exception.acknowledgedBy,
           acknowledgedAt: exception.acknowledgedAt,
         });
+
+        /**
+         * DriftEvent.reconJobId is the UUID of the reconciliation run that produced this drift
+         * (ReconciliationRun.id). It is not a batch/workflow job id; match review uses a separate
+         * API and route model (ReconciliationMatch under /api/jobs/...).
+         */
+        let provenanceRun:
+          | {
+              id: string;
+              name: string | null;
+              status: string | null;
+              createdAt: string | null;
+              startedAt: string | null;
+              completedAt: string | null;
+              ingestionId: string | null;
+              href: string;
+              recordFound: boolean;
+            }
+          | null = null;
+
+        if (exception.reconJobId) {
+          const runRow = await prisma.reconciliationRun.findFirst({
+            where: { id: exception.reconJobId, tenantId },
+            select: {
+              id: true,
+              name: true,
+              status: true,
+              createdAt: true,
+              startedAt: true,
+              completedAt: true,
+              ingestionId: true,
+            },
+          });
+
+          if (runRow) {
+            provenanceRun = {
+              id: runRow.id,
+              name: runRow.name ?? null,
+              status: runRow.status ?? null,
+              createdAt: runRow.createdAt.toISOString(),
+              startedAt: runRow.startedAt.toISOString(),
+              completedAt: runRow.completedAt?.toISOString() ?? null,
+              ingestionId: runRow.ingestionId,
+              href: `/console/runs/${runRow.id}`,
+              recordFound: true,
+            };
+          } else {
+            provenanceRun = {
+              id: exception.reconJobId,
+              name: null,
+              status: null,
+              createdAt: null,
+              startedAt: null,
+              completedAt: null,
+              ingestionId: null,
+              href: `/console/runs/${exception.reconJobId}`,
+              recordFound: false,
+            };
+          }
+        }
         const suggestedActions = buildSuggestedActions({
           driftType: exception.driftType,
           fieldPath: exception.fieldPath,
@@ -152,6 +212,7 @@ export const GET = withSecurity(
         // Build structured provenance block — aligned with admin API contract
         const provenance = {
           runId: exception.reconJobId || null,
+          run: provenanceRun,
           fieldPath: exception.fieldPath || null,
           ruleId:
             (metadata.ruleId as string | undefined) ??

@@ -25,11 +25,17 @@ import {
 import Link from "next/link";
 import { useGovernanceState } from "@/hooks/use-governance-state";
 import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
+import {
+  ExceptionDetailRunContext,
+  type ExceptionDetailProvenanceRun,
+} from "@/components/console/ExceptionDetailRunContext";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
 interface ExceptionProvenance {
   runId: string | null;
+  /** Canonical ReconciliationRun row for this drift exception, tenant-scoped; null when unlinked. */
+  run?: ExceptionDetailProvenanceRun | null;
   fieldPath: string | null;
   ruleId: string | null;
   detectorId: string | null;
@@ -557,11 +563,30 @@ export default function ExceptionDetailPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Provenance &amp; Origin</CardTitle>
+          <p className="text-xs text-muted-foreground font-normal mt-1 max-w-3xl">
+            This page is for drift exceptions (resolve, ignore, reopen). Match adjudication for
+            reconciliation pairs is handled under Jobs, not here.
+          </p>
         </CardHeader>
-        <CardContent className="space-y-0">
+        <CardContent className="space-y-4">
           {(() => {
             const prov = exception.provenance;
             const runId = prov?.runId ?? exception.runId ?? null;
+            const runContext: ExceptionDetailProvenanceRun | null =
+              prov?.run ??
+              (runId
+                ? {
+                    id: runId,
+                    name: null,
+                    status: null,
+                    createdAt: null,
+                    startedAt: null,
+                    completedAt: null,
+                    ingestionId: null,
+                    href: `/console/runs/${runId}`,
+                    recordFound: false,
+                  }
+                : null);
             const sourceAdapter = prov?.sourceAdapter ?? exception.sourceSystem ?? null;
             const targetAdapter = prov?.targetAdapter ?? exception.targetSystem ?? null;
             const srcTxn = prov?.sourceTransactionId ?? exception.sourceTransactionId ?? null;
@@ -569,12 +594,8 @@ export default function ExceptionDetailPage() {
 
             return (
               <>
-                <ProvenanceRow
-                  label="Reconciliation run"
-                  value={runId}
-                  mono
-                  link={runId ? `/console/runs/${runId}` : undefined}
-                />
+                <ExceptionDetailRunContext run={runContext} />
+                <div className="space-y-0 border-t border-border pt-2">
                 <ProvenanceRow label="Source adapter" value={sourceAdapter} />
                 <ProvenanceRow label="Target adapter" value={targetAdapter} />
                 <ProvenanceRow label="Source transaction" value={srcTxn} mono />
@@ -612,6 +633,7 @@ export default function ExceptionDetailPage() {
                     </div>
                   </div>
                 )}
+                </div>
               </>
             );
           })()}
