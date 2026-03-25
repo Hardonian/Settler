@@ -52,7 +52,7 @@
     "@settler/react-settler": "workspace:*",
     "@settler/sdk": "workspace:*",
     "@settler/types": "workspace:*",
-    "@stripe/stripe-js": "^8.5.3",
+    "@stripe/stripe-js": "^8.11.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.86.0",
     "@tanstack/react-query": "^5.91.0",
