@@ -24,6 +24,7 @@ import {
   buildSuggestedActions,
   getExceptionWorkflowState,
 } from "@/lib/exceptions/presentation";
+import { resolveExceptionProvenanceRun } from "@/lib/exceptions/resolve-exception-run-context";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
@@ -78,7 +79,7 @@ export const GET = withSecurity(
           null;
         const tenantId = resolveTenantForMutation(tenantIds, requestedTenantId);
 
-        // Fetch exception - workspace scoped
+        // Fetch exception - workspace scoped (DriftEvent = console "exception")
         const exception = await prisma.driftEvent.findFirst({
           where: {
             id: exceptionId,
@@ -128,6 +129,19 @@ export const GET = withSecurity(
           acknowledgedBy: exception.acknowledgedBy,
           acknowledgedAt: exception.acknowledgedAt,
         });
+
+        /**
+         * DriftEvent.reconJobId is a run-scoped UUID used by the console. It may reference either:
+         * - ReconciliationRun (ingestion-backed execution), or
+         * - ReconJob (definition id — same UUID space; resolved via @settler/reconciliation-core).
+         * Match adjudication (ReconciliationMatch) uses /api/jobs/... and is separate from this
+         * drift workflow.
+         */
+        const provenanceRun = await resolveExceptionProvenanceRun(
+          prisma,
+          tenantId,
+          exception.reconJobId
+        );
         const suggestedActions = buildSuggestedActions({
           driftType: exception.driftType,
           fieldPath: exception.fieldPath,
@@ -152,6 +166,7 @@ export const GET = withSecurity(
         // Build structured provenance block — aligned with admin API contract
         const provenance = {
           runId: exception.reconJobId || null,
+          run: provenanceRun,
           fieldPath: exception.fieldPath || null,
           ruleId:
             (metadata.ruleId as string | undefined) ??
