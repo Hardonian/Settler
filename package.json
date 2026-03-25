@@ -379,6 +379,6 @@
     ]
   },
   "dependencies": {
-    "turbo": "^2.6.2"
+    "turbo": "^2.8.20"
   }
 }
