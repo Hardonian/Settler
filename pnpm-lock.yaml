@@ -107,8 +107,8 @@ importers:
         specifier: ^14.21.0
         version: 14.25.0
       zod:
-        specifier: ^3.22.4
-        version: 3.25.76
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       '@types/jest':
         specifier: ^29.5.14
@@ -279,8 +279,8 @@ importers:
         specifier: ^0.6.2
         version: 0.6.2
       zod:
-        specifier: ^3.22.4
-        version: 3.25.76
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       '@types/bcrypt':
         specifier: ^6.0.0
@@ -516,8 +516,8 @@ importers:
         specifier: workspace:*
         version: link:../jobforge-shared
       zod:
-        specifier: ^3.22.4
-        version: 3.25.76
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       '@jobforge/typescript-config':
         specifier: workspace:*
@@ -575,8 +575,8 @@ importers:
         specifier: ^2.39.0
         version: 2.99.2
       zod:
-        specifier: ^3.22.4
-        version: 3.25.76
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       '@jobforge/typescript-config':
         specifier: workspace:*
@@ -597,8 +597,8 @@ importers:
   packages/jobforge-shared:
     dependencies:
       zod:
-        specifier: ^3.22.4
-        version: 3.25.76
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       '@jobforge/typescript-config':
         specifier: workspace:*
@@ -660,8 +660,8 @@ importers:
         specifier: workspace:*
         version: link:../types
       zod:
-        specifier: ^3.22.4
-        version: 3.25.76
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       '@types/jest':
         specifier: ^29.5.11
@@ -720,8 +720,8 @@ importers:
         specifier: ^5.3.3
         version: 5.9.3
       zod:
-        specifier: ^3.23.8
-        version: 3.25.76
+        specifier: ^4.3.6
+        version: 4.3.6
 
   packages/web:
     dependencies:
@@ -897,7 +897,7 @@ importers:
         specifier: ^5.25.0
         version: 5.28.0
       zod:
-        specifier: ^4.1.13
+        specifier: ^4.3.6
         version: 4.3.6
     devDependencies:
       '@next/bundle-analyzer':
@@ -8913,6 +8913,10 @@ packages:
     resolution: {integrity: sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==}
     engines: {node: '>=12'}
 
+  picomatch@4.0.4:
+    resolution: {integrity: sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==}
+    engines: {node: '>=12'}
+
   pidtree@0.6.0:
     resolution: {integrity: sha512-eG2dWTVw5bzqGRztnHExczNxt5VGsE6OwTeCG3fdUf9KBsZzO3R5OIIIzWR+iZA0NtZ+RDVdaoE2dK1cn6jH4g==}
     engines: {node: '>=0.10'}
@@ -10700,9 +10704,6 @@ packages:
     engines: {node: '>=18.0.0'}
     peerDependencies:
       zod: ^3.25.0 || ^4.0.0
-
-  zod@3.25.76:
-    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
   zod@4.3.6:
     resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
@@ -18327,8 +18328,8 @@ snapshots:
       '@babel/parser': 7.29.2
       eslint: 9.39.4(jiti@1.21.7)
       hermes-parser: 0.25.1
-      zod: 3.25.76
-      zod-validation-error: 4.0.2(zod@3.25.76)
+      zod: 4.3.6
+      zod-validation-error: 4.0.2(zod@4.3.6)
     transitivePeerDependencies:
       - supports-color
 
@@ -19900,7 +19901,7 @@ snapshots:
       chalk: 4.1.2
       ci-info: 4.4.0
       graceful-fs: 4.2.11
-      picomatch: 4.0.3
+      picomatch: 4.0.4
     optional: true
 
   jest-validate@29.7.0:
@@ -21241,6 +21242,9 @@ snapshots:
   picomatch@2.3.1: {}
 
   picomatch@4.0.3: {}
+
+  picomatch@4.0.4:
+    optional: true
 
   pidtree@0.6.0: {}
 
@@ -23250,11 +23254,9 @@ snapshots:
       compress-commons: 4.1.2
       readable-stream: 3.6.2
 
-  zod-validation-error@4.0.2(zod@3.25.76):
+  zod-validation-error@4.0.2(zod@4.3.6):
     dependencies:
-      zod: 3.25.76
-
-  zod@3.25.76: {}
+      zod: 4.3.6
 
   zod@4.3.6: {}
 
