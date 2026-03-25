@@ -798,11 +798,11 @@ importers:
         specifier: ^2.86.0
         version: 2.99.2
       '@tanstack/react-query':
-        specifier: ^5.91.0
-        version: 5.91.0(react@18.3.1)
+        specifier: ^5.95.2
+        version: 5.95.2(react@18.3.1)
       '@tanstack/react-query-devtools':
         specifier: ^5.91.1
-        version: 5.91.3(@tanstack/react-query@5.91.0(react@18.3.1))(react@18.3.1)
+        version: 5.91.3(@tanstack/react-query@5.95.2(react@18.3.1))(react@18.3.1)
       '@types/bcrypt':
         specifier: ^6.0.0
         version: 6.0.0
@@ -4609,8 +4609,8 @@ packages:
     resolution: {integrity: sha512-4BAffykYOgO+5nzBWYwE3W90sBgLJoUPRWWcL8wlyiM8IB8ipJz3UMJ9KXQd1RKQXpKp8Tutn80HZtWsu2u76w==}
     engines: {node: '>=10'}
 
-  '@tanstack/query-core@5.91.0':
-    resolution: {integrity: sha512-FYXN8Kk9Q5VKuV6AIVaNwMThSi0nvAtR4X7HQoigf6ePOtFcavJYVIzgFhOVdtbBQtCJE3KimDIMMJM2DR1hjw==}
+  '@tanstack/query-core@5.95.2':
+    resolution: {integrity: sha512-o4T8vZHZET4Bib3jZ/tCW9/7080urD4c+0/AUaYVpIqOsr7y0reBc1oX3ttNaSW5mYyvZHctiQ/UOP2PfdmFEQ==}
 
   '@tanstack/query-devtools@5.93.0':
     resolution: {integrity: sha512-+kpsx1NQnOFTZsw6HAFCW3HkKg0+2cepGtAWXjiiSOJJ1CtQpt72EE2nyZb+AjAbLRPoeRmPJ8MtQd8r8gsPdg==}
@@ -4621,8 +4621,8 @@ packages:
       '@tanstack/react-query': ^5.90.20
       react: ^18 || ^19
 
-  '@tanstack/react-query@5.91.0':
-    resolution: {integrity: sha512-S8FODsDTNv0Ym+o/JVBvA6EWiWVhg6K2Q4qFehZyFKk6uW4H9OPbXl4kyiN9hAly0uHJ/1GEbR6kAI4MZWfjEA==}
+  '@tanstack/react-query@5.95.2':
+    resolution: {integrity: sha512-/wGkvLj/st5Ud1Q76KF1uFxScV7WeqN1slQx5280ycwAyYkIPGaRZAEgHxe3bjirSd5Zpwkj6zNcR4cqYni/ZA==}
     peerDependencies:
       react: ^18 || ^19
 
@@ -8911,6 +8911,10 @@ packages:
 
   picomatch@4.0.3:
     resolution: {integrity: sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==}
+    engines: {node: '>=12'}
+
+  picomatch@4.0.4:
+    resolution: {integrity: sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==}
     engines: {node: '>=12'}
 
   pidtree@0.6.0:
@@ -15785,19 +15789,19 @@ snapshots:
     dependencies:
       defer-to-connect: 2.0.1
 
-  '@tanstack/query-core@5.91.0': {}
+  '@tanstack/query-core@5.95.2': {}
 
   '@tanstack/query-devtools@5.93.0': {}
 
-  '@tanstack/react-query-devtools@5.91.3(@tanstack/react-query@5.91.0(react@18.3.1))(react@18.3.1)':
+  '@tanstack/react-query-devtools@5.91.3(@tanstack/react-query@5.95.2(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@tanstack/query-devtools': 5.93.0
-      '@tanstack/react-query': 5.91.0(react@18.3.1)
+      '@tanstack/react-query': 5.95.2(react@18.3.1)
       react: 18.3.1
 
-  '@tanstack/react-query@5.91.0(react@18.3.1)':
+  '@tanstack/react-query@5.95.2(react@18.3.1)':
     dependencies:
-      '@tanstack/query-core': 5.91.0
+      '@tanstack/query-core': 5.95.2
       react: 18.3.1
 
   '@testing-library/dom@9.3.4':
@@ -19900,7 +19904,7 @@ snapshots:
       chalk: 4.1.2
       ci-info: 4.4.0
       graceful-fs: 4.2.11
-      picomatch: 4.0.3
+      picomatch: 4.0.4
     optional: true
 
   jest-validate@29.7.0:
@@ -21241,6 +21245,9 @@ snapshots:
   picomatch@2.3.1: {}
 
   picomatch@4.0.3: {}
+
+  picomatch@4.0.4:
+    optional: true
 
   pidtree@0.6.0: {}
 
