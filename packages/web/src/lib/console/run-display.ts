@@ -11,12 +11,18 @@ export function reconciliationRunStatusToBadgeType(status: string | null | undef
   const normalized = status.trim().toLowerCase();
   switch (normalized) {
     case "completed":
+    case "success":
       return "completed";
     case "failed":
+    case "error":
       return "failed";
     case "running":
+    case "processing":
+    case "in_progress":
       return "running";
     case "pending":
+    case "queued":
+    case "draft":
       return "pending";
     default:
       return "unknown";

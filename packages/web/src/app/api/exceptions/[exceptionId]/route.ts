@@ -24,6 +24,7 @@ import {
   buildSuggestedActions,
   getExceptionWorkflowState,
 } from "@/lib/exceptions/presentation";
+import { resolveExceptionProvenanceRun } from "@/lib/exceptions/resolve-exception-run-context";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
@@ -130,64 +131,17 @@ export const GET = withSecurity(
         });
 
         /**
-         * DriftEvent.reconJobId is the UUID of the reconciliation run that produced this drift
-         * (ReconciliationRun.id). It is not a batch/workflow job id; match review uses a separate
-         * API and route model (ReconciliationMatch under /api/jobs/...).
+         * DriftEvent.reconJobId is a run-scoped UUID used by the console. It may reference either:
+         * - ReconciliationRun (ingestion-backed execution), or
+         * - ReconJob (definition id — same UUID space; resolved via @settler/reconciliation-core).
+         * Match adjudication (ReconciliationMatch) uses /api/jobs/... and is separate from this
+         * drift workflow.
          */
-        let provenanceRun:
-          | {
-              id: string;
-              name: string | null;
-              status: string | null;
-              createdAt: string | null;
-              startedAt: string | null;
-              completedAt: string | null;
-              ingestionId: string | null;
-              href: string;
-              recordFound: boolean;
-            }
-          | null = null;
-
-        if (exception.reconJobId) {
-          const runRow = await prisma.reconciliationRun.findFirst({
-            where: { id: exception.reconJobId, tenantId },
-            select: {
-              id: true,
-              name: true,
-              status: true,
-              createdAt: true,
-              startedAt: true,
-              completedAt: true,
-              ingestionId: true,
-            },
-          });
-
-          if (runRow) {
-            provenanceRun = {
-              id: runRow.id,
-              name: runRow.name ?? null,
-              status: runRow.status ?? null,
-              createdAt: runRow.createdAt.toISOString(),
-              startedAt: runRow.startedAt.toISOString(),
-              completedAt: runRow.completedAt?.toISOString() ?? null,
-              ingestionId: runRow.ingestionId,
-              href: `/console/runs/${runRow.id}`,
-              recordFound: true,
-            };
-          } else {
-            provenanceRun = {
-              id: exception.reconJobId,
-              name: null,
-              status: null,
-              createdAt: null,
-              startedAt: null,
-              completedAt: null,
-              ingestionId: null,
-              href: `/console/runs/${exception.reconJobId}`,
-              recordFound: false,
-            };
-          }
-        }
+        const provenanceRun = await resolveExceptionProvenanceRun(
+          prisma,
+          tenantId,
+          exception.reconJobId
+        );
         const suggestedActions = buildSuggestedActions({
           driftType: exception.driftType,
           fieldPath: exception.fieldPath,

@@ -25,7 +25,9 @@ const resolveTenantForMutationMock = jest.fn();
 const getTraceIdMock = jest.fn();
 const driftEventFindFirstMock = jest.fn();
 const driftEventUpdateMock = jest.fn();
+const reconJobFindFirstMock = jest.fn();
 const reconciliationRunFindFirstMock = jest.fn();
+const reconResultFindFirstMock = jest.fn();
 
 jest.mock("@/lib/middleware/api-security", () => ({
   withSecurity: (handler: unknown) => handler,
@@ -63,8 +65,14 @@ jest.mock("@/shared/db/prismaClient", () => ({
       findFirst: (...args: unknown[]) => driftEventFindFirstMock(...args),
       update: (...args: unknown[]) => driftEventUpdateMock(...args),
     },
+    reconJob: {
+      findFirst: (...args: unknown[]) => reconJobFindFirstMock(...args),
+    },
     reconciliationRun: {
       findFirst: (...args: unknown[]) => reconciliationRunFindFirstMock(...args),
+    },
+    reconResult: {
+      findFirst: (...args: unknown[]) => reconResultFindFirstMock(...args),
     },
   },
 }));
@@ -132,7 +140,9 @@ beforeEach(() => {
   getTraceIdMock.mockReset();
   driftEventFindFirstMock.mockReset();
   driftEventUpdateMock.mockReset();
+  reconJobFindFirstMock.mockReset();
   reconciliationRunFindFirstMock.mockReset();
+  reconResultFindFirstMock.mockReset();
 
   resolveTenantMembershipScopeMock.mockResolvedValue({
     tenantIds: [TENANT_UUID],
@@ -142,15 +152,29 @@ beforeEach(() => {
   resolveTenantForMutationMock.mockReturnValue(TENANT_UUID);
   getTraceIdMock.mockResolvedValue("trace-test-001");
 
+  reconJobFindFirstMock.mockResolvedValue(null);
   reconciliationRunFindFirstMock.mockResolvedValue({
     id: RUN_UUID,
+    tenantId: TENANT_UUID,
+    userId: "88888888-8888-4888-8888-888888888888",
     name: "Test reconciliation run",
     status: "completed",
     createdAt: new Date("2026-02-01T08:00:00.000Z"),
     startedAt: new Date("2026-02-01T08:05:00.000Z"),
     completedAt: new Date("2026-02-01T08:10:00.000Z"),
+    sourceCount: 0,
+    targetCount: 0,
+    matchedCount: 0,
+    unmatchedSourceCount: 0,
+    unmatchedTargetCount: 0,
+    confidenceAvg: null,
+    errorMessage: null,
+    traceId: null,
+    metadata: {},
+    updatedAt: new Date("2026-02-01T08:10:00.000Z"),
     ingestionId: "99999999-aaaa-4bbb-8ccc-dddddddddddd",
   });
+  reconResultFindFirstMock.mockResolvedValue(null);
 });
 
 // ─── GET tests ────────────────────────────────────────────────────────────────
@@ -221,11 +245,16 @@ describe("GET /api/exceptions/[exceptionId]", () => {
     expect(payload.provenance.runId).toBe(RUN_UUID);
     expect(payload.provenance.run).toMatchObject({
       id: RUN_UUID,
+      runKind: "ingestion_run",
+      sourceModel: "reconciliation_runs",
       name: "Test reconciliation run",
-      status: "completed",
+      normalizedStatus: "completed",
+      statusLabel: "Completed",
       recordFound: true,
       href: `/console/runs/${RUN_UUID}`,
       ingestionId: "99999999-aaaa-4bbb-8ccc-dddddddddddd",
+      reconJobId: null,
+      uuidCollision: false,
     });
     expect(payload.provenance.run.createdAt).toBe("2026-02-01T08:00:00.000Z");
     expect(payload.provenance.run.startedAt).toBe("2026-02-01T08:05:00.000Z");
@@ -430,11 +459,13 @@ describe("GET /api/exceptions/[exceptionId]", () => {
     expect(payload.provenance.fieldPath).toBeNull();
     expect(payload.runId).toBeNull();
     expect(reconciliationRunFindFirstMock).not.toHaveBeenCalled();
+    expect(reconJobFindFirstMock).not.toHaveBeenCalled();
   });
 
   test("joins ReconciliationRun with tenantId — same id in another tenant does not leak", async () => {
     driftEventFindFirstMock.mockResolvedValue(makeException());
     reconciliationRunFindFirstMock.mockResolvedValue(null);
+    reconJobFindFirstMock.mockResolvedValue(null);
 
     const res = await GET(makeRequest(EXCEPTION_UUID), makeParams(EXCEPTION_UUID) as any);
     const payload = await res.json();
@@ -443,12 +474,17 @@ describe("GET /api/exceptions/[exceptionId]", () => {
     const runCall = reconciliationRunFindFirstMock.mock.calls[0]?.[0];
     expect(runCall?.where?.id).toBe(RUN_UUID);
     expect(runCall?.where?.tenantId).toBe(TENANT_UUID);
+    expect(reconJobFindFirstMock).toHaveBeenCalledTimes(1);
+    const jobCall = reconJobFindFirstMock.mock.calls[0]?.[0];
+    expect(jobCall?.where?.id).toBe(RUN_UUID);
+    expect(jobCall?.where?.tenantId).toBe(TENANT_UUID);
 
     expect(payload.provenance.run).toMatchObject({
       id: RUN_UUID,
       recordFound: false,
       name: null,
-      status: null,
+      normalizedStatus: "unknown",
+      statusLabel: "Not found",
     });
   });
 
@@ -456,19 +492,85 @@ describe("GET /api/exceptions/[exceptionId]", () => {
     driftEventFindFirstMock.mockResolvedValue(makeException());
     reconciliationRunFindFirstMock.mockResolvedValue({
       id: RUN_UUID,
+      tenantId: TENANT_UUID,
+      userId: "88888888-8888-4888-8888-888888888888",
       name: null,
-      status: "cancelled",
+      status: "weird_status_xyz",
       createdAt: new Date("2026-02-01T08:00:00.000Z"),
       startedAt: new Date("2026-02-01T08:05:00.000Z"),
       completedAt: null,
+      sourceCount: 0,
+      targetCount: 0,
+      matchedCount: 0,
+      unmatchedSourceCount: 0,
+      unmatchedTargetCount: 0,
+      confidenceAvg: null,
+      errorMessage: null,
+      traceId: null,
+      metadata: {},
+      updatedAt: new Date("2026-02-01T08:05:00.000Z"),
       ingestionId: null,
     });
 
     const res = await GET(makeRequest(EXCEPTION_UUID), makeParams(EXCEPTION_UUID) as any);
     expect(res.status).toBe(200);
     const payload = await res.json();
-    expect(payload.provenance.run?.status).toBe("cancelled");
+    expect(payload.provenance.run?.normalizedStatus).toBe("unknown");
+    expect(payload.provenance.run?.statusLabel).toMatch(/unknown/i);
     expect(payload.provenance.run?.recordFound).toBe(true);
+  });
+
+  test("resolves recon_jobs id when no reconciliation_runs row exists", async () => {
+    driftEventFindFirstMock.mockResolvedValue(makeException());
+    reconciliationRunFindFirstMock.mockResolvedValue(null);
+    reconJobFindFirstMock.mockResolvedValue({
+      id: RUN_UUID,
+      tenantId: TENANT_UUID,
+      name: "Stripe ↔ Ledger",
+      status: "active",
+      createdAt: new Date("2026-02-01T07:00:00.000Z"),
+      updatedAt: new Date("2026-02-01T07:00:00.000Z"),
+      sourceAdapter: "stripe",
+      targetAdapter: "ledger",
+      reconStrategy: "deterministic",
+      templateId: null,
+      validationRules: [],
+      sourceConfigEncrypted: "x",
+      targetConfigEncrypted: "y",
+      metadata: {},
+    });
+    reconResultFindFirstMock.mockResolvedValue({
+      id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+      reconJobId: RUN_UUID,
+      status: "completed",
+      startedAt: new Date("2026-02-01T08:00:00.000Z"),
+      completedAt: new Date("2026-02-01T08:30:00.000Z"),
+      sourceCount: 10,
+      targetCount: 10,
+      matchedCount: 9,
+      unmatchedSourceCount: 1,
+      unmatchedTargetCount: 0,
+      conflictCount: 0,
+      errorMessage: null,
+      inputHash: null,
+      snapshotId: null,
+      summary: {},
+      metadata: {},
+    });
+
+    const res = await GET(makeRequest(EXCEPTION_UUID), makeParams(EXCEPTION_UUID) as any);
+    const payload = await res.json();
+
+    expect(payload.provenance.run).toMatchObject({
+      id: RUN_UUID,
+      runKind: "recon_job",
+      sourceModel: "recon_jobs",
+      name: "Stripe ↔ Ledger",
+      reconJobId: RUN_UUID,
+      recordFound: true,
+      latestResultId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+    });
+    expect(reconResultFindFirstMock).toHaveBeenCalled();
   });
 
   test("handles null expectedValue and actualValue without throwing", async () => {

@@ -546,6 +546,9 @@ model ContractVersion {
   @@map("contract_versions")
 }
 
+// reconJobId is a run-scoped UUID in the console: it may reference ReconciliationRun.id
+// (ingestion execution) or ReconJob.id (recon job definition). There is no single FK target,
+// so integrity is enforced in application code (tenant-scoped resolution).
 model DriftEvent {
   id                String    @id @default(uuid())
   tenantId          String    @db.Uuid

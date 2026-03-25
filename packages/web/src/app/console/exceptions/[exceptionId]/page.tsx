@@ -34,7 +34,7 @@ import {
 
 interface ExceptionProvenance {
   runId: string | null;
-  /** Canonical ReconciliationRun row for this drift exception, tenant-scoped; null when unlinked. */
+  /** Resolved run context (recon job and/or ingestion run); null when unlinked. */
   run?: ExceptionDetailProvenanceRun | null;
   fieldPath: string | null;
   ruleId: string | null;
@@ -577,14 +577,20 @@ export default function ExceptionDetailPage() {
               (runId
                 ? {
                     id: runId,
+                    runKind: "ingestion_run",
+                    sourceModel: "reconciliation_runs",
                     name: null,
-                    status: null,
+                    normalizedStatus: "unknown",
+                    statusLabel: "Unavailable",
                     createdAt: null,
                     startedAt: null,
                     completedAt: null,
                     ingestionId: null,
+                    reconJobId: null,
                     href: `/console/runs/${runId}`,
                     recordFound: false,
+                    latestResultId: null,
+                    uuidCollision: false,
                   }
                 : null);
             const sourceAdapter = prov?.sourceAdapter ?? exception.sourceSystem ?? null;

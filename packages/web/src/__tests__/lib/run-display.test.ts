@@ -14,4 +14,9 @@ describe("reconciliationRunStatusToBadgeType", () => {
     expect(reconciliationRunStatusToBadgeType(null)).toBe("unknown");
     expect(reconciliationRunStatusToBadgeType(undefined)).toBe("unknown");
   });
+
+  test("maps extended aliases used by canonical status normalization", () => {
+    expect(reconciliationRunStatusToBadgeType("success")).toBe("completed");
+    expect(reconciliationRunStatusToBadgeType("queued")).toBe("pending");
+  });
 });
