@@ -63,7 +63,7 @@
     "@vercel/blob": "^0.26.0",
     "@vercel/edge-config": "^1.0.0",
     "@vercel/kv": "^3.0.0",
-    "@vercel/speed-insights": "^1.0.2",
+    "@vercel/speed-insights": "^2.0.0",
     "@xstate/react": "^6.0.0",
     "autoprefixer": "^10.4.16",
     "bcrypt": "^6.0.0",
