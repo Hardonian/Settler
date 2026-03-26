@@ -1,6 +1,6 @@
 /** @jest-environment node */
 
-import { GET as getRunDetail } from "@/app/api/runs/[runId]/route";
+import { GET as getRunDetail } from "@/app/api/runs/[id]/route";
 import { POST as createRun } from "@/app/api/runs/create/route";
 import { POST as runReconciliation } from "@/app/api/console/reconciliation/route";
 import { POST as postExceptionAction } from "@/app/api/exceptions/[exceptionId]/route";
@@ -14,6 +14,7 @@ const requireAuthMock = jest.fn();
 const authenticateApiKeyMock = jest.fn();
 const reconJobFindFirstMock = jest.fn();
 const reconResultFindFirstMock = jest.fn();
+const reconciliationRunFindFirstMock = jest.fn();
 const prismaQueryRawMock = jest.fn();
 
 jest.mock("@/lib/middleware/api-security", () => ({
@@ -47,6 +48,7 @@ jest.mock("@/shared/db/prismaClient", () => ({
     $queryRaw: (...args: unknown[]) => prismaQueryRawMock(...args),
     reconciliationRun: {
       count: jest.fn(async () => 0),
+      findFirst: (...args: unknown[]) => reconciliationRunFindFirstMock(...args),
     },
     reconJob: {
       findFirst: (...args: unknown[]) => reconJobFindFirstMock(...args),
@@ -119,6 +121,7 @@ describe("run domain trust invariants", () => {
     authenticateApiKeyMock.mockReset();
     reconJobFindFirstMock.mockReset();
     reconResultFindFirstMock.mockReset();
+    reconciliationRunFindFirstMock.mockReset();
     prismaQueryRawMock.mockReset();
     prismaQueryRawMock.mockResolvedValue([
       {
@@ -132,50 +135,17 @@ describe("run domain trust invariants", () => {
   });
 
   test("run detail read blocks cross-tenant access", async () => {
-    const runRow = {
-      id: "run-b-1",
-      name: "Tenant B Run",
-      status: "completed",
-      created_at: "2026-01-01T00:00:00.000Z",
-      updated_at: "2026-01-01T00:00:00.000Z",
-      tenant_id: "tenant-b",
-    };
-
-    const supabase = {
-      from: jest.fn((table: string) => {
-        if (table === "recon_jobs") {
-          return {
-            select: jest.fn(() => ({
-              eq: jest.fn((column: string, value: string) => ({
-                in: jest.fn((_tenantColumn: string, tenantIds: string[]) => ({
-                  single: jest.fn(async () => {
-                    if (
-                      column === "id" &&
-                      value === runRow.id &&
-                      tenantIds.includes(runRow.tenant_id)
-                    ) {
-                      return { data: runRow, error: null };
-                    }
-                    return { data: null, error: { message: "Not found" } };
-                  }),
-                })),
-              })),
-            })),
-          };
-        }
-
-        throw new Error(`Unexpected table access: ${table}`);
-      }),
-    };
+    reconJobFindFirstMock.mockResolvedValue(null);
+    reconciliationRunFindFirstMock.mockResolvedValue(null);
 
     resolveTenantMembershipScopeMock.mockResolvedValue({
-      supabase,
+      supabase: { from: jest.fn() },
       userId: "user-a",
       tenantIds: ["tenant-a"],
     });
 
     const response = await getRunDetail(req("http://localhost/api/runs/run-b-1"), {
-      params: { runId: "run-b-1" },
+      params: { id: "run-b-1" },
     } as any);
 
     expect(response.status).toBe(404);
@@ -201,6 +171,24 @@ describe("run domain trust invariants", () => {
       recon_strategy: "deterministic",
     };
 
+    reconJobFindFirstMock.mockResolvedValue({
+      id: runRow.id,
+      tenantId: "tenant-a",
+      name: runRow.name,
+      status: runRow.status,
+      createdAt: new Date(runRow.created_at),
+      updatedAt: new Date(runRow.updated_at),
+      sourceAdapter: "stripe",
+      targetAdapter: "netsuite",
+      reconStrategy: "deterministic",
+      templateId: "tpl-1",
+      validationRules: runRow.validation_rules,
+      sourceConfigEncrypted: "enc-src",
+      targetConfigEncrypted: "enc-tgt",
+      metadata: {},
+    });
+    reconciliationRunFindFirstMock.mockResolvedValue(null);
+
     const latestResult = {
       id: "result-a-1",
       recon_job_id: runRow.id,
@@ -219,13 +207,33 @@ describe("run domain trust invariants", () => {
       snapshot_id: "snapshot-1",
     };
 
+    reconResultFindFirstMock.mockResolvedValue({
+      id: latestResult.id,
+      reconJobId: runRow.id,
+      tenantId: "tenant-a",
+      status: latestResult.status,
+      startedAt: new Date(latestResult.started_at),
+      completedAt: new Date(latestResult.completed_at),
+      sourceCount: latestResult.source_count,
+      targetCount: latestResult.target_count,
+      matchedCount: latestResult.matched_count,
+      unmatchedSourceCount: latestResult.unmatched_source_count,
+      unmatchedTargetCount: latestResult.unmatched_target_count,
+      conflictCount: latestResult.conflict_count,
+      errorMessage: null,
+      inputHash: latestResult.input_hash,
+      snapshotId: latestResult.snapshot_id,
+      summary: null,
+      metadata: latestResult.metadata,
+    });
+
     const supabase = {
       from: jest.fn((table: string) => {
         if (table === "recon_jobs") {
           return {
             select: jest.fn(() => ({
               eq: jest.fn(() => ({
-                in: jest.fn(() => ({
+                eq: jest.fn(() => ({
                   single: jest.fn(async () => ({ data: runRow, error: null })),
                 })),
               })),
@@ -310,11 +318,12 @@ describe("run domain trust invariants", () => {
     });
 
     const response = await getRunDetail(req("http://localhost/api/runs/run-a-1"), {
-      params: { runId: "run-a-1" },
+      params: { id: "run-a-1" },
     } as any);
 
     expect(response.status).toBe(200);
     const payload = await response.json();
+    expect(payload.runKind).toBe("recon_job");
     expect(payload.config).toEqual(
       expect.objectContaining({
         sourceAdapter: "stripe",

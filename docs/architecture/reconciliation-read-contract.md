@@ -47,11 +47,19 @@ If the same UUID exists in **both** `recon_jobs` and `reconciliation_runs` for a
 
 ## Next console: `GET /api/console/reconciliation`
 
-- **Default** `run_kind=recon_job` preserves historical “jobs only” `reconciliations[]` shape for list calls without query params.
+- **Default** `run_kind=all` returns the merged dual-stream page (same semantics as `fetchMergedReconciliationRunsPage`). Invalid `run_kind` values return **400** with `RECONCILIATION_INVALID_RUN_KIND` (no silent fallback to recon-job-only).
 - **`run_kind=all`**: response includes `runs` (canonical merged list) plus `reconciliations` (job-shaped projection for backward compatibility) and real `next_cursor`.
+- **`run_kind=recon_job`**: job stream only; omits top-level `runs` key (legacy shape).
 - **`run_kind=ingestion_run`**: only ingestion stream; `reconciliations` is `[]`.
 
 List JSON (no `id` query) is built via **`buildConsoleReconciliationListBody`** in `@settler/reconciliation-core` so Next and any other consumer stay aligned with the same `runs` / `reconciliations` projection rules.
+
+## Next console: `GET /api/runs`
+
+- **Merged by default**: uses **`fetchMergedReconciliationRunsPage`** with `run_kind=all` unless overridden.
+- **Envelope**: `{ items[], next_cursor, pagination, response_meta }`. Each `items[]` entry includes **`runKind`** (`recon_job` | `ingestion_run`) plus the legacy summary fields the console already consumed.
+- **Query**: `run_kind`, `limit` (1–500), `cursor` (opaque merged cursor), optional `status` / `search`. **Do not** combine `cursor` with `status` or `search` (returns **400** `RUNS_CURSOR_WITH_FILTERS_UNSUPPORTED`). Filtered mode scans up to a bounded number of merged pages server-side; see `response_meta.pagination_mode` and `pagination.filter_truncation_possible`.
+- **Detail**: `GET /api/runs/:id` resolves via **`resolveReconciliationRunForTenants`**; ingestion runs return `runKind: ingestion_run` with explicit degraded fields where recon-job-only data does not exist. UUID collision returns **409** `RUN_ID_COLLISION`.
 
 ### DB-backed integration tests (optional)
 

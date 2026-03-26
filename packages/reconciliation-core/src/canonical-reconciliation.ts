@@ -16,6 +16,7 @@ import {
   getRunStatusLabel,
   getRunSummaryState,
   normalizeRunStatus,
+  type CanonicalConfigDrift,
   type ReconJobRecordLike,
   type ReconResultRecordLike,
 } from "./canonical-run-result.js";
@@ -36,6 +37,7 @@ export interface CanonicalReconciliationListItem {
   id: string;
   tenantId: string;
   name: string;
+  configDrift: CanonicalConfigDrift;
   /** Latest persisted recon_results row for recon_job runs; null for ingestion runs or jobs without results */
   reconResultId: string | null;
   lifecycle: {
@@ -131,6 +133,7 @@ export function mapReconJobRowToCanonicalListItem(input: {
       completedAt: contract.provenance.completedAt,
       updatedAt: input.job.updatedAt.toISOString(),
     },
+    configDrift: contract.configDrift,
   };
 }
 
@@ -231,6 +234,21 @@ export function mapIngestionReconciliationRunToCanonicalDetail(row: {
       completedAt: row.completedAt?.toISOString() ?? null,
       updatedAt: row.updatedAt.toISOString(),
     },
+    configDrift: {
+      status: "none",
+      strategyChanged: false,
+      templateChanged: false,
+      validationRulesChanged: false,
+      adapter: {
+        status: "none",
+        comparisonMode: "unavailable",
+        sourceChanged: null,
+        targetChanged: null,
+        sourceHashPresent: false,
+        targetHashPresent: false,
+      },
+      notes: [],
+    },
     errorMessage: row.errorMessage,
     traceId: row.traceId,
     metadata: meta,
@@ -273,6 +291,7 @@ export function mapIngestionReconciliationRunToCanonicalListItem(row: {
     provenance: detail.provenance,
     adapters: detail.adapters,
     timestamps: detail.timestamps,
+    configDrift: detail.configDrift,
   };
 }
 

@@ -22,9 +22,43 @@ export async function resolveReconciliationRunForTenant(
   tenantId: string,
   runId: string
 ): Promise<ReconciliationRunResolution> {
+  const resolved = await resolveReconciliationRunForTenants(prisma, [tenantId], runId);
+  if (resolved.kind === "recon_job" || resolved.kind === "ingestion_run") {
+    return { kind: resolved.kind, detail: resolved.detail };
+  }
+  return resolved;
+}
+
+export type ResolvedReconciliationRunForTenants =
+  | {
+      kind: "recon_job";
+      tenantId: string;
+      detail: CanonicalReconciliationRunDetail;
+    }
+  | {
+      kind: "ingestion_run";
+      tenantId: string;
+      detail: CanonicalReconciliationRunDetail;
+    }
+  | { kind: "ambiguous_uuid_collision"; jobId: string; ingestionRunId: string }
+  | { kind: "not_found" };
+
+/**
+ * Resolve a run id when the caller has membership in multiple tenants (console scope).
+ * Uses at most one row per table across the allowed tenant set.
+ */
+export async function resolveReconciliationRunForTenants(
+  prisma: PrismaClient,
+  tenantIds: string[],
+  runId: string
+): Promise<ResolvedReconciliationRunForTenants> {
+  if (tenantIds.length === 0) {
+    return { kind: "not_found" };
+  }
+
   const [job, ingestionRun] = await Promise.all([
     prisma.reconJob.findFirst({
-      where: { id: runId, tenantId, deletedAt: null },
+      where: { id: runId, tenantId: { in: tenantIds }, deletedAt: null },
       select: {
         id: true,
         tenantId: true,
@@ -43,7 +77,7 @@ export async function resolveReconciliationRunForTenant(
       },
     }),
     prisma.reconciliationRun.findFirst({
-      where: { id: runId, tenantId },
+      where: { id: runId, tenantId: { in: tenantIds } },
       select: {
         id: true,
         tenantId: true,
@@ -70,7 +104,7 @@ export async function resolveReconciliationRunForTenant(
 
   if (job && ingestionRun) {
     await logConflict({
-      tenantId,
+      tenantId: job.tenantId,
       duplicateUuid: runId,
       reconJobId: job.id,
       reconciliationRunId: ingestionRun.id,
@@ -84,7 +118,7 @@ export async function resolveReconciliationRunForTenant(
 
   if (job) {
     const latestResult = await prisma.reconResult.findFirst({
-      where: { reconJobId: job.id, tenantId },
+      where: { reconJobId: job.id, tenantId: job.tenantId },
       orderBy: { startedAt: "desc" },
       select: {
         id: true,
@@ -129,6 +163,7 @@ export async function resolveReconciliationRunForTenant(
 
     return {
       kind: "recon_job",
+      tenantId: job.tenantId,
       detail: mapReconJobRowToCanonicalDetail({
         job: {
           id: job.id,
@@ -154,6 +189,7 @@ export async function resolveReconciliationRunForTenant(
   if (ingestionRun) {
     return {
       kind: "ingestion_run",
+      tenantId: ingestionRun.tenantId,
       detail: mapIngestionReconciliationRunToCanonicalDetail(ingestionRun),
     };
   }

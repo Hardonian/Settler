@@ -31,6 +31,7 @@ interface RunStage {
 }
 
 interface Run {
+  runKind?: "recon_job" | "ingestion_run";
   id: string;
   name: string;
   status: "pending" | "running" | "completed" | "failed" | "unknown";
@@ -103,6 +104,9 @@ interface Run {
     ignored: number;
     reviewRequired: number;
   };
+  exceptionWorkflowNote?: string;
+  metadata?: Record<string, unknown>;
+  traceId?: string | null;
 }
 
 export default function RunPage() {
@@ -207,6 +211,7 @@ export default function RunPage() {
   }
 
   const StatusIcon = getStatusIcon(run.status);
+  const isIngestionRun = run.runKind === "ingestion_run";
 
   return (
     <div className="p-6 space-y-6">
@@ -254,6 +259,24 @@ export default function RunPage() {
           </Button>
         </div>
       </div>
+
+      {isIngestionRun ? (
+        <Card className="border-amber-200 bg-amber-50/50 dark:border-amber-900 dark:bg-amber-950/20">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Ingestion reconciliation run</CardTitle>
+            <CardDescription>
+              This run is stored in <code className="text-xs">reconciliation_runs</code>, not{" "}
+              <code className="text-xs">recon_jobs</code>. Counts and lifecycle here reflect that
+              row; snapshot-backed job config and drift-event scoping may differ from recon job runs.
+            </CardDescription>
+          </CardHeader>
+          {run.exceptionWorkflowNote ? (
+            <CardContent className="pt-0 text-sm text-muted-foreground">
+              {run.exceptionWorkflowNote}
+            </CardContent>
+          ) : null}
+        </Card>
+      ) : null}
 
       {/* Status Card */}
       <Card>
@@ -335,7 +358,7 @@ export default function RunPage() {
         </CardContent>
       </Card>
 
-      {run.resultContext && (
+      {run.resultContext && !isIngestionRun && (
         <Card>
           <CardHeader>
             <CardTitle>Result Provenance</CardTitle>
@@ -396,7 +419,7 @@ export default function RunPage() {
         </Card>
       )}
 
-      {run.exceptions && (
+      {run.exceptions && !isIngestionRun && (
         <Card>
           <CardHeader>
             <CardTitle>Exception Workflow</CardTitle>
@@ -459,7 +482,7 @@ export default function RunPage() {
       )}
 
       {/* Workflow Continuity - Next Actions */}
-      {run.status === "completed" && (
+      {run.status === "completed" && !isIngestionRun && (
         <Card>
           <CardHeader>
             <CardTitle>Next Steps</CardTitle>
