@@ -29,6 +29,7 @@ import {
   fetchMergedReconciliationRunsPage,
   MergedRunsCursorError,
 } from "@settler/reconciliation-core";
+import { parseRunKindParam, parseRunsLimit } from "@/lib/reconciliation/runs-query-params";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -203,12 +204,11 @@ export const GET = withSecurity(
         }
 
         const cursorParam = request.nextUrl.searchParams.get("cursor") ?? undefined;
-        const limit = Math.min(Number(request.nextUrl.searchParams.get("limit") || 50), 500);
-        const runKindRaw = (request.nextUrl.searchParams.get("run_kind") ?? "all").trim();
-        const runKind =
-          runKindRaw === "all" || runKindRaw === "recon_job" || runKindRaw === "ingestion_run"
-            ? runKindRaw
-            : "__invalid__";
+        const limit = parseRunsLimit(request.nextUrl.searchParams.get("limit"));
+        const runKind = parseRunKindParam(
+          request.nextUrl.searchParams.get("run_kind") ??
+            request.nextUrl.searchParams.get("runKind")
+        );
 
         if (runKind === "__invalid__") {
           return NextResponse.json(
