@@ -194,7 +194,7 @@ const EXCEPTION_TYPES = [
   "amount_mismatch",
   "missing_counterpart",
   "duplicate_detected",
-  "timing_variance",
+  "timing_difference",
   "field_discrepancy",
   "threshold_breach",
   "currency_mismatch",
@@ -217,7 +217,7 @@ const EXCEPTION_DESCRIPTIONS: Record<string, string[]> = {
     "Two charges on same card ending {{last4}} within 60 seconds",
     "Duplicate payout reference detected across settlement batches",
   ],
-  timing_variance: [
+  timing_difference: [
     "Transaction posted {{days}} business days after expected settlement window",
     "Bank posting date {{bankDate}} is {{days}} days after processor date",
     "Settlement lag exceeds 3-day SLA by {{days}} days",

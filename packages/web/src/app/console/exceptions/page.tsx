@@ -57,7 +57,7 @@ function exceptionStatusToStatusType(status: Exception["status"]): StatusType {
 
 function severityToBadgeVariant(
   severity: Exception["severity"]
-): "destructive" | "warning" | "outline" | "success" {
+): "destructive" | "warning" | "outline" | "secondary" {
   switch (severity) {
     case "critical":
       return "destructive";
@@ -66,7 +66,7 @@ function severityToBadgeVariant(
     case "medium":
       return "outline";
     default:
-      return "success";
+      return "secondary";
   }
 }
 
