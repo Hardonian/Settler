@@ -204,11 +204,22 @@ export const GET = withSecurity(
 
         const cursorParam = request.nextUrl.searchParams.get("cursor") ?? undefined;
         const limit = Math.min(Number(request.nextUrl.searchParams.get("limit") || 50), 500);
-        const runKindRaw = request.nextUrl.searchParams.get("run_kind") ?? "recon_job";
+        const runKindRaw = (request.nextUrl.searchParams.get("run_kind") ?? "all").trim();
         const runKind =
           runKindRaw === "all" || runKindRaw === "recon_job" || runKindRaw === "ingestion_run"
             ? runKindRaw
-            : "recon_job";
+            : "__invalid__";
+
+        if (runKind === "__invalid__") {
+          return NextResponse.json(
+            {
+              error: "Invalid run_kind",
+              code: "RECONCILIATION_INVALID_RUN_KIND",
+              detail: "run_kind must be one of: all, recon_job, ingestion_run",
+            },
+            { status: 400 }
+          );
+        }
 
         let cursorState = null;
         if (cursorParam) {

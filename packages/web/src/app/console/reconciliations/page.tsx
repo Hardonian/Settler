@@ -14,6 +14,7 @@ import { ReconciliationView } from "@/components/console/ReconciliationView";
 import { safeFetch } from "@/lib/safe-fetch";
 
 interface RecentRun {
+  runKind?: "recon_job" | "ingestion_run";
   id: string;
   name: string;
   status: "pending" | "running" | "completed" | "failed" | "unknown";
@@ -74,14 +75,14 @@ export default function ReconciliationsPage() {
 
     async function loadRuns() {
       setLoading(true);
-      const result = await safeFetch<RecentRun[]>("/api/runs");
+      const result = await safeFetch<{ items: RecentRun[] }>("/api/runs?limit=6&run_kind=all");
 
       if (cancelled) {
         return;
       }
 
       if (result.success && result.data) {
-        setRuns(result.data.slice(0, 6));
+        setRuns((result.data.items ?? []).slice(0, 6));
         setError(null);
       } else {
         setRuns([]);
@@ -156,9 +157,10 @@ export default function ReconciliationsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent Runs</CardTitle>
+          <CardTitle>Recent runs</CardTitle>
           <CardDescription>
-            Open a completed run to review matched, unmatched, and conflict outcomes.
+            Mixed recon jobs and ingestion runs from the same merged list as Runs. Result inspection
+            is available for recon jobs; ingestion runs use run detail for now.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -201,6 +203,15 @@ export default function ReconciliationsPage() {
                       <div className="space-y-2">
                         <div className="flex flex-wrap items-center gap-2">
                           <h3 className="font-semibold text-foreground">{run.name}</h3>
+                          {run.runKind === "ingestion_run" ? (
+                            <Badge variant="outline" className="text-xs font-normal">
+                              Ingestion run
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-xs font-normal">
+                              Recon job
+                            </Badge>
+                          )}
                           <Badge className={getStatusTone(run.status)}>
                             <StatusIcon
                               className={`mr-1 h-3.5 w-3.5 ${
@@ -233,7 +244,7 @@ export default function ReconciliationsPage() {
                         <Button asChild variant="outline">
                           <Link href={`/console/runs/${run.id}`}>Open Run Detail</Link>
                         </Button>
-                        {run.status === "completed" ? (
+                        {run.status === "completed" && run.runKind !== "ingestion_run" ? (
                           <Button asChild>
                             <Link href={`/console/reconciliations?runId=${run.id}`}>
                               Inspect Results

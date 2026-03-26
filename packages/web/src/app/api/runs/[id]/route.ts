@@ -30,7 +30,9 @@ import {
   type ReconResultRow,
 } from "@/lib/reconciliation/run-status";
 import { buildRunConfigurationSummary } from "@/lib/reconciliation/run-detail";
+import { buildIngestionRunDetailJson } from "@/lib/reconciliation/build-ingestion-run-detail-json";
 import { prisma } from "@/shared/db/prismaClient";
+import { resolveReconciliationRunForTenants } from "@settler/reconciliation-core";
 
 export const runtime = "nodejs";
 
@@ -42,13 +44,41 @@ export const GET = withSecurity(
       try {
         const { supabase, tenantIds: accessibleTenantIds } = await resolveTenantMembershipScope();
 
+        const resolved = await resolveReconciliationRunForTenants(
+          prisma,
+          accessibleTenantIds,
+          params.id
+        );
+
+        if (resolved.kind === "ambiguous_uuid_collision") {
+          return NextResponse.json(
+            {
+              error: "Ambiguous run identifier",
+              code: "RUN_ID_COLLISION",
+              detail:
+                "The same UUID exists as both a recon job and an ingestion reconciliation run; disambiguate in the database or use tenant-scoped APIs that return a single kind.",
+              recon_job_id: resolved.jobId,
+              ingestion_run_id: resolved.ingestionRunId,
+            },
+            { status: 409 }
+          );
+        }
+
+        if (resolved.kind === "not_found") {
+          return NextResponse.json({ error: "Run not found" }, { status: 404 });
+        }
+
+        if (resolved.kind === "ingestion_run") {
+          return NextResponse.json(buildIngestionRunDetailJson(resolved.detail));
+        }
+
         const { data: run, error: runError } = (await supabase
           .from("recon_jobs" as any)
           .select(
             "id, name, status, created_at, updated_at, tenant_id, template_id, source_adapter, target_adapter, source_config_encrypted, target_config_encrypted, validation_rules, recon_strategy"
           )
           .eq("id", params.id)
-          .in("tenant_id", accessibleTenantIds)
+          .eq("tenant_id", resolved.tenantId)
           .single()) as {
           data:
             | (ReconJobRow & {
@@ -294,6 +324,7 @@ export const GET = withSecurity(
         );
 
         return NextResponse.json({
+          runKind: "recon_job" as const,
           id: run.id,
           name: contract.name,
           status: truth.status,

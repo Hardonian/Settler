@@ -1,156 +1,268 @@
 /**
- * List Reconciliation Runs
+ * List reconciliation runs (merged canonical view)
  *
  * GET /api/runs
  *
- * Returns canonical run results using one shared run-result contract.
+ * Returns recon_jobs-backed runs and ingestion-backed reconciliation_runs in one list,
+ * using the same merge + cursor semantics as reconciliation-core.
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { createLogger } from "@/lib/logger";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { withSecurity } from "@/lib/middleware/api-security";
+import { requireAuth, type UnifiedAuthContext } from "@/lib/api/unified-auth";
 import {
+  assertTenantMembership,
+  resolveTenantForMutation,
   resolveTenantMembershipScope,
   TenantMembershipError,
 } from "@/lib/supabase/tenant-membership";
+import { prisma } from "@/shared/db/prismaClient";
 import {
-  buildCanonicalRunResultContract,
-  type ReconJobRecordLike,
-  type ReconResultRecordLike,
-} from "@/lib/reconciliation/canonical-run-result";
+  decodeMergedRunsCursor,
+  encodeMergedRunsCursor,
+  fetchMergedReconciliationRunsPage,
+  mapCanonicalListItemToApiRunsLegacyRow,
+  MergedRunsCursorError,
+  type MergedRunsCursorV1,
+  type ReconciliationRunKindFilter,
+} from "@settler/reconciliation-core";
 
 export const runtime = "nodejs";
 
-type RunListJobRow = {
-  id: string;
-  name: string | null;
-  status: string | null;
-  tenant_id: string;
-  created_at: string;
-  updated_at?: string | null;
-  source_adapter?: string | null;
-  target_adapter?: string | null;
-  recon_strategy?: string | null;
-  template_id?: string | null;
-  validation_rules?: unknown;
-  source_config_encrypted?: string | null;
-  target_config_encrypted?: string | null;
-};
+const RUN_KIND_VALUES: ReconciliationRunKindFilter[] = ["all", "recon_job", "ingestion_run"];
 
-type RunListResultRow = ReconResultRecordLike & {
-  recon_job_id: string;
-};
+function resolveTenantIdForRuns(
+  authContext: UnifiedAuthContext,
+  tenantIds: string[],
+  tenantIdParam: string | null
+): string {
+  if (tenantIdParam) {
+    assertTenantMembership(tenantIds, tenantIdParam);
+    return tenantIdParam;
+  }
+  if (authContext.tenantId) {
+    assertTenantMembership(tenantIds, authContext.tenantId);
+    return authContext.tenantId;
+  }
+  return resolveTenantForMutation(tenantIds);
+}
+
+function parseLimit(raw: string | null): number {
+  const n = Number(raw || 50);
+  if (!Number.isFinite(n) || n < 1) {
+    return 50;
+  }
+  return Math.min(Math.floor(n), 500);
+}
+
+function matchesStatusFilter(
+  statusFilter: string | undefined,
+  status: string
+): boolean {
+  if (!statusFilter) return true;
+  return status.toLowerCase() === statusFilter;
+}
+
+function matchesSearchFilter(searchFilter: string | undefined, id: string, name: string): boolean {
+  if (!searchFilter) return true;
+  const haystack = `${id} ${name}`.toLowerCase();
+  return haystack.includes(searchFilter);
+}
+
+const MAX_FILTER_SCAN_PAGES = 30;
 
 export const GET = withSecurity(
   withUniversalBillingGate(
-    async function GET(_request: NextRequest, _params: unknown) {
+    async function GET(request: NextRequest) {
       const logger = createLogger({});
 
       try {
-        const { searchParams } = new URL(_request.url);
-        const statusFilter = searchParams.get("status")?.toLowerCase() || undefined;
+        const authContext = await requireAuth(request);
+        const { tenantIds } = await resolveTenantMembershipScope();
+
+        const { searchParams } = new URL(request.url);
+        const tenantIdParam = searchParams.get("tenant_id") ?? searchParams.get("workspace_id");
+        const tenantId = resolveTenantIdForRuns(authContext, tenantIds, tenantIdParam);
+
+        const statusFilter = searchParams.get("status")?.trim().toLowerCase() || undefined;
         const searchFilter = searchParams.get("search")?.trim().toLowerCase() || undefined;
+        const runKindRaw = (searchParams.get("run_kind") ?? searchParams.get("runKind") ?? "all")
+          .trim()
+          .toLowerCase();
+        const runKind = (
+          RUN_KIND_VALUES.includes(runKindRaw as ReconciliationRunKindFilter)
+            ? runKindRaw
+            : "__invalid__"
+        ) as ReconciliationRunKindFilter | "__invalid__";
 
-        const { supabase, tenantIds } = await resolveTenantMembershipScope();
-
-        const { data: latestResults, error: resultsError } = (await supabase
-          .from("recon_results" as any)
-          .select(
-            "id, recon_job_id, status, started_at, completed_at, source_count, target_count, matched_count, unmatched_source_count, unmatched_target_count, conflict_count, error_message, input_hash, snapshot_id, summary, metadata"
-          )
-          .in("tenant_id", tenantIds)
-          .order("started_at", { ascending: false })) as {
-          data: RunListResultRow[] | null;
-          error: { message?: string } | null;
-        };
-
-        if (resultsError) {
-          logger.error("Error fetching results", new Error(resultsError.message || "Unknown error"));
-          return NextResponse.json({ error: "Failed to fetch run results" }, { status: 500 });
+        if (runKind === "__invalid__") {
+          return NextResponse.json(
+            {
+              error: "Invalid run_kind",
+              code: "RUNS_INVALID_RUN_KIND",
+              detail: `run_kind must be one of: ${RUN_KIND_VALUES.join(", ")}`,
+            },
+            { status: 400 }
+          );
         }
 
-        const { data: runs, error: runsError } = (await supabase
-          .from("recon_jobs" as any)
-          .select(
-            "id, name, status, tenant_id, created_at, updated_at, source_adapter, target_adapter, recon_strategy, template_id, validation_rules, source_config_encrypted, target_config_encrypted"
-          )
-          .in("tenant_id", tenantIds)
-          .order("created_at", { ascending: false })
-          .limit(200)) as {
-          data: RunListJobRow[] | null;
-          error: { message?: string } | null;
-        };
+        const limit = parseLimit(searchParams.get("limit"));
+        const cursorParam = searchParams.get("cursor")?.trim() || undefined;
+        const legacyPage = searchParams.get("page");
 
-        if (runsError) {
-          logger.error("Error fetching runs", new Error(runsError.message || "Unknown error"));
-          return NextResponse.json({ error: "Failed to fetch runs" }, { status: 500 });
-        }
-
-        const latestResultByJobId = new Map<string, RunListResultRow>();
-        for (const result of latestResults || []) {
-          if (!latestResultByJobId.has(result.recon_job_id)) {
-            latestResultByJobId.set(result.recon_job_id, result);
+        let cursorState: MergedRunsCursorV1 | null = null;
+        if (cursorParam) {
+          try {
+            cursorState = decodeMergedRunsCursor(cursorParam);
+          } catch (e) {
+            logger.warn("[GET /api/runs] invalid cursor", {
+              code: "RUNS_CURSOR_INVALID",
+              detail: e instanceof MergedRunsCursorError ? e.message : "Invalid cursor",
+            });
+            return NextResponse.json(
+              {
+                error: "Invalid cursor",
+                code: "RUNS_CURSOR_INVALID",
+                detail: e instanceof MergedRunsCursorError ? e.message : "Invalid cursor",
+              },
+              { status: 400 }
+            );
           }
         }
 
-        const filteredRuns = (runs || [])
-          .map((run) => {
-            const latestResult = latestResultByJobId.get(run.id) ?? null;
-            const contract = buildCanonicalRunResultContract({
-              job: run as ReconJobRecordLike,
-              result: latestResult,
-            });
+        const filterActive = Boolean(statusFilter || searchFilter);
 
-            return {
-              id: run.id,
-              name: contract.name,
-              status: contract.lifecycle.status,
-              statusLabel: contract.lifecycle.statusLabel,
-              startedAt:
-                contract.provenance.executedAt || run.created_at || new Date().toISOString(),
-              completedAt: contract.provenance.completedAt,
-              summary: {
-                total: contract.summary.total,
-                sourceCount: contract.summary.sourceCount,
-                targetCount: contract.summary.targetCount,
-                matched: contract.summary.matched,
-                unmatched: contract.summary.unmatched,
-                unmatchedSourceCount: contract.summary.unmatchedSourceCount,
-                unmatchedTargetCount: contract.summary.unmatchedTargetCount,
-                conflicts: contract.summary.conflicts,
-              },
-              summarySemantics: {
-                processed: contract.summary.processed,
-                matchedWithTolerance: contract.summary.matchedWithTolerance,
-                exceptioned: contract.summary.exceptioned,
-                unresolved: contract.summary.unresolved,
-                ignored: contract.summary.ignored,
-                resolved: contract.summary.resolved,
-              },
-              summaryState: contract.summaryState,
-              progress: contract.lifecycle.progressPercent,
-              progressState: contract.lifecycle.progressState,
-              isTerminal: contract.lifecycle.isTerminal,
-              provenance: contract.provenance,
-              configDrift: {
-                status: contract.configDrift.status,
-                adapter: contract.configDrift.adapter,
-              },
-            };
-          })
-          .filter((run) => {
-            if (statusFilter && run.status !== statusFilter) {
-              return false;
-            }
-            if (searchFilter) {
-              const searchable = `${run.id} ${run.name}`.toLowerCase();
-              return searchable.includes(searchFilter);
-            }
-            return true;
+        if (!filterActive) {
+          const page = await fetchMergedReconciliationRunsPage({
+            prisma,
+            tenantId,
+            limit,
+            cursorState,
+            runKind,
+            encodeCursor: encodeMergedRunsCursor,
           });
 
-        return NextResponse.json(filteredRuns);
+          const items = page.runs.map(mapCanonicalListItemToApiRunsLegacyRow);
+
+          return NextResponse.json({
+            items,
+            next_cursor: page.next_cursor,
+            pagination: page.pagination,
+            response_meta: {
+              ...page.response_meta,
+              contract_version: 1,
+              api: "GET /api/runs",
+              tenant_id: tenantId,
+              requested_run_kind: runKind,
+              filters_applied: {
+                status: statusFilter ?? null,
+                search: searchFilter ?? null,
+              },
+              pagination_mode: "merged_cursor",
+              legacy_page_param_ignored: legacyPage ? true : false,
+            },
+          });
+        }
+
+        if (cursorParam) {
+          return NextResponse.json(
+            {
+              error: "Cursor pagination is not supported together with status or search filters",
+              code: "RUNS_CURSOR_WITH_FILTERS_UNSUPPORTED",
+              detail:
+                "Remove the cursor parameter or clear status/search to use keyset pagination; filtered mode returns the first page only.",
+            },
+            { status: 400 }
+          );
+        }
+
+        let walkCursor: MergedRunsCursorV1 | null = null;
+        const collected: ReturnType<typeof mapCanonicalListItemToApiRunsLegacyRow>[] = [];
+        let pagesScanned = 0;
+        let lastPagePagination = null as Awaited<
+          ReturnType<typeof fetchMergedReconciliationRunsPage>
+        >["pagination"] | null;
+        let truncated = false;
+
+        while (collected.length < limit && pagesScanned < MAX_FILTER_SCAN_PAGES) {
+          const page = await fetchMergedReconciliationRunsPage({
+            prisma,
+            tenantId,
+            limit,
+            cursorState: walkCursor,
+            runKind,
+            encodeCursor: encodeMergedRunsCursor,
+          });
+          pagesScanned += 1;
+          lastPagePagination = page.pagination;
+
+          for (const row of page.runs) {
+            const legacy = mapCanonicalListItemToApiRunsLegacyRow(row);
+            if (!matchesStatusFilter(statusFilter, legacy.status)) continue;
+            if (!matchesSearchFilter(searchFilter, legacy.id, legacy.name)) continue;
+            collected.push(legacy);
+            if (collected.length >= limit) break;
+          }
+
+          if (!page.next_cursor) {
+            break;
+          }
+          try {
+            walkCursor = decodeMergedRunsCursor(page.next_cursor);
+          } catch {
+            truncated = true;
+            break;
+          }
+          if (collected.length >= limit) {
+            truncated = Boolean(page.next_cursor);
+            break;
+          }
+        }
+
+        if (pagesScanned >= MAX_FILTER_SCAN_PAGES && lastPagePagination?.has_more) {
+          truncated = true;
+        }
+
+        const items = collected.slice(0, limit);
+
+        return NextResponse.json({
+          items,
+          next_cursor: null,
+          pagination: {
+            limit,
+            returned: items.length,
+            has_more: false,
+            job_stream_has_more: lastPagePagination?.job_stream_has_more ?? false,
+            ingestion_stream_has_more: lastPagePagination?.ingestion_stream_has_more ?? false,
+            job_stream_exhausted: lastPagePagination?.job_stream_exhausted ?? true,
+            ingestion_stream_exhausted: lastPagePagination?.ingestion_stream_exhausted ?? true,
+            filter_scan_pages: pagesScanned,
+            filter_truncation_possible: truncated,
+          },
+          response_meta: {
+            contract_version: 1,
+            included_run_kinds:
+              runKind === "all"
+                ? (["recon_job", "ingestion_run"] as const)
+                : runKind === "recon_job"
+                  ? (["recon_job"] as const)
+                  : (["ingestion_run"] as const),
+            ordering:
+              "merged: recon_jobs.created_at DESC,id DESC + reconciliation_runs GREATEST(started_at,created_at) DESC,id DESC; filtered mode scans pages until enough matches",
+            consistency: "read_committed",
+            api: "GET /api/runs",
+            tenant_id: tenantId,
+            requested_run_kind: runKind,
+            filters_applied: {
+              status: statusFilter ?? null,
+              search: searchFilter ?? null,
+            },
+            pagination_mode: "filter_scan_first_page",
+            legacy_page_param_ignored: legacyPage ? true : false,
+          },
+        });
       } catch (error) {
         if (error instanceof TenantMembershipError) {
           return NextResponse.json(

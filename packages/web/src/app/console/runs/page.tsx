@@ -2,16 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  AlertCircle,
-  CheckCircle2,
-  Clock,
-  RefreshCw,
-  Search,
-  TimerReset,
-  XCircle,
-  Scale,
-} from "lucide-react";
+import { RefreshCw, Search, TimerReset, Scale } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,12 +17,16 @@ import { useGovernanceState } from "@/hooks/use-governance-state";
 import { shouldPollRuns } from "@/lib/console/polling";
 import { safeFetch } from "@/lib/safe-fetch";
 
+type RunKindFilter = "all" | "recon_job" | "ingestion_run";
+
 interface RunFilters {
   status?: string;
   search?: string;
+  runKind?: RunKindFilter;
 }
 
 interface RunListItem {
+  runKind: "recon_job" | "ingestion_run";
   id: string;
   name: string;
   status: "pending" | "running" | "completed" | "failed" | "unknown";
@@ -41,6 +36,9 @@ interface RunListItem {
   progress: number;
   progressState?: "not_started" | "in_progress" | "completed" | "failed" | "unknown";
   isTerminal: boolean;
+  ingestionId?: string | null;
+  sourceAdapter?: string | null;
+  targetAdapter?: string | null;
   summary: {
     total: number;
     sourceCount: number;
@@ -62,6 +60,23 @@ interface RunListItem {
   summaryState: "success" | "review_needed" | "in_progress" | "failed" | "empty" | "unknown";
   configDrift?: {
     status?: "none" | "detected" | "indeterminate";
+  };
+}
+
+interface RunsListApiResponse {
+  items: RunListItem[];
+  next_cursor: string | null;
+  pagination?: {
+    limit?: number;
+    returned?: number;
+    has_more?: boolean;
+    filter_scan_pages?: number;
+    filter_truncation_possible?: boolean;
+  };
+  response_meta?: {
+    pagination_mode?: string;
+    requested_run_kind?: RunKindFilter;
+    filters_applied?: { status: string | null; search: string | null };
   };
 }
 
@@ -118,9 +133,15 @@ function formatCount(value: number) {
 
 export default function RunsPage() {
   const [runs, setRuns] = useState<RunListItem[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [listMeta, setListMeta] = useState<RunsListApiResponse["response_meta"] | null>(null);
+  const [pagePagination, setPagePagination] = useState<RunsListApiResponse["pagination"] | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState<RunFilters>({});
+  const [filters, setFilters] = useState<RunFilters>({ runKind: "all" });
   const [autoRefresh, setAutoRefresh] = useState(true);
   const { isFrozen, governanceState } = useGovernanceState();
 
@@ -134,20 +155,29 @@ export default function RunsPage() {
     if (filters.search) {
       queryParams.set("search", filters.search);
     }
+    const runKind = filters.runKind ?? "all";
+    queryParams.set("run_kind", runKind);
+    queryParams.set("limit", "50");
 
     const query = queryParams.toString();
-    const result = await safeFetch<RunListItem[]>(query ? `/api/runs?${query}` : "/api/runs");
+    const result = await safeFetch<RunsListApiResponse>(`/api/runs?${query}`);
 
     if (result.success && result.data) {
-      setRuns(result.data);
+      setRuns(result.data.items ?? []);
+      setNextCursor(result.data.next_cursor ?? null);
+      setListMeta(result.data.response_meta ?? null);
+      setPagePagination(result.data.pagination ?? null);
       setError(null);
     } else {
       setRuns([]);
+      setNextCursor(null);
+      setListMeta(null);
+      setPagePagination(null);
       setError(result.error?.message || "Failed to load runs");
     }
 
     setLoading(false);
-  }, [filters.search, filters.status]);
+  }, [filters.search, filters.status, filters.runKind]);
 
   useEffect(() => {
     void loadRuns();
@@ -199,6 +229,24 @@ export default function RunsPage() {
   const handleRefresh = useCallback(async () => {
     await loadRuns();
   }, [loadRuns]);
+
+  const loadMore = useCallback(async () => {
+    if (!nextCursor || filters.status || filters.search) {
+      return;
+    }
+    setLoadingMore(true);
+    const queryParams = new URLSearchParams();
+    const runKind = filters.runKind ?? "all";
+    queryParams.set("run_kind", runKind);
+    queryParams.set("limit", "50");
+    queryParams.set("cursor", nextCursor);
+    const result = await safeFetch<RunsListApiResponse>(`/api/runs?${queryParams.toString()}`);
+    if (result.success && result.data) {
+      setRuns((prev) => [...prev, ...(result.data!.items ?? [])]);
+      setNextCursor(result.data.next_cursor ?? null);
+    }
+    setLoadingMore(false);
+  }, [filters.runKind, filters.search, filters.status, nextCursor]);
 
   const showFreezeBanner = isFrozen && governanceState;
 
@@ -268,7 +316,7 @@ export default function RunsPage() {
 
       <ConsolePageHeader
         title="Runs"
-        description="Track reconciliation execution state, compare outcomes, and drill into the exception queue."
+        description="Merged reconciliation activity: scheduled recon jobs and ingestion-triggered reconciliation runs share one list. Use the run kind filter to narrow the stream."
         breadcrumbs={[
           { label: "Console", href: "/console" },
           { label: "Runs" },
@@ -309,7 +357,7 @@ export default function RunsPage() {
           <StatCard
             label="Visible runs"
             value={formatCount(totals.totalRuns)}
-            description="Tenant-scoped run history after filters."
+            description="Rows on this page after filters (merged recon jobs + ingestion runs)."
           />
           <StatCard
             label="Matched rows"
@@ -338,7 +386,30 @@ export default function RunsPage() {
 
       <Card>
         <CardContent className="py-5">
-          <div className="grid gap-4 md:grid-cols-[200px_minmax(0,1fr)_auto]">
+          <div className="grid gap-4 md:grid-cols-[minmax(0,160px)_200px_minmax(0,1fr)_auto]">
+            <div className="space-y-1.5">
+              <label
+                htmlFor="run-kind-filter"
+                className="block text-xs font-medium text-muted-foreground"
+              >
+                Run kind
+              </label>
+              <select
+                id="run-kind-filter"
+                value={filters.runKind ?? "all"}
+                onChange={(event) =>
+                  setFilters((current) => ({
+                    ...current,
+                    runKind: (event.target.value as RunKindFilter) || "all",
+                  }))
+                }
+                className="input-field"
+              >
+                <option value="all">All kinds</option>
+                <option value="recon_job">Recon job</option>
+                <option value="ingestion_run">Ingestion run</option>
+              </select>
+            </div>
             <div className="space-y-1.5">
               <label
                 htmlFor="status-filter"
@@ -392,8 +463,12 @@ export default function RunsPage() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setFilters({})}
-                disabled={!filters.search && !filters.status}
+                onClick={() => setFilters({ runKind: "all" })}
+                disabled={
+                  !filters.search &&
+                  !filters.status &&
+                  (!filters.runKind || filters.runKind === "all")
+                }
               >
                 <TimerReset className="mr-1.5 h-3.5 w-3.5" />
                 Clear
@@ -407,27 +482,27 @@ export default function RunsPage() {
         <EmptyState
           icon={Scale}
           title={
-            filters.status || filters.search
+            filters.status || filters.search || (filters.runKind && filters.runKind !== "all")
               ? "No runs match your filters"
               : "No reconciliation runs yet"
           }
           description={
-            filters.status || filters.search
-              ? "Try widening the lifecycle filter or clearing your search to review the full tenant run history."
-              : "Reconciliation runs appear here once you connect data sources and execute your first match. Each run compares records from a source system (e.g., Stripe) against a target system (e.g., your bank), identifies matches, flags mismatches, and produces an auditable result."
+            filters.status || filters.search || (filters.runKind && filters.runKind !== "all")
+              ? "Try widening filters: clear run kind, lifecycle status, or search to see the full merged tenant history."
+              : "Reconciliation runs appear here from recon jobs and from ingestion-triggered reconciliation. Each row shows execution state and summary counts for that run kind."
           }
           hint={
-            filters.status || filters.search
+            filters.status || filters.search || (filters.runKind && filters.runKind !== "all")
               ? undefined
               : "Start by connecting an integration, or try the Playground to see reconciliation in action with sample data."
           }
           action={
-            filters.status || filters.search
-              ? { label: "Clear Filters", onClick: () => setFilters({}) }
+            filters.status || filters.search || (filters.runKind && filters.runKind !== "all")
+              ? { label: "Clear Filters", onClick: () => setFilters({ runKind: "all" }) }
               : { label: "Open Reconciliations", href: "/console/reconciliations" }
           }
           secondaryAction={
-            filters.status || filters.search
+            filters.status || filters.search || (filters.runKind && filters.runKind !== "all")
               ? undefined
               : { label: "Try Demo", href: "/demo/console" }
           }
@@ -437,10 +512,21 @@ export default function RunsPage() {
           <CardHeader>
             <CardTitle>Run history</CardTitle>
             <CardDescription>
-              Every row uses the same lifecycle and summary semantics surfaced on run detail.
+              Merged list: recon jobs and ingestion reconciliation runs. Detail pages differ by run
+              kind where the data model does not yet offer parity.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
+            {listMeta?.pagination_mode === "filter_scan_first_page" &&
+            listMeta.filters_applied &&
+            (listMeta.filters_applied.status || listMeta.filters_applied.search) ? (
+              <p className="text-sm text-muted-foreground rounded-lg border border-border px-3 py-2">
+                Status and search use a bounded scan of merged pages;{" "}
+                {pagePagination?.filter_truncation_possible
+                  ? "results may be incomplete if more matches exist beyond the scan limit—narrow filters or use run kind + pagination without status/search."
+                  : "pagination cursor is disabled until those filters are cleared."}
+              </p>
+            ) : null}
             {runs.map((run) => (
                 <div
                   key={run.id}
@@ -453,6 +539,9 @@ export default function RunsPage() {
                         <h2 className="truncate text-base font-semibold text-foreground">
                           {run.name}
                         </h2>
+                        <Badge variant="outline" className="text-xs font-normal">
+                          {run.runKind === "ingestion_run" ? "Ingestion run" : "Recon job"}
+                        </Badge>
                         <StatusBadge
                           status={toStatusType(run.status)}
                           label={run.statusLabel || undefined}
@@ -468,6 +557,23 @@ export default function RunsPage() {
                           <span className="text-xs text-muted-foreground">Run ID</span>
                           <div className="font-mono text-xs text-foreground truncate">{run.id}</div>
                         </div>
+                        {run.ingestionId ? (
+                          <div>
+                            <span className="text-xs text-muted-foreground">Ingestion</span>
+                            <div className="font-mono text-xs text-foreground truncate">
+                              {run.ingestionId}
+                            </div>
+                          </div>
+                        ) : null}
+                        {(run.sourceAdapter || run.targetAdapter) && (
+                          <div className="md:col-span-2">
+                            <span className="text-xs text-muted-foreground">Adapters</span>
+                            <div className="text-sm text-foreground">
+                              {[run.sourceAdapter, run.targetAdapter].filter(Boolean).join(" → ") ||
+                                "—"}
+                            </div>
+                          </div>
+                        )}
                         <div>
                           <span className="text-xs text-muted-foreground">Started</span>
                           <div className="text-foreground">{new Date(run.startedAt).toLocaleString()}</div>
@@ -547,18 +653,39 @@ export default function RunsPage() {
                       <Button asChild size="sm">
                         <Link href={`/console/runs/${run.id}`}>Open detail</Link>
                       </Button>
-                      <Button asChild variant="outline" size="sm">
-                        <Link href={`/console/reconciliations?runId=${run.id}`}>
-                          Reconciliation
-                        </Link>
-                      </Button>
-                      <Button asChild variant="ghost" size="sm">
-                        <Link href={`/console/exceptions?runId=${run.id}`}>Exceptions</Link>
-                      </Button>
+                      {run.runKind === "recon_job" ? (
+                        <>
+                          <Button asChild variant="outline" size="sm">
+                            <Link href={`/console/reconciliations?runId=${run.id}`}>
+                              Reconciliation
+                            </Link>
+                          </Button>
+                          <Button asChild variant="ghost" size="sm">
+                            <Link href={`/console/exceptions?runId=${run.id}`}>Exceptions</Link>
+                          </Button>
+                        </>
+                      ) : (
+                        <p className="text-xs text-muted-foreground xl:px-1">
+                          Results and exceptions UIs are recon-job keyed today; open detail for
+                          ingestion run truth.
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
               ))}
+            {!filters.status && !filters.search && nextCursor ? (
+              <div className="flex justify-center pt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => void loadMore()}
+                  disabled={loadingMore}
+                >
+                  {loadingMore ? "Loading…" : "Load more"}
+                </Button>
+              </div>
+            ) : null}
           </CardContent>
         </Card>
       )}

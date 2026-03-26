@@ -21,7 +21,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Changed
 
-- `GET /api/console/reconciliation` list: default `run_kind=recon_job` preserves legacy `reconciliations[]` shape; `run_kind=all` adds canonical `runs` plus real `next_cursor` (dual-stream).
+- `GET /api/console/reconciliation` list: default `run_kind=all` for merged dual-stream listing; invalid `run_kind` returns **400**; `run_kind=recon_job` omits top-level `runs` (legacy `reconciliations[]` only); `run_kind=all` includes canonical `runs` plus real `next_cursor`.
+- `GET /api/runs` returns merged recon jobs + ingestion runs via `fetchMergedReconciliationRunsPage` with explicit `runKind` on each item; `GET /api/runs/:id` resolves ingestion runs with `runKind: ingestion_run` and typed collision **409** when both tables share a UUID.
 - Workbench-style v1 routes return **409** `RECONCILIATION_WRONG_RUN_KIND` when the id resolves to a `recon_job` instead of `reconciliation_runs`.
 - `ReconciliationMatches` prefetches canonical run detail when `run_kind` is unknown, uses `capabilitiesForRunKind` to skip matches for `recon_job`, and surfaces typed collision/not-found states instead of a generic failure.
 - Root `pnpm.overrides` pins `@types/pg` to **8.18.0**; API `pretypecheck`/`prebuild` builds `@settler/reconciliation-core` so workspace typecheck resolves the package; Turbo `typecheck` depends on `^build` so dependent `dist` exists before consumer `tsc`.
