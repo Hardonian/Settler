@@ -26,12 +26,14 @@ import {
   mapCanonicalListItemToApiRunsLegacyRow,
   MergedRunsCursorError,
   type MergedRunsCursorV1,
-  type ReconciliationRunKindFilter,
 } from "@settler/reconciliation-core";
+import {
+  parseRunKindParam,
+  parseRunsLimit,
+  RUN_KIND_VALUES,
+} from "@/lib/reconciliation/runs-query-params";
 
 export const runtime = "nodejs";
-
-const RUN_KIND_VALUES: ReconciliationRunKindFilter[] = ["all", "recon_job", "ingestion_run"];
 
 function resolveTenantIdForRuns(
   authContext: UnifiedAuthContext,
@@ -49,18 +51,7 @@ function resolveTenantIdForRuns(
   return resolveTenantForMutation(tenantIds);
 }
 
-function parseLimit(raw: string | null): number {
-  const n = Number(raw || 50);
-  if (!Number.isFinite(n) || n < 1) {
-    return 50;
-  }
-  return Math.min(Math.floor(n), 500);
-}
-
-function matchesStatusFilter(
-  statusFilter: string | undefined,
-  status: string
-): boolean {
+function matchesStatusFilter(statusFilter: string | undefined, status: string): boolean {
   if (!statusFilter) return true;
   return status.toLowerCase() === statusFilter;
 }
@@ -88,14 +79,9 @@ export const GET = withSecurity(
 
         const statusFilter = searchParams.get("status")?.trim().toLowerCase() || undefined;
         const searchFilter = searchParams.get("search")?.trim().toLowerCase() || undefined;
-        const runKindRaw = (searchParams.get("run_kind") ?? searchParams.get("runKind") ?? "all")
-          .trim()
-          .toLowerCase();
-        const runKind = (
-          RUN_KIND_VALUES.includes(runKindRaw as ReconciliationRunKindFilter)
-            ? runKindRaw
-            : "__invalid__"
-        ) as ReconciliationRunKindFilter | "__invalid__";
+        const runKind = parseRunKindParam(
+          searchParams.get("run_kind") ?? searchParams.get("runKind")
+        );
 
         if (runKind === "__invalid__") {
           return NextResponse.json(
@@ -108,7 +94,7 @@ export const GET = withSecurity(
           );
         }
 
-        const limit = parseLimit(searchParams.get("limit"));
+        const limit = parseRunsLimit(searchParams.get("limit"));
         const cursorParam = searchParams.get("cursor")?.trim() || undefined;
         const legacyPage = searchParams.get("page");
 
@@ -181,9 +167,9 @@ export const GET = withSecurity(
         let walkCursor: MergedRunsCursorV1 | null = null;
         const collected: ReturnType<typeof mapCanonicalListItemToApiRunsLegacyRow>[] = [];
         let pagesScanned = 0;
-        let lastPagePagination = null as Awaited<
-          ReturnType<typeof fetchMergedReconciliationRunsPage>
-        >["pagination"] | null;
+        let lastPagePagination = null as
+          | Awaited<ReturnType<typeof fetchMergedReconciliationRunsPage>>["pagination"]
+          | null;
         let truncated = false;
 
         while (collected.length < limit && pagesScanned < MAX_FILTER_SCAN_PAGES) {
