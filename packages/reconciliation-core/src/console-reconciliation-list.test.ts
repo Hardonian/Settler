@@ -68,6 +68,21 @@ describe("buildConsoleReconciliationListBody", () => {
       completedAt: null,
       updatedAt: "2024-01-01T00:00:00.000Z",
     },
+    configDrift: {
+      status: "none",
+      strategyChanged: false,
+      templateChanged: false,
+      validationRulesChanged: false,
+      adapter: {
+        status: "none",
+        comparisonMode: "unavailable",
+        sourceChanged: null,
+        targetChanged: null,
+        sourceHashPresent: false,
+        targetHashPresent: false,
+      },
+      notes: [],
+    },
   };
 
   const ing: CanonicalReconciliationListItem = {
@@ -91,7 +106,7 @@ describe("buildConsoleReconciliationListBody", () => {
     expect(recs[0]?.id).toBe("j1");
     expect(body.response_meta).toMatchObject({
       requested_run_kind: "all",
-      default_run_kind: "recon_job",
+      default_run_kind: "all",
     });
   });
 

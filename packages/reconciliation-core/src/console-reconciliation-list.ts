@@ -39,7 +39,7 @@ function toLegacyReconciliation(r: CanonicalReconciliationListItem) {
 
 /**
  * @param page — result of {@link fetchMergedReconciliationRunsPage}
- * @param runKind — validated `run_kind` query (`recon_job` default in route)
+ * @param runKind — validated `run_kind` query (`all` default in Next route)
  */
 export function buildConsoleReconciliationListBody(
   page: MergedReconciliationListResponse,
@@ -56,7 +56,7 @@ export function buildConsoleReconciliationListBody(
     pagination: page.pagination,
     response_meta: {
       ...page.response_meta,
-      default_run_kind: "recon_job",
+      default_run_kind: "all",
       requested_run_kind: runKind,
     },
   };
