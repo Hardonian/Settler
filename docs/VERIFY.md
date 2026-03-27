@@ -1,5 +1,17 @@
 # Settler Implementation Verification Guide
 
+## Root release verification (`package.json`)
+
+These scripts are defined in the repo root and implemented primarily via `scripts/verify-release.mjs`:
+
+| Script | Scope |
+| ------ | ----- |
+| `pnpm verify:fast` | Release-critical code health (root cleanliness, lint, typecheck, claims, boundaries, routes, security). Does **not** run the internal marketing/docs link crawl. |
+| `pnpm verify:fast:with-links` | Same as `verify:fast` plus `pnpm verify:internal-links`. |
+| `pnpm verify:full` | Broad gate including build, core tests, internal links, launch assets, and additional security stages—see `profiles.full` in `scripts/verify-release.mjs`. |
+
+Canonical operator run detail is implemented in `@settler/reconciliation-core` (`resolveOperatorRunDetailForTenants`). The web app runs `prebuild` to compile that package and asserts dist freshness during `pnpm build` (see `packages/web/scripts/assert-reconciliation-core-dist.mjs`).
+
 ## Pre-Verification Checklist
 
 1. ✅ Domain types created (`/lib/domain/types.ts`)

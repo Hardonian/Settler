@@ -1,10 +1,10 @@
 import { Command } from "commander";
 import path from "node:path";
 import { stableHash } from "@settler/protocol";
-import chalk from "chalk";
 import { MAX_VERIFICATION_JSON_BYTES, readLimitedJsonSync } from "../lib/safety";
 import { verifyLedgerEntry } from "../lib/execution-ledger";
 import { verifyProofpack, type Proofpack } from "../lib/proof-engine";
+import { createCliLogger, resolveJsonFallbackFromEnv } from "../lib/cli-logger";
 
 export const verifyCommand = new Command("verify")
   .description("Verify a Reconciliation Proof Capsule (RPC) against source data")
@@ -13,19 +13,25 @@ export const verifyCommand = new Command("verify")
   .option("-r, --rules <path>", "Path to reconciliation rules JSON")
   .option("-o, --output <path>", "Path to reconciliation matches/output JSON")
   .action(async (capsulePath, options) => {
+    const json = resolveJsonFallbackFromEnv();
+    const logger = createCliLogger({ isJSONFallback: json });
+
     try {
       const maybeExecutionReport = await verifyLedgerEntry(capsulePath);
       if (maybeExecutionReport) {
-        console.log(chalk.blue("🔍 Verifying execution ledger receipt..."));
-        console.log(chalk.gray(`Execution ID: ${maybeExecutionReport.executionId}`));
-        console.log(
-          `${maybeExecutionReport.receiptIntegrity ? chalk.green("✓") : chalk.red("✗")} Receipt Integrity`
+        logger.section("Execution ledger receipt");
+        logger.detail(`execution_id=${maybeExecutionReport.executionId}`);
+        logger.log(
+          maybeExecutionReport.receiptIntegrity ? "success" : "error",
+          `Receipt integrity: ${maybeExecutionReport.receiptIntegrity ? "ok" : "fail"}`
         );
-        console.log(
-          `${maybeExecutionReport.hashMatches ? chalk.green("✓") : chalk.red("✗")} Hash Correctness`
+        logger.log(
+          maybeExecutionReport.hashMatches ? "success" : "error",
+          `Hash correctness: ${maybeExecutionReport.hashMatches ? "ok" : "fail"}`
         );
-        console.log(
-          `${maybeExecutionReport.replayCompatible ? chalk.green("✓") : chalk.red("✗")} Replay Compatibility`
+        logger.log(
+          maybeExecutionReport.replayCompatible ? "success" : "error",
+          `Replay compatibility: ${maybeExecutionReport.replayCompatible ? "ok" : "fail"}`
         );
         if (
           !maybeExecutionReport.receiptIntegrity ||
@@ -37,7 +43,7 @@ export const verifyCommand = new Command("verify")
         return;
       }
 
-      console.log(chalk.blue("🔍 Verifying Reconciliation Proof..."));
+      logger.section("Reconciliation proof");
 
       const fullCapsulePath = path.resolve(process.cwd(), capsulePath);
       const capsule = readLimitedJsonSync(
@@ -49,11 +55,11 @@ export const verifyCommand = new Command("verify")
       if (capsule.schemaVersion === "2026-03-13" && typeof capsule.execution_id === "string") {
         const result = verifyProofpack(capsule as unknown as Proofpack);
         if (!result.valid) {
-          console.error(chalk.red(`INVALID\nreason=${result.reason}`));
+          logger.error(`INVALID: ${result.reason}`);
           process.exit(1);
         }
-        console.log(chalk.green("VALID"));
-        console.log(`execution_id=${capsule.execution_id}`);
+        logger.success("VALID");
+        logger.rawLine(`execution_id=${capsule.execution_id}`);
         return;
       }
 
@@ -69,18 +75,16 @@ export const verifyCommand = new Command("verify")
       const missingFields = requiredFields.filter((f) => !capsule[f]);
 
       if (missingFields.length > 0) {
-        console.error(
-          chalk.red(`Error: Invalid capsule format. Missing fields: ${missingFields.join(", ")}`)
-        );
+        logger.error(`Invalid capsule format. Missing fields: ${missingFields.join(", ")}`);
         process.exit(1);
       }
 
-      console.log(chalk.gray(`Capsule Version: ${capsule.capsuleVersion}`));
-      console.log(chalk.gray(`Job ID: ${capsule.jobId}`));
-      console.log(chalk.gray(`Created At: ${capsule.createdAt}`));
-      console.log(chalk.gray(`Version Hash: ${capsule.versionHash}`));
+      logger.detail(`Capsule Version: ${String(capsule.capsuleVersion)}`);
+      logger.detail(`Job ID: ${String(capsule.jobId)}`);
+      logger.detail(`Created At: ${String(capsule.createdAt)}`);
+      logger.detail(`Version Hash: ${String(capsule.versionHash)}`);
 
-      console.log("\n" + chalk.bold("Verification Status:"));
+      logger.section("Verification status");
 
       let allMatch = true;
 
@@ -92,17 +96,15 @@ export const verifyCommand = new Command("verify")
         );
         const computedInputHash = stableHash(inputData);
         if (computedInputHash === capsule.inputHash) {
-          console.log(`${chalk.green("✓")} Input Hash: ${chalk.green("MATCH")}`);
+          logger.success("Input hash: MATCH");
         } else {
-          console.log(`${chalk.red("✗")} Input Hash: ${chalk.red("MISMATCH")}`);
-          console.log(chalk.gray(`  Expected: ${capsule.inputHash}`));
-          console.log(chalk.gray(`  Computed: ${computedInputHash}`));
+          logger.error("Input hash: MISMATCH");
+          logger.detail(`  Expected: ${String(capsule.inputHash)}`);
+          logger.detail(`  Computed: ${computedInputHash}`);
           allMatch = false;
         }
       } else {
-        console.log(
-          `${chalk.yellow("?")} Input Hash: ${chalk.yellow("SKIPPED")} (No input data provided)`
-        );
+        logger.warning("Input hash: SKIPPED (no input data provided)");
       }
 
       if (options.rules) {
@@ -113,17 +115,15 @@ export const verifyCommand = new Command("verify")
         );
         const computedRuleHash = stableHash(rulesData);
         if (computedRuleHash === capsule.ruleHash) {
-          console.log(`${chalk.green("✓")} Rule Hash: ${chalk.green("MATCH")}`);
+          logger.success("Rule hash: MATCH");
         } else {
-          console.log(`${chalk.red("✗")} Rule Hash: ${chalk.red("MISMATCH")}`);
-          console.log(chalk.gray(`  Expected: ${capsule.ruleHash}`));
-          console.log(chalk.gray(`  Computed: ${computedRuleHash}`));
+          logger.error("Rule hash: MISMATCH");
+          logger.detail(`  Expected: ${String(capsule.ruleHash)}`);
+          logger.detail(`  Computed: ${computedRuleHash}`);
           allMatch = false;
         }
       } else {
-        console.log(
-          `${chalk.yellow("?")} Rule Hash: ${chalk.yellow("SKIPPED")} (No rules data provided)`
-        );
+        logger.warning("Rule hash: SKIPPED (no rules data provided)");
       }
 
       if (options.output) {
@@ -134,31 +134,27 @@ export const verifyCommand = new Command("verify")
         );
         const computedOutputHash = stableHash(outputData);
         if (computedOutputHash === capsule.outputHash) {
-          console.log(`${chalk.green("✓")} Output Hash: ${chalk.green("MATCH")}`);
+          logger.success("Output hash: MATCH");
         } else {
-          console.log(`${chalk.red("✗")} Output Hash: ${chalk.red("MISMATCH")}`);
-          console.log(chalk.gray(`  Expected: ${capsule.outputHash}`));
-          console.log(chalk.gray(`  Computed: ${computedOutputHash}`));
+          logger.error("Output hash: MISMATCH");
+          logger.detail(`  Expected: ${String(capsule.outputHash)}`);
+          logger.detail(`  Computed: ${computedOutputHash}`);
           allMatch = false;
         }
       } else {
-        console.log(
-          `${chalk.yellow("?")} Output Hash: ${chalk.yellow("SKIPPED")} (No output data provided)`
-        );
+        logger.warning("Output hash: SKIPPED (no output data provided)");
       }
 
       if (!allMatch) {
-        console.log("\n" + chalk.red("❌ PROOF VERIFICATION FAILED"));
+        logger.error("Proof verification failed");
         process.exit(1);
       } else {
-        console.log("\n" + chalk.green("✅ PROOF VERIFICATION SUCCESSFUL"));
-        console.log(
-          chalk.gray("The provided data matches the cryptographic signatures in this capsule.")
-        );
+        logger.success("Proof verification successful");
+        logger.detail("The provided data matches the cryptographic signatures in this capsule.");
       }
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : "Unknown error";
-      console.error(chalk.red(`\nVerification Error: ${message}`));
+      logger.error(`Verification error: ${message}`);
       process.exit(1);
     }
   });

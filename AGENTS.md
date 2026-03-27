@@ -29,7 +29,8 @@ Or use the combined command: `pnpm run dev:stack` (starts API + Web together).
 - **Database schema**: The golden schema migration at `supabase/migrations/20240101000000_settler_golden_schema.sql` requires `analytics`, `auth`, and `app_private` schemas pre-created. Run with `BEGIN`/`COMMIT` removed for non-Supabase PostgreSQL.
 - **Node.js 24 required**: The `engines` field requires `>=24.0.0 <25.0.0`. Use `nvm use 24` before running any commands.
 - **Husky hooks**: Pre-commit runs lint-staged and conflict-marker checks. Pre-push runs `pnpm verify:fast` (release-critical gates only; internal link integrity is `pnpm verify:internal-links` or CI job `verify-internal-links`).
-- **`@settler/reconciliation-core`**: Web `package.json` runs `prebuild` → `pnpm --filter @settler/reconciliation-core run build` so `dist/` is current before `next build`; the package is also listed in `transpilePackages` for dev-time resolution.
+- **Verify profiles**: `pnpm verify:fast` runs the `fast` profile in `scripts/verify-release.mjs` (lint, typecheck, claims, boundaries, routes, security—no internal link crawl). `pnpm verify:full` adds build, tests, link integrity, launch assets, and supply-chain evidence stages. `pnpm verify:internal-links` is the docs/link gate when you need it outside `verify:full`.
+- **`@settler/reconciliation-core`**: Web `package.json` runs `prebuild` → `pnpm --filter @settler/reconciliation-core run build` so `dist/` is current before `next build`. The web `build` script also runs `scripts/assert-reconciliation-core-dist.mjs` so a stale `dist/` cannot be newer than `src/` without failing the build; the package is listed in `transpilePackages` for dev-time resolution.
 
 ### Lint / Test / Build
 
