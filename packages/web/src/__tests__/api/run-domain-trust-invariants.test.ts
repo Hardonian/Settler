@@ -342,6 +342,57 @@ describe("run domain trust invariants", () => {
     expect(payload.config.validationRuleLabels).toEqual(
       expect.arrayContaining(["amount • ±0.01", "date • 24h"])
     );
+    expect(payload.kindDetail?.kind).toBe("recon_job");
+  });
+
+  test("run detail uses canonical serializer boundary for ingestion_run responses", async () => {
+    reconJobFindFirstMock.mockResolvedValue(null);
+    reconciliationRunFindFirstMock.mockResolvedValue({
+      id: "ing-run-1",
+      tenantId: "tenant-a",
+      userId: "user-a",
+      ingestionId: "ing-1",
+      name: "Ingestion Tenant A",
+      status: "running",
+      startedAt: new Date("2026-01-01T00:00:00.000Z"),
+      completedAt: null,
+      sourceCount: 25,
+      targetCount: 24,
+      matchedCount: 20,
+      unmatchedSourceCount: 3,
+      unmatchedTargetCount: 1,
+      confidenceAvg: null,
+      errorMessage: null,
+      traceId: "trace-ing-1",
+      metadata: { sourceAdapter: "csv" },
+      createdAt: new Date("2026-01-01T00:00:00.000Z"),
+      updatedAt: new Date("2026-01-01T00:01:00.000Z"),
+    });
+
+    resolveTenantMembershipScopeMock.mockResolvedValue({
+      supabase: { from: jest.fn() },
+      userId: "user-a",
+      tenantIds: ["tenant-a"],
+    });
+
+    const response = await getRunDetail(req("http://localhost/api/runs/ing-run-1"), {
+      params: { id: "ing-run-1" },
+    } as any);
+
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(payload.runKind).toBe("ingestion_run");
+    expect(payload.sourceModel).toBe("reconciliation_runs");
+    expect(payload.kindDetail?.kind).toBe("ingestion_run");
+    expect(payload.summarySemantics).toEqual(
+      expect.objectContaining({
+        processed: 24,
+        exceptioned: 0,
+        unresolved: 0,
+      })
+    );
+    expect(payload.resultContext.latestResultId).toBeNull();
+    expect(payload.exceptions.reviewRequired).toBe(0);
   });
 
   test("run create mutation denies tenant outside authenticated membership", async () => {

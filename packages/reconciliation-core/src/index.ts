@@ -8,3 +8,4 @@ export * from "./v1-serializer.js";
 export * from "./run-capabilities.js";
 export * from "./console-reconciliation-list.js";
 export * from "./api-runs-list-adapter.js";
+export * from "./operator-run-detail.js";

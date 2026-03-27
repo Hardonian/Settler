@@ -65,9 +65,9 @@ function checkToolchain() {
   const nodeMajor = Number(process.versions.node.split(".")[0] ?? 0);
   addCheck(
     "toolchain.node",
-    nodeMajor >= 22 ? "PASS" : "FAIL",
+    nodeMajor >= 24 ? "PASS" : "FAIL",
     `Node ${process.version} detected`,
-    "Use Node 22+ (see package.json engines)."
+    "Use Node 24.x (see .nvmrc/.node-version and package.json engines)."
   );
 
   const pnpm = run("pnpm", ["--version"]);
