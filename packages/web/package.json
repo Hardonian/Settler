@@ -11,7 +11,7 @@
     "clean:build": "rm -rf .next dist out .next/tsconfig.tsbuildinfo",
     "validate:api-routes": "test -f ../../scripts/validate-api-routes.ts && tsx ../../scripts/validate-api-routes.ts || echo '⚠️  API route validation skipped (script not found)'",
     "validate:boundary": "tsx ./scripts/check-public-route-boundary.ts",
-    "prebuild": "pnpm --filter @settler/reconciliation-core run build",
+    "prebuild": "cd ../.. && (pnpm run prisma:generate || pnpm exec prisma generate || echo 'Warning: Prisma generate may have failed') && pnpm --filter @settler/reconciliation-core run build",
     "build": "node ./scripts/assert-build-env.mjs && node ./scripts/assert-reconciliation-core-dist.mjs && next build --webpack",
     "build:vercel": "node ./scripts/assert-build-env.mjs && node ./scripts/assert-reconciliation-core-dist.mjs && next build --webpack",
     "postinstall": "export SENTRY_SKIP_AUTO_INSTALL=1 || set SENTRY_SKIP_AUTO_INSTALL=1 || true",
