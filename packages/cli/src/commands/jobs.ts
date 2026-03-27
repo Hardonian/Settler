@@ -201,10 +201,11 @@ jobsCommand
       id: string,
       options: { tail?: boolean; since?: string; limit?: string; parent?: CommandParentOptions }
     ) => {
+      const log = createCliLogger({ isJSONFallback: resolveJsonFallbackFromEnv() });
       try {
         const apiKey = process.env.SETTLER_API_KEY || options.parent?.parent?.apiKey;
         if (!apiKey) {
-          console.error(chalk.red("Error: API key required"));
+          log.error("API key required. Set SETTLER_API_KEY or use --api-key");
           process.exit(1);
         }
 
@@ -231,7 +232,7 @@ jobsCommand
 
         if (!response.ok) {
           const error = (await response.json()) as { message?: string };
-          console.error(chalk.red(`Error: ${error?.message || "Failed to fetch logs"}`));
+          log.error(error?.message ?? "Failed to fetch logs");
           process.exit(1);
         }
 
@@ -245,14 +246,14 @@ jobsCommand
         };
 
         if (!logs.data || logs.data.length === 0) {
-          console.log(chalk.yellow("No logs found"));
+          log.warning("No logs found.");
           return;
         }
 
-        console.log(chalk.bold(`\nJob Logs (${logs.data.length} entries):\n`));
-        logs.data.forEach((log) => {
-          const timestamp = new Date(log.timestamp).toLocaleString();
-          const level = log.level.toUpperCase();
+        log.section(`Job logs (${logs.data.length} entries)`);
+        logs.data.forEach((entry) => {
+          const timestamp = new Date(entry.timestamp).toLocaleString();
+          const level = entry.level.toUpperCase();
           const levelColor =
             level === "ERROR"
               ? chalk.red
@@ -262,21 +263,18 @@ jobsCommand
                   ? chalk.blue
                   : chalk.gray;
 
-          console.log(`${chalk.gray(timestamp)} ${levelColor(level)} ${log.message}`);
-          if (log.metadata) {
-            console.log(chalk.gray(`  ${JSON.stringify(log.metadata, null, 2)}`));
+          log.rawLine(`${chalk.gray(timestamp)} ${levelColor(level)} ${entry.message}`);
+          if (entry.metadata) {
+            log.detail(JSON.stringify(entry.metadata, null, 2));
           }
         });
 
         if (options.tail) {
-          console.log(chalk.blue("\nFollowing logs... (Ctrl+C to stop)"));
-          // In a real implementation, you'd use WebSocket or Server-Sent Events
-          console.log(chalk.yellow("Note: Real-time tailing requires WebSocket support"));
+          log.info("Following logs... (Ctrl+C to stop)");
+          log.warning("Real-time tailing requires WebSocket support in this environment.");
         }
       } catch (error) {
-        console.error(
-          chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
-        );
+        log.error(error instanceof Error ? error.message : "Unknown error");
         process.exit(1);
       }
     }
@@ -298,10 +296,11 @@ jobsCommand
         parent?: CommandParentOptions;
       }
     ) => {
+      const log = createCliLogger({ isJSONFallback: resolveJsonFallbackFromEnv() });
       try {
         const apiKey = process.env.SETTLER_API_KEY || options.parent?.parent?.apiKey;
         if (!apiKey) {
-          console.error(chalk.red("Error: API key required"));
+          log.error("API key required. Set SETTLER_API_KEY or use --api-key");
           process.exit(1);
         }
 
@@ -319,7 +318,7 @@ jobsCommand
           body.eventId = options.eventId;
         }
 
-        console.log(chalk.blue("Replaying events..."));
+        log.info("Replaying events...");
 
         const trace = createTraceContext(undefined, id);
         const response = await fetch(`${baseUrl}/api/v1/jobs/${id}/replay`, {
@@ -336,7 +335,7 @@ jobsCommand
 
         if (!response.ok) {
           const error = (await response.json()) as { message?: string };
-          console.error(chalk.red(`Error: ${error.message || "Failed to replay events"}`));
+          log.error(error.message ?? "Failed to replay events");
           process.exit(1);
         }
 
@@ -346,17 +345,15 @@ jobsCommand
         };
 
         if (options.dryRun) {
-          console.log(chalk.yellow("Dry run mode - no events were actually replayed"));
+          log.warning("Dry run — no events were replayed.");
         } else {
-          console.log(chalk.green("✓ Events replayed successfully"));
+          log.success("Events replayed successfully.");
         }
 
-        console.log(chalk.gray(`   Events processed: ${result.eventsProcessed || 0}`));
-        console.log(chalk.gray(`   Events replayed: ${result.eventsReplayed || 0}`));
+        log.detail(`Events processed: ${result.eventsProcessed ?? 0}`);
+        log.detail(`Events replayed: ${result.eventsReplayed ?? 0}`);
       } catch (error) {
-        console.error(
-          chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
-        );
+        log.error(error instanceof Error ? error.message : "Unknown error");
         process.exit(1);
       }
     }
