@@ -3,7 +3,9 @@ import type {
   CanonicalReconciliationRunDetail,
 } from "@settler/reconciliation-core";
 
-function legacyAdapterDriftLabel(signal: AdapterDriftSignal): "source" | "target" | "both" | "none" {
+function legacyAdapterDriftLabel(
+  signal: AdapterDriftSignal
+): "source" | "target" | "both" | "none" {
   if (signal.sourceChanged && signal.targetChanged) return "both";
   if (signal.sourceChanged) return "source";
   if (signal.targetChanged) return "target";
@@ -30,7 +32,9 @@ export function buildIngestionRunDetailJson(detail: CanonicalReconciliationRunDe
 
   return {
     runKind: "ingestion_run" as const,
+    sourceModel: detail.provenance.sourceModel,
     id: detail.id,
+    detailHref: `/console/runs/${detail.id}`,
     name: detail.name,
     status: lifecycle.status,
     statusLabel: lifecycle.statusLabel,
@@ -57,8 +61,7 @@ export function buildIngestionRunDetailJson(detail: CanonicalReconciliationRunDe
       unmatchedSourceCount: s.unmatchedSourceCount,
       unmatchedTargetCount: s.unmatchedTargetCount,
       conflictCount: s.conflicts,
-      note:
-        "Ingestion-backed run: counts come from reconciliation_runs; exception workflow and snapshot-backed config apply to recon job runs only.",
+      note: "Ingestion-backed run: counts come from reconciliation_runs; exception workflow and snapshot-backed config apply to recon job runs only.",
     },
     summarySemantics: {
       processed: s.processed,

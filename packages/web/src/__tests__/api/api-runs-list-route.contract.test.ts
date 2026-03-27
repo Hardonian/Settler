@@ -22,8 +22,7 @@ jest.mock("@/lib/api/unified-auth", () => ({
 }));
 
 jest.mock("@/lib/supabase/tenant-membership", () => ({
-  resolveTenantMembershipScope: (...args: unknown[]) =>
-    resolveTenantMembershipScopeMock(...args),
+  resolveTenantMembershipScope: (...args: unknown[]) => resolveTenantMembershipScopeMock(...args),
   assertTenantMembership: jest.fn(),
   resolveTenantForMutation: jest.fn(() => "tenant-1"),
 }));
@@ -155,42 +154,46 @@ describe("GET /api/runs", () => {
       },
     });
 
-    mapCanonicalListItemToApiRunsLegacyRowMock.mockImplementation((row: CanonicalReconciliationListItem) => ({
-      runKind: row.runKind,
-      id: row.id,
-      name: row.name,
-      status: row.lifecycle.status,
-      statusLabel: row.lifecycle.statusLabel,
-      startedAt: row.timestamps.startedAt ?? row.timestamps.createdAt,
-      completedAt: row.timestamps.completedAt,
-      summary: {
-        total: row.summary.total,
-        sourceCount: row.summary.sourceCount,
-        targetCount: row.summary.targetCount,
-        matched: row.summary.matched,
-        unmatched: row.summary.unmatched,
-        unmatchedSourceCount: row.summary.unmatchedSourceCount,
-        unmatchedTargetCount: row.summary.unmatchedTargetCount,
-        conflicts: row.summary.conflicts,
-      },
-      summarySemantics: {
-        processed: row.summary.processed,
-        matchedWithTolerance: row.summary.matchedWithTolerance,
-        exceptioned: row.summary.exceptioned,
-        unresolved: row.summary.unresolved,
-        ignored: row.summary.ignored,
-        resolved: row.summary.resolved,
-      },
-      summaryState: row.summaryState,
-      progress: row.lifecycle.progressPercent,
-      progressState: row.lifecycle.progressState,
-      isTerminal: row.lifecycle.isTerminal,
-      provenance: {},
-      configDrift: { status: "none", adapter: "none" },
-      ingestionId: row.provenance.ingestionId,
-      sourceAdapter: row.adapters.sourceAdapter,
-      targetAdapter: row.adapters.targetAdapter,
-    }));
+    mapCanonicalListItemToApiRunsLegacyRowMock.mockImplementation(
+      (row: CanonicalReconciliationListItem) => ({
+        runKind: row.runKind,
+        sourceModel: row.provenance.sourceModel,
+        id: row.id,
+        detailHref: `/console/runs/${row.id}`,
+        name: row.name,
+        status: row.lifecycle.status,
+        statusLabel: row.lifecycle.statusLabel,
+        startedAt: row.timestamps.startedAt ?? row.timestamps.createdAt,
+        completedAt: row.timestamps.completedAt,
+        summary: {
+          total: row.summary.total,
+          sourceCount: row.summary.sourceCount,
+          targetCount: row.summary.targetCount,
+          matched: row.summary.matched,
+          unmatched: row.summary.unmatched,
+          unmatchedSourceCount: row.summary.unmatchedSourceCount,
+          unmatchedTargetCount: row.summary.unmatchedTargetCount,
+          conflicts: row.summary.conflicts,
+        },
+        summarySemantics: {
+          processed: row.summary.processed,
+          matchedWithTolerance: row.summary.matchedWithTolerance,
+          exceptioned: row.summary.exceptioned,
+          unresolved: row.summary.unresolved,
+          ignored: row.summary.ignored,
+          resolved: row.summary.resolved,
+        },
+        summaryState: row.summaryState,
+        progress: row.lifecycle.progressPercent,
+        progressState: row.lifecycle.progressState,
+        isTerminal: row.lifecycle.isTerminal,
+        provenance: {},
+        configDrift: { status: "none", adapter: "none" },
+        ingestionId: row.provenance.ingestionId,
+        sourceAdapter: row.adapters.sourceAdapter,
+        targetAdapter: row.adapters.targetAdapter,
+      })
+    );
   });
 
   it("returns 400 for invalid run_kind", async () => {
@@ -220,6 +223,9 @@ describe("GET /api/runs", () => {
     const body = await res.json();
     expect(body.items).toHaveLength(1);
     expect(body.items[0].id).toBe("job-1");
+    expect(body.items[0].runKind).toBe("recon_job");
+    expect(body.items[0].sourceModel).toBe("recon_jobs");
+    expect(body.items[0].detailHref).toBe("/console/runs/job-1");
     expect(body.next_cursor).toBe("next");
     expect(body.response_meta.pagination_mode).toBe("merged_cursor");
     expect(fetchMergedReconciliationRunsPageMock).toHaveBeenCalled();

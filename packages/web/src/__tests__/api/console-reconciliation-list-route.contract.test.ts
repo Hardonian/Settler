@@ -95,7 +95,17 @@ describe("GET /api/console/reconciliation", () => {
         consistency: "read_committed",
       },
     });
-    buildConsoleReconciliationListBodyMock.mockReturnValue({ reconciliations: [] });
+    buildConsoleReconciliationListBodyMock.mockReturnValue({
+      runs: [
+        {
+          id: "run-1",
+          runKind: "ingestion_run",
+          sourceModel: "reconciliation_runs",
+          detailHref: "/console/runs/run-1",
+        },
+      ],
+      reconciliations: [],
+    });
   });
 
   it("accepts runKind alias and case-insensitive value", async () => {
@@ -128,5 +138,23 @@ describe("GET /api/console/reconciliation", () => {
     expect(fetchMergedReconciliationRunsPageMock).toHaveBeenCalledWith(
       expect.objectContaining({ limit: 50 })
     );
+  });
+
+  it("returns canonical runs list even when legacy reconciliations is empty", async () => {
+    const res = await getConsoleReconciliationList(
+      req("http://localhost/api/console/reconciliation?run_kind=ingestion_run"),
+      {} as any
+    );
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.reconciliations).toEqual([]);
+    expect(body.runs).toEqual([
+      expect.objectContaining({
+        id: "run-1",
+        runKind: "ingestion_run",
+        sourceModel: "reconciliation_runs",
+        detailHref: "/console/runs/run-1",
+      }),
+    ]);
   });
 });

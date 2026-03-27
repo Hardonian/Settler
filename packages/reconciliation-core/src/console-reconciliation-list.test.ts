@@ -99,7 +99,20 @@ describe("buildConsoleReconciliationListBody", () => {
 
   it("run_kind=all includes runs and job-shaped reconciliations", () => {
     const body = buildConsoleReconciliationListBody(mockPage([job, ing]), "all");
-    expect(body.runs).toEqual([job, ing]);
+    expect(body.runs).toEqual([
+      expect.objectContaining({
+        id: "j1",
+        runKind: "recon_job",
+        sourceModel: "recon_jobs",
+        detailHref: "/console/runs/j1",
+      }),
+      expect.objectContaining({
+        id: "i1",
+        runKind: "ingestion_run",
+        sourceModel: "reconciliation_runs",
+        detailHref: "/console/runs/i1",
+      }),
+    ]);
     expect(Array.isArray(body.reconciliations)).toBe(true);
     expect((body.reconciliations as unknown[]).length).toBe(1);
     const recs = body.reconciliations as { id: string }[];
@@ -107,18 +120,19 @@ describe("buildConsoleReconciliationListBody", () => {
     expect(body.response_meta).toMatchObject({
       requested_run_kind: "all",
       default_run_kind: "all",
+      legacy_reconciliations_field_scope: "recon_job_only",
     });
   });
 
-  it("run_kind=recon_job omits runs key", () => {
+  it("run_kind=recon_job still returns canonical runs list", () => {
     const body = buildConsoleReconciliationListBody(mockPage([job, ing]), "recon_job");
-    expect(body.runs).toBeUndefined();
+    expect((body.runs as unknown[]).length).toBe(2);
     expect((body.reconciliations as unknown[]).length).toBe(1);
   });
 
-  it("run_kind=ingestion_run yields empty reconciliations and omits runs", () => {
+  it("run_kind=ingestion_run keeps runs while reconciliations remains legacy-empty", () => {
     const body = buildConsoleReconciliationListBody(mockPage([ing]), "ingestion_run");
-    expect(body.runs).toBeUndefined();
+    expect((body.runs as unknown[]).length).toBe(1);
     expect(body.reconciliations).toEqual([]);
   });
 });

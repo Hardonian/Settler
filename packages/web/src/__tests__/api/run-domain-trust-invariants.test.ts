@@ -324,6 +324,8 @@ describe("run domain trust invariants", () => {
     expect(response.status).toBe(200);
     const payload = await response.json();
     expect(payload.runKind).toBe("recon_job");
+    expect(payload.sourceModel).toBe("recon_jobs");
+    expect(payload.detailHref).toBe("/console/runs/run-a-1");
     expect(payload.config).toEqual(
       expect.objectContaining({
         sourceAdapter: "stripe",

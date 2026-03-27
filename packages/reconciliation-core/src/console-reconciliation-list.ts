@@ -45,25 +45,28 @@ export function buildConsoleReconciliationListBody(
   page: MergedReconciliationListResponse,
   runKind: ConsoleReconciliationRunKindParam
 ): Record<string, unknown> {
+  const runs = page.runs.map((r) => ({
+    ...r,
+    sourceModel: r.provenance.sourceModel,
+    detailHref: `/console/runs/${r.id}`,
+  }));
   const reconciliations =
     runKind === "ingestion_run"
       ? []
-      : page.runs.filter((r) => r.runKind === "recon_job").map(toLegacyReconciliation);
+      : runs.filter((r) => r.runKind === "recon_job").map(toLegacyReconciliation);
 
   const body: Record<string, unknown> = {
     contract_version: 1,
+    runs,
     next_cursor: page.next_cursor,
     pagination: page.pagination,
     response_meta: {
       ...page.response_meta,
       default_run_kind: "all",
       requested_run_kind: runKind,
+      legacy_reconciliations_field_scope: "recon_job_only",
     },
   };
-
-  if (runKind === "all") {
-    body.runs = page.runs;
-  }
 
   body.reconciliations = reconciliations;
   return body;

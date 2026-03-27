@@ -73,6 +73,8 @@ describe("mapCanonicalListItemToApiRunsLegacyRow", () => {
     };
     const legacy = mapCanonicalListItemToApiRunsLegacyRow(row);
     expect(legacy.runKind).toBe("recon_job");
+    expect(legacy.sourceModel).toBe("recon_jobs");
+    expect(legacy.detailHref).toBe("/console/runs/j1");
     expect(legacy.configDrift.adapter).toBe("source");
     expect(legacy.ingestionId).toBeNull();
   });

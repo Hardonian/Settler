@@ -6,7 +6,9 @@
 import type { CanonicalReconciliationListItem } from "./canonical-reconciliation.js";
 import type { AdapterDriftSignal } from "./canonical-run-result.js";
 
-function legacyAdapterDriftLabel(signal: AdapterDriftSignal): "source" | "target" | "both" | "none" {
+function legacyAdapterDriftLabel(
+  signal: AdapterDriftSignal
+): "source" | "target" | "both" | "none" {
   if (signal.sourceChanged && signal.targetChanged) return "both";
   if (signal.sourceChanged) return "source";
   if (signal.targetChanged) return "target";
@@ -15,7 +17,9 @@ function legacyAdapterDriftLabel(signal: AdapterDriftSignal): "source" | "target
 
 export type ApiRunsListLegacyItem = {
   runKind: "recon_job" | "ingestion_run";
+  sourceModel: "recon_jobs" | "reconciliation_runs";
   id: string;
+  detailHref: string;
   name: string;
   status: string;
   statusLabel: string;
@@ -57,11 +61,12 @@ export type ApiRunsListLegacyItem = {
 export function mapCanonicalListItemToApiRunsLegacyRow(
   r: CanonicalReconciliationListItem
 ): ApiRunsListLegacyItem {
-  const startedAt =
-    r.timestamps.startedAt ?? r.timestamps.createdAt ?? new Date().toISOString();
+  const startedAt = r.timestamps.startedAt ?? r.timestamps.createdAt ?? new Date().toISOString();
   return {
     runKind: r.runKind,
+    sourceModel: r.provenance.sourceModel,
     id: r.id,
+    detailHref: `/console/runs/${r.id}`,
     name: r.name,
     status: r.lifecycle.status,
     statusLabel: r.lifecycle.statusLabel,
