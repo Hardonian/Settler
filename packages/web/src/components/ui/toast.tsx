@@ -93,7 +93,7 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
   const iconClass = {
     success: "text-success",
     error: "text-error",
-    info: "text-highlight",
+    info: "text-accent-highlight",
     warning: "text-warning",
   };
 
