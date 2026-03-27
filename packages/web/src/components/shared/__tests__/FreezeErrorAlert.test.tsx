@@ -21,7 +21,7 @@ describe("FreezeErrorAlert", () => {
     );
 
     expect(screen.getByText(/Scope:/)).toBeInTheDocument();
-    expect(screen.getByText(/tenant/)).toBeInTheDocument();
+    expect(screen.getByText(/^tenant$/)).toBeInTheDocument();
     expect(screen.getByText(/Frozen at:/)).toBeInTheDocument();
   });
 
@@ -31,14 +31,14 @@ describe("FreezeErrorAlert", () => {
         reason="Incident response"
         recoveryAction={{
           label: "View Governance",
-          href: "/console/governance",
+          href: "/app/governance",
         }}
       />
     );
 
     const link = screen.getByRole("link", { name: /View Governance/i });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/console/governance");
+    expect(link).toHaveAttribute("href", "/app/governance");
   });
 
   it("should render recovery action with onClick handler", () => {

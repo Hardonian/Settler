@@ -170,7 +170,7 @@ export default function ApiKeysPage() {
               Implementation Documentation
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Link href="/docs/api-guide" className="group">
+              <Link href="/docs/api" className="group">
                 <Card className="border-border/40 hover:border-primary/40 hover:shadow-lg transition-all">
                   <CardHeader className="pb-2">
                     <div className="p-2 rounded-lg bg-primary/10 text-primary w-fit mb-2 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
@@ -252,7 +252,7 @@ export default function ApiKeysPage() {
                   commit keys to source control.
                 </p>
                 <Button variant="default" className="w-full h-11 font-bold shadow-lg gap-2" asChild>
-                  <Link href="/docs/security">
+                  <Link href="/security-and-audit">
                     Security Policy
                     <ExternalLink size={14} />
                   </Link>

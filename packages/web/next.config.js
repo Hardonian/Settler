@@ -100,6 +100,7 @@ const nextConfig = {
   },
   transpilePackages: [
     "@settler/api",
+    "@settler/reconciliation-core",
     "@settler/sdk",
     "@settler/react-settler",
     "@settler/protocol",
@@ -457,6 +458,22 @@ const nextConfig = {
         destination: "/dashboard/integrations",
         permanent: true,
       },
+      // Legacy marketing/docs slugs → existing App Router pages (internal link integrity)
+      { source: "/docs/intro", destination: "/docs/quickstart", permanent: true },
+      { source: "/docs/architecture", destination: "/docs/architecture/platform-architecture", permanent: true },
+      { source: "/docs/installation", destination: "/docs/getting-started", permanent: true },
+      { source: "/docs/policies", destination: "/docs/cli", permanent: true },
+      { source: "/docs/assertions", destination: "/docs/errors", permanent: true },
+      { source: "/docs/adapters", destination: "/docs/integrations", permanent: true },
+      { source: "/docs/sync", destination: "/docs/webhooks", permanent: true },
+      { source: "/docs/deploy", destination: "/docs/launch", permanent: true },
+      { source: "/docs/proof-explorer", destination: "/console/proof-explorer", permanent: true },
+      { source: "/docs/rbac", destination: "/docs/auth", permanent: true },
+      { source: "/docs/auditor", destination: "/security-and-audit", permanent: true },
+      { source: "/docs/oss-setup", destination: "/docs/getting-started", permanent: true },
+      { source: "/docs/api-guide", destination: "/docs/api", permanent: true },
+      { source: "/docs/security", destination: "/security-and-audit", permanent: true },
+      { source: "/console/governance", destination: "/app/governance", permanent: false },
     ];
   },
   async rewrites() {

@@ -205,7 +205,7 @@ export default function ProofExplorerMarketingPage() {
             <Link href="/signup">Create Free Account</Link>
           </Button>
           <Button asChild variant="outline" size="lg" className="h-14 px-8 text-lg font-bold">
-            <Link href="/docs/proof-explorer">Technical Docs</Link>
+            <Link href="/docs/replay-lab">Technical Docs</Link>
           </Button>
         </div>
       </section>

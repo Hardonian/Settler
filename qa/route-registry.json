@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-03-13T20:42:42.004Z",
-  "totalRoutes": 463,
-  "pageRoutes": 260,
+  "generatedAt": "2026-03-27T03:48:29.852Z",
+  "totalRoutes": 476,
+  "pageRoutes": 261,
   "routes": [
     {
       "path": "/",
-      "type": "template",
-      "file": "template.tsx",
+      "type": "page",
+      "file": "page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -232,6 +232,14 @@
       "type": "route",
       "file": "api/admin/exceptions/route.ts",
       "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/admin/exceptions/[id]",
+      "type": "route",
+      "file": "api/admin/exceptions/[id]/route.ts",
+      "dynamic": true,
       "catchAll": false,
       "optional": false
     },
@@ -812,6 +820,22 @@
       "optional": false
     },
     {
+      "path": "/api/console/usage/export/[exportId]",
+      "type": "route",
+      "file": "api/console/usage/export/[exportId]/route.ts",
+      "dynamic": true,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/console/usage/export/[exportId]/download",
+      "type": "route",
+      "file": "api/console/usage/export/[exportId]/download/route.ts",
+      "dynamic": true,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/api/console/usage/warnings",
       "type": "route",
       "file": "api/console/usage/warnings/route.ts",
@@ -948,6 +972,62 @@
       "optional": false
     },
     {
+      "path": "/api/demo/alerts",
+      "type": "route",
+      "file": "api/demo/alerts/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/demo/audit",
+      "type": "route",
+      "file": "api/demo/audit/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/demo/exceptions",
+      "type": "route",
+      "file": "api/demo/exceptions/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/demo/integrations",
+      "type": "route",
+      "file": "api/demo/integrations/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/demo/metrics",
+      "type": "route",
+      "file": "api/demo/metrics/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/demo/runs",
+      "type": "route",
+      "file": "api/demo/runs/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/demo/tenants",
+      "type": "route",
+      "file": "api/demo/tenants/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/api/docs/openapi",
       "type": "route",
       "file": "api/docs/openapi/route.ts",
@@ -975,6 +1055,22 @@
       "path": "/api/enterprise/ip-allowlist/[id]",
       "type": "route",
       "file": "api/enterprise/ip-allowlist/[id]/route.ts",
+      "dynamic": true,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/exceptions",
+      "type": "route",
+      "file": "api/exceptions/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/exceptions/[exceptionId]",
+      "type": "route",
+      "file": "api/exceptions/[exceptionId]/route.ts",
       "dynamic": true,
       "catchAll": false,
       "optional": false
@@ -1460,9 +1556,17 @@
       "optional": false
     },
     {
-      "path": "/api/runs/[runId]",
+      "path": "/api/runs",
       "type": "route",
-      "file": "api/runs/[runId]/route.ts",
+      "file": "api/runs/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/runs/[id]",
+      "type": "route",
+      "file": "api/runs/[id]/route.ts",
       "dynamic": true,
       "catchAll": false,
       "optional": false
@@ -1719,6 +1823,14 @@
       "path": "/api/v1/runs/[id]",
       "type": "route",
       "file": "api/v1/runs/[id]/route.ts",
+      "dynamic": true,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/v1/runs/[id]/[runId]",
+      "type": "route",
+      "file": "api/v1/runs/[id]/[runId]/route.ts",
       "dynamic": true,
       "catchAll": false,
       "optional": false
@@ -2140,14 +2252,6 @@
       "optional": false
     },
     {
-      "path": "/comparison",
-      "type": "page",
-      "file": "comparison/page.tsx",
-      "dynamic": false,
-      "catchAll": false,
-      "optional": false
-    },
-    {
       "path": "/console",
       "type": "page",
       "file": "console/page.tsx",
@@ -2340,6 +2444,30 @@
       "optional": false
     },
     {
+      "path": "/console/docs/glossary",
+      "type": "page",
+      "file": "console/docs/glossary/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/console/exceptions",
+      "type": "page",
+      "file": "console/exceptions/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/console/exceptions/[exceptionId]",
+      "type": "page",
+      "file": "console/exceptions/[exceptionId]/page.tsx",
+      "dynamic": true,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/console/feature-flags",
       "type": "page",
       "file": "console/feature-flags/page.tsx",
@@ -2524,6 +2652,14 @@
       "optional": false
     },
     {
+      "path": "/console/reconciliation",
+      "type": "page",
+      "file": "console/reconciliation/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/console/reconciliation-view",
       "type": "page",
       "file": "console/reconciliation-view/page.tsx",
@@ -2581,8 +2717,8 @@
     },
     {
       "path": "/console/runs",
-      "type": "error",
-      "file": "console/runs/error.tsx",
+      "type": "page",
+      "file": "console/runs/page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -2756,14 +2892,6 @@
       "optional": false
     },
     {
-      "path": "/cookbooks",
-      "type": "page",
-      "file": "cookbooks/page.tsx",
-      "dynamic": false,
-      "catchAll": false,
-      "optional": false
-    },
-    {
       "path": "/dashboard",
       "type": "page",
       "file": "dashboard/page.tsx",
@@ -2884,6 +3012,14 @@
       "optional": false
     },
     {
+      "path": "/demo/console",
+      "type": "page",
+      "file": "demo/console/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/demo/receipts",
       "type": "page",
       "file": "demo/receipts/page.tsx",
@@ -2911,6 +3047,14 @@
       "path": "/docs/api",
       "type": "page",
       "file": "docs/api/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/docs/architecture/platform-architecture",
+      "type": "page",
+      "file": "docs/architecture/platform-architecture/page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -2968,6 +3112,14 @@
       "type": "page",
       "file": "docs/integrations/[integrationId]/page.tsx",
       "dynamic": true,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/docs/launch",
+      "type": "page",
+      "file": "docs/launch/page.tsx",
+      "dynamic": false,
       "catchAll": false,
       "optional": false
     },
@@ -3196,14 +3348,6 @@
       "optional": false
     },
     {
-      "path": "/how-it-works",
-      "type": "page",
-      "file": "how-it-works/page.tsx",
-      "dynamic": false,
-      "catchAll": false,
-      "optional": false
-    },
-    {
       "path": "/integrations",
       "type": "page",
       "file": "integrations/page.tsx",
@@ -3380,22 +3524,6 @@
       "optional": false
     },
     {
-      "path": "/oss",
-      "type": "page",
-      "file": "oss/page.tsx",
-      "dynamic": false,
-      "catchAll": false,
-      "optional": false
-    },
-    {
-      "path": "/oss/stats",
-      "type": "page",
-      "file": "oss/stats/page.tsx",
-      "dynamic": false,
-      "catchAll": false,
-      "optional": false
-    },
-    {
       "path": "/parser",
       "type": "page",
       "file": "parser/page.tsx",
@@ -3447,14 +3575,6 @@
       "path": "/product",
       "type": "page",
       "file": "product/page.tsx",
-      "dynamic": false,
-      "catchAll": false,
-      "optional": false
-    },
-    {
-      "path": "/proof",
-      "type": "page",
-      "file": "proof/page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -3524,22 +3644,6 @@
       "optional": false
     },
     {
-      "path": "/roadmap",
-      "type": "page",
-      "file": "roadmap/page.tsx",
-      "dynamic": false,
-      "catchAll": false,
-      "optional": false
-    },
-    {
-      "path": "/roi-calculator",
-      "type": "page",
-      "file": "roi-calculator/page.tsx",
-      "dynamic": false,
-      "catchAll": false,
-      "optional": false
-    },
-    {
       "path": "/runbooks",
       "type": "page",
       "file": "runbooks/page.tsx",
@@ -3551,14 +3655,6 @@
       "path": "/schematics",
       "type": "page",
       "file": "schematics/page.tsx",
-      "dynamic": false,
-      "catchAll": false,
-      "optional": false
-    },
-    {
-      "path": "/security",
-      "type": "page",
-      "file": "security/page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -3636,14 +3732,6 @@
       "optional": false
     },
     {
-      "path": "/trust",
-      "type": "page",
-      "file": "trust/page.tsx",
-      "dynamic": false,
-      "catchAll": false,
-      "optional": false
-    },
-    {
       "path": "/use-cases",
       "type": "page",
       "file": "use-cases/page.tsx",
@@ -3684,14 +3772,6 @@
       "optional": false
     },
     {
-      "path": "/vision",
-      "type": "page",
-      "file": "vision/page.tsx",
-      "dynamic": false,
-      "catchAll": false,
-      "optional": false
-    },
-    {
       "path": "/why",
       "type": "page",
       "file": "why/page.tsx",
@@ -3700,15 +3780,40 @@
       "optional": false
     },
     {
-      "path": "/why-settler",
+      "path": "/workspace",
       "type": "page",
-      "file": "why-settler/page.tsx",
+      "file": "workspace/page.tsx",
       "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/workspace/bulk-triage",
+      "type": "page",
+      "file": "workspace/bulk-triage/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/workspace/investigate",
+      "type": "page",
+      "file": "workspace/investigate/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/workspace/investigate/[ingestionId]",
+      "type": "page",
+      "file": "workspace/investigate/[ingestionId]/page.tsx",
+      "dynamic": true,
       "catchAll": false,
       "optional": false
     }
   ],
   "pagePaths": [
+    "/",
     "/[slug]",
     "/about",
     "/admin",
@@ -3775,7 +3880,6 @@
     "/changelog/[slug]",
     "/community",
     "/community/contributors",
-    "/comparison",
     "/console",
     "/console/activity",
     "/console/admin/activation",
@@ -3800,6 +3904,9 @@
     "/console/costs",
     "/console/diagnostics",
     "/console/docs",
+    "/console/docs/glossary",
+    "/console/exceptions",
+    "/console/exceptions/[exceptionId]",
     "/console/feature-flags",
     "/console/feature-flags-policy",
     "/console/ingestion/[ingestionId]",
@@ -3823,6 +3930,7 @@
     "/console/receipt-matching",
     "/console/receipts",
     "/console/receipts-hash",
+    "/console/reconciliation",
     "/console/reconciliation-view",
     "/console/reconciliation/[runId]",
     "/console/reconciliations",
@@ -3830,6 +3938,7 @@
     "/console/replay-lab",
     "/console/replay/[executionId]",
     "/console/rules-engine",
+    "/console/runs",
     "/console/runs/[runId]",
     "/console/settings",
     "/console/setup-check",
@@ -3851,7 +3960,6 @@
     "/console/workflows/new",
     "/contact",
     "/cookbook",
-    "/cookbooks",
     "/dashboard",
     "/dashboard/addons",
     "/dashboard/billing",
@@ -3867,10 +3975,12 @@
     "/dashboard/user",
     "/demo",
     "/demo/api",
+    "/demo/console",
     "/demo/receipts",
     "/demo/reconciliation",
     "/docs",
     "/docs/api",
+    "/docs/architecture/platform-architecture",
     "/docs/auth",
     "/docs/cli",
     "/docs/errors",
@@ -3878,6 +3988,7 @@
     "/docs/getting-started",
     "/docs/integrations",
     "/docs/integrations/[integrationId]",
+    "/docs/launch",
     "/docs/quickstart",
     "/docs/replay-lab",
     "/docs/sdk",
@@ -3906,7 +4017,6 @@
     "/founder",
     "/future-proof",
     "/home",
-    "/how-it-works",
     "/integrations",
     "/integrations/request",
     "/intelligence/foundry",
@@ -3928,8 +4038,6 @@
     "/offline",
     "/open-source",
     "/operator/incidents",
-    "/oss",
-    "/oss/stats",
     "/parser",
     "/platform",
     "/playground",
@@ -3937,7 +4045,6 @@
     "/pricing",
     "/privacy",
     "/product",
-    "/proof",
     "/proof-explorer",
     "/react-settler-demo",
     "/realtime-dashboard",
@@ -3946,11 +4053,8 @@
     "/reconciliation",
     "/replay-lab",
     "/review/polish",
-    "/roadmap",
-    "/roi-calculator",
     "/runbooks",
     "/schematics",
-    "/security",
     "/security-and-audit",
     "/signup",
     "/status",
@@ -3960,14 +4064,15 @@
     "/support/contact",
     "/terms",
     "/transparency",
-    "/trust",
     "/use-cases",
     "/use-cases/[slug]",
     "/ux-playground",
     "/ux-playground/events",
     "/verify",
-    "/vision",
     "/why",
-    "/why-settler"
+    "/workspace",
+    "/workspace/bulk-triage",
+    "/workspace/investigate",
+    "/workspace/investigate/[ingestionId]"
   ]
 }
