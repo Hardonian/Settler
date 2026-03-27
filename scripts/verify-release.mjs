@@ -105,6 +105,17 @@ const profiles = {
   ],
 };
 
+function assertNode24Toolchain() {
+  const required = readFileSync(path.join(repoRoot, ".nvmrc"), "utf8").trim();
+  const requiredMajor = Number(required.split(".")[0] ?? 24);
+  const activeMajor = Number(process.versions.node.split(".")[0] ?? 0);
+  if (activeMajor !== requiredMajor) {
+    throw new Error(
+      `verify-release requires Node ${required} (from .nvmrc); active runtime is ${process.version}. Run 'nvm use ${requiredMajor}'.`
+    );
+  }
+}
+
 function parseArgs(argv) {
   const profileArg = argv.find((value) => value.startsWith("--profile="));
   const stageArg = argv.find((value) => value.startsWith("--stage="));
@@ -144,7 +155,7 @@ async function runStage(stageName, runDir) {
   if (process.platform === "win32" && bin === "pnpm") {
     // Some systems report pnpm.CMD while others report pnpm.cmd.
     // Also ensures we use shell resolution properly.
-    bin = "pnpm.cmd"; 
+    bin = "pnpm.cmd";
   }
   const startedAt = Date.now();
   const logLines = [];
@@ -280,6 +291,7 @@ function emitSummary(args, results, runDir) {
 }
 
 async function main() {
+  assertNode24Toolchain();
   const args = parseArgs(process.argv.slice(2));
   const stages = resolveStages(args);
 

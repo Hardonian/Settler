@@ -30,9 +30,12 @@ import {
   type ReconResultRow,
 } from "@/lib/reconciliation/run-status";
 import { buildRunConfigurationSummary } from "@/lib/reconciliation/run-detail";
-import { buildIngestionRunDetailJson } from "@/lib/reconciliation/build-ingestion-run-detail-json";
 import { prisma } from "@/shared/db/prismaClient";
-import { resolveReconciliationRunForTenants } from "@settler/reconciliation-core";
+import {
+  buildOperatorIngestionRunDetailJson,
+  buildOperatorReconRunDetailJson,
+  resolveReconciliationRunForTenants,
+} from "@settler/reconciliation-core";
 
 export const runtime = "nodejs";
 
@@ -69,7 +72,31 @@ export const GET = withSecurity(
         }
 
         if (resolved.kind === "ingestion_run") {
-          return NextResponse.json(buildIngestionRunDetailJson(resolved.detail));
+          const stageStatus: "pending" | "running" | "completed" | "failed" =
+            resolved.detail.lifecycle.status === "completed"
+              ? "completed"
+              : resolved.detail.lifecycle.status === "failed"
+                ? "failed"
+                : resolved.detail.lifecycle.status === "running"
+                  ? "running"
+                  : "pending";
+
+          return NextResponse.json(
+            buildOperatorIngestionRunDetailJson({
+              detail: resolved.detail,
+              stages: [
+                {
+                  id: "ingestion-reconciliation",
+                  name: "Ingestion reconciliation",
+                  status: stageStatus,
+                  startedAt:
+                    resolved.detail.timestamps.startedAt ?? resolved.detail.timestamps.createdAt,
+                  completedAt: resolved.detail.timestamps.completedAt ?? undefined,
+                  ...(resolved.detail.errorMessage ? { error: resolved.detail.errorMessage } : {}),
+                },
+              ],
+            })
+          );
         }
 
         const { data: run, error: runError } = (await supabase
@@ -323,70 +350,40 @@ export const GET = withSecurity(
           new Set(contract.rowResults.map((row) => row.rationale.code))
         );
 
-        return NextResponse.json({
-          runKind: "recon_job" as const,
-          sourceModel: "recon_jobs" as const,
-          id: run.id,
-          detailHref: `/console/runs/${run.id}`,
-          name: contract.name,
-          status: truth.status,
-          statusLabel: truth.statusLabel,
-          isTerminal: truth.isTerminal,
-          progress: truth.progressPercent,
-          progressState: truth.progressState,
-          startedAt: contract.provenance.executedAt || run.created_at,
-          completedAt: contract.provenance.completedAt,
-          ...(latestResult?.error_message
-            ? { error: latestResult.error_message }
-            : latestResult?.errorMessage
-              ? { error: latestResult.errorMessage }
-              : {}),
-          summary: truth.summary,
-          summarySemantics: {
-            processed: contract.summary.processed,
-            matchedWithTolerance: contract.summary.matchedWithTolerance,
-            exceptioned: contract.summary.exceptioned,
-            unresolved: contract.summary.unresolved,
-            ignored: contract.summary.ignored,
-            resolved: contract.summary.resolved,
-          },
-          summaryState: truth.summaryState,
-          summaryMath: {
-            sourceCount: truth.summary.sourceCount,
-            targetCount: truth.summary.targetCount,
-            matchedCount: truth.summary.matched,
-            unmatchedSourceCount: truth.summary.unmatchedSourceCount,
-            unmatchedTargetCount: truth.summary.unmatchedTargetCount,
-            conflictCount: truth.summary.conflicts,
-            note: "unmatched = unmatched_source + unmatched_target; review scope includes unresolved exceptions",
-          },
-          provenance: contract.provenance,
-          resultContext: {
-            latestResultId: contract.provenance.runResultId,
-            latestResultStatus: latestResult?.status ?? null,
-            latestResultStartedAt: contract.provenance.executedAt,
-            latestResultCompletedAt: contract.provenance.completedAt,
-            persistedResultCount: persistedResultCount ?? (latestResult ? 1 : 0),
-            comparison,
-          },
-          config,
-          configDrift: contract.configDrift,
-          exceptions: {
-            total: contract.exceptions.total,
-            pending: contract.exceptions.pending,
-            investigating: contract.exceptions.investigating,
-            resolved: contract.exceptions.resolved,
-            ignored: contract.exceptions.ignored,
-            reviewRequired: contract.exceptions.unresolved,
-          },
-          rowRationale: {
-            available: contract.rowResults.length > 0,
-            rowCount: contract.rowResults.length,
-            codes: rowRationaleCodes,
-          },
-          rowResultsPreview: contract.rowResults.slice(0, 100),
-          stages: toStageRows(audits || []),
-        });
+        return NextResponse.json(
+          buildOperatorReconRunDetailJson({
+            detail: resolved.detail,
+            status: truth.status,
+            startedAt: contract.provenance.executedAt || run.created_at,
+            completedAt: contract.provenance.completedAt,
+            errorMessage:
+              (latestResult?.error_message as string | null | undefined) ||
+              (latestResult?.errorMessage as string | null | undefined) ||
+              null,
+            summaryMathNote:
+              "unmatched = unmatched_source + unmatched_target; review scope includes unresolved exceptions",
+            resultContext: {
+              latestResultId: contract.provenance.runResultId,
+              latestResultStatus: latestResult?.status ?? null,
+              latestResultStartedAt: contract.provenance.executedAt,
+              latestResultCompletedAt: contract.provenance.completedAt,
+              persistedResultCount: persistedResultCount ?? (latestResult ? 1 : 0),
+              comparison,
+            },
+            config,
+            exceptions: {
+              total: contract.exceptions.total,
+              pending: contract.exceptions.pending,
+              investigating: contract.exceptions.investigating,
+              resolved: contract.exceptions.resolved,
+              ignored: contract.exceptions.ignored,
+              reviewRequired: contract.exceptions.unresolved,
+            },
+            rowRationaleCodes,
+            rowResultsPreview: contract.rowResults.slice(0, 100),
+            stages: toStageRows(audits || []),
+          })
+        );
       } catch (error) {
         if (error instanceof TenantMembershipError) {
           return NextResponse.json(
