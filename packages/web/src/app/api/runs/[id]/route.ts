@@ -325,7 +325,9 @@ export const GET = withSecurity(
 
         return NextResponse.json({
           runKind: "recon_job" as const,
+          sourceModel: "recon_jobs" as const,
           id: run.id,
+          detailHref: `/console/runs/${run.id}`,
           name: contract.name,
           status: truth.status,
           statusLabel: truth.statusLabel,
