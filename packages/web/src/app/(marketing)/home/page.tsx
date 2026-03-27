@@ -156,7 +156,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
 
         {/* Hero Section */}
         <section
-          className="relative pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden"
+          className="relative pt-16 sm:pt-20 lg:pt-24 pb-16 sm:pb-20 lg:pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden"
           aria-labelledby="hero-heading"
         >
           <ParallaxBackground>
@@ -184,15 +184,15 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                       as="h1"
                       id="hero-heading"
                       text="Reconcile Financial Data. Find Every Mismatch. Prove the Results."
-                      className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold mb-4 sm:mb-6 text-foreground dark:text-foreground tracking-tight leading-[1.1]"
+                      className="text-3xl sm:text-4xl md:text-5xl lg:text-[3rem] font-bold mb-4 sm:mb-6 text-foreground dark:text-foreground tracking-tight leading-[1.12]"
                       delay={0}
                       staggerDelay={0.02}
                       splitBy="words"
                     />
                   </div>
 
-                  <div className="mb-10 sm:mb-12">
-                    <p className="text-lg sm:text-xl text-muted-foreground dark:text-muted-foreground leading-relaxed">
+                  <div className="mb-10 sm:mb-12 max-w-xl lg:max-w-2xl">
+                    <p className="text-base sm:text-lg text-muted-foreground dark:text-muted-foreground leading-relaxed">
                       Settler matches records across Stripe, banks, ERPs, and ledgers — then
                       surfaces every mismatch with full context. Every run produces verifiable
                       evidence. Every run can be replayed.
@@ -203,7 +203,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                     <Button
                       size="lg"
                       asChild
-                      className="w-full sm:w-auto bg-foreground hover:bg-foreground/90 text-background px-8 py-6 text-lg font-semibold shadow-xl transition-all duration-200"
+                      className="w-full sm:w-auto bg-foreground hover:bg-foreground/90 text-background px-8 py-6 text-base sm:text-lg font-semibold shadow-lg transition-all duration-200"
                     >
                       <Link
                         href="/docs/quickstart"
@@ -218,7 +218,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                       size="lg"
                       variant="outline"
                       asChild
-                      className="w-full sm:w-auto px-8 py-6 text-lg border-2 border-border dark:border-border bg-card dark:bg-background hover:bg-background dark:hover:bg-card transition-all duration-200"
+                      className="w-full sm:w-auto px-8 py-6 text-base sm:text-lg border-2 border-border dark:border-border bg-card dark:bg-background hover:bg-background dark:hover:bg-card hover:border-primary/40 transition-all duration-200"
                     >
                       <Link href={repoUrl} className="flex items-center justify-center gap-3">
                         <span>View on GitHub</span>
@@ -636,7 +636,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
 
         {/* GitHub / Quickstart CTA */}
         <section
-          className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-background "
+          className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-background border-t border-border/60"
           aria-label="Get started"
         >
           <div className="max-w-3xl mx-auto text-center">
@@ -649,24 +649,22 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground tracking-tight mb-4">
               Start in Minutes
             </h2>
-            <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed mb-10">
+            <p className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed mb-10">
               One SDK install. Define your rules. Run reconciliation. Review the evidence.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/docs/quickstart"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-card text-foreground hover:bg-muted/40 px-8 py-3.5 text-base font-semibold shadow-lg transition-all duration-200"
-              >
-                <BookOpen className="w-4 h-4" aria-hidden="true" />
-                Read the Quickstart
-              </Link>
-              <Link
-                href={repoUrl}
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card text-foreground hover:bg-muted hover:border-border px-8 py-3.5 text-base font-medium transition-all duration-200"
-              >
-                <Github className="w-4 h-4" aria-hidden="true" />
-                View on GitHub
-              </Link>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center">
+              <Button size="lg" asChild className="shadow-md">
+                <Link href="/docs/quickstart" className="inline-flex items-center justify-center gap-2">
+                  <BookOpen className="w-4 h-4" aria-hidden="true" />
+                  Read the Quickstart
+                </Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link href={repoUrl} className="inline-flex items-center justify-center gap-2">
+                  <Github className="w-4 h-4" aria-hidden="true" />
+                  View on GitHub
+                </Link>
+              </Button>
             </div>
           </div>
         </section>

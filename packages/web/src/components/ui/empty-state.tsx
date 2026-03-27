@@ -67,11 +67,11 @@ export function EmptyState({
 
       <p className="text-sm text-muted-foreground mb-1 max-w-md leading-relaxed">{description}</p>
 
-      {hint && (
-        <p className="text-xs text-muted-foreground/70 mb-6 max-w-sm leading-relaxed">{hint}</p>
+      {hint ? (
+        <p className="text-xs text-muted-foreground/80 mb-6 max-w-sm leading-relaxed">{hint}</p>
+      ) : (
+        <div className="mb-6" aria-hidden="true" />
       )}
-
-      {!hint && <div className="mb-6" />}
 
       {(action || secondaryAction) && (
         <div className="flex flex-col sm:flex-row gap-3">

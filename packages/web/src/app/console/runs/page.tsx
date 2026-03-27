@@ -530,7 +530,7 @@ export default function RunsPage() {
             {runs.map((run) => (
                 <div
                   key={run.id}
-                  className="rounded-xl border border-border/80 bg-card/50 p-5 shadow-sm transition-all hover:border-primary/25 hover:shadow-md"
+                  className="rounded-xl border border-border/80 bg-card/50 p-5 shadow-sm transition-colors hover:border-primary/30 hover:bg-card/80 hover:shadow-md"
                 >
                   <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
                     <div className="min-w-0 flex-1 space-y-4">
