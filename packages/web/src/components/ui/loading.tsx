@@ -50,7 +50,10 @@ const Loading = React.forwardRef<HTMLDivElement, LoadingProps>(
       >
         {showSpinner && (
           <Loader2
-            className={cn("animate-spin text-primary-600", sizeClasses[size])}
+            className={cn(
+              "animate-spin text-primary motion-reduce:animate-none",
+              sizeClasses[size]
+            )}
             aria-hidden="true"
           />
         )}

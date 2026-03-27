@@ -10,6 +10,7 @@ import {
   Section,
   SectionHeader,
 } from "@/components/site/primitives";
+import { MarketingIntentCard } from "@/components/site/marketing-motion-wrappers";
 import { Button } from "@/components/ui/button";
 import { UiLink } from "@/components/ui/link";
 
@@ -112,14 +113,15 @@ export default function HomePage() {
                 desc: "Interactive showcase console with realistic reconciliation scenarios.",
               },
             ].map((item) => (
-              <UiLink
-                key={item.role}
-                href={item.href}
-                className="rounded-xl border border-border bg-card p-5 hover:border-primary/50"
-              >
-                <h3 className="text-lg font-semibold text-foreground">{item.role}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{item.desc}</p>
-              </UiLink>
+              <MarketingIntentCard key={item.role}>
+                <UiLink
+                  href={item.href}
+                  className="block rounded-xl border border-border bg-card p-6 transition-colors hover:border-primary/45"
+                >
+                  <h3 className="text-lg font-semibold text-foreground">{item.role}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
+                </UiLink>
+              </MarketingIntentCard>
             ))}
           </div>
         </Section>

@@ -20,13 +20,23 @@ export interface ErrorFallbackProps {
 }
 
 const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetError }) => {
+  const safeDetail =
+    process.env.NODE_ENV === "development" && error.message.trim().length > 0
+      ? error.message
+      : "We could not render this section. Your data is safe — try again, or refresh the page if the problem continues.";
+
   return (
     <EmptyState
       icon={AlertCircle}
       title="Something went wrong"
-      description={error.message || 'An unexpected error occurred. Please try again.'}
+      description={safeDetail}
+      hint={
+        process.env.NODE_ENV === "development"
+          ? undefined
+          : "If this keeps happening, contact support with what you were doing when it appeared."
+      }
       action={{
-        label: 'Try again',
+        label: "Try again",
         onClick: resetError,
       }}
     />
