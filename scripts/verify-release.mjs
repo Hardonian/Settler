@@ -73,7 +73,10 @@ const stageCatalog = {
 };
 
 const profiles = {
-  fast: [
+  /** Release-critical code health; excludes internal marketing/docs link crawl (see `fast-with-links`). */
+  fast: ["root", "lint", "typecheck", "claims", "boundaries", "routes", "security"],
+  /** Same as `fast` plus static internal link integrity (requires fresh `qa/route-registry.json` from `qa:routes`). */
+  "fast-with-links": [
     "root",
     "lint",
     "typecheck",

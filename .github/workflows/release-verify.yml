@@ -28,7 +28,7 @@ jobs:
           version: 10.13.1
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -41,9 +41,8 @@ jobs:
           name: verification-fast-${{ github.run_id }}
           path: artifacts/verification/
 
-  security-supply-chain:
+  verify-internal-links:
     runs-on: ubuntu-latest
-    needs: verify-fast
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -51,7 +50,26 @@ jobs:
           version: 10.13.1
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Internal link integrity (route registry + dead links)
+        run: pnpm run verify:internal-links
+
+  security-supply-chain:
+    runs-on: ubuntu-latest
+    needs:
+      - verify-fast
+      - verify-internal-links
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -73,6 +91,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - verify-fast
+      - verify-internal-links
       - security-supply-chain
     steps:
       - uses: actions/checkout@v4
@@ -81,7 +100,7 @@ jobs:
           version: 10.13.1
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
