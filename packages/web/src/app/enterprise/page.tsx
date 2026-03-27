@@ -1,5 +1,6 @@
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
@@ -161,14 +162,13 @@ export default function EnterprisePage() {
         aria-label="Enterprise capabilities"
       >
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 text-foreground dark:text-white tracking-tight">
-              Enterprise Capabilities
-            </h2>
-            <p className="text-lg text-muted-foreground dark:text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Security, compliance, and governance controls built into the infrastructure layer.
-            </p>
-          </div>
+          <MarketingSectionHeader
+            align="center"
+            title="Enterprise Capabilities"
+            titleClassName="text-2xl md:text-3xl lg:text-4xl"
+            description="Security, compliance, and governance controls built into the infrastructure layer."
+            className="mb-12 md:mb-16"
+          />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {enterpriseCapabilities.map((feature, index) => {
               const Icon = feature.icon;

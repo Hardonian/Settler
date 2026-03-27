@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
 import { safeFetch } from "@/lib/safe-fetch";
 import {
   RefreshCw,
@@ -181,8 +182,13 @@ export default function RunPage() {
   if (loading && !run) {
     return (
       <div className="p-6 space-y-6">
-        <Skeleton className="h-12 w-64" />
-        <Skeleton className="h-64" />
+        <div className="space-y-3">
+          <Skeleton className="h-3 w-40" />
+          <Skeleton className="h-9 w-72 max-w-full" />
+          <Skeleton className="h-4 w-full max-w-xl" />
+        </div>
+        <Skeleton className="h-48 w-full rounded-lg" />
+        <Skeleton className="h-32 w-full rounded-lg" />
       </div>
     );
   }
@@ -215,50 +221,45 @@ export default function RunPage() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Breadcrumb navigation */}
-      <nav className="flex items-center text-sm text-muted-foreground dark:text-muted-foreground mb-4">
-        <Link href="/console" className="hover:text-foreground dark:hover:text-white">
-          Console
-        </Link>
-        <span className="mx-2">/</span>
-        <Link href="/console/runs" className="hover:text-foreground dark:hover:text-white">
-          Runs
-        </Link>
-        <span className="mx-2">/</span>
-        <span className="text-foreground dark:text-white">{run.name}</span>
-      </nav>
-
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/console/runs">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Runs
+      <ConsolePageHeader
+        title={run.name}
+        description={
+          <>
+            Run ID:{" "}
+            <code className="rounded bg-muted/40 px-1.5 py-0.5 font-mono text-xs break-all dark:bg-card">
+              {run.id}
+            </code>
+          </>
+        }
+        breadcrumbs={[
+          { label: "Console", href: "/console" },
+          { label: "Runs", href: "/console/runs" },
+          { label: run.name },
+        ]}
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="flex items-center gap-2 text-sm text-muted-foreground">
+              <input
+                type="checkbox"
+                checked={autoRefresh}
+                onChange={(e) => setAutoRefresh(e.target.checked)}
+                className="rounded"
+              />
+              Auto-refresh
+            </label>
+            <Button variant="outline" size="sm" onClick={loadRun}>
+              <RefreshCw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+              Refresh
             </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold text-foreground dark:text-white">{run.name}</h1>
-            <p className="text-muted-foreground dark:text-muted-foreground mt-1">
-              Run ID: <code className="bg-muted/40 dark:bg-card px-2 py-1 rounded">{run.id}</code>
-            </p>
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/console/runs">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back
+              </Link>
+            </Button>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <label className="flex items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground">
-            <input
-              type="checkbox"
-              checked={autoRefresh}
-              onChange={(e) => setAutoRefresh(e.target.checked)}
-              className="rounded"
-            />
-            Auto-refresh
-          </label>
-          <Button variant="outline" size="sm" onClick={loadRun}>
-            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
-            Refresh
-          </Button>
-        </div>
-      </div>
+        }
+      />
 
       {isIngestionRun ? (
         <Card className="border-amber-200 bg-amber-50/50 dark:border-amber-900 dark:bg-amber-950/20">
