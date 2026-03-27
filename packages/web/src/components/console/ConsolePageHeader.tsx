@@ -10,7 +10,7 @@ export interface BreadcrumbItem {
 
 interface ConsolePageHeaderProps {
   title: string;
-  description: string;
+  description: React.ReactNode;
   /** Only shown when scope is "admin" or "global" — tenant scope is the default and not labeled. */
   scope?: "tenant" | "global" | "admin";
   /** Breadcrumb trail above the title */

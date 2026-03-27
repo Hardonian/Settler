@@ -9,24 +9,31 @@ import {
   listLedgerEntries,
   verifyLedgerEntry,
 } from "../lib/execution-ledger";
+import { createCliLogger, resolveJsonFallbackFromEnv } from "../lib/cli-logger";
 
 export const historyCommand = new Command("history")
   .description("Show execution ledger history")
   .option("--tenant <tenantId>", "Filter by tenant")
   .action(async (options: { tenant?: string }) => {
+    const json = resolveJsonFallbackFromEnv();
+    const log = createCliLogger({ isJSONFallback: json });
     const entries = await listLedgerEntries(options.tenant);
     if (entries.length === 0) {
-      console.log(chalk.yellow("No execution ledger entries found."));
+      log.warning("No execution ledger entries found.");
       return;
     }
 
+    log.section("Execution ledger");
     for (const entry of entries) {
-      console.log(
-        `${chalk.yellow(entry.execution_hash.slice(0, 12))} ${entry.status} ${entry.execution_id} (${entry.tenant_id}) ${entry.timestamp}`
-      );
-      console.log(
-        `  trace=${entry.trace_id} policy=${entry.policy_version} duration=${entry.duration}ms`
-      );
+      const line1 = `${entry.execution_hash.slice(0, 12)} ${entry.status} ${entry.execution_id} (${entry.tenant_id}) ${entry.timestamp}`;
+      const line2 = `  trace=${entry.trace_id} policy=${entry.policy_version} duration=${entry.duration}ms`;
+      if (json) {
+        log.detail(line1);
+        log.detail(line2);
+      } else {
+        log.rawLine(`${chalk.yellow(entry.execution_hash.slice(0, 12))} ${entry.status} ${entry.execution_id} (${entry.tenant_id}) ${entry.timestamp}`);
+        log.rawLine(line2);
+      }
     }
   });
 
@@ -48,23 +55,32 @@ export const diffCommand = new Command("diff")
   .argument("<execution_a>")
   .argument("<execution_b>")
   .action(async (executionA: string, executionB: string) => {
+    const json = resolveJsonFallbackFromEnv();
+    const log = createCliLogger({ isJSONFallback: json });
     const [a, b] = await Promise.all([getLedgerEntry(executionA), getLedgerEntry(executionB)]);
     if (!a || !b) {
-      console.error(chalk.red("Both execution IDs must exist in ledger."));
+      log.error("Both execution IDs must exist in ledger.");
       process.exit(1);
     }
 
     const diff = diffLedgerEntries(a, b);
     const keys = Object.keys(diff);
     if (keys.length === 0) {
-      console.log(chalk.green("No differences across tracked fields."));
+      log.success("No differences across tracked fields.");
       return;
     }
 
+    log.section("Diff");
     for (const key of keys) {
-      console.log(chalk.cyan(`${key}:`));
-      console.log(`  a: ${JSON.stringify(diff[key]?.a)}`);
-      console.log(`  b: ${JSON.stringify(diff[key]?.b)}`);
+      if (json) {
+        log.detail(`${key}:`);
+        log.detail(`  a: ${JSON.stringify(diff[key]?.a)}`);
+        log.detail(`  b: ${JSON.stringify(diff[key]?.b)}`);
+      } else {
+        log.rawLine(chalk.cyan(`${key}:`));
+        log.rawLine(`  a: ${JSON.stringify(diff[key]?.a)}`);
+        log.rawLine(`  b: ${JSON.stringify(diff[key]?.b)}`);
+      }
     }
   });
 
@@ -72,18 +88,27 @@ export const verifyExecutionCommand = new Command("verify-execution")
   .description("Verify deterministic receipt integrity for an execution")
   .argument("<execution_id>")
   .action(async (executionId: string) => {
+    const json = resolveJsonFallbackFromEnv();
+    const log = createCliLogger({ isJSONFallback: json });
     const report = await verifyLedgerEntry(executionId);
     if (!report) {
-      console.error(chalk.red(`Execution ${executionId} not found in ledger.`));
+      log.error(`Execution ${executionId} not found in ledger.`);
       process.exit(1);
     }
 
-    console.log(`execution=${report.executionId}`);
-    console.log(`receipt_integrity=${report.receiptIntegrity}`);
-    console.log(`hash_correct=${report.hashMatches}`);
-    console.log(`replay_compatible=${report.replayCompatible}`);
-    console.log(`expected_hash=${report.expectedHash}`);
-    console.log(`computed_hash=${report.computedHash}`);
+    const lines = [
+      `execution=${report.executionId}`,
+      `receipt_integrity=${report.receiptIntegrity}`,
+      `hash_correct=${report.hashMatches}`,
+      `replay_compatible=${report.replayCompatible}`,
+      `expected_hash=${report.expectedHash}`,
+      `computed_hash=${report.computedHash}`,
+    ];
+    if (json) {
+      lines.forEach((line) => log.detail(line));
+    } else {
+      lines.forEach((line) => log.rawLine(line));
+    }
 
     if (!report.receiptIntegrity || !report.hashMatches || !report.replayCompatible) {
       process.exit(1);
@@ -127,9 +152,11 @@ export const exportLedgerCommand = new Command("export-ledger")
       };
       await fs.writeFile(outPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
     } else {
-      console.error(chalk.red("Unsupported format. Use json|csv|signed."));
+      const log = createCliLogger({ isJSONFallback: resolveJsonFallbackFromEnv() });
+      log.error("Unsupported format. Use json|csv|signed.");
       process.exit(1);
     }
 
-    console.log(chalk.green(`Wrote ${entries.length} receipts to ${outPath}`));
+    const log = createCliLogger({ isJSONFallback: resolveJsonFallbackFromEnv() });
+    log.success(`Wrote ${entries.length} receipts to ${outPath}`);
   });

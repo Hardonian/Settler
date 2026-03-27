@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Section } from "@/components/marketing/Section";
+import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
 import { Button } from "@/components/ui/button";
 import { UiLink } from "@/components/ui/link";
 import { Badge } from "@/components/ui/badge";
@@ -149,7 +150,10 @@ export default function PlatformPage() {
 
       {/* Platform layers */}
       <Section className="py-16" containerClassName="max-w-6xl">
-        <h2 className="text-2xl font-bold text-foreground mb-10">Platform Architecture</h2>
+        <MarketingSectionHeader
+          title="Platform Architecture"
+          description="Layers you operate: deterministic matching, review, governance, and replayable evidence—each inspectable end to end."
+        />
         <div className="grid gap-6 sm:grid-cols-2">
           {platformLayers.map((layer) => {
             const Icon = layer.icon;
