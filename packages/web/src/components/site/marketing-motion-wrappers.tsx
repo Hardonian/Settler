@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Children, type ReactNode } from "react";
 import {
   MotionFadeIn,
@@ -29,6 +29,7 @@ export function MarketingIntentCard({ children }: { children: ReactNode }) {
 }
 
 export function MarketingStaggeredFeatureGrid({ children }: { children: ReactNode }) {
+  const reduceMotion = useReducedMotion();
   return (
     <motion.div
       className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
@@ -38,7 +39,9 @@ export function MarketingStaggeredFeatureGrid({ children }: { children: ReactNod
       variants={{
         hidden: {},
         show: {
-          transition: { staggerChildren: 0.06, delayChildren: 0.04 },
+          transition: reduceMotion
+            ? { staggerChildren: 0, delayChildren: 0 }
+            : { staggerChildren: 0.06, delayChildren: 0.04 },
         },
       }}
     >
@@ -46,11 +49,11 @@ export function MarketingStaggeredFeatureGrid({ children }: { children: ReactNod
         <motion.div
           key={index}
           variants={{
-            hidden: { opacity: 0, y: 12 },
+            hidden: reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 },
             show: {
               opacity: 1,
               y: 0,
-              transition: { duration: 0.28, ease: easeSnappy },
+              transition: { duration: reduceMotion ? 0 : 0.28, ease: easeSnappy },
             },
           }}
         >

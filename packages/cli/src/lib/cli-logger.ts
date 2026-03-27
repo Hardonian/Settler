@@ -18,6 +18,15 @@ function formatPlainLine(level: CliLogLevel, message: string): string {
   return `[${LEVEL_LABEL[level]}] ${message}`;
 }
 
+/** Human-friendly section header (skipped in JSON/CI mode) */
+export function formatCliSection(title: string, json: boolean): string {
+  if (json) {
+    return "";
+  }
+  const line = "─".repeat(Math.min(48, Math.max(title.length + 4, 24)));
+  return `\n${line}\n${title}\n${line}\n`;
+}
+
 /**
  * Structured CLI logger: strict levels, optional JSON/CI mode (no chalk, no icons).
  */
@@ -79,6 +88,14 @@ export function createCliLogger(options: CliLoggerOptions = {}) {
         return;
       }
       console.log(chalk.gray(message));
+    },
+
+    /** Section header for long flows — no-op in JSON mode */
+    section: (title: string): void => {
+      const block = formatCliSection(title, json);
+      if (block) {
+        console.log(chalk.bold.cyan(block.trimEnd()));
+      }
     },
   };
 }

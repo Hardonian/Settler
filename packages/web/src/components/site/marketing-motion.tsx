@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, type HTMLMotionProps } from "framer-motion";
+import { motion, useReducedMotion, type HTMLMotionProps } from "framer-motion";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
@@ -15,12 +15,13 @@ export function MotionFadeIn({
   children,
   ...rest
 }: HTMLMotionProps<"div"> & { children: ReactNode }) {
+  const reduceMotion = useReducedMotion();
   return (
     <motion.div
       className={cn("will-change-[opacity]", className)}
-      initial={{ opacity: 0 }}
+      initial={reduceMotion ? false : { opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={fadeInTransition}
+      transition={reduceMotion ? { duration: 0 } : fadeInTransition}
       {...rest}
     >
       {children}
@@ -33,12 +34,13 @@ export function MotionSlideUp({
   children,
   ...rest
 }: HTMLMotionProps<"div"> & { children: ReactNode }) {
+  const reduceMotion = useReducedMotion();
   return (
     <motion.div
       className={cn("will-change-[transform,opacity]", className)}
-      initial={{ opacity: 0, y: 14 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={slideUpTransition}
+      transition={reduceMotion ? { duration: 0 } : slideUpTransition}
       {...rest}
     >
       {children}
@@ -53,12 +55,13 @@ export function MotionHeroBlock({
   delay = 0,
   ...rest
 }: HTMLMotionProps<"div"> & { children: ReactNode; delay?: number }) {
+  const reduceMotion = useReducedMotion();
   return (
     <motion.div
       className={cn("will-change-[transform,opacity]", className)}
-      initial={{ opacity: 0, y: 14 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ ...slideUpTransition, delay }}
+      transition={reduceMotion ? { duration: 0 } : { ...slideUpTransition, delay }}
       {...rest}
     >
       {children}
@@ -72,11 +75,12 @@ export function MotionInteractive({
   children,
   ...rest
 }: HTMLMotionProps<"div"> & { children: ReactNode }) {
+  const reduceMotion = useReducedMotion();
   return (
     <motion.div
       className={cn(className)}
-      whileHover={{ y: -2 }}
-      whileTap={{ scale: 0.99 }}
+      whileHover={reduceMotion ? undefined : { y: -2 }}
+      whileTap={reduceMotion ? undefined : { scale: 0.99 }}
       transition={{ type: "spring", stiffness: 420, damping: 28 }}
       {...rest}
     >
