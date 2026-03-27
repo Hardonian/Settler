@@ -11,6 +11,7 @@ import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
 import { safeFetch } from "@/lib/safe-fetch";
+import type { OperatorRunDetail } from "@/types/operator-run-detail";
 import {
   RefreshCw,
   CheckCircle2,
@@ -22,98 +23,10 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-interface RunStage {
-  id: string;
-  name: string;
-  status: "pending" | "running" | "completed" | "failed";
-  startedAt?: string;
-  completedAt?: string;
-  error?: string;
-}
-
-interface Run {
-  runKind?: "recon_job" | "ingestion_run";
-  id: string;
-  name: string;
-  status: "pending" | "running" | "completed" | "failed" | "unknown";
-  statusLabel?: string;
-  isTerminal?: boolean;
-  stages: RunStage[];
-  progress: number;
-  progressState?: "not_started" | "in_progress" | "completed" | "failed" | "unknown";
-  startedAt: string;
-  completedAt?: string;
-  error?: string;
-  summary?: {
-    total: number;
-    sourceCount: number;
-    targetCount: number;
-    matched: number;
-    unmatched: number;
-    unmatchedSourceCount: number;
-    unmatchedTargetCount: number;
-    conflicts: number;
-  };
-  summaryMath?: {
-    sourceCount: number;
-    targetCount: number;
-    matchedCount: number;
-    unmatchedSourceCount: number;
-    unmatchedTargetCount: number;
-    conflictCount: number;
-    note: string;
-  };
-  summaryState?: "success" | "review_needed" | "in_progress" | "failed" | "empty" | "unknown";
-  config?: {
-    sourceAdapter: string | null;
-    targetAdapter: string | null;
-    reconStrategy: string | null;
-    templateId: string | null;
-    validationRuleCount: number;
-    validationRuleLabels: string[];
-    ruleVersionCount: number;
-    ruleVersionLabels: string[];
-    snapshotId: string | null;
-    inputHash: string | null;
-    configSource: "snapshot" | "job_definition";
-    configCapturedAt: string | null;
-    definitionDriftDetected: boolean;
-    definitionDriftNotes: string[];
-    summaryBasis: string;
-  };
-  resultContext?: {
-    latestResultId: string | null;
-    latestResultStatus: string | null;
-    latestResultStartedAt: string | null;
-    latestResultCompletedAt: string | null;
-    persistedResultCount: number;
-    comparison?: {
-      previousResultId: string;
-      previousResultStartedAt: string | null;
-      deltaMatched: number;
-      deltaUnmatched: number;
-      deltaConflicts: number;
-      snapshotChanged: boolean;
-      inputHashChanged: boolean;
-    } | null;
-  };
-  exceptions?: {
-    total: number;
-    pending: number;
-    investigating: number;
-    resolved: number;
-    ignored: number;
-    reviewRequired: number;
-  };
-  exceptionWorkflowNote?: string;
-  metadata?: Record<string, unknown>;
-  traceId?: string | null;
-}
-
 export default function RunPage() {
   const params = useParams();
   const runId = params.runId as string;
-  const [run, setRun] = useState<Run | null>(null);
+  const [run, setRun] = useState<OperatorRunDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
@@ -130,7 +43,7 @@ export default function RunPage() {
 
   const loadRun = async () => {
     setLoading(true);
-    const result = await safeFetch<Run>(`/api/runs/${runId}`);
+    const result = await safeFetch<OperatorRunDetail>(`/api/runs/${runId}`);
 
     if (result.success && result.data) {
       setRun(result.data);
@@ -142,7 +55,7 @@ export default function RunPage() {
     setLoading(false);
   };
 
-  const getStatusIcon = (status: Run["status"]) => {
+  const getStatusIcon = (status: OperatorRunDetail["status"]) => {
     switch (status) {
       case "completed":
         return CheckCircle2;
@@ -157,7 +70,7 @@ export default function RunPage() {
     }
   };
 
-  const getStatusColor = (status: Run["status"]) => {
+  const getStatusColor = (status: OperatorRunDetail["status"]) => {
     switch (status) {
       case "completed":
         return "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300";

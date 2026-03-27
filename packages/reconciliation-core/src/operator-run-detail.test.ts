@@ -112,7 +112,7 @@ describe("operator run detail serializer", () => {
       },
       rowRationaleCodes: ["deterministic_exact"],
       rowResultsPreview: [{ id: "row-1" }],
-      stages: [{ id: "stage-1" }],
+      stages: [{ id: "stage-1", name: "Stage one", status: "completed" }],
     });
 
     expect(payload.runKind).toBe("recon_job");
@@ -144,7 +144,14 @@ describe("operator run detail serializer", () => {
 
     const payload = buildOperatorIngestionRunDetailJson({
       detail,
-      stages: [{ id: "ingestion-reconciliation" }],
+      stages: [
+        {
+          id: "ingestion-reconciliation",
+          name: "Ingestion reconciliation",
+          status: "failed",
+          error: "bad csv",
+        },
+      ],
     });
 
     expect(payload.runKind).toBe("ingestion_run");

@@ -19,6 +19,7 @@ import {
   buildOperatorIngestionRunDetailJson,
   buildOperatorReconRunDetailJson,
   type OperatorRunDetail,
+  type OperatorRunStageRow,
 } from "./operator-run-detail.js";
 import { resolveReconciliationRunForTenants, type ResolvedReconciliationRunForTenants } from "./run-resolution.js";
 import { buildRunConfigurationSummary, type RunConfigurationSummary } from "./run-configuration-summary.js";
@@ -120,7 +121,7 @@ function runConfigurationToOperatorConfig(summary: RunConfigurationSummary) {
 
 function buildIngestionStages(
   resolved: Extract<ResolvedReconciliationRunForTenants, { kind: "ingestion_run" }>
-) {
+): OperatorRunStageRow[] {
   const stageStatus: "pending" | "running" | "completed" | "failed" =
     resolved.detail.lifecycle.status === "completed"
       ? "completed"

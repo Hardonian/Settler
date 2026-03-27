@@ -101,6 +101,16 @@ type OperatorKindDetail =
       };
     };
 
+/** Audit-derived or synthetic stage rows emitted with operator run detail JSON */
+export interface OperatorRunStageRow {
+  id: string;
+  name: string;
+  status: "pending" | "running" | "completed" | "failed";
+  startedAt?: string;
+  completedAt?: string;
+  error?: string;
+}
+
 export interface OperatorRunDetailBase {
   runKind: "recon_job" | "ingestion_run";
   sourceModel: "recon_jobs" | "reconciliation_runs";
@@ -146,7 +156,7 @@ export interface OperatorRunDetailBase {
   exceptions: OperatorExceptions;
   rowRationale: { available: boolean; rowCount: number; codes: string[] };
   rowResultsPreview: unknown[];
-  stages: unknown[];
+  stages: OperatorRunStageRow[];
   metadata?: Record<string, unknown>;
   traceId?: string | null;
   exceptionWorkflowNote?: string;
@@ -212,7 +222,7 @@ function baseFromCanonical(
 
 export function buildOperatorIngestionRunDetailJson(input: {
   detail: CanonicalReconciliationRunDetail;
-  stages: unknown[];
+  stages: OperatorRunStageRow[];
 }): OperatorRunDetail {
   const startedAt = input.detail.timestamps.startedAt ?? input.detail.timestamps.createdAt;
   const completedAt = input.detail.timestamps.completedAt;
@@ -295,7 +305,7 @@ export function buildOperatorReconRunDetailJson(input: {
   exceptions: OperatorExceptions;
   rowRationaleCodes: string[];
   rowResultsPreview: unknown[];
-  stages: unknown[];
+  stages: OperatorRunStageRow[];
 }): OperatorRunDetail {
   const base = baseFromCanonical(input.detail, input.startedAt, input.completedAt);
 
