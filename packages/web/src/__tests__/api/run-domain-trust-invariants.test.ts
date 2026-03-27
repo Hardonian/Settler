@@ -14,6 +14,10 @@ const requireAuthMock = jest.fn();
 const authenticateApiKeyMock = jest.fn();
 const reconJobFindFirstMock = jest.fn();
 const reconResultFindFirstMock = jest.fn();
+const reconResultFindManyMock = jest.fn();
+const reconResultCountMock = jest.fn();
+const runSnapshotFindFirstMock = jest.fn();
+const reconAuditFindManyMock = jest.fn();
 const reconciliationRunFindFirstMock = jest.fn();
 const prismaQueryRawMock = jest.fn();
 
@@ -55,6 +59,14 @@ jest.mock("@/shared/db/prismaClient", () => ({
     },
     reconResult: {
       findFirst: (...args: unknown[]) => reconResultFindFirstMock(...args),
+      findMany: (...args: unknown[]) => reconResultFindManyMock(...args),
+      count: (...args: unknown[]) => reconResultCountMock(...args),
+    },
+    runSnapshot: {
+      findFirst: (...args: unknown[]) => runSnapshotFindFirstMock(...args),
+    },
+    reconAudit: {
+      findMany: (...args: unknown[]) => reconAuditFindManyMock(...args),
     },
   },
 }));
@@ -121,17 +133,12 @@ describe("run domain trust invariants", () => {
     authenticateApiKeyMock.mockReset();
     reconJobFindFirstMock.mockReset();
     reconResultFindFirstMock.mockReset();
+    reconResultFindManyMock.mockReset();
+    reconResultCountMock.mockReset();
+    runSnapshotFindFirstMock.mockReset();
+    reconAuditFindManyMock.mockReset();
     reconciliationRunFindFirstMock.mockReset();
     prismaQueryRawMock.mockReset();
-    prismaQueryRawMock.mockResolvedValue([
-      {
-        total: 0,
-        pending: 0,
-        investigating: 0,
-        resolved: 0,
-        ignored: 0,
-      },
-    ]);
   });
 
   test("run detail read blocks cross-tenant access", async () => {
@@ -171,7 +178,7 @@ describe("run domain trust invariants", () => {
       recon_strategy: "deterministic",
     };
 
-    reconJobFindFirstMock.mockResolvedValue({
+    const prismaJob = {
       id: runRow.id,
       tenantId: "tenant-a",
       name: runRow.name,
@@ -186,7 +193,9 @@ describe("run domain trust invariants", () => {
       sourceConfigEncrypted: "enc-src",
       targetConfigEncrypted: "enc-tgt",
       metadata: {},
-    });
+    };
+
+    reconJobFindFirstMock.mockResolvedValue(prismaJob);
     reconciliationRunFindFirstMock.mockResolvedValue(null);
 
     const latestResult = {
@@ -207,7 +216,7 @@ describe("run domain trust invariants", () => {
       snapshot_id: "snapshot-1",
     };
 
-    reconResultFindFirstMock.mockResolvedValue({
+    const latestResultPrisma = {
       id: latestResult.id,
       reconJobId: runRow.id,
       tenantId: "tenant-a",
@@ -225,94 +234,41 @@ describe("run domain trust invariants", () => {
       snapshotId: latestResult.snapshot_id,
       summary: null,
       metadata: latestResult.metadata,
-    });
-
-    const supabase = {
-      from: jest.fn((table: string) => {
-        if (table === "recon_jobs") {
-          return {
-            select: jest.fn(() => ({
-              eq: jest.fn(() => ({
-                eq: jest.fn(() => ({
-                  single: jest.fn(async () => ({ data: runRow, error: null })),
-                })),
-              })),
-            })),
-          };
-        }
-
-        if (table === "recon_results") {
-          return {
-            select: jest.fn((_fields: string, options?: { count?: string; head?: boolean }) => {
-              if (options?.head) {
-                return {
-                  eq: jest.fn(() => ({
-                    eq: jest.fn(async () => ({ count: 1, error: null })),
-                  })),
-                };
-              }
-
-              return {
-                eq: jest.fn(() => ({
-                  eq: jest.fn(() => ({
-                    order: jest.fn(() => ({
-                      limit: jest.fn(async () => ({ data: [latestResult], error: null })),
-                    })),
-                  })),
-                })),
-              };
-            }),
-          };
-        }
-
-        if (table === "run_snapshots") {
-          return {
-            select: jest.fn(() => ({
-              eq: jest.fn(() => ({
-                eq: jest.fn(() => ({
-                  maybeSingle: jest.fn(async () => ({
-                    data: {
-                      id: "snapshot-1",
-                      input_hash: "hash-1",
-                      job_config: {
-                        reconStrategy: "deterministic",
-                        validationRules: [
-                          { field: "amount", tolerance: 0.01 },
-                          { field: "date", window: "24h" },
-                        ],
-                        templateId: "tpl-1",
-                      },
-                      rule_versions: [{ ruleId: "rule-amount", version: 2 }],
-                      created_at: "2026-01-01T00:09:00.000Z",
-                    },
-                    error: null,
-                  })),
-                })),
-              })),
-            })),
-          };
-        }
-
-        if (table === "recon_audits") {
-          return {
-            select: jest.fn(() => ({
-              eq: jest.fn(() => ({
-                eq: jest.fn(() => ({
-                  order: jest.fn(() => ({
-                    limit: jest.fn(async () => ({ data: [], error: null })),
-                  })),
-                })),
-              })),
-            })),
-          };
-        }
-
-        throw new Error(`Unexpected table access: ${table}`);
-      }),
     };
 
+    reconResultFindFirstMock.mockResolvedValue(latestResultPrisma);
+    reconResultFindManyMock.mockResolvedValue([latestResultPrisma]);
+    reconResultCountMock.mockResolvedValue(1);
+    runSnapshotFindFirstMock.mockResolvedValue({
+      id: "snapshot-1",
+      inputHash: "hash-1",
+      adapterConfigHashes: {},
+      jobConfig: {
+        reconStrategy: "deterministic",
+        validationRules: [
+          { field: "amount", tolerance: 0.01 },
+          { field: "date", window: "24h" },
+        ],
+        templateId: "tpl-1",
+      },
+      ruleVersions: [{ ruleId: "rule-amount", version: 2 }],
+      createdAt: new Date("2026-01-01T00:09:00.000Z"),
+    });
+    reconAuditFindManyMock.mockResolvedValue([]);
+    prismaQueryRawMock
+      .mockResolvedValueOnce([
+        {
+          total: 0,
+          pending: 0,
+          investigating: 0,
+          resolved: 0,
+          ignored: 0,
+        },
+      ])
+      .mockResolvedValue([]);
+
     resolveTenantMembershipScopeMock.mockResolvedValue({
-      supabase,
+      supabase: { from: jest.fn() },
       userId: "user-a",
       tenantIds: ["tenant-a"],
     });

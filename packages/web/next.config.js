@@ -104,7 +104,6 @@ const nextConfig = {
     "@settler/react-settler",
     "@settler/protocol",
     "@settler/types",
-    "@settler/reconciliation-core",
   ],
   webpack: (config, { isServer }) => {
     // Ensure webpack can resolve path aliases in dynamic imports
@@ -115,6 +114,11 @@ const nextConfig = {
       alias: {
         ...originalResolve.alias,
         "@": path.resolve(__dirname, "src"),
+        // Align with packages/web/tsconfig.json paths: consume `dist` so ESM `./foo.js` re-exports resolve.
+        "@settler/reconciliation-core": path.resolve(
+          __dirname,
+          "../reconciliation-core/dist/index.js"
+        ),
         "@settler/api/lib/email-lifecycle": path.resolve(
           __dirname,
           "../api/dist/lib/email-lifecycle.js"

@@ -5,7 +5,7 @@ Console run surfaces (list + detail) use `@settler/reconciliation-core` merged p
 Canonical contract notes:
 
 - `runs` is the canonical operator-truth surface (list + detail).
-- `/api/runs/[id]` detail payloads are serialized via `OperatorRunDetail` in `@settler/reconciliation-core` for both `recon_job` and `ingestion_run`.
+- `/api/runs/[id]` delegates tenant-scoped resolution, enrichment (results, snapshots, audits, drift aggregates, deterministic previews), and serialization to `resolveOperatorRunDetailForTenants` in `@settler/reconciliation-core`, which emits `OperatorRunDetail` for both `recon_job` and `ingestion_run`.
 - Any `reconciliations` list exposure is compatibility-only and remains fenced to legacy scope metadata in console list responses.
 
 | Method | Path               | Criticality | Auth | Tenant | Test    | Source                                          |
