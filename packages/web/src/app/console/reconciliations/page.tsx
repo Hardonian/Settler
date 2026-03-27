@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
+import { ConsoleListRow } from "@/components/console/console-list-row";
 import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
 import { ReconciliationView } from "@/components/console/ReconciliationView";
 import { safeFetch } from "@/lib/safe-fetch";
@@ -165,9 +166,23 @@ export default function ReconciliationsPage() {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="space-y-3">
+            <div className="space-y-4" aria-busy="true" aria-label="Loading recent runs">
               {Array.from({ length: 3 }).map((_, index) => (
-                <Skeleton key={index} className="h-20 w-full" />
+                <div
+                  key={index}
+                  className="rounded-xl border border-border bg-card/40 p-4 space-y-3"
+                >
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Skeleton className="h-5 w-40" />
+                    <Skeleton className="h-5 w-20 rounded-full" />
+                    <Skeleton className="h-5 w-24 rounded-full" />
+                  </div>
+                  <Skeleton className="h-4 w-72 max-w-full" />
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <Skeleton className="h-9 w-32" />
+                    <Skeleton className="h-9 w-36" />
+                  </div>
+                </div>
               ))}
             </div>
           ) : error ? (
@@ -198,7 +213,7 @@ export default function ReconciliationsPage() {
                 const StatusIcon = getStatusIcon(run.status);
 
                 return (
-                  <div key={run.id} className="rounded-xl border border-border p-4">
+                  <ConsoleListRow key={run.id}>
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                       <div className="space-y-2">
                         <div className="flex flex-wrap items-center gap-2">
@@ -222,10 +237,19 @@ export default function ReconciliationsPage() {
                           </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          Started {new Date(run.startedAt).toLocaleString()}
-                          {run.completedAt
-                            ? ` • Completed ${new Date(run.completedAt).toLocaleString()}`
-                            : ""}
+                          Started{" "}
+                          <time dateTime={run.startedAt}>
+                            {new Date(run.startedAt).toLocaleString()}
+                          </time>
+                          {run.completedAt ? (
+                            <>
+                              {" "}
+                              • Completed{" "}
+                              <time dateTime={run.completedAt}>
+                                {new Date(run.completedAt).toLocaleString()}
+                              </time>
+                            </>
+                          ) : null}
                         </p>
                         {run.summary && (
                           <p className="text-sm text-muted-foreground">
@@ -253,7 +277,7 @@ export default function ReconciliationsPage() {
                         ) : null}
                       </div>
                     </div>
-                  </div>
+                  </ConsoleListRow>
                 );
               })}
             </div>
