@@ -27,9 +27,9 @@ const guideCategories = [
     icon: Zap,
     description: "Quick start guides for developers and financial operations teams.",
     links: [
-      { name: "5-Minute Introduction", href: "/docs/intro" },
-      { name: "Core Architecture Concepts", href: "/docs/architecture" },
-      { name: "Install the CLI & SDK", href: "/docs/installation" },
+      { name: "5-Minute Introduction", href: "/docs/quickstart" },
+      { name: "Core Architecture Concepts", href: "/docs/architecture/platform-architecture" },
+      { name: "Install the CLI & SDK", href: "/docs/getting-started" },
     ],
   },
   {
@@ -37,8 +37,8 @@ const guideCategories = [
     icon: Code,
     description: "Master the TypeScript-based protocol for defining reconciliation logic.",
     links: [
-      { name: "Writing your first Policy", href: "/docs/policies" },
-      { name: "Invariants & Match Assertions", href: "/docs/assertions" },
+      { name: "Writing your first Policy", href: "/docs/cli" },
+      { name: "Invariants & Match Assertions", href: "/docs/errors" },
       { name: "Deterministic Replay Config", href: "/docs/replay-lab" },
     ],
   },
@@ -47,9 +47,9 @@ const guideCategories = [
     icon: Settings,
     description: "Connect Settler to your existing data sources and cloud providers.",
     links: [
-      { name: "Database Adapters (SQL/NoSQL)", href: "/docs/adapters" },
-      { name: "Webhook & Event Sync", href: "/docs/sync" },
-      { name: "Self-Hosted Deployment", href: "/docs/deploy" },
+      { name: "Database Adapters (SQL/NoSQL)", href: "/docs/integrations" },
+      { name: "Webhook & Event Sync", href: "/docs/webhooks" },
+      { name: "Self-Hosted Deployment", href: "/docs/launch" },
     ],
   },
   {
@@ -57,9 +57,9 @@ const guideCategories = [
     icon: ShieldCheck,
     description: "Operational best practices for auditability and compliance.",
     links: [
-      { name: "Proof Graph Integrity", href: "/docs/proof-explorer" },
-      { name: "Role-Based Access Control", href: "/docs/rbac" },
-      { name: "Auditor Access Protocol", href: "/docs/auditor" },
+      { name: "Proof Graph Integrity", href: "/console/proof-explorer" },
+      { name: "Role-Based Access Control", href: "/docs/auth" },
+      { name: "Auditor Access Protocol", href: "/security-and-audit" },
     ],
   },
 ];

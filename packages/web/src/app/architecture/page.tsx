@@ -65,7 +65,7 @@ export default function ArchitecturePage() {
           </div>
           <div className="flex justify-center gap-6">
             <Button asChild size="lg" className="h-14 px-8 text-lg font-bold gap-2">
-              <Link href="/docs/architecture">
+              <Link href="/docs/architecture/platform-architecture">
                 Read the Spec
                 <ArrowRight size={18} />
               </Link>

@@ -45,6 +45,7 @@ const EXEMPT_ROUTE_RULES: ExemptionRule[] = [
   { prefix: "/api/status", reason: "status endpoint (no tenant data contract)" },
   { prefix: "/api/docs", reason: "docs endpoint (public by design)" },
   { prefix: "/api/public", reason: "public endpoint namespace" },
+  { prefix: "/api/demo/", reason: "public demo dataset (read-only showcase; not tenant-scoped)" },
   { prefix: "/api/seo", reason: "SEO/public metadata route" },
   { prefix: "/api/stripe/webhook", reason: "signed webhook endpoint" },
   { prefix: "/api/cron/", reason: "scheduled system endpoint" },

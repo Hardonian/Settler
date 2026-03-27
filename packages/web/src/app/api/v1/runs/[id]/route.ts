@@ -1,3 +1,11 @@
+/**
+ * GET /api/v1/runs/[id] — compatibility-only recon-job summary for the v1 API surface.
+ *
+ * Canonical operator run detail (recon_job + ingestion_run, `OperatorRunDetail`) is served by
+ * GET `/api/runs/[id]` via `resolveOperatorRunDetailForTenants` in `@settler/reconciliation-core`.
+ * This route intentionally keeps the legacy v1 envelope; do not treat it as the canonical
+ * operator detail contract.
+ */
 import { NextRequest, NextResponse } from "next/server";
 import {
   applyRateLimit,

@@ -7,7 +7,7 @@ This repository uses a staged verification runner (`scripts/verify-release.mjs`)
 | Tier       | Command                   | Scope                                                                                              | Goal                                                           |
 | ---------- | ------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
 | pre-commit | `.husky/pre-commit`       | staged lint/format + conflict marker + staged package lint only                                    | fast, low-memory, catches obvious local regressions            |
-| pre-push   | `.husky/pre-push`         | `verify:fast` (lint/typecheck/claims/boundaries/routes/security static checks)                     | broader local confidence without full release runtime workload |
+| pre-push   | `.husky/pre-push`         | `verify:fast` (lint/typecheck/claims/boundaries/routes/security; **no** internal link crawl)         | broader local confidence without full release runtime workload |
 | CI/release | `pnpm run verify:release` | full staged pipeline including build, runtime smoke, tests, launch evidence, and security evidence | release integrity and auditable proof                          |
 
 If pre-commit fails due local constraints, run `pnpm run verify:fast` manually before push; do not normalize `--no-verify`.
@@ -16,7 +16,9 @@ If pre-commit fails due local constraints, run `pnpm run verify:fast` manually b
 
 | Command                                   | Purpose                                                                                                               | Typical duration | Output                                                           |
 | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------: | ---------------------------------------------------------------- |
-| `pnpm run verify:fast`                    | Fast local + PR gate checks (policy, lint, typecheck, route, boundary, and static security controls).                 |         2-12 min | `artifacts/verification/<run-id>/summary.{json,md}` + stage logs |
+| `pnpm run verify:fast`                    | Fast release-critical gates (policy, lint, typecheck, route smoke, boundaries, static security). Internal marketing/docs link integrity is **not** included; use `pnpm run verify:internal-links` or `pnpm run verify:fast:with-links`. |         2-12 min | `artifacts/verification/<run-id>/summary.{json,md}` + stage logs |
+| `pnpm run verify:internal-links`          | Regenerates `qa/route-registry.json`, extracts internal links, fails on dead hrefs. Same engine as `qa:links`. |           <1 min | Console output |
+| `pnpm run verify:fast:with-links`         | Same stages as historical `verify:fast` when it included link integrity: runs `verify:fast` stages **plus** internal link crawl. |        2-13 min | Same as `verify:fast` |
 | `pnpm run verify:build`                   | Isolated production build stage.                                                                                      |         3-20 min | Same summary/log artifacts                                       |
 | `pnpm run verify:test`                    | Isolated core test stage.                                                                                             |         2-25 min | Same summary/log artifacts                                       |
 | `pnpm run verify:release` (`verify:full`) | Full release gate including runtime security smoke + launch capture + launch artifact + security evidence validation. |         8-45 min | Same summary/log artifacts                                       |
@@ -77,7 +79,8 @@ node scripts/verify-release.mjs --profile=artifacts
 
 Use the `release-verify` workflow:
 
-- `verify-fast` runs fast static gates.
+- `verify-fast` runs fast static gates (`verify:fast`, release-critical only).
+- `verify-internal-links` runs `pnpm run verify:internal-links` (route registry + dead-link scan).
 - `security-supply-chain` runs dependency CVE scan + SBOM generation and uploads artifacts.
 - `verify-release` downloads those security artifacts and enforces `RELEASE_REQUIRE_SECURITY_EVIDENCE=1`.
 - Release soft-skip requires explicit workflow input (`allow_audit_soft_skip=true`).

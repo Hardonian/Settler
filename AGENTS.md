@@ -28,7 +28,8 @@ Or use the combined command: `pnpm run dev:stack` (starts API + Web together).
 - **Sentry blocks production builds**: The `@sentry/nextjs` v7 plugin runs `sentry-cli` even when `disable: true`. Production builds (`pnpm build`) fail without valid Sentry credentials. Dev mode (`next dev`) is unaffected.
 - **Database schema**: The golden schema migration at `supabase/migrations/20240101000000_settler_golden_schema.sql` requires `analytics`, `auth`, and `app_private` schemas pre-created. Run with `BEGIN`/`COMMIT` removed for non-Supabase PostgreSQL.
 - **Node.js 24 required**: The `engines` field requires `>=24.0.0 <25.0.0`. Use `nvm use 24` before running any commands.
-- **Husky hooks**: Pre-commit runs lint-staged and conflict-marker checks. Pre-push runs `pnpm verify:fast`.
+- **Husky hooks**: Pre-commit runs lint-staged and conflict-marker checks. Pre-push runs `pnpm verify:fast` (release-critical gates only; internal link integrity is `pnpm verify:internal-links` or CI job `verify-internal-links`).
+- **`@settler/reconciliation-core`**: Web `package.json` runs `prebuild` → `pnpm --filter @settler/reconciliation-core run build` so `dist/` is current before `next build`; the package is also listed in `transpilePackages` for dev-time resolution.
 
 ### Lint / Test / Build
 

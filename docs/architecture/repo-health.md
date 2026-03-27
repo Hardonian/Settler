@@ -131,7 +131,8 @@ No critical CVEs requiring immediate action identified at time of report.
 
 | Script             | Command                                       | Status |
 | ------------------ | --------------------------------------------- | ------ |
-| `verify:fast`      | `pnpm verify:fast`                            | ✅     |
+| `verify:fast`      | `pnpm verify:fast` (lint/typecheck/routes/security; no internal link crawl) | ✅     |
+| `verify:internal-links` | `pnpm verify:internal-links` (regenerates route registry + dead-link scan) | ✅     |
 | `verify:full`      | `pnpm verify:full`                            | ✅     |
 | `verify:schema`    | `tsx scripts/verify-schema.ts`                | ✅     |
 | `verify:contracts` | `tsx scripts/check-contract-compatibility.ts` | ✅     |
@@ -145,7 +146,7 @@ No critical CVEs requiring immediate action identified at time of report.
 1. **Pin Node version** in `.nvmrc` and `Dockerfile` to `24.x` consistently (already required in `package.json` engines).
 2. **Add `SECURITY_AUDIT_ALLOW_UNAVAILABLE` documentation** to `.env.example` for CI environments without registry access.
 3. **Benchmark harness** should be run quarterly; results committed to `docs/performance/`.
-4. **Tenant isolation tests** should be included in every PR CI run via `verify:fast`.
+4. **Tenant isolation tests** should be included in every PR CI run via `verify:fast`; **internal link integrity** is enforced separately (`verify:internal-links` / CI `verify-internal-links`).
 
 ---
 

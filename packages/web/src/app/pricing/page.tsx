@@ -26,7 +26,7 @@ const plans = [
       "Self-managed Infrastructure",
     ],
     cta: "Download OSS",
-    href: "/docs/oss-setup",
+    href: "/docs/getting-started",
     icon: Globe,
     popular: false,
   },
