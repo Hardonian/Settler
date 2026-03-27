@@ -8,6 +8,7 @@ import {
   PlatformOverviewDiagram,
   VisualProofCTA,
 } from "@/components/public-visual-proof";
+import { PageHero, PublicPageShell, Section } from "@/components/site/primitives";
 
 export const metadata: Metadata = {
   title: "Product — Settler",
@@ -17,30 +18,25 @@ export const metadata: Metadata = {
 
 export default function ProductPage() {
   return (
-    <>
+    <PublicPageShell>
       <Navigation />
-      <main
-        id="main-content"
-        className="min-h-screen bg-slate-50 px-4 pb-16 pt-24 dark:bg-slate-950 sm:px-6 lg:px-8"
-      >
-        <div className="mx-auto max-w-6xl space-y-8">
-          <section>
-            <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100">
-              Product architecture and capability proof
-            </h1>
-            <p className="mt-3 max-w-3xl text-slate-600 dark:text-slate-400">
-              A visual view of what is currently shipped: module boundaries, capability clusters,
-              integration points, and packaging boundaries.
-            </p>
-          </section>
-          <PlatformOverviewDiagram />
-          <CapabilityMap />
-          <IntegrationAndPackagingMap />
-          <VisualProofCTA />
-          <RealityEvidencePanel scope="architecture" title="Product proof references" />
-        </div>
+      <main id="main-content" className="pt-16">
+        <PageHero
+          eyebrow="Product"
+          title="Architecture and capability proof"
+          description="A visual view of what is currently shipped: module boundaries, capability clusters, integration points, and packaging boundaries."
+        />
+        <Section className="py-16 sm:py-20">
+          <div className="space-y-16">
+            <PlatformOverviewDiagram />
+            <CapabilityMap />
+            <IntegrationAndPackagingMap />
+            <VisualProofCTA />
+            <RealityEvidencePanel scope="architecture" title="Product proof references" />
+          </div>
+        </Section>
       </main>
       <Footer />
-    </>
+    </PublicPageShell>
   );
 }

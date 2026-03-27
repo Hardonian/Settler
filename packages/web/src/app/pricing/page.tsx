@@ -2,6 +2,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { AnimatedHero } from "@/components/AnimatedHero";
 import { FeatureComparison } from "@/components/FeatureComparison";
+import { CTASection, Section, SectionHeader } from "@/components/site/primitives";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, ArrowRight, Zap, Shield, Globe } from "lucide-react";
@@ -79,12 +80,13 @@ export default function PricingPage() {
       />
 
       {/* Pricing Cards */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {plans.map((plan) => (
+      <Section className="py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative flex flex-col h-full border-border/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${plan.popular ? "border-primary shadow-lg ring-1 ring-primary/20" : ""}`}
+              className={`relative flex h-full flex-col border-border/40 transition-all duration-300 hover:shadow-xl motion-reduce:transition-none motion-reduce:hover:translate-y-0 hover:-translate-y-1 ${plan.popular ? "border-primary shadow-lg ring-1 ring-primary/20" : ""}`}
             >
               {plan.popular && (
                 <div className="absolute top-0 right-1/2 translate-x-1/2 -translate-y-1/2 px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-bold uppercase tracking-widest shadow-lg">
@@ -117,7 +119,7 @@ export default function PricingPage() {
                       <div className="mt-1 rounded-full bg-primary/10 p-1">
                         <Check className="h-3 w-3 text-primary" />
                       </div>
-                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                      <span className="text-sm font-medium text-foreground">
                         {feature}
                       </span>
                     </div>
@@ -136,68 +138,59 @@ export default function PricingPage() {
                 </Button>
               </CardContent>
             </Card>
-          ))}
+            ))}
+          </div>
         </div>
-      </section>
+      </Section>
 
       {/* Feature Comparison */}
       <FeatureComparison />
 
-      {/* Simple FAQ Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto border-t border-border/40">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold mb-4 italic tracking-tight">
-            Frequently Asked Questions
-          </h2>
-          <p className="text-muted-foreground font-medium">
-            Common inquiries regarding Settler deployment and scaling.
-          </p>
+      {/* FAQ */}
+      <Section className="border-t border-border/40 py-16 sm:py-20">
+        <div className="mx-auto max-w-3xl">
+          <SectionHeader
+            title="Frequently asked questions"
+            description="Common questions about deployment, plans, and reconciliation volume."
+          />
+          <div className="mt-10 space-y-10">
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-foreground">Can I switch plans later?</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Absolutely. Our cloud infrastructure supports seamless migration between plans.
+                Downgrading from Commercial to OSS requires setting up your own hosting environment.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-foreground">
+                What constitutes a reconciliation run?
+              </h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                A run is any triggered execution that compares a source and target dataset. Our
+                pricing is based on volume and required data retention rather than just run counts.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-foreground">
+                Is the Enterprise plan available on-prem?
+              </h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Yes. For highly regulated industries, we provide a containerized version of the
+                Settler stack for air-gapped or VPC deployments.
+              </p>
+            </div>
+          </div>
         </div>
+      </Section>
 
-        <div className="space-y-12">
-          <div className="space-y-4">
-            <h3 className="text-lg font-bold">Can I switch plans later?</h3>
-            <p className="text-muted-foreground leading-relaxed">
-              Absolutely. Our cloud infrastructure supports seamless migration between plans.
-              Downgrading from Commercial to OSS requires setting up your own hosting environment.
-            </p>
-          </div>
-          <div className="space-y-4">
-            <h3 className="text-lg font-bold">What constitutes a 'Reconciliation Run'?</h3>
-            <p className="text-muted-foreground leading-relaxed">
-              A run is any triggered execution that compares a source and target dataset. Our
-              pricing is based on volume and required data retention rather than just run counts.
-            </p>
-          </div>
-          <div className="space-y-4">
-            <h3 className="text-lg font-bold">Is the Enterprise plan available on-prem?</h3>
-            <p className="text-muted-foreground leading-relaxed">
-              Yes. For highly regulated industries, we provide a containerized version of the
-              Settler stack for air-gapped or VPC deployments.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Pre-footer CTA */}
-      <section className="py-24 bg-primary/5 border-y border-primary/10">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 tracking-tight italic">
-            Ready to Ensure Integrity?
-          </h2>
-          <p className="text-xl text-muted-foreground mb-10 leading-relaxed font-medium">
-            Join the teams building deterministic financial pipelines with Settler today.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="h-14 px-8 text-lg font-bold">
-              <Link href="/signup">Start Free Trial</Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="h-14 px-8 text-lg font-bold">
-              <Link href="/docs">Read the Docs</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      <CTASection
+        title="Ready to evaluate Settler?"
+        description="Start a trial or read the docs to see how deterministic runs and evidence fit your stack."
+        primaryHref="/signup"
+        primaryLabel="Start free trial"
+        secondaryHref="/docs"
+        secondaryLabel="Read documentation"
+      />
 
       <Footer />
     </div>

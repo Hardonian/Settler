@@ -11,6 +11,8 @@ import { Command } from "commander";
 import Settler from "@settler/sdk";
 import type { ApiKey, UsageSummary } from "@settler/sdk";
 
+import { createCliLogger, resolveJsonFallbackFromEnv } from "../lib/cli-logger";
+
 export const consoleCommand = new Command("console").description("Manage Console resources");
 
 // API Keys subcommand
@@ -20,13 +22,15 @@ apiKeysCommand
   .command("list" as const)
   .description("List all API keys")
   .action(async (options: { parent?: { apiKey?: string; baseUrl?: string } }) => {
+    const json = resolveJsonFallbackFromEnv();
+    const log = createCliLogger({ isJSONFallback: json });
     const parentApiKey = options.parent?.apiKey;
     const parentBaseUrl = options.parent?.baseUrl;
     const apiKey = process.env.SETTLER_API_KEY || parentApiKey || "";
     const baseUrl = parentBaseUrl || process.env.SETTLER_BASE_URL || "https://api.settler.io";
 
     if (!apiKey) {
-      console.error(chalk.red("Error: SETTLER_API_KEY environment variable not set"));
+      log.error("SETTLER_API_KEY environment variable not set");
       process.exit(1);
     }
 
@@ -40,29 +44,46 @@ apiKeysCommand
       const keys = response.data || [];
 
       if (keys.length === 0) {
-        console.log(chalk.yellow("No API keys found."));
+        log.warning("No API keys found.");
         return;
       }
 
-      console.log(chalk.bold("\nAPI Keys:"));
-      console.log("─".repeat(80));
+      log.section("API keys");
       keys.forEach((key: ApiKey) => {
-        console.log(chalk.cyan(`\nID: ${key.id}`));
-        if (key.name) console.log(`Name: ${key.name}`);
-        console.log(`Prefix: ${key.keyPrefix}`);
-        console.log(`Created: ${new Date(key.createdAt).toLocaleString()}`);
-        if (key.lastUsedAt) {
-          console.log(`Last Used: ${new Date(key.lastUsedAt).toLocaleString()}`);
+        if (json) {
+          log.detail(`ID: ${key.id}`);
+          if (key.name) {
+            log.detail(`Name: ${key.name}`);
+          }
+          log.detail(`Prefix: ${key.keyPrefix}`);
+          log.detail(`Created: ${new Date(key.createdAt).toLocaleString()}`);
+          if (key.lastUsedAt) {
+            log.detail(`Last Used: ${new Date(key.lastUsedAt).toLocaleString()}`);
+          }
+          if (key.revokedAt) {
+            log.detail(`Revoked: ${new Date(key.revokedAt).toLocaleString()}`);
+          }
+          log.detail(`Scopes: ${key.scopes.join(", ")}`);
+          log.detail("");
+        } else {
+          log.rawLine("");
+          log.rawLine(chalk.cyan(`ID: ${key.id}`));
+          if (key.name) {
+            log.rawLine(`Name: ${key.name}`);
+          }
+          log.rawLine(`Prefix: ${key.keyPrefix}`);
+          log.rawLine(`Created: ${new Date(key.createdAt).toLocaleString()}`);
+          if (key.lastUsedAt) {
+            log.rawLine(`Last Used: ${new Date(key.lastUsedAt).toLocaleString()}`);
+          }
+          if (key.revokedAt) {
+            log.rawLine(chalk.red(`Revoked: ${new Date(key.revokedAt).toLocaleString()}`));
+          }
+          log.rawLine(`Scopes: ${key.scopes.join(", ")}`);
         }
-        if (key.revokedAt) {
-          console.log(chalk.red(`Revoked: ${new Date(key.revokedAt).toLocaleString()}`));
-        }
-        console.log(`Scopes: ${key.scopes.join(", ")}`);
       });
     } catch (error) {
-      console.error(
-        chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
-      );
+      log.error(error instanceof Error ? error.message : "Unknown error");
       process.exit(1);
     }
   });
@@ -78,12 +99,13 @@ apiKeysCommand
       scopes?: string;
       parent?: { apiKey?: string; baseUrl?: string };
     }) => {
+      const log = createCliLogger({ isJSONFallback: resolveJsonFallbackFromEnv() });
       const apiKey = process.env.SETTLER_API_KEY || options.parent?.apiKey || "";
       const baseUrl =
         options.parent?.baseUrl || process.env.SETTLER_BASE_URL || "https://api.settler.io";
 
       if (!apiKey) {
-        console.error(chalk.red("Error: SETTLER_API_KEY environment variable not set"));
+        log.error("SETTLER_API_KEY environment variable not set");
         process.exit(1);
       }
 
@@ -100,18 +122,16 @@ apiKeysCommand
           scopes: scopes,
         });
 
-        console.log(chalk.green("\n✅ API Key created successfully!\n"));
-        console.log(
-          chalk.yellow("⚠️  IMPORTANT: Save this key now. You won't be able to see it again.\n")
-        );
-        console.log(chalk.bold(`Key: ${data.key}`));
-        console.log(`ID: ${data.id}`);
-        if (data.name) console.log(`Name: ${data.name}`);
-        console.log(`Created: ${new Date(data.createdAt).toLocaleString()}\n`);
+        log.success("API key created successfully.");
+        log.warning("Save this key now. You will not be able to see it again.");
+        log.rawLine(chalk.bold(`Key: ${data.key}`));
+        log.detail(`ID: ${data.id}`);
+        if (data.name) {
+          log.detail(`Name: ${data.name}`);
+        }
+        log.detail(`Created: ${new Date(data.createdAt).toLocaleString()}`);
       } catch (error) {
-        console.error(
-          chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
-        );
+        log.error(error instanceof Error ? error.message : "Unknown error");
         process.exit(1);
       }
     }
@@ -121,17 +141,18 @@ apiKeysCommand
   .command("revoke <id>")
   .description("Revoke an API key")
   .action(async (id: string, options: { parent?: { apiKey?: string; baseUrl?: string } }) => {
+    const log = createCliLogger({ isJSONFallback: resolveJsonFallbackFromEnv() });
     const apiKey = process.env.SETTLER_API_KEY || options.parent?.apiKey || "";
     const baseUrl =
       options.parent?.baseUrl || process.env.SETTLER_BASE_URL || "https://api.settler.io";
 
     if (!apiKey) {
-      console.error(chalk.red("Error: SETTLER_API_KEY environment variable not set"));
+      log.error("SETTLER_API_KEY environment variable not set");
       process.exit(1);
     }
 
     if (!id) {
-      console.error(chalk.red("Error: API key ID required"));
+      log.error("API key ID required");
       process.exit(1);
     }
 
@@ -142,11 +163,9 @@ apiKeysCommand
       });
 
       await client.console.revokeApiKey(id);
-      console.log(chalk.green("✅ API key revoked successfully"));
+      log.success("API key revoked successfully.");
     } catch (error) {
-      console.error(
-        chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
-      );
+      log.error(error instanceof Error ? error.message : "Unknown error");
       process.exit(1);
     }
   });
@@ -159,12 +178,14 @@ usageCommand
   .description("Get usage summary")
   .option("-d, --days <days>", "Number of days", "7")
   .action(async (options: { days?: string; parent?: { apiKey?: string; baseUrl?: string } }) => {
+    const json = resolveJsonFallbackFromEnv();
+    const log = createCliLogger({ isJSONFallback: json });
     const apiKey = process.env.SETTLER_API_KEY || options.parent?.apiKey || "";
     const baseUrl =
       options.parent?.baseUrl || process.env.SETTLER_BASE_URL || "https://api.settler.io";
 
     if (!apiKey) {
-      console.error(chalk.red("Error: SETTLER_API_KEY environment variable not set"));
+      log.error("SETTLER_API_KEY environment variable not set");
       process.exit(1);
     }
 
@@ -187,25 +208,32 @@ usageCommand
         },
       };
 
-      console.log(chalk.bold(`\n📊 Usage Summary (Last ${days} days)`));
-      console.log("─".repeat(80));
-      console.log(`Total API Calls: ${chalk.cyan(summary.totalCalls?.toLocaleString() || 0)}`);
-      console.log(`Error Rate: ${chalk.yellow(((summary.errorRate || 0) * 100).toFixed(2))}%`);
-      console.log(`Active Services: ${chalk.cyan(Object.keys(summary.byService || {}).length)}`);
+      log.section(`Usage summary (last ${days} days)`);
+      if (json) {
+        log.detail(`Total API Calls: ${summary.totalCalls?.toLocaleString() ?? 0}`);
+        log.detail(`Error Rate: ${((summary.errorRate ?? 0) * 100).toFixed(2)}%`);
+        log.detail(`Active Services: ${Object.keys(summary.byService || {}).length}`);
+      } else {
+        log.rawLine(`Total API Calls: ${chalk.cyan(summary.totalCalls?.toLocaleString() ?? "0")}`);
+        log.rawLine(`Error Rate: ${chalk.yellow(((summary.errorRate ?? 0) * 100).toFixed(2))}%`);
+        log.rawLine(`Active Services: ${chalk.cyan(Object.keys(summary.byService || {}).length)}`);
+      }
 
       if (summary.byService && Object.keys(summary.byService).length > 0) {
-        console.log(chalk.bold("\nBy Service:"));
+        log.section("By service");
         const byServiceEntries = Object.entries(summary.byService) as Array<[string, number]>;
         byServiceEntries.forEach(([service, count]) => {
-          console.log(`  ${service}: ${chalk.cyan(count.toLocaleString())} calls`);
+          if (json) {
+            log.detail(`${service}: ${count.toLocaleString()} calls`);
+          } else {
+            log.rawLine(`  ${service}: ${chalk.cyan(count.toLocaleString())} calls`);
+          }
         });
       }
 
-      console.log("");
+      log.detail("");
     } catch (error) {
-      console.error(
-        chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
-      );
+      log.error(error instanceof Error ? error.message : "Unknown error");
       process.exit(1);
     }
   });
@@ -214,12 +242,12 @@ usageCommand
 const healthCommand = new Command("health").description("Check Console health");
 
 healthCommand.action(async (options: { parent?: { baseUrl?: string } }) => {
+  const json = resolveJsonFallbackFromEnv();
+  const log = createCliLogger({ isJSONFallback: json });
   const baseUrl =
     options.parent?.baseUrl || process.env.SETTLER_BASE_URL || "https://api.settler.io";
 
   try {
-    // Health check doesn't require auth, but SDK needs an API key
-    // Use a dummy key for health checks
     const client = new Settler({
       apiKey: "health-check",
       baseUrl,
@@ -227,27 +255,34 @@ healthCommand.action(async (options: { parent?: { baseUrl?: string } }) => {
 
     const data = await client.console.health();
 
-    console.log(chalk.bold("\n🏥 Console Health Check"));
-    console.log("─".repeat(80));
-    console.log(
-      `Status: ${data.status === "healthy" ? chalk.green(data.status) : chalk.red(data.status)}`
-    );
-    console.log(
-      `Environment: ${data.checks.env.status === "ok" ? chalk.green(data.checks.env.status) : chalk.red(data.checks.env.status)}`
-    );
-    console.log(
-      `Supabase: ${data.checks.supabase.status === "ok" ? chalk.green(data.checks.supabase.status) : chalk.red(data.checks.supabase.status)}`
-    );
-    console.log(
-      `Auth: ${data.checks.auth.status === "ok" ? chalk.green(data.checks.auth.status) : chalk.yellow(data.checks.auth.status)}`
-    );
-    console.log(`Timestamp: ${new Date().toLocaleString()}\n`);
+    log.section("Console health");
+    if (json) {
+      log.detail(`Status: ${data.status}`);
+      log.detail(`Environment: ${data.checks.env.status}`);
+      log.detail(`Supabase: ${data.checks.supabase.status}`);
+      log.detail(`Auth: ${data.checks.auth.status}`);
+      log.detail(`Timestamp: ${new Date().toLocaleString()}`);
+    } else {
+      log.rawLine(
+        `Status: ${data.status === "healthy" ? chalk.green(data.status) : chalk.red(data.status)}`
+      );
+      log.rawLine(
+        `Environment: ${data.checks.env.status === "ok" ? chalk.green(data.checks.env.status) : chalk.red(data.checks.env.status)}`
+      );
+      log.rawLine(
+        `Supabase: ${data.checks.supabase.status === "ok" ? chalk.green(data.checks.supabase.status) : chalk.red(data.checks.supabase.status)}`
+      );
+      log.rawLine(
+        `Auth: ${data.checks.auth.status === "ok" ? chalk.green(data.checks.auth.status) : chalk.yellow(data.checks.auth.status)}`
+      );
+      log.rawLine(`Timestamp: ${new Date().toLocaleString()}`);
+    }
 
     if (data.status !== "healthy") {
       process.exit(1);
     }
   } catch {
-    console.error(chalk.red("❌ Health check failed:"), "Unknown error");
+    log.error("Health check failed.");
     process.exit(1);
   }
 });
