@@ -19,12 +19,41 @@ export interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
    * @default 'default'
    */
   size?: "sm" | "default" | "lg";
+
+  /**
+   * Enable vertical scroll + max height (use with sticky TableHeader for dense lists).
+   * @default false
+   */
+  stickyScroll?: boolean;
+
+  /**
+   * Max height class when stickyScroll is true
+   * @default 'max-h-[min(70vh,52rem)]'
+   */
+  scrollMaxHeightClassName?: string;
 }
 
 const Table = React.forwardRef<HTMLTableElement, TableProps>(
-  ({ className, striped = false, hover = false, size: _size = "default", ...props }, ref) => {
+  (
+    {
+      className,
+      striped = false,
+      hover = false,
+      size: _size = "default",
+      stickyScroll = false,
+      scrollMaxHeightClassName = "max-h-[min(70vh,52rem)]",
+      ...props
+    },
+    ref
+  ) => {
     return (
-      <div className="relative w-full overflow-auto">
+      <div
+        className={cn(
+          "relative w-full overflow-x-auto",
+          stickyScroll && "overflow-y-auto",
+          stickyScroll && scrollMaxHeightClassName
+        )}
+      >
         <table
           ref={ref}
           className={cn(
@@ -41,11 +70,23 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
 );
 Table.displayName = "Table";
 
-export type TableHeaderProps = React.HTMLAttributes<HTMLTableSectionElement>;
+export interface TableHeaderProps extends React.HTMLAttributes<HTMLTableSectionElement> {
+  /** Pin header while scrolling the table scroll container (pairs with overflow-auto wrapper). */
+  sticky?: boolean;
+}
 
 const TableHeader = React.forwardRef<HTMLTableSectionElement, TableHeaderProps>(
-  ({ className, ...props }, ref) => (
-    <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
+  ({ className, sticky, ...props }, ref) => (
+    <thead
+      ref={ref}
+      className={cn(
+        "[&_tr]:border-b",
+        sticky &&
+          "[&_th]:sticky [&_th]:top-0 [&_th]:z-[200] [&_th]:bg-card/95 [&_th]:backdrop-blur-sm [&_th]:shadow-[0_1px_0_0_var(--border)]",
+        className
+      )}
+      {...props}
+    />
   )
 );
 TableHeader.displayName = "TableHeader";

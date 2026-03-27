@@ -20,7 +20,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Search, ChevronLeft, ChevronRight, Loader2, AlertCircle, Inbox } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, AlertCircle, Inbox } from "lucide-react";
 import { Button } from "./button";
 import {
   Table,
@@ -116,10 +116,10 @@ function SkeletonRows({ columns, count = 5 }: { columns: number; count?: number 
       {Array.from({ length: count }).map((_, i) => (
         <TableRow key={i} className="border-b border-border/20">
           {Array.from({ length: columns }).map((_, j) => (
-            <TableCell key={j} className="py-3 px-4">
+            <TableCell key={j} className="px-3 py-2.5">
               <div
                 className={cn(
-                  "h-4 rounded bg-muted/60 animate-pulse",
+                  "h-3.5 rounded-md bg-gradient-to-r from-muted/80 via-primary/10 to-muted/80 bg-[length:200%_100%] animate-shimmer motion-reduce:animate-none",
                   j === 0 ? "w-24" : j === columns - 1 ? "w-12 ml-auto" : "w-full max-w-[180px]"
                 )}
               />
@@ -267,11 +267,14 @@ export function DataTable<TRow>({
 
       {/* Table */}
       <CardContent className="p-0">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-muted/20 hover:bg-muted/20 border-b border-border/40">
+        <Table stickyScroll>
+          <TableHeader sticky>
+            <TableRow className="border-b border-border/40 bg-muted/25 hover:bg-muted/25">
               {columns.map((col) => (
-                <TableHead key={col.key} className={col.headerClassName}>
+                <TableHead
+                  key={col.key}
+                  className={cn("h-9 py-2 text-[11px] font-semibold", col.headerClassName)}
+                >
                   {col.header}
                 </TableHead>
               ))}
@@ -291,11 +294,14 @@ export function DataTable<TRow>({
                   onClick={onRowClick ? () => onRowClick(row) : undefined}
                   className={cn(
                     "border-b border-border/20 last:border-0 transition-colors",
-                    onRowClick && "cursor-pointer hover:bg-muted/40"
+                    onRowClick && "cursor-pointer hover:bg-muted/50"
                   )}
                 >
                   {columns.map((col) => (
-                    <TableCell key={col.key} className={col.cellClassName}>
+                    <TableCell
+                      key={col.key}
+                      className={cn("py-2.5 text-[13px] leading-snug", col.cellClassName)}
+                    >
                       {col.cell(row)}
                     </TableCell>
                   ))}

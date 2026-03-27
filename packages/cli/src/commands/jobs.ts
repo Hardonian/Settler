@@ -3,6 +3,8 @@ import { Command } from "commander";
 
 import Settler from "@settler/sdk";
 import type { ReconciliationJob } from "@settler/sdk";
+import { createCliLogger, resolveJsonFallbackFromEnv } from "../lib/cli-logger";
+import { withIndeterminateProgress } from "../lib/cli-progress";
 import { createTraceContext, withTraceHeaders } from "../lib/http";
 
 interface CommandParentOptions {
@@ -23,10 +25,11 @@ jobsCommand
   .command("list")
   .description("List all reconciliation jobs")
   .action(async (options: CommandOptions) => {
+    const log = createCliLogger({ isJSONFallback: resolveJsonFallbackFromEnv() });
     try {
       const apiKey = process.env.SETTLER_API_KEY || options.parent?.apiKey;
       if (!apiKey) {
-        console.error(chalk.red("Error: API key required. Set SETTLER_API_KEY or use --api-key"));
+        log.error("API key required. Set SETTLER_API_KEY or use --api-key");
         process.exit(1);
       }
 
@@ -35,25 +38,28 @@ jobsCommand
         ...(options.parent?.baseUrl ? { baseUrl: options.parent.baseUrl } : {}),
       });
 
-      const response = await client.jobs.list();
+      const response = await withIndeterminateProgress(
+        "Fetching jobs…",
+        resolveJsonFallbackFromEnv(),
+        () => client.jobs.list()
+      );
 
       if (response.data.length === 0) {
-        console.log(chalk.yellow("No jobs found."));
+        log.warning("No jobs found.");
         return;
       }
 
-      console.log(chalk.bold("\nReconciliation Jobs:\n"));
+      log.rawLine("");
+      log.rawLine(chalk.bold("Reconciliation Jobs:"));
       response.data.forEach((job: ReconciliationJob) => {
-        console.log(chalk.cyan(`  ${job.id}`));
-        console.log(`    Name: ${job.name}`);
-        console.log(`    Status: ${job.status}`);
-        console.log(`    Created: ${new Date(job.createdAt).toLocaleString()}`);
-        console.log();
+        log.rawLine(chalk.cyan(`  ${job.id}`));
+        log.rawLine(`    Name: ${job.name}`);
+        log.rawLine(`    Status: ${job.status}`);
+        log.rawLine(`    Created: ${new Date(job.createdAt).toLocaleString()}`);
+        log.rawLine("");
       });
     } catch (error) {
-      console.error(
-        chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
-      );
+      log.error(error instanceof Error ? error.message : "Unknown error");
       process.exit(1);
     }
   });
@@ -71,16 +77,16 @@ jobsCommand
       target?: string;
       parent?: CommandParentOptions;
     }) => {
+      const log = createCliLogger({ isJSONFallback: resolveJsonFallbackFromEnv() });
       try {
         const apiKey = process.env.SETTLER_API_KEY || options.parent?.parent?.apiKey;
         if (!apiKey) {
-          console.error(chalk.red("Error: API key required"));
+          log.error("API key required");
           process.exit(1);
         }
 
-        // In a real CLI, you'd use inquirer for interactive prompts
-        console.log(chalk.yellow("Creating job..."));
-        console.log(chalk.gray("Note: Use the web UI or API for full configuration"));
+        log.warning("Creating job…");
+        log.detail("Note: Use the web UI or API for full configuration");
 
         const client = new Settler({
           apiKey,
@@ -89,30 +95,33 @@ jobsCommand
 
         // Example job creation
         const emptyConfig: Record<string, unknown> = {};
-        const response = await client.jobs.create({
-          name: options.name || "New Reconciliation Job",
-          source: {
-            adapter: options.source || "shopify",
-            config: emptyConfig,
-          },
-          target: {
-            adapter: options.target || "stripe",
-            config: emptyConfig,
-          },
-          rules: {
-            matching: [
-              { field: "order_id" as const, type: "exact" as const },
-              { field: "amount" as const, type: "exact" as const, tolerance: 0.01 },
-            ],
-          },
-        });
-
-        console.log(chalk.green(`\n✓ Job created: ${response.data.id}`));
-        console.log(chalk.gray(`  Name: ${response.data.name}`));
-      } catch (error) {
-        console.error(
-          chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
+        const response = await withIndeterminateProgress(
+          "Submitting job…",
+          resolveJsonFallbackFromEnv(),
+          () =>
+            client.jobs.create({
+              name: options.name || "New Reconciliation Job",
+              source: {
+                adapter: options.source || "shopify",
+                config: emptyConfig,
+              },
+              target: {
+                adapter: options.target || "stripe",
+                config: emptyConfig,
+              },
+              rules: {
+                matching: [
+                  { field: "order_id" as const, type: "exact" as const },
+                  { field: "amount" as const, type: "exact" as const, tolerance: 0.01 },
+                ],
+              },
+            })
         );
+
+        log.success(`Job created: ${response.data.id}`);
+        log.detail(`Name: ${response.data.name}`);
+      } catch (error) {
+        log.error(error instanceof Error ? error.message : "Unknown error");
         process.exit(1);
       }
     }
@@ -123,10 +132,11 @@ jobsCommand
   .description("Run a reconciliation job")
   .option("--wait", "Wait for job completion")
   .action(async (id: string, options: { wait?: boolean; parent?: CommandParentOptions }) => {
+    const log = createCliLogger({ isJSONFallback: resolveJsonFallbackFromEnv() });
     try {
       const apiKey = process.env.SETTLER_API_KEY || options.parent?.apiKey;
       if (!apiKey) {
-        console.error(chalk.red("Error: API key required"));
+        log.error("API key required");
         process.exit(1);
       }
 
@@ -138,11 +148,15 @@ jobsCommand
         baseUrl,
       });
 
-      const response = await client.jobs.run(id);
-      console.log(chalk.green(`\n✓ Job execution started: ${response.data.id}`));
+      const response = await withIndeterminateProgress(
+        "Starting job run…",
+        resolveJsonFallbackFromEnv(),
+        () => client.jobs.run(id)
+      );
+      log.success(`Job execution started: ${response.data.id}`);
 
       if (options.wait) {
-        console.log(chalk.blue("Waiting for completion..."));
+        log.info("Waiting for completion…");
         // Poll for completion
         let completed = false;
         let attempts = 0;
@@ -159,7 +173,7 @@ jobsCommand
               endDate: new Date().toISOString(),
             });
             completed = true;
-            console.log(chalk.green("✓ Job execution completed"));
+            log.success("Job execution completed");
           } catch {
             // Execution might still be running, continue polling
           }
@@ -167,13 +181,11 @@ jobsCommand
         }
 
         if (!completed) {
-          console.log(chalk.yellow("⚠ Job still running after 5 minutes"));
+          log.warning("Job still running after 5 minutes");
         }
       }
     } catch (error) {
-      console.error(
-        chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
-      );
+      log.error(error instanceof Error ? error.message : "Unknown error");
       process.exit(1);
     }
   });

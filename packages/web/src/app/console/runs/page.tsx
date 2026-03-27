@@ -254,26 +254,26 @@ export default function RunsPage() {
     return (
       <div className="space-y-6">
         <div className="space-y-2">
-          <Skeleton className="h-8 w-48" />
-          <Skeleton className="h-4 w-96" />
+          <Skeleton animation="wave" className="h-8 w-48" />
+          <Skeleton animation="wave" className="h-4 w-full max-w-md" />
         </div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {Array.from({ length: 4 }).map((_, index) => (
-            <Card key={index}>
+            <Card key={index} className="border-border/70 shadow-sm">
               <CardHeader className="pb-1 pt-5 px-5">
-                <Skeleton className="h-3 w-20" />
-                <Skeleton className="h-8 w-24 mt-1" />
+                <Skeleton animation="wave" className="h-3 w-20" />
+                <Skeleton animation="wave" className="mt-1 h-8 w-24" />
               </CardHeader>
               <CardContent className="px-5 pb-5">
-                <Skeleton className="h-3 w-40" />
+                <Skeleton animation="wave" className="h-3 w-40" />
               </CardContent>
             </Card>
           ))}
         </div>
-        <Card>
-          <CardContent className="py-6 space-y-4">
+        <Card className="border-border/70 shadow-sm">
+          <CardContent className="space-y-4 py-6">
             {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className="h-36 w-full rounded-xl" />
+              <Skeleton key={i} animation="wave" className="h-36 w-full rounded-xl" />
             ))}
           </CardContent>
         </Card>
@@ -494,29 +494,29 @@ export default function RunsPage() {
           hint={
             filters.status || filters.search || (filters.runKind && filters.runKind !== "all")
               ? undefined
-              : "Start by connecting an integration, or try the Playground to see reconciliation in action with sample data."
+              : "Next: connect Stripe (or another source) under Integrations, then trigger a recon job — or explore the Playground with sample data."
           }
           action={
             filters.status || filters.search || (filters.runKind && filters.runKind !== "all")
               ? { label: "Clear Filters", onClick: () => setFilters({ runKind: "all" }) }
-              : { label: "Open Reconciliations", href: "/console/reconciliations" }
+              : { label: "Connect integrations", href: "/dashboard/integrations" }
           }
           secondaryAction={
             filters.status || filters.search || (filters.runKind && filters.runKind !== "all")
               ? undefined
-              : { label: "Try Demo", href: "/demo/console" }
+              : { label: "Try demo console", href: "/demo/console", variant: "outline" }
           }
         />
       ) : (
-        <Card>
-          <CardHeader>
+        <Card className="border-border/70 shadow-sm">
+          <CardHeader className="sticky top-0 z-10 border-b border-border/40 bg-card/95 py-4 backdrop-blur-sm">
             <CardTitle>Run history</CardTitle>
             <CardDescription>
               Merged list: recon jobs and ingestion reconciliation runs. Detail pages differ by run
               kind where the data model does not yet offer parity.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 pt-5">
             {listMeta?.pagination_mode === "filter_scan_first_page" &&
             listMeta.filters_applied &&
             (listMeta.filters_applied.status || listMeta.filters_applied.search) ? (
@@ -530,13 +530,13 @@ export default function RunsPage() {
             {runs.map((run) => (
                 <div
                   key={run.id}
-                  className="rounded-xl border border-border p-5 hover:border-border/80 transition-colors"
+                  className="rounded-xl border border-border/80 bg-card/50 p-5 shadow-sm transition-all hover:border-primary/25 hover:shadow-md"
                 >
                   <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
                     <div className="min-w-0 flex-1 space-y-4">
                       {/* Row 1: Name + status badges */}
                       <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="truncate text-base font-semibold text-foreground">
+                        <h2 className="truncate text-base font-semibold text-foreground" title={run.name}>
                           {run.name}
                         </h2>
                         <Badge variant="outline" className="text-xs font-normal">
@@ -555,12 +555,20 @@ export default function RunsPage() {
                       <div className="grid gap-x-6 gap-y-1 text-sm md:grid-cols-4">
                         <div>
                           <span className="text-xs text-muted-foreground">Run ID</span>
-                          <div className="font-mono text-xs text-foreground truncate">{run.id}</div>
+                          <div
+                            className="truncate font-mono text-xs text-foreground"
+                            title={run.id}
+                          >
+                            {run.id}
+                          </div>
                         </div>
                         {run.ingestionId ? (
                           <div>
                             <span className="text-xs text-muted-foreground">Ingestion</span>
-                            <div className="font-mono text-xs text-foreground truncate">
+                            <div
+                              className="truncate font-mono text-xs text-foreground"
+                              title={run.ingestionId}
+                            >
                               {run.ingestionId}
                             </div>
                           </div>
@@ -596,19 +604,19 @@ export default function RunsPage() {
                       <div className="grid gap-2 sm:grid-cols-3 xl:grid-cols-6">
                         <div className="metric-chip">
                           <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Matched</div>
-                          <div className="mt-0.5 text-lg font-semibold text-green-600 dark:text-green-400 tabular-nums">
+                          <div className="mt-0.5 text-lg font-semibold text-success tabular-nums">
                             {formatCount(run.summary.matched)}
                           </div>
                         </div>
                         <div className="metric-chip">
                           <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Unmatched</div>
-                          <div className="mt-0.5 text-lg font-semibold text-amber-600 dark:text-amber-400 tabular-nums">
+                          <div className="mt-0.5 text-lg font-semibold text-warning tabular-nums">
                             {formatCount(run.summary.unmatched)}
                           </div>
                         </div>
                         <div className="metric-chip">
                           <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Conflicts</div>
-                          <div className="mt-0.5 text-lg font-semibold text-red-600 dark:text-red-400 tabular-nums">
+                          <div className="mt-0.5 text-lg font-semibold text-error tabular-nums">
                             {formatCount(run.summary.conflicts)}
                           </div>
                         </div>
