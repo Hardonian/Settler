@@ -1,6 +1,9 @@
 /**
  * Canonical operator run detail serializer for GET /api/runs/[id].
  *
+ * Full detail resolution (tenant-scoped resolve → enrich → serialize) is implemented
+ * in `operator-run-detail-resolve.ts` (`resolveOperatorRunDetailForTenants`).
+ *
  * `runs` is the canonical operator surface. Any legacy `reconciliations` payload
  * remains compatibility scope only and must not become the source of truth.
  */

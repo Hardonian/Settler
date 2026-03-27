@@ -14,6 +14,10 @@ import {
   type RunProgressState,
   type RunSummaryState,
 } from "@/lib/reconciliation/canonical-run-result";
+import {
+  toStageRows as toStageRowsFromCore,
+  type ReconAuditRow as ReconAuditRowCore,
+} from "@settler/reconciliation-core";
 
 export type { CanonicalRunStatus, RunSummaryState, RunProgressState, CanonicalRunTruth };
 
@@ -64,13 +68,7 @@ export interface ReconResultRow {
   snapshot_id?: string | null;
 }
 
-export interface ReconAuditRow {
-  id: string;
-  audit_type: string | null;
-  action: string | null;
-  metadata?: Record<string, unknown> | null;
-  created_at: string;
-}
+export type ReconAuditRow = ReconAuditRowCore;
 
 export {
   normalizeRunStatus,
@@ -116,38 +114,5 @@ export function toStageRows(audits: ReconAuditRow[]): Array<{
   completedAt?: string;
   error?: string;
 }> {
-  return audits.map((audit) => {
-    const auditType = audit.audit_type ?? "event";
-    const action = (audit.action ?? "").toLowerCase();
-    const metadata = audit.metadata ?? {};
-    const error =
-      typeof metadata.error === "string"
-        ? metadata.error
-        : typeof metadata.errorMessage === "string"
-          ? metadata.errorMessage
-          : undefined;
-
-    let status: "pending" | "running" | "completed" | "failed" = "pending";
-    if (auditType.includes("failed") || action === "failed" || Boolean(error)) {
-      status = "failed";
-    } else if (auditType.includes("start") || action === "start" || action === "execute") {
-      status = "running";
-    } else if (
-      auditType.includes("completed") ||
-      auditType.includes("approved") ||
-      action === "complete" ||
-      action === "completed"
-    ) {
-      status = "completed";
-    }
-
-    return {
-      id: audit.id,
-      name: auditType.replaceAll("_", " "),
-      status,
-      startedAt: status === "running" ? audit.created_at : undefined,
-      completedAt: status === "completed" || status === "failed" ? audit.created_at : undefined,
-      ...(error ? { error } : {}),
-    };
-  });
+  return toStageRowsFromCore(audits);
 }
