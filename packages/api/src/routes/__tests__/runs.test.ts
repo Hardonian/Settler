@@ -26,6 +26,11 @@ jest.mock("../../infrastructure/db/prisma", () => ({
   },
 }));
 
+const mockResolveOperatorRunDetail = jest.fn();
+jest.mock("@settler/reconciliation-core", () => ({
+  resolveOperatorRunDetailForTenants: (...args: unknown[]) => mockResolveOperatorRunDetail(...args),
+}));
+
 // Access the mocked module after jest.mock is applied
 const { prisma: mockedPrisma } = require("../../infrastructure/db/prisma");
 const mockReconResult = mockedPrisma.reconResult;
@@ -71,6 +76,7 @@ describe("Runs Routes", () => {
 
     app.use("/api/runs", runsRouter);
     jest.clearAllMocks();
+    mockResolveOperatorRunDetail.mockReset();
   });
 
   describe("GET /api/runs", () => {
@@ -181,80 +187,81 @@ describe("Runs Routes", () => {
   });
 
   describe("GET /api/runs/:runId", () => {
-    it("should return run detail with stages and progress", async () => {
-      mockReconResult.findFirst.mockResolvedValueOnce({
-        id: "run-1",
-        reconJobId: "job-1",
-        reconJob: { name: "Daily Reconciliation" },
-        status: "completed",
-        startedAt: new Date("2026-03-17T10:00:00Z"),
-        completedAt: new Date("2026-03-17T10:05:00Z"),
-        summary: { total: 100, matched: 95, unmatched: 5, conflicts: 0 },
-        errorMessage: null,
+    const canonicalDetailSample = {
+      runKind: "recon_job" as const,
+      id: "run-1",
+      name: "Daily Reconciliation",
+      status: "completed",
+      progress: 100,
+      stages: [{ id: "audit-1", name: "Stage 1" }],
+    };
+
+    it("should return canonical operator detail from reconciliation-core", async () => {
+      mockResolveOperatorRunDetail.mockResolvedValueOnce({
+        kind: "ok",
+        detail: canonicalDetailSample,
       });
 
       const res = await request(app).get("/api/runs/run-1");
 
       expect(res.status).toBe(200);
-      expect(res.body.data).toMatchObject({
-        id: "run-1",
-        name: "Daily Reconciliation",
-        status: "completed",
-        progress: 100,
-        summary: { total: 100, matched: 95, unmatched: 5, conflicts: 0 },
-      });
-      expect(res.body.data.stages).toHaveLength(4);
-      expect(res.body.data.stages[0]).toMatchObject({
-        id: "1",
-        name: "Initialize",
-        status: "completed",
-      });
-
-      // Verify tenant isolation
-      expect(mockReconResult.findFirst).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({ tenantId: "tenant-123" }),
-        })
+      expect(res.body.data).toEqual(canonicalDetailSample);
+      expect(mockResolveOperatorRunDetail).toHaveBeenCalledWith(
+        expect.anything(),
+        ["tenant-123"],
+        "run-1"
       );
     });
 
-    it("should return null progress for running jobs", async () => {
-      mockReconResult.findFirst.mockResolvedValueOnce({
-        id: "run-2",
-        reconJobId: "job-2",
-        reconJob: { name: "Running Job" },
-        status: "running",
-        startedAt: new Date(),
-        completedAt: null,
-        summary: null,
-        errorMessage: null,
+    it("should surface in-progress runs via canonical detail.progress", async () => {
+      mockResolveOperatorRunDetail.mockResolvedValueOnce({
+        kind: "ok",
+        detail: {
+          ...canonicalDetailSample,
+          id: "run-2",
+          status: "running",
+          progress: 0,
+        },
       });
 
       const res = await request(app).get("/api/runs/run-2");
 
       expect(res.status).toBe(200);
-      // Route returns null for running status - no reliable estimate available
-      expect(res.body.data.progress).toBeNull();
+      expect(res.body.data.status).toBe("running");
+      expect(res.body.data.progress).toBe(0);
     });
 
     it("should return 404 when run not found", async () => {
-      mockReconResult.findFirst.mockResolvedValueOnce(null);
+      mockResolveOperatorRunDetail.mockResolvedValueOnce({ kind: "not_found" });
 
       const res = await request(app).get("/api/runs/nonexistent");
 
       expect(res.status).toBe(404);
     });
 
-    it("should enforce tenant isolation - reject cross-tenant access", async () => {
-      mockReconResult.findFirst.mockResolvedValueOnce(null);
+    it("should return 409 when UUID collision occurs", async () => {
+      mockResolveOperatorRunDetail.mockResolvedValueOnce({
+        kind: "ambiguous_uuid_collision",
+        jobId: "job-x",
+        ingestionRunId: "ing-x",
+      });
+
+      const res = await request(app).get("/api/runs/collision-id");
+
+      expect(res.status).toBe(409);
+      expect(res.body.error).toBe("CONFLICT");
+    });
+
+    it("should enforce tenant isolation via single-tenant resolver scope", async () => {
+      mockResolveOperatorRunDetail.mockResolvedValueOnce({ kind: "not_found" });
 
       const res = await request(app).get("/api/runs/other-tenant-run");
 
       expect(res.status).toBe(404);
-      expect(mockReconResult.findFirst).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({ tenantId: "tenant-123" }),
-        })
+      expect(mockResolveOperatorRunDetail).toHaveBeenCalledWith(
+        expect.anything(),
+        ["tenant-123"],
+        "other-tenant-run"
       );
     });
   });
@@ -290,22 +297,15 @@ describe("Runs Routes", () => {
   });
 
   describe("Data Integrity", () => {
-    it("should handle null summary gracefully", async () => {
-      mockReconResult.findFirst.mockResolvedValueOnce({
-        id: "run-3",
-        reconJobId: "job-3",
-        reconJob: { name: "Pending Run" },
-        status: "pending",
-        startedAt: new Date(),
-        completedAt: null,
-        summary: null,
-        errorMessage: null,
+    it("should return 500 when enrichment fails", async () => {
+      mockResolveOperatorRunDetail.mockResolvedValueOnce({
+        kind: "recon_enrichment_failed",
+        message: "snapshot read failed",
       });
 
       const res = await request(app).get("/api/runs/run-3");
 
-      expect(res.status).toBe(200);
-      expect(res.body.data.summary).toBeUndefined();
+      expect(res.status).toBe(500);
     });
   });
 

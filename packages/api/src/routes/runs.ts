@@ -4,11 +4,16 @@
  * Operator-facing route for reconciliation run history and detail.
  * Maps "runs" to executions with job context for clearer operator UX.
  *
+ * GET /api/runs/:runId returns canonical operator detail via
+ * `resolveOperatorRunDetailForTenants` (same read model as Next.js GET /api/runs/[id]),
+ * wrapped in `{ data: ... }` for this Express envelope. It is not a second truth source.
+ *
  * TENANT SAFETY: All queries scoped to req.tenantId
  * FREEZE AWARE: No mutations, read-only operator surface
  */
 
 import { Router, Response } from "express";
+import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
@@ -16,9 +21,10 @@ import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
 import { enforceFreezeState } from "../middleware/governance";
 
+import { resolveOperatorRunDetailForTenants } from "@settler/reconciliation-core";
 import { Run, RunSummary } from "@settler/types";
 import { handleRouteError } from "../utils/error-handler";
-import { NotFoundError, ValidationError } from "../utils/typed-errors";
+import { ConflictError, InternalServerError, NotFoundError, ValidationError } from "../utils/typed-errors";
 import { trackEventAsync } from "../utils/event-tracker";
 import { logInfo } from "../utils/logger";
 
@@ -58,7 +64,7 @@ router.get(
       const limit = Math.min(parseInt((req.query.limit as string) || "50"), 100);
       const offset = (page - 1) * limit;
 
-      const where: any = {
+      const where: Prisma.ReconResultWhereInput = {
         tenantId,
         ...(status && { status }),
         ...(search && {
@@ -122,7 +128,9 @@ router.get(
 
 /**
  * GET /api/runs/:runId
- * Get detailed run information including stages and progress
+ *
+ * Canonical operator run detail (OperatorRunDetail) from reconciliation-core, same resolver as
+ * Next GET /api/runs/[id]. Response is wrapped as `{ data: detail }` for the Express API envelope.
  */
 router.get(
   "/:runId",
@@ -134,104 +142,37 @@ router.get(
       const runId = Array.isArray(runIdParam) ? (runIdParam[0] ?? "") : (runIdParam ?? "");
       const tenantId = req.tenantId!;
 
-      // Get run with job context - tenant-scoped
-      const run = await prisma.reconResult.findFirst({
-        where: {
-          id: runId,
-          tenantId,
-        },
-        include: {
-          reconJob: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      });
+      const outcome = await resolveOperatorRunDetailForTenants(prisma, [tenantId], runId);
 
-      if (!run) {
+      if (outcome.kind === "ambiguous_uuid_collision") {
+        throw new ConflictError("Ambiguous run identifier", {
+          code: "RUN_ID_COLLISION",
+          detail:
+            "The same UUID exists as both a recon job and an ingestion reconciliation run; disambiguate in the database or use tenant-scoped APIs that return a single kind.",
+          recon_job_id: outcome.jobId,
+          ingestion_run_id: outcome.ingestionRunId,
+        });
+      }
+
+      if (outcome.kind === "not_found") {
         throw new NotFoundError("Run not found or access denied", "run", runId);
       }
 
-      // TRUTHFUL STATE: Progress calculation
-      // - completed: 100%
-      // - failed: 0%
-      // - pending: null (not started)
-      // - running: null (no reliable estimate available - hardcoded estimate removed)
-      // Note: Real progress tracking requires job checkpoints or progress percentage stored in DB
-      let progress: number | null = null;
-      if (run.status === "completed") {
-        progress = 100;
-      } else if (run.status === "failed") {
-        progress = 0;
-      } else if (run.status === "pending") {
-        progress = null;
+      if (outcome.kind === "recon_enrichment_failed") {
+        throw new InternalServerError(outcome.message);
       }
-      // running status returns null - no reliable estimate available
 
-      // Build stage information (simplified for now - can be enhanced)
-      const stages = [
-        {
-          id: "1",
-          name: "Initialize",
-          status: run.status === "pending" ? "pending" : "completed",
-          startedAt: run.startedAt,
-          completedAt: run.status === "pending" ? undefined : run.startedAt,
-        },
-        {
-          id: "2",
-          name: "Extract Source Data",
-          status:
-            run.status === "pending"
-              ? "pending"
-              : run.status === "running"
-                ? "running"
-                : run.status === "failed"
-                  ? "failed"
-                  : "completed",
-          startedAt: run.status === "pending" ? undefined : run.startedAt,
-          completedAt: run.status === "completed" ? run.completedAt : undefined,
-          error: run.status === "failed" ? run.errorMessage : undefined,
-        },
-        {
-          id: "3",
-          name: "Match Records",
-          status: run.status === "completed" ? "completed" : "pending",
-          startedAt: run.status === "completed" ? run.startedAt : undefined,
-          completedAt: run.completedAt,
-        },
-        {
-          id: "4",
-          name: "Generate Results",
-          status: run.status === "completed" ? "completed" : "pending",
-          startedAt: run.status === "completed" ? run.startedAt : undefined,
-          completedAt: run.completedAt,
-        },
-      ];
-
-      const summary = (run.summary as RunSummary | null) || undefined;
+      const detail = outcome.detail;
 
       logInfo("Run detail fetched", {
         tenantId,
-        runId: run.id,
-        jobName: run.reconJob.name,
-        status: run.status,
-        hasError: !!run.errorMessage,
+        runId: detail.id,
+        jobName: detail.name,
+        status: detail.status,
+        hasError: !!detail.error,
       });
 
-      res.json({
-        data: {
-          id: run.id,
-          name: run.reconJob.name,
-          status: run.status as "pending" | "running" | "completed" | "failed" | "unknown",
-          progress,
-          startedAt: run.startedAt,
-          completedAt: run.completedAt,
-          error: run.errorMessage,
-          summary,
-          stages,
-        },
-      });
+      res.json({ data: detail });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to fetch run detail", 500, {
         userId: req.userId,
