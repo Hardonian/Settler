@@ -27,6 +27,14 @@ export async function processInBatches<T, R>(
   config: Partial<BatchConfig> = {}
 ): Promise<{ results: R[]; errors: Array<{ item: T; error: Error }> }> {
   const finalConfig = { ...DEFAULT_BATCH_CONFIG, ...config };
+  if (!Number.isFinite(finalConfig.batchSize) || finalConfig.batchSize < 1) {
+    throw new Error(`batchSize must be a finite integer >= 1, got ${finalConfig.batchSize}`);
+  }
+  if (!Number.isFinite(finalConfig.maxConcurrency) || finalConfig.maxConcurrency < 1) {
+    throw new Error(
+      `maxConcurrency must be a finite integer >= 1, got ${finalConfig.maxConcurrency}`
+    );
+  }
   const results: R[] = [];
   const errors: Array<{ item: T; error: Error }> = [];
 
@@ -108,6 +116,9 @@ export async function processParallel<T, R>(
   processor: (item: T) => Promise<R>,
   maxConcurrency: number = 5
 ): Promise<{ results: R[]; errors: Array<{ item: T; error: Error }> }> {
+  if (!Number.isFinite(maxConcurrency) || maxConcurrency < 1) {
+    throw new Error(`maxConcurrency must be a finite integer >= 1, got ${maxConcurrency}`);
+  }
   const results: R[] = [];
   const errors: Array<{ item: T; error: Error }> = [];
   const semaphore = new Semaphore(maxConcurrency);
@@ -136,6 +147,9 @@ export async function processParallel<T, R>(
  * Chunk array into smaller arrays
  */
 export function chunk<T>(array: T[], size: number): T[][] {
+  if (!Number.isFinite(size) || size < 1 || !Number.isInteger(size)) {
+    throw new Error(`chunk size must be a finite integer >= 1, got ${size}`);
+  }
   const chunks: T[][] = [];
   for (let i = 0; i < array.length; i += size) {
     chunks.push(array.slice(i, i + size));
@@ -166,6 +180,9 @@ export async function batchInsert<T>(
   inserter: (batch: T[]) => Promise<void>,
   batchSize: number = 1000
 ): Promise<void> {
+  if (!Number.isFinite(batchSize) || batchSize < 1 || !Number.isInteger(batchSize)) {
+    throw new Error(`batchSize must be a finite integer >= 1, got ${batchSize}`);
+  }
   const batches = chunk(items, batchSize);
 
   for (const batch of batches) {
