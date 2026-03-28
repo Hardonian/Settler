@@ -24,7 +24,12 @@ import { enforceFreezeState } from "../middleware/governance";
 import { resolveOperatorRunDetailForTenants } from "@settler/reconciliation-core";
 import { Run, RunSummary } from "@settler/types";
 import { handleRouteError } from "../utils/error-handler";
-import { ConflictError, InternalServerError, NotFoundError, ValidationError } from "../utils/typed-errors";
+import {
+  ConflictError,
+  InternalServerError,
+  NotFoundError,
+  ValidationError,
+} from "../utils/typed-errors";
 import { trackEventAsync } from "../utils/event-tracker";
 import { logInfo } from "../utils/logger";
 
@@ -222,6 +227,29 @@ router.post(
         ]);
       }
 
+      const existingRetry = await prisma.reconResult.findFirst({
+        where: {
+          tenantId,
+          reconJobId: originalRun.reconJobId,
+          status: "running",
+          metadata: {
+            path: ["retryOfRunId"],
+            equals: runId2,
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      if (existingRetry) {
+        throw new ConflictError("Retry already in progress for this run", {
+          code: "RETRY_ALREADY_IN_PROGRESS",
+          runId: runId2,
+          retryRunId: existingRetry.id,
+        });
+      }
+
       const newRun = await prisma.reconResult.create({
         data: {
           reconJob: {
@@ -231,6 +259,11 @@ router.post(
           },
           tenantId,
           status: "running",
+          metadata: {
+            retryOfRunId: runId2,
+            retryTriggeredBy: userId,
+            retryTriggeredAt: new Date().toISOString(),
+          },
         },
       });
 

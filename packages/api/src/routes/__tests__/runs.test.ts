@@ -27,9 +27,14 @@ jest.mock("../../infrastructure/db/prisma", () => ({
 }));
 
 const mockResolveOperatorRunDetail = jest.fn();
-jest.mock("@settler/reconciliation-core", () => ({
-  resolveOperatorRunDetailForTenants: (...args: unknown[]) => mockResolveOperatorRunDetail(...args),
-}));
+jest.mock(
+  "@settler/reconciliation-core",
+  () => ({
+    resolveOperatorRunDetailForTenants: (...args: unknown[]) =>
+      mockResolveOperatorRunDetail(...args),
+  }),
+  { virtual: true }
+);
 
 // Access the mocked module after jest.mock is applied
 const { prisma: mockedPrisma } = require("../../infrastructure/db/prisma");
@@ -322,6 +327,7 @@ describe("Runs Routes", () => {
         summary: null,
         errorMessage: "Previous failure",
       });
+      mockReconResult.findFirst.mockResolvedValueOnce(null);
       mockReconResult.create.mockResolvedValueOnce({
         id: "run-new",
         reconJobId: "job-1",
@@ -341,6 +347,27 @@ describe("Runs Routes", () => {
       const res = await request(app).post("/api/runs/run-1/retry");
 
       expect(res.status).toBe(404);
+    });
+
+    it("should return 409 if retry is already in progress", async () => {
+      mockReconResult.findFirst
+        .mockResolvedValueOnce({
+          id: "run-1",
+          reconJobId: "job-1",
+          reconJob: { id: "job-1", name: "Daily Reconciliation" },
+          status: "failed",
+          tenantId: "tenant-123",
+          startedAt: new Date(),
+          completedAt: new Date(),
+          summary: null,
+          errorMessage: "Previous failure",
+        })
+        .mockResolvedValueOnce({ id: "run-retry-existing" });
+
+      const res = await request(app).post("/api/runs/run-1/retry");
+
+      expect(res.status).toBe(409);
+      expect(mockReconResult.create).not.toHaveBeenCalled();
     });
 
     it("should block retry if run is not failed", async () => {
