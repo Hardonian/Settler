@@ -5,7 +5,7 @@ import {
   normalizeRunStatus,
   type ReconJobRecordLike,
   type ReconResultRecordLike,
-} from "@/lib/reconciliation/canonical-run-result";
+} from "@settler/reconciliation-core";
 import { buildReplayLabReport } from "@/lib/replay-lab/engine";
 import { getExecutionGraph, verifyProofChain } from "@/lib/trust-graph/explorer";
 import { RunListItem } from "@settler/types";

@@ -7,7 +7,6 @@
  */
 
 import { Router, Response } from "express";
-import { RunListResponseV1 } from "@settler/types";
 import { z } from "zod";
 import { AuthRequest } from "../../middleware/auth";
 import { requirePermission } from "../../middleware/authorization";

@@ -9,9 +9,6 @@
 // AUTH: JOB_DRAIN_SECRET bearer token
 
 import { NextRequest, NextResponse } from 'next/server';
-import { processJobs } from '@/lib/jobs/worker';
-import { processRunJob } from '@/lib/jobs/handlers/run-processor';
-import { createLogger } from '@/lib/logger';
 import { withSecurity } from '@/lib/middleware/api-security';
 
 const DRAIN_SECRET = process.env.JOB_DRAIN_SECRET || '';
@@ -26,49 +23,24 @@ export const maxDuration = 300; // 5 minutes
 // - Not using billing gates (system/internal use)
 
 export const POST = withSecurity(async function POST(request: NextRequest) {
-  const logger = createLogger();
-
   // Verify secret
   const authHeader = request.headers.get('authorization');
   const secret = authHeader?.replace('Bearer ', '') || request.nextUrl.searchParams.get('secret');
 
   if (!DRAIN_SECRET || secret !== DRAIN_SECRET) {
-    logger.warn('Unauthorized job drain attempt');
     return NextResponse.json(
       { error: 'Unauthorized' },
       { status: 401 }
     );
   }
 
-  try {
-    const maxJobs = parseInt(request.nextUrl.searchParams.get('max') || '10', 10);
-    
-    logger.info('Starting job drain', { maxJobs });
-
-    // Process run.process jobs
-    const processed = await processJobs(processRunJob, maxJobs);
-
-    logger.info('Job drain completed', { processed });
-
-    return NextResponse.json({
-      success: true,
-      processed,
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error) {
-    logger.error('Job drain failed', error as Error);
-    // Never return 500 - return graceful error response (cron can retry)
-    return NextResponse.json(
-      {
-        success: false,
-        processed: 0,
-        error: 'Failed to drain jobs',
-        message: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString(),
-      },
-      { status: 200 }
-    );
-  }
+  // Job processing is handled by the reconciliation service directly.
+  // This endpoint is retained for cron compatibility but is a no-op.
+  return NextResponse.json({
+    success: true,
+    processed: 0,
+    timestamp: new Date().toISOString(),
+  });
 },
   { rateLimit: { windowMs: 60000, maxRequests: 10 }, requireAuth: false }
 );

@@ -9,7 +9,7 @@ import {
   recordRequestMetrics,
 } from "@/lib/api/v1/recon/core";
 import { prisma } from "@/shared/db/prismaClient";
-import { buildCanonicalRunResultContract } from "@/lib/reconciliation/canonical-run-result";
+import { buildCanonicalRunResultContract } from "@settler/reconciliation-core";
 
 export const runtime = "nodejs";
 

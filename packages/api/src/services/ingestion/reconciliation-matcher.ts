@@ -614,7 +614,7 @@ export async function runReconciliation(
       throw new ConflictError("Reconciliation already running for this ingestion", {
         code: "RECONCILIATION_ALREADY_RUNNING",
         ingestionId,
-        existingRunId: existingRunning[0].id,
+        existingRunId: existingRunning[0]!.id,
       });
     }
 
@@ -793,11 +793,13 @@ export async function runReconciliation(
         traceId,
       });
       await emitOperatorRuntimeEvent({
-        eventType: "reconciliation_review_failed",
+        eventType: "reconciliation_run_failed",
         tenantId,
         runId,
         metadata: {
           traceId,
+          phase: "automated_review",
+          nonFatal: true,
           error: reviewError instanceof Error ? reviewError.message : String(reviewError),
         },
       }).catch(() => {});

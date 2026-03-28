@@ -1,4 +1,4 @@
-import { buildRunConfigurationSummary } from "@/lib/reconciliation/run-detail";
+import { buildRunConfigurationSummary } from "@settler/reconciliation-core";
 
 describe("run-detail helpers", () => {
   test("marks snapshot-backed configuration without drift when definitions align", () => {
@@ -66,4 +66,3 @@ describe("run-detail helpers", () => {
     expect(summary.definitionDriftNotes).toEqual([]);
   });
 });
-

@@ -359,7 +359,7 @@ export async function recordRequestMetrics(ctx: ApiContext, payload: RequestMetr
       VALUES (${ctx.tenantId}, ${payload.route}, ${payload.method}, ${payload.statusCode}, ${payload.latencyMs}, ${payload.cacheHit}, ${payload.rateLimited})
     `;
   } catch (error) {
-    void error;
+    console.error("[metrics] recording failed:", error);
   }
 }
 
@@ -379,7 +379,7 @@ export async function recordRunMetrics(ctx: ApiContext, payload: RunMetricsPaylo
         created_at = NOW()
     `;
   } catch (error) {
-    void error;
+    console.error("[metrics] recording failed:", error);
   }
 }
 
@@ -394,7 +394,7 @@ export async function recordEconomicMetrics(
       VALUES (${ctx.tenantId}, ${runId}, ${payload.computeUnits}, ${payload.memoryUnits}, ${payload.casIoUnits}, ${payload.replayCalls})
     `;
   } catch (error) {
-    void error;
+    console.error("[metrics] recording failed:", error);
   }
 }
 
@@ -413,7 +413,7 @@ export async function recordDriftMetric(
       VALUES (${ctx.tenantId}, ${payload.runId}, ${payload.expectedFingerprint}, ${payload.actualFingerprint}, ${payload.replayVerification})
     `;
   } catch (error) {
-    void error;
+    console.error("[metrics] recording failed:", error);
   }
 }
 
