@@ -39,6 +39,32 @@ function paramString(value: string | string[] | undefined): string {
 const WRONG_RUN_KIND = "RECONCILIATION_WRONG_RUN_KIND";
 const CURSOR_INVALID = "RECONCILIATION_CURSOR_INVALID";
 
+/** POST /run JSON body (partial validation; config fields validated below). */
+type ReconciliationRunRequestBody = {
+  ingestionId?: unknown;
+  config?: unknown;
+  jobId?: unknown;
+  templateId?: unknown;
+};
+
+function optionalNonEmptyString(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const t = value.trim();
+  return t === "" ? undefined : t;
+}
+
+/** Normalize ingestion id from JSON (string or finite number, matching typical clients). */
+function coerceIngestionId(value: unknown): string | null {
+  if (typeof value === "string") {
+    const t = value.trim();
+    return t === "" ? null : t;
+  }
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return String(value);
+  }
+  return null;
+}
+
 type IngestionWorkbenchGate =
   | { ok: true }
   | { ok: false; problem: Parameters<typeof sendProblemJson>[2] }
@@ -116,22 +142,27 @@ function respondIngestionWorkbenchGate(
  */
 router.post("/run", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
-    const { ingestionId, config } = req.body;
+    const body = req.body as ReconciliationRunRequestBody;
+    const config = body.config;
     const tenantId = req.tenantId!;
     const userId = req.userId!;
 
+    const ingestionId = coerceIngestionId(body.ingestionId);
     if (!ingestionId) {
       sendProblemJson(req, res, {
         status: 400,
         title: "Validation Error",
-        detail: "ingestionId is required",
+        detail: "ingestionId is required (non-empty string or number)",
         code: "VALIDATION_ERROR",
         extra: { field: "ingestionId" },
       });
       return;
     }
 
-    const rawConfig = (config ?? {}) as Record<string, unknown>;
+    const rawConfig =
+      config !== undefined && config !== null && typeof config === "object" && !Array.isArray(config)
+        ? (config as Record<string, unknown>)
+        : {};
     const reconciliationConfig: ReconciliationConfig = {};
     const invalidConfigFields: string[] = [];
 
@@ -195,18 +226,10 @@ router.post("/run", enforceFreezeState(), async (req: AuthRequest, res: Response
       return;
     }
 
-    // Extract jobId and templateId from request if available
-    const jobId = (req.body as any)?.jobId;
-    const templateId = (req.body as any)?.templateId;
+    const jobId = optionalNonEmptyString(body.jobId);
+    const templateId = optionalNonEmptyString(body.templateId);
 
-    const runId = await runReconciliation(
-      ingestionId,
-      tenantId,
-      userId,
-      jobId,
-      templateId,
-      reconciliationConfig
-    );
+    const runId = await runReconciliation(ingestionId, tenantId, userId, jobId, templateId, reconciliationConfig);
 
     logInfo("Reconciliation run started", { runId, ingestionId, traceId: req.traceId });
 
@@ -287,6 +310,17 @@ router.get("/runs", async (req: AuthRequest, res: Response) => {
       cursorState,
       runKind,
       encodeCursor: encodeMergedRunsCursor,
+    });
+
+    logInfo("Reconciliation runs listed", {
+      event: "reconciliation.runs_listed",
+      tenantId,
+      limit,
+      run_kind: runKind,
+      returned: page.pagination.returned,
+      has_more: page.pagination.has_more,
+      cursor_present: Boolean(cursorParam),
+      traceId: req.traceId,
     });
 
     return res.json({
