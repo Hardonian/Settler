@@ -40,7 +40,7 @@ export async function getRunsList(tenantId: string, limit: number = 20): Promise
 
   if (runs.length === 0) return [];
 
-  const runIds = runs.map((run) => run.id);
+  const runIds = runs.map((run: (typeof runs)[number]) => run.id);
 
   // 2. Fetch latest results for these jobs
   const latestResults = await prisma.reconResult.findMany({
@@ -72,7 +72,7 @@ export async function getRunsList(tenantId: string, limit: number = 20): Promise
   }
 
   // 3. Transform to standard List Item contract
-  return runs.map((run) => {
+  return runs.map((run: (typeof runs)[number]) => {
     const result = latestResultByRunId.get(run.id);
 
     const contract = buildCanonicalRunResultContract({
@@ -231,7 +231,7 @@ export async function getDashboardStats() {
         integrity_score:
           totalJobs > 0 ? Math.round(((totalJobs - totalUnmatchedRuns) / totalJobs) * 100) : 100,
       },
-      recent: recentActivity.map((run) => ({
+      recent: recentActivity.map((run: (typeof recentActivity)[number]) => ({
         id: run.id,
         status: normalizeRunStatus(run.results?.[0]?.status ?? run.status),
         timestamp: run.createdAt.toISOString(),
@@ -405,7 +405,7 @@ export async function getAlertsList(limit: number = 30) {
       },
     });
 
-    return alerts.map((alert) => ({
+    return alerts.map((alert: (typeof alerts)[number]) => ({
       id: alert.id,
       type: alert.driftType,
       severity: (alert.severity === "critical"
@@ -454,7 +454,7 @@ export async function getMatchesList(limit: number = 50) {
       },
     });
 
-    return matches.map((match) => ({
+    return matches.map((match: (typeof matches)[number]) => ({
       id: match.id,
       runId: match.runId,
       matchType: match.matchType,
@@ -491,7 +491,7 @@ export async function getPoliciesList(limit: number = 20) {
       },
     });
 
-    return policies.map((p) => ({
+    return policies.map((p: (typeof policies)[number]) => ({
       id: p.id,
       name: p.contractName,
       version: p.version,
@@ -543,7 +543,7 @@ export async function getAuditLogs(limit: number = 50): Promise<AuditLogItem[]> 
       },
     });
 
-    return logs.map((log) => ({
+    return logs.map((log: (typeof logs)[number]) => ({
       id: log.id,
       action: log.action,
       resource: log.resourceType,
