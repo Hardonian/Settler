@@ -10,8 +10,10 @@ jest.mock("../../middleware/governance", () => ({
   enforceFreezeState: () => (_req: unknown, _res: unknown, next: () => void) => next(),
 }));
 
+const mockRunReconciliation = jest.fn().mockResolvedValue("33333333-3333-4333-8333-333333333333");
+
 jest.mock("../../services/ingestion/reconciliation-matcher", () => ({
-  runReconciliation: jest.fn().mockResolvedValue("33333333-3333-4333-8333-333333333333"),
+  runReconciliation: (...args: unknown[]) => mockRunReconciliation(...args),
 }));
 
 jest.mock("../../infrastructure/db/prisma", () => ({
@@ -40,7 +42,6 @@ jest.mock("../../utils/logger", () => ({
 }));
 
 import { query } from "../../db";
-
 const tenantId = "11111111-1111-4111-8111-111111111111";
 
 describe("reconciliation v1 contract", () => {
@@ -80,6 +81,8 @@ describe("reconciliation v1 contract", () => {
     });
     (resolveReconciliationRunForTenant as jest.Mock).mockReset();
     (query as jest.Mock).mockReset();
+    mockRunReconciliation.mockClear();
+    mockRunReconciliation.mockResolvedValue("33333333-3333-4333-8333-333333333333");
   });
 
   test("GET /runs rejects malformed cursor with RECONCILIATION_CURSOR_INVALID", async () => {
@@ -122,6 +125,86 @@ describe("reconciliation v1 contract", () => {
     expect(res.body.code).toBe("RECONCILIATION_UUID_COLLISION");
     expect(res.body.recon_job_id).toBe("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa");
     expect(res.body.reconciliation_run_id).toBe("bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb");
+  });
+
+  test("GET /runs serves identical pages for concurrent pollers (same tenant, same params)", async () => {
+    const pagePayload = {
+      runs: [{ id: "run-1", runKind: "ingestion_run" } as never],
+      next_cursor: null,
+      pagination: {
+        limit: 10,
+        returned: 1,
+        has_more: false,
+        job_stream_has_more: false,
+        ingestion_stream_has_more: false,
+        job_stream_exhausted: true,
+        ingestion_stream_exhausted: true,
+      },
+      response_meta: {
+        contract_version: 1 as const,
+        included_run_kinds: ["recon_job", "ingestion_run"] as const,
+        ordering: "test",
+        consistency: "read_committed" as const,
+      },
+    };
+    (fetchMergedReconciliationRunsPage as jest.Mock).mockResolvedValue(pagePayload);
+
+    const concurrent = 24;
+    const responses = await Promise.all(
+      Array.from({ length: concurrent }, () =>
+        request(app).get("/api/v1/reconciliation/runs?limit=10&run_kind=all")
+      )
+    );
+
+    const expectedBody = {
+      contract_version: 1,
+      ...pagePayload,
+      traceId: "trace-contract",
+    };
+
+    for (const res of responses) {
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual(expectedBody);
+    }
+
+    expect(fetchMergedReconciliationRunsPage).toHaveBeenCalledTimes(concurrent);
+    for (const [arg] of (fetchMergedReconciliationRunsPage as jest.Mock).mock.calls) {
+      expect(arg.tenantId).toBe(tenantId);
+      expect(arg.limit).toBe(10);
+      expect(arg.runKind).toBe("all");
+      expect(arg.cursorState).toBeNull();
+    }
+  });
+
+  test("POST /run rejects object ingestionId with validation error", async () => {
+    const res = await request(app)
+      .post("/api/v1/reconciliation/run")
+      .send({ ingestionId: { not: "valid" } })
+      .expect(400);
+
+    expect(res.headers["content-type"]).toMatch(/application\/problem\+json/);
+    expect(res.body.code).toBe("VALIDATION_ERROR");
+    expect(mockRunReconciliation).not.toHaveBeenCalled();
+  });
+
+  test("POST /run forwards trimmed jobId and templateId when strings", async () => {
+    await request(app)
+      .post("/api/v1/reconciliation/run")
+      .send({
+        ingestionId: "ing-1",
+        jobId: "  job-abc  ",
+        templateId: "tpl-1",
+      })
+      .expect(201);
+
+    expect(mockRunReconciliation).toHaveBeenCalledWith(
+      "ing-1",
+      tenantId,
+      "22222222-2222-4222-8222-222222222222",
+      "job-abc",
+      "tpl-1",
+      {}
+    );
   });
 
   test("GET /runs/:id/matches caps limit at 500", async () => {

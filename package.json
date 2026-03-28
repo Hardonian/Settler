@@ -266,6 +266,7 @@
     "test:reconciliation:e2e": "pnpm exec tsx packages/cli/src/index.ts foundry reconciliation-verify --seed 42 --profile smoke --strict",
     "verify:reconciliation-runtime": "pnpm exec tsx packages/cli/src/index.ts foundry reconciliation-verify --seed 42 --profile integration --strict",
     "verify:reconciliation:strict": "node scripts/verify-reconciliation-strict.mjs",
+    "verify:pre-go-live-simulation": "pnpm --filter @settler/reconciliation-core test -- pre-go-live-simulation.test.ts && pnpm --filter @settler/api exec jest src/__tests__/routes/reconciliation-v1-contract.test.ts --runInBand --forceExit",
     "reconciliation:summary": "node scripts/reconciliation-run-tools.mjs summary test-data/exports/latest",
     "reconciliation:compare": "node scripts/reconciliation-run-tools.mjs compare test-data/exports/smoke-seed42 test-data/exports/latest",
     "verify:issue-templates": "node scripts/validate-issue-templates.mjs",
