@@ -21,6 +21,12 @@ if (fastBody.includes("linkIntegrity")) {
   );
   process.exit(1);
 }
+if (!fastBody.includes("reconciliationCoreDist")) {
+  console.error(
+    "`fast` profile must include `reconciliationCoreDist` so stale `@settler/reconciliation-core` dist cannot pass CI silently."
+  );
+  process.exit(1);
+}
 
 const fastWithLinksMatch = src.match(/"fast-with-links":\s*\[([\s\S]*?)\],/);
 if (!fastWithLinksMatch) {

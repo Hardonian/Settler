@@ -8,6 +8,11 @@ const defaultRunId = new Date().toISOString().replace(/[:.]/g, "-");
 
 const stageCatalog = {
   root: { label: "Root cleanliness", command: ["pnpm", ["run", "verify:root"]], timeoutMs: 60_000 },
+  reconciliationCoreDist: {
+    label: "Reconciliation core dist freshness",
+    command: ["pnpm", ["run", "verify:reconciliation-core-dist"]],
+    timeoutMs: 60_000,
+  },
   lint: { label: "Lint", command: ["pnpm", ["run", "lint"]], timeoutMs: 12 * 60_000 },
   typecheck: {
     label: "Typecheck",
@@ -74,10 +79,20 @@ const stageCatalog = {
 
 const profiles = {
   /** Release-critical code health; excludes internal marketing/docs link crawl (see `fast-with-links`). */
-  fast: ["root", "lint", "typecheck", "claims", "boundaries", "routes", "security"],
+  fast: [
+    "root",
+    "reconciliationCoreDist",
+    "lint",
+    "typecheck",
+    "claims",
+    "boundaries",
+    "routes",
+    "security",
+  ],
   /** Same as `fast` plus static internal link integrity (requires fresh `qa/route-registry.json` from `qa:routes`). */
   "fast-with-links": [
     "root",
+    "reconciliationCoreDist",
     "lint",
     "typecheck",
     "claims",
@@ -91,6 +106,7 @@ const profiles = {
   artifacts: ["launchManifest", "capture", "artifacts"],
   full: [
     "root",
+    "reconciliationCoreDist",
     "lint",
     "typecheck",
     "claims",

@@ -213,6 +213,7 @@
     "verify:tenant-isolation": "node scripts/verify-tenant-isolation.mjs",
     "settler demo": "node scripts/settler-demo.mjs",
     "verify:root": "node scripts/verify-root-cleanliness.mjs",
+    "verify:reconciliation-core-dist": "node scripts/assert-reconciliation-core-dist-root.mjs",
     "demo": "tsx scripts/settler-demo.ts",
     "settler:replay": "tsx scripts/settler-replay.ts",
     "verify:policy": "tsx scripts/verify-policy.ts && tsx scripts/test-moat.ts && tsx scripts/settler-replay.ts examples/demo-output-fixtures/demo-run-1/evidence.json",
