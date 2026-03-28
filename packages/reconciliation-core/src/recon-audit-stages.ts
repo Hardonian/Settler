@@ -2,6 +2,8 @@
  * Maps persisted recon audit rows to operator stage rows for run detail.
  */
 
+import type { OperatorRunStageRow } from "./operator-run-detail.js";
+
 export interface ReconAuditRow {
   id: string;
   audit_type: string | null;
@@ -10,14 +12,7 @@ export interface ReconAuditRow {
   created_at: string;
 }
 
-export function toStageRows(audits: ReconAuditRow[]): Array<{
-  id: string;
-  name: string;
-  status: "pending" | "running" | "completed" | "failed";
-  startedAt?: string;
-  completedAt?: string;
-  error?: string;
-}> {
+export function toStageRows(audits: ReconAuditRow[]): OperatorRunStageRow[] {
   return audits.map((audit) => {
     const auditType = audit.audit_type ?? "event";
     const action = (audit.action ?? "").toLowerCase();
