@@ -36,6 +36,28 @@ import { canRunBackgroundJob } from "../../services/operator-mode/cost-controls"
 const router: Router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
+/** Bounded parallelism for per-row DB work (raw_record + normalize); avoids unbounded Promise fan-out */
+const CSV_ROW_INGEST_CONCURRENCY = 8;
+
+async function processCsvRowsWithBoundedConcurrency(
+  rowCount: number,
+  concurrency: number,
+  processRow: (index: number) => Promise<void>
+): Promise<void> {
+  const limit = Math.max(1, Math.min(concurrency, rowCount || 1));
+  let next = 0;
+  const workers = Array.from({ length: limit }, async () => {
+    while (true) {
+      const i = next++;
+      if (i >= rowCount) {
+        return;
+      }
+      await processRow(i);
+    }
+  });
+  await Promise.all(workers);
+}
+
 function parseColumnMappingOverride(rawValue: unknown): {
   mapping?: CSVColumnMapping;
   error?: string;
@@ -496,34 +518,52 @@ router.post(
       });
 
       // Process CSV rows
-      const normalizedTransactions: Array<{
-        transaction: any;
-        rawRecordId?: string;
-      }> = [];
-      let failedCount = 0;
+      type RowSlot =
+        | { kind: "ok"; transaction: ReturnType<typeof normalizeCSVRow>; rawRecordId: string }
+        | { kind: "fail" }
+        | { kind: "empty" };
 
-      for (let i = 0; i < rows.length; i++) {
+      const rowSlots: RowSlot[] = new Array(rows.length);
+      await processCsvRowsWithBoundedConcurrency(rows.length, CSV_ROW_INGEST_CONCURRENCY, async (i) => {
         const row = rows[i];
-        if (!row) continue;
+        if (!row) {
+          rowSlots[i] = { kind: "empty" };
+          return;
+        }
         try {
           const normalized = normalizeCSVRow(row, columnMapping);
 
-          // Create raw record
           const rawRecordId = await createRawRecord(ingestionId, finalSourceId, tenantId, row, {
             rowNumber: i + 1,
             externalId: normalized.externalId,
           });
 
-          normalizedTransactions.push({
-            transaction: normalized,
-            rawRecordId,
-          });
+          rowSlots[i] = { kind: "ok", transaction: normalized, rawRecordId };
         } catch (error) {
-          failedCount++;
+          rowSlots[i] = { kind: "fail" };
           logError("Failed to normalize CSV row", error, {
             rowNumber: i + 1,
             traceId,
           });
+        }
+      });
+
+      const normalizedTransactions: Array<{
+        transaction: any;
+        rawRecordId?: string;
+      }> = [];
+      let failedCount = 0;
+      for (const slot of rowSlots) {
+        if (!slot) {
+          continue;
+        }
+        if (slot.kind === "ok") {
+          normalizedTransactions.push({
+            transaction: slot.transaction,
+            rawRecordId: slot.rawRecordId,
+          });
+        } else if (slot.kind === "fail" || slot.kind === "empty") {
+          failedCount += 1;
         }
       }
 
@@ -920,18 +960,19 @@ router.post(
         },
       });
 
-      const normalizedTransactions: Array<{
-        transaction: ReturnType<typeof normalizeCSVRow>;
-        rawRecordId?: string;
-      }> = [];
-      let failedCount = 0;
-
       const columnMapping = mappingParse.mapping || autoDetectColumnMapping(headers);
-      for (let index = 0; index < rows.length; index++) {
+
+      type RetrySlot =
+        | { kind: "ok"; transaction: ReturnType<typeof normalizeCSVRow>; rawRecordId: string }
+        | { kind: "fail"; rawRecordId: string }
+        | { kind: "empty" };
+
+      const retrySlots: RetrySlot[] = new Array(rows.length);
+      await processCsvRowsWithBoundedConcurrency(rows.length, CSV_ROW_INGEST_CONCURRENCY, async (index) => {
         const row = rows[index];
         if (!row) {
-          failedCount += 1;
-          continue;
+          retrySlots[index] = { kind: "empty" };
+          return;
         }
 
         const rowNumber = index + 1;
@@ -941,13 +982,29 @@ router.post(
 
         try {
           const normalized = normalizeCSVRow(row, columnMapping);
-          normalizedTransactions.push({ transaction: normalized, rawRecordId });
+          retrySlots[index] = { kind: "ok", transaction: normalized, rawRecordId };
         } catch {
-          failedCount += 1;
+          retrySlots[index] = { kind: "fail", rawRecordId };
           await query(
             `UPDATE raw_records SET status = 'failed', updated_at = NOW() WHERE id = $1 AND tenant_id = $2`,
             [rawRecordId, tenantId]
           );
+        }
+      });
+
+      const normalizedTransactions: Array<{
+        transaction: ReturnType<typeof normalizeCSVRow>;
+        rawRecordId?: string;
+      }> = [];
+      let failedCount = 0;
+      for (const slot of retrySlots) {
+        if (!slot) {
+          continue;
+        }
+        if (slot.kind === "ok") {
+          normalizedTransactions.push({ transaction: slot.transaction, rawRecordId: slot.rawRecordId });
+        } else if (slot.kind === "fail" || slot.kind === "empty") {
+          failedCount += 1;
         }
       }
 

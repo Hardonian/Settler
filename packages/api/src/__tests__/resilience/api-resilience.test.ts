@@ -134,8 +134,8 @@ describe("API resilience primitives", () => {
       if (sql.includes("DELETE FROM webhook_replay_keys")) {
         return Promise.resolve([]);
       }
-      if (sql.includes("SELECT secret FROM webhook_configs")) {
-        return Promise.resolve([{ secret: "whsec_test" }]);
+      if (sql.includes("FROM webhook_configs") && sql.includes("tenant_id")) {
+        return Promise.resolve([{ secret: "whsec_test", signature_algorithm: "hmac-sha256" }]);
       }
       return Promise.resolve([]);
     });
@@ -144,7 +144,10 @@ describe("API resilience primitives", () => {
     app.use(express.json());
     app.use("/receive", webhookReceiveRouter);
 
-    const payload = { id: "evt_1", tenant_id: "tenant-1" };
+    const payload = {
+      id: "evt_1",
+      tenant_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+    };
 
     const first = await request(app)
       .post("/receive/stripe")

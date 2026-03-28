@@ -21,6 +21,7 @@ import {
   validateWebhookTimestamp,
 } from "../services/webhooks/security";
 import { IngestionBoundary } from "../services/ingestion/boundary";
+import { isValidTenantUuid } from "../utils/tenant-id";
 
 // Initialize Boundary
 const ingestionBoundary = new IngestionBoundary({ query } as any);
@@ -235,7 +236,17 @@ router.post(
       const timestampHeader = req.headers["x-webhook-timestamp"] as string | undefined;
       const idempotencyKey = req.headers["x-idempotency-key"] as string | undefined;
 
-      const tenantId = (req.headers["x-tenant-id"] as string) || "system";
+      const body = req.body as Record<string, unknown> | undefined;
+      const fromBody =
+        typeof body?.tenant_id === "string" ? body.tenant_id.trim() : undefined;
+      const rawTenant = (req.headers["x-tenant-id"] as string | undefined)?.trim() || fromBody;
+      if (!isValidTenantUuid(rawTenant)) {
+        return res.status(400).json({
+          error: "TENANT_REQUIRED",
+          message: "Valid tenant UUID required (header x-tenant-id or JSON body tenant_id)",
+        });
+      }
+      const tenantId = rawTenant;
 
       try {
         await ingestionBoundary.enforceRateLimit(tenantId);
@@ -328,7 +339,7 @@ router.post(
       }
 
       try {
-        const isValid = await verifyWebhookSignature(adapter, rawBody, signature);
+        const isValid = await verifyWebhookSignature(adapter, rawBody, signature, tenantId);
         if (!isValid) {
           await ingestionBoundary.sendToDLQ(
             tenantId,

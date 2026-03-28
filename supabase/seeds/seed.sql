@@ -89,11 +89,11 @@ ON CONFLICT DO NOTHING;
 -- EXAMPLE WEBHOOK CONFIG (for development/testing)
 -- ============================================================================
 
-INSERT INTO webhook_configs (adapter, secret, signature_algorithm)
+INSERT INTO webhook_configs (tenant_id, adapter, secret, signature_algorithm)
 VALUES 
-  ('stripe', 'whsec_placeholder_secret', 'hmac-sha256'),
-  ('shopify', 'placeholder_shopify_secret', 'hmac-sha256'),
-  ('quickbooks', 'placeholder_qb_secret', 'hmac-sha256')
-ON CONFLICT (adapter) DO NOTHING;
+  ('00000000-0000-0000-0000-000000000001', 'stripe', 'whsec_placeholder_secret', 'hmac-sha256'),
+  ('00000000-0000-0000-0000-000000000001', 'shopify', 'placeholder_shopify_secret', 'hmac-sha256'),
+  ('00000000-0000-0000-0000-000000000001', 'quickbooks', 'placeholder_qb_secret', 'hmac-sha256')
+ON CONFLICT (tenant_id, adapter) DO NOTHING;
 
 COMMIT;
