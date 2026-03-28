@@ -28,6 +28,7 @@
     "bundle:size": "next build && du -sh .next && du -sh .next/static && du -sh .next/static/chunks",
     "bundle:check": "echo '⚠️  Run \"pnpm build\" first, then \"pnpm bundle:size\" to check bundle sizes'",
     "test": "NODE_OPTIONS=--max-old-space-size=8192 jest --runInBand",
+    "test:connector-webhook-slice": "NODE_OPTIONS=--max-old-space-size=8192 jest --runInBand src/__tests__/server/migration-truth.test.ts src/__tests__/server/resolve-connector-webhook-context.test.ts src/__tests__/api/connectors-webhook-runtime.test.ts",
     "test:watch": "jest --watch",
     "test:coverage": "NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --runInBand"
   },

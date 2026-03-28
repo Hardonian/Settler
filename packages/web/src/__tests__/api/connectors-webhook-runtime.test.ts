@@ -14,6 +14,10 @@ describe("connector webhook runtime hardening invariants", () => {
     expect(source).toContain('error: "WEBHOOK_SECRET_NOT_CONFIGURED"');
     expect(source).toContain('error: "WEBHOOK_SIGNATURE_MISSING"');
     expect(source).toContain("verifyWebhook(providerId, rawBody, signature, webhookSecret)");
+    expect(source).toContain("assertWebhookConfigsTenantScoping(prisma)");
+    expect(source).toContain("WEBHOOK_PERSISTENCE_UNAVAILABLE");
+    expect(source).toContain("duplicate: true");
+    expect(source).toContain('"Webhook accepted and persisted"');
   });
 
   it("keeps timestamp freshness guard and node runtime", () => {

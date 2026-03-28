@@ -8,6 +8,8 @@ import { appLogger } from "@/lib/utils/logger";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { checkRateLimit } from "@/lib/security/rate-limiter";
 import { resolveConnectorWebhookContext } from "@/lib/server/resolve-connector-webhook-context";
+import { assertWebhookConfigsTenantScoping } from "@/lib/server/migration-truth";
+import { prisma } from "@/shared/db/prismaClient";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -157,26 +159,48 @@ export const POST = withUniversalBillingGate(
         );
       }
 
-      const admin = await createAdminClient();
-      if (!admin || typeof admin.from !== "function") {
-        appLogger.error("Webhook persistence skipped: admin Supabase client unavailable", undefined, {
-          providerId,
-        });
+      const migrationTruth = await assertWebhookConfigsTenantScoping(prisma);
+      if (!migrationTruth.ok) {
+        appLogger.error(
+          "Webhook rejected: webhook_configs tenant migration not satisfied",
+          undefined,
+          {
+            providerId,
+            code: migrationTruth.code,
+          }
+        );
         return NextResponse.json(
           {
             success: false,
-            error: "WEBHOOK_PERSISTENCE_UNAVAILABLE",
-            message: "Server cannot persist webhooks (database admin not configured)",
+            error: migrationTruth.code,
+            message: migrationTruth.message,
           },
           { status: 503 }
         );
       }
 
-      const resolved = await resolveConnectorWebhookContext(
-        admin,
-        providerId,
-        request
-      );
+      const admin = await createAdminClient();
+      if (!admin || typeof admin.from !== "function") {
+        appLogger.error(
+          "Webhook persistence skipped: admin Supabase client unavailable",
+          undefined,
+          {
+            providerId,
+            reason: "SUPABASE_SERVICE_ROLE_KEY_missing_or_client_init_failed",
+          }
+        );
+        return NextResponse.json(
+          {
+            success: false,
+            error: "WEBHOOK_PERSISTENCE_UNAVAILABLE",
+            message:
+              "Verified webhook cannot be persisted: set SUPABASE_SERVICE_ROLE_KEY (service role) for this deployment",
+          },
+          { status: 503 }
+        );
+      }
+
+      const resolved = await resolveConnectorWebhookContext(admin, providerId, request);
       if (!resolved.ok) {
         return NextResponse.json(
           {
@@ -215,6 +239,40 @@ export const POST = withUniversalBillingGate(
       });
 
       if (webhookError) {
+        const errObj =
+          webhookError && typeof webhookError === "object"
+            ? (webhookError as { code?: string; message?: string })
+            : null;
+        const pgCode = errObj?.code ? String(errObj.code) : "";
+        const errMsg = typeof errObj?.message === "string" ? errObj.message : "";
+        const isDuplicate = pgCode === "23505" || /duplicate key|unique constraint/i.test(errMsg);
+
+        if (isDuplicate) {
+          appLogger.info("Webhook duplicate delivery ignored (idempotent)", {
+            providerId,
+            webhookId,
+            tenantId: resolved.tenantId,
+          });
+          return NextResponse.json(
+            {
+              success: true,
+              duplicate: true,
+              providerId,
+              webhookId,
+              eventType,
+              tenantId: resolved.tenantId,
+              message: "Webhook already recorded (duplicate delivery)",
+            },
+            {
+              status: 200,
+              headers: {
+                "X-RateLimit-Limit": String(WEBHOOK_RL_MAX),
+                "X-RateLimit-Remaining": String(rl.remaining),
+              },
+            }
+          );
+        }
+
         appLogger.error("Failed to store webhook event", webhookError, {
           providerId,
           webhookId,
@@ -225,7 +283,7 @@ export const POST = withUniversalBillingGate(
           {
             success: false,
             error: "WEBHOOK_PERSISTENCE_FAILED",
-            message: "Webhook accepted but could not be persisted",
+            message: "Webhook verified and tenant-resolved but persistence failed",
           },
           { status: 503 }
         );
@@ -238,7 +296,7 @@ export const POST = withUniversalBillingGate(
           webhookId,
           eventType,
           tenantId: resolved.tenantId,
-          message: "Webhook accepted",
+          message: "Webhook accepted and persisted",
         },
         {
           status: 202,
