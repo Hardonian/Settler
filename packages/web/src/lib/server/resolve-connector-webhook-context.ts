@@ -30,7 +30,8 @@ export async function resolveConnectorWebhookContext(
 > {
   const normalizedProvider = providerId.trim().toLowerCase();
   const headerTenant =
-    request.headers.get("x-tenant-id")?.trim() || request.headers.get("x-settler-tenant-id")?.trim();
+    request.headers.get("x-tenant-id")?.trim() ||
+    request.headers.get("x-settler-tenant-id")?.trim();
 
   if (headerTenant) {
     const { data: row, error } = await admin
@@ -101,7 +102,7 @@ export async function resolveConnectorWebhookContext(
       ok: false,
       code: "CONNECTOR_NOT_PROVISIONED",
       message: `No connector registered for provider ${normalizedProvider}. Provision the connector or send x-tenant-id.`,
-      status: 503,
+      status: 404,
     };
   }
 

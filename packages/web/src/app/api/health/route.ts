@@ -17,6 +17,8 @@ import { logger } from "@/lib/observability/logger";
 import { validateSupabaseEnv } from "@/lib/env/validator";
 import { publicRoute } from "@/middleware/billing-gate-universal";
 import { withSecurity } from "@/lib/middleware/api-security";
+import { assertWebhookConfigsTenantScoping } from "@/lib/server/migration-truth";
+import { prisma } from "@/shared/db/prismaClient";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -190,17 +192,29 @@ export const GET = withSecurity(
         }
 
         const allTablesOk = Object.values(tableChecks).every((v) => v);
+
+        const webhookMigration = await assertWebhookConfigsTenantScoping(prisma);
+        checks.webhookConfigsTenantMigration = webhookMigration.ok
+          ? { status: "ok" as const, message: "webhook_configs tenant-scoped migration applied" }
+          : {
+              status: "error" as const,
+              message: `${webhookMigration.code}: ${webhookMigration.message}`,
+            };
+
+        const backendOk = allTablesOk && webhookMigration.ok;
         checks.backendContract = {
-          status: allTablesOk ? "ok" : "error",
-          message: allTablesOk
-            ? "Critical tables accessible"
-            : `Missing tables: ${Object.entries(tableChecks)
-                .filter(([_, ok]) => !ok)
-                .map(([t]) => t)
-                .join(", ")}`,
+          status: backendOk ? "ok" : "error",
+          message: backendOk
+            ? "Critical tables accessible and webhook_configs migration verified"
+            : !allTablesOk
+              ? `Missing tables: ${Object.entries(tableChecks)
+                  .filter(([_, ok]) => !ok)
+                  .map(([t]) => t)
+                  .join(", ")}`
+              : (checks.webhookConfigsTenantMigration.message ?? "Backend contract check failed"),
         };
 
-        if (!allTablesOk) {
+        if (!backendOk) {
           overallStatus = overallStatus === "healthy" ? "degraded" : "unhealthy";
         }
       } else {
