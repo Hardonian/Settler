@@ -6,7 +6,7 @@
  */
 
 import { logInfo, logError } from "../../utils/logger";
-import { PercentileValues, DriftDetectionResult, AlertSeverity, SLOMetricType } from "./types";
+import { DriftDetectionResult, AlertSeverity, SLOMetricType } from "./types";
 import { calculatePercentiles, comparePercentiles, detectDistributionAnomaly } from "./percentiles";
 import { getHistoricalMetrics } from "./metrics";
 

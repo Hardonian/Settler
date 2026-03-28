@@ -7,8 +7,6 @@
 
 import { checkSLAViolations } from "../services/sla/tracker";
 import { logInfo, logError } from "../utils/logger";
-import { checkTenantFrozen } from "../middleware/governance";
-
 /**
  * Run SLA monitoring job
  * Should be scheduled to run every hour (e.g., via cron or scheduled function)

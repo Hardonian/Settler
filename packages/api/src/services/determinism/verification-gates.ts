@@ -8,7 +8,6 @@
  */
 
 import { createHash } from 'node:crypto';
-import { query } from '../../db';
 import { logError, logInfo } from '../../utils/logger';
 import { stableStringify } from './canonical-input';
 import { DeterministicMatchingEngine, MatchingRule } from './deterministic-matcher';

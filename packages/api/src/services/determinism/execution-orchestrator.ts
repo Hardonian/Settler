@@ -13,8 +13,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { query } from '../../db';
 import { logError, logInfo, logWarn } from '../../utils/logger';
 import { stableStringify } from './canonical-input';
-import { createRunSnapshot, updateRunSnapshotStatus, RunSnapshot } from './run-snapshot';
-
 /**
  * Run configuration
  */

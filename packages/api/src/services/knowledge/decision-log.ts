@@ -225,7 +225,7 @@ ${decision.tags.map(tag => `\`${tag}\``).join(', ')}
   private async ensureDirectoryExists(): Promise<void> {
     try {
       await fs.mkdir(this.logDirectory, { recursive: true });
-    } catch (error) {
+    } catch {
       // Directory might already exist
     }
   }

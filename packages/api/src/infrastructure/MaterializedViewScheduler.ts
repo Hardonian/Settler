@@ -8,19 +8,11 @@
  */
 
 import { logInfo, logError, logWarn } from "../utils/logger";
-import {
-  RefreshConfig,
-  RefreshStrategy,
-  AutomaticRefreshConfig,
-  CronRefreshConfig,
-  TenantViewConfig,
-  COMMON_VIEW_TEMPLATES,
-} from "./MaterializedViewConfig";
+import { RefreshConfig, CronRefreshConfig, TenantViewConfig, COMMON_VIEW_TEMPLATES } from "./MaterializedViewConfig";
 import {
   refreshMaterializedView,
   getTenantConfig,
   getActiveTenantViews,
-  getMaterializedViewName,
   checkViewExists,
 } from "./MaterializedViewManager";
 
@@ -52,7 +44,11 @@ let schedulerInterval: NodeJS.Timeout | null = null;
  */
 function parseCronToNextRun(cronConfig: CronRefreshConfig): Date {
   const now = new Date();
-  const [minute, hour, dayOfMonth, month, dayOfWeek] = cronConfig.cronExpression.split(" ");
+  const [minute, _hour, _dayOfMonth, _month, _dayOfWeek] = cronConfig.cronExpression.split(" ");
+  void _hour;
+  void _dayOfMonth;
+  void _month;
+  void _dayOfWeek;
 
   const next = new Date(now);
   next.setSeconds(0);

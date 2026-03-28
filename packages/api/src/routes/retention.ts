@@ -12,9 +12,7 @@ import {
   retentionPeriodToDays,
 } from "../services/retention/retention-policy";
 import { retentionMetricsService } from "../services/retention/retention-metrics";
-import { getTTLWorker, TTLWorkerConfig } from "../services/retention/ttl-worker";
-import { authMiddleware as requireAuth } from "../middleware/auth";
-import { tenantMiddleware as requireTenantContext } from "../middleware/tenant";
+import { getTTLWorker } from "../services/retention/ttl-worker";
 import { logInfo, logError } from "../utils/logger";
 
 const router: Router = Router();

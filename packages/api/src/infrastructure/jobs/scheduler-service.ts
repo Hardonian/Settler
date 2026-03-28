@@ -27,7 +27,7 @@ let cron: typeof import('node-cron') | null = null;
 try {
    
   cron = require('node-cron');
-} catch (error) {
+} catch {
   logWarn('[JobScheduler] node-cron not installed. Scheduled jobs will not run.');
   logWarn('[JobScheduler] Install with: npm install node-cron @types/node-cron');
 }

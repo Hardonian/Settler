@@ -18,18 +18,7 @@ import {
   getFailedIngestions,
   getBillingAnomalies,
 } from "../../services/operator-mode/daily-intelligence";
-import {
-  checkAlertThresholds,
-  getNotifierCapabilities,
-  upsertAlertThreshold,
-  AlertThreshold,
-} from "../../services/operator-mode/alerting";
-import {
-  setTenantUsageCeiling,
-  getAllUsageCeilings,
-  checkUsageCeiling,
-  setBackgroundJobLimit,
-} from "../../services/operator-mode/cost-controls";
+import { getNotifierCapabilities, AlertThreshold } from "../../services/operator-mode/alerting";
 import {
   getAlertRoutingProvider,
   getUsageMeteringProvider,

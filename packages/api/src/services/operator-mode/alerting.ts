@@ -432,7 +432,8 @@ async function sendEmailAlert(
 /**
  * Send Slack alert (placeholder - integrate with Slack API)
  */
-async function sendSlackAlert(
+/** Reserved for Slack channel integration; kept for a single call site once wired. */
+export async function sendSlackAlert(
   alertId: string,
   alertData: {
     ruleName: string;

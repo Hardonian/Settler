@@ -93,7 +93,7 @@ export function computePayloadFingerprint(payload: unknown): string {
 export async function checkIdempotency(
   request: CheckIdempotencyRequest
 ): Promise<CheckIdempotencyResponse> {
-  const { tenant_id, source_id, idempotency_key, payload, effective_date } = request;
+  const { tenant_id, source_id, idempotency_key, payload } = request;
   
   try {
     // If idempotency key provided, check by key

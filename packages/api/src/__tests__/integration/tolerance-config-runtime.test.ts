@@ -19,7 +19,7 @@ import {
   serializeConfigForProvenance,
 } from "../../services/matching-rules-loader";
 import { MatchingEngine, MatchingContext } from "../../application/matching/MatchingEngine";
-import { Transaction, Settlement, MatchingRulesConfig } from "@settler/types";
+import { Transaction, Settlement } from "@settler/types";
 
 // Mock database
 const mockQuery = jest.fn();
