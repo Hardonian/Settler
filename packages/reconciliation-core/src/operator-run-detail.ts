@@ -8,6 +8,7 @@
  * remains compatibility scope only and must not become the source of truth.
  */
 
+import type { RunStatus } from "@settler/types";
 import type { CanonicalReconciliationRunDetail } from "./canonical-reconciliation.js";
 import type { AdapterDriftSignal } from "./canonical-run-result.js";
 
@@ -105,7 +106,8 @@ type OperatorKindDetail =
 export interface OperatorRunStageRow {
   id: string;
   name: string;
-  status: "pending" | "running" | "completed" | "failed";
+  /** Subset of {@link RunStatus} used for stage lifecycle in operator UI */
+  status: Extract<RunStatus, "pending" | "running" | "completed" | "failed">;
   startedAt?: string;
   completedAt?: string;
   error?: string;
@@ -117,7 +119,8 @@ export interface OperatorRunDetailBase {
   id: string;
   detailHref: string;
   name: string;
-  status: string;
+  /** Normalized lifecycle status (same contract as canonical reconciliation lifecycle) */
+  status: RunStatus;
   statusLabel: string;
   isTerminal: boolean;
   progress: number;
@@ -295,7 +298,7 @@ export function buildOperatorIngestionRunDetailJson(input: {
 
 export function buildOperatorReconRunDetailJson(input: {
   detail: CanonicalReconciliationRunDetail;
-  status: string;
+  status: RunStatus;
   startedAt: string;
   completedAt: string | null;
   errorMessage: string | null;

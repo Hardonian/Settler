@@ -493,128 +493,126 @@ export default function RunPage() {
         </Card>
       )}
 
-      {/* Stages */}
-      {run.config && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Effective Configuration</CardTitle>
-            <CardDescription>
-              Configuration context used to interpret the latest persisted result.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div
-              className={`rounded-md border p-3 text-sm ${
-                run.config.configSource === "snapshot"
-                  ? "border-green-200 bg-green-50 text-green-900 dark:border-green-800 dark:bg-green-900/20 dark:text-green-200"
-                  : "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200"
-              }`}
-            >
-              {run.config.configSource === "snapshot"
-                ? "Snapshot-backed configuration: run decisions are tied to a captured snapshot."
-                : "Live-definition fallback: snapshot data was not available for this result."}
-              {run.config.configCapturedAt
-                ? ` Captured ${new Date(run.config.configCapturedAt).toLocaleString()}.`
-                : ""}
+      {/* Configuration + provenance timestamps (DTO-owned; same card for recon_job and ingestion_run) */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Effective Configuration</CardTitle>
+          <CardDescription>
+            Configuration context used to interpret the latest persisted result.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div
+            className={`rounded-md border p-3 text-sm ${
+              run.config.configSource === "snapshot"
+                ? "border-green-200 bg-green-50 text-green-900 dark:border-green-800 dark:bg-green-900/20 dark:text-green-200"
+                : "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200"
+            }`}
+          >
+            {run.config.configSource === "snapshot"
+              ? "Snapshot-backed configuration: run decisions are tied to a captured snapshot."
+              : "Live-definition fallback: snapshot data was not available for this result."}
+            {run.config.configCapturedAt
+              ? ` Captured ${new Date(run.config.configCapturedAt).toLocaleString()}.`
+              : ""}
+          </div>
+          {run.config.definitionDriftDetected && run.config.definitionDriftNotes.length > 0 && (
+            <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+              <p className="font-medium">Current definition differs from captured snapshot:</p>
+              <ul className="mt-2 list-disc pl-5 space-y-1">
+                {run.config.definitionDriftNotes.map((note) => (
+                  <li key={note}>{note}</li>
+                ))}
+              </ul>
             </div>
-            {run.config.definitionDriftDetected && run.config.definitionDriftNotes.length > 0 && (
-              <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
-                <p className="font-medium">Current definition differs from captured snapshot:</p>
-                <ul className="mt-2 list-disc pl-5 space-y-1">
-                  {run.config.definitionDriftNotes.map((note) => (
-                    <li key={note}>{note}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              <div>
-                <p className="text-sm font-medium text-foreground dark:text-white">Adapters</p>
-                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
-                  {[run.config.sourceAdapter, run.config.targetAdapter]
-                    .filter(Boolean)
-                    .join(" -> ") || "Not recorded"}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-foreground dark:text-white">Strategy</p>
-                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
-                  {run.config.reconStrategy || "Not recorded"}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-foreground dark:text-white">Rules</p>
-                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
-                  {run.config.validationRuleCount > 0
-                    ? `${run.config.validationRuleCount} rule${
-                        run.config.validationRuleCount === 1 ? "" : "s"
-                      } active`
-                    : "No validation rules recorded"}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-foreground dark:text-white">Rule Versions</p>
-                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
-                  {run.config.ruleVersionCount > 0
-                    ? `${run.config.ruleVersionCount} locked version${
-                        run.config.ruleVersionCount === 1 ? "" : "s"
-                      }`
-                    : "No rule-version lock recorded"}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-foreground dark:text-white">Snapshot</p>
-                <p className="text-sm text-muted-foreground dark:text-muted-foreground font-mono break-all">
-                  {run.config.snapshotId || "Not persisted"}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-foreground dark:text-white">Input Hash</p>
-                <p className="text-sm text-muted-foreground dark:text-muted-foreground font-mono break-all">
-                  {run.config.inputHash || "Not recorded"}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-foreground dark:text-white">Template</p>
-                <p className="text-sm text-muted-foreground dark:text-muted-foreground font-mono break-all">
-                  {run.config.templateId || "None"}
-                </p>
+          )}
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <div>
+              <p className="text-sm font-medium text-foreground dark:text-white">Adapters</p>
+              <p className="text-sm text-muted-foreground dark:text-muted-foreground">
+                {[run.config.sourceAdapter, run.config.targetAdapter]
+                  .filter(Boolean)
+                  .join(" -> ") || "Not recorded"}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-foreground dark:text-white">Strategy</p>
+              <p className="text-sm text-muted-foreground dark:text-muted-foreground">
+                {run.config.reconStrategy || "Not recorded"}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-foreground dark:text-white">Rules</p>
+              <p className="text-sm text-muted-foreground dark:text-muted-foreground">
+                {run.config.validationRuleCount > 0
+                  ? `${run.config.validationRuleCount} rule${
+                      run.config.validationRuleCount === 1 ? "" : "s"
+                    } active`
+                  : "No validation rules recorded"}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-foreground dark:text-white">Rule Versions</p>
+              <p className="text-sm text-muted-foreground dark:text-muted-foreground">
+                {run.config.ruleVersionCount > 0
+                  ? `${run.config.ruleVersionCount} locked version${
+                      run.config.ruleVersionCount === 1 ? "" : "s"
+                    }`
+                  : "No rule-version lock recorded"}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-foreground dark:text-white">Snapshot</p>
+              <p className="text-sm text-muted-foreground dark:text-muted-foreground font-mono break-all">
+                {run.config.snapshotId || "Not persisted"}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-foreground dark:text-white">Input Hash</p>
+              <p className="text-sm text-muted-foreground dark:text-muted-foreground font-mono break-all">
+                {run.config.inputHash || "Not recorded"}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-foreground dark:text-white">Template</p>
+              <p className="text-sm text-muted-foreground dark:text-muted-foreground font-mono break-all">
+                {run.config.templateId || "None"}
+              </p>
+            </div>
+          </div>
+          {run.config.validationRuleLabels.length > 0 && (
+            <div>
+              <p className="mb-2 text-sm font-medium text-foreground dark:text-white">
+                Recorded Rule Coverage
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {run.config.validationRuleLabels.map((label) => (
+                  <Badge key={label} variant="outline">
+                    {label}
+                  </Badge>
+                ))}
               </div>
             </div>
-            {run.config.validationRuleLabels.length > 0 && (
-              <div>
-                <p className="mb-2 text-sm font-medium text-foreground dark:text-white">
-                  Recorded Rule Coverage
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {run.config.validationRuleLabels.map((label) => (
-                    <Badge key={label} variant="outline">
-                      {label}
-                    </Badge>
-                  ))}
-                </div>
+          )}
+          {run.config.ruleVersionLabels.length > 0 && (
+            <div>
+              <p className="mb-2 text-sm font-medium text-foreground dark:text-white">
+                Snapshot Rule Versions
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {run.config.ruleVersionLabels.map((label) => (
+                  <Badge key={label} variant="outline">
+                    {label}
+                  </Badge>
+                ))}
               </div>
-            )}
-            {run.config.ruleVersionLabels.length > 0 && (
-              <div>
-                <p className="mb-2 text-sm font-medium text-foreground dark:text-white">
-                  Snapshot Rule Versions
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {run.config.ruleVersionLabels.map((label) => (
-                    <Badge key={label} variant="outline">
-                      {label}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-            <p className="text-sm text-muted-foreground dark:text-muted-foreground">
-              {run.config.summaryBasis}
-            </p>
-          </CardContent>
-        </Card>
-      )}
+            </div>
+          )}
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground">
+            {run.config.summaryBasis}
+          </p>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
@@ -623,6 +621,11 @@ export default function RunPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
+            {run.stages.length === 0 ? (
+              <p className="text-sm text-muted-foreground dark:text-muted-foreground">
+                No stage events recorded for this run yet.
+              </p>
+            ) : null}
             {run.stages.map((stage) => {
               const StageIcon = getStatusIcon(stage.status);
               return (

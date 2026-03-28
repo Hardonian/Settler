@@ -20,6 +20,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { AlertCircle, CheckCircle2, Info } from "lucide-react";
 import { capabilitiesForRunKind, type ReconciliationRunKind } from "@settler/reconciliation-core";
+import type { OperatorRunDetail } from "@/types/operator-run-detail";
 
 interface Match {
   id: string;
@@ -81,11 +82,7 @@ export function ReconciliationMatches({ runId, runKind: runKindProp }: Reconcili
 
       let runKind = resolvedRunKind;
       if (runKind == null) {
-        const detailRes = await fetch(`/api/v1/reconciliation/runs/${runId}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("apiKey")}`,
-          },
-        });
+        const detailRes = await fetch(`/api/runs/${runId}`);
 
         if (detailRes.status === 404) {
           setBlockReason({ kind: "not_found" });
@@ -97,39 +94,36 @@ export function ReconciliationMatches({ runId, runKind: runKindProp }: Reconcili
           const problem = (await detailRes.json().catch(() => ({}))) as {
             code?: string;
             detail?: string;
+            error?: string;
           };
-          if (problem.code === "RECONCILIATION_UUID_COLLISION") {
-            setBlockReason({
-              kind: "uuid_collision",
-              detail:
-                problem.detail ||
-                "This id exists as both a recon job and an ingestion reconciliation run.",
-            });
-          } else if (problem.code === "RECONCILIATION_WRONG_RUN_KIND") {
-            setBlockReason({ kind: "wrong_run_kind" });
-          } else {
-            setBlockReason({
-              kind: "other",
-              message: problem.detail || "Unable to resolve run for matches.",
-            });
-          }
+          setBlockReason({
+            kind: "uuid_collision",
+            detail:
+              problem.detail ||
+              problem.error ||
+              "This id exists as both a recon job and an ingestion reconciliation run.",
+          });
           setMatches([]);
           return;
         }
 
         if (!detailRes.ok) {
-          setBlockReason({ kind: "other", message: "Failed to load run detail for matches." });
+          setBlockReason({
+            kind: "other",
+            message: "Failed to load canonical run detail for matches.",
+          });
           setMatches([]);
           return;
         }
 
-        const detailBody = (await detailRes.json()) as { run_kind?: ReconciliationRunKind };
-        if (detailBody.run_kind !== "recon_job" && detailBody.run_kind !== "ingestion_run") {
-          setBlockReason({ kind: "other", message: "Unexpected run_kind in detail response." });
+        const detailBody = (await detailRes.json()) as OperatorRunDetail;
+        const k = detailBody.runKind;
+        if (k !== "recon_job" && k !== "ingestion_run") {
+          setBlockReason({ kind: "other", message: "Unexpected runKind in operator run detail." });
           setMatches([]);
           return;
         }
-        runKind = detailBody.run_kind;
+        runKind = k;
         setResolvedRunKind(runKind);
       }
 
