@@ -1,7 +1,6 @@
 import { safeLogger } from "@/lib/observability/safe-logger";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ReconciliationRunPayload = { ingestionId: string; config?: any };
+type ReconciliationRunPayload = { ingestionId: string; config?: Record<string, unknown> };
 
 /**
  * Internal engine base URL. Must be explicitly set in production.

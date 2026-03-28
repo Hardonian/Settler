@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AuditTrailDataTable } from "@/components/console/AuditTrailDataTable";
-import { History, ShieldCheck, Download, User, Calendar } from "lucide-react";
+import { ShieldCheck, Download, User, Calendar } from "lucide-react";
 
 export const metadata = {
   title: "Audit Trail | Settler",

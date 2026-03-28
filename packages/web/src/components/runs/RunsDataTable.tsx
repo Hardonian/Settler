@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { DataTable, DataTableColumn } from "@/components/ui/data-table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Sparkline } from "@/components/ui/sparkline";

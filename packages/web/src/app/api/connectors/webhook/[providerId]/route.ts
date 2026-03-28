@@ -2,15 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { getConnectorDriver, verifyWebhook } from "@settler/adapters";
 
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/server";
 import { asExtendedClient } from "@/lib/supabase/types";
 import { appLogger } from "@/lib/utils/logger";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
+import { checkRateLimit } from "@/lib/security/rate-limiter";
+import { resolveConnectorWebhookContext } from "@/lib/server/resolve-connector-webhook-context";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const WEBHOOK_TIMESTAMP_TOLERANCE_MS = 5 * 60 * 1000;
+const WEBHOOK_RL_WINDOW_MS = 60_000;
+const WEBHOOK_RL_MAX = 200;
 
 function parseWebhookJson(rawBody: string): Record<string, unknown> | null {
   try {
@@ -35,10 +39,42 @@ function isTimestampFresh(timestampHeader: string | null): boolean {
   return age <= WEBHOOK_TIMESTAMP_TOLERANCE_MS;
 }
 
+function clientIp(request: NextRequest): string {
+  return (
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown"
+  );
+}
+
 export const POST = withUniversalBillingGate(
   async function POST(request: NextRequest, { params }: { params: { providerId: string } }) {
     try {
       const providerId = params.providerId;
+      const ip = clientIp(request);
+      const rl = checkRateLimit(`connector-webhook:${providerId}:${ip}`, {
+        windowMs: WEBHOOK_RL_WINDOW_MS,
+        maxRequests: WEBHOOK_RL_MAX,
+      });
+      if (!rl.allowed) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "RATE_LIMITED",
+            message: "Too many webhook requests; retry later",
+            retryAfter: rl.retryAfter,
+          },
+          {
+            status: 429,
+            headers: {
+              "Retry-After": String(rl.retryAfter ?? 60),
+              "X-RateLimit-Limit": String(WEBHOOK_RL_MAX),
+              "X-RateLimit-Remaining": "0",
+            },
+          }
+        );
+      }
+
       const driver = getConnectorDriver(providerId);
 
       if (!driver || !driver.handleWebhook) {
@@ -121,8 +157,38 @@ export const POST = withUniversalBillingGate(
         );
       }
 
-      const supabase = await createClient();
-      const typedSupabase = asExtendedClient(supabase);
+      const admin = await createAdminClient();
+      if (!admin || typeof admin.from !== "function") {
+        appLogger.error("Webhook persistence skipped: admin Supabase client unavailable", undefined, {
+          providerId,
+        });
+        return NextResponse.json(
+          {
+            success: false,
+            error: "WEBHOOK_PERSISTENCE_UNAVAILABLE",
+            message: "Server cannot persist webhooks (database admin not configured)",
+          },
+          { status: 503 }
+        );
+      }
+
+      const resolved = await resolveConnectorWebhookContext(
+        admin,
+        providerId,
+        request
+      );
+      if (!resolved.ok) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: resolved.code,
+            message: resolved.message,
+          },
+          { status: resolved.status }
+        );
+      }
+
+      const typedSupabase = asExtendedClient(admin);
 
       const webhookId =
         typeof body.id === "string"
@@ -139,8 +205,8 @@ export const POST = withUniversalBillingGate(
             : "unknown";
 
       const { error: webhookError } = await typedSupabase.from("webhook_events").insert({
-        connector_id: null,
-        tenant_id: null,
+        connector_id: resolved.connectorId,
+        tenant_id: resolved.tenantId,
         webhook_id: webhookId,
         event_type: eventType,
         payload: body,
@@ -153,6 +219,7 @@ export const POST = withUniversalBillingGate(
           providerId,
           webhookId,
           eventType,
+          tenantId: resolved.tenantId,
         });
         return NextResponse.json(
           {
@@ -170,9 +237,16 @@ export const POST = withUniversalBillingGate(
           providerId,
           webhookId,
           eventType,
+          tenantId: resolved.tenantId,
           message: "Webhook accepted",
         },
-        { status: 202 }
+        {
+          status: 202,
+          headers: {
+            "X-RateLimit-Limit": String(WEBHOOK_RL_MAX),
+            "X-RateLimit-Remaining": String(rl.remaining),
+          },
+        }
       );
     } catch (error) {
       appLogger.error("Error in webhook route", error);

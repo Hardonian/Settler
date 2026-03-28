@@ -89,7 +89,7 @@ const MARKETING_ROUTES = [
 test.describe("CI Deployment Gates - HTTP Status", () => {
   for (const route of CRITICAL_ROUTES) {
     test(`${route.name} (${route.path}) - should return 200 or redirect`, async ({ page }) => {
-      const { errors } = createConsoleErrorCollector(page);
+      createConsoleErrorCollector(page);
 
       const response = await page.goto(`${BASE_URL}${route.path}`, {
         waitUntil: "domcontentloaded",

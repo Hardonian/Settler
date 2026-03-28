@@ -21,6 +21,8 @@ import { RequestResponseViewer } from './RequestResponseViewer';
 import { CodeGenerator } from './CodeGenerator';
 import { Play, Loader2 } from 'lucide-react';
 import { ConsoleErrorBoundary } from './ErrorBoundary';
+import { appLogger } from '@/lib/utils/logger';
+import { tryParseJson } from '@/lib/safe-json';
 
 interface ApiCall {
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -37,20 +39,33 @@ export function EnhancedPlayground() {
   const [response, setResponse] = useState<{ status: number; data: unknown } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [apiKeyHint, setApiKeyHint] = useState<string | null>(null);
 
   useEffect(() => {
-    // Try to get API key from localStorage or fetch from API
+    let cancelled = false;
     fetch('/api/console/api-keys')
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+        return res.json() as Promise<{ keys?: Array<{ keyPrefix?: string; revokedAt?: string | null }> }>;
+      })
       .then((data) => {
-        if (data.keys && data.keys.length > 0) {
-          // Use first active key (in real app, would show key prefix)
-          // For demo, we'll need user to paste full key
+        if (cancelled) return;
+        const active = data.keys?.find((k) => !k.revokedAt);
+        if (active?.keyPrefix) {
+          setApiKeyHint(`Active key prefix: ${active.keyPrefix}… — paste the full secret to call the API.`);
         }
       })
-      .catch(() => {
-        // Ignore errors
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        const msg = err instanceof Error ? err.message : 'Request failed';
+        setApiKeyHint(`Could not load API key hints (${msg}). Paste your key manually.`);
+        appLogger.warn('EnhancedPlayground: api-keys fetch failed', { message: msg });
       });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleExecute = async () => {
@@ -99,6 +114,9 @@ export function EnhancedPlayground() {
     }
   };
 
+  const parsedRequestBody =
+    requestBody.trim().length > 0 ? tryParseJson(requestBody) : { ok: true as const, data: undefined };
+
   const apiCall: ApiCall = {
     method,
     endpoint,
@@ -106,7 +124,7 @@ export function EnhancedPlayground() {
       'x-api-key': apiKey,
       'Content-Type': 'application/json',
     },
-    body: requestBody ? JSON.parse(requestBody).catch(() => ({})) : undefined,
+    body: parsedRequestBody.ok ? (parsedRequestBody.data as Record<string, unknown> | undefined) : undefined,
   };
 
   return (
@@ -140,8 +158,13 @@ export function EnhancedPlayground() {
                   className="font-mono"
                 />
                 <p className="text-xs text-muted-foreground mt-1 leading-[1.5]">
-                  Your API key is never stored or sent to our servers
+                  Keys stay in this browser session only; requests go to the endpoint you configure.
                 </p>
+                {apiKeyHint && (
+                  <p className="text-xs text-amber-700 dark:text-amber-300 mt-2 leading-[1.5]">
+                    {apiKeyHint}
+                  </p>
+                )}
               </div>
             </div>
           </CardContent>

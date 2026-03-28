@@ -5,7 +5,7 @@
  * and login/signup flow smoke tests.
  */
 
-import { test, expect, Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000";
 
@@ -138,6 +138,7 @@ test.describe("Login Page Functionality", () => {
 
     // At least one of these should be present
     const hasLoginElements = hasLoginForm || hasEmailInput || hasPasswordInput;
+    expect(hasLoginElements, "Login page should expose at least one credential field").toBe(true);
 
     // Check page has content
     const bodyText = await page.textContent("body");

@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import { unzipSync, strFromU8 } from "fflate";
 import { z } from "zod";
+import { tryParseJson } from "@/lib/safe-json";
 
 const varianceCountSchema = z.object({
   type: z.string(),
@@ -35,15 +36,17 @@ const engineOutputSchema = z.object({
 
 type EngineOutput = z.infer<typeof engineOutputSchema>;
 
-type VarianceItem = {
-  id: string;
-  type: string;
-  transaction_id?: string;
-  settlement_id?: string;
-  message: string;
-  amount_diff_cents?: number;
-  date_diff_days?: number;
-};
+const varianceItemSchema = z.object({
+  id: z.string(),
+  type: z.string(),
+  transaction_id: z.string().optional(),
+  settlement_id: z.string().optional(),
+  message: z.string(),
+  amount_diff_cents: z.number().optional(),
+  date_diff_days: z.number().optional(),
+});
+
+type VarianceItem = z.infer<typeof varianceItemSchema>;
 
 export default function ImportResultsPage() {
   const [engineOutput, setEngineOutput] = useState<EngineOutput | null>(null);
@@ -52,7 +55,12 @@ export default function ImportResultsPage() {
 
   const handleEngineOutput = useCallback(async (file: File) => {
     const text = await file.text();
-    const parsed = engineOutputSchema.safeParse(JSON.parse(text));
+    const json = tryParseJson(text);
+    if (!json.ok) {
+      setStatus(`Invalid JSON in engine_output.json: ${json.error}`);
+      return;
+    }
+    const parsed = engineOutputSchema.safeParse(json.data);
     if (!parsed.success) {
       setStatus("engine_output.json failed schema validation.");
       return;
@@ -79,17 +87,45 @@ export default function ImportResultsPage() {
     }
     const content = strFromU8(entryData);
     const items: VarianceItem[] = [];
+    const pushLine = (line: string, lineNo: number) => {
+      const j = tryParseJson(line);
+      if (!j.ok) {
+        setStatus(`Invalid JSON on line ${lineNo} of variances: ${j.error}`);
+        return false;
+      }
+      const row = varianceItemSchema.safeParse(j.data);
+      if (!row.success) {
+        setStatus(`Variance line ${lineNo} failed validation.`);
+        return false;
+      }
+      items.push(row.data);
+      return true;
+    };
+
     if (varianceEntry.endsWith(".jsonl")) {
-      content
-        .split("\n")
-        .filter(Boolean)
-        .forEach((line) => {
-          items.push(JSON.parse(line));
-        });
+      const lines = content.split("\n").filter(Boolean);
+      for (let i = 0; i < lines.length; i++) {
+        if (!pushLine(lines[i]!, i + 1)) {
+          return;
+        }
+      }
     } else {
-      const parsed = JSON.parse(content);
-      if (Array.isArray(parsed)) {
-        items.push(...parsed);
+      const j = tryParseJson(content);
+      if (!j.ok) {
+        setStatus(`Invalid JSON in variances file: ${j.error}`);
+        return;
+      }
+      if (!Array.isArray(j.data)) {
+        setStatus("Variances JSON must be an array of objects.");
+        return;
+      }
+      for (let i = 0; i < j.data.length; i++) {
+        const row = varianceItemSchema.safeParse(j.data[i]);
+        if (!row.success) {
+          setStatus(`Variance item ${i + 1} failed validation.`);
+          return;
+        }
+        items.push(row.data);
       }
     }
     setVariances(items);
