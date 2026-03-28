@@ -9,7 +9,7 @@
  * wrapped in `{ data: ... }` for this Express envelope. It is not a second truth source.
  *
  * TENANT SAFETY: All queries scoped to req.tenantId
- * FREEZE AWARE: No mutations, read-only operator surface
+ * FREEZE AWARE: Retry mutation is freeze-gated; reads are unrestricted
  */
 
 import { Router, Response } from "express";
@@ -21,7 +21,10 @@ import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
 import { enforceFreezeState } from "../middleware/governance";
 
-import { resolveOperatorRunDetailForTenants } from "@settler/reconciliation-core";
+import {
+  resolveOperatorRunDetailForTenants,
+  normalizeRunStatus,
+} from "@settler/reconciliation-core";
 import { Run, RunSummary } from "@settler/types";
 import { handleRouteError } from "../utils/error-handler";
 import {
@@ -102,14 +105,14 @@ router.get(
 
       logInfo("Runs listed", { tenantId, status, count: runs.length, total, page, limit });
 
-      // Transform to operator-friendly format
+      // Transform to operator-friendly format using canonical status normalization
       const data: Run[] = runs.map((run) => {
         const summary = (run.summary as RunSummary | null) || undefined;
 
         return {
           id: run.id,
           name: run.reconJob.name,
-          status: run.status as "pending" | "running" | "completed" | "failed" | "unknown",
+          status: normalizeRunStatus(run.status),
           startedAt: run.startedAt.toISOString(),
           completedAt: run.completedAt?.toISOString() || null,
           summary,
@@ -227,45 +230,53 @@ router.post(
         ]);
       }
 
-      const existingRetry = await prisma.reconResult.findFirst({
-        where: {
-          tenantId,
-          reconJobId: originalRun.reconJobId,
-          status: "running",
-          metadata: {
-            path: ["retryOfRunId"],
-            equals: runId2,
-          },
-        },
-        select: {
-          id: true,
-        },
-      });
-
-      if (existingRetry) {
-        throw new ConflictError("Retry already in progress for this run", {
-          code: "RETRY_ALREADY_IN_PROGRESS",
-          runId: runId2,
-          retryRunId: existingRetry.id,
-        });
-      }
-
-      const newRun = await prisma.reconResult.create({
-        data: {
-          reconJob: {
-            connect: {
-              id: originalRun.reconJobId,
+      // Wrap duplicate-check + create in a Serializable transaction to prevent
+      // TOCTOU race: two concurrent retry requests could both pass the findFirst
+      // check before either creates, resulting in duplicate running retries.
+      const newRun = await prisma.$transaction(
+        async (tx) => {
+          const existingRetry = await tx.reconResult.findFirst({
+            where: {
+              tenantId,
+              reconJobId: originalRun.reconJobId,
+              status: "running",
+              metadata: {
+                path: ["retryOfRunId"],
+                equals: runId2,
+              },
             },
-          },
-          tenantId,
-          status: "running",
-          metadata: {
-            retryOfRunId: runId2,
-            retryTriggeredBy: userId,
-            retryTriggeredAt: new Date().toISOString(),
-          },
+            select: {
+              id: true,
+            },
+          });
+
+          if (existingRetry) {
+            throw new ConflictError("Retry already in progress for this run", {
+              code: "RETRY_ALREADY_IN_PROGRESS",
+              runId: runId2,
+              retryRunId: existingRetry.id,
+            });
+          }
+
+          return tx.reconResult.create({
+            data: {
+              reconJob: {
+                connect: {
+                  id: originalRun.reconJobId,
+                },
+              },
+              tenantId,
+              status: "running",
+              metadata: {
+                retryOfRunId: runId2,
+                retryTriggeredBy: userId,
+                retryTriggeredAt: new Date().toISOString(),
+              },
+            },
+          });
         },
-      });
+        { isolationLevel: "Serializable" }
+      );
 
       // Track event
       trackEventAsync(userId, "RunRetried", {

@@ -10,29 +10,40 @@ import express from "express";
 import { runsRouter } from "../runs";
 import { AuthRequest } from "../../middleware/auth";
 
-jest.mock("../../infrastructure/db/prisma", () => ({
-  prisma: {
-    reconResult: {
-      findMany: jest.fn(),
-      count: jest.fn(),
-      findFirst: jest.fn(),
-      create: jest.fn(),
+jest.mock("../../infrastructure/db/prisma", () => {
+  const reconResult = {
+    findMany: jest.fn(),
+    count: jest.fn(),
+    findFirst: jest.fn(),
+    create: jest.fn(),
+  };
+  return {
+    prisma: {
+      reconResult,
+      $transaction: jest.fn((fn: (tx: unknown) => Promise<unknown>) => fn({ reconResult })),
     },
-  },
-}));
+  };
+});
 
-const mockResolveOperatorRunDetail = jest.fn();
 jest.mock(
   "@settler/reconciliation-core",
   () => ({
-    resolveOperatorRunDetailForTenants: (...args: unknown[]) =>
-      mockResolveOperatorRunDetail(...args),
+    resolveOperatorRunDetailForTenants: jest.fn(),
+    normalizeRunStatus: (raw: string | null | undefined) => {
+      if (!raw) return "unknown";
+      const s = raw.trim().toLowerCase();
+      if (["pending", "running", "completed", "failed"].includes(s)) return s;
+      return "unknown";
+    },
   }),
   { virtual: true }
 );
 
 const { prisma: mockedPrisma } = require("../../infrastructure/db/prisma");
 const mockReconResult = mockedPrisma.reconResult;
+const {
+  resolveOperatorRunDetailForTenants: mockResolveOperatorRunDetail,
+} = require("@settler/reconciliation-core");
 
 jest.mock("../../middleware/governance", () => ({
   enforceFreezeState: () => (_req: unknown, _res: unknown, next: () => void) => next(),
@@ -209,5 +220,36 @@ describe("Runs pre-go-live simulation", () => {
     const statuses = [first.status, second.status].sort((a, b) => a - b);
     expect(statuses).toEqual([201, 409]);
     expect(mockReconResult.create).toHaveBeenCalledTimes(1);
+  });
+
+  it("uses Serializable transaction isolation for retry to prevent DB-level TOCTOU", async () => {
+    const { prisma: mockedPrisma } = require("../../infrastructure/db/prisma");
+    const app = buildApp("tenant-txn");
+
+    mockReconResult.findFirst
+      .mockResolvedValueOnce({
+        id: "run-txn",
+        reconJobId: "job-txn",
+        reconJob: { id: "job-txn", name: "Txn Job" },
+        status: "failed",
+        tenantId: "tenant-txn",
+        startedAt: new Date(),
+        completedAt: new Date(),
+        summary: null,
+        errorMessage: "failed",
+      })
+      .mockResolvedValueOnce(null);
+    mockReconResult.create.mockResolvedValueOnce({
+      id: "retry-txn",
+      reconJobId: "job-txn",
+      status: "running",
+      startedAt: new Date(),
+    });
+
+    const res = await request(app).post("/api/runs/run-txn/retry");
+    expect(res.status).toBe(201);
+    expect(mockedPrisma.$transaction).toHaveBeenCalledWith(expect.any(Function), {
+      isolationLevel: "Serializable",
+    });
   });
 });
