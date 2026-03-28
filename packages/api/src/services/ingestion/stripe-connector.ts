@@ -9,6 +9,7 @@ import { logError, logInfo } from "../../utils/logger";
 import { NormalizedTransactionInput } from "./types";
 import { StripeConnectorConfig } from "./types";
 import { retryWithBackoff } from "../../utils/retry-with-backoff";
+import { decrypt, encrypt } from "../../infrastructure/security/encryption";
 
 // Stripe SDK types (we'll install stripe package)
 // For now, using basic types
@@ -35,22 +36,13 @@ interface StripePayout {
   description: string | null;
 }
 
-/**
- * Encrypt connector config (in production, use proper encryption)
- * For now, storing as-is but should be encrypted at rest
- */
-async function encryptConfig(config: StripeConnectorConfig): Promise<string> {
-  // TODO: Implement proper encryption using SecretsManager or similar
-  // For now, storing JSON (should be encrypted in production)
-  return JSON.stringify(config);
+function encryptConfig(config: StripeConnectorConfig): string {
+  return encrypt(JSON.stringify(config));
 }
 
-/**
- * Decrypt connector config
- */
-async function decryptConfig(encrypted: string): Promise<StripeConnectorConfig> {
-  // TODO: Implement proper decryption
-  return JSON.parse(encrypted) as StripeConnectorConfig;
+function decryptConfig(encrypted: string): StripeConnectorConfig {
+  const plaintext = decrypt(encrypted);
+  return JSON.parse(plaintext) as StripeConnectorConfig;
 }
 
 /**
@@ -235,7 +227,7 @@ export async function createStripeSource(
   config: StripeConnectorConfig
 ): Promise<string> {
   const sourceId = uuidv4();
-  const encryptedConfig = await encryptConfig(config);
+  const encryptedConfig = encryptConfig(config);
 
   try {
     await query(
@@ -282,7 +274,7 @@ export async function getStripeConfig(sourceId: string): Promise<StripeConnector
   }
 
   const row = results[0] as { config_encrypted: string };
-  return await decryptConfig(row.config_encrypted);
+  return decryptConfig(row.config_encrypted);
 }
 
 /**

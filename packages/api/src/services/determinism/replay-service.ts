@@ -224,7 +224,7 @@ async function createReplaySnapshot(
  * Load original data from snapshot
  * In production, would fetch from source systems
  */
-async function loadOriginalData(snapshot: RunSnapshot): Promise<{
+async function loadOriginalData(_snapshot: RunSnapshot): Promise<{
   sourceRecords: Array<{
     source: string;
     external_id: string;
@@ -255,7 +255,7 @@ async function loadOriginalData(snapshot: RunSnapshot): Promise<{
 /**
  * Load original rules from snapshot
  */
-async function loadOriginalRules(snapshot: RunSnapshot): Promise<Array<{
+async function loadOriginalRules(_snapshot: RunSnapshot): Promise<Array<{
   id: string;
   field: string;
   type: 'exact' | 'fuzzy' | 'range' | 'date_range';
@@ -413,8 +413,8 @@ async function getMatchOrdering(runId: string): Promise<string[]> {
  * Compare score breakdowns
  */
 async function compareScoreBreakdowns(
-  runId: string,
-  replayMatches: DeterministicMatchResult[]
+  _runId: string,
+  _replayMatches: DeterministicMatchResult[]
 ): Promise<boolean> {
   // This is a simplified check - in production would compare detailed breakdowns
   return true;
@@ -425,7 +425,7 @@ async function compareScoreBreakdowns(
  */
 export async function generateDiffReport(
   originalRunId: string,
-  replayRunId: string
+  _replayRunId: string
 ): Promise<{
   summary: string;
   details: ReplayMismatch[];
@@ -462,7 +462,7 @@ export async function generateDiffReport(
 /**
  * List replays for a run
  */
-export async function listReplays(originalRunId: string): Promise<Array<{
+export async function listReplays(_originalRunId: string): Promise<Array<{
   replay_run_id: string;
   status: string;
   matches_identical: boolean;

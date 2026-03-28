@@ -11,14 +11,7 @@ import { AuthRequest, authMiddleware } from "../../middleware/auth";
 import { requirePermission } from "../../middleware/authorization";
 import { Permission } from "../../infrastructure/security/Permissions";
 import { handleRouteError } from "../../utils/error-handler";
-import { logError } from "../../utils/logger";
-import {
-  SLOMetricType,
-  SLOConfig,
-  DashboardMetricSummary,
-  AlertSummary,
-  TrendDataPoint,
-} from "./types";
+import { SLOMetricType, SLOConfig, DashboardMetricSummary } from "./types";
 import * as config from "./config";
 import * as metrics from "./metrics";
 import * as alerts from "./alerts";

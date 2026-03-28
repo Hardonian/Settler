@@ -177,19 +177,6 @@ export interface ShowcaseDataset {
 
 const SEED = 20260301;
 
-const ADAPTERS = [
-  "stripe",
-  "shopify",
-  "quickbooks",
-  "xero",
-  "bank-of-america",
-  "wells-fargo",
-  "square",
-  "paypal",
-  "adyen",
-  "netsuite",
-] as const;
-
 const EXCEPTION_TYPES = [
   "amount_mismatch",
   "missing_counterpart",

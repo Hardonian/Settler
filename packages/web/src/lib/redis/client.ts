@@ -5,8 +5,7 @@
  * Gracefully falls back to in-memory store if Redis unavailable.
  */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type RedisClient = any;
+type RedisClient = import("@upstash/redis").Redis;
 
 let redisInstance: RedisClient | null = null;
 let initializationPromise: Promise<RedisClient | null> | null = null;
@@ -23,7 +22,7 @@ async function initRedis(): Promise<RedisClient | null> {
   try {
     const { Redis } = await import("@upstash/redis");
     const client = new Redis({ url: restUrl, token: restToken });
-    console.info("[Redis] Connected to Upstash Redis");
+    console.warn("[Redis] Connected to Upstash Redis");
     return client;
   } catch (error) {
     console.warn("[Redis] Failed to initialise Redis client — using in-memory fallback:", error);

@@ -268,7 +268,7 @@ export class ShopifyStripeReconciliationSaga {
           let matchingConfig;
           try {
             matchingConfig = await getMatchingRulesForJob(state.tenantId, reconciliationId);
-          } catch (error) {
+          } catch {
             // Fall back to defaults
             matchingConfig = {
               amountTolerance: DEFAULT_TOLERANCES.amount,

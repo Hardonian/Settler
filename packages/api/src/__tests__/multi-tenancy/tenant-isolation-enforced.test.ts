@@ -131,10 +131,10 @@ describe("assertTenantScoped guard", () => {
     ).not.toThrow();
   });
 
-  it("allows queries on non-tenant-scoped tables", () => {
+  it("REJECTS SELECT on webhook_configs WITHOUT tenant_id", () => {
     expect(() =>
       assertTenantScoped("SELECT * FROM webhook_configs WHERE adapter = $1")
-    ).not.toThrow();
+    ).toThrow("TENANT ISOLATION VIOLATION");
   });
 
   it("allows SELECT on tenant-scoped table with tenant_id", () => {

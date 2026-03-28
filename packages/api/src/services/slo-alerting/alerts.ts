@@ -448,6 +448,14 @@ async function sendAlertNotifications(
     threshold?: number;
   }
 ): Promise<void> {
+  logInfo("Dispatching SLO alert notifications", {
+    alertId,
+    tenantId: alertData.tenantId,
+    metricType: alertData.metricType,
+    alertType: alertData.alertType,
+    severity: alertData.severity,
+  });
+
   // Collect all unique channels from rules
   const channels = new Map<string, AlertChannel>();
   for (const rule of rules) {

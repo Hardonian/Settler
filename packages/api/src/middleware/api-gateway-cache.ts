@@ -179,10 +179,8 @@ async function invalidateCache(req: Request, tags: string[]): Promise<void> {
 
     // Invalidate by pattern
     const patterns = generateInvalidationPatterns(req);
-    for (const _pattern of patterns) {
-      // Pattern-based invalidation would require Redis SCAN
-      // For now, skip pattern-based invalidation
-      // await delPattern(pattern);
+    if (patterns.length > 0) {
+      // Pattern-based invalidation would require Redis SCAN — skipped until SCAN wiring exists
     }
 
     logInfo('Cache invalidated', { tags, patterns, path: req.path });

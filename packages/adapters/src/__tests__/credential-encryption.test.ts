@@ -12,6 +12,7 @@ describe("credential-encryption", () => {
     delete process.env.CREDENTIAL_ENCRYPTION_KEY;
     delete process.env.SUPABASE_VAULT_KEY;
     delete process.env.ALLOW_INSECURE_CREDENTIAL_FALLBACK;
+    delete process.env.ALLOW_INSECURE_CREDENTIAL_FALLBACK_IN_DEV;
   });
 
   it("fails closed when no key or vault available", async () => {
@@ -22,15 +23,34 @@ describe("credential-encryption", () => {
     ).rejects.toMatchObject({ code: "ENCRYPTION_UNAVAILABLE" });
   });
 
-  it("allows legacy base64 fallback only when explicitly enabled", async () => {
+  it("allows legacy base64 fallback only in dev/test with both explicit gates", async () => {
     rpcMock.mockResolvedValue({ data: null, error: { message: "no vault" } });
+    const prevNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = "test";
     process.env.ALLOW_INSECURE_CREDENTIAL_FALLBACK = "true";
+    process.env.ALLOW_INSECURE_CREDENTIAL_FALLBACK_IN_DEV = "true";
 
     const encoded = Buffer.from(JSON.stringify({ token: "legacy" }), "utf8").toString("base64");
 
     await expect(decryptCredentials(encoded, "http://localhost", "service")).resolves.toEqual({
       token: "legacy",
     });
+    process.env.NODE_ENV = prevNodeEnv;
+  });
+
+  it("rejects insecure fallback in production even if ALLOW_INSECURE_CREDENTIAL_FALLBACK=true", async () => {
+    rpcMock.mockResolvedValue({ data: null, error: { message: "no vault" } });
+    const prevNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = "production";
+    process.env.ALLOW_INSECURE_CREDENTIAL_FALLBACK = "true";
+    delete process.env.ALLOW_INSECURE_CREDENTIAL_FALLBACK_IN_DEV;
+
+    const encoded = Buffer.from(JSON.stringify({ token: "legacy" }), "utf8").toString("base64");
+
+    await expect(decryptCredentials(encoded, "http://localhost", "service")).rejects.toMatchObject({
+      code: "DECRYPTION_UNAVAILABLE",
+    });
+    process.env.NODE_ENV = prevNodeEnv;
   });
 
   it("rejects malformed encrypted payloads without leaking secrets", async () => {

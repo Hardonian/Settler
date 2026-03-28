@@ -5,7 +5,7 @@
  * for tenant analytics optimization.
  */
 
-import { query, queryWithTenant, pool } from "../db";
+import { query } from "../db";
 import { logInfo, logError, logWarn } from "../utils/logger";
 import {
   MaterializedViewDefinition,
@@ -59,14 +59,6 @@ export function generateCreateViewSQL(
 ): string {
   const viewName = getMaterializedViewName(tenantId, viewDefinition.id);
 
-  // Build column definitions
-  const columnDefs = viewDefinition.columns
-    .map((col) => {
-      const agg = col.aggregation ? `${col.aggregation.toUpperCase()}(${col.name})` : col.name;
-      return `  ${col.name}`;
-    })
-    .join(",\n");
-
   // Build SELECT with aggregations
   const selectColumns = viewDefinition.columns
     .map((col) => {
@@ -91,25 +83,6 @@ export function generateCreateViewSQL(
       return `  ${col.name}`;
     })
     .join(",\n");
-
-  // Build time bucket expression
-  let timeBucketExpr = "";
-  if (viewDefinition.timeBucket) {
-    const bucket = viewDefinition.timeBucket.bucket;
-    const col = viewDefinition.timeBucket.column;
-    const bucketExpr = `DATE_TRUNC('${bucket}', ${col})`;
-
-    // Add time bucket to SELECT and GROUP BY if not already present
-    if (!selectColumns.includes(bucketExpr)) {
-      // Replace the time column with truncated version
-      const timeColDef = viewDefinition.columns.find(
-        (c) => c.name === viewDefinition.timeBucket?.column
-      );
-      if (timeColDef) {
-        // Modify the column in the select
-      }
-    }
-  }
 
   // Build WHERE clause
   const filters: string[] = [];

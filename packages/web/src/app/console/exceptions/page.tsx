@@ -70,7 +70,7 @@ function severityToBadgeVariant(
   }
 }
 
-function buildColumns(runId: string | null): DataTableColumn<Exception>[] {
+function buildColumns(_runId: string | null): DataTableColumn<Exception>[] {
   return [
     {
       key: "type",

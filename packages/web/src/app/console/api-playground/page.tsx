@@ -18,6 +18,11 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { safeFetch, maskToken, sanitizeForLogging } from "@/lib/safe-fetch";
+import {
+  getPlaygroundApiKey,
+  setPlaygroundApiKey,
+  migrateApiPlaygroundKeyFromLocalStorage,
+} from "@/lib/client/playground-api-key-memory";
 import { RBACGate } from "@/lib/rbac-gate";
 import { Play, History, Copy, Check, Clock, Globe, Key, Code, FileJson } from "lucide-react";
 
@@ -54,9 +59,10 @@ export default function ApiPlaygroundPage() {
 
   // Load environments and history
   useEffect(() => {
+    migrateApiPlaygroundKeyFromLocalStorage();
     loadEnvironments();
     loadHistory();
-    loadApiKey();
+    setApiKey(getPlaygroundApiKey());
   }, []);
 
   const loadEnvironments = async () => {
@@ -77,14 +83,6 @@ export default function ApiPlaygroundPage() {
       } catch {
         // Ignore parse errors
       }
-    }
-  };
-
-  const loadApiKey = async () => {
-    // Load from secure storage (will be workspace-scoped)
-    const stored = localStorage.getItem("api-playground-key");
-    if (stored) {
-      setApiKey(stored);
     }
   };
 
@@ -259,8 +257,9 @@ export default function ApiPlaygroundPage() {
                   type="password"
                   value={apiKey}
                   onChange={(e) => {
-                    setApiKey(e.target.value);
-                    localStorage.setItem("api-playground-key", e.target.value);
+                    const v = e.target.value;
+                    setApiKey(v);
+                    setPlaygroundApiKey(v);
                   }}
                   placeholder="sk_live_..."
                   className="mt-1 font-mono"
@@ -271,7 +270,8 @@ export default function ApiPlaygroundPage() {
                   </p>
                 )}
                 <p className="text-xs text-slate-500 mt-1">
-                  💡 Tip: Your API key is stored locally and never sent to our servers
+                  API keys stay in this browser tab (session memory only), not localStorage, and are
+                  only sent to the API host you request.
                 </p>
               </div>
 

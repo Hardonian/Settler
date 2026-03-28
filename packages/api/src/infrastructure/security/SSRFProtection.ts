@@ -63,13 +63,13 @@ export async function validateExternalUrl(url: string): Promise<boolean> {
       if (isInternalIP(address)) {
         return false;
       }
-    } catch (error) {
+    } catch {
       // DNS lookup failed - reject to be safe
       return false;
     }
 
     return true;
-  } catch (error) {
+  } catch {
     // Invalid URL
     return false;
   }
@@ -91,7 +91,7 @@ export function isAllowedUrl(url: string, allowedDomains: string[] = []): boolea
     return allowedDomains.some((domain) => {
       return parsed.hostname === domain || parsed.hostname.endsWith(`.${domain}`);
     });
-  } catch (error) {
+  } catch {
     return false;
   }
 }

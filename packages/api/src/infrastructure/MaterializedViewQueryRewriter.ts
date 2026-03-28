@@ -5,11 +5,10 @@
  * when available and appropriate for the tenant.
  */
 
-import { logInfo, logWarn, logError } from "../utils/logger";
+import { logInfo } from "../utils/logger";
 import {
   COMMON_VIEW_TEMPLATES,
   MaterializedViewDefinition,
-  TenantMaterializedViewConfig,
 } from "./MaterializedViewConfig";
 import { getTenantConfig, getMaterializedViewName, getViewStatus } from "./MaterializedViewManager";
 
@@ -43,8 +42,6 @@ interface RewriteResult {
   notes: string[];
 }
 
-// Simple SQL parser patterns
-const TABLE_PATTERN = /FROM\s+([a-zA-Z_][a-zA-Z0-9_]*)/gi;
 const AGGREGATION_PATTERNS = [
   /COUNT\s*\(/gi,
   /SUM\s*\(/gi,
@@ -155,7 +152,8 @@ export async function rewriteQuery(
     forceRefresh?: boolean;
   } = {}
 ): Promise<RewriteResult> {
-  const { allowStale = false, forceRefresh = false } = options;
+  const { allowStale = false, forceRefresh: _forceRefresh = false } = options;
+  void _forceRefresh;
 
   // Get tenant configuration
   const tenantConfig = getTenantConfig(tenantId);
@@ -269,7 +267,7 @@ function generateRewrittenQuery(
   originalQuery: string,
   viewDef: MaterializedViewDefinition,
   viewName: string,
-  analysis: QueryAnalysis
+  _analysis: QueryAnalysis
 ): string {
   const normalized = originalQuery.replace(/\s+/g, " ").trim();
 

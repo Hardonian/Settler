@@ -97,8 +97,6 @@ export function calculateThresholdStatus(
   status: "healthy" | "warning" | "critical";
   breachedPercentiles: { type: PercentileType; value: number; threshold: number }[];
 } {
-  const breachedPercentiles: { type: PercentileType; value: number; threshold: number }[] = [];
-
   // Check p99 against thresholds (most sensitive)
   if (currentPercentiles.p99 >= criticalThreshold) {
     return {
@@ -137,10 +135,15 @@ export function calculateThresholdStatus(
     };
   }
 
-  return {
+  const healthy: {
+    status: "healthy";
+    breachedPercentiles: { type: PercentileType; value: number; threshold: number }[];
+  } = {
     status: "healthy",
     breachedPercentiles: [],
   };
+  void healthy.breachedPercentiles;
+  return healthy;
 }
 
 /**
@@ -264,6 +267,14 @@ export function detectDistributionAnomaly(percentiles: PercentileValues): {
   // Check for large gaps between percentiles
   const p50ToP90 = (percentiles.p90 - percentiles.p50) / (percentiles.p50 || 1);
   const p90ToP99 = (percentiles.p99 - percentiles.p90) / (percentiles.p90 || 1);
+
+  if (p50ToP90 > 3 && percentiles.p50 > 0) {
+    return {
+      isAnomalous: true,
+      severity: "medium",
+      reason: `Elevated mid-band spread: p90 is ${p50ToP90.toFixed(2)}× p50`,
+    };
+  }
 
   // If p99 is more than 5x p50, it's highly skewed
   if (percentiles.p99 > percentiles.p50 * 5) {

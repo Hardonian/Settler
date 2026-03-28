@@ -13,7 +13,6 @@
  */
 
 import { prisma } from "../../infrastructure/db/prisma";
-import { config } from "../../config";
 import { logInfo, logError, logWarn } from "../../utils/logger";
 import { retentionPolicyService, RetentionPeriod } from "./retention-policy";
 import { retentionMetricsService } from "./retention-metrics";

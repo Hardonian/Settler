@@ -121,8 +121,22 @@ export async function decryptCredentials(
     }
   }
 
-  if (process.env.ALLOW_INSECURE_CREDENTIAL_FALLBACK === "true") {
-    console.warn("ALLOW_INSECURE_CREDENTIAL_FALLBACK=true enabled; accepting legacy base64 credentials");
+  const nodeEnv = process.env.NODE_ENV || "development";
+  const insecureAllowed =
+    process.env.ALLOW_INSECURE_CREDENTIAL_FALLBACK === "true" &&
+    process.env.ALLOW_INSECURE_CREDENTIAL_FALLBACK_IN_DEV === "true" &&
+    (nodeEnv === "development" || nodeEnv === "test");
+
+  if (process.env.ALLOW_INSECURE_CREDENTIAL_FALLBACK === "true" && !insecureAllowed) {
+    console.error(
+      "[credential-encryption] ALLOW_INSECURE_CREDENTIAL_FALLBACK is set but rejected: requires NODE_ENV=development|test and ALLOW_INSECURE_CREDENTIAL_FALLBACK_IN_DEV=true (production must never use plaintext credential fallback)"
+    );
+  }
+
+  if (insecureAllowed) {
+    console.warn(
+      "[credential-encryption] INSECURE legacy base64 credential fallback is active (dev/test only)"
+    );
     try {
       return JSON.parse(Buffer.from(encryptedCredentials, "base64").toString("utf8")) as Record<
         string,

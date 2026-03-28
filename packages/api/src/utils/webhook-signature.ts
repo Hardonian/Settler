@@ -1,25 +1,21 @@
 import crypto from 'crypto';
-import { query } from '../db';
+import { getWebhookSecretForTenant } from './webhook-secret';
 
 export async function verifyWebhookSignature(
   adapter: string,
   payload: string | Buffer,
-  signature: string
+  signature: string,
+  tenantId: string
 ): Promise<boolean> {
-  // Get webhook config from database
-  const configs = await query<{ secret: string; signature_algorithm: string }>(
-    'SELECT secret, signature_algorithm FROM webhook_configs WHERE adapter = $1',
-    [adapter]
-  );
+  const normalizedAdapter = adapter.trim().toLowerCase();
+  const config = await getWebhookSecretForTenant(normalizedAdapter, tenantId);
 
-  if (configs.length === 0) {
-    throw new Error(`Unknown adapter: ${adapter}`);
+  if (!config) {
+    throw new Error(`Webhook secret not configured for adapter: ${normalizedAdapter}`);
   }
-
-  const config = configs[0]!; // Safe: we checked length above
   const payloadBuffer = typeof payload === 'string' ? Buffer.from(payload) : payload;
 
-  switch (adapter) {
+  switch (normalizedAdapter) {
     case 'stripe': {
       // Stripe uses HMAC-SHA256 with hex encoding
       const expectedSignature = crypto

@@ -5,15 +5,13 @@
  */
 
 import { query } from "../db";
-import { logInfo, logError, logWarn } from "../utils/logger";
+import { logInfo, logError } from "../utils/logger";
 import {
   getTenantConfig,
   getActiveTenantViews,
   getViewStatus,
   getMaterializedViewName,
 } from "./MaterializedViewManager";
-import { TenantMaterializedViewConfig, TenantViewConfig } from "./MaterializedViewConfig";
-
 export interface ViewHealthStatus {
   viewId: string;
   viewName: string;

@@ -2,7 +2,6 @@
  * Governance Middleware Tests
  */
 
-import { Request, Response } from "express";
 import { enforceFreezeState, checkTenantFrozen } from "../../middleware/governance";
 import { clearGovernanceCache } from "../../utils/governance-cache";
 

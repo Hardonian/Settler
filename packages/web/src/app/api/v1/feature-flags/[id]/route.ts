@@ -5,11 +5,28 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { prisma } from '@/shared/db/prismaClient';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
 import { withSecurity } from '@/lib/middleware/api-security';
+
+const patchFeatureFlagBodySchema = z
+  .object({
+    name: z.string().min(1).max(256).optional(),
+    description: z.string().max(4000).nullable().optional(),
+    isGlobal: z.boolean().optional(),
+    defaultValue: z.unknown().optional(),
+  })
+  .strict();
+
+function jsonError(message: string, details?: unknown) {
+  return NextResponse.json(
+    { error: 'Invalid request body', code: 'VALIDATION_ERROR', message, details },
+    { status: 400 }
+  );
+}
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -37,7 +54,18 @@ export const PATCH = withSecurity(
     // Unauthenticated access allowed for playground (graceful degradation)
 
     const { id } = await params;
-    const body = await request.json();
+    let rawBody: unknown;
+    try {
+      rawBody = await request.json();
+    } catch {
+      return jsonError('Request body must be valid JSON');
+    }
+
+    const parsed = patchFeatureFlagBodySchema.safeParse(rawBody);
+    if (!parsed.success) {
+      return jsonError('Malformed PATCH body', parsed.error.flatten());
+    }
+    const body = parsed.data;
 
     // For unauthenticated users, return demo response
     if (!isAuthenticated) {
@@ -45,7 +73,7 @@ export const PATCH = withSecurity(
         id: `demo_${id}`,
         key: 'demo_flag',
         name: body.name || 'Demo Feature Flag',
-        description: body.description || 'This is a demo response',
+        description: body.description ?? 'This is a demo response',
         type: 'boolean',
         isGlobal: false,
         defaultValue: false,
@@ -81,10 +109,10 @@ export const PATCH = withSecurity(
     const flag = await prisma.featureFlag.update({
       where: { id },
       data: {
-        name: body.name,
-        description: body.description,
-        isGlobal: body.isGlobal,
-        defaultValue: body.defaultValue ? JSON.parse(JSON.stringify(body.defaultValue)) : undefined,
+        ...(body.name !== undefined ? { name: body.name } : {}),
+        ...(body.description !== undefined ? { description: body.description } : {}),
+        ...(body.isGlobal !== undefined ? { isGlobal: body.isGlobal } : {}),
+        ...(body.defaultValue !== undefined ? { defaultValue: body.defaultValue as object } : {}),
       },
     });
 

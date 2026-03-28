@@ -6,7 +6,7 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "./auth";
 import { query } from "../db";
-import { getCachedTenantFreezeState, invalidateTenantFreezeCache } from "../utils/governance-cache";
+import { getCachedTenantFreezeState } from "../utils/governance-cache";
 
 export interface GovernanceError extends Error {
   code: string;

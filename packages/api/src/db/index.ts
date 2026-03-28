@@ -112,6 +112,7 @@ const TENANT_SCOPED_TABLES = new Set([
   "reports",
   "webhooks",
   "api_keys",
+  "webhook_configs",
   "webhook_payloads",
   "audit_logs",
   "idempotency_keys",

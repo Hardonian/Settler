@@ -7,13 +7,6 @@
 import { logInfo, logError } from "../utils/logger";
 
 /**
- * Calculate days remaining in trial
- */
-function _calculateDaysRemaining(_trialEndDate: string): number {
-  return 0;
-}
-
-/**
  * Process trial lifecycle emails
  * Should be called daily via cron job
  */

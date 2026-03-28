@@ -14,6 +14,8 @@ import {
   consumeWebhookReplayKey,
   logWebhookReplayRejected,
 } from "../../../services/distributed-guards";
+import { getWebhookSecretForTenant } from "../../../utils/webhook-secret";
+import { isValidTenantUuid } from "../../../utils/tenant-id";
 
 const router: Router = Router();
 const webhookService = new WebhookIngestionService();
@@ -43,13 +45,17 @@ router.post(
   "/:adapter",
   // Middleware to load tenantId for governance check on this unauthenticated route
   (req: AuthRequest, res: Response, next: NextFunction) => {
-    const tenantId = (req.headers["x-tenant-id"] as string) || req.body.tenant_id;
-    if (!tenantId) {
-      // Governance check requires a tenant ID
-      return sendError(res, 400, "BAD_REQUEST", "Tenant ID required");
+    const rawTenant =
+      (req.headers["x-tenant-id"] as string | undefined)?.trim() || req.body?.tenant_id;
+    if (!isValidTenantUuid(rawTenant)) {
+      return sendError(
+        res,
+        400,
+        "BAD_REQUEST",
+        "Valid tenant UUID required (header x-tenant-id or body.tenant_id)"
+      );
     }
-    // Hoist tenantId onto request for the next middleware
-    req.tenantId = tenantId;
+    req.tenantId = rawTenant;
     next();
   },
   enforceFreezeState(), // CRITICAL: Enforce freeze state for all incoming webhooks
@@ -100,9 +106,9 @@ router.post(
         );
       }
 
-      const secret = await getWebhookSecret(adapter, tenantId);
+      const secretRow = await getWebhookSecretForTenant(adapter, tenantId);
 
-      if (!secret) {
+      if (!secretRow) {
         return sendError(res, 401, "UNAUTHORIZED", "Webhook secret not configured");
       }
 
@@ -110,7 +116,7 @@ router.post(
         adapter,
         req.body,
         signature as string,
-        secret,
+        secretRow.secret,
         tenantId
       );
 
@@ -136,14 +142,5 @@ router.post(
     }
   }
 );
-
-async function getWebhookSecret(adapter: string, _tenantId: string): Promise<string | null> {
-  const { query } = await import("../../../db");
-  const result = await query<{ secret: string }>(
-    `SELECT secret FROM webhook_configs WHERE adapter = $1 LIMIT 1`,
-    [adapter]
-  );
-  return result.length > 0 && result[0] ? result[0].secret : null;
-}
 
 export default router;

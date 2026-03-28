@@ -69,7 +69,6 @@ router.get(
         startDate,
         endDate,
         includeMatched,
-        includeUnmatched: _includeUnmatched,
         includeExceptions,
       } = queryParams.query;
       const userId = req.userId!;

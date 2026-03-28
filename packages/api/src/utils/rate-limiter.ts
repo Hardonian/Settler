@@ -14,7 +14,14 @@ async function resolveTenantLimit(req: AuthRequest): Promise<number> {
     return config.rateLimiting.defaultLimit;
   }
 
-  const keys = await query<{ rate_limit: number }>("SELECT rate_limit FROM api_keys WHERE id = $1", [req.apiKeyId]);
+  if (!req.tenantId) {
+    return config.rateLimiting.defaultLimit;
+  }
+
+  const keys = await query<{ rate_limit: number }>(
+    "SELECT rate_limit FROM api_keys WHERE id = $1 AND tenant_id = $2",
+    [req.apiKeyId, req.tenantId]
+  );
   return keys[0]?.rate_limit ?? config.rateLimiting.defaultLimit;
 }
 

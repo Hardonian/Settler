@@ -7,8 +7,6 @@ import { generateDailyIntelligence } from "../services/operator-mode/daily-intel
 import { checkAlertThresholds } from "../services/operator-mode/alerting";
 import { scheduleDailyBackup } from "../services/operator-mode/backups";
 import { logInfo, logError } from "../utils/logger";
-import { checkTenantFrozen } from "../middleware/governance";
-
 /**
  * Run daily operator mode tasks
  */

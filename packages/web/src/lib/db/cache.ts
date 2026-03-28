@@ -45,7 +45,10 @@ export async function getCached<T>(key: string, options: CacheOptions): Promise<
     const result = await safeRedisOperation(
       async (client) => {
         const cached = await client.get(key);
-        return cached ? safeJsonParse<T>(cached, `Redis cache key: ${key.substring(0, 50)}`) : null;
+        if (cached == null || typeof cached !== "string") {
+          return null;
+        }
+        return safeJsonParse<T>(cached, `Redis cache key: ${key.substring(0, 50)}`);
       },
       () => null // Fallback to no cache
     );
@@ -97,9 +100,12 @@ export async function invalidateCache(pattern: string): Promise<void> {
         let cursor = "0";
 
         do {
-          const result = await client.scan(cursor, "MATCH", pattern, "COUNT", 100);
-          cursor = result[0];
-          keys.push(...result[1]);
+          const [nextCursor, batch] = await client.scan(cursor, {
+            match: pattern,
+            count: 100,
+          });
+          cursor = nextCursor;
+          keys.push(...batch);
         } while (cursor !== "0");
 
         if (keys.length > 0) {
