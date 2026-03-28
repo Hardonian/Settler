@@ -9,14 +9,12 @@ import {
   isTerminalRunState,
   normalizeRunStatus,
   toLegacyRunTruth,
+  toStageRows as toStageRowsFromCore,
   type CanonicalRunStatus,
   type CanonicalRunTruth,
+  type ReconAuditRow as ReconAuditRowCore,
   type RunProgressState,
   type RunSummaryState,
-} from "@/lib/reconciliation/canonical-run-result";
-import {
-  toStageRows as toStageRowsFromCore,
-  type ReconAuditRow as ReconAuditRowCore,
 } from "@settler/reconciliation-core";
 
 export type { CanonicalRunStatus, RunSummaryState, RunProgressState, CanonicalRunTruth };
@@ -39,14 +37,6 @@ export interface RunSummary {
   unresolved?: number;
   resolved?: number;
   ignored?: number;
-}
-
-export interface ReconJobRow {
-  id: string;
-  name: string | null;
-  status: string | null;
-  created_at: string;
-  updated_at?: string | null;
 }
 
 export interface ReconResultRow {
@@ -79,13 +69,6 @@ export {
   getRunSummaryState,
   getRunProgressState,
 };
-
-export function getCanonicalRunStatus(
-  jobStatus: string | null | undefined,
-  resultStatus: string | null | undefined
-): CanonicalRunStatus {
-  return deriveRunStatus(jobStatus, resultStatus);
-}
 
 export function buildRunSummary(result: ReconResultRow | null): RunSummary {
   return buildLegacyRunSummary(result);

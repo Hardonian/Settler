@@ -2,9 +2,10 @@ import { prisma } from "@/shared/db/prismaClient";
 import { getActiveTenantId } from "@/lib/auth/tenant";
 import {
   buildCanonicalRunResultContract,
-  ReconJobRecordLike,
-  ReconResultRecordLike,
-} from "@/lib/reconciliation/canonical-run-result";
+  normalizeRunStatus,
+  type ReconJobRecordLike,
+  type ReconResultRecordLike,
+} from "@settler/reconciliation-core";
 import { buildReplayLabReport } from "@/lib/replay-lab/engine";
 import { getExecutionGraph, verifyProofChain } from "@/lib/trust-graph/explorer";
 import { RunListItem } from "@settler/types";
@@ -39,7 +40,7 @@ export async function getRunsList(tenantId: string, limit: number = 20): Promise
 
   if (runs.length === 0) return [];
 
-  const runIds = runs.map((run: any) => run.id);
+  const runIds = runs.map((run: (typeof runs)[number]) => run.id);
 
   // 2. Fetch latest results for these jobs
   const latestResults = await prisma.reconResult.findMany({
@@ -64,14 +65,14 @@ export async function getRunsList(tenantId: string, limit: number = 20): Promise
   });
 
   // Map results by job ID (only keep the latest one per job)
-  const latestResultByRunId = new Map<string, any>();
+  const latestResultByRunId = new Map<string, (typeof latestResults)[number]>();
   for (const result of latestResults) {
     if (latestResultByRunId.has(result.reconJobId)) continue;
     latestResultByRunId.set(result.reconJobId, result);
   }
 
   // 3. Transform to standard List Item contract
-  return runs.map((run: any) => {
+  return runs.map((run: (typeof runs)[number]) => {
     const result = latestResultByRunId.get(run.id);
 
     const contract = buildCanonicalRunResultContract({
@@ -131,8 +132,34 @@ export async function getRunDetail(tenantId: string, runId: string) {
   });
 
   const contract = buildCanonicalRunResultContract({
-    job: run as any,
-    result: result as any,
+    job: {
+      id: run.id,
+      status: run.status,
+      tenantId,
+      sourceAdapter: run.sourceAdapter,
+      targetAdapter: run.targetAdapter,
+      reconStrategy: run.reconStrategy,
+      templateId: run.templateId,
+      validationRules: run.validationRules,
+    } as ReconJobRecordLike,
+    result: result
+      ? ({
+          id: result.id,
+          recon_job_id: result.reconJobId,
+          status: result.status,
+          started_at: result.startedAt?.toISOString() ?? null,
+          completed_at: result.completedAt?.toISOString() ?? null,
+          source_count: result.sourceCount,
+          target_count: result.targetCount,
+          matched_count: result.matchedCount,
+          unmatched_source_count: result.unmatchedSourceCount,
+          unmatched_target_count: result.unmatchedTargetCount,
+          conflict_count: result.conflictCount,
+          error_message: result.errorMessage,
+          summary: result.summary as Record<string, unknown> | null,
+          metadata: (result.metadata as Record<string, unknown> | null) ?? null,
+        } satisfies ReconResultRecordLike)
+      : null,
   });
 
   return {
@@ -204,9 +231,9 @@ export async function getDashboardStats() {
         integrity_score:
           totalJobs > 0 ? Math.round(((totalJobs - totalUnmatchedRuns) / totalJobs) * 100) : 100,
       },
-      recent: recentActivity.map((run: any) => ({
+      recent: recentActivity.map((run: (typeof recentActivity)[number]) => ({
         id: run.id,
-        status: run.results?.[0]?.status || run.status,
+        status: normalizeRunStatus(run.results?.[0]?.status ?? run.status),
         timestamp: run.createdAt.toISOString(),
         description:
           (run.metadata as Record<string, unknown> | null)?.description ||
@@ -378,7 +405,7 @@ export async function getAlertsList(limit: number = 30) {
       },
     });
 
-    return alerts.map((alert: any) => ({
+    return alerts.map((alert: (typeof alerts)[number]) => ({
       id: alert.id,
       type: alert.driftType,
       severity: (alert.severity === "critical"
@@ -427,7 +454,7 @@ export async function getMatchesList(limit: number = 50) {
       },
     });
 
-    return matches.map((match: any) => ({
+    return matches.map((match: (typeof matches)[number]) => ({
       id: match.id,
       runId: match.runId,
       matchType: match.matchType,
@@ -464,7 +491,7 @@ export async function getPoliciesList(limit: number = 20) {
       },
     });
 
-    return policies.map((p: any) => ({
+    return policies.map((p: (typeof policies)[number]) => ({
       id: p.id,
       name: p.contractName,
       version: p.version,
@@ -516,7 +543,7 @@ export async function getAuditLogs(limit: number = 50): Promise<AuditLogItem[]> 
       },
     });
 
-    return logs.map((log: any) => ({
+    return logs.map((log: (typeof logs)[number]) => ({
       id: log.id,
       action: log.action,
       resource: log.resourceType,

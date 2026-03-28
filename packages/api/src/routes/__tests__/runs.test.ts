@@ -14,31 +14,42 @@ import express from "express";
 import { runsRouter } from "../runs";
 import { AuthRequest } from "../../middleware/auth";
 
-// Mock Prisma - use jest.fn() inside factory to avoid hoisting issues
-jest.mock("../../infrastructure/db/prisma", () => ({
-  prisma: {
-    reconResult: {
-      findMany: jest.fn(),
-      count: jest.fn(),
-      findFirst: jest.fn(),
-      create: jest.fn(),
+// Mock Prisma - jest.mock is hoisted, so define fns inside the factory
+jest.mock("../../infrastructure/db/prisma", () => {
+  const reconResult = {
+    findMany: jest.fn(),
+    count: jest.fn(),
+    findFirst: jest.fn(),
+    create: jest.fn(),
+  };
+  return {
+    prisma: {
+      reconResult,
+      $transaction: jest.fn((fn: (tx: unknown) => Promise<unknown>) => fn({ reconResult })),
     },
-  },
-}));
+  };
+});
 
-const mockResolveOperatorRunDetail = jest.fn();
 jest.mock(
   "@settler/reconciliation-core",
   () => ({
-    resolveOperatorRunDetailForTenants: (...args: unknown[]) =>
-      mockResolveOperatorRunDetail(...args),
+    resolveOperatorRunDetailForTenants: jest.fn(),
+    normalizeRunStatus: (raw: string | null | undefined) => {
+      if (!raw) return "unknown";
+      const s = raw.trim().toLowerCase();
+      if (["pending", "running", "completed", "failed"].includes(s)) return s;
+      return "unknown";
+    },
   }),
   { virtual: true }
 );
 
-// Access the mocked module after jest.mock is applied
+// Access mocked modules after jest.mock is applied
 const { prisma: mockedPrisma } = require("../../infrastructure/db/prisma");
 const mockReconResult = mockedPrisma.reconResult;
+const {
+  resolveOperatorRunDetailForTenants: mockResolveOperatorRunDetail,
+} = require("@settler/reconciliation-core");
 
 // Mock governance middleware
 jest.mock("../../middleware/governance", () => ({
@@ -383,6 +394,68 @@ describe("Runs Routes", () => {
       const res = await request(app).post("/api/runs/run-1/retry");
 
       expect(res.status).toBe(400);
+    });
+
+    it("should use $transaction for retry to prevent TOCTOU race", async () => {
+      const { prisma: mockedPrisma } = require("../../infrastructure/db/prisma");
+      mockReconResult.findFirst.mockResolvedValueOnce({
+        id: "run-1",
+        reconJobId: "job-1",
+        reconJob: { id: "job-1", name: "Daily Reconciliation" },
+        status: "failed",
+        tenantId: "tenant-123",
+        startedAt: new Date(),
+        completedAt: new Date(),
+        summary: null,
+        errorMessage: "Previous failure",
+      });
+      // Inside transaction: no existing retry, then create
+      mockReconResult.findFirst.mockResolvedValueOnce(null);
+      mockReconResult.create.mockResolvedValueOnce({
+        id: "run-new",
+        reconJobId: "job-1",
+        status: "running",
+        startedAt: new Date(),
+      });
+
+      await request(app).post("/api/runs/run-1/retry");
+
+      // Verify $transaction was called with Serializable isolation
+      expect(mockedPrisma.$transaction).toHaveBeenCalledWith(expect.any(Function), {
+        isolationLevel: "Serializable",
+      });
+    });
+  });
+
+  describe("List status normalization", () => {
+    it("should normalize unknown status values to 'unknown' via canonical normalizeRunStatus", async () => {
+      mockReconResult.findMany.mockResolvedValueOnce([
+        {
+          id: "run-1",
+          reconJobId: "job-1",
+          reconJob: { name: "Job A" },
+          status: "completed",
+          startedAt: new Date("2026-03-17T10:00:00Z"),
+          completedAt: new Date("2026-03-17T10:05:00Z"),
+          summary: null,
+        },
+        {
+          id: "run-2",
+          reconJobId: "job-2",
+          reconJob: { name: "Job B" },
+          status: "some_unexpected_value",
+          startedAt: new Date("2026-03-17T11:00:00Z"),
+          completedAt: null,
+          summary: null,
+        },
+      ]);
+      mockReconResult.count.mockResolvedValueOnce(2);
+
+      const res = await request(app).get("/api/runs");
+
+      expect(res.status).toBe(200);
+      expect(res.body.data[0].status).toBe("completed");
+      expect(res.body.data[1].status).toBe("unknown");
     });
   });
 });

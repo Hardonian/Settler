@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 import { query, transaction } from "../../db";
 import { logError, logInfo, logWarn } from "../../utils/logger";
-import { NotFoundError, ValidationError } from "../../utils/typed-errors";
+import { ConflictError, NotFoundError, ValidationError } from "../../utils/typed-errors";
 import { MatchResult, ReconciliationConfig } from "./types";
 import { mlMatchingEngine } from "../matching/ml-matching-engine";
 import { enhancedCrossCustomerIntelligence } from "../matching/enhanced-cross-customer-intelligence";
@@ -602,6 +602,22 @@ export async function runReconciliation(
   };
 
   try {
+    // Guard: prevent duplicate running reconciliation for same ingestion+tenant
+    const existingRunning = await query(
+      `SELECT id FROM reconciliation_runs
+       WHERE ingestion_id = $1 AND tenant_id = $2 AND status = 'running'
+       LIMIT 1`,
+      [ingestionId, tenantId]
+    );
+
+    if (existingRunning.length > 0) {
+      throw new ConflictError("Reconciliation already running for this ingestion", {
+        code: "RECONCILIATION_ALREADY_RUNNING",
+        ingestionId,
+        existingRunId: existingRunning[0]!.id,
+      });
+    }
+
     // Create reconciliation run
     await query(
       `INSERT INTO reconciliation_runs (
@@ -645,8 +661,10 @@ export async function runReconciliation(
       traceId,
     });
 
-    const oneToOneResult = await executeOneToOneMatching(sourceIds, targetIds, (sourceId, candidates) =>
-      matchTransaction(sourceId, candidates, tenantId, effectiveConfig)
+    const oneToOneResult = await executeOneToOneMatching(
+      sourceIds,
+      targetIds,
+      (sourceId, candidates) => matchTransaction(sourceId, candidates, tenantId, effectiveConfig)
     );
     const matches = oneToOneResult.matches;
     const matchedCount = oneToOneResult.matchedCount;
@@ -774,6 +792,17 @@ export async function runReconciliation(
         tenantId,
         traceId,
       });
+      await emitOperatorRuntimeEvent({
+        eventType: "reconciliation_run_failed",
+        tenantId,
+        runId,
+        metadata: {
+          traceId,
+          phase: "automated_review",
+          nonFatal: true,
+          error: reviewError instanceof Error ? reviewError.message : String(reviewError),
+        },
+      }).catch(() => {});
     }
 
     // Record patterns for cross-customer intelligence (creates data moat)

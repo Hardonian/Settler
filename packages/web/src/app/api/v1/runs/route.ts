@@ -16,7 +16,7 @@ import {
   buildCanonicalRunResultContract,
   type ReconJobRecordLike,
   type ReconResultRecordLike,
-} from "@/lib/reconciliation/canonical-run-result";
+} from "@settler/reconciliation-core";
 import { prisma } from "@/shared/db/prismaClient";
 
 export const runtime = "nodejs";
