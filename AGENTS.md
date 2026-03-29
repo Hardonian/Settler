@@ -1,6 +1,82 @@
 # Settler – AGENTS.md
 
-## Cursor Cloud specific instructions
+Status: **CANONICAL agent execution contract**  
+Last updated: 2026-03-29
+
+## 1) Mission and operating identity
+
+Settler is a reconciliation-intelligence and exception/evidence operating system.
+
+Agent work must optimize for:
+
+- operator truth first
+- canonical run/detail truth
+- deterministic behavior
+- explicit degraded states
+- tenant isolation
+- evidence before claims
+- no silent contract drift
+- moat-compounding outcomes over generic polish
+
+## 2) Canonical instruction stack
+
+Use these files first, in order:
+
+1. `AGENTS.md` (this file)
+2. `MODEL_SPEC.md`
+3. `docs/repo-os/README.md`
+4. `docs/repo-os/verification-matrix.md`
+5. `docs/repo-os/checklists/implementation-pass.md`
+6. `CONTRIBUTING.md`
+
+When guidance conflicts, follow the higher-priority file and update lower-priority docs in the same pass.
+
+## 3) Non-negotiables
+
+- No theatre: do not claim proof you did not establish.
+- No silent degraded behavior: degraded/fallback states must be explicit and machine-visible.
+- No tenant leakage: protect against cross-tenant data, metadata, cache, and export bleed.
+- No silent contract drift: routes, schemas, policy outputs, and evidence contracts must stay aligned.
+- No vague pattern references: cite exact files/scripts/tests used as precedent.
+
+## 4) Required execution loop (every meaningful pass)
+
+1. Read impacted canonical docs and route/contract/security surfaces.
+2. Classify work as **Maintenance**, **Leverage**, or **Moat**.
+3. Implement the smallest safe change that improves system truth.
+4. Run verification commands appropriate to impact (see `docs/repo-os/verification-matrix.md`).
+5. Report evidence, residual risk, and next highest-leverage task.
+
+## 5) Moat-aware default questions (major features)
+
+- What reconciliation/policy/evidence knowledge compounds from real usage?
+- What exception/adjudication history becomes reusable institutional memory?
+- What raises workflow lock-in and switching cost?
+- What improves proofpack quality and audit trust?
+- What is hard to copy without accumulated historical data?
+
+## 6) Verification expectations
+
+At minimum for code changes: lint + typecheck + tests for touched surfaces.
+
+Add route/security/tenant/replay/determinism verification when impacted.
+
+Use exact commands from:
+
+- `docs/repo-os/verification-matrix.md`
+- root `package.json` scripts
+
+## 7) Reporting contract
+
+Use the report format in `docs/repo-os/checklists/implementation-pass.md`.
+
+Each verification command must be listed with status icon:
+
+- ✅ pass
+- ⚠️ environment limitation / warning
+- ❌ fail
+
+## 8) Cursor Cloud specific instructions
 
 ### Services overview
 
@@ -17,28 +93,25 @@
 3. Start API: `cd packages/api && PORT=4000 pnpm run dev`
 4. Start Web: `cd packages/web && pnpm run dev`
 
-Or use the combined command: `pnpm run dev:stack` (starts API + Web together).
+Or use `pnpm run dev:stack`.
 
 ### Non-obvious gotchas
 
-- **Prisma v7 driver adapter**: The API's `packages/api/src/infrastructure/db/prisma.ts` uses `@prisma/adapter-pg` for the Prisma v7 "client" engine. Without this adapter, PrismaClient throws `PrismaClientConstructorValidationError`.
-- **API requires env vars loaded from `.env.local`**: The API validates env vars on startup. Run `set -a && source .env.local && set +a` before starting the API, or use the `dev:stack` script which does this automatically.
-- **Redis is optional**: The API falls back to in-memory cache when Redis is unavailable. Redis warnings in the API logs are expected in local dev.
-- **TigerBeetle is optional**: Disabled by default (`TIGERBEETLE_ENABLED=false`). The API uses a fallback implementation.
-- **Sentry blocks production builds**: The `@sentry/nextjs` v7 plugin runs `sentry-cli` even when `disable: true`. Production builds (`pnpm build`) fail without valid Sentry credentials. Dev mode (`next dev`) is unaffected.
-- **Database schema**: The golden schema migration at `supabase/migrations/20240101000000_settler_golden_schema.sql` requires `analytics`, `auth`, and `app_private` schemas pre-created. Run with `BEGIN`/`COMMIT` removed for non-Supabase PostgreSQL.
-- **Node.js 24 required**: The `engines` field requires `>=24.0.0 <25.0.0`. Use `nvm use 24` before running any commands.
-- **Husky hooks**: Pre-commit runs lint-staged and conflict-marker checks. Pre-push runs `pnpm verify:fast` (release-critical gates only; internal link integrity is `pnpm verify:internal-links` or CI job `verify-internal-links`).
-- **Verify profiles**: `pnpm verify:fast` runs the `fast` profile in `scripts/verify-release.mjs` (lint, typecheck, claims, boundaries, routes, security—no internal link crawl). `pnpm verify:full` adds build, tests, link integrity, launch assets, and supply-chain evidence stages. `pnpm verify:internal-links` is the docs/link gate when you need it outside `verify:full`.
-- **`@settler/reconciliation-core`**: Web `package.json` runs `prebuild` → `pnpm --filter @settler/reconciliation-core run build` so `dist/` is current before `next build`. The web `build` script also runs `scripts/assert-reconciliation-core-dist.mjs` so a stale `dist/` cannot be newer than `src/` without failing the build; the package is listed in `transpilePackages` for dev-time resolution.
+- Prisma v7 requires `@prisma/adapter-pg` in `packages/api/src/infrastructure/db/prisma.ts`.
+- API startup requires `.env.local` loaded first.
+- Redis is optional; in-memory fallback is expected in local dev.
+- TigerBeetle is optional by default (`TIGERBEETLE_ENABLED=false`).
+- Production `pnpm build` can fail without Sentry credentials; dev mode is unaffected.
+- Golden migration requires `analytics`, `auth`, and `app_private` schemas pre-created.
+- Node.js `>=24.0.0 <25.0.0` is required.
+- Husky pre-push runs `pnpm verify:fast`.
+- `verify:fast`/`verify:full` profiles are defined in `scripts/verify-release.mjs`.
 
 ### Lint / Test / Build
 
-See `CONTRIBUTING.md` and root `package.json` scripts. Key commands:
-
-- Lint: `pnpm lint`
-- Test: `pnpm test` (runs all workspace tests via Turborepo)
-- API tests: `pnpm --filter @settler/api test`
-- Web tests: `pnpm --filter @settler/web test`
-- Typecheck: `pnpm typecheck`
-- Build: `pnpm build` (blocked by Sentry in production mode; dev mode works fine)
+- `pnpm lint`
+- `pnpm test`
+- `pnpm --filter @settler/api test`
+- `pnpm --filter @settler/web test`
+- `pnpm typecheck`
+- `pnpm build`

@@ -110,3 +110,10 @@ Extended verification (context-dependent):
 - Governance map: [`docs/_meta/document-governance-map.md`](./_meta/document-governance-map.md)
 - Status matrix: [`docs/_meta/document-status-matrix.md`](./_meta/document-status-matrix.md)
 - Path normalization notes: [`docs/_meta/path-normalization-notes.md`](./_meta/path-normalization-notes.md)
+
+## 15) Repo Operating System (Execution Canon)
+
+- Repo-OS doctrine: [`docs/repo-os/README.md`](./repo-os/README.md)
+- Verification matrix: [`docs/repo-os/verification-matrix.md`](./repo-os/verification-matrix.md)
+- Implementation checklist/report template: [`docs/repo-os/checklists/implementation-pass.md`](./repo-os/checklists/implementation-pass.md)
+- Reusable prompt header: [`prompts/IMPLEMENTATION_EXECUTION_HEADER.md`](../prompts/IMPLEMENTATION_EXECUTION_HEADER.md)

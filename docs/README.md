@@ -14,6 +14,9 @@ This directory is the canonical documentation surface for Settler.
 - API/reference: `docs/api/`, `docs/reference/`
 - Product + positioning context: `docs/product/README.md`, `docs/positioning/`
 - Contribution guide: `CONTRIBUTING.md`
+- Repo operating system (canonical): `docs/repo-os/README.md`
+- Repo verification matrix: `docs/repo-os/verification-matrix.md`
+- Implementation pass checklist/report template: `docs/repo-os/checklists/implementation-pass.md`
 - Security policy + disclosure process: `SECURITY.md`
 - Licensing model: `LICENSE`, `docs/LICENSING_OVERVIEW.md`
 

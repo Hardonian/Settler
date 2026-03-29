@@ -4,11 +4,12 @@ Settler keeps reusable prompt assets under `prompts/`.
 
 ## Canonical reusable prompt assets
 
-| Prompt | Purpose | Intended model/use | Required context | Expected output | Status |
-|---|---|---|---|---|---|
-| `prompts/STITCH_UI_PROMPT.md` | UI stitching and implementation planning. | UI-capable coding/model workflows. | Target component scope, style constraints, acceptance criteria. | Structured implementation instructions and guardrails. | active |
-| `prompts/VIDEO_PROMPT.md` | Video/demo generation and script framing. | Media-generation/model-assisted scripting workflows. | Audience, product area, call-to-action, duration limits. | Video script/storyboard draft. | active |
-| `prompts/GEMINI_IMAGE_PROMPT.md` | Image generation prompt baseline. | Image-generation models. | Visual style constraints, dimensions, content restrictions. | Reusable image prompt template. | active |
+| Prompt                                       | Purpose                                                         | Intended model/use                                   | Required context                                                | Expected output                                        | Status |
+| -------------------------------------------- | --------------------------------------------------------------- | ---------------------------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------ | ------ |
+| `prompts/STITCH_UI_PROMPT.md`                | UI stitching and implementation planning.                       | UI-capable coding/model workflows.                   | Target component scope, style constraints, acceptance criteria. | Structured implementation instructions and guardrails. | active |
+| `prompts/VIDEO_PROMPT.md`                    | Video/demo generation and script framing.                       | Media-generation/model-assisted scripting workflows. | Audience, product area, call-to-action, duration limits.        | Video script/storyboard draft.                         | active |
+| `prompts/GEMINI_IMAGE_PROMPT.md`             | Image generation prompt baseline.                               | Image-generation models.                             | Visual style constraints, dimensions, content restrictions.     | Reusable image prompt template.                        | active |
+| `prompts/IMPLEMENTATION_EXECUTION_HEADER.md` | Default production execution framing for implementation agents. | Repo-writing agents and engineering copilots.        | Task scope, classification, verification profile, risk posture. | Structured execution block and reporting constraints.  | active |
 
 ## Historical prompt artifacts
 
