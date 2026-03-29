@@ -1387,6 +1387,7 @@ model ReconciliationRun {
 
   ingestion         Ingestion? @relation(fields: [ingestionId], references: [id], onDelete: SetNull)
   matches           ReconciliationMatch[]
+  provenance        ReconciliationProvenance[]
 
   @@index([ingestionId])
   @@index([tenantId])
@@ -1416,6 +1417,7 @@ model ReconciliationMatch {
 
   run               ReconciliationRun @relation(fields: [runId], references: [id], onDelete: Cascade)
   sourceTransaction NormalizedTransaction @relation(fields: [sourceTransactionId], references: [id], onDelete: Cascade)
+  provenance        ReconciliationProvenance[]
 
   @@index([runId])
   @@index([tenantId])
@@ -1427,6 +1429,32 @@ model ReconciliationMatch {
   @@map("reconciliation_matches")
 }
 
+
+
+model ReconciliationProvenance {
+  id                String   @id @default(uuid())
+  tenantId          String   @map("tenant_id") @db.Uuid
+  runId             String   @map("run_id") @db.Uuid
+  matchId           String?  @map("match_id") @db.Uuid
+  sequence          Int
+  eventType         String   @map("event_type")
+  actorType         String   @default("system") @map("actor_type")
+  actorUserId       String?  @map("actor_user_id") @db.Uuid
+  details           Json     @default("{}")
+  entryHash         String   @map("entry_hash")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  run               ReconciliationRun   @relation(fields: [runId], references: [id], onDelete: Cascade)
+  match             ReconciliationMatch? @relation(fields: [matchId], references: [id], onDelete: SetNull)
+
+  @@unique([runId, sequence])
+  @@index([tenantId])
+  @@index([runId])
+  @@index([matchId])
+  @@index([eventType])
+  @@index([createdAt])
+  @@map("reconciliation_provenance")
+}
 model Export {
   id                String    @id @default(uuid())
   tenantId          String    @db.Uuid

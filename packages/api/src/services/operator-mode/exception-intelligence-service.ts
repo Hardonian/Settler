@@ -1,64 +1,76 @@
 import crypto from "node:crypto";
 import { prisma } from "../../infrastructure/db/prisma";
-import {
-  buildWorkbenchItem,
-  type ReconciliationWorkbenchItem,
-} from "../../routes/v1/reconciliation-trust-contract";
 
-export interface ExceptionRecommendation {
-  action: "auto_match_candidate" | "manual_review" | "policy_adjustment";
-  reason: string;
-  confidence: number;
-  evidence: string[];
+export interface ExceptionSignature {
+  signature: string;
+  construction: {
+    matchType: string;
+    category: string;
+    currency: string;
+    reason: string;
+    rationaleCodes: string[];
+  };
 }
 
-export interface ExceptionCluster {
-  signature: string;
-  clusterKey: string;
+export interface SourceTrustSignal {
+  sourceId: string;
+  sourceName: string;
+  totalExceptions: number;
+  resolvedRate: number;
+  trustScore: number;
+  basis: string[];
+}
+
+export interface CounterpartyFingerprint {
+  counterpartyKey: string;
+  displayName: string | null;
+  exceptionCount: number;
+  supportLevel: "none" | "partial" | "strong";
+}
+
+export interface ExplainableRecommendation {
+  action: "manual_review" | "policy_adjustment" | "auto_match_candidate" | "insufficient_data";
+  confidence: number | null;
+  confidenceBasis: string;
+  reasons: string[];
+  degraded: boolean;
+}
+
+export interface AdjudicationEvent {
+  matchId: string;
+  runId: string;
+  resolution: "matched" | "manual" | "ignored" | "unknown";
+  actorId: string | null;
+  occurredAt: string;
+  notes: string | null;
+}
+
+export interface ResolutionPathSummary {
+  count: number;
+  lastSeenAt: string | null;
+  avgResolutionMinutes: number | null;
+  medianResolutionMinutes: number | null;
+  adjudicationMix: Record<string, number>;
+}
+
+export interface RecurringExceptionCluster {
+  signature: ExceptionSignature;
   volume: number;
   openCount: number;
   resolvedCount: number;
-  medianTimeToResolutionMinutes: number | null;
-  recommendedAction: ExceptionRecommendation;
-}
-
-export interface SourceReliability {
-  sourceId: string;
-  sourceName: string;
-  reliabilityScore: number;
-  totalExceptions: number;
-  resolvedRate: number;
+  resolutionPath: ResolutionPathSummary;
+  recommendation: ExplainableRecommendation;
 }
 
 export interface ExceptionIntelligenceSnapshot {
-  generatedAt: string;
   tenantId: string;
-  totals: {
-    exceptions: number;
-    open: number;
-    resolved: number;
-    recurringSignatures: number;
-  };
-  clusters: ExceptionCluster[];
-  sourceReliability: SourceReliability[];
-}
-
-export interface ProofGraphNode {
-  id: string;
-  type: "run" | "policy" | "exception" | "decision" | "evidence" | "export";
-  label: string;
-  metadata: Record<string, unknown>;
-}
-
-export interface ProofGraphEdge {
-  from: string;
-  to: string;
-  relation:
-    | "applied_policy"
-    | "produced_exception"
-    | "resolved_by"
-    | "supported_by"
-    | "exported_as";
+  generatedAt: string;
+  lookbackDays: number;
+  degraded: boolean;
+  degradedReasons: string[];
+  clusters: RecurringExceptionCluster[];
+  sourceTrustSignals: SourceTrustSignal[];
+  counterparties: CounterpartyFingerprint[];
 }
 
 export interface ProofGraphResponse {
@@ -66,27 +78,20 @@ export interface ProofGraphResponse {
   tenantId: string;
   degraded: boolean;
   degradedReasons: string[];
-  nodes: ProofGraphNode[];
-  edges: ProofGraphEdge[];
+  nodes: Array<{ id: string; type: string; label: string; metadata: Record<string, unknown> }>;
+  edges: Array<{ from: string; to: string; relation: string }>;
 }
 
 export interface EvidencePack {
   runId: string;
   tenantId: string;
   generatedAt: string;
-  graphDigestSha256: string;
+  summary: Record<string, unknown>;
   lineage: ProofGraphResponse;
-  exceptions: Array<{
-    id: string;
-    status: string;
-    reviewedAt: string | null;
-    reviewedBy: string | null;
-  }>;
-  policy: {
-    configVersion: string | null;
-    configSource: string | null;
-    matchingRuleIds: string[];
-  };
+  decisions: AdjudicationEvent[];
+  provenance: { count: number; complete: boolean; missingReasons: string[] };
+  deterministicDigest: string;
+  exportMetadata: Record<string, unknown>;
 }
 
 export interface PolicySandboxRequest {
@@ -103,87 +108,94 @@ export interface PolicySandboxResult {
   runId: string;
   tenantId: string;
   simulatedAt: string;
-  baseline: {
-    matchRate: number;
-    exceptionRate: number;
-    manualReviewLoad: number;
-  };
-  candidate: {
-    matchRate: number;
-    exceptionRate: number;
-    manualReviewLoad: number;
-  };
-  blastRadius: {
-    impactedRecords: number;
-    newlyManualReview: number;
-    newlyAutoMatched: number;
-  };
-  notes: string[];
+  reproducibilityKey: string;
+  cohort: { matchCount: number; runStatus: string | null };
+  baseline: { matchRate: number; exceptionRate: number; operatorReviewLoad: number };
+  candidate: { matchRate: number; exceptionRate: number; operatorReviewLoad: number };
+  metricSupport: Record<string, "supported" | "unsupported">;
+  degraded: boolean;
+  degradedReasons: string[];
 }
 
-type ClusterAccumulator = {
-  signature: string;
-  clusterKey: string;
-  volume: number;
-  openCount: number;
-  resolvedCount: number;
-  durations: number[];
-  unmatchedCount: number;
-  lowConfidenceCount: number;
-};
-
-function asObject(value: unknown): Record<string, unknown> {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
-  return value as Record<string, unknown>;
+function asRecord(v: unknown): Record<string, unknown> {
+  return v && typeof v === "object" && !Array.isArray(v) ? (v as Record<string, unknown>) : {};
 }
 
-function sortedStrings(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return value
-    .filter((entry): entry is string => typeof entry === "string")
-    .slice()
-    .sort();
+function computeMedian(nums: number[]): number | null {
+  if (nums.length === 0) return null;
+  const s = nums.slice().sort((a, b) => a - b);
+  return s[Math.floor(s.length / 2)] ?? null;
 }
 
-function buildExceptionSignature(parts: Array<string | number | null | undefined>): string {
-  return crypto
+function signatureFrom(match: {
+  matchType: string;
+  matchReason: string | null;
+  metadata: unknown;
+  sourceTransaction?: { category: string | null; currency: string | null } | null;
+}): ExceptionSignature {
+  const metadata = asRecord(match.metadata);
+  const rationaleCodes = Array.isArray(metadata["rationale_codes"])
+    ? (metadata["rationale_codes"] as unknown[])
+        .filter((v): v is string => typeof v === "string")
+        .sort()
+    : [];
+  const construction = {
+    matchType: match.matchType,
+    category: match.sourceTransaction?.category ?? "uncategorized",
+    currency: match.sourceTransaction?.currency ?? "unknown",
+    reason: match.matchReason ?? "none",
+    rationaleCodes,
+  };
+  const signature = crypto
     .createHash("sha256")
-    .update(parts.map((part) => String(part ?? "na")).join("|"))
+    .update(JSON.stringify(construction))
     .digest("hex")
-    .slice(0, 16);
+    .slice(0, 20);
+  return { signature, construction };
 }
 
-function buildRecommendation(cluster: ClusterAccumulator): ExceptionRecommendation {
-  if (cluster.unmatchedCount / Math.max(cluster.volume, 1) > 0.7) {
+function recommendationFor(cluster: {
+  volume: number;
+  resolvedCount: number;
+  openCount: number;
+  lowConfidenceCount: number;
+}): ExplainableRecommendation {
+  if (cluster.volume < 3) {
+    return {
+      action: "insufficient_data",
+      confidence: null,
+      confidenceBasis: "Fewer than 3 observations in lookback window",
+      reasons: ["insufficient_cluster_volume"],
+      degraded: true,
+    };
+  }
+  const openRatio = cluster.openCount / cluster.volume;
+  const resolvedRatio = cluster.resolvedCount / cluster.volume;
+  const lowConfRatio = cluster.lowConfidenceCount / cluster.volume;
+  if (openRatio > 0.6) {
     return {
       action: "manual_review",
-      reason: "High unmatched concentration requires human adjudication.",
-      confidence: 0.92,
-      evidence: [
-        `unmatched_ratio=${(cluster.unmatchedCount / Math.max(cluster.volume, 1)).toFixed(2)}`,
-        `volume=${cluster.volume}`,
-      ],
+      confidence: Number(Math.min(0.95, 0.6 + openRatio / 3).toFixed(2)),
+      confidenceBasis: "High unresolved concentration in recurring signature",
+      reasons: [`open_ratio=${openRatio.toFixed(2)}`],
+      degraded: false,
     };
   }
-
-  if (cluster.lowConfidenceCount / Math.max(cluster.volume, 1) > 0.4) {
+  if (lowConfRatio > 0.4) {
     return {
       action: "policy_adjustment",
-      reason: "Low-confidence recurring signature suggests tolerance/policy drift.",
-      confidence: 0.78,
-      evidence: [
-        `low_confidence_ratio=${(cluster.lowConfidenceCount / Math.max(cluster.volume, 1)).toFixed(2)}`,
-      ],
+      confidence: Number(Math.min(0.9, 0.5 + lowConfRatio / 2).toFixed(2)),
+      confidenceBasis: "High low-confidence recurrence indicates policy sensitivity",
+      reasons: [`low_confidence_ratio=${lowConfRatio.toFixed(2)}`],
+      degraded: false,
     };
   }
-
   return {
     action: "auto_match_candidate",
-    reason: "Historically resolved cluster with stable signature.",
-    confidence: 0.71,
-    evidence: [
-      `resolved_ratio=${(cluster.resolvedCount / Math.max(cluster.volume, 1)).toFixed(2)}`,
-    ],
+    confidence: Number(Math.max(0.55, resolvedRatio).toFixed(2)),
+    confidenceBasis: "Historically resolved signature with low open burden",
+    reasons: [`resolved_ratio=${resolvedRatio.toFixed(2)}`],
+    degraded: false,
   };
 }
 
@@ -192,145 +204,141 @@ export class ExceptionIntelligenceService {
     tenantId: string,
     lookbackDays: number
   ): Promise<ExceptionIntelligenceSnapshot> {
-    const since = new Date(Date.now() - lookbackDays * 24 * 60 * 60 * 1000);
+    const since = new Date(Date.now() - lookbackDays * 86400000);
     const matches = await prisma.reconciliationMatch.findMany({
-      where: {
-        tenantId,
-        createdAt: { gte: since },
-      },
-      include: {
-        sourceTransaction: {
-          select: {
-            sourceId: true,
-            category: true,
-            currency: true,
-            source: {
-              select: { id: true, name: true },
-            },
-          },
-        },
-      },
+      where: { tenantId, createdAt: { gte: since } },
+      include: { sourceTransaction: { include: { source: { select: { id: true, name: true } } } } },
       orderBy: { createdAt: "desc" },
-      take: 1500,
+      take: 3000,
     });
 
-    const clusters = new Map<string, ClusterAccumulator>();
-    const sourceAgg = new Map<string, { sourceName: string; total: number; resolved: number }>();
+    const clusters = new Map<
+      string,
+      {
+        signature: ExceptionSignature;
+        volume: number;
+        openCount: number;
+        resolvedCount: number;
+        lowConfidenceCount: number;
+        durations: number[];
+        lastSeenAt: Date | null;
+        adjudicationMix: Record<string, number>;
+      }
+    >();
+    const sourceSignals = new Map<string, { name: string; total: number; resolved: number }>();
+    const counterparty = new Map<string, { name: string | null; count: number }>();
 
     for (const match of matches) {
-      const metadata = asObject(match.metadata);
-      const rationaleCodes = sortedStrings(metadata["rationale_codes"]);
-      const clusterKey = [
-        match.matchType,
-        match.sourceTransaction?.category ?? "uncategorized",
-        match.sourceTransaction?.currency ?? "unknown",
-        rationaleCodes.join(",") || "none",
-      ].join("|");
-      const signature = buildExceptionSignature([
-        clusterKey,
-        match.matchReason,
-        match.amountDiff?.toString(),
-        match.dateDiff,
-      ]);
-
-      const current = clusters.get(signature) ?? {
-        signature,
-        clusterKey,
+      const sig = signatureFrom(match);
+      const current = clusters.get(sig.signature) ?? {
+        signature: sig,
         volume: 0,
         openCount: 0,
         resolvedCount: 0,
-        durations: [],
-        unmatchedCount: 0,
         lowConfidenceCount: 0,
+        durations: [] as number[],
+        lastSeenAt: null as Date | null,
+        adjudicationMix: {},
       };
       current.volume += 1;
+      current.lastSeenAt =
+        !current.lastSeenAt || match.createdAt > current.lastSeenAt
+          ? match.createdAt
+          : current.lastSeenAt;
+      if (Number(match.confidence) < 0.75) current.lowConfidenceCount += 1;
       if (match.reviewed) {
         current.resolvedCount += 1;
-        if (match.reviewedAt) {
+        const res = match.matchReason?.toLowerCase().includes("ignored") ? "ignored" : "manual";
+        current.adjudicationMix[res] = (current.adjudicationMix[res] ?? 0) + 1;
+        if (match.reviewedAt)
           current.durations.push((match.reviewedAt.getTime() - match.createdAt.getTime()) / 60000);
-        }
       } else {
         current.openCount += 1;
+        current.adjudicationMix["open"] = (current.adjudicationMix["open"] ?? 0) + 1;
       }
-      if (match.matchType === "unmatched") current.unmatchedCount += 1;
-      if (Number(match.confidence) < 0.75) current.lowConfidenceCount += 1;
-      clusters.set(signature, current);
+      clusters.set(sig.signature, current);
 
-      const sourceId = match.sourceTransaction?.sourceId;
-      const sourceName = match.sourceTransaction?.source?.name ?? "unknown";
+      const sourceId = match.sourceTransaction?.source?.id;
       if (sourceId) {
-        const source = sourceAgg.get(sourceId) ?? { sourceName, total: 0, resolved: 0 };
-        source.total += 1;
-        if (match.reviewed) source.resolved += 1;
-        sourceAgg.set(sourceId, source);
+        const src = sourceSignals.get(sourceId) ?? {
+          name: match.sourceTransaction.source.name,
+          total: 0,
+          resolved: 0,
+        };
+        src.total += 1;
+        if (match.reviewed) src.resolved += 1;
+        sourceSignals.set(sourceId, src);
       }
+
+      const key = match.sourceTransaction?.externalId ?? `txn:${match.sourceTransactionId}`;
+      const cp = counterparty.get(key) ?? {
+        name: match.sourceTransaction?.description ?? null,
+        count: 0,
+      };
+      cp.count += 1;
+      counterparty.set(key, cp);
     }
 
-    const clusterItems = Array.from(clusters.values())
-      .map((cluster): ExceptionCluster => {
-        const orderedDurations = cluster.durations.slice().sort((a, b) => a - b);
-        const medianIndex = Math.floor(orderedDurations.length / 2);
-        return {
-          signature: cluster.signature,
-          clusterKey: cluster.clusterKey,
-          volume: cluster.volume,
-          openCount: cluster.openCount,
-          resolvedCount: cluster.resolvedCount,
-          medianTimeToResolutionMinutes:
-            orderedDurations.length > 0 ? Math.round(orderedDurations[medianIndex] ?? 0) : null,
-          recommendedAction: buildRecommendation(cluster),
-        };
-      })
-      .sort((a, b) => b.volume - a.volume)
-      .slice(0, 20);
-
-    const sourceReliability = Array.from(sourceAgg.entries())
-      .map(([sourceId, source]): SourceReliability => {
-        const resolvedRate = source.total === 0 ? 0 : source.resolved / source.total;
-        const reliabilityScore = Math.round(
-          (1 - (source.total - source.resolved) / Math.max(source.total, 1)) * 100
-        );
+    return {
+      tenantId,
+      generatedAt: new Date().toISOString(),
+      lookbackDays,
+      degraded: matches.length === 0,
+      degradedReasons: matches.length === 0 ? ["no_exception_history_in_scope"] : [],
+      clusters: Array.from(clusters.values())
+        .map((cluster) => {
+          const avg = cluster.durations.length
+            ? cluster.durations.reduce((a, b) => a + b, 0) / cluster.durations.length
+            : null;
+          return {
+            signature: cluster.signature,
+            volume: cluster.volume,
+            openCount: cluster.openCount,
+            resolvedCount: cluster.resolvedCount,
+            resolutionPath: {
+              count: cluster.volume,
+              lastSeenAt: cluster.lastSeenAt?.toISOString() ?? null,
+              avgResolutionMinutes: avg ? Number(avg.toFixed(2)) : null,
+              medianResolutionMinutes: computeMedian(cluster.durations),
+              adjudicationMix: cluster.adjudicationMix,
+            },
+            recommendation: recommendationFor(cluster),
+          };
+        })
+        .sort((a, b) => b.volume - a.volume)
+        .slice(0, 25),
+      sourceTrustSignals: Array.from(sourceSignals.entries()).map(([sourceId, item]) => {
+        const resolvedRate = item.total ? item.resolved / item.total : 0;
         return {
           sourceId,
-          sourceName: source.sourceName,
-          totalExceptions: source.total,
+          sourceName: item.name,
+          totalExceptions: item.total,
           resolvedRate: Number(resolvedRate.toFixed(4)),
-          reliabilityScore,
+          trustScore: Math.round(resolvedRate * 100),
+          basis: ["review_resolution_rate", `sample_size=${item.total}`],
         };
-      })
-      .sort((a, b) => b.reliabilityScore - a.reliabilityScore)
-      .slice(0, 20);
-
-    const totalExceptions = matches.length;
-    const resolved = matches.filter((match) => match.reviewed).length;
-
-    return {
-      generatedAt: new Date().toISOString(),
-      tenantId,
-      totals: {
-        exceptions: totalExceptions,
-        open: totalExceptions - resolved,
-        resolved,
-        recurringSignatures: clusterItems.filter((cluster) => cluster.volume > 1).length,
-      },
-      clusters: clusterItems,
-      sourceReliability,
+      }),
+      counterparties: Array.from(counterparty.entries())
+        .map(([counterpartyKey, value]) => ({
+          counterpartyKey,
+          displayName: value.name,
+          exceptionCount: value.count,
+          supportLevel: (value.count >= 5 ? "strong" : value.count >= 2 ? "partial" : "none") as
+            | "none"
+            | "partial"
+            | "strong",
+        }))
+        .sort((a, b) => b.exceptionCount - a.exceptionCount)
+        .slice(0, 20),
     };
   }
 
   async getProofGraph(tenantId: string, runId: string): Promise<ProofGraphResponse> {
     const run = await prisma.reconciliationRun.findFirst({
       where: { id: runId, tenantId },
-      include: {
-        matches: {
-          include: { sourceTransaction: { select: { id: true, externalId: true } } },
-          orderBy: { createdAt: "asc" },
-          take: 200,
-        },
-      },
+      include: { matches: true, provenance: true },
     });
-
-    if (!run) {
+    if (!run)
       return {
         runId,
         tenantId,
@@ -339,9 +347,8 @@ export class ExceptionIntelligenceService {
         nodes: [],
         edges: [],
       };
-    }
 
-    const nodes: ProofGraphNode[] = [
+    const nodes: ProofGraphResponse["nodes"] = [
       {
         id: `run:${run.id}`,
         type: "run",
@@ -353,117 +360,89 @@ export class ExceptionIntelligenceService {
         },
       },
     ];
-    const edges: ProofGraphEdge[] = [];
-    const degradedReasons: string[] = [];
-
-    const policyMetadata = asObject(run.metadata);
-    const policyNode: ProofGraphNode = {
-      id: `policy:${run.id}`,
-      type: "policy",
-      label: `Policy for run ${run.id}`,
-      metadata: {
-        amountTolerance: policyMetadata["amountTolerance"] ?? null,
-        dateWindowDays: policyMetadata["dateWindowDays"] ?? null,
-      },
-    };
-    nodes.push(policyNode);
-    edges.push({ from: `run:${run.id}`, to: policyNode.id, relation: "applied_policy" });
-
-    if (run.matches.length === 0) degradedReasons.push("run_has_no_match_records");
+    const edges: ProofGraphResponse["edges"] = [];
 
     for (const match of run.matches) {
-      const exceptionNodeId = `exception:${match.id}`;
-      const decisionNodeId = `decision:${match.id}`;
-
+      const mid = `match:${match.id}`;
       nodes.push({
-        id: exceptionNodeId,
-        type: "exception",
-        label: `Exception ${match.id}`,
+        id: mid,
+        type: "match",
+        label: `Match ${match.id}`,
         metadata: {
-          classification: match.matchType,
-          confidence: Number(match.confidence),
+          matchType: match.matchType,
           reviewed: match.reviewed,
-          sourceExternalId: match.sourceTransaction.externalId,
+          confidence: Number(match.confidence),
         },
       });
-      edges.push({ from: `run:${run.id}`, to: exceptionNodeId, relation: "produced_exception" });
-
-      nodes.push({
-        id: decisionNodeId,
-        type: "decision",
-        label: `Decision ${match.id}`,
-        metadata: {
-          reviewedAt: match.reviewedAt?.toISOString() ?? null,
-          reviewedBy: match.reviewedBy,
-          reason: match.matchReason,
-        },
-      });
-      edges.push({ from: exceptionNodeId, to: decisionNodeId, relation: "resolved_by" });
-
-      const evidenceNodeId = `evidence:${match.id}`;
-      nodes.push({
-        id: evidenceNodeId,
-        type: "evidence",
-        label: `Evidence ${match.id}`,
-        metadata: {
-          amountDiff: match.amountDiff ? Number(match.amountDiff) : null,
-          dateDiff: match.dateDiff,
-        },
-      });
-      edges.push({ from: decisionNodeId, to: evidenceNodeId, relation: "supported_by" });
+      edges.push({ from: `run:${run.id}`, to: mid, relation: "produced" });
     }
 
-    return {
-      runId,
-      tenantId,
-      degraded: degradedReasons.length > 0,
-      degradedReasons,
-      nodes,
-      edges,
-    };
+    for (const event of run.provenance) {
+      const pid = `prov:${event.id}`;
+      nodes.push({
+        id: pid,
+        type: "provenance",
+        label: event.eventType,
+        metadata: {
+          sequence: event.sequence,
+          actorType: event.actorType,
+          actorUserId: event.actorUserId,
+          createdAt: event.createdAt.toISOString(),
+          entryHash: event.entryHash,
+        },
+      });
+      edges.push({ from: `run:${run.id}`, to: pid, relation: "recorded" });
+      if (event.matchId)
+        edges.push({ from: `match:${event.matchId}`, to: pid, relation: "evidenced_by" });
+    }
+
+    const degradedReasons: string[] = [];
+    if (run.provenance.length === 0) degradedReasons.push("missing_run_provenance");
+
+    return { runId, tenantId, degraded: degradedReasons.length > 0, degradedReasons, nodes, edges };
   }
 
   async buildEvidencePack(tenantId: string, runId: string): Promise<EvidencePack> {
     const graph = await this.getProofGraph(tenantId, runId);
     const run = await prisma.reconciliationRun.findFirst({
       where: { id: runId, tenantId },
-      select: {
-        id: true,
-        metadata: true,
-        matches: { select: { id: true, reviewed: true, reviewedAt: true, reviewedBy: true } },
-      },
+      include: { matches: true, provenance: { orderBy: { sequence: "asc" } } },
     });
-
-    const runMetadata = asObject(run?.metadata);
-    const policyConfig = asObject(runMetadata["_provenance"]);
-
-    const graphDigestSha256 = crypto
+    const decisions: AdjudicationEvent[] = (run?.matches ?? [])
+      .filter((m) => m.reviewed)
+      .map((m) => ({
+        matchId: m.id,
+        runId,
+        resolution: m.matchReason?.toLowerCase().includes("ignored") ? "ignored" : "manual",
+        actorId: m.reviewedBy,
+        occurredAt: m.reviewedAt?.toISOString() ?? m.updatedAt.toISOString(),
+        notes: m.matchReason,
+      }));
+    const digest = crypto
       .createHash("sha256")
-      .update(JSON.stringify(graph))
+      .update(JSON.stringify({ graph, decisions }))
       .digest("hex");
-
     return {
       runId,
       tenantId,
       generatedAt: new Date().toISOString(),
-      graphDigestSha256,
+      summary: {
+        runStatus: run?.status ?? null,
+        matchCount: run?.matches.length ?? 0,
+        decisionCount: decisions.length,
+      },
       lineage: graph,
-      exceptions: (run?.matches ?? []).map((match) => ({
-        id: match.id,
-        status: match.reviewed ? "resolved" : "open",
-        reviewedAt: match.reviewedAt?.toISOString() ?? null,
-        reviewedBy: match.reviewedBy,
-      })),
-      policy: {
-        configVersion:
-          typeof policyConfig["configVersion"] === "string"
-            ? (policyConfig["configVersion"] as string)
-            : null,
-        configSource:
-          typeof policyConfig["configSource"] === "string"
-            ? (policyConfig["configSource"] as string)
-            : null,
-        matchingRuleIds: sortedStrings(policyConfig["matchingRuleIds"]),
+      decisions,
+      provenance: {
+        count: run?.provenance.length ?? 0,
+        complete: (run?.provenance.length ?? 0) > 0,
+        missingReasons: (run?.provenance.length ?? 0) > 0 ? [] : ["no_provenance_entries_for_run"],
+      },
+      deterministicDigest: digest,
+      exportMetadata: {
+        format: "json",
+        version: "v1",
+        generatedBy: "exception-intelligence-service",
       },
     };
   }
@@ -474,122 +453,89 @@ export class ExceptionIntelligenceService {
   ): Promise<PolicySandboxResult> {
     const run = await prisma.reconciliationRun.findFirst({
       where: { id: input.runId, tenantId },
-      include: {
-        matches: {
-          include: {
-            sourceTransaction: {
-              select: {
-                id: true,
-                externalId: true,
-                amount: true,
-                currency: true,
-                date: true,
-                description: true,
-              },
-            },
-          },
-          orderBy: { createdAt: "asc" },
-        },
-      },
+      include: { matches: true },
     });
-
     if (!run) {
       return {
         runId: input.runId,
         tenantId,
         simulatedAt: new Date().toISOString(),
-        baseline: { matchRate: 0, exceptionRate: 0, manualReviewLoad: 0 },
-        candidate: { matchRate: 0, exceptionRate: 0, manualReviewLoad: 0 },
-        blastRadius: { impactedRecords: 0, newlyManualReview: 0, newlyAutoMatched: 0 },
-        notes: ["run_not_found_or_not_scoped"],
+        reproducibilityKey: crypto
+          .createHash("sha256")
+          .update(`${tenantId}|${input.runId}|missing`)
+          .digest("hex"),
+        cohort: { matchCount: 0, runStatus: null },
+        baseline: { matchRate: 0, exceptionRate: 0, operatorReviewLoad: 0 },
+        candidate: { matchRate: 0, exceptionRate: 0, operatorReviewLoad: 0 },
+        metricSupport: {
+          matchRate: "supported",
+          exceptionRate: "supported",
+          operatorReviewLoad: "supported",
+          overrideSensitivity: "supported",
+          falsePositiveRate: "unsupported",
+          falseNegativeRate: "unsupported",
+        },
+        degraded: true,
+        degradedReasons: ["run_not_found_or_not_scoped"],
       };
     }
 
-    const baseItems: ReconciliationWorkbenchItem[] = run.matches.map((match) =>
-      buildWorkbenchItem(
-        {
-          id: match.id,
-          run_id: run.id,
-          match_type: match.matchType as ReconciliationWorkbenchItem["classification"],
-          confidence: Number(match.confidence),
-          match_reason: match.matchReason,
-          amount_diff: match.amountDiff ? Number(match.amountDiff) : null,
-          date_diff: match.dateDiff,
-          reviewed: match.reviewed,
-          reviewed_at: match.reviewedAt,
-          reviewed_by: match.reviewedBy,
-          metadata: match.metadata as Record<string, unknown>,
-          source_id: match.sourceTransaction.id,
-          source_amount: Number(match.sourceTransaction.amount),
-          source_currency: match.sourceTransaction.currency,
-          source_date: match.sourceTransaction.date,
-          source_description: match.sourceTransaction.description,
-          source_external_id: match.sourceTransaction.externalId,
-          target_id: null,
-          target_amount: null,
-          target_currency: null,
-          target_date: null,
-          target_description: null,
-          target_external_id: null,
-        },
-        run.metadata as Record<string, unknown>
+    const total = Math.max(run.matches.length, 1);
+    const baselineMatched = run.matches.filter((m) => m.matchType !== "unmatched").length;
+    const baselineReview = run.matches.filter((m) => !m.reviewed).length;
+    const candidateMatched = run.matches.filter((m) => {
+      const amountDiff = Number(m.amountDiff ?? 0);
+      const dateDiff = Math.abs(m.dateDiff ?? 0);
+      if (input.candidatePolicy.requireExactAmount && amountDiff !== 0) return false;
+      return (
+        amountDiff <= input.candidatePolicy.amountTolerance &&
+        dateDiff <= input.candidatePolicy.dateWindowDays
+      );
+    }).length;
+
+    const reproducibilityKey = crypto
+      .createHash("sha256")
+      .update(
+        JSON.stringify({
+          tenantId,
+          runId: input.runId,
+          policy: input.candidatePolicy,
+          sample: run.matches.map((m) => [
+            m.id,
+            Number(m.amountDiff ?? 0),
+            m.dateDiff ?? 0,
+            m.matchType,
+          ]),
+        })
       )
-    );
-
-    const candidateItems = baseItems.map((item) => {
-      const amountDiff = item.explanation.amountComparison.amountDifference;
-      const dateDiff = item.explanation.dateComparison.dateDifferenceDays;
-      const candidateWithinTolerance =
-        (amountDiff === null || amountDiff <= input.candidatePolicy.amountTolerance) &&
-        (dateDiff === null || Math.abs(dateDiff) <= input.candidatePolicy.dateWindowDays);
-
-      const candidateQueue = candidateWithinTolerance ? "matched" : "manual_review";
-      return {
-        ...item,
-        queue: candidateQueue,
-        explanation: {
-          ...item.explanation,
-          tolerancePolicy: input.candidatePolicy,
-        },
-      };
-    });
-
-    const total = Math.max(baseItems.length, 1);
-    const baselineMatched = baseItems.filter((item) => item.classification !== "unmatched").length;
-    const baselineManual = baseItems.filter((item) => item.queue !== "matched").length;
-    const candidateMatched = candidateItems.filter((item) => item.queue === "matched").length;
-    const candidateManual = candidateItems.filter((item) => item.queue !== "matched").length;
-
-    const newlyManualReview = candidateItems.filter(
-      (candidate, index) => baseItems[index]?.queue === "matched" && candidate.queue !== "matched"
-    ).length;
-    const newlyAutoMatched = candidateItems.filter(
-      (candidate, index) => baseItems[index]?.queue !== "matched" && candidate.queue === "matched"
-    ).length;
+      .digest("hex");
 
     return {
       runId: input.runId,
       tenantId,
       simulatedAt: new Date().toISOString(),
+      reproducibilityKey,
+      cohort: { matchCount: run.matches.length, runStatus: run.status },
       baseline: {
         matchRate: Number((baselineMatched / total).toFixed(4)),
         exceptionRate: Number(((total - baselineMatched) / total).toFixed(4)),
-        manualReviewLoad: baselineManual,
+        operatorReviewLoad: baselineReview,
       },
       candidate: {
         matchRate: Number((candidateMatched / total).toFixed(4)),
         exceptionRate: Number(((total - candidateMatched) / total).toFixed(4)),
-        manualReviewLoad: candidateManual,
+        operatorReviewLoad: total - candidateMatched,
       },
-      blastRadius: {
-        impactedRecords: newlyManualReview + newlyAutoMatched,
-        newlyManualReview,
-        newlyAutoMatched,
+      metricSupport: {
+        matchRate: "supported",
+        exceptionRate: "supported",
+        operatorReviewLoad: "supported",
+        overrideSensitivity: "supported",
+        falsePositiveRate: "unsupported",
+        falseNegativeRate: "unsupported",
       },
-      notes: [
-        "simulation_only_not_production_truth",
-        "false_positive_false_negative_require_labeled_ground_truth",
-      ],
+      degraded: false,
+      degradedReasons: [],
     };
   }
 }

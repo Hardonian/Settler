@@ -19,6 +19,8 @@ import { AuthRequest } from "../middleware/auth";
 import { enforceFreezeState } from "../middleware/governance";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
+import { prisma } from "../infrastructure/db/prisma";
+import { ProvenanceService } from "../services/recon-core/provenance-service";
 
 import { handleRouteError } from "../utils/error-handler";
 import { NotFoundError } from "../utils/typed-errors";
@@ -26,7 +28,7 @@ import { trackEventAsync } from "../utils/event-tracker";
 import { logInfo } from "../utils/logger";
 
 const router: Router = Router();
-import { prisma } from "../infrastructure/db/prisma";
+const provenanceService = new ProvenanceService(prisma);
 
 const listExceptionsSchema = z.object({
   query: z.object({
@@ -320,6 +322,7 @@ router.post(
           tenantId: req.tenantId,
           matchType: "unmatched",
         },
+        select: { id: true, metadata: true, runId: true },
       });
 
       if (!existing) {
@@ -329,12 +332,13 @@ router.post(
         });
       }
 
-      await prisma.reconciliationMatch.update({
-        where: { id },
+      const reviewedAt = new Date();
+      const updateResult = await prisma.reconciliationMatch.updateMany({
+        where: { id, tenantId: req.tenantId, matchType: "unmatched" },
         data: {
           reviewed: true,
           reviewedBy: userId,
-          reviewedAt: new Date(),
+          reviewedAt,
           matchReason: notes || `${resolution} resolution`,
           metadata: appendAdjudicationHistory(existing.metadata, {
             actorId: userId,
@@ -342,6 +346,27 @@ router.post(
             notes: notes || null,
           }) as any,
         },
+      });
+
+      if (updateResult.count !== 1) {
+        return res.status(404).json({
+          error: "NOT_FOUND",
+          message: "Exception not found",
+        });
+      }
+
+      await provenanceService.recordReviewDecision({
+        tenantId: req.tenantId!,
+        runId: existing.runId,
+        matchId: id,
+        decision:
+          resolution === "ignored"
+            ? "rejected"
+            : resolution === "matched"
+              ? "approved"
+              : "override",
+        actorUserId: userId,
+        reason: notes || `${resolution} resolution`,
       });
 
       await prisma.auditLog.create({
@@ -400,17 +425,18 @@ router.post(
           tenantId: req.tenantId,
           matchType: "unmatched",
         },
-        select: { id: true, metadata: true },
+        select: { id: true, metadata: true, runId: true },
       });
 
       let count = 0;
       for (const exception of existing) {
-        await prisma.reconciliationMatch.update({
-          where: { id: exception.id },
+        const reviewedAt = new Date();
+        const updated = await prisma.reconciliationMatch.updateMany({
+          where: { id: exception.id, tenantId: req.tenantId, matchType: "unmatched" },
           data: {
             reviewed: true,
             reviewedBy: userId,
-            reviewedAt: new Date(),
+            reviewedAt,
             matchReason: notes || `${resolution} resolution`,
             metadata: appendAdjudicationHistory(exception.metadata, {
               actorId: userId,
@@ -418,6 +444,24 @@ router.post(
               notes: notes || null,
             }) as any,
           },
+        });
+
+        if (updated.count !== 1) {
+          continue;
+        }
+
+        await provenanceService.recordReviewDecision({
+          tenantId: req.tenantId!,
+          runId: exception.runId,
+          matchId: exception.id,
+          decision:
+            resolution === "ignored"
+              ? "rejected"
+              : resolution === "matched"
+                ? "approved"
+                : "override",
+          actorUserId: userId,
+          reason: notes || `${resolution} resolution`,
         });
 
         await prisma.auditLog.create({
