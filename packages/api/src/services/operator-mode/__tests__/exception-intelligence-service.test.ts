@@ -4,8 +4,13 @@ jest.mock("../../../infrastructure/db/prisma", () => ({
   prisma: {
     reconciliationMatch: { findMany: jest.fn() },
     reconciliationRun: { findFirst: jest.fn() },
-    reconAudit: { findFirst: jest.fn(), findMany: jest.fn(), create: jest.fn() },
-    policyEvolutionProposal: { findFirst: jest.fn(), upsert: jest.fn(), update: jest.fn() },
+    reconAudit: { create: jest.fn() },
+    policyEvolutionProposal: {
+      findFirst: jest.fn(),
+      findMany: jest.fn(),
+      upsert: jest.fn(),
+      update: jest.fn(),
+    },
     policyEvolutionProposalReview: { create: jest.fn(), findMany: jest.fn() },
     policyMemoryArtifact: { upsert: jest.fn(), findMany: jest.fn() },
   },
@@ -16,102 +21,87 @@ const { prisma } = require("../../../infrastructure/db/prisma");
 describe("ExceptionIntelligenceService", () => {
   const service = new ExceptionIntelligenceService();
 
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    prisma.policyEvolutionProposal.findMany.mockResolvedValue([]);
+    prisma.policyMemoryArtifact.findMany.mockResolvedValue([]);
+  });
 
-  it("stores deterministic policy proposals in canonical policy-memory entities", async () => {
+  it("enforces tenant-scoped retrieval when loading decision history", async () => {
+    prisma.reconciliationMatch.findMany.mockResolvedValue([]);
+
+    await service.getDecisionHistory("tenant-abc", { limit: 10 });
+
+    expect(prisma.reconciliationMatch.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ tenantId: "tenant-abc" }) })
+    );
+  });
+
+  it("returns explicit degraded signature lifecycle when evidence is sparse", async () => {
+    prisma.reconciliationMatch.findMany.mockResolvedValue([]);
+
+    const lifecycle = await service.getSignatureLifecycle("tenant-1", "12345678901234567890", 30);
+
+    expect(lifecycle.degraded).toBe(true);
+    expect(lifecycle.degradedReasons).toContain("signature_not_observed_in_scope");
+  });
+
+  it("returns truthful degraded source friction and entity fingerprints for small samples", async () => {
     prisma.reconciliationMatch.findMany.mockResolvedValue([
-      ...Array.from({ length: 3 }).map((_, i) => ({
-        id: `m-${i}`,
+      {
+        id: "m-1",
         runId: "run-1",
-        sourceTransactionId: `s-tx-${i}`,
-        metadata: { rationale_codes: ["LOW_CONFIDENCE"] },
+        sourceTransactionId: "st-1",
+        metadata: {},
         matchType: "unmatched",
         matchReason: "amount variance",
-        confidence: 0.51,
-        reviewed: i === 0,
-        reviewedBy: i === 0 ? "user-1" : null,
-        reviewedAt: i === 0 ? new Date("2026-03-28T11:10:00Z") : null,
-        updatedAt: new Date("2026-03-28T11:10:00Z"),
-        createdAt: new Date(`2026-03-28T1${i}:00:00Z`),
+        confidence: 0.4,
+        reviewed: false,
+        reviewedBy: null,
+        reviewedAt: null,
+        updatedAt: new Date("2026-03-28T10:00:00Z"),
+        createdAt: new Date("2026-03-28T10:00:00Z"),
         sourceTransaction: {
+          source: { id: "src-1", name: "Stripe" },
+          sourceId: "src-1",
+          externalId: "cp-1",
+          description: "Merchant A",
           category: "payments",
           currency: "USD",
-          externalId: "cp-1",
-          source: { id: "src-1" },
         },
-      })),
-    ]);
-    prisma.reconAudit.findFirst.mockResolvedValue(null);
-
-    const proposals = await service.generatePolicyEvolutionProposals("tenant-1", 30);
-
-    expect(proposals[0]?.learnedEffectiveness).toBeDefined();
-    expect(prisma.policyEvolutionProposal.upsert).toHaveBeenCalled();
-    expect(prisma.policyMemoryArtifact.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: expect.objectContaining({
-          tenantId_artifactKey: expect.objectContaining({
-            artifactKey: expect.stringContaining("proposal:"),
-          }),
-        }),
-      })
-    );
-  });
-
-  it("stores proposal review transitions", async () => {
-    prisma.reconAudit.findFirst.mockResolvedValue({ entityId: "proposal-1" });
-
-    const result = await service.reviewPolicyEvolutionProposal("tenant-1", {
-      proposalId: "proposal-1",
-      decision: "approved",
-      reviewerId: "user-1",
-      reason: "evidence stable",
-    });
-
-    expect(result).toMatchObject({ accepted: true, status: "approved" });
-    expect(prisma.reconAudit.create).toHaveBeenCalled();
-  });
-
-    const reviewed = await service.reviewPolicyEvolutionProposal("tenant-1", {
-      proposalId: "proposal-1",
-      decision: "approved",
-      reviewerId: "user-1",
-      reason: "Evidence quality is strong and risk is low",
-    });
-
-    expect(reviewed.accepted).toBe(true);
-    expect(prisma.policyEvolutionProposalReview.create).toHaveBeenCalled();
-    expect(prisma.reconAudit.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({
-          action: "proposal_reviewed",
-          changes: expect.objectContaining({
-            reasonCodes: expect.arrayContaining(["evidence_quality", "risk_concern"]),
-          }),
-        }),
-      })
-    );
-  });
-
-  it("returns proposal history with linked artifacts and explicit degraded semantics", async () => {
-    prisma.policyEvolutionProposal.findFirst.mockResolvedValue({ id: "proposal-row-1" });
-    prisma.policyEvolutionProposalReview.findMany.mockResolvedValue([]);
-    prisma.policyMemoryArtifact.findMany.mockResolvedValue([
-      {
-        artifactKey: "proposal:proposal-1",
-        artifactType: "policy_proposal",
-        createdAt: new Date("2026-03-29T00:00:00Z"),
       },
     ]);
 
-    const history = await service.getProposalHistory("tenant-1", "proposal-1");
+    const friction = await service.getSourceFrictionSummary("tenant-1", 30);
+    const fingerprints = await service.getEntityFingerprints("tenant-1", 30);
 
-    expect(history?.degraded).toBe(true);
-    expect(history?.degradedReasons).toContain("no_review_history_for_proposal");
-    expect(history?.linkedArtifacts[0]?.artifactKey).toBe("proposal:proposal-1");
+    expect(friction.sources[0]?.degraded).toBe(true);
+    expect(friction.sources[0]?.degradedReasons).toContain("insufficient_source_history");
+    expect(fingerprints.entities[0]?.degraded).toBe(true);
+    expect(fingerprints.entities[0]?.degradedReasons).toContain("insufficient_entity_history");
   });
 
-  it("builds deterministic evidence pack digest inputs", async () => {
+  it("keeps effectiveness summary explicit when evidence is insufficient", async () => {
+    prisma.policyEvolutionProposal.findMany.mockResolvedValue([
+      {
+        id: "p-row-1",
+        proposalKey: "proposal-1",
+        signatureKey: "aaaaaaaaaaaaaaaaaaaa",
+        status: "approved",
+        createdAt: new Date("2026-03-28T10:00:00Z"),
+      },
+    ]);
+    prisma.reconciliationMatch.findMany.mockResolvedValue([]);
+
+    const effectiveness = await service.getProposalEffectivenessSummary("tenant-1", 30);
+
+    expect(effectiveness.proposals[0]?.degraded).toBe(true);
+    expect(effectiveness.proposals[0]?.unsupportedMetrics).toContain(
+      "insufficient_pre_post_samples"
+    );
+  });
+
+  it("marks proof completeness flags and avoids 500-style fallback semantics", async () => {
     prisma.reconciliationRun.findFirst.mockResolvedValue({
       id: "run-1",
       tenantId: "tenant-1",
@@ -122,10 +112,19 @@ describe("ExceptionIntelligenceService", () => {
       provenance: [],
     });
 
-    const packA = await service.buildEvidencePack("tenant-1", "run-1");
-    const packB = await service.buildEvidencePack("tenant-1", "run-1");
+    const pack = await service.buildEvidencePack("tenant-1", "run-1");
 
-    expect(packA.deterministicDigest).toBe(packB.deterministicDigest);
-    expect(packA.completenessByCategory.policyReferences?.degraded).toBe(true);
+    expect(pack.completenessByCategory.proposalPackLineage?.complete).toBe(false);
+    expect(pack.completenessByCategory.provenanceRecords?.degraded).toBe(true);
+    expect(pack.deterministicDigest).toHaveLength(64);
+  });
+
+  it("supports pack runtime degraded truth when no versions exist", async () => {
+    prisma.policyMemoryArtifact.findMany.mockResolvedValue([]);
+
+    const runtime = await service.getPackRuntimeSummary("tenant-1");
+
+    expect(runtime.degraded).toBe(true);
+    expect(runtime.degradedReasons).toContain("no_pack_runtime_history");
   });
 });

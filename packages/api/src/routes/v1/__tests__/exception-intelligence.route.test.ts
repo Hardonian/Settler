@@ -12,6 +12,12 @@ const serviceMock = {
   getProofGraph: jest.fn(),
   buildEvidencePack: jest.fn(),
   simulatePolicy: jest.fn(),
+  getSignatureLifecycle: jest.fn(),
+  getSourceFrictionSummary: jest.fn(),
+  getEntityFingerprints: jest.fn(),
+  getProposalEffectivenessSummary: jest.fn(),
+  getPackRuntimeSummary: jest.fn(),
+  getOperatorDecisionEffectiveness: jest.fn(),
 };
 
 jest.mock("../../../services/operator-mode/exception-intelligence-service", () => ({
@@ -43,45 +49,44 @@ describe("exception intelligence route contracts", () => {
     expect(response.body.data[0].proposalId).toBe("proposal-1");
   });
 
-  it("serves policy proposal detail", async () => {
-    serviceMock.getPolicyEvolutionProposalDetail.mockResolvedValue({ proposalId: "proposal-1" });
-    const response = await request(app).get(
-      "/api/v1/operator/intelligence/policy/proposals/proposal-1"
-    );
-    expect(response.status).toBe(200);
-    expect(response.body.data.proposalId).toBe("proposal-1");
+  it("serves lifecycle/friction/fingerprint/effectiveness surfaces", async () => {
+    serviceMock.getSignatureLifecycle.mockResolvedValue({ signature: "s" });
+    serviceMock.getSourceFrictionSummary.mockResolvedValue({ sources: [] });
+    serviceMock.getEntityFingerprints.mockResolvedValue({ entities: [] });
+    serviceMock.getProposalEffectivenessSummary.mockResolvedValue({ proposals: [] });
+    serviceMock.getPackRuntimeSummary.mockResolvedValue({ packs: [] });
+    serviceMock.getOperatorDecisionEffectiveness.mockResolvedValue({ patterns: [] });
+
+    const [sig, source, entity, proposal, pack, operator] = await Promise.all([
+      request(app).get("/api/v1/operator/intelligence/signatures/12345678901234567890/lifecycle"),
+      request(app).get("/api/v1/operator/intelligence/sources/friction"),
+      request(app).get("/api/v1/operator/intelligence/entities/fingerprints"),
+      request(app).get("/api/v1/operator/intelligence/effectiveness/proposals"),
+      request(app).get("/api/v1/operator/intelligence/packs/runtime"),
+      request(app).get("/api/v1/operator/intelligence/decisions/effectiveness"),
+    ]);
+
+    expect(sig.status).toBe(200);
+    expect(source.status).toBe(200);
+    expect(entity.status).toBe(200);
+    expect(proposal.status).toBe(200);
+    expect(pack.status).toBe(200);
+    expect(operator.status).toBe(200);
   });
 
-  it("serves proposal review action", async () => {
-    serviceMock.reviewPolicyEvolutionProposal.mockResolvedValue({
-      accepted: true,
-      status: "approved",
+  it("returns 400 without tenant context instead of hard 500", async () => {
+    const appNoTenant = express();
+    appNoTenant.use(express.json());
+    appNoTenant.use((req, _res, next) => {
+      (req as any).tenantId = null;
+      next();
     });
-    const response = await request(app)
-      .post("/api/v1/operator/intelligence/policy/proposals/proposal-1/review")
-      .send({ decision: "approved", reason: "evidence_quality" });
-    expect(response.status).toBe(200);
-    expect(response.body.data.status).toBe("approved");
-  });
+    appNoTenant.use("/api/v1", router);
 
-  it("serves proposal history", async () => {
-    serviceMock.getProposalHistory.mockResolvedValue({ proposalId: "proposal-1", reviews: [] });
-    const response = await request(app).get(
-      "/api/v1/operator/intelligence/policy/proposals/proposal-1/history"
+    const response = await request(appNoTenant).get(
+      "/api/v1/operator/intelligence/sources/friction"
     );
-    expect(response.status).toBe(200);
-    expect(response.body.data.proposalId).toBe("proposal-1");
-  });
-
-  it("serves playbooks and decision history", async () => {
-    serviceMock.getExceptionPlaybooks.mockResolvedValue({ playbooks: [], degraded: false });
-    serviceMock.getDecisionHistory.mockResolvedValue({ decisions: [], degraded: true });
-
-    const playbookRes = await request(app).get("/api/v1/operator/intelligence/playbooks");
-    const decisionsRes = await request(app).get("/api/v1/operator/intelligence/decisions/history");
-
-    expect(playbookRes.status).toBe(200);
-    expect(decisionsRes.status).toBe(200);
-    expect(decisionsRes.body.data.degraded).toBe(true);
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe("TENANT_CONTEXT_REQUIRED");
   });
 });

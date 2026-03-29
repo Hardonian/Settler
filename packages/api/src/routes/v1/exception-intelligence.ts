@@ -48,6 +48,13 @@ const policyProposalReviewSchema = z.object({
   }),
 });
 
+const signatureLifecycleSchema = z.object({
+  params: z.object({ signature: z.string().length(20) }),
+  query: z.object({
+    lookbackDays: z.coerce.number().int().min(1).max(365).default(30),
+  }),
+});
+
 const decisionHistorySchema = z.object({
   query: z.object({
     runId: z.string().uuid().optional(),
@@ -297,6 +304,135 @@ router.post(
       return res.status(200).json({ data });
     } catch (error: unknown) {
       return handleRouteError(res, error, "Failed to run policy sandbox", 500, {
+        userId: req.userId,
+        tenantId: req.tenantId,
+      });
+    }
+  }
+);
+
+router.get(
+  "/operator/intelligence/signatures/:signature/lifecycle",
+  requirePermission(Permission.ADMIN_READ),
+  validateRequest(signatureLifecycleSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = tenantOr400(req, res);
+      if (!tenantId) return;
+      const data = await service.getSignatureLifecycle(
+        tenantId,
+        req.params["signature"] as string,
+        Number(req.query.lookbackDays ?? 30)
+      );
+      return res.status(200).json({ data });
+    } catch (error: unknown) {
+      return handleRouteError(res, error, "Failed to load signature lifecycle", 500, {
+        userId: req.userId,
+        tenantId: req.tenantId,
+      });
+    }
+  }
+);
+
+router.get(
+  "/operator/intelligence/sources/friction",
+  requirePermission(Permission.ADMIN_READ),
+  validateRequest(snapshotSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = tenantOr400(req, res);
+      if (!tenantId) return;
+      const data = await service.getSourceFrictionSummary(
+        tenantId,
+        Number(req.query.lookbackDays ?? 30)
+      );
+      return res.status(200).json({ data });
+    } catch (error: unknown) {
+      return handleRouteError(res, error, "Failed to load source friction summary", 500, {
+        userId: req.userId,
+        tenantId: req.tenantId,
+      });
+    }
+  }
+);
+
+router.get(
+  "/operator/intelligence/entities/fingerprints",
+  requirePermission(Permission.ADMIN_READ),
+  validateRequest(snapshotSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = tenantOr400(req, res);
+      if (!tenantId) return;
+      const data = await service.getEntityFingerprints(
+        tenantId,
+        Number(req.query.lookbackDays ?? 30)
+      );
+      return res.status(200).json({ data });
+    } catch (error: unknown) {
+      return handleRouteError(res, error, "Failed to load entity fingerprints", 500, {
+        userId: req.userId,
+        tenantId: req.tenantId,
+      });
+    }
+  }
+);
+
+router.get(
+  "/operator/intelligence/effectiveness/proposals",
+  requirePermission(Permission.ADMIN_READ),
+  validateRequest(snapshotSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = tenantOr400(req, res);
+      if (!tenantId) return;
+      const data = await service.getProposalEffectivenessSummary(
+        tenantId,
+        Number(req.query.lookbackDays ?? 30)
+      );
+      return res.status(200).json({ data });
+    } catch (error: unknown) {
+      return handleRouteError(res, error, "Failed to load proposal effectiveness", 500, {
+        userId: req.userId,
+        tenantId: req.tenantId,
+      });
+    }
+  }
+);
+
+router.get(
+  "/operator/intelligence/packs/runtime",
+  requirePermission(Permission.ADMIN_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = tenantOr400(req, res);
+      if (!tenantId) return;
+      const data = await service.getPackRuntimeSummary(tenantId);
+      return res.status(200).json({ data });
+    } catch (error: unknown) {
+      return handleRouteError(res, error, "Failed to load pack runtime summary", 500, {
+        userId: req.userId,
+        tenantId: req.tenantId,
+      });
+    }
+  }
+);
+
+router.get(
+  "/operator/intelligence/decisions/effectiveness",
+  requirePermission(Permission.ADMIN_READ),
+  validateRequest(snapshotSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = tenantOr400(req, res);
+      if (!tenantId) return;
+      const data = await service.getOperatorDecisionEffectiveness(
+        tenantId,
+        Number(req.query.lookbackDays ?? 30)
+      );
+      return res.status(200).json({ data });
+    } catch (error: unknown) {
+      return handleRouteError(res, error, "Failed to load decision effectiveness", 500, {
         userId: req.userId,
         tenantId: req.tenantId,
       });
