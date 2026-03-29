@@ -46,7 +46,12 @@ export type TenantAction =
   | "tenant.api_key.read"
   | "tenant.api_key.manage"
   | "tenant.webhook.read"
-  | "tenant.webhook.manage";
+  | "tenant.webhook.manage"
+  | "tenant.user.data.export"
+  | "tenant.user.data.delete"
+  | "tenant.operator.control"
+  | "tenant.knowledge.read"
+  | "tenant.knowledge.manage";
 
 function readConfig(): OpenFgaConfig {
   const enabled = process.env.OPENFGA_ENABLED === "true";
@@ -147,11 +152,16 @@ function relationForAction(action: TenantAction): string {
     case "tenant.approval.manage":
       return "can_review_policy";
     case "tenant.memory.graph.read":
+    case "tenant.knowledge.read":
     case "tenant.integration.read":
+    case "tenant.user.data.export":
       return "can_view";
     case "tenant.integration.manage":
     case "tenant.api_key.manage":
     case "tenant.webhook.manage":
+    case "tenant.knowledge.manage":
+    case "tenant.operator.control":
+    case "tenant.user.data.delete":
       return "can_manage_integrations";
     case "tenant.approval.read":
     case "tenant.approval.request":
@@ -182,8 +192,13 @@ function localRoleAllowed(action: TenantAction, role: UserRole | null): boolean 
     case "tenant.api_key.manage":
     case "tenant.webhook.read":
     case "tenant.webhook.manage":
+    case "tenant.user.data.delete":
+    case "tenant.operator.control":
+    case "tenant.knowledge.manage":
       return role === UserRole.OWNER || role === UserRole.ADMIN;
     case "tenant.integration.read":
+    case "tenant.knowledge.read":
+    case "tenant.user.data.export":
       return role === UserRole.OWNER || role === UserRole.ADMIN || role === UserRole.DEVELOPER;
   }
 }

@@ -8,7 +8,11 @@ import { query, transaction } from "../db";
 import { verifyPassword } from "../utils/hash";
 import { logInfo } from "../utils/logger";
 import { handleRouteError } from "../utils/error-handler";
-import { UserRole } from "../domain/entities/User";
+import {
+  authorizeTenantActionOr403,
+  requireTenantContext,
+  requireUserContext,
+} from "./authz-helpers";
 
 const router: Router = Router();
 
@@ -32,25 +36,21 @@ router.delete(
   async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
-      const userId = req.userId!;
+      const userId = requireUserContext(req, res);
+      const tenantId = requireTenantContext(req, res);
+      if (!userId || !tenantId) return;
       const { password } = req.body;
 
-      const tenantId = req.tenantId!;
-
-      // Users can only delete their own data (or admins)
-      if (id !== userId) {
-        // Check if user is admin
-        const users = await query<{ role: UserRole }>(
-          "SELECT role FROM users WHERE id = $1 AND tenant_id = $2",
-          [userId, tenantId]
-        );
-        if (
-          users.length === 0 ||
-          !users[0] ||
-          (users[0].role !== UserRole.ADMIN && users[0].role !== UserRole.OWNER)
-        ) {
-          return res.status(403).json({ error: "Forbidden" });
-        }
+      if (
+        !(await authorizeTenantActionOr403(
+          req,
+          res,
+          tenantId,
+          "tenant.user.data.delete",
+          "User data deletion is not authorized"
+        ))
+      ) {
+        return;
       }
 
       if (!id || !userId) {
@@ -126,14 +126,31 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
-      const userId = req.userId!;
+      const userId = requireUserContext(req, res);
+      const tenantId = requireTenantContext(req, res);
+      if (!userId || !tenantId) return;
 
       // Users can only export their own data
       if (id !== userId) {
-        return res.status(403).json({ error: "Forbidden" });
+        return res.status(403).json({
+          error: "FORBIDDEN",
+          message: "User export is only allowed for the authenticated user",
+          reason: "cross_user_export_forbidden",
+          traceId: req.traceId,
+        });
       }
 
-      const tenantId = req.tenantId!;
+      if (
+        !(await authorizeTenantActionOr403(
+          req,
+          res,
+          tenantId,
+          "tenant.user.data.export",
+          "User data export is not authorized"
+        ))
+      ) {
+        return;
+      }
 
       // Fetch all user data — scoped by tenant_id
       const [users, jobs, reports, webhooks, apiKeys, auditLogs] = await Promise.all([

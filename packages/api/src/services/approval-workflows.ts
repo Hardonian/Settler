@@ -160,19 +160,19 @@ export async function approveRequest(
         throw new Error("separation_of_duties_violation: requester cannot approve own request");
       }
 
-      // Verify approver has permission
       if (request.approver_id && request.approver_id !== approverId) {
-        // Check if user has the required role
-        if (request.approver_role) {
-          const approverResult = await client.query(
-            `SELECT id FROM approvers
-             WHERE tenant_id = $1 AND user_id = $2 AND role = $3`,
-            [tenantId, approverId, request.approver_role]
-          );
+        throw new Error("User does not have permission to approve this request");
+      }
 
-          if (approverResult.rows.length === 0) {
-            throw new Error("User does not have permission to approve this request");
-          }
+      if (request.approver_role) {
+        const approverResult = await client.query(
+          `SELECT id FROM approvers
+             WHERE tenant_id = $1 AND user_id = $2 AND role = $3`,
+          [tenantId, approverId, request.approver_role]
+        );
+
+        if (approverResult.rows.length === 0) {
+          throw new Error("User does not have permission to approve this request");
         }
       }
 
@@ -238,16 +238,18 @@ export async function rejectRequest(
       }
 
       if (request.approver_id && request.approver_id !== approverId) {
-        if (request.approver_role) {
-          const approverResult = await client.query(
-            `SELECT id FROM approvers
-             WHERE tenant_id = $1 AND user_id = $2 AND role = $3`,
-            [tenantId, approverId, request.approver_role]
-          );
+        throw new Error("User does not have permission to reject this request");
+      }
 
-          if (approverResult.rows.length === 0) {
-            throw new Error("User does not have permission to reject this request");
-          }
+      if (request.approver_role) {
+        const approverResult = await client.query(
+          `SELECT id FROM approvers
+             WHERE tenant_id = $1 AND user_id = $2 AND role = $3`,
+          [tenantId, approverId, request.approver_role]
+        );
+
+        if (approverResult.rows.length === 0) {
+          throw new Error("User does not have permission to reject this request");
         }
       }
 
