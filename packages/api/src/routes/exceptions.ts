@@ -58,6 +58,29 @@ const bulkResolveSchema = z.object({
   }),
 });
 
+function appendAdjudicationHistory(
+  metadata: unknown,
+  entry: { actorId: string; resolution: string; notes: string | null }
+): Record<string, unknown> {
+  const base =
+    metadata && typeof metadata === "object" && !Array.isArray(metadata)
+      ? ({ ...metadata } as Record<string, unknown>)
+      : {};
+  const current = Array.isArray(base["adjudicationHistory"])
+    ? [...(base["adjudicationHistory"] as unknown[])]
+    : [];
+  current.push({
+    actorId: entry.actorId,
+    resolution: entry.resolution,
+    notes: entry.notes,
+    timestamp: new Date().toISOString(),
+  });
+  return {
+    ...base,
+    adjudicationHistory: current.slice(-50),
+  };
+}
+
 // List exceptions (unmatched transactions)
 router.get(
   "/exceptions",
@@ -291,24 +314,49 @@ router.post(
       // - "ignored": Mark as reviewed but dismissed (not a match)
       // - "matched": Mark as reviewed and matched (automatic match found)
       // - "manual": Mark as reviewed and manually resolved by user
-      const resolved = await prisma.reconciliationMatch
-        .update({
-          where: { id },
-          data: {
-            reviewed: true,
-            reviewedBy: userId,
-            reviewedAt: new Date(),
-            matchReason: notes || `${resolution} resolution`,
-          },
-        })
-        .catch(() => null);
+      const existing = await prisma.reconciliationMatch.findFirst({
+        where: {
+          id,
+          tenantId: req.tenantId,
+          matchType: "unmatched",
+        },
+      });
 
-      if (!resolved) {
+      if (!existing) {
         return res.status(404).json({
           error: "NOT_FOUND",
           message: "Exception not found",
         });
       }
+
+      await prisma.reconciliationMatch.update({
+        where: { id },
+        data: {
+          reviewed: true,
+          reviewedBy: userId,
+          reviewedAt: new Date(),
+          matchReason: notes || `${resolution} resolution`,
+          metadata: appendAdjudicationHistory(existing.metadata, {
+            actorId: userId,
+            resolution,
+            notes: notes || null,
+          }) as any,
+        },
+      });
+
+      await prisma.auditLog.create({
+        data: {
+          tenantId: req.tenantId,
+          userId,
+          action: "exception_resolved",
+          resourceType: "reconciliation_match",
+          resourceId: id,
+          metadata: {
+            resolution,
+            notes: notes || null,
+          } as any,
+        },
+      });
 
       trackEventAsync(userId, "ExceptionResolved", {
         exceptionId: id,
@@ -346,18 +394,48 @@ router.post(
       const userId = req.userId!;
 
       // TRUTHFUL STATE: Handle all resolution types properly
-      const result = await prisma.reconciliationMatch.updateMany({
+      const existing = await prisma.reconciliationMatch.findMany({
         where: {
           id: { in: exceptionIds },
           tenantId: req.tenantId,
+          matchType: "unmatched",
         },
-        data: {
-          reviewed: true,
-          reviewedBy: userId,
-          reviewedAt: new Date(),
-          matchReason: notes || `${resolution} resolution`,
-        },
+        select: { id: true, metadata: true },
       });
+
+      let count = 0;
+      for (const exception of existing) {
+        await prisma.reconciliationMatch.update({
+          where: { id: exception.id },
+          data: {
+            reviewed: true,
+            reviewedBy: userId,
+            reviewedAt: new Date(),
+            matchReason: notes || `${resolution} resolution`,
+            metadata: appendAdjudicationHistory(exception.metadata, {
+              actorId: userId,
+              resolution,
+              notes: notes || null,
+            }) as any,
+          },
+        });
+
+        await prisma.auditLog.create({
+          data: {
+            tenantId: req.tenantId,
+            userId,
+            action: "exception_resolved",
+            resourceType: "reconciliation_match",
+            resourceId: exception.id,
+            metadata: {
+              resolution,
+              notes: notes || null,
+              bulk: true,
+            } as any,
+          },
+        });
+        count += 1;
+      }
 
       for (const exceptionId of exceptionIds) {
         trackEventAsync(userId, "ExceptionResolved", {
@@ -369,14 +447,14 @@ router.post(
 
       logInfo("Exceptions bulk resolved", {
         tenantId: req.tenantId,
-        count: result.count,
+        count,
         resolution,
         resolvedBy: userId,
       });
 
       res.json({
-        message: `Resolved ${result.count} exceptions successfully`,
-        count: result.count,
+        message: `Resolved ${count} exceptions successfully`,
+        count,
       });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to bulk resolve exceptions", 500, {

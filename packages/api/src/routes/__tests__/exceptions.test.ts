@@ -25,6 +25,9 @@ jest.mock("../../infrastructure/db/prisma", () => ({
       update: jest.fn(),
       updateMany: jest.fn(),
     },
+    auditLog: {
+      create: jest.fn(),
+    },
   },
 }));
 
@@ -270,6 +273,12 @@ describe("Exceptions Routes", () => {
 
   describe("POST /api/exceptions/:id/resolve - Resolve Exception", () => {
     it("should resolve exception with valid resolution", async () => {
+      mockReconciliationMatch.findFirst.mockResolvedValueOnce({
+        id: "exc-1",
+        tenantId: "tenant-123",
+        metadata: {},
+        matchType: "unmatched",
+      });
       mockReconciliationMatch.update.mockResolvedValueOnce({
         id: "exc-1",
         reviewed: true,
@@ -287,7 +296,7 @@ describe("Exceptions Routes", () => {
     });
 
     it("should return 404 when exception not found", async () => {
-      mockReconciliationMatch.update.mockRejectedValueOnce(new Error("Record not found"));
+      mockReconciliationMatch.findFirst.mockResolvedValueOnce(null);
 
       const res = await request(app)
         .post("/api/exceptions/exc-1/resolve")
@@ -296,8 +305,8 @@ describe("Exceptions Routes", () => {
       expect(res.status).toBe(404);
     });
 
-    it("should return 404 when update throws (exception not found)", async () => {
-      mockReconciliationMatch.update.mockResolvedValueOnce(null);
+    it("should return 404 when exception missing in tenant scope", async () => {
+      mockReconciliationMatch.findFirst.mockResolvedValueOnce(null);
 
       const res = await request(app)
         .post("/api/exceptions/missing-exc/resolve")
@@ -309,7 +318,11 @@ describe("Exceptions Routes", () => {
 
   describe("POST /api/exceptions/bulk-resolve - Bulk Resolve", () => {
     it("should resolve multiple exceptions at once", async () => {
-      mockReconciliationMatch.updateMany.mockResolvedValueOnce({ count: 2 });
+      mockReconciliationMatch.findMany.mockResolvedValueOnce([
+        { id: "00000000-0000-4000-8000-000000000001", metadata: {} },
+        { id: "00000000-0000-4000-8000-000000000002", metadata: {} },
+      ]);
+      mockReconciliationMatch.update.mockResolvedValue({});
 
       const res = await request(app)
         .post("/api/exceptions/bulk-resolve")
@@ -327,7 +340,10 @@ describe("Exceptions Routes", () => {
     });
 
     it("should scope bulk resolve to tenant", async () => {
-      mockReconciliationMatch.updateMany.mockResolvedValueOnce({ count: 1 });
+      mockReconciliationMatch.findMany.mockResolvedValueOnce([
+        { id: "00000000-0000-4000-8000-000000000001", metadata: {} },
+      ]);
+      mockReconciliationMatch.update.mockResolvedValue({});
 
       await request(app)
         .post("/api/exceptions/bulk-resolve")
@@ -336,7 +352,7 @@ describe("Exceptions Routes", () => {
           resolution: "matched",
         });
 
-      expect(mockReconciliationMatch.updateMany).toHaveBeenCalledWith(
+      expect(mockReconciliationMatch.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({ tenantId: "tenant-123" }),
         })
@@ -411,6 +427,12 @@ describe("Exceptions Routes", () => {
       expect(listRes.body.data).toHaveLength(1);
 
       // Step 2: Resolve exception
+      mockReconciliationMatch.findFirst.mockResolvedValueOnce({
+        id: "exc-1",
+        tenantId: "tenant-123",
+        metadata: {},
+        matchType: "unmatched",
+      });
       mockReconciliationMatch.update.mockResolvedValueOnce({
         id: "exc-1",
         reviewed: true,

@@ -18,6 +18,7 @@ import reconciliationRouter from "./reconciliation";
 import ingestionExportsRouter from "./ingestion-exports";
 import { operatorModeRouter } from "./operator-mode";
 import operatorIntelligenceRouter from "./operator-intelligence";
+import exceptionIntelligenceRouter from "./exception-intelligence";
 import { systemHealthRouter } from "./system-health";
 import { runsRouter } from "./runs";
 import { governanceRouter } from "./governance";
@@ -83,6 +84,7 @@ v1Router.use("/dedicated-infrastructure", dedicatedInfrastructureRouter);
 // Operator mode routes
 v1Router.use("/", operatorModeRouter);
 v1Router.use("/", operatorIntelligenceRouter);
+v1Router.use("/", exceptionIntelligenceRouter);
 v1Router.use("/", systemHealthRouter);
 v1Router.use("/", runsRouter);
 v1Router.use("/", governanceRouter);
