@@ -1,25 +1,43 @@
 /**
  * Evidence & Traceability Service
  *
- * Provides comprehensive audit trail for reconciliation decisions:
- * - Rule ID + version tracking per match
- * - Actor tracking (system vs human)
- * - Status transition logging
- * - Evidence chain normalization
- *
- * Part of Phase III: Evidence & Traceability
- *
- * NOTE: This service is currently a stub. The ExecutionProvenance model
- * referenced in this code does not exist in the Prisma schema.
- * These methods will log warnings instead of persisting data.
+ * Canonical provenance recorder for reconciliation decisions.
+ * Persists deterministic provenance entries with tenant scoping.
  */
 
-import { PrismaClient } from "@prisma/client";
+import crypto from "node:crypto";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { type DeterministicMatch } from "./deterministic-types";
 
-/**
- * Provenance service for recording execution evidence
- */
+function toJsonValue(input: unknown): Prisma.InputJsonValue {
+  return (input ?? {}) as Prisma.InputJsonValue;
+}
+
+function buildEntryHash(input: {
+  runResultId: string;
+  snapshotId: string;
+  sequence: number;
+  operation: string;
+  entityType: string;
+  entityId: string;
+  details: unknown;
+}): string {
+  return crypto
+    .createHash("sha256")
+    .update(
+      JSON.stringify({
+        runResultId: input.runResultId,
+        snapshotId: input.snapshotId,
+        sequence: input.sequence,
+        operation: input.operation,
+        entityType: input.entityType,
+        entityId: input.entityId,
+        details: input.details,
+      })
+    )
+    .digest("hex");
+}
+
 export class ProvenanceService {
   private prisma: PrismaClient;
 
@@ -27,72 +45,141 @@ export class ProvenanceService {
     this.prisma = prisma;
   }
 
-  /**
-   * Record a match creation event
-   * STUB: ExecutionProvenance table does not exist in schema
-   */
+  private async resolveTenantId(runResultId: string): Promise<string> {
+    const result = await this.prisma.reconResult.findUnique({
+      where: { id: runResultId },
+      select: { tenantId: true },
+    });
+
+    if (!result) {
+      throw new Error(`Cannot record provenance: run result ${runResultId} not found`);
+    }
+
+    return result.tenantId;
+  }
+
   async recordMatch(
-    _runResultId: string,
-    _snapshotId: string,
-    _match: DeterministicMatch,
-    _sequence: number
+    runResultId: string,
+    snapshotId: string,
+    match: DeterministicMatch,
+    sequence: number
   ): Promise<void> {
-    // Stub - provenance recording not implemented
-    // The ExecutionProvenance model does not exist in the Prisma schema
+    const tenantId = await this.resolveTenantId(runResultId);
+    await this.prisma.executionProvenance.create({
+      data: {
+        tenantId,
+        runResultId,
+        snapshotId,
+        sequence,
+        operation: "match_created",
+        entityType: "reconciliation_match",
+        entityId: match.id,
+        confidence: match.confidence,
+        ruleId: match.ruleId,
+        ruleVersion: match.ruleVersion,
+        actor: "system",
+        details: toJsonValue({
+          sourceRecordId: match.sourceId,
+          targetRecordId: match.targetId,
+          reason: match.reason,
+          metadata: match.metadata,
+        }),
+        entryHash: buildEntryHash({
+          runResultId,
+          snapshotId,
+          sequence,
+          operation: "match_created",
+          entityType: "reconciliation_match",
+          entityId: match.id,
+          details: match,
+        }),
+      },
+    });
   }
 
-  /**
-   * Record a review decision
-   * STUB: ExecutionProvenance table does not exist in schema
-   */
   async recordReviewDecision(
-    _runResultId: string,
-    _snapshotId: string,
-    _matchId: string,
-    _decision: "approved" | "rejected" | "override",
-    _actor: "system" | "human",
-    _actorUserId: string | undefined,
-    _reason: string,
-    _sequence: number
+    runResultId: string,
+    snapshotId: string,
+    matchId: string,
+    decision: "approved" | "rejected" | "override",
+    actor: "system" | "human",
+    actorUserId: string | undefined,
+    reason: string,
+    sequence: number
   ): Promise<void> {
-    // Stub - provenance recording not implemented
+    const tenantId = await this.resolveTenantId(runResultId);
+    await this.prisma.executionProvenance.create({
+      data: {
+        tenantId,
+        runResultId,
+        snapshotId,
+        sequence,
+        operation: "review_decision",
+        entityType: "reconciliation_match",
+        entityId: matchId,
+        actor,
+        actorUserId,
+        details: toJsonValue({ decision, reason }),
+        entryHash: buildEntryHash({
+          runResultId,
+          snapshotId,
+          sequence,
+          operation: "review_decision",
+          entityType: "reconciliation_match",
+          entityId: matchId,
+          details: { decision, reason, actor, actorUserId },
+        }),
+      },
+    });
   }
 
-  /**
-   * Record run status transition
-   * STUB: ExecutionProvenance table does not exist in schema
-   */
   async recordStatusTransition(
-    _runResultId: string,
-    _snapshotId: string,
-    _fromStatus: string,
-    _toStatus: string,
-    _actor: "system" | "human",
-    _actorUserId: string | undefined,
-    _reason: string,
-    _sequence: number
+    runResultId: string,
+    snapshotId: string,
+    fromStatus: string,
+    toStatus: string,
+    actor: "system" | "human",
+    actorUserId: string | undefined,
+    reason: string,
+    sequence: number
   ): Promise<void> {
-    // Stub - provenance recording not implemented
+    const tenantId = await this.resolveTenantId(runResultId);
+    await this.prisma.executionProvenance.create({
+      data: {
+        tenantId,
+        runResultId,
+        snapshotId,
+        sequence,
+        operation: "status_transition",
+        entityType: "recon_result",
+        entityId: runResultId,
+        actor,
+        actorUserId,
+        details: toJsonValue({ fromStatus, toStatus, reason }),
+        entryHash: buildEntryHash({
+          runResultId,
+          snapshotId,
+          sequence,
+          operation: "status_transition",
+          entityType: "recon_result",
+          entityId: runResultId,
+          details: { fromStatus, toStatus, reason, actor },
+        }),
+      },
+    });
   }
 
-  /**
-   * Query provenance records for a run
-   * STUB: ExecutionProvenance table does not exist in schema
-   */
-  async getProvenanceForRun(_runResultId: string): Promise<unknown[]> {
-    // Stub - returns empty array
-    return [];
+  async getProvenanceForRun(runResultId: string): Promise<unknown[]> {
+    return this.prisma.executionProvenance.findMany({
+      where: { runResultId },
+      orderBy: { sequence: "asc" },
+    });
   }
 
-  /**
-   * Query provenance records by entity
-   * STUB: ExecutionProvenance table does not exist in schema
-   */
-  async getProvenanceForEntity(
-    _runResultId: string,
-    _entityId: string
-  ): Promise<unknown[]> {
-    // Stub - returns empty array
-    return [];
+  async getProvenanceForEntity(runResultId: string, entityId: string): Promise<unknown[]> {
+    return this.prisma.executionProvenance.findMany({
+      where: { runResultId, entityId },
+      orderBy: { sequence: "asc" },
+    });
   }
 }
