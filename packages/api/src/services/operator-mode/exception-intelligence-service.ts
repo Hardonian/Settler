@@ -1,6 +1,8 @@
 import crypto from "node:crypto";
 import { prisma } from "../../infrastructure/db/prisma";
 
+const prismaAny = prisma as any;
+
 export interface ExceptionSignature {
   signature: string;
   construction: {
@@ -73,6 +75,75 @@ export interface ExceptionIntelligenceSnapshot {
   counterparties: CounterpartyFingerprint[];
 }
 
+export interface SignatureOutcomeProfile {
+  signature: string;
+  totalObservations: number;
+  resolutionDistribution: Record<string, number>;
+  operatorReviewedRate: number;
+  overrideFrequency: number;
+  evidenceBasis: string[];
+  degraded: boolean;
+  degradedReasons: string[];
+}
+
+export interface LearnedPolicyCandidate {
+  proposalId: string;
+  tenantId: string;
+  proposalType: "policy_adjustment" | "manual_guardrail";
+  why: string;
+  historicalSupport: {
+    sampleSize: number;
+    signature: string;
+    resolutionDistribution: Record<string, number>;
+    operatorReviewedRate: number;
+  };
+  estimatedImpact: {
+    supported: string[];
+    unsupported: string[];
+    estimate: Record<string, number | null>;
+  };
+  riskFlags: string[];
+  missingData: string[];
+  status: "pending_review" | "approved" | "rejected" | "deferred";
+  createdAt: string;
+}
+
+export interface ProposalReviewAction {
+  action: "approve" | "reject" | "defer";
+  actorUserId: string;
+  reason: string | null;
+}
+
+export interface ExceptionPlaybookSummary {
+  signature: string;
+  clusterIdentity: Record<string, unknown>;
+  commonResolutionPaths: Record<string, number>;
+  handlingTimeMinutes: { average: number | null; median: number | null };
+  sourceSystems: string[];
+  commonOperatorActions: string[];
+  escalationIndicators: string[];
+  ambiguityMarkers: string[];
+  evidenceCoverage: "strong" | "partial" | "insufficient";
+  basisType: "automatic_only" | "operator_reviewed_only" | "mixed";
+  degradedReasons: string[];
+}
+
+export interface DecisionHistoryRecord {
+  id: string;
+  tenantId: string;
+  runId: string | null;
+  signature: string | null;
+  counterpartyKey: string | null;
+  sourcePair: string | null;
+  action: string;
+  priorState: string | null;
+  resultingState: string | null;
+  actorUserId: string | null;
+  reason: string | null;
+  occurredAt: string;
+  provenanceType: "match_review" | "proposal_review";
+}
+
 export interface ProofGraphResponse {
   runId: string;
   tenantId: string;
@@ -90,6 +161,10 @@ export interface EvidencePack {
   lineage: ProofGraphResponse;
   decisions: AdjudicationEvent[];
   provenance: { count: number; complete: boolean; missingReasons: string[] };
+  completenessByCategory: Record<
+    string,
+    { complete: boolean; degraded: boolean; reasons: string[] }
+  >;
   deterministicDigest: string;
   exportMetadata: Record<string, unknown>;
 }
@@ -827,7 +902,7 @@ export class ExceptionIntelligenceService {
   }
 
   async getProofGraph(tenantId: string, runId: string): Promise<ProofGraphResponse> {
-    const run = await prisma.reconciliationRun.findFirst({
+    const run: any = await prismaAny.reconciliationRun.findFirst({
       where: { id: runId, tenantId },
       include: { matches: true, provenance: true },
     });
@@ -897,13 +972,13 @@ export class ExceptionIntelligenceService {
 
   async buildEvidencePack(tenantId: string, runId: string): Promise<EvidencePack> {
     const graph = await this.getProofGraph(tenantId, runId);
-    const run = await prisma.reconciliationRun.findFirst({
+    const run: any = await prismaAny.reconciliationRun.findFirst({
       where: { id: runId, tenantId },
       include: { matches: true, provenance: { orderBy: { sequence: "asc" } } },
     });
     const decisions: AdjudicationEvent[] = (run?.matches ?? [])
-      .filter((m) => m.reviewed)
-      .map((m) => ({
+      .filter((m: any) => m.reviewed)
+      .map((m: any) => ({
         matchId: m.id,
         runId,
         resolution: m.matchReason?.toLowerCase().includes("ignored") ? "ignored" : "manual",
@@ -911,9 +986,49 @@ export class ExceptionIntelligenceService {
         occurredAt: m.reviewedAt?.toISOString() ?? m.updatedAt.toISOString(),
         notes: m.matchReason,
       }));
+    const completenessByCategory = {
+      runLineage: {
+        complete: graph.nodes.some((n) => n.type === "run"),
+        degraded: !graph.nodes.some((n) => n.type === "run"),
+        reasons: graph.nodes.some((n) => n.type === "run") ? [] : ["missing_run_node"],
+      },
+      matchLineage: {
+        complete: graph.nodes.some((n) => n.type === "match"),
+        degraded: !graph.nodes.some((n) => n.type === "match"),
+        reasons: graph.nodes.some((n) => n.type === "match") ? [] : ["no_match_nodes"],
+      },
+      operatorDecisions: {
+        complete: decisions.length > 0,
+        degraded: decisions.length === 0,
+        reasons: decisions.length > 0 ? [] : ["no_operator_decisions"],
+      },
+      policyReferences: {
+        complete: false,
+        degraded: true,
+        reasons: ["policy_reference_linking_not_available"],
+      },
+      provenanceRecords: {
+        complete: (run?.provenance.length ?? 0) > 0,
+        degraded: (run?.provenance.length ?? 0) === 0,
+        reasons: (run?.provenance.length ?? 0) > 0 ? [] : ["no_provenance_entries_for_run"],
+      },
+      exportDeterminismBasis: { complete: true, degraded: false, reasons: [] },
+    };
+
+    const deterministicInputs = {
+      runId,
+      tenantId,
+      graphNodeIds: graph.nodes.map((node) => node.id).sort(),
+      graphEdgeSet: graph.edges.map((edge) => `${edge.from}|${edge.relation}|${edge.to}`).sort(),
+      decisionSet: decisions
+        .map((decision) => `${decision.matchId}|${decision.resolution}|${decision.occurredAt}`)
+        .sort(),
+      completenessByCategory,
+    };
+
     const digest = crypto
       .createHash("sha256")
-      .update(JSON.stringify({ graph, decisions }))
+      .update(JSON.stringify(deterministicInputs))
       .digest("hex");
     return {
       runId,
@@ -931,11 +1046,19 @@ export class ExceptionIntelligenceService {
         complete: (run?.provenance.length ?? 0) > 0,
         missingReasons: (run?.provenance.length ?? 0) > 0 ? [] : ["no_provenance_entries_for_run"],
       },
+      completenessByCategory,
       deterministicDigest: digest,
       exportMetadata: {
         format: "json",
-        version: "v1",
+        version: "v2",
         generatedBy: "exception-intelligence-service",
+        generatedAt: new Date().toISOString(),
+        tenantScope: tenantId,
+        runScope: runId,
+        completenessFlags: Object.fromEntries(
+          Object.entries(completenessByCategory).map(([k, v]) => [k, v.complete])
+        ),
+        deterministicInputReferences: Object.keys(deterministicInputs),
       },
     };
   }
