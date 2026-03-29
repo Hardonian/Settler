@@ -1455,6 +1455,71 @@ model ReconciliationProvenance {
   @@index([createdAt])
   @@map("reconciliation_provenance")
 }
+
+
+model PolicyMemoryArtifact {
+  id             String   @id @default(uuid())
+  tenantId       String   @map("tenant_id") @db.Uuid
+  artifactType   String   @map("artifact_type")
+  artifactKey    String   @map("artifact_key")
+  signatureKey   String?  @map("signature_key")
+  payload        Json     @default("{}")
+  evidenceCount  Int      @default(0) @map("evidence_count")
+  degraded       Boolean  @default(false)
+  degradedReasons Json    @default("[]") @map("degraded_reasons")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@unique([tenantId, artifactKey])
+  @@index([tenantId])
+  @@index([artifactType])
+  @@index([signatureKey])
+  @@map("policy_memory_artifacts")
+}
+
+model PolicyEvolutionProposal {
+  id                String   @id @default(uuid())
+  tenantId          String   @map("tenant_id") @db.Uuid
+  proposalKey       String   @map("proposal_key")
+  proposalType      String   @map("proposal_type")
+  signatureKey      String?  @map("signature_key")
+  status            String   @default("pending_review")
+  why               String   @db.Text
+  historicalSupport Json     @default("{}") @map("historical_support")
+  impactSummary     Json     @default("{}") @map("impact_summary")
+  riskFlags         Json     @default("[]") @map("risk_flags")
+  missingData       Json     @default("[]") @map("missing_data")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  reviews           PolicyEvolutionProposalReview[]
+
+  @@unique([tenantId, proposalKey])
+  @@index([tenantId])
+  @@index([signatureKey])
+  @@index([status])
+  @@map("policy_evolution_proposals")
+}
+
+model PolicyEvolutionProposalReview {
+  id              String   @id @default(uuid())
+  tenantId        String   @map("tenant_id") @db.Uuid
+  proposalId      String   @map("proposal_id") @db.Uuid
+  action          String
+  actorUserId     String?  @map("actor_user_id") @db.Uuid
+  reason          String?  @db.Text
+  priorStatus     String   @map("prior_status")
+  resultingStatus String   @map("resulting_status")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  proposal        PolicyEvolutionProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([proposalId])
+  @@index([createdAt])
+  @@map("policy_evolution_proposal_reviews")
+}
+
 model Export {
   id                String    @id @default(uuid())
   tenantId          String    @db.Uuid
