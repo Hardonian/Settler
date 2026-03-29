@@ -22,6 +22,12 @@ const runSchema = z.object({
   }),
 });
 
+const proposalParamsSchema = z.object({
+  params: z.object({
+    proposalId: z.string().min(8).max(64),
+  }),
+});
+
 const policySandboxSchema = z.object({
   body: z.object({
     runId: z.string().uuid(),
@@ -31,12 +37,6 @@ const policySandboxSchema = z.object({
       fuzzyDescriptionThreshold: z.number().min(0).max(1),
       requireExactAmount: z.boolean(),
     }),
-  }),
-});
-
-const policyProposalSchema = z.object({
-  query: z.object({
-    lookbackDays: z.coerce.number().int().min(1).max(365).default(30),
   }),
 });
 
@@ -60,6 +60,17 @@ const decisionHistorySchema = z.object({
   }),
 });
 
+function tenantOr400(req: AuthRequest, res: Response): string | null {
+  if (!req.tenantId) {
+    res.status(400).json({
+      error: "TENANT_CONTEXT_REQUIRED",
+      message: "Tenant context is required",
+    });
+    return null;
+  }
+  return req.tenantId;
+}
+
 router.get(
   "/operator/intelligence/exceptions/snapshot",
   requirePermission(Permission.ADMIN_READ),
@@ -73,6 +84,26 @@ router.get(
       return res.status(200).json({ data });
     } catch (error: unknown) {
       return handleRouteError(res, error, "Failed to load exception intelligence snapshot", 500, {
+        userId: req.userId,
+        tenantId: req.tenantId,
+      });
+    }
+  }
+);
+
+router.get(
+  "/operator/intelligence/memory-graph",
+  requirePermission(Permission.ADMIN_READ),
+  validateRequest(snapshotSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = tenantOr400(req, res);
+      if (!tenantId) return;
+      const lookbackDays = Number(req.query.lookbackDays ?? 30);
+      const data = await service.getReconciliationMemoryGraph(tenantId, lookbackDays);
+      return res.status(200).json({ data });
+    } catch (error: unknown) {
+      return handleRouteError(res, error, "Failed to load reconciliation memory graph", 500, {
         userId: req.userId,
         tenantId: req.tenantId,
       });
@@ -108,7 +139,7 @@ router.get(
     try {
       const tenantId = tenantOr400(req, res);
       if (!tenantId) return;
-      const proposalId = paramAsString(req.params["proposalId"]);
+      const proposalId = req.params["proposalId"] as string;
       const data = await service.getPolicyEvolutionProposalDetail(tenantId, proposalId);
       if (!data)
         return res.status(404).json({ error: "PROPOSAL_NOT_FOUND", message: "Proposal not found" });
@@ -125,26 +156,19 @@ router.get(
 router.post(
   "/operator/intelligence/policy/proposals/:proposalId/review",
   requirePermission(Permission.ADMIN_WRITE),
-  validateRequest(proposalReviewSchema),
+  validateRequest(policyProposalReviewSchema),
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = tenantOr400(req, res);
       if (!tenantId) return;
-      if (!req.userId) {
-        return res
-          .status(422)
-          .json({ error: "ACTOR_REQUIRED", message: "Actor user id is required" });
-      }
-      const proposalId = paramAsString(req.params["proposalId"]);
-      const action = await service.reviewPolicyEvolutionProposal(tenantId, proposalId, {
-        action: req.body.action,
-        actorUserId: req.userId,
+      const proposalId = req.params["proposalId"] as string;
+      const data = await service.reviewPolicyEvolutionProposal(tenantId, {
+        proposalId,
+        decision: req.body.decision,
+        reviewerId: req.userId ?? null,
         reason: req.body.reason ?? null,
       });
-      if (!action.found) {
-        return res.status(404).json({ error: "PROPOSAL_NOT_FOUND", message: "Proposal not found" });
-      }
-      return res.status(200).json({ data: action });
+      return res.status(data.accepted ? 200 : 404).json({ data });
     } catch (error: unknown) {
       return handleRouteError(res, error, "Failed to review policy proposal", 500, {
         userId: req.userId,
@@ -162,7 +186,7 @@ router.get(
     try {
       const tenantId = tenantOr400(req, res);
       if (!tenantId) return;
-      const proposalId = paramAsString(req.params["proposalId"]);
+      const proposalId = req.params["proposalId"] as string;
       const data = await service.getProposalHistory(tenantId, proposalId);
       if (!data)
         return res.status(404).json({ error: "PROPOSAL_NOT_FOUND", message: "Proposal not found" });
@@ -206,9 +230,10 @@ router.get(
       if (!tenantId) return;
       const data = await service.getDecisionHistory(tenantId, {
         runId: req.query.runId as string | undefined,
-        signature: req.query.signature as string | undefined,
+        sourceId: req.query.sourceId as string | undefined,
         counterpartyKey: req.query.counterpartyKey as string | undefined,
-        sourcePair: req.query.sourcePair as string | undefined,
+        signature: req.query.signature as string | undefined,
+        limit: Number(req.query.limit ?? 100),
       });
       return res.status(200).json({ data });
     } catch (error: unknown) {
@@ -228,8 +253,7 @@ router.get(
     try {
       const tenantId = tenantOr400(req, res);
       if (!tenantId) return;
-      const runIdParam = req.params["runId"];
-      const runId = Array.isArray(runIdParam) ? (runIdParam[0] ?? "") : (runIdParam ?? "");
+      const runId = req.params["runId"] as string;
       const data = await service.getProofGraph(tenantId, runId);
       return res.status(data.degraded && data.nodes.length === 0 ? 404 : 200).json({ data });
     } catch (error: unknown) {
@@ -249,8 +273,7 @@ router.get(
     try {
       const tenantId = tenantOr400(req, res);
       if (!tenantId) return;
-      const runIdParam = req.params["runId"];
-      const runId = Array.isArray(runIdParam) ? (runIdParam[0] ?? "") : (runIdParam ?? "");
+      const runId = req.params["runId"] as string;
       const data = await service.buildEvidencePack(tenantId, runId);
       return res.status(200).json({ data });
     } catch (error: unknown) {
@@ -274,91 +297,6 @@ router.post(
       return res.status(200).json({ data });
     } catch (error: unknown) {
       return handleRouteError(res, error, "Failed to run policy sandbox", 500, {
-        userId: req.userId,
-        tenantId: req.tenantId,
-      });
-    }
-  }
-);
-
-router.get(
-  "/operator/intelligence/policy/proposals",
-  requirePermission(Permission.ADMIN_READ),
-  validateRequest(policyProposalSchema),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = req.tenantId;
-      if (!tenantId) {
-        return res.status(400).json({
-          error: "TENANT_CONTEXT_REQUIRED",
-          message: "Tenant context is required",
-        });
-      }
-      const lookbackDays = Number(req.query.lookbackDays ?? 30);
-      const data = await service.listPolicyEvolutionProposals(tenantId, lookbackDays);
-      return res.status(200).json({ data });
-    } catch (error: unknown) {
-      return handleRouteError(res, error, "Failed to load policy evolution proposals", 500, {
-        userId: req.userId,
-        tenantId: req.tenantId,
-      });
-    }
-  }
-);
-
-router.post(
-  "/operator/intelligence/policy/proposals/:proposalId/review",
-  requirePermission(Permission.ADMIN_WRITE),
-  validateRequest(policyProposalReviewSchema),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = req.tenantId;
-      if (!tenantId) {
-        return res.status(400).json({
-          error: "TENANT_CONTEXT_REQUIRED",
-          message: "Tenant context is required",
-        });
-      }
-      const proposalId = req.params["proposalId"] as string;
-      const data = await service.reviewPolicyEvolutionProposal(tenantId, {
-        proposalId,
-        decision: req.body.decision,
-        reviewerId: req.userId ?? null,
-        reason: req.body.reason ?? null,
-      });
-      return res.status(data.accepted ? 200 : 404).json({ data });
-    } catch (error: unknown) {
-      return handleRouteError(res, error, "Failed to review policy evolution proposal", 500, {
-        userId: req.userId,
-        tenantId: req.tenantId,
-      });
-    }
-  }
-);
-
-router.get(
-  "/operator/intelligence/decisions/history",
-  requirePermission(Permission.ADMIN_READ),
-  validateRequest(decisionHistorySchema),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = req.tenantId;
-      if (!tenantId) {
-        return res.status(400).json({
-          error: "TENANT_CONTEXT_REQUIRED",
-          message: "Tenant context is required",
-        });
-      }
-      const data = await service.getDecisionHistory(tenantId, {
-        runId: req.query.runId as string | undefined,
-        sourceId: req.query.sourceId as string | undefined,
-        counterpartyKey: req.query.counterpartyKey as string | undefined,
-        signature: req.query.signature as string | undefined,
-        limit: Number(req.query.limit ?? 100),
-      });
-      return res.status(200).json({ data });
-    } catch (error: unknown) {
-      return handleRouteError(res, error, "Failed to load decision history", 500, {
         userId: req.userId,
         tenantId: req.tenantId,
       });
