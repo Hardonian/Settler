@@ -58,12 +58,19 @@ describe("ExceptionIntelligenceService", () => {
     );
   });
 
-  it("captures structured review reasons and persists policy review lineage", async () => {
-    prisma.policyEvolutionProposal.findFirst.mockResolvedValue({
-      id: "proposal-row-1",
-      status: "pending_review",
-      signatureKey: "signature-1",
+  it("stores proposal review transitions", async () => {
+    prisma.reconAudit.findFirst.mockResolvedValue({ entityId: "proposal-1" });
+
+    const result = await service.reviewPolicyEvolutionProposal("tenant-1", {
+      proposalId: "proposal-1",
+      decision: "approved",
+      reviewerId: "user-1",
+      reason: "evidence stable",
     });
+
+    expect(result).toMatchObject({ accepted: true, status: "approved" });
+    expect(prisma.reconAudit.create).toHaveBeenCalled();
+  });
 
     const reviewed = await service.reviewPolicyEvolutionProposal("tenant-1", {
       proposalId: "proposal-1",

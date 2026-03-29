@@ -17,11 +17,27 @@ const snapshotSchema = z.object({
 });
 
 const runSchema = z.object({
-  params: z.object({ runId: z.string().uuid() }),
+  params: z.object({
+    runId: z.string().uuid(),
+  }),
 });
 
 const proposalParamsSchema = z.object({
-  params: z.object({ proposalId: z.string().min(8).max(64) }),
+  params: z.object({
+    proposalId: z.string().min(8).max(64),
+  }),
+});
+
+const policySandboxSchema = z.object({
+  body: z.object({
+    runId: z.string().uuid(),
+    candidatePolicy: z.object({
+      amountTolerance: z.number().min(0).max(100000),
+      dateWindowDays: z.number().int().min(0).max(365),
+      fuzzyDescriptionThreshold: z.number().min(0).max(1),
+      requireExactAmount: z.boolean(),
+    }),
+  }),
 });
 
 const policyProposalReviewSchema = z.object({
@@ -39,18 +55,6 @@ const decisionHistorySchema = z.object({
     counterpartyKey: z.string().min(1).max(255).optional(),
     signature: z.string().min(20).max(20).optional(),
     limit: z.coerce.number().int().min(1).max(500).default(100),
-  }),
-});
-
-const policySandboxSchema = z.object({
-  body: z.object({
-    runId: z.string().uuid(),
-    candidatePolicy: z.object({
-      amountTolerance: z.number().min(0).max(100000),
-      dateWindowDays: z.number().int().min(0).max(365),
-      fuzzyDescriptionThreshold: z.number().min(0).max(1),
-      requireExactAmount: z.boolean(),
-    }),
   }),
 });
 
@@ -86,6 +90,26 @@ router.get(
 );
 
 router.get(
+  "/operator/intelligence/memory-graph",
+  requirePermission(Permission.ADMIN_READ),
+  validateRequest(snapshotSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = tenantOr400(req, res);
+      if (!tenantId) return;
+      const lookbackDays = Number(req.query.lookbackDays ?? 30);
+      const data = await service.getReconciliationMemoryGraph(tenantId, lookbackDays);
+      return res.status(200).json({ data });
+    } catch (error: unknown) {
+      return handleRouteError(res, error, "Failed to load reconciliation memory graph", 500, {
+        userId: req.userId,
+        tenantId: req.tenantId,
+      });
+    }
+  }
+);
+
+router.get(
   "/operator/intelligence/policy/proposals",
   requirePermission(Permission.ADMIN_READ),
   validateRequest(snapshotSchema),
@@ -113,7 +137,7 @@ router.get(
     try {
       const tenantId = tenantOr400(req, res);
       if (!tenantId) return;
-      const proposalId = req.params.proposalId as string;
+      const proposalId = req.params["proposalId"] as string;
       const data = await service.getPolicyEvolutionProposalDetail(tenantId, proposalId);
       if (!data) {
         return res.status(404).json({ error: "PROPOSAL_NOT_FOUND", message: "Proposal not found" });
@@ -136,7 +160,7 @@ router.post(
     try {
       const tenantId = tenantOr400(req, res);
       if (!tenantId) return;
-      const proposalId = req.params.proposalId as string;
+      const proposalId = req.params["proposalId"] as string;
       const data = await service.reviewPolicyEvolutionProposal(tenantId, {
         proposalId,
         decision: req.body.decision,
@@ -161,7 +185,7 @@ router.get(
     try {
       const tenantId = tenantOr400(req, res);
       if (!tenantId) return;
-      const proposalId = req.params.proposalId as string;
+      const proposalId = req.params["proposalId"] as string;
       const data = await service.getProposalHistory(tenantId, proposalId);
       if (!data) {
         return res.status(404).json({ error: "PROPOSAL_NOT_FOUND", message: "Proposal not found" });
@@ -229,7 +253,7 @@ router.get(
     try {
       const tenantId = tenantOr400(req, res);
       if (!tenantId) return;
-      const runId = req.params.runId as string;
+      const runId = req.params["runId"] as string;
       const data = await service.getProofGraph(tenantId, runId);
       return res.status(data.degraded && data.nodes.length === 0 ? 404 : 200).json({ data });
     } catch (error: unknown) {
@@ -249,7 +273,7 @@ router.get(
     try {
       const tenantId = tenantOr400(req, res);
       if (!tenantId) return;
-      const runId = req.params.runId as string;
+      const runId = req.params["runId"] as string;
       const data = await service.buildEvidencePack(tenantId, runId);
       return res.status(200).json({ data });
     } catch (error: unknown) {

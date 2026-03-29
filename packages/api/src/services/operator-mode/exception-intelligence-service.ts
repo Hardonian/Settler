@@ -1330,6 +1330,317 @@ export class ExceptionIntelligenceService {
     };
   }
 
+  async getPolicyEvolutionProposalDetail(
+    tenantId: string,
+    proposalId: string
+  ): Promise<PolicyEvolutionProposal | null> {
+    const proposals = await this.listPolicyEvolutionProposals(tenantId, 30);
+    return proposals.find((proposal) => proposal.proposalId === proposalId) ?? null;
+  }
+
+  async getProposalHistory(
+    tenantId: string,
+    proposalId: string
+  ): Promise<{
+    proposalId: string;
+    tenantId: string;
+    generatedAt: string | null;
+    latestStatus: "pending_review" | "approved" | "rejected" | "deferred";
+    events: Array<{
+      action: string;
+      actorUserId: string | null;
+      occurredAt: string;
+      changes: Record<string, unknown>;
+      metadata: Record<string, unknown>;
+    }>;
+    degraded: boolean;
+    degradedReasons: string[];
+  } | null> {
+    const events = await prisma.reconAudit.findMany({
+      where: {
+        tenantId,
+        entityType: "policy_proposal",
+        entityId: proposalId,
+        action: { in: ["proposal_generated", "proposal_reviewed"] },
+      },
+      orderBy: { createdAt: "asc" },
+      take: 100,
+    });
+
+    if (events.length === 0) return null;
+
+    const generated = events.find((event) => event.action === "proposal_generated") ?? null;
+    const latestReview =
+      [...events].reverse().find((event) => event.action === "proposal_reviewed") ?? null;
+    const latestDecision = asRecord(latestReview?.changes ?? {})["decision"];
+
+    return {
+      proposalId,
+      tenantId,
+      generatedAt: generated?.createdAt.toISOString() ?? null,
+      latestStatus:
+        latestDecision === "approved" ||
+        latestDecision === "rejected" ||
+        latestDecision === "deferred"
+          ? latestDecision
+          : "pending_review",
+      events: events.map((event) => ({
+        action: event.action,
+        actorUserId: event.userId,
+        occurredAt: event.createdAt.toISOString(),
+        changes: asRecord(event.changes),
+        metadata: asRecord(event.metadata),
+      })),
+      degraded: events.every((event) => event.action !== "proposal_reviewed"),
+      degradedReasons: events.some((event) => event.action === "proposal_reviewed")
+        ? []
+        : ["proposal_has_no_review_history"],
+    };
+  }
+
+  async getExceptionPlaybooks(
+    tenantId: string,
+    lookbackDays: number
+  ): Promise<{
+    tenantId: string;
+    generatedAt: string;
+    lookbackDays: number;
+    playbooks: ExceptionPlaybookSummary[];
+    degraded: boolean;
+    degradedReasons: string[];
+  }> {
+    const snapshot = await this.getSnapshot(tenantId, lookbackDays);
+    const playbooks: ExceptionPlaybookSummary[] = snapshot.clusters.map((cluster) => {
+      const action = cluster.recommendation.action;
+      return {
+        signature: cluster.signature.signature,
+        clusterIdentity: cluster.signature.construction,
+        commonResolutionPaths: cluster.resolutionPath.adjudicationMix,
+        handlingTimeMinutes: {
+          average: cluster.resolutionPath.avgResolutionMinutes,
+          median: cluster.resolutionPath.medianResolutionMinutes,
+        },
+        sourceSystems: snapshot.sourceTrustSignals.map((signal) => signal.sourceName),
+        commonOperatorActions:
+          action === "manual_review"
+            ? ["manual_review"]
+            : action === "policy_adjustment"
+              ? ["policy_review"]
+              : action === "auto_match_candidate"
+                ? ["monitor_and_sample"]
+                : ["gather_more_evidence"],
+        escalationIndicators:
+          cluster.openCount > Math.max(2, Math.floor(cluster.volume * 0.6))
+            ? ["high_unresolved_concentration"]
+            : [],
+        ambiguityMarkers:
+          cluster.recommendation.degraded || cluster.recommendation.action === "insufficient_data"
+            ? ["insufficient_cluster_volume"]
+            : [],
+        evidenceCoverage:
+          cluster.volume >= 8 ? "strong" : cluster.volume >= 3 ? "partial" : "insufficient",
+        basisType: cluster.resolvedCount > 0 && cluster.openCount > 0 ? "mixed" : "automatic_only",
+        degradedReasons:
+          cluster.recommendation.degraded || cluster.volume < 3
+            ? ["limited_historical_support"]
+            : [],
+      };
+    });
+
+    return {
+      tenantId,
+      generatedAt: new Date().toISOString(),
+      lookbackDays,
+      playbooks,
+      degraded: snapshot.degraded,
+      degradedReasons: snapshot.degradedReasons,
+    };
+  }
+
+  async getReconciliationMemoryGraph(
+    tenantId: string,
+    lookbackDays: number
+  ): Promise<{
+    tenantId: string;
+    generatedAt: string;
+    lookbackDays: number;
+    degraded: boolean;
+    degradedReasons: string[];
+    nodes: Array<{ id: string; type: string; label: string; metadata: Record<string, unknown> }>;
+    edges: Array<{ from: string; to: string; relation: string }>;
+  }> {
+    const [snapshot, proposals, decisions] = await Promise.all([
+      this.getSnapshot(tenantId, lookbackDays),
+      this.listPolicyEvolutionProposals(tenantId, lookbackDays),
+      this.getDecisionHistory(tenantId, { limit: 300 }),
+    ]);
+
+    const proposalHistory = await Promise.all(
+      proposals.map(async (proposal) => ({
+        proposalId: proposal.proposalId,
+        history: await this.getProposalHistory(tenantId, proposal.proposalId),
+      }))
+    );
+
+    const nodes: Array<{
+      id: string;
+      type: string;
+      label: string;
+      metadata: Record<string, unknown>;
+    }> = [];
+    const edges: Array<{ from: string; to: string; relation: string }> = [];
+
+    for (const cluster of snapshot.clusters) {
+      nodes.push({
+        id: `signature:${cluster.signature.signature}`,
+        type: "exception_signature",
+        label: cluster.signature.signature,
+        metadata: {
+          volume: cluster.volume,
+          openCount: cluster.openCount,
+          resolvedCount: cluster.resolvedCount,
+          recommendation: cluster.recommendation.action,
+        },
+      });
+
+      for (const source of snapshot.sourceTrustSignals) {
+        const sourceNode = `source:${source.sourceId}`;
+        if (!nodes.some((node) => node.id === sourceNode)) {
+          nodes.push({
+            id: sourceNode,
+            type: "source_system",
+            label: source.sourceName,
+            metadata: {
+              totalExceptions: source.totalExceptions,
+              resolvedRate: source.resolvedRate,
+              trustScore: source.trustScore,
+              basis: source.basis,
+            },
+          });
+        }
+        edges.push({
+          from: sourceNode,
+          to: `signature:${cluster.signature.signature}`,
+          relation: "participates_in",
+        });
+      }
+    }
+
+    for (const counterparty of snapshot.counterparties) {
+      const counterpartyNode = `counterparty:${counterparty.counterpartyKey}`;
+      nodes.push({
+        id: counterpartyNode,
+        type: "counterparty",
+        label: counterparty.displayName ?? counterparty.counterpartyKey,
+        metadata: {
+          exceptionCount: counterparty.exceptionCount,
+          supportLevel: counterparty.supportLevel,
+        },
+      });
+    }
+
+    for (const decision of decisions.decisions) {
+      const decisionNode = `decision:${decision.matchId}`;
+      nodes.push({
+        id: decisionNode,
+        type: "operator_decision",
+        label: decision.decision,
+        metadata: {
+          runId: decision.runId,
+          actorId: decision.actorId,
+          decidedAt: decision.decidedAt,
+          resultingState: decision.resultingState,
+          reason: decision.reason,
+        },
+      });
+      if (decision.signature) {
+        edges.push({
+          from: decisionNode,
+          to: `signature:${decision.signature}`,
+          relation: "resolves",
+        });
+      }
+      if (decision.counterpartyKey) {
+        edges.push({
+          from: decisionNode,
+          to: `counterparty:${decision.counterpartyKey}`,
+          relation: "about_counterparty",
+        });
+      }
+      if (decision.runId) {
+        const runNode = `run:${decision.runId}`;
+        if (!nodes.some((node) => node.id === runNode)) {
+          nodes.push({
+            id: runNode,
+            type: "reconciliation_run",
+            label: decision.runId,
+            metadata: {},
+          });
+        }
+        edges.push({ from: runNode, to: decisionNode, relation: "includes_decision" });
+      }
+    }
+
+    for (const proposal of proposals) {
+      const proposalNode = `proposal:${proposal.proposalId}`;
+      nodes.push({
+        id: proposalNode,
+        type: "policy_evolution_proposal",
+        label: proposal.proposalId,
+        metadata: {
+          status: proposal.status,
+          dataSufficiency: proposal.dataSufficiency,
+          riskFlags: proposal.riskFlags,
+          unsupportedMetrics: proposal.unsupportedMetrics,
+        },
+      });
+      edges.push({
+        from: proposalNode,
+        to: `signature:${proposal.signature.signature}`,
+        relation: "targets_signature",
+      });
+
+      const history = proposalHistory.find(
+        (item) => item.proposalId === proposal.proposalId
+      )?.history;
+      for (const event of history?.events ?? []) {
+        if (event.action !== "proposal_reviewed") continue;
+        const reviewNode = `proposal_review:${proposal.proposalId}:${event.occurredAt}`;
+        nodes.push({
+          id: reviewNode,
+          type: "proposal_review",
+          label: String(event.changes["decision"] ?? "review"),
+          metadata: {
+            actorUserId: event.actorUserId,
+            occurredAt: event.occurredAt,
+            reason: event.changes["reason"] ?? null,
+          },
+        });
+        edges.push({ from: reviewNode, to: proposalNode, relation: "reviews" });
+      }
+    }
+
+    const dedupedNodes = Array.from(new Map(nodes.map((node) => [node.id, node])).values());
+    const dedupedEdges = Array.from(
+      new Map(edges.map((edge) => [`${edge.from}|${edge.relation}|${edge.to}`, edge])).values()
+    );
+
+    const degradedReasons = [
+      ...(snapshot.degraded ? snapshot.degradedReasons : []),
+      ...(decisions.degraded ? decisions.degradedReasons : []),
+      ...(proposals.length === 0 ? ["no_policy_proposals_in_scope"] : []),
+    ];
+
+    return {
+      tenantId,
+      generatedAt: new Date().toISOString(),
+      lookbackDays,
+      degraded: degradedReasons.length > 0,
+      degradedReasons,
+      nodes: dedupedNodes,
+      edges: dedupedEdges,
+    };
+  }
   async simulatePolicy(
     tenantId: string,
     input: PolicySandboxRequest
