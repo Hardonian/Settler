@@ -48,6 +48,11 @@ jest.mock("../../middleware/validation", () => ({
   validateRequest: () => (_req: any, _res: any, next: any) => next(),
 }));
 
+jest.mock("../../services/recon-core/provenance-service", () => ({
+  ProvenanceService: jest.fn().mockImplementation(() => ({
+    recordReviewDecision: jest.fn().mockResolvedValue(undefined),
+  })),
+}));
 jest.mock("../../utils/event-tracker", () => ({
   trackEventAsync: jest.fn(),
 }));
@@ -279,13 +284,7 @@ describe("Exceptions Routes", () => {
         metadata: {},
         matchType: "unmatched",
       });
-      mockReconciliationMatch.update.mockResolvedValueOnce({
-        id: "exc-1",
-        reviewed: true,
-        reviewedBy: "user-456",
-        reviewedAt: new Date(),
-        matchReason: "Manually matched via review",
-      });
+      mockReconciliationMatch.updateMany.mockResolvedValueOnce({ count: 1 });
 
       const res = await request(app)
         .post("/api/exceptions/exc-1/resolve")
@@ -322,7 +321,7 @@ describe("Exceptions Routes", () => {
         { id: "00000000-0000-4000-8000-000000000001", metadata: {} },
         { id: "00000000-0000-4000-8000-000000000002", metadata: {} },
       ]);
-      mockReconciliationMatch.update.mockResolvedValue({});
+      mockReconciliationMatch.updateMany.mockResolvedValue({ count: 1 });
 
       const res = await request(app)
         .post("/api/exceptions/bulk-resolve")
@@ -343,7 +342,7 @@ describe("Exceptions Routes", () => {
       mockReconciliationMatch.findMany.mockResolvedValueOnce([
         { id: "00000000-0000-4000-8000-000000000001", metadata: {} },
       ]);
-      mockReconciliationMatch.update.mockResolvedValue({});
+      mockReconciliationMatch.updateMany.mockResolvedValue({ count: 1 });
 
       await request(app)
         .post("/api/exceptions/bulk-resolve")

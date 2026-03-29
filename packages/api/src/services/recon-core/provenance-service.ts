@@ -1,184 +1,172 @@
-/**
- * Evidence & Traceability Service
- *
- * Canonical provenance recorder for reconciliation decisions.
- * Persists deterministic provenance entries with tenant scoping.
- */
-
 import crypto from "node:crypto";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { type DeterministicMatch } from "./deterministic-types";
+
+export type ProvenanceEventType = "match_created" | "review_decision" | "status_transition";
+
+export interface ProvenanceRecordInput {
+  tenantId: string;
+  runId: string;
+  matchId?: string;
+  eventType: ProvenanceEventType;
+  actorType: "system" | "human";
+  actorUserId?: string;
+  details: Record<string, unknown>;
+}
 
 function toJsonValue(input: unknown): Prisma.InputJsonValue {
   return (input ?? {}) as Prisma.InputJsonValue;
 }
 
-function buildEntryHash(input: {
-  runResultId: string;
-  snapshotId: string;
-  sequence: number;
-  operation: string;
-  entityType: string;
-  entityId: string;
-  details: unknown;
-}): string {
+function stableStringify(input: Record<string, unknown>): string {
+  const sorted: Record<string, unknown> = {};
+  Object.keys(input)
+    .sort()
+    .forEach((key) => {
+      sorted[key] = input[key];
+    });
+  return JSON.stringify(sorted);
+}
+
+function buildEntryHash(input: ProvenanceRecordInput & { sequence: number }): string {
   return crypto
     .createHash("sha256")
     .update(
-      JSON.stringify({
-        runResultId: input.runResultId,
-        snapshotId: input.snapshotId,
-        sequence: input.sequence,
-        operation: input.operation,
-        entityType: input.entityType,
-        entityId: input.entityId,
-        details: input.details,
-      })
+      [
+        input.tenantId,
+        input.runId,
+        input.matchId ?? "none",
+        String(input.sequence),
+        input.eventType,
+        input.actorType,
+        input.actorUserId ?? "none",
+        stableStringify(input.details),
+      ].join("|")
     )
     .digest("hex");
 }
 
 export class ProvenanceService {
-  private prisma: PrismaClient;
+  constructor(private readonly prisma: PrismaClient) {}
 
-  constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
-  }
-
-  private async resolveTenantId(runResultId: string): Promise<string> {
-    const result = await this.prisma.reconResult.findUnique({
-      where: { id: runResultId },
-      select: { tenantId: true },
+  private async nextSequence(tx: Prisma.TransactionClient, runId: string): Promise<number> {
+    const latest = await tx.reconciliationProvenance.findFirst({
+      where: { runId },
+      select: { sequence: true },
+      orderBy: { sequence: "desc" },
     });
-
-    if (!result) {
-      throw new Error(`Cannot record provenance: run result ${runResultId} not found`);
-    }
-
-    return result.tenantId;
+    return (latest?.sequence ?? 0) + 1;
   }
 
-  async recordMatch(
-    runResultId: string,
-    snapshotId: string,
-    match: DeterministicMatch,
-    sequence: number
-  ): Promise<void> {
-    const tenantId = await this.resolveTenantId(runResultId);
-    await this.prisma.executionProvenance.create({
-      data: {
-        tenantId,
-        runResultId,
-        snapshotId,
-        sequence,
-        operation: "match_created",
-        entityType: "reconciliation_match",
-        entityId: match.id,
+  async recordEvent(input: ProvenanceRecordInput): Promise<void> {
+    await this.prisma.$transaction(async (tx) => {
+      const run = await tx.reconciliationRun.findFirst({
+        where: {
+          id: input.runId,
+          tenantId: input.tenantId,
+        },
+        select: { id: true },
+      });
+
+      if (!run) {
+        throw new Error(`Cannot record provenance: run ${input.runId} not found in tenant scope`);
+      }
+
+      if (input.matchId) {
+        const match = await tx.reconciliationMatch.findFirst({
+          where: { id: input.matchId, runId: input.runId, tenantId: input.tenantId },
+          select: { id: true },
+        });
+        if (!match) {
+          throw new Error(
+            `Cannot record provenance: match ${input.matchId} not found for run ${input.runId}`
+          );
+        }
+      }
+
+      const sequence = await this.nextSequence(tx, input.runId);
+      const entryHash = buildEntryHash({ ...input, sequence });
+
+      await tx.reconciliationProvenance.create({
+        data: {
+          tenantId: input.tenantId,
+          runId: input.runId,
+          matchId: input.matchId,
+          sequence,
+          eventType: input.eventType,
+          actorType: input.actorType,
+          actorUserId: input.actorUserId,
+          details: toJsonValue(input.details),
+          entryHash,
+        },
+      });
+    });
+  }
+
+  async recordMatch(runId: string, tenantId: string, match: DeterministicMatch): Promise<void> {
+    await this.recordEvent({
+      tenantId,
+      runId,
+      matchId: match.id,
+      eventType: "match_created",
+      actorType: "system",
+      details: {
+        sourceRecordId: match.sourceId,
+        targetRecordId: match.targetId,
         confidence: match.confidence,
         ruleId: match.ruleId,
         ruleVersion: match.ruleVersion,
-        actor: "system",
-        details: toJsonValue({
-          sourceRecordId: match.sourceId,
-          targetRecordId: match.targetId,
-          reason: match.reason,
-          metadata: match.metadata,
-        }),
-        entryHash: buildEntryHash({
-          runResultId,
-          snapshotId,
-          sequence,
-          operation: "match_created",
-          entityType: "reconciliation_match",
-          entityId: match.id,
-          details: match,
-        }),
+        reason: match.reason,
+        metadata: match.metadata ?? {},
       },
     });
   }
 
-  async recordReviewDecision(
-    runResultId: string,
-    snapshotId: string,
-    matchId: string,
-    decision: "approved" | "rejected" | "override",
-    actor: "system" | "human",
-    actorUserId: string | undefined,
-    reason: string,
-    sequence: number
-  ): Promise<void> {
-    const tenantId = await this.resolveTenantId(runResultId);
-    await this.prisma.executionProvenance.create({
-      data: {
-        tenantId,
-        runResultId,
-        snapshotId,
-        sequence,
-        operation: "review_decision",
-        entityType: "reconciliation_match",
-        entityId: matchId,
-        actor,
-        actorUserId,
-        details: toJsonValue({ decision, reason }),
-        entryHash: buildEntryHash({
-          runResultId,
-          snapshotId,
-          sequence,
-          operation: "review_decision",
-          entityType: "reconciliation_match",
-          entityId: matchId,
-          details: { decision, reason, actor, actorUserId },
-        }),
+  async recordReviewDecision(input: {
+    tenantId: string;
+    runId: string;
+    matchId: string;
+    decision: "approved" | "rejected" | "override";
+    actorUserId?: string;
+    reason?: string;
+  }): Promise<void> {
+    await this.recordEvent({
+      tenantId: input.tenantId,
+      runId: input.runId,
+      matchId: input.matchId,
+      eventType: "review_decision",
+      actorType: "human",
+      actorUserId: input.actorUserId,
+      details: { decision: input.decision, reason: input.reason ?? null },
+    });
+  }
+
+  async recordStatusTransition(input: {
+    tenantId: string;
+    runId: string;
+    fromStatus: string;
+    toStatus: string;
+    actorType?: "system" | "human";
+    actorUserId?: string;
+    reason?: string;
+  }): Promise<void> {
+    await this.recordEvent({
+      tenantId: input.tenantId,
+      runId: input.runId,
+      eventType: "status_transition",
+      actorType: input.actorType ?? "system",
+      actorUserId: input.actorUserId,
+      details: {
+        fromStatus: input.fromStatus,
+        toStatus: input.toStatus,
+        reason: input.reason ?? null,
       },
     });
   }
 
-  async recordStatusTransition(
-    runResultId: string,
-    snapshotId: string,
-    fromStatus: string,
-    toStatus: string,
-    actor: "system" | "human",
-    actorUserId: string | undefined,
-    reason: string,
-    sequence: number
-  ): Promise<void> {
-    const tenantId = await this.resolveTenantId(runResultId);
-    await this.prisma.executionProvenance.create({
-      data: {
-        tenantId,
-        runResultId,
-        snapshotId,
-        sequence,
-        operation: "status_transition",
-        entityType: "recon_result",
-        entityId: runResultId,
-        actor,
-        actorUserId,
-        details: toJsonValue({ fromStatus, toStatus, reason }),
-        entryHash: buildEntryHash({
-          runResultId,
-          snapshotId,
-          sequence,
-          operation: "status_transition",
-          entityType: "recon_result",
-          entityId: runResultId,
-          details: { fromStatus, toStatus, reason, actor },
-        }),
-      },
-    });
-  }
-
-  async getProvenanceForRun(runResultId: string): Promise<unknown[]> {
-    return this.prisma.executionProvenance.findMany({
-      where: { runResultId },
-      orderBy: { sequence: "asc" },
-    });
-  }
-
-  async getProvenanceForEntity(runResultId: string, entityId: string): Promise<unknown[]> {
-    return this.prisma.executionProvenance.findMany({
-      where: { runResultId, entityId },
+  async getRunProvenance(tenantId: string, runId: string) {
+    return this.prisma.reconciliationProvenance.findMany({
+      where: { tenantId, runId },
       orderBy: { sequence: "asc" },
     });
   }
