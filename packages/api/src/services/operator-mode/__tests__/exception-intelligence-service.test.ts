@@ -157,20 +157,17 @@ describe("ExceptionIntelligenceService", () => {
   });
 
   it("stores proposal review transitions", async () => {
-    prisma.policyEvolutionProposal.findFirst.mockResolvedValue({
-      id: "p1",
-      status: "pending_review",
-    });
-    prisma.$transaction.mockResolvedValue([]);
+    prisma.reconAudit.findFirst.mockResolvedValue({ entityId: "proposal-1" });
 
-    const result = await service.reviewPolicyEvolutionProposal("tenant-1", "proposal-1", {
-      action: "approve",
-      actorUserId: "user-1",
+    const result = await service.reviewPolicyEvolutionProposal("tenant-1", {
+      proposalId: "proposal-1",
+      decision: "approved",
+      reviewerId: "user-1",
       reason: "evidence stable",
     });
 
-    expect(result).toMatchObject({ found: true, status: "approved" });
-    expect(prisma.$transaction).toHaveBeenCalled();
+    expect(result).toMatchObject({ accepted: true, status: "approved" });
+    expect(prisma.reconAudit.create).toHaveBeenCalled();
   });
 
   it("marks unsupported policy metrics explicitly", async () => {
