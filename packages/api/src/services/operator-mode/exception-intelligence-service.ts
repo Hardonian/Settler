@@ -1,6 +1,8 @@
 import crypto from "node:crypto";
 import { prisma } from "../../infrastructure/db/prisma";
 
+const prismaAny = prisma as any;
+
 export interface ExceptionSignature {
   signature: string;
   construction: {
@@ -73,6 +75,75 @@ export interface ExceptionIntelligenceSnapshot {
   counterparties: CounterpartyFingerprint[];
 }
 
+export interface SignatureOutcomeProfile {
+  signature: string;
+  totalObservations: number;
+  resolutionDistribution: Record<string, number>;
+  operatorReviewedRate: number;
+  overrideFrequency: number;
+  evidenceBasis: string[];
+  degraded: boolean;
+  degradedReasons: string[];
+}
+
+export interface LearnedPolicyCandidate {
+  proposalId: string;
+  tenantId: string;
+  proposalType: "policy_adjustment" | "manual_guardrail";
+  why: string;
+  historicalSupport: {
+    sampleSize: number;
+    signature: string;
+    resolutionDistribution: Record<string, number>;
+    operatorReviewedRate: number;
+  };
+  estimatedImpact: {
+    supported: string[];
+    unsupported: string[];
+    estimate: Record<string, number | null>;
+  };
+  riskFlags: string[];
+  missingData: string[];
+  status: "pending_review" | "approved" | "rejected" | "deferred";
+  createdAt: string;
+}
+
+export interface ProposalReviewAction {
+  action: "approve" | "reject" | "defer";
+  actorUserId: string;
+  reason: string | null;
+}
+
+export interface ExceptionPlaybookSummary {
+  signature: string;
+  clusterIdentity: Record<string, unknown>;
+  commonResolutionPaths: Record<string, number>;
+  handlingTimeMinutes: { average: number | null; median: number | null };
+  sourceSystems: string[];
+  commonOperatorActions: string[];
+  escalationIndicators: string[];
+  ambiguityMarkers: string[];
+  evidenceCoverage: "strong" | "partial" | "insufficient";
+  basisType: "automatic_only" | "operator_reviewed_only" | "mixed";
+  degradedReasons: string[];
+}
+
+export interface DecisionHistoryRecord {
+  id: string;
+  tenantId: string;
+  runId: string | null;
+  signature: string | null;
+  counterpartyKey: string | null;
+  sourcePair: string | null;
+  action: string;
+  priorState: string | null;
+  resultingState: string | null;
+  actorUserId: string | null;
+  reason: string | null;
+  occurredAt: string;
+  provenanceType: "match_review" | "proposal_review";
+}
+
 export interface ProofGraphResponse {
   runId: string;
   tenantId: string;
@@ -90,6 +161,10 @@ export interface EvidencePack {
   lineage: ProofGraphResponse;
   decisions: AdjudicationEvent[];
   provenance: { count: number; complete: boolean; missingReasons: string[] };
+  completenessByCategory: Record<
+    string,
+    { complete: boolean; degraded: boolean; reasons: string[] }
+  >;
   deterministicDigest: string;
   exportMetadata: Record<string, unknown>;
 }
@@ -333,8 +408,336 @@ export class ExceptionIntelligenceService {
     };
   }
 
+  async listPolicyEvolutionProposals(
+    tenantId: string,
+    lookbackDays = 30
+  ): Promise<LearnedPolicyCandidate[]> {
+    const snapshot = await this.getSnapshot(tenantId, lookbackDays);
+    const candidates = snapshot.clusters
+      .filter((cluster) => cluster.volume >= 3)
+      .map((cluster) => {
+        const resolutionDistribution = cluster.resolutionPath.adjudicationMix;
+        const operatorReviewedRate = Number(
+          (cluster.resolvedCount / Math.max(cluster.volume, 1)).toFixed(4)
+        );
+        const missingData = cluster.volume < 6 ? ["limited_longitudinal_history"] : [];
+        const riskFlags =
+          cluster.openCount > cluster.resolvedCount ? ["high_open_exception_load"] : [];
+        const proposalType =
+          cluster.recommendation.action === "policy_adjustment"
+            ? "policy_adjustment"
+            : "manual_guardrail";
+        const proposalKey = crypto
+          .createHash("sha256")
+          .update(`${tenantId}|${cluster.signature.signature}|${proposalType}`)
+          .digest("hex");
+        return {
+          proposalId: proposalKey,
+          tenantId,
+          proposalType,
+          why: `Recurring signature ${cluster.signature.signature} observed ${cluster.volume} times with ${cluster.openCount} open exceptions`,
+          historicalSupport: {
+            sampleSize: cluster.volume,
+            signature: cluster.signature.signature,
+            resolutionDistribution,
+            operatorReviewedRate,
+          },
+          estimatedImpact: {
+            supported: ["exception_backlog_pressure", "operator_review_load"],
+            unsupported: ["false_positive_rate", "false_negative_rate"],
+            estimate: {
+              openRatio: Number((cluster.openCount / cluster.volume).toFixed(4)),
+              reviewedRatio: operatorReviewedRate,
+              expectedManualTouchesPer100: Number((100 * operatorReviewedRate).toFixed(2)),
+            },
+          },
+          riskFlags,
+          missingData,
+          status: "pending_review" as const,
+          createdAt: new Date().toISOString(),
+        };
+      });
+
+    for (const candidate of candidates) {
+      await prismaAny.policyEvolutionProposal.upsert({
+        where: { tenantId_proposalKey: { tenantId, proposalKey: candidate.proposalId } },
+        create: {
+          tenantId,
+          proposalKey: candidate.proposalId,
+          proposalType: candidate.proposalType,
+          signatureKey: candidate.historicalSupport.signature,
+          status: "pending_review",
+          why: candidate.why,
+          historicalSupport: candidate.historicalSupport,
+          impactSummary: candidate.estimatedImpact,
+          riskFlags: candidate.riskFlags,
+          missingData: candidate.missingData,
+        },
+        update: {
+          proposalType: candidate.proposalType,
+          why: candidate.why,
+          historicalSupport: candidate.historicalSupport,
+          impactSummary: candidate.estimatedImpact,
+          riskFlags: candidate.riskFlags,
+          missingData: candidate.missingData,
+        },
+      });
+      await prismaAny.policyMemoryArtifact.upsert({
+        where: {
+          tenantId_artifactKey: {
+            tenantId,
+            artifactKey: `policy-candidate:${candidate.proposalId}`,
+          },
+        },
+        create: {
+          tenantId,
+          artifactType: "learned_policy_candidate",
+          artifactKey: `policy-candidate:${candidate.proposalId}`,
+          signatureKey: candidate.historicalSupport.signature,
+          payload: candidate,
+          evidenceCount: candidate.historicalSupport.sampleSize,
+          degraded: candidate.missingData.length > 0,
+          degradedReasons: candidate.missingData,
+        },
+        update: {
+          payload: candidate,
+          evidenceCount: candidate.historicalSupport.sampleSize,
+          degraded: candidate.missingData.length > 0,
+          degradedReasons: candidate.missingData,
+        },
+      });
+    }
+
+    const persisted = await prismaAny.policyEvolutionProposal.findMany({
+      where: { tenantId },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    });
+    return persisted.map((proposal: any) => ({
+      proposalId: proposal.proposalKey,
+      tenantId,
+      proposalType: proposal.proposalType,
+      why: proposal.why,
+      historicalSupport: proposal.historicalSupport,
+      estimatedImpact: proposal.impactSummary,
+      riskFlags: proposal.riskFlags ?? [],
+      missingData: proposal.missingData ?? [],
+      status: proposal.status,
+      createdAt: proposal.createdAt.toISOString(),
+    }));
+  }
+
+  async getPolicyEvolutionProposalDetail(
+    tenantId: string,
+    proposalId: string
+  ): Promise<LearnedPolicyCandidate | null> {
+    const proposal = await prismaAny.policyEvolutionProposal.findFirst({
+      where: { tenantId, proposalKey: proposalId },
+    });
+    if (!proposal) return null;
+    return {
+      proposalId: proposal.proposalKey,
+      tenantId,
+      proposalType: proposal.proposalType,
+      why: proposal.why,
+      historicalSupport: proposal.historicalSupport,
+      estimatedImpact: proposal.impactSummary,
+      riskFlags: proposal.riskFlags ?? [],
+      missingData: proposal.missingData ?? [],
+      status: proposal.status,
+      createdAt: proposal.createdAt.toISOString(),
+    };
+  }
+
+  async reviewPolicyEvolutionProposal(
+    tenantId: string,
+    proposalId: string,
+    input: ProposalReviewAction
+  ) {
+    const proposal = await prismaAny.policyEvolutionProposal.findFirst({
+      where: { tenantId, proposalKey: proposalId },
+    });
+    if (!proposal) return { found: false as const };
+    const nextStatus =
+      input.action === "approve" ? "approved" : input.action === "reject" ? "rejected" : "deferred";
+    await prismaAny.$transaction([
+      prismaAny.policyEvolutionProposal.update({
+        where: { id: proposal.id },
+        data: { status: nextStatus },
+      }),
+      prismaAny.policyEvolutionProposalReview.create({
+        data: {
+          tenantId,
+          proposalId: proposal.id,
+          action: input.action,
+          actorUserId: input.actorUserId,
+          reason: input.reason,
+          priorStatus: proposal.status,
+          resultingStatus: nextStatus,
+        },
+      }),
+    ]);
+    return { found: true as const, status: nextStatus };
+  }
+
+  async getProposalHistory(tenantId: string, proposalId: string) {
+    const proposal = await prismaAny.policyEvolutionProposal.findFirst({
+      where: { tenantId, proposalKey: proposalId },
+      include: { reviews: { orderBy: { createdAt: "asc" } } },
+    });
+    if (!proposal) return null;
+    return {
+      proposalId: proposal.proposalKey,
+      currentStatus: proposal.status,
+      timeline: proposal.reviews.map((review: any) => ({
+        id: review.id,
+        action: review.action,
+        actorUserId: review.actorUserId,
+        reason: review.reason,
+        priorStatus: review.priorStatus,
+        resultingStatus: review.resultingStatus,
+        occurredAt: review.createdAt.toISOString(),
+      })),
+    };
+  }
+
+  async getExceptionPlaybooks(
+    tenantId: string,
+    lookbackDays = 30
+  ): Promise<ExceptionPlaybookSummary[]> {
+    const snapshot = await this.getSnapshot(tenantId, lookbackDays);
+    const playbooks = snapshot.clusters.slice(0, 20).map((cluster) => {
+      const evidenceCoverage: ExceptionPlaybookSummary["evidenceCoverage"] =
+        cluster.volume >= 8 ? "strong" : cluster.volume >= 4 ? "partial" : "insufficient";
+      const commonOperatorActions = Object.entries(cluster.resolutionPath.adjudicationMix)
+        .filter(([action]) => action !== "open")
+        .sort((a, b) => b[1] - a[1])
+        .map(([action]) => action);
+      return {
+        signature: cluster.signature.signature,
+        clusterIdentity: cluster.signature.construction,
+        commonResolutionPaths: cluster.resolutionPath.adjudicationMix,
+        handlingTimeMinutes: {
+          average: cluster.resolutionPath.avgResolutionMinutes,
+          median: cluster.resolutionPath.medianResolutionMinutes,
+        },
+        sourceSystems: snapshot.sourceTrustSignals.map((s) => s.sourceName).slice(0, 5),
+        commonOperatorActions,
+        escalationIndicators:
+          cluster.openCount > cluster.resolvedCount ? ["open_backlog_dominant"] : [],
+        ambiguityMarkers:
+          cluster.recommendation.action === "insufficient_data" ? ["insufficient_data"] : [],
+        evidenceCoverage,
+        basisType:
+          cluster.resolvedCount === 0
+            ? "automatic_only"
+            : cluster.openCount === 0
+              ? "operator_reviewed_only"
+              : "mixed",
+        degradedReasons: evidenceCoverage === "insufficient" ? ["insufficient_cluster_volume"] : [],
+      } satisfies ExceptionPlaybookSummary;
+    });
+
+    for (const playbook of playbooks) {
+      await prismaAny.policyMemoryArtifact.upsert({
+        where: {
+          tenantId_artifactKey: { tenantId, artifactKey: `playbook:${playbook.signature}` },
+        },
+        create: {
+          tenantId,
+          artifactType: "exception_playbook_summary",
+          artifactKey: `playbook:${playbook.signature}`,
+          signatureKey: playbook.signature,
+          payload: playbook,
+          evidenceCount: Object.values(playbook.commonResolutionPaths).reduce(
+            (a, b) => a + Number(b),
+            0
+          ),
+          degraded: playbook.degradedReasons.length > 0,
+          degradedReasons: playbook.degradedReasons,
+        },
+        update: {
+          payload: playbook,
+          degraded: playbook.degradedReasons.length > 0,
+          degradedReasons: playbook.degradedReasons,
+          evidenceCount: Object.values(playbook.commonResolutionPaths).reduce(
+            (a, b) => a + Number(b),
+            0
+          ),
+        },
+      });
+    }
+
+    return playbooks;
+  }
+
+  async getDecisionHistory(
+    tenantId: string,
+    filters: { runId?: string; signature?: string; counterpartyKey?: string; sourcePair?: string }
+  ): Promise<DecisionHistoryRecord[]> {
+    const matchDecisions = await prisma.reconciliationMatch.findMany({
+      where: { tenantId, reviewed: true, ...(filters.runId ? { runId: filters.runId } : {}) },
+      include: { sourceTransaction: { include: { source: true } } },
+      orderBy: { reviewedAt: "desc" },
+      take: 200,
+    });
+
+    const fromMatches: DecisionHistoryRecord[] = matchDecisions.map((match) => {
+      const sig = signatureFrom(match);
+      const counterpartyKey = match.sourceTransaction?.externalId ?? null;
+      const sourcePair = match.sourceTransaction?.source?.name ?? null;
+      return {
+        id: `match:${match.id}`,
+        tenantId,
+        runId: match.runId,
+        signature: sig.signature,
+        counterpartyKey,
+        sourcePair,
+        action: match.matchReason?.toLowerCase().includes("ignored")
+          ? "ignored"
+          : "manual_reviewed",
+        priorState: "unreviewed",
+        resultingState: "reviewed",
+        actorUserId: match.reviewedBy,
+        reason: match.matchReason,
+        occurredAt: (match.reviewedAt ?? match.updatedAt).toISOString(),
+        provenanceType: "match_review",
+      };
+    });
+
+    const proposalReviews = await prismaAny.policyEvolutionProposalReview.findMany({
+      where: { tenantId },
+      include: { proposal: true },
+      orderBy: { createdAt: "desc" },
+      take: 200,
+    });
+    const fromReviews: DecisionHistoryRecord[] = proposalReviews.map((review: any) => ({
+      id: `proposal-review:${review.id}`,
+      tenantId,
+      runId: null,
+      signature: review.proposal?.signatureKey ?? null,
+      counterpartyKey: null,
+      sourcePair: null,
+      action: review.action,
+      priorState: review.priorStatus,
+      resultingState: review.resultingStatus,
+      actorUserId: review.actorUserId,
+      reason: review.reason,
+      occurredAt: review.createdAt.toISOString(),
+      provenanceType: "proposal_review",
+    }));
+
+    return [...fromMatches, ...fromReviews]
+      .filter((d) => (filters.signature ? d.signature === filters.signature : true))
+      .filter((d) =>
+        filters.counterpartyKey ? d.counterpartyKey === filters.counterpartyKey : true
+      )
+      .filter((d) => (filters.sourcePair ? d.sourcePair === filters.sourcePair : true))
+      .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt));
+  }
+
   async getProofGraph(tenantId: string, runId: string): Promise<ProofGraphResponse> {
-    const run = await prisma.reconciliationRun.findFirst({
+    const run: any = await prismaAny.reconciliationRun.findFirst({
       where: { id: runId, tenantId },
       include: { matches: true, provenance: true },
     });
@@ -404,13 +807,13 @@ export class ExceptionIntelligenceService {
 
   async buildEvidencePack(tenantId: string, runId: string): Promise<EvidencePack> {
     const graph = await this.getProofGraph(tenantId, runId);
-    const run = await prisma.reconciliationRun.findFirst({
+    const run: any = await prismaAny.reconciliationRun.findFirst({
       where: { id: runId, tenantId },
       include: { matches: true, provenance: { orderBy: { sequence: "asc" } } },
     });
     const decisions: AdjudicationEvent[] = (run?.matches ?? [])
-      .filter((m) => m.reviewed)
-      .map((m) => ({
+      .filter((m: any) => m.reviewed)
+      .map((m: any) => ({
         matchId: m.id,
         runId,
         resolution: m.matchReason?.toLowerCase().includes("ignored") ? "ignored" : "manual",
@@ -418,9 +821,49 @@ export class ExceptionIntelligenceService {
         occurredAt: m.reviewedAt?.toISOString() ?? m.updatedAt.toISOString(),
         notes: m.matchReason,
       }));
+    const completenessByCategory = {
+      runLineage: {
+        complete: graph.nodes.some((n) => n.type === "run"),
+        degraded: !graph.nodes.some((n) => n.type === "run"),
+        reasons: graph.nodes.some((n) => n.type === "run") ? [] : ["missing_run_node"],
+      },
+      matchLineage: {
+        complete: graph.nodes.some((n) => n.type === "match"),
+        degraded: !graph.nodes.some((n) => n.type === "match"),
+        reasons: graph.nodes.some((n) => n.type === "match") ? [] : ["no_match_nodes"],
+      },
+      operatorDecisions: {
+        complete: decisions.length > 0,
+        degraded: decisions.length === 0,
+        reasons: decisions.length > 0 ? [] : ["no_operator_decisions"],
+      },
+      policyReferences: {
+        complete: false,
+        degraded: true,
+        reasons: ["policy_reference_linking_not_available"],
+      },
+      provenanceRecords: {
+        complete: (run?.provenance.length ?? 0) > 0,
+        degraded: (run?.provenance.length ?? 0) === 0,
+        reasons: (run?.provenance.length ?? 0) > 0 ? [] : ["no_provenance_entries_for_run"],
+      },
+      exportDeterminismBasis: { complete: true, degraded: false, reasons: [] },
+    };
+
+    const deterministicInputs = {
+      runId,
+      tenantId,
+      graphNodeIds: graph.nodes.map((node) => node.id).sort(),
+      graphEdgeSet: graph.edges.map((edge) => `${edge.from}|${edge.relation}|${edge.to}`).sort(),
+      decisionSet: decisions
+        .map((decision) => `${decision.matchId}|${decision.resolution}|${decision.occurredAt}`)
+        .sort(),
+      completenessByCategory,
+    };
+
     const digest = crypto
       .createHash("sha256")
-      .update(JSON.stringify({ graph, decisions }))
+      .update(JSON.stringify(deterministicInputs))
       .digest("hex");
     return {
       runId,
@@ -438,11 +881,19 @@ export class ExceptionIntelligenceService {
         complete: (run?.provenance.length ?? 0) > 0,
         missingReasons: (run?.provenance.length ?? 0) > 0 ? [] : ["no_provenance_entries_for_run"],
       },
+      completenessByCategory,
       deterministicDigest: digest,
       exportMetadata: {
         format: "json",
-        version: "v1",
+        version: "v2",
         generatedBy: "exception-intelligence-service",
+        generatedAt: new Date().toISOString(),
+        tenantScope: tenantId,
+        runScope: runId,
+        completenessFlags: Object.fromEntries(
+          Object.entries(completenessByCategory).map(([k, v]) => [k, v.complete])
+        ),
+        deterministicInputReferences: Object.keys(deterministicInputs),
       },
     };
   }
