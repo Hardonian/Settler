@@ -58,21 +58,21 @@ export async function createApprovalRequest(
     let approverId = options.approverId;
     let approverRole = options.approverRole;
 
-      // Auto-assign approver if not provided
-      if (!approverId && !approverRole) {
-        const approverResult = await query<{ user_id: string; role: string }>(
-          `SELECT user_id, role FROM approvers
+    // Auto-assign approver if not provided
+    if (!approverId && !approverRole) {
+      const approverResult = await query<{ user_id: string; role: string }>(
+        `SELECT user_id, role FROM approvers
            WHERE tenant_id = $1 AND can_approve_final = true
            ORDER BY created_at ASC
            LIMIT 1`,
-          [tenantId]
-        );
+        [tenantId]
+      );
 
-        if (approverResult.length > 0) {
-          approverId = approverResult[0]?.user_id;
-          approverRole = approverResult[0]?.role;
-        }
+      if (approverResult.length > 0) {
+        approverId = approverResult[0]?.user_id;
+        approverRole = approverResult[0]?.role;
       }
+    }
 
     const expiresAt = options.expiresInHours
       ? new Date(Date.now() + options.expiresInHours * 60 * 60 * 1000)
@@ -100,7 +100,7 @@ export async function createApprovalRequest(
       ] as (string | number | boolean | null | Date)[]
     );
 
-    const approvalId = result[0]?.id || '';
+    const approvalId = result[0]?.id || "";
 
     logInfo("Approval request created", {
       approvalId,
@@ -130,7 +130,7 @@ export async function approveRequest(
     await transaction(async (client) => {
       // Verify the request exists and is pending
       const requestResult = await client.query(
-        `SELECT id, approver_id, approver_role, status, expires_at
+        `SELECT id, requested_by, approver_id, approver_role, status, expires_at
          FROM approval_requests
          WHERE id = $1 AND tenant_id = $2`,
         [approvalId, tenantId]
@@ -141,6 +141,7 @@ export async function approveRequest(
       }
 
       const request = requestResult.rows[0] as {
+        requested_by?: string;
         approver_id?: string;
         approver_role?: string;
         status: string;
@@ -153,6 +154,10 @@ export async function approveRequest(
 
       if (request.expires_at && new Date(request.expires_at) < new Date()) {
         throw new Error("Approval request has expired");
+      }
+
+      if (request.requested_by === approverId) {
+        throw new Error("separation_of_duties_violation: requester cannot approve own request");
       }
 
       // Verify approver has permission
@@ -202,7 +207,7 @@ export async function rejectRequest(
     await transaction(async (client) => {
       // Verify the request exists and is pending
       const requestResult = await client.query(
-        `SELECT id, approver_id, approver_role, status
+        `SELECT id, requested_by, approver_id, approver_role, status, expires_at
          FROM approval_requests
          WHERE id = $1 AND tenant_id = $2`,
         [approvalId, tenantId]
@@ -213,13 +218,37 @@ export async function rejectRequest(
       }
 
       const request = requestResult.rows[0] as {
+        requested_by?: string;
         approver_id?: string;
         approver_role?: string;
         status: string;
+        expires_at?: Date;
       };
 
       if (request.status !== "pending") {
         throw new Error(`Request is not pending (status: ${request.status})`);
+      }
+
+      if (request.expires_at && new Date(request.expires_at) < new Date()) {
+        throw new Error("Approval request has expired");
+      }
+
+      if (request.requested_by === approverId) {
+        throw new Error("separation_of_duties_violation: requester cannot reject own request");
+      }
+
+      if (request.approver_id && request.approver_id !== approverId) {
+        if (request.approver_role) {
+          const approverResult = await client.query(
+            `SELECT id FROM approvers
+             WHERE tenant_id = $1 AND user_id = $2 AND role = $3`,
+            [tenantId, approverId, request.approver_role]
+          );
+
+          if (approverResult.rows.length === 0) {
+            throw new Error("User does not have permission to reject this request");
+          }
+        }
       }
 
       // Update approval request
@@ -391,7 +420,7 @@ export async function addApprover(
       ] as (string | number | boolean | null | Date)[]
     );
 
-    const approverId = result[0]?.id || '';
+    const approverId = result[0]?.id || "";
     logInfo("Approver added", { approverId, tenantId, userId, role });
     return approverId;
   } catch (error) {

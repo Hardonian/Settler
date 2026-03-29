@@ -9,6 +9,11 @@ import { generateApiKey, hashApiKey } from "../utils/hash";
 import { logInfo } from "../utils/logger";
 import { handleRouteError } from "../utils/error-handler";
 import { NotFoundError } from "../utils/typed-errors";
+import {
+  authorizeTenantActionOr403,
+  requireTenantContext,
+  requireUserContext,
+} from "./authz-helpers";
 
 const router: Router = Router();
 
@@ -45,8 +50,10 @@ router.get(
   requirePermission(Permission.USERS_WRITE),
   async (req: AuthRequest, res: Response) => {
     try {
-      const userId = req.userId!;
-      const tenantId = req.tenantId!;
+      const userId = requireUserContext(req, res);
+      const tenantId = requireTenantContext(req, res);
+      if (!userId || !tenantId) return;
+      if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.api_key.read"))) return;
 
       const keys = await query<{
         id: string;
@@ -101,7 +108,9 @@ router.get(
         return;
       }
       const userId = req.userId!;
-      const tenantId = req.tenantId!;
+      const tenantId = requireTenantContext(req, res);
+      if (!tenantId) return;
+      if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.api_key.read"))) return;
 
       const keys = await query<{
         id: string;
@@ -153,17 +162,21 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const { name, scopes, rateLimit, expiresAt } = req.body;
-      const userId = req.userId!;
+      const userId = requireUserContext(req, res);
+      const tenantId = requireTenantContext(req, res);
+      if (!userId || !tenantId) return;
+      if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.api_key.manage"))) return;
 
       const { key, prefix } = generateApiKey();
       const keyHash = await hashApiKey(key);
 
       const result = await query<{ id: string }>(
-        `INSERT INTO api_keys (user_id, key_prefix, key_hash, name, scopes, rate_limit, expires_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `INSERT INTO api_keys (user_id, tenant_id, key_prefix, key_hash, name, scopes, rate_limit, expires_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
          RETURNING id`,
         [
           userId,
+          tenantId,
           prefix,
           keyHash,
           name,
@@ -234,9 +247,10 @@ router.patch(
         return;
       }
       const { name, scopes, rateLimit, revoked } = req.body;
-      const userId = req.userId!;
-
-      const tenantId = req.tenantId!;
+      const userId = requireUserContext(req, res);
+      const tenantId = requireTenantContext(req, res);
+      if (!userId || !tenantId) return;
+      if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.api_key.manage"))) return;
 
       // Verify ownership
       const existing = await query<{ id: string; revoked_at: Date | null }>(
@@ -322,9 +336,10 @@ router.post(
         res.status(400).json({ error: "API key ID required" });
         return;
       }
-      const userId = req.userId!;
-
-      const tenantId = req.tenantId!;
+      const userId = requireUserContext(req, res);
+      const tenantId = requireTenantContext(req, res);
+      if (!userId || !tenantId) return;
+      if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.api_key.manage"))) return;
 
       // Verify ownership
       const existing = await query<{
@@ -349,8 +364,8 @@ router.post(
       await transaction(async (client) => {
         // Revoke old key
         await client.query(
-          `UPDATE api_keys SET revoked_at = NOW(), updated_at = NOW() WHERE id = $1`,
-          [id]
+          `UPDATE api_keys SET revoked_at = NOW(), updated_at = NOW() WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
+          [id, userId, tenantId]
         );
 
         // Create new key with same settings
@@ -358,11 +373,12 @@ router.post(
         const keyHash = await hashApiKey(key);
 
         const result = await client.query<{ id: string }>(
-          `INSERT INTO api_keys (user_id, key_prefix, key_hash, name, scopes, rate_limit, expires_at)
-           VALUES ($1, $2, $3, $4, $5, $6, $7)
+          `INSERT INTO api_keys (user_id, tenant_id, key_prefix, key_hash, name, scopes, rate_limit, expires_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
            RETURNING id`,
           [
             userId,
+            tenantId,
             prefix,
             keyHash,
             oldKey.name,
@@ -435,9 +451,10 @@ router.delete(
         res.status(400).json({ error: "API key ID required" });
         return;
       }
-      const userId = req.userId!;
-
-      const tenantId = req.tenantId!;
+      const userId = requireUserContext(req, res);
+      const tenantId = requireTenantContext(req, res);
+      if (!userId || !tenantId) return;
+      if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.api_key.manage"))) return;
 
       // Verify ownership
       const existing = await query<{ id: string }>(
@@ -450,9 +467,10 @@ router.delete(
       }
 
       // Revoke instead of delete (soft delete)
-      await query(`UPDATE api_keys SET revoked_at = NOW(), updated_at = NOW() WHERE id = $1`, [
-        id || null,
-      ]);
+      await query(
+        `UPDATE api_keys SET revoked_at = NOW(), updated_at = NOW() WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
+        [id, userId, tenantId]
+      );
 
       // Log audit event
       await query(
