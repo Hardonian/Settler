@@ -94,6 +94,77 @@ export interface EvidencePack {
   exportMetadata: Record<string, unknown>;
 }
 
+export interface PolicyEvolutionProposal {
+  proposalId: string;
+  tenantId: string;
+  generatedAt: string;
+  signature: ExceptionSignature;
+  why: string;
+  historicalBasis: {
+    supportCount: number;
+    lookbackDays: number;
+    openCount: number;
+    resolvedCount: number;
+    lowConfidenceCount: number;
+    adjudicationMix: Record<string, number>;
+  };
+  affectedScope: {
+    sourceIds: string[];
+    counterpartyKeys: string[];
+  };
+  estimatedImpact: {
+    expectedManualReviewReduction: number | null;
+    expectedOpenExceptionChange: number | null;
+  };
+  unsupportedMetrics: string[];
+  riskFlags: string[];
+  dataSufficiency: "insufficient" | "limited" | "sufficient";
+  status: "pending_review" | "approved" | "rejected" | "deferred";
+  latestReview: {
+    decision: "approved" | "rejected" | "deferred";
+    reviewedBy: string | null;
+    reviewedAt: string;
+    reason: string | null;
+  } | null;
+}
+
+export interface DecisionHistoryEntry {
+  matchId: string;
+  runId: string;
+  tenantId: string;
+  signature: string;
+  sourceId: string | null;
+  counterpartyKey: string;
+  previousState: "pending_review";
+  resultingState: "reviewed";
+  decision: "manual" | "ignored";
+  actorId: string | null;
+  reason: string | null;
+  decidedAt: string;
+}
+
+export interface DecisionHistoryResponse {
+  tenantId: string;
+  generatedAt: string;
+  filters: {
+    runId?: string;
+    sourceId?: string;
+    counterpartyKey?: string;
+    signature?: string;
+    limit: number;
+  };
+  degraded: boolean;
+  degradedReasons: string[];
+  decisions: DecisionHistoryEntry[];
+}
+
+export interface PolicyProposalReviewInput {
+  proposalId: string;
+  decision: "approved" | "rejected" | "deferred";
+  reviewerId: string | null;
+  reason: string | null;
+}
+
 export interface PolicySandboxRequest {
   runId: string;
   candidatePolicy: {
@@ -196,6 +267,131 @@ function recommendationFor(cluster: {
     confidenceBasis: "Historically resolved signature with low open burden",
     reasons: [`resolved_ratio=${resolvedRatio.toFixed(2)}`],
     degraded: false,
+  };
+}
+
+function parseClusterFromProposalAudit(afterState: unknown): {
+  signature: ExceptionSignature;
+  volume: number;
+  openCount: number;
+  resolvedCount: number;
+  lowConfidenceCount: number;
+  adjudicationMix: Record<string, number>;
+  sourceIds: string[];
+  counterpartyKeys: string[];
+} | null {
+  const state = asRecord(afterState);
+  const signatureState = asRecord(state["signature"]);
+  const construction = asRecord(signatureState["construction"]);
+  const matchType = construction["matchType"];
+  const category = construction["category"];
+  const currency = construction["currency"];
+  const reason = construction["reason"];
+  if (
+    typeof signatureState["signature"] !== "string" ||
+    typeof matchType !== "string" ||
+    typeof category !== "string" ||
+    typeof currency !== "string" ||
+    typeof reason !== "string"
+  ) {
+    return null;
+  }
+  const rationaleCodes = Array.isArray(construction["rationaleCodes"])
+    ? (construction["rationaleCodes"] as unknown[]).filter(
+        (value): value is string => typeof value === "string"
+      )
+    : [];
+  const sourceIds = Array.isArray(state["sourceIds"])
+    ? (state["sourceIds"] as unknown[]).filter(
+        (value): value is string => typeof value === "string"
+      )
+    : [];
+  const counterpartyKeys = Array.isArray(state["counterpartyKeys"])
+    ? (state["counterpartyKeys"] as unknown[]).filter(
+        (value): value is string => typeof value === "string"
+      )
+    : [];
+  return {
+    signature: {
+      signature: signatureState["signature"],
+      construction: {
+        matchType,
+        category,
+        currency,
+        reason,
+        rationaleCodes,
+      },
+    },
+    volume: Number(state["volume"] ?? 0),
+    openCount: Number(state["openCount"] ?? 0),
+    resolvedCount: Number(state["resolvedCount"] ?? 0),
+    lowConfidenceCount: Number(state["lowConfidenceCount"] ?? 0),
+    adjudicationMix: asRecord(state["adjudicationMix"]) as Record<string, number>,
+    sourceIds,
+    counterpartyKeys,
+  };
+}
+
+function buildProposal(
+  tenantId: string,
+  generatedAt: Date,
+  lookbackDays: number,
+  cluster: {
+    signature: ExceptionSignature;
+    volume: number;
+    openCount: number;
+    resolvedCount: number;
+    lowConfidenceCount: number;
+    adjudicationMix: Record<string, number>;
+    sourceIds: string[];
+    counterpartyKeys: string[];
+  },
+  latestReview: PolicyEvolutionProposal["latestReview"]
+): PolicyEvolutionProposal {
+  const recommendation = recommendationFor(cluster);
+  const riskFlags: string[] = [];
+  if (cluster.openCount / Math.max(1, cluster.volume) > 0.6)
+    riskFlags.push("high_open_exception_concentration");
+  if (cluster.lowConfidenceCount / Math.max(1, cluster.volume) > 0.4)
+    riskFlags.push("high_low_confidence_concentration");
+  if (cluster.volume < 5) riskFlags.push("small_sample_size");
+
+  const dataSufficiency: PolicyEvolutionProposal["dataSufficiency"] =
+    cluster.volume >= 10 ? "sufficient" : cluster.volume >= 5 ? "limited" : "insufficient";
+
+  return {
+    proposalId: crypto
+      .createHash("sha256")
+      .update(`${tenantId}|${cluster.signature.signature}|${lookbackDays}`)
+      .digest("hex")
+      .slice(0, 24),
+    tenantId,
+    generatedAt: generatedAt.toISOString(),
+    signature: cluster.signature,
+    why: recommendation.confidenceBasis,
+    historicalBasis: {
+      supportCount: cluster.volume,
+      lookbackDays,
+      openCount: cluster.openCount,
+      resolvedCount: cluster.resolvedCount,
+      lowConfidenceCount: cluster.lowConfidenceCount,
+      adjudicationMix: cluster.adjudicationMix,
+    },
+    affectedScope: {
+      sourceIds: cluster.sourceIds,
+      counterpartyKeys: cluster.counterpartyKeys,
+    },
+    estimatedImpact: {
+      expectedManualReviewReduction:
+        cluster.volume > 0 ? Number((cluster.resolvedCount / cluster.volume).toFixed(4)) : null,
+      expectedOpenExceptionChange:
+        cluster.volume > 0 ? Number((-(cluster.openCount / cluster.volume)).toFixed(4)) : null,
+    },
+    unsupportedMetrics: ["false_positive_rate", "false_negative_rate", "causal_effect_size"],
+    riskFlags,
+    dataSufficiency,
+    status: latestReview?.decision ?? "pending_review",
+    latestReview,
   };
 }
 
@@ -330,6 +526,303 @@ export class ExceptionIntelligenceService {
         }))
         .sort((a, b) => b.exceptionCount - a.exceptionCount)
         .slice(0, 20),
+    };
+  }
+
+  async generatePolicyEvolutionProposals(
+    tenantId: string,
+    lookbackDays: number
+  ): Promise<PolicyEvolutionProposal[]> {
+    const since = new Date(Date.now() - lookbackDays * 86400000);
+    const matches = await prisma.reconciliationMatch.findMany({
+      where: { tenantId, createdAt: { gte: since } },
+      include: { sourceTransaction: { include: { source: { select: { id: true } } } } },
+      orderBy: { createdAt: "desc" },
+      take: 3000,
+    });
+
+    const clusters = new Map<
+      string,
+      {
+        signature: ExceptionSignature;
+        volume: number;
+        openCount: number;
+        resolvedCount: number;
+        lowConfidenceCount: number;
+        adjudicationMix: Record<string, number>;
+        sourceIds: Set<string>;
+        counterpartyKeys: Set<string>;
+      }
+    >();
+
+    for (const match of matches) {
+      const sig = signatureFrom(match);
+      const current = clusters.get(sig.signature) ?? {
+        signature: sig,
+        volume: 0,
+        openCount: 0,
+        resolvedCount: 0,
+        lowConfidenceCount: 0,
+        adjudicationMix: {},
+        sourceIds: new Set<string>(),
+        counterpartyKeys: new Set<string>(),
+      };
+      current.volume += 1;
+      if (match.reviewed) current.resolvedCount += 1;
+      else current.openCount += 1;
+      if (Number(match.confidence) < 0.75) current.lowConfidenceCount += 1;
+      const reasonKey = match.reviewed
+        ? match.matchReason?.toLowerCase().includes("ignored")
+          ? "ignored"
+          : "manual"
+        : "open";
+      current.adjudicationMix[reasonKey] = (current.adjudicationMix[reasonKey] ?? 0) + 1;
+      const sourceId = match.sourceTransaction?.source?.id;
+      if (sourceId) current.sourceIds.add(sourceId);
+      current.counterpartyKeys.add(
+        match.sourceTransaction?.externalId ?? `txn:${match.sourceTransactionId}`
+      );
+      clusters.set(sig.signature, current);
+    }
+
+    const generatedAt = new Date();
+    const candidateClusters = Array.from(clusters.values())
+      .filter((cluster) => cluster.volume >= 3)
+      .sort((a, b) => b.volume - a.volume)
+      .slice(0, 20);
+
+    const proposals: PolicyEvolutionProposal[] = [];
+    for (const cluster of candidateClusters) {
+      const proposal = buildProposal(
+        tenantId,
+        generatedAt,
+        lookbackDays,
+        {
+          signature: cluster.signature,
+          volume: cluster.volume,
+          openCount: cluster.openCount,
+          resolvedCount: cluster.resolvedCount,
+          lowConfidenceCount: cluster.lowConfidenceCount,
+          adjudicationMix: cluster.adjudicationMix,
+          sourceIds: Array.from(cluster.sourceIds.values()).sort(),
+          counterpartyKeys: Array.from(cluster.counterpartyKeys.values()).sort(),
+        },
+        null
+      );
+
+      const existing = await prisma.reconAudit.findFirst({
+        where: {
+          tenantId,
+          entityType: "policy_proposal",
+          entityId: proposal.proposalId,
+          action: "proposal_generated",
+        },
+        orderBy: { createdAt: "desc" },
+      });
+      if (!existing) {
+        await prisma.reconAudit.create({
+          data: {
+            tenantId,
+            reconJobId: null,
+            reconResultId: null,
+            userId: null,
+            auditType: "policy_evolution",
+            action: "proposal_generated",
+            entityType: "policy_proposal",
+            entityId: proposal.proposalId,
+            changes: {
+              lookbackDays,
+              generatedAt: proposal.generatedAt,
+            },
+            beforeState: {},
+            afterState: JSON.parse(
+              JSON.stringify({
+                signature: proposal.signature,
+                volume: proposal.historicalBasis.supportCount,
+                openCount: proposal.historicalBasis.openCount,
+                resolvedCount: proposal.historicalBasis.resolvedCount,
+                lowConfidenceCount: proposal.historicalBasis.lowConfidenceCount,
+                adjudicationMix: proposal.historicalBasis.adjudicationMix,
+                sourceIds: proposal.affectedScope.sourceIds,
+                counterpartyKeys: proposal.affectedScope.counterpartyKeys,
+              })
+            ),
+            metadata: {
+              unsupportedMetrics: proposal.unsupportedMetrics,
+              riskFlags: proposal.riskFlags,
+              dataSufficiency: proposal.dataSufficiency,
+            },
+          },
+        });
+      }
+      proposals.push(proposal);
+    }
+
+    return proposals;
+  }
+
+  async listPolicyEvolutionProposals(
+    tenantId: string,
+    lookbackDays: number
+  ): Promise<PolicyEvolutionProposal[]> {
+    await this.generatePolicyEvolutionProposals(tenantId, lookbackDays);
+    const generated = await prisma.reconAudit.findMany({
+      where: { tenantId, entityType: "policy_proposal", action: "proposal_generated" },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    });
+    const reviews = await prisma.reconAudit.findMany({
+      where: { tenantId, entityType: "policy_proposal", action: "proposal_reviewed" },
+      orderBy: { createdAt: "desc" },
+      take: 500,
+    });
+    const latestReviewByProposal = new Map<string, PolicyEvolutionProposal["latestReview"]>();
+    for (const review of reviews) {
+      if (!review.entityId) continue;
+      if (latestReviewByProposal.has(review.entityId)) continue;
+      const changes = asRecord(review.changes);
+      const decision = changes["decision"];
+      if (decision !== "approved" && decision !== "rejected" && decision !== "deferred") continue;
+      latestReviewByProposal.set(review.entityId, {
+        decision,
+        reviewedBy: review.userId,
+        reviewedAt: review.createdAt.toISOString(),
+        reason: typeof changes["reason"] === "string" ? changes["reason"] : null,
+      });
+    }
+    return generated
+      .map((audit) => {
+        if (!audit.entityId) return null;
+        const cluster = parseClusterFromProposalAudit(audit.afterState);
+        if (!cluster) return null;
+        return buildProposal(
+          tenantId,
+          audit.createdAt,
+          lookbackDays,
+          cluster,
+          latestReviewByProposal.get(audit.entityId) ?? null
+        );
+      })
+      .filter((proposal): proposal is PolicyEvolutionProposal => Boolean(proposal));
+  }
+
+  async reviewPolicyEvolutionProposal(
+    tenantId: string,
+    input: PolicyProposalReviewInput
+  ): Promise<{ accepted: boolean; status: string; degraded: boolean; degradedReasons: string[] }> {
+    const proposal = await prisma.reconAudit.findFirst({
+      where: {
+        tenantId,
+        entityType: "policy_proposal",
+        entityId: input.proposalId,
+        action: "proposal_generated",
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    if (!proposal) {
+      return {
+        accepted: false,
+        status: "missing",
+        degraded: true,
+        degradedReasons: ["proposal_not_found_or_not_scoped"],
+      };
+    }
+
+    await prisma.reconAudit.create({
+      data: {
+        tenantId,
+        reconJobId: null,
+        reconResultId: null,
+        userId: input.reviewerId,
+        auditType: "policy_evolution",
+        action: "proposal_reviewed",
+        entityType: "policy_proposal",
+        entityId: input.proposalId,
+        changes: {
+          decision: input.decision,
+          reason: input.reason,
+        },
+        beforeState: {},
+        afterState: {
+          status: input.decision,
+        },
+        metadata: {
+          reviewedAt: new Date().toISOString(),
+        },
+      },
+    });
+
+    return {
+      accepted: true,
+      status: input.decision,
+      degraded: false,
+      degradedReasons: [],
+    };
+  }
+
+  async getDecisionHistory(
+    tenantId: string,
+    filters: {
+      runId?: string;
+      sourceId?: string;
+      counterpartyKey?: string;
+      signature?: string;
+      limit?: number;
+    }
+  ): Promise<DecisionHistoryResponse> {
+    const limit = Math.max(1, Math.min(filters.limit ?? 100, 500));
+    const matches = await prisma.reconciliationMatch.findMany({
+      where: {
+        tenantId,
+        reviewed: true,
+        ...(filters.runId ? { runId: filters.runId } : {}),
+        ...(filters.sourceId ? { sourceTransaction: { sourceId: filters.sourceId } } : {}),
+        ...(filters.counterpartyKey
+          ? { sourceTransaction: { externalId: filters.counterpartyKey } }
+          : {}),
+      },
+      include: { sourceTransaction: { include: { source: { select: { id: true } } } } },
+      orderBy: { reviewedAt: "desc" },
+      take: limit * 3,
+    });
+
+    const decisionsMapped = matches.map((match): DecisionHistoryEntry | null => {
+      const signature = signatureFrom(match).signature;
+      if (filters.signature && signature !== filters.signature) return null;
+      return {
+        matchId: match.id,
+        runId: match.runId,
+        tenantId,
+        signature,
+        sourceId: match.sourceTransaction?.source?.id ?? null,
+        counterpartyKey: match.sourceTransaction?.externalId ?? `txn:${match.sourceTransactionId}`,
+        previousState: "pending_review" as const,
+        resultingState: "reviewed" as const,
+        decision: (match.matchReason?.toLowerCase().includes("ignored") ? "ignored" : "manual") as
+          | "manual"
+          | "ignored",
+        actorId: match.reviewedBy,
+        reason: match.matchReason,
+        decidedAt: (match.reviewedAt ?? match.updatedAt).toISOString(),
+      };
+    });
+    const decisions = decisionsMapped
+      .filter((decision): decision is DecisionHistoryEntry => decision !== null)
+      .slice(0, limit);
+
+    return {
+      tenantId,
+      generatedAt: new Date().toISOString(),
+      filters: {
+        runId: filters.runId,
+        sourceId: filters.sourceId,
+        counterpartyKey: filters.counterpartyKey,
+        signature: filters.signature,
+        limit,
+      },
+      degraded: decisions.length === 0,
+      degradedReasons: decisions.length === 0 ? ["no_reviewed_decisions_in_scope"] : [],
+      decisions,
     };
   }
 
