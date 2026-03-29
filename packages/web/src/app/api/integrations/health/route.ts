@@ -3,6 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 import { publicRoute } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
 import { withSecurity } from "@/lib/middleware/api-security";
+import {
+  getExternalPlatformStatuses,
+  summarizePlatformStatus,
+} from "@/lib/integrations/platform-stack";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs"; // Ensure Node.js runtime for Supabase
@@ -19,6 +23,8 @@ export const GET = withSecurity(
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
 
+      const platformServices = await getExternalPlatformStatuses();
+
       // Get user's integrations
       const { data: userIntegrations } = await supabase
         .from("integration_credentials")
@@ -32,7 +38,6 @@ export const GET = withSecurity(
         status?: string;
       };
 
-      // Mock health data (in production, fetch from monitoring system)
       const integrations = (userIntegrations || []).map((integration: IntegrationRow) => {
         // Determine status based on last sync and error rates
         const lastSync = integration.last_sync_at ? new Date(integration.last_sync_at) : null;
@@ -68,12 +73,22 @@ export const GET = withSecurity(
         };
       });
 
-      return NextResponse.json({ integrations });
+      return NextResponse.json({
+        integrations,
+        platform: {
+          status: summarizePlatformStatus(platformServices),
+          services: platformServices,
+        },
+      });
     } catch (error) {
       appLogger.error("Error in integrations/health GET", error);
       return NextResponse.json(
         {
           integrations: [],
+          platform: {
+            status: "degraded",
+            services: await getExternalPlatformStatuses(),
+          },
           error: error instanceof Error ? error.message : "Failed to fetch integrations",
           degraded: true,
         },
