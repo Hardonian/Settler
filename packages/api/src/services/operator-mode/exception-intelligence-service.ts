@@ -1,8 +1,6 @@
 import crypto from "node:crypto";
 import { prisma } from "../../infrastructure/db/prisma";
 
-const prismaAny = prisma as any;
-
 export interface ExceptionSignature {
   signature: string;
   construction: {
@@ -193,6 +191,12 @@ export interface PolicyEvolutionProposal {
   };
   unsupportedMetrics: string[];
   riskFlags: string[];
+  learnedEffectiveness: {
+    score: number;
+    confidence: "low" | "medium" | "high";
+    evidenceCount: number;
+    basis: string[];
+  };
   dataSufficiency: "insufficient" | "limited" | "sufficient";
   status: "pending_review" | "approved" | "rejected" | "deferred";
   latestReview: {
@@ -201,6 +205,26 @@ export interface PolicyEvolutionProposal {
     reviewedAt: string;
     reason: string | null;
   } | null;
+}
+
+export interface ProposalHistoryResponse {
+  proposalId: string;
+  tenantId: string;
+  degraded: boolean;
+  degradedReasons: string[];
+  reviews: Array<{
+    reviewId: string;
+    decision: "approved" | "rejected" | "deferred";
+    actorUserId: string | null;
+    reason: string | null;
+    reasonCodes: string[];
+    createdAt: string;
+  }>;
+  linkedArtifacts: Array<{
+    artifactKey: string;
+    artifactType: string;
+    createdAt: string;
+  }>;
 }
 
 export interface DecisionHistoryEntry {
@@ -433,6 +457,12 @@ function buildProposal(
 
   const dataSufficiency: PolicyEvolutionProposal["dataSufficiency"] =
     cluster.volume >= 10 ? "sufficient" : cluster.volume >= 5 ? "limited" : "insufficient";
+  const learnedScore = Number(
+    (
+      (cluster.resolvedCount / Math.max(1, cluster.volume)) * 0.7 +
+      (1 - cluster.openCount / Math.max(1, cluster.volume)) * 0.3
+    ).toFixed(4)
+  );
 
   return {
     proposalId: crypto
@@ -464,10 +494,31 @@ function buildProposal(
     },
     unsupportedMetrics: ["false_positive_rate", "false_negative_rate", "causal_effect_size"],
     riskFlags,
+    learnedEffectiveness: {
+      score: learnedScore,
+      confidence: cluster.volume >= 10 ? "high" : cluster.volume >= 5 ? "medium" : "low",
+      evidenceCount: cluster.volume,
+      basis: [
+        `resolved_ratio=${(cluster.resolvedCount / Math.max(1, cluster.volume)).toFixed(4)}`,
+        `open_ratio=${(cluster.openCount / Math.max(1, cluster.volume)).toFixed(4)}`,
+      ],
+    },
     dataSufficiency,
     status: latestReview?.decision ?? "pending_review",
     latestReview,
   };
+}
+
+function normalizeReasonCodes(reason: string | null): string[] {
+  if (!reason) return ["reason_unspecified"];
+  const normalized = reason.toLowerCase();
+  const codes: string[] = [];
+  if (normalized.includes("evidence")) codes.push("evidence_quality");
+  if (normalized.includes("risk")) codes.push("risk_concern");
+  if (normalized.includes("data")) codes.push("insufficient_data");
+  if (normalized.includes("manual")) codes.push("operator_workload");
+  if (codes.length === 0) codes.push("freeform_reason");
+  return codes;
 }
 
 export class ExceptionIntelligenceService {
@@ -730,6 +781,74 @@ export class ExceptionIntelligenceService {
           },
         });
       }
+      await prisma.policyEvolutionProposal.upsert({
+        where: {
+          tenantId_proposalKey: {
+            tenantId,
+            proposalKey: proposal.proposalId,
+          },
+        },
+        update: {
+          proposalType: "manual_guardrail",
+          signatureKey: proposal.signature.signature,
+          why: proposal.why,
+          historicalSupport: proposal.historicalBasis,
+          impactSummary: {
+            estimatedImpact: proposal.estimatedImpact,
+            learnedEffectiveness: proposal.learnedEffectiveness,
+          },
+          riskFlags: proposal.riskFlags,
+          missingData: proposal.unsupportedMetrics,
+          status: proposal.status,
+        },
+        create: {
+          tenantId,
+          proposalKey: proposal.proposalId,
+          proposalType: "manual_guardrail",
+          signatureKey: proposal.signature.signature,
+          why: proposal.why,
+          historicalSupport: proposal.historicalBasis,
+          impactSummary: {
+            estimatedImpact: proposal.estimatedImpact,
+            learnedEffectiveness: proposal.learnedEffectiveness,
+          },
+          riskFlags: proposal.riskFlags,
+          missingData: proposal.unsupportedMetrics,
+          status: proposal.status,
+        },
+      });
+      await prisma.policyMemoryArtifact.upsert({
+        where: {
+          tenantId_artifactKey: {
+            tenantId,
+            artifactKey: `proposal:${proposal.proposalId}`,
+          },
+        },
+        update: {
+          artifactType: "policy_proposal",
+          signatureKey: proposal.signature.signature,
+          payload: JSON.parse(JSON.stringify(proposal)),
+          evidenceCount: proposal.historicalBasis.supportCount,
+          degraded: proposal.dataSufficiency === "insufficient",
+          degradedReasons:
+            proposal.dataSufficiency === "insufficient"
+              ? ["insufficient_cluster_volume_for_policy_change"]
+              : [],
+        },
+        create: {
+          tenantId,
+          artifactType: "policy_proposal",
+          artifactKey: `proposal:${proposal.proposalId}`,
+          signatureKey: proposal.signature.signature,
+          payload: JSON.parse(JSON.stringify(proposal)),
+          evidenceCount: proposal.historicalBasis.supportCount,
+          degraded: proposal.dataSufficiency === "insufficient",
+          degradedReasons:
+            proposal.dataSufficiency === "insufficient"
+              ? ["insufficient_cluster_volume_for_policy_change"]
+              : [],
+        },
+      });
       proposals.push(proposal);
     }
 
@@ -785,24 +904,33 @@ export class ExceptionIntelligenceService {
     tenantId: string,
     input: PolicyProposalReviewInput
   ): Promise<{ accepted: boolean; status: string; degraded: boolean; degradedReasons: string[] }> {
-    const proposal = await prisma.reconAudit.findFirst({
-      where: {
-        tenantId,
-        entityType: "policy_proposal",
-        entityId: input.proposalId,
-        action: "proposal_generated",
-      },
-      orderBy: { createdAt: "desc" },
+    const proposal = await prisma.policyEvolutionProposal.findFirst({
+      where: { tenantId, proposalKey: input.proposalId },
     });
-    if (!proposal) {
+    if (!proposal)
       return {
         accepted: false,
         status: "missing",
         degraded: true,
         degradedReasons: ["proposal_not_found_or_not_scoped"],
       };
-    }
 
+    const reasonCodes = normalizeReasonCodes(input.reason);
+    await prisma.policyEvolutionProposalReview.create({
+      data: {
+        tenantId,
+        proposalId: proposal.id,
+        action: input.decision,
+        actorUserId: input.reviewerId,
+        reason: input.reason,
+        priorStatus: proposal.status,
+        resultingStatus: input.decision,
+      },
+    });
+    await prisma.policyEvolutionProposal.update({
+      where: { id: proposal.id },
+      data: { status: input.decision },
+    });
     await prisma.reconAudit.create({
       data: {
         tenantId,
@@ -816,6 +944,7 @@ export class ExceptionIntelligenceService {
         changes: {
           decision: input.decision,
           reason: input.reason,
+          reasonCodes,
         },
         beforeState: {},
         afterState: {
@@ -823,7 +952,46 @@ export class ExceptionIntelligenceService {
         },
         metadata: {
           reviewedAt: new Date().toISOString(),
+          proposalRecordId: proposal.id,
         },
+      },
+    });
+    await prisma.policyMemoryArtifact.upsert({
+      where: {
+        tenantId_artifactKey: {
+          tenantId,
+          artifactKey: `proposal-review:${input.proposalId}`,
+        },
+      },
+      update: {
+        artifactType: "policy_review",
+        signatureKey: proposal.signatureKey,
+        payload: {
+          proposalId: input.proposalId,
+          decision: input.decision,
+          reviewerId: input.reviewerId,
+          reason: input.reason,
+          reasonCodes,
+        },
+        evidenceCount: 1,
+        degraded: false,
+        degradedReasons: [],
+      },
+      create: {
+        tenantId,
+        artifactType: "policy_review",
+        artifactKey: `proposal-review:${input.proposalId}`,
+        signatureKey: proposal.signatureKey,
+        payload: {
+          proposalId: input.proposalId,
+          decision: input.decision,
+          reviewerId: input.reviewerId,
+          reason: input.reason,
+          reasonCodes,
+        },
+        evidenceCount: 1,
+        degraded: false,
+        degradedReasons: [],
       },
     });
 
@@ -832,6 +1000,105 @@ export class ExceptionIntelligenceService {
       status: input.decision,
       degraded: false,
       degradedReasons: [],
+    };
+  }
+
+  async getPolicyEvolutionProposalDetail(
+    tenantId: string,
+    proposalId: string
+  ): Promise<PolicyEvolutionProposal | null> {
+    const proposals = await this.listPolicyEvolutionProposals(tenantId, 30);
+    return proposals.find((proposal) => proposal.proposalId === proposalId) ?? null;
+  }
+
+  async getProposalHistory(
+    tenantId: string,
+    proposalId: string
+  ): Promise<ProposalHistoryResponse | null> {
+    const proposal = await prisma.policyEvolutionProposal.findFirst({
+      where: { tenantId, proposalKey: proposalId },
+      select: { id: true },
+    });
+    if (!proposal) return null;
+    const reviews = await prisma.policyEvolutionProposalReview.findMany({
+      where: { tenantId, proposalId: proposal.id },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    });
+    const artifacts = await prisma.policyMemoryArtifact.findMany({
+      where: {
+        tenantId,
+        OR: [
+          { artifactKey: `proposal:${proposalId}` },
+          { artifactKey: `proposal-review:${proposalId}` },
+        ],
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    return {
+      proposalId,
+      tenantId,
+      degraded: reviews.length === 0,
+      degradedReasons: reviews.length === 0 ? ["no_review_history_for_proposal"] : [],
+      reviews: reviews.map((review) => ({
+        reviewId: review.id,
+        decision: review.resultingStatus as "approved" | "rejected" | "deferred",
+        actorUserId: review.actorUserId,
+        reason: review.reason,
+        reasonCodes: normalizeReasonCodes(review.reason),
+        createdAt: review.createdAt.toISOString(),
+      })),
+      linkedArtifacts: artifacts.map((artifact) => ({
+        artifactKey: artifact.artifactKey,
+        artifactType: artifact.artifactType,
+        createdAt: artifact.createdAt.toISOString(),
+      })),
+    };
+  }
+
+  async getExceptionPlaybooks(
+    tenantId: string,
+    lookbackDays: number
+  ): Promise<{
+    tenantId: string;
+    generatedAt: string;
+    degraded: boolean;
+    degradedReasons: string[];
+    playbooks: ExceptionPlaybookSummary[];
+  }> {
+    const snapshot = await this.getSnapshot(tenantId, lookbackDays);
+    const playbooks = snapshot.clusters.map((cluster) => ({
+      signature: cluster.signature.signature,
+      clusterIdentity: cluster.signature.construction,
+      commonResolutionPaths: cluster.resolutionPath.adjudicationMix,
+      handlingTimeMinutes: {
+        average: cluster.resolutionPath.avgResolutionMinutes,
+        median: cluster.resolutionPath.medianResolutionMinutes,
+      },
+      sourceSystems: snapshot.sourceTrustSignals.map((source) => source.sourceId),
+      commonOperatorActions: [cluster.recommendation.action],
+      escalationIndicators: cluster.openCount > 0 ? ["has_open_exceptions"] : [],
+      ambiguityMarkers:
+        cluster.recommendation.action === "insufficient_data" ? ["insufficient_data"] : [],
+      evidenceCoverage:
+        cluster.volume >= 8
+          ? ("strong" as const)
+          : cluster.volume >= 3
+            ? ("partial" as const)
+            : ("insufficient" as const),
+      basisType:
+        cluster.resolvedCount > 0 && cluster.openCount > 0
+          ? ("mixed" as const)
+          : ("automatic_only" as const),
+      degradedReasons: cluster.recommendation.degraded ? cluster.recommendation.reasons : [],
+    }));
+
+    return {
+      tenantId,
+      generatedAt: new Date().toISOString(),
+      degraded: snapshot.degraded,
+      degradedReasons: snapshot.degradedReasons,
+      playbooks,
     };
   }
 
@@ -902,7 +1169,7 @@ export class ExceptionIntelligenceService {
   }
 
   async getProofGraph(tenantId: string, runId: string): Promise<ProofGraphResponse> {
-    const run: any = await prismaAny.reconciliationRun.findFirst({
+    const run = await prisma.reconciliationRun.findFirst({
       where: { id: runId, tenantId },
       include: { matches: true, provenance: true },
     });
@@ -972,13 +1239,13 @@ export class ExceptionIntelligenceService {
 
   async buildEvidencePack(tenantId: string, runId: string): Promise<EvidencePack> {
     const graph = await this.getProofGraph(tenantId, runId);
-    const run: any = await prismaAny.reconciliationRun.findFirst({
+    const run = await prisma.reconciliationRun.findFirst({
       where: { id: runId, tenantId },
       include: { matches: true, provenance: { orderBy: { sequence: "asc" } } },
     });
     const decisions: AdjudicationEvent[] = (run?.matches ?? [])
-      .filter((m: any) => m.reviewed)
-      .map((m: any) => ({
+      .filter((m) => m.reviewed)
+      .map((m) => ({
         matchId: m.id,
         runId,
         resolution: m.matchReason?.toLowerCase().includes("ignored") ? "ignored" : "manual",
