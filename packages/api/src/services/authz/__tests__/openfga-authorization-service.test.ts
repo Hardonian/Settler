@@ -61,6 +61,33 @@ describe("OpenFgaAuthorizationService", () => {
     expect(global.fetch).not.toHaveBeenCalled();
   });
 
+  it("denies policy proposal review for developer role", async () => {
+    query.mockResolvedValue([{ role: UserRole.DEVELOPER }]);
+
+    const result = await service.authorizeTenantAction(
+      "user-1",
+      "tenant-1",
+      "tenant.policy.proposal.review"
+    );
+
+    expect(result.allowed).toBe(false);
+    expect(result.reason).toBe("insufficient_local_role");
+  });
+
+  it("allows integration read for developer role when OpenFGA is disabled", async () => {
+    query.mockResolvedValue([{ role: UserRole.DEVELOPER }]);
+
+    const result = await service.authorizeTenantAction(
+      "user-1",
+      "tenant-1",
+      "tenant.integration.read"
+    );
+
+    expect(result.allowed).toBe(true);
+    expect(result.mode).toBe("local_rbac");
+    expect(result.openfga.state).toBe("disabled");
+  });
+
   it("uses OpenFGA decision when enabled and reachable", async () => {
     process.env.OPENFGA_ENABLED = "true";
     process.env.OPENFGA_API_URL = "http://openfga.local";

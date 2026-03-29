@@ -31,6 +31,15 @@ export interface TenantActionAuthorization {
   openfga: OpenFgaCheckResult;
 }
 
+export type TenantAction =
+  | "tenant.data.export"
+  | "tenant.data.delete"
+  | "tenant.policy.proposal.review"
+  | "tenant.proof.evidence.export"
+  | "tenant.memory.graph.read"
+  | "tenant.integration.read"
+  | "tenant.integration.manage";
+
 function readConfig(): OpenFgaConfig {
   const enabled = process.env.OPENFGA_ENABLED === "true";
   const required = process.env.OPENFGA_REQUIRED === "true";
@@ -118,34 +127,47 @@ async function getTenantUserRole(userId: string, tenantId: string): Promise<User
   return rows[0]?.role ?? null;
 }
 
-function relationForAction(action: "tenant.data.export" | "tenant.data.delete"): string {
-  if (action === "tenant.data.delete") {
-    return "can_delete";
+function relationForAction(action: TenantAction): string {
+  switch (action) {
+    case "tenant.data.delete":
+      return "can_delete";
+    case "tenant.data.export":
+    case "tenant.proof.evidence.export":
+      return "can_export";
+    case "tenant.policy.proposal.review":
+      return "can_review_policy";
+    case "tenant.memory.graph.read":
+    case "tenant.integration.read":
+      return "can_view";
+    case "tenant.integration.manage":
+      return "can_manage_integrations";
   }
-
-  return "can_export";
 }
 
-function localRoleAllowed(
-  action: "tenant.data.export" | "tenant.data.delete",
-  role: UserRole | null
-): boolean {
+function localRoleAllowed(action: TenantAction, role: UserRole | null): boolean {
   if (!role) {
     return false;
   }
 
-  if (action === "tenant.data.delete") {
-    return role === UserRole.OWNER;
+  switch (action) {
+    case "tenant.data.delete":
+      return role === UserRole.OWNER;
+    case "tenant.data.export":
+    case "tenant.policy.proposal.review":
+    case "tenant.proof.evidence.export":
+    case "tenant.memory.graph.read":
+    case "tenant.integration.manage":
+      return role === UserRole.OWNER || role === UserRole.ADMIN;
+    case "tenant.integration.read":
+      return role === UserRole.OWNER || role === UserRole.ADMIN || role === UserRole.DEVELOPER;
   }
-
-  return role === UserRole.OWNER || role === UserRole.ADMIN;
 }
 
 export class OpenFgaAuthorizationService {
   async authorizeTenantAction(
     userId: string,
     tenantId: string,
-    action: "tenant.data.export" | "tenant.data.delete"
+    action: TenantAction
   ): Promise<TenantActionAuthorization> {
     const role = await getTenantUserRole(userId, tenantId);
     const localAllowed = localRoleAllowed(action, role);
