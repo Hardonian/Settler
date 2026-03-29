@@ -127,4 +127,48 @@ describe("ExceptionIntelligenceService", () => {
     expect(runtime.degraded).toBe(true);
     expect(runtime.degradedReasons).toContain("no_pack_runtime_history");
   });
+
+  it("builds ontology taxonomy summary with explicit degraded semantics for unknowns", async () => {
+    prisma.reconciliationMatch.findMany.mockResolvedValue([
+      {
+        id: "m-1",
+        runId: "run-1",
+        sourceTransactionId: "st-1",
+        metadata: {},
+        matchType: "unmatched",
+        matchReason: "amount variance with missing evidence",
+        confidence: 0.4,
+        reviewed: false,
+        reviewedBy: null,
+        reviewedAt: null,
+        updatedAt: new Date("2026-03-28T10:00:00Z"),
+        createdAt: new Date("2026-03-28T10:00:00Z"),
+        sourceTransaction: null,
+      },
+      {
+        id: "m-2",
+        runId: "run-1",
+        sourceTransactionId: "st-2",
+        metadata: {},
+        matchType: "unmatched",
+        matchReason: null,
+        confidence: 0.4,
+        reviewed: false,
+        reviewedBy: null,
+        reviewedAt: null,
+        updatedAt: new Date("2026-03-28T11:00:00Z"),
+        createdAt: new Date("2026-03-28T11:00:00Z"),
+        sourceTransaction: null,
+      },
+    ]);
+
+    const summary = await service.getExceptionTaxonomySummary("tenant-1", 30);
+
+    expect(summary.totals.exceptionCount).toBe(2);
+    expect(summary.dimensions.mismatchType.amount_mismatch).toBe(1);
+    expect(summary.dimensions.mismatchType.unknown).toBe(1);
+    expect(summary.dimensions.unresolvedBecause.missing_evidence).toBe(1);
+    expect(summary.degraded).toBe(true);
+    expect(summary.degradedReasons).toContain("partial_ontology_coverage");
+  });
 });

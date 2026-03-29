@@ -9,6 +9,7 @@ const serviceMock = {
   getExceptionPlaybooks: jest.fn(),
   getDecisionHistory: jest.fn(),
   getSnapshot: jest.fn(),
+  getExceptionTaxonomySummary: jest.fn(),
   getProofGraph: jest.fn(),
   buildEvidencePack: jest.fn(),
   simulatePolicy: jest.fn(),
@@ -47,6 +48,15 @@ describe("exception intelligence route contracts", () => {
     const response = await request(app).get("/api/v1/operator/intelligence/policy/proposals");
     expect(response.status).toBe(200);
     expect(response.body.data[0].proposalId).toBe("proposal-1");
+  });
+
+  it("serves ontology summary surface", async () => {
+    serviceMock.getExceptionTaxonomySummary.mockResolvedValue({
+      dimensions: { mismatchType: { amount_mismatch: 2 } },
+    });
+    const response = await request(app).get("/api/v1/operator/intelligence/ontology/summary");
+    expect(response.status).toBe(200);
+    expect(response.body.data.dimensions.mismatchType.amount_mismatch).toBe(2);
   });
 
   it("serves lifecycle/friction/fingerprint/effectiveness surfaces", async () => {

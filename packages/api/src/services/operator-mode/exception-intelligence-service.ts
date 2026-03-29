@@ -36,6 +36,36 @@ export interface ExplainableRecommendation {
   degraded: boolean;
 }
 
+export interface ExceptionOntologyClassification {
+  mismatchType: "amount_mismatch" | "date_mismatch" | "reference_mismatch" | "unknown";
+  evidenceGapType:
+    | "missing_supporting_documentation"
+    | "missing_reference_data"
+    | "missing_counterparty_context"
+    | "none"
+    | "unknown";
+  timingDiscrepancyType: "late_arrival" | "window_violation" | "none" | "unknown";
+  policyConflictType: "tolerance_violation" | "rule_conflict" | "none" | "unknown";
+  sourceInconsistencyType: "format_inconsistency" | "duplicate_signal" | "none" | "unknown";
+  reviewRequiredType: "manual_override_required" | "ambiguous_match" | "none" | "unknown";
+  unresolvedBecause:
+    | "missing_evidence"
+    | "policy_too_strict"
+    | "counterparty_dispute"
+    | "operator_capacity"
+    | "unknown";
+  disputeBecause:
+    | "amount_disagreement"
+    | "timing_disagreement"
+    | "evidence_disagreement"
+    | "none"
+    | "unknown";
+  support: "weak" | "partial" | "strong";
+  degraded: boolean;
+  degradedReasons: string[];
+  basis: string[];
+}
+
 export interface SignatureLifecycleSummary {
   tenantId: string;
   signature: string;
@@ -185,7 +215,27 @@ export interface RecurringExceptionCluster {
     medianResolutionMinutes: number | null;
     adjudicationMix: Record<string, number>;
   };
+  ontology: ExceptionOntologyClassification;
   recommendation: ExplainableRecommendation;
+}
+
+export interface ExceptionTaxonomySummary {
+  tenantId: string;
+  generatedAt: string;
+  lookbackDays: number;
+  totals: { exceptionCount: number; unresolvedCount: number };
+  dimensions: {
+    mismatchType: Record<string, number>;
+    evidenceGapType: Record<string, number>;
+    timingDiscrepancyType: Record<string, number>;
+    policyConflictType: Record<string, number>;
+    sourceInconsistencyType: Record<string, number>;
+    reviewRequiredType: Record<string, number>;
+    unresolvedBecause: Record<string, number>;
+    disputeBecause: Record<string, number>;
+  };
+  degraded: boolean;
+  degradedReasons: string[];
 }
 
 export interface ExceptionIntelligenceSnapshot {
@@ -377,6 +427,116 @@ function buildProposalId(tenantId: string, signature: string, lookbackDays: numb
     .slice(0, 24);
 }
 
+function includesAny(value: string, terms: string[]): boolean {
+  return terms.some((term) => value.includes(term));
+}
+
+function classifyExceptionOntology(match: {
+  matchType: string;
+  matchReason: string | null;
+  reviewed: boolean;
+  metadata: unknown;
+}): ExceptionOntologyClassification {
+  const normalizedReason = (match.matchReason ?? "").toLowerCase();
+  const metadata = asRecord(match.metadata);
+  const rationaleCodes = Array.isArray(metadata["rationale_codes"])
+    ? (metadata["rationale_codes"] as unknown[])
+        .filter((item): item is string => typeof item === "string")
+        .map((item) => item.toLowerCase())
+    : [];
+
+  const basis = [
+    `match_type=${match.matchType}`,
+    ...(match.matchReason ? [`reason=${match.matchReason}`] : []),
+    ...(rationaleCodes.length > 0 ? [`rationale_codes=${rationaleCodes.join(",")}`] : []),
+  ];
+
+  const mismatchType = includesAny(normalizedReason, ["amount", "variance"])
+    ? "amount_mismatch"
+    : includesAny(normalizedReason, ["date", "timing", "late"])
+      ? "date_mismatch"
+      : includesAny(normalizedReason, ["reference", "id", "duplicate"])
+        ? "reference_mismatch"
+        : "unknown";
+
+  const evidenceGapType = includesAny(normalizedReason, ["evidence", "document", "invoice"])
+    ? "missing_supporting_documentation"
+    : includesAny(normalizedReason, ["reference", "mapping", "schema"])
+      ? "missing_reference_data"
+      : includesAny(normalizedReason, ["counterparty", "merchant"])
+        ? "missing_counterparty_context"
+        : "none";
+
+  const timingDiscrepancyType = includesAny(normalizedReason, ["late", "delayed", "lag"])
+    ? "late_arrival"
+    : includesAny(normalizedReason, ["window", "date", "timing"])
+      ? "window_violation"
+      : "none";
+
+  const policyConflictType = includesAny(normalizedReason, ["tolerance", "threshold"])
+    ? "tolerance_violation"
+    : includesAny(normalizedReason, ["policy", "rule"])
+      ? "rule_conflict"
+      : "none";
+
+  const sourceInconsistencyType = includesAny(normalizedReason, ["format", "schema"])
+    ? "format_inconsistency"
+    : includesAny(normalizedReason, ["duplicate"])
+      ? "duplicate_signal"
+      : "none";
+
+  const reviewRequiredType = !match.reviewed
+    ? "manual_override_required"
+    : includesAny(normalizedReason, ["ambiguous", "unclear", "manual"])
+      ? "ambiguous_match"
+      : "none";
+
+  const unresolvedBecause = !match.reviewed
+    ? evidenceGapType !== "none"
+      ? "missing_evidence"
+      : policyConflictType !== "none"
+        ? "policy_too_strict"
+        : includesAny(normalizedReason, ["dispute", "chargeback"])
+          ? "counterparty_dispute"
+          : "operator_capacity"
+    : "unknown";
+
+  const disputeBecause = includesAny(normalizedReason, ["dispute", "chargeback", "amount dispute"])
+    ? includesAny(normalizedReason, ["amount", "variance"])
+      ? "amount_disagreement"
+      : includesAny(normalizedReason, ["date", "timing"])
+        ? "timing_disagreement"
+        : "evidence_disagreement"
+    : "none";
+
+  const uncertainDimensions = [mismatchType === "unknown", unresolvedBecause === "unknown"].filter(
+    Boolean
+  ).length;
+
+  const support: ExceptionOntologyClassification["support"] =
+    uncertainDimensions === 0 ? "strong" : uncertainDimensions === 1 ? "partial" : "weak";
+
+  const degradedReasons: string[] = [];
+  if (mismatchType === "unknown") degradedReasons.push("mismatch_type_unsupported");
+  if (unresolvedBecause === "unknown") degradedReasons.push("unresolved_because_unsupported");
+  if (!match.matchReason) degradedReasons.push("missing_match_reason");
+
+  return {
+    mismatchType,
+    evidenceGapType,
+    timingDiscrepancyType,
+    policyConflictType,
+    sourceInconsistencyType,
+    reviewRequiredType,
+    unresolvedBecause,
+    disputeBecause,
+    support,
+    degraded: degradedReasons.length > 0,
+    degradedReasons,
+    basis,
+  };
+}
+
 export class ExceptionIntelligenceService {
   private async fetchScopedMatches(tenantId: string, lookbackDays: number) {
     const since = new Date(Date.now() - lookbackDays * 86400000);
@@ -470,6 +630,12 @@ export class ExceptionIntelligenceService {
     }
 
     const recurring = Array.from(clusters.values()).map((cluster): RecurringExceptionCluster => {
+      const ontology = classifyExceptionOntology({
+        matchType: cluster.signature.construction.matchType,
+        matchReason: cluster.signature.construction.reason,
+        reviewed: cluster.openCount === 0,
+        metadata: { rationale_codes: cluster.signature.construction.rationaleCodes },
+      });
       const openRatio = cluster.openCount / Math.max(1, cluster.volume);
       const lowConfRatio = cluster.lowConfidenceCount / Math.max(1, cluster.volume);
       const recommendation: ExplainableRecommendation =
@@ -528,6 +694,7 @@ export class ExceptionIntelligenceService {
           medianResolutionMinutes: computeMedian(cluster.durations),
           adjudicationMix: cluster.adjudicationMix,
         },
+        ontology,
         recommendation,
       };
     });
@@ -1567,6 +1734,9 @@ export class ExceptionIntelligenceService {
           volume: cluster.volume,
           unresolved: cluster.openCount,
           recommendation: cluster.recommendation.action,
+          mismatchType: cluster.ontology.mismatchType,
+          unresolvedBecause: cluster.ontology.unresolvedBecause,
+          ontologySupport: cluster.ontology.support,
         },
       });
     }
@@ -1916,6 +2086,61 @@ export class ExceptionIntelligenceService {
       },
       degraded: false,
       degradedReasons: [],
+    };
+  }
+
+  async getExceptionTaxonomySummary(
+    tenantId: string,
+    lookbackDays: number
+  ): Promise<ExceptionTaxonomySummary> {
+    const matches = await this.fetchScopedMatches(tenantId, lookbackDays);
+    const dims: ExceptionTaxonomySummary["dimensions"] = {
+      mismatchType: {},
+      evidenceGapType: {},
+      timingDiscrepancyType: {},
+      policyConflictType: {},
+      sourceInconsistencyType: {},
+      reviewRequiredType: {},
+      unresolvedBecause: {},
+      disputeBecause: {},
+    };
+
+    for (const match of matches) {
+      const ontology = classifyExceptionOntology(match);
+      dims.mismatchType[ontology.mismatchType] =
+        (dims.mismatchType[ontology.mismatchType] ?? 0) + 1;
+      dims.evidenceGapType[ontology.evidenceGapType] =
+        (dims.evidenceGapType[ontology.evidenceGapType] ?? 0) + 1;
+      dims.timingDiscrepancyType[ontology.timingDiscrepancyType] =
+        (dims.timingDiscrepancyType[ontology.timingDiscrepancyType] ?? 0) + 1;
+      dims.policyConflictType[ontology.policyConflictType] =
+        (dims.policyConflictType[ontology.policyConflictType] ?? 0) + 1;
+      dims.sourceInconsistencyType[ontology.sourceInconsistencyType] =
+        (dims.sourceInconsistencyType[ontology.sourceInconsistencyType] ?? 0) + 1;
+      dims.reviewRequiredType[ontology.reviewRequiredType] =
+        (dims.reviewRequiredType[ontology.reviewRequiredType] ?? 0) + 1;
+      dims.unresolvedBecause[ontology.unresolvedBecause] =
+        (dims.unresolvedBecause[ontology.unresolvedBecause] ?? 0) + 1;
+      dims.disputeBecause[ontology.disputeBecause] =
+        (dims.disputeBecause[ontology.disputeBecause] ?? 0) + 1;
+    }
+
+    const unresolvedCount = matches.filter((match) => !match.reviewed).length;
+    const degradedReasons: string[] = [];
+    if (matches.length === 0) degradedReasons.push("no_exception_history_in_scope");
+    if ((dims.mismatchType["unknown"] ?? 0) > 0) degradedReasons.push("partial_ontology_coverage");
+
+    return {
+      tenantId,
+      generatedAt: new Date().toISOString(),
+      lookbackDays,
+      totals: {
+        exceptionCount: matches.length,
+        unresolvedCount,
+      },
+      dimensions: dims,
+      degraded: degradedReasons.length > 0,
+      degradedReasons,
     };
   }
 }

@@ -77,6 +77,26 @@ function tenantOr400(req: AuthRequest, res: Response): string | null {
 }
 
 router.get(
+  "/operator/intelligence/ontology/summary",
+  requirePermission(Permission.ADMIN_READ),
+  validateRequest(snapshotSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = tenantOr400(req, res);
+      if (!tenantId) return;
+      const lookbackDays = Number(req.query.lookbackDays ?? 30);
+      const data = await service.getExceptionTaxonomySummary(tenantId, lookbackDays);
+      return res.status(200).json({ data });
+    } catch (error: unknown) {
+      return handleRouteError(res, error, "Failed to load exception ontology summary", 500, {
+        userId: req.userId,
+        tenantId: req.tenantId,
+      });
+    }
+  }
+);
+
+router.get(
   "/operator/intelligence/exceptions/snapshot",
   requirePermission(Permission.ADMIN_READ),
   validateRequest(snapshotSchema),
