@@ -6,6 +6,10 @@ import { Permission } from "../../infrastructure/security/Permissions";
 import { validateRequest } from "../../middleware/validation";
 import { handleRouteError } from "../../utils/error-handler";
 import { ExceptionIntelligenceService } from "../../services/operator-mode/exception-intelligence-service";
+import {
+  getOpenFgaAuthorizationService,
+  TenantAction,
+} from "../../services/authz/openfga-authorization-service";
 
 const router: Router = Router();
 const service = new ExceptionIntelligenceService();
@@ -76,6 +80,44 @@ function tenantOr400(req: AuthRequest, res: Response): string | null {
   return req.tenantId;
 }
 
+async function authorizeTenantActionOr403(
+  req: AuthRequest,
+  res: Response,
+  tenantId: string,
+  action: TenantAction
+): Promise<boolean> {
+  const userId = req.userId;
+  if (!userId) {
+    res.status(401).json({
+      error: "UNAUTHORIZED",
+      message: "Authentication required",
+      reason: "missing_user_context",
+    });
+    return false;
+  }
+
+  const authz = await getOpenFgaAuthorizationService().authorizeTenantAction(
+    userId,
+    tenantId,
+    action
+  );
+  if (authz.allowed) {
+    return true;
+  }
+
+  res.status(403).json({
+    error: "FORBIDDEN",
+    message: "Tenant action is not authorized",
+    reason: authz.reason,
+    authz: {
+      mode: authz.mode,
+      degraded: authz.degraded,
+      openfga: authz.openfga,
+    },
+  });
+  return false;
+}
+
 router.get(
   "/operator/intelligence/ontology/summary",
   requirePermission(Permission.ADMIN_READ),
@@ -124,6 +166,8 @@ router.get(
     try {
       const tenantId = tenantOr400(req, res);
       if (!tenantId) return;
+      if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.memory.graph.read")))
+        return;
       const lookbackDays = Number(req.query.lookbackDays ?? 30);
       const data = await service.getReconciliationMemoryGraph(tenantId, lookbackDays);
       return res.status(200).json({ data });
@@ -187,6 +231,8 @@ router.post(
     try {
       const tenantId = tenantOr400(req, res);
       if (!tenantId) return;
+      if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.policy.proposal.review")))
+        return;
       const proposalId = req.params["proposalId"] as string;
       const data = await service.reviewPolicyEvolutionProposal(tenantId, {
         proposalId,
@@ -300,6 +346,8 @@ router.get(
     try {
       const tenantId = tenantOr400(req, res);
       if (!tenantId) return;
+      if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.proof.evidence.export")))
+        return;
       const runId = req.params["runId"] as string;
       const data = await service.buildEvidencePack(tenantId, runId);
       return res.status(200).json({ data });

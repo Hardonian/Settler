@@ -29,6 +29,13 @@ jest.mock("../../../middleware/authorization", () => ({
   requirePermission: () => (_req: unknown, _res: unknown, next: () => void) => next(),
 }));
 
+const authorizeTenantActionMock = jest.fn();
+jest.mock("../../../services/authz/openfga-authorization-service", () => ({
+  getOpenFgaAuthorizationService: () => ({
+    authorizeTenantAction: authorizeTenantActionMock,
+  }),
+}));
+
 const router = require("../exception-intelligence").default;
 
 describe("exception intelligence route contracts", () => {
@@ -42,6 +49,14 @@ describe("exception intelligence route contracts", () => {
   app.use("/api/v1", router);
 
   beforeEach(() => jest.clearAllMocks());
+  beforeEach(() =>
+    authorizeTenantActionMock.mockResolvedValue({
+      allowed: true,
+      degraded: false,
+      mode: "local_rbac",
+      openfga: { state: "disabled", allowed: false, reason: "openfga_disabled" },
+    })
+  );
 
   it("serves policy proposal list", async () => {
     serviceMock.listPolicyEvolutionProposals.mockResolvedValue([{ proposalId: "proposal-1" }]);
@@ -98,5 +113,23 @@ describe("exception intelligence route contracts", () => {
     );
     expect(response.status).toBe(400);
     expect(response.body.error).toBe("TENANT_CONTEXT_REQUIRED");
+  });
+
+  it("fails closed on proposal review when OpenFGA authorization denies", async () => {
+    authorizeTenantActionMock.mockResolvedValue({
+      allowed: false,
+      reason: "openfga_required_unavailable",
+      degraded: true,
+      mode: "fail_closed",
+      openfga: { state: "unavailable", allowed: false, reason: "openfga_unavailable" },
+    });
+
+    const response = await request(app)
+      .post("/api/v1/operator/intelligence/policy/proposals/proposal-12345/review")
+      .send({ decision: "approved" });
+
+    expect(response.status).toBe(403);
+    expect(response.body.reason).toBe("openfga_required_unavailable");
+    expect(serviceMock.reviewPolicyEvolutionProposal).not.toHaveBeenCalled();
   });
 });
