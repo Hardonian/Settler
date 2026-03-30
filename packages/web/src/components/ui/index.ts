@@ -1,29 +1,38 @@
 // UI Components Index
-export { Button } from './button';
-export type { ButtonProps } from './button';
+export { Button } from "./button";
+export type { ButtonProps } from "./button";
 
-export { Input } from './input';
-export type { InputProps } from './input';
+export { Input } from "./input";
+export type { InputProps } from "./input";
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './card';
-export type { CardProps, CardHeaderProps, CardFooterProps, CardTitleProps, CardDescriptionProps, CardContentProps } from './card';
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from "./card";
+export type {
+  CardProps,
+  CardHeaderProps,
+  CardFooterProps,
+  CardTitleProps,
+  CardDescriptionProps,
+  CardContentProps,
+} from "./card";
 
-export { Badge } from './badge';
-export type { BadgeProps } from './badge';
+export { Badge } from "./badge";
+export type { BadgeProps } from "./badge";
 
-export { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './select';
+export { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "./select";
 
-export { Label } from './label';
-export type { LabelProps } from './label';
+export { ScrollArea } from "./scroll-area";
 
-export { Checkbox } from './checkbox';
-export type { CheckboxProps } from './checkbox';
+export { Label } from "./label";
+export type { LabelProps } from "./label";
 
-export { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';
-export type { TabsProps, TabsListProps, TabsTriggerProps, TabsContentProps } from './tabs';
+export { Checkbox } from "./checkbox";
+export type { CheckboxProps } from "./checkbox";
 
-export { Modal } from './modal';
-export type { ModalProps } from './modal';
+export { Tabs, TabsList, TabsTrigger, TabsContent } from "./tabs";
+export type { TabsProps, TabsListProps, TabsTriggerProps, TabsContentProps } from "./tabs";
+
+export { Modal } from "./modal";
+export type { ModalProps } from "./modal";
 
 export {
   Table,
@@ -34,7 +43,7 @@ export {
   TableRow,
   TableCell,
   TableCaption,
-} from './table';
+} from "./table";
 export type {
   TableProps,
   TableHeaderProps,
@@ -44,30 +53,30 @@ export type {
   TableRowProps,
   TableCellProps,
   TableCaptionProps,
-} from './table';
+} from "./table";
 
 // Specialized UI Components
-export { SpotlightCard } from './SpotlightCard';
-export { TextReveal, TextRevealHeading } from './TextReveal';
-export { ParallaxBackground, ParallaxBlobs } from './ParallaxBackground';
-export { SmoothScroll } from './SmoothScroll';
-export { BentoGrid, BentoGridItem } from './BentoGrid';
-export { CodeBlock } from './code-block';
+export { SpotlightCard } from "./SpotlightCard";
+export { TextReveal, TextRevealHeading } from "./TextReveal";
+export { ParallaxBackground, ParallaxBlobs } from "./ParallaxBackground";
+export { SmoothScroll } from "./SmoothScroll";
+export { BentoGrid, BentoGridItem } from "./BentoGrid";
+export { CodeBlock } from "./code-block";
 
-export { Loading } from './loading';
-export type { LoadingProps } from './loading';
+export { Loading } from "./loading";
+export type { LoadingProps } from "./loading";
 
-export { Skeleton, SkeletonText, SkeletonCard } from './skeleton';
-export type { SkeletonProps, SkeletonTextProps, SkeletonCardProps } from './skeleton';
+export { Skeleton, SkeletonText, SkeletonCard } from "./skeleton";
+export type { SkeletonProps, SkeletonTextProps, SkeletonCardProps } from "./skeleton";
 
-export { EmptyState } from './empty-state';
-export type { EmptyStateProps } from './empty-state';
+export { EmptyState } from "./empty-state";
+export type { EmptyStateProps } from "./empty-state";
 
-export { ErrorState } from './error-state';
-export type { ErrorStateProps } from './error-state';
+export { ErrorState } from "./error-state";
+export type { ErrorStateProps } from "./error-state";
 
-export { DataLoader } from './data-loader';
-export type { DataLoaderProps } from './data-loader';
+export { DataLoader } from "./data-loader";
+export type { DataLoaderProps } from "./data-loader";
 
-export { ErrorBoundary } from './error-boundary';
-export type { ErrorBoundaryProps, ErrorFallbackProps } from './error-boundary';
+export { ErrorBoundary } from "./error-boundary";
+export type { ErrorBoundaryProps, ErrorFallbackProps } from "./error-boundary";

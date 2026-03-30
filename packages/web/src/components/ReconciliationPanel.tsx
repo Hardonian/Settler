@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion";
 
 interface ReconciliationPanelProps {
   matchedCount: number;
@@ -53,9 +54,11 @@ const ReconciliationPanel: React.FC<ReconciliationPanelProps> = ({
           </div>
 
           <div className="h-3 w-full bg-neutral-200/20 dark:bg-white/5 rounded-full overflow-hidden shadow-inner border border-white/5">
-            <div
-              className="h-full bg-gradient-to-r from-teal-600 to-teal-400 rounded-full transition-all duration-1000 ease-out will-change-transform w-[var(--p-width)]"
-              style={{ "--p-width": `${matchedPercentage}%` } as React.CSSProperties}
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${matchedPercentage}%` }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="h-full bg-gradient-to-r from-teal-600 to-teal-400 rounded-full will-change-transform"
             />
           </div>
 
@@ -84,9 +87,11 @@ const ReconciliationPanel: React.FC<ReconciliationPanelProps> = ({
           </div>
 
           <div className="h-3 w-full bg-neutral-200/20 dark:bg-white/5 rounded-full overflow-hidden shadow-inner border border-white/5">
-            <div
-              className="h-full bg-gradient-to-r from-blue-600 to-blue-400 rounded-full transition-all duration-1000 ease-out will-change-transform w-[var(--p-width)]"
-              style={{ "--p-width": `${unmatchedPercentage}%` } as React.CSSProperties}
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${unmatchedPercentage}%` }}
+              transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+              className="h-full bg-gradient-to-r from-blue-600 to-blue-400 rounded-full will-change-transform"
             />
           </div>
 

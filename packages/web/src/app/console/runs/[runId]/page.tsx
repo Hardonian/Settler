@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -212,10 +213,12 @@ export default function RunPage() {
                 <span>Progress</span>
                 <span>{run.progress}%</span>
               </div>
-              <div className="w-full bg-muted rounded-full h-2">
-                <div
-                  className="bg-blue-600 h-2 rounded-full transition-all"
-                  style={{ "--p-width": `${run.progress}%` } as React.CSSProperties}
+              <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${run.progress}%` }}
+                  transition={{ duration: 0.8, ease: "easeInOut" }}
+                  className="bg-blue-600 h-2 rounded-full shadow-[0_0_8px_rgba(37,99,235,0.4)]"
                 />
               </div>
             </div>
