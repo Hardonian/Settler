@@ -51,9 +51,7 @@ export const RunStatistics = memo(function RunStatistics({
       <div className="p-5 rounded-2xl border bg-gradient-to-br from-card/30 to-muted/20 backdrop-blur-sm">
         <div className="flex items-center gap-2 mb-4">
           <BarChart3 className="w-4 h-4 text-primary" />
-          <h3 className="text-sm font-bold tracking-tight uppercase tracking-wider">
-            Comparative Drift Insights
-          </h3>
+          <h3 className="text-sm font-bold uppercase tracking-wider">Comparative Drift Insights</h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-4">

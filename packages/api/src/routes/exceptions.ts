@@ -29,6 +29,22 @@ import { NotFoundError, ConflictError } from "../utils/typed-errors";
 import { trackEventAsync } from "../utils/event-tracker";
 import { logInfo } from "../utils/logger";
 
+type ExceptionForMapping = Prisma.ReconciliationMatchGetPayload<{
+  include: {
+    run: { select: { id: true } };
+    sourceTransaction: {
+      select: {
+        id: true;
+        category: true;
+        description: true;
+        amount: true;
+        currency: true;
+        date: true;
+      };
+    };
+  };
+}>;
+
 const router: Router = Router();
 const provenanceService = new ProvenanceService(prisma);
 const exceptionReviewService = new ExceptionReviewService(prisma, provenanceService);
@@ -147,7 +163,7 @@ function appendAdjudicationHistory(
   };
 }
 
-function mapExceptionToResponse(e: any) {
+function mapExceptionToResponse(e: ExceptionForMapping) {
   let status: "open" | "in_progress" | "resolved" | "dismissed" = e.status || "open";
   if (!e.status && e.reviewed) {
     status = e.matchReason?.toLowerCase().includes("ignored") ? "dismissed" : "resolved";
@@ -221,7 +237,7 @@ router.get(
         offset,
       } = listExceptionsSchema.parse({ query: req.query }).query;
 
-      const where: any = {
+      const where: Prisma.ReconciliationMatchWhereInput = {
         tenantId,
         matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] },
         ...(jobId && { runId: jobId }),
@@ -741,7 +757,7 @@ router.post(
           action: "exception_assigned",
           resourceType: "reconciliation_match",
           resourceId: id,
-          metadata: { assignedTo, previousAssignee: existing.assignedTo, notes } as any,
+          metadata: { assignedTo, previousAssignee: existing.assignedTo, notes },
         },
       });
 
@@ -845,7 +861,7 @@ router.put(
             toStatus: status,
             notes,
             resolutionReason,
-          } as any,
+          },
         },
       });
 
@@ -981,7 +997,7 @@ router.post(
             duplicateRequestCount: result.duplicateRequestCount,
             requestedCount: result.requestedCount,
             uniqueExceptionCount: result.uniqueExceptionCount,
-          } as any,
+          },
           traceId: req.traceId ?? null,
           requestId: req.requestId ?? null,
           actorType: "user",
@@ -1058,7 +1074,7 @@ router.post(
           action: "exceptions_bulk_assigned",
           resourceType: "reconciliation_match",
           resourceId: null,
-          metadata: { assignedTo, exceptionCount: result.count } as any,
+          metadata: { assignedTo, exceptionCount: result.count },
         },
       });
 
@@ -1118,7 +1134,7 @@ router.post(
           action: "exceptions_bulk_status_changed",
           resourceType: "reconciliation_match",
           resourceId: null,
-          metadata: { newStatus: status, exceptionCount: result.count, notes } as any,
+          metadata: { newStatus: status, exceptionCount: result.count, notes },
         },
       });
 

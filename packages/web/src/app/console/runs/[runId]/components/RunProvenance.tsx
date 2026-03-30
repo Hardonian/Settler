@@ -1,7 +1,7 @@
 "use client";
 
 import React, { memo } from "react";
-import { Database, User, Shield, Info, ArrowRight } from "lucide-react";
+import { Database, User, Shield, Info } from "lucide-react";
 import type { OperatorRunDetail } from "@/types/operator-run-detail";
 
 interface RunProvenanceProps {

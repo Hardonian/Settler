@@ -59,6 +59,7 @@
     "streamable",
     "TIGERBEETLE",
     "TIMESTAMPTZ",
+    "TOCTOU",
     "trgm",
     "triaging",
     "typname",
