@@ -245,14 +245,7 @@ export async function onReconciliationRunCompletedHook(
 ): Promise<void> {
   try {
     const { RunDeltaService } = await import("../intelligence/run-delta");
-    const { getPool } = await import("../../db");
-
-    const prisma = new PrismaClient({
-      adapter: await import("@prisma/adapter-pg"),
-      ...((await getPool()) && {
-        datasources: { db: { url: (await getPool()).totalCount > 0 ? "" : "" } },
-      }),
-    });
+    const { prisma } = await import("../../infrastructure/db/prisma");
 
     const runDeltaService = new RunDeltaService(prisma);
     const delta = await runDeltaService.onRunCompleted(tenantId, jobId, runId);
@@ -273,6 +266,15 @@ export async function onReconciliationRunCompletedHook(
         },
       });
     }
+  } catch (error) {
+    logError("Run delta computation hook failed", {
+      tenantId,
+      jobId,
+      runId,
+      error,
+    });
+  }
+}
 
     await prisma.$disconnect();
   } catch (error) {
