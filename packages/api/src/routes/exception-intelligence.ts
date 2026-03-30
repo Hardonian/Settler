@@ -612,15 +612,14 @@ router.post(
         data: {
           tenantId,
           exceptionId,
-          runId: exception.runId,
           archetypeId: exception.archetypeClassifications[0]?.archetypeId,
           resolution: resolution || "unknown",
-          reason: reason || "",
-          notes: notes || "",
+          resolutionReason: reason || "",
+          operatorNotes: notes || "",
           adjudicatorId: userId,
           adjudicatorType: "operator",
           adjudicationType: override ? "override" : "standard",
-          matchFeatures: exception.metadata as unknown as Record<string, unknown> | undefined,
+          annotations: exception.metadata as unknown as Record<string, unknown> | undefined,
         },
       });
 

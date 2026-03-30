@@ -30,6 +30,6 @@ export type {
   WhyFlaggedResult,
   PolicyTuningHint,
   FlagReason,
-  AdjudicationRecord,
-  AdjudicationInput,
+  AdjudicationMemoryInput,
+  AdjudicationMemoryRecord,
 } from "./adjudication-memory";
