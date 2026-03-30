@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -71,7 +71,7 @@ async function fetchExceptionDetail(exceptionId: string): Promise<ExceptionDetai
     throw new Error(result.error?.message || "Failed to load exception detail");
   }
 
-  return result.data;
+  return result.data.data;
 }
 
 // ─── Main page ─────────────────────────────────────────────────────────────────
