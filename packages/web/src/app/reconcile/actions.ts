@@ -3,14 +3,11 @@
 import { prisma } from "@/shared/db/prismaClient";
 import { revalidatePath } from "next/cache";
 
-export async function acceptMatch(sourceTransactionId: string, targetTransactionId: string | null) {
+export async function acceptMatch(sourceTransactionId: string, targetTransactionId: string | null, sourceTxDto: any) {
   try {
-    // Upsert or create the review record. Since `id` is a UUID, we can't upsert directly without an active Run.
-    // For the sake of the canonical path + demo fallback, we will create a new Run & Match if one does not exist.
-    // We expect a tenantId in a real app, we'll hardcode a dummy or grab the first for now to ensure DB rules are met.
-    const tenantAction = await getOrCreateTenant();
+    const tenantAction = await getOrCreateTenant(sourceTxDto);
     
-    // Create an explicit audit log / match record for the Accepted state
+    // Upsert or create the review record. 
     const match = await prisma.reconciliationMatch.create({
       data: {
         runId: tenantAction.runId,
@@ -28,7 +25,7 @@ export async function acceptMatch(sourceTransactionId: string, targetTransaction
     });
 
     revalidatePath("/reconcile");
-    revalidatePath(`/reconcile/${sourceTransactionId}`);
+    revalidatePath(\`/reconcile/\${sourceTransactionId}\`);
     return { success: true, matchId: match.id };
   } catch (error) {
     console.error("Failed to accept match", error);
@@ -36,9 +33,9 @@ export async function acceptMatch(sourceTransactionId: string, targetTransaction
   }
 }
 
-export async function modifyMatch(sourceTransactionId: string, newTargetTransactionId: string | null, notes: string) {
+export async function modifyMatch(sourceTransactionId: string, newTargetTransactionId: string | null, notes: string, sourceTxDto: any) {
   try {
-    const tenantAction = await getOrCreateTenant();
+    const tenantAction = await getOrCreateTenant(sourceTxDto);
     
     const match = await prisma.reconciliationMatch.create({
       data: {
@@ -57,7 +54,7 @@ export async function modifyMatch(sourceTransactionId: string, newTargetTransact
     });
 
     revalidatePath("/reconcile");
-    revalidatePath(`/reconcile/${sourceTransactionId}`);
+    revalidatePath(\`/reconcile/\${sourceTransactionId}\`);
     return { success: true, matchId: match.id };
   } catch (error) {
     console.error("Failed to modify match", error);
@@ -65,9 +62,9 @@ export async function modifyMatch(sourceTransactionId: string, newTargetTransact
   }
 }
 
-export async function overrideMatch(sourceTransactionId: string, overrideReason: string) {
+export async function overrideMatch(sourceTransactionId: string, overrideReason: string, sourceTxDto: any) {
   try {
-    const tenantAction = await getOrCreateTenant();
+    const tenantAction = await getOrCreateTenant(sourceTxDto);
     
     const match = await prisma.reconciliationMatch.create({
       data: {
@@ -86,7 +83,7 @@ export async function overrideMatch(sourceTransactionId: string, overrideReason:
     });
 
     revalidatePath("/reconcile");
-    revalidatePath(`/reconcile/${sourceTransactionId}`);
+    revalidatePath(\`/reconcile/\${sourceTransactionId}\`);
     return { success: true, matchId: match.id };
   } catch (error) {
     console.error("Failed to override match", error);
@@ -108,11 +105,49 @@ export async function fetchReviewState(sourceTransactionId: string) {
 }
 
 // Fallback helper to ensure we satisfy Foreign Key constraints for demo local
-async function getOrCreateTenant() {
+async function getOrCreateTenant(sourceTxDto: any) {
   let tenant = await prisma.tenant.findFirst();
   if (!tenant) {
     tenant = await prisma.tenant.create({
       data: { name: "System Tenant", slug: "system", isActive: true }
+    });
+  }
+
+  // Ensure source adapter / ingestion exists
+  let source = await prisma.ingestionSource.findFirst({ where: { tenantId: tenant.id } });
+  if (!source) {
+    const user = "00000000-0000-0000-0000-000000000000";
+    source = await prisma.ingestionSource.create({
+      data: { tenantId: tenant.id, userId: user, name: "Demo Import", type: "manual" }
+    });
+  }
+
+  // Ensure ingestion
+  let ingestion = await prisma.ingestion.findFirst({ where: { sourceId: source.id } });
+  if (!ingestion) {
+    const user = "00000000-0000-0000-0000-000000000000";
+    ingestion = await prisma.ingestion.create({
+      data: { sourceId: source.id, tenantId: tenant.id, userId: user, status: "completed" }
+    });
+  }
+
+  // Upsert the specific NormalizedTransaction to satisfy the Foreign Key constraint
+  let normTx = await prisma.normalizedTransaction.findUnique({
+    where: { id: sourceTxDto.id }
+  });
+  
+  if (!normTx && sourceTxDto.id.length === 36) { // Ensure validity as UUID, fallback if fake UUIDs are used in loaders
+    normTx = await prisma.normalizedTransaction.create({
+      data: {
+        id: sourceTxDto.id,
+        tenantId: tenant.id,
+        sourceId: source.id,
+        ingestionId: ingestion.id,
+        amount: Math.abs(sourceTxDto.amount),
+        currency: sourceTxDto.currency || "USD",
+        date: new Date(sourceTxDto.timestamp),
+        description: sourceTxDto.description || "Demo fallback transaction"
+      }
     });
   }
 
@@ -122,10 +157,7 @@ async function getOrCreateTenant() {
   });
   
   if (!run) {
-    // Need a dummy user too
-    let user = "00000000-0000-0000-0000-000000000000";
-    
-    // We'll wrap this in a catch if PG fails to use UUID zeroes.
+    const user = "00000000-0000-0000-0000-000000000000";
     try {
       run = await prisma.reconciliationRun.create({
         data: {
@@ -136,7 +168,6 @@ async function getOrCreateTenant() {
         }
       });
     } catch (e) {
-       // if zero uuid fails, we'll try something else or bypass.
        throw e;
     }
   }

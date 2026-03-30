@@ -2104,3 +2104,129 @@ model RetentionMetric {
   @@index([runDate(sort: Desc)])
   @@map("retention_metrics")
 }
+
+// ============================================================================
+// APPROVAL WORKFLOW MODELS
+// Formal approval chains for policy changes, exports, and critical operations
+// ============================================================================
+
+model ApprovalRequest {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  requestedBy       String    @db.Uuid
+  approverId        String?   @db.Uuid
+  approverRole      String?   // Role-based approval (e.g., "supervisor", "finance_admin")
+  
+  # Target of approval
+  requestType       String    // "policy_change", "export", "exception_override", "rule_modification"
+  reconciliationRunId String? @db.Uuid
+  reconJobId        String?   @db.Uuid
+  reconResultId     String?   @db.Uuid
+  proposalId        String?   @db.Uuid
+  
+  # Request details
+  requestDetails    Json      @default("{}")
+  comments          String?   @db.Text
+  justification     String?   @db.Text
+  
+  # Status and timing
+  status            String    @default("pending") // pending, approved, rejected, cancelled, expired
+  requestedAt       DateTime  @default(now())
+  approvedAt        DateTime?
+  rejectedAt        DateTime?
+  cancelledAt       DateTime?
+  expiresAt         DateTime?
+  
+  # Outcome
+  outcome          String?   // approved, rejected, superseded, auto_approved, auto_rejected
+  outcomeReason   String?  @db.Text
+  
+  # Multi-step approvals
+  approvalStep     Int      @default(1)
+  requiredSteps    Int      @default(1)
+  approvalChain    Json     @default("[]") // History of approval steps
+  
+  # Separation of duties
+  separationViolation Boolean @default(false) // True if requester tried to self-approve
+  
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([tenantId])
+  @@index([requestedBy])
+  @@index([approverId])
+  @@index([approverRole])
+  @@index([requestType])
+  @@index([status])
+  @@index([requestedAt(sort: Desc)])
+  @@index([expiresAt])
+  @@map("approval_requests")
+}
+
+model Approver {
+  id                  String    @id @default(uuid())
+  tenantId            String    @db.Uuid
+  userId              String    @db.Uuid
+  role                String    // e.g., "supervisor", "finance_admin", "compliance_officer"
+  
+  # Approval scope
+  approvalScope        Json      @default("{}") // { "requestTypes": ["export", "policy_change"], "maxAmount": 10000 }
+  approvalThreshold    Int?      // For multi-step: number of approvers needed
+  
+  # Capabilities
+  canApproveFinal     Boolean   @default(false)
+  canEscalate         Boolean   @default(true)
+  canDelegate         Boolean   @default(false)
+  maxDelegationDepth  Int       @default(0)
+  
+  # Status
+  isActive            Boolean   @default(true)
+  autoApproveEnabled  Boolean   @default(false) // Auto-approve under certain conditions
+  
+  # Notifications
+  notifyOnRequest     Boolean   @default(true)
+  notifyOnExpiration  Boolean   @default(true)
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt          DateTime?
+
+  @@unique([tenantId, userId, role])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([role])
+  @@index([isActive])
+  @@map("approvers")
+}
+
+model ApprovalDelegation {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  delegatorId       String    @db.Uuid // Original approver
+  delegateId        String    @db.Uuid // Person delegated to
+  role              String    // Role being delegated
+  
+  # Delegation scope
+  scope             Json      @default("{}") // Limitations on delegation
+  requestTypes      Json      @default("[]") // Which request types can be delegated
+  
+  # Timing
+  validFrom         DateTime  @default(now())
+  validUntil        DateTime?
+  isActive          Boolean   @default(true)
+  
+  # Constraints
+  maxDelegations    Int       @default(1) // How many times this can be used
+  usedCount         Int       @default(0)
+  
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+
+  @@unique([tenantId, delegatorId, delegateId, role])
+  @@index([tenantId])
+  @@index([delegatorId])
+  @@index([delegateId])
+  @@index([isActive])
+  @@map("approval_delegations")
+}
