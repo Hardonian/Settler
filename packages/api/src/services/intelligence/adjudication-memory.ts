@@ -240,11 +240,11 @@ export class AdjudicationMemoryService {
         evidenceIds: input.evidenceIds ?? [],
         sourceTrustScore: input.sourceTrustScore,
 
-        annotations: input.annotations ?? {},
+        annotations: (input.annotations ?? {}) as Record<string, unknown>,
         operatorNotes: input.operatorNotes,
         systemNotes: input.systemNotes,
 
-        suggestedPolicyChange: input.suggestedPolicyChange ?? undefined,
+        suggestedPolicyChange: input.suggestedPolicyChange as Record<string, unknown> | undefined,
 
         entryHash,
       },

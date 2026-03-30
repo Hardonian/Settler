@@ -13,6 +13,7 @@
 
 import { Router, Response } from "express";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
@@ -24,50 +25,6 @@ import { logInfo } from "../utils/logger";
 
 const router: Router = Router();
 
-const findSimilarCasesSchema = z.object({
-  params: z.object({
-    exceptionId: z.string().uuid(),
-  }),
-  query: z.object({
-    limit: z.string().regex(/^\d+$/).transform(Number).optional().default("5"),
-    includeResolved: z
-      .string()
-      .transform((v) => v === "true")
-      .optional()
-      .default("false"),
-  }),
-});
-
-const whyFlaggedSchema = z.object({
-  params: z.object({
-    exceptionId: z.string().uuid(),
-  }),
-});
-
-const policyTuningHintsSchema = z.object({
-  params: z.object({
-    exceptionId: z.string().uuid(),
-  }),
-});
-
-const runDeltaSchema = z.object({
-  params: z.object({
-    runId: z.string().uuid(),
-  }),
-  query: z.object({
-    previousRunId: z.string().uuid().optional(),
-  }),
-});
-
-const runTrendSchema = z.object({
-  params: z.object({
-    jobId: z.string().uuid(),
-  }),
-  query: z.object({
-    runs: z.string().regex(/^\d+$/).transform(Number).optional().default("5"),
-  }),
-});
-
 /**
  * GET /api/exceptions/:exceptionId/similar
  * Find similar resolved exceptions for reference
@@ -75,23 +32,15 @@ const runTrendSchema = z.object({
 router.get(
   "/:exceptionId/similar",
   requirePermission(Permission.OPERATOR_READ),
-  validateRequest(findSimilarCasesSchema),
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
       const exceptionId = req.params.exceptionId as string;
-      const { limit, includeResolved } = req.query as {
-        limit: number;
-        includeResolved: boolean;
-      };
+      const limit = parseInt(req.query.limit as string) || 5;
+      const includeResolved = req.query.includeResolved === "true";
 
       const exception = await prisma.reconciliationMatch.findFirst({
         where: { id: exceptionId, tenantId },
-        include: {
-          archetypeClassifications: {
-            include: { archetype: true },
-          },
-        },
       });
 
       if (!exception) {
@@ -105,22 +54,6 @@ router.get(
           tenantId,
           status: { in: resolvedStatuses },
           id: { not: exceptionId },
-          archetypeClassifications: {
-            some: {
-              archetypeId: {
-                in: exception.archetypeClassifications.map((c) => c.archetypeId),
-              },
-            },
-          },
-        },
-        include: {
-          archetypeClassifications: {
-            include: { archetype: true },
-          },
-          adjudicationMemories: {
-            orderBy: { createdAt: "desc" },
-            take: 1,
-          },
         },
         take: limit,
         orderBy: { confidence: "desc" },
@@ -131,9 +64,8 @@ router.get(
         status: match.status,
         resolution: match.resolutionReason,
         confidence: match.confidence.toNumber(),
-        archetype: match.archetypeClassifications[0]?.archetype?.label || "Unknown",
-        adjudicatedAt: match.adjudicationMemories[0]?.createdAt || null,
-        similarity: match.archetypeClassifications.length > 0 ? 0.8 : 0.5,
+        severity: match.severity,
+        adjudicatedAt: match.reviewedAt,
       }));
 
       logInfo("Similar cases retrieved", {
@@ -164,7 +96,6 @@ router.get(
 router.get(
   "/:exceptionId/explain",
   requirePermission(Permission.OPERATOR_READ),
-  validateRequest(whyFlaggedSchema),
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
@@ -172,14 +103,6 @@ router.get(
 
       const exception = await prisma.reconciliationMatch.findFirst({
         where: { id: exceptionId, tenantId },
-        include: {
-          archetypeClassifications: {
-            include: { archetype: true },
-          },
-          run: {
-            include: { reconJob: true },
-          },
-        },
       });
 
       if (!exception) {
@@ -188,37 +111,35 @@ router.get(
 
       const reasons: { code: string; label: string; confidence: number; details: string }[] = [];
 
-      for (const classification of exception.archetypeClassifications) {
+      const meta = exception.metadata as {
+        amountDiff?: number;
+        dateDiff?: number;
+        reason?: string;
+      } | null;
+      if (meta?.amountDiff) {
         reasons.push({
-          code: classification.archetype.code,
-          label: classification.archetype.label,
-          confidence: classification.confidence.toNumber(),
-          details: classification.archetype.description || "",
+          code: "AMOUNT_DIFF",
+          label: "Amount difference detected",
+          confidence: Math.min(Math.abs(Number(meta.amountDiff)) / 100, 1),
+          details: `Difference of ${meta.amountDiff}`,
+        });
+      }
+      if (meta?.dateDiff) {
+        reasons.push({
+          code: "DATE_DIFF",
+          label: "Date drift detected",
+          confidence: Math.min(Math.abs(meta.dateDiff) / 30, 1),
+          details: `Difference of ${meta.dateDiff} days`,
         });
       }
 
-      if (exception.metadata) {
-        const meta = exception.metadata as {
-          amountDiff?: number;
-          dateDiff?: number;
-          reason?: string;
-        };
-        if (meta.amountDiff) {
-          reasons.push({
-            code: "AMOUNT_DIFF",
-            label: "Amount difference detected",
-            confidence: Math.min(Math.abs(Number(meta.amountDiff)) / 100, 1),
-            details: `Difference of ${meta.amountDiff}`,
-          });
-        }
-        if (meta.dateDiff) {
-          reasons.push({
-            code: "DATE_DIFF",
-            label: "Date drift detected",
-            confidence: Math.min(Math.abs(meta.dateDiff) / 30, 1),
-            details: `Difference of ${meta.dateDiff} days`,
-          });
-        }
+      if (!exception.targetTransactionId) {
+        reasons.push({
+          code: "MISSING_IN_TARGET",
+          label: "No matching record found in target",
+          confidence: 0.9,
+          details: "Source transaction has no counterpart in target",
+        });
       }
 
       const explanation = {
@@ -226,12 +147,11 @@ router.get(
         reasons,
         summary:
           reasons.length > 0
-            ? `This exception was flagged due to ${reasons[0].label.toLowerCase()} with ${Math.round(reasons[0].confidence * 100)}% confidence.`
+            ? `This exception was flagged due to ${reasons[0].label.toLowerCase()}.`
             : "This exception was flagged based on reconciliation rules.",
         metadata: {
           severity: exception.severity,
           confidence: exception.confidence.toNumber(),
-          jobName: exception.run?.reconJob?.name || "Unknown",
         },
       };
 
@@ -263,7 +183,6 @@ router.get(
 router.get(
   "/:exceptionId/policy-hints",
   requirePermission(Permission.OPERATOR_READ),
-  validateRequest(policyTuningHintsSchema),
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
@@ -271,14 +190,6 @@ router.get(
 
       const exception = await prisma.reconciliationMatch.findFirst({
         where: { id: exceptionId, tenantId },
-        include: {
-          archetypeClassifications: {
-            include: { archetype: true },
-          },
-          run: {
-            include: { reconJob: true },
-          },
-        },
       });
 
       if (!exception) {
@@ -287,40 +198,32 @@ router.get(
 
       const hints: { type: string; priority: string; suggestion: string; rationale: string }[] = [];
 
-      for (const classification of exception.archetypeClassifications) {
-        if (classification.archetype.typicalResolution) {
-          hints.push({
-            type: "resolution_template",
-            priority: "high",
-            suggestion: `For ${classification.archetype.label}, consider: ${classification.archetype.typicalResolution}`,
-            rationale: `This archetype has historically been resolved with this approach.`,
-          });
-        }
-      }
-
-      const recentSimilarCount = await prisma.reconciliationMatch.count({
+      const recentCount = await prisma.reconciliationMatch.count({
         where: {
           tenantId,
           status: { in: ["resolved", "dismissed"] },
-          archetypeClassifications: {
-            some: {
-              archetypeId: {
-                in: exception.archetypeClassifications.map((c) => c.archetypeId),
-              },
-            },
-          },
+          severity: exception.severity,
           updatedAt: {
             gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
           },
         },
       });
 
-      if (recentSimilarCount > 10) {
+      if (recentCount > 10) {
         hints.push({
           type: "auto_resolution",
           priority: "medium",
-          suggestion: "Consider creating an auto-resolution rule for this pattern.",
-          rationale: `${recentSimilarCount} similar exceptions have been resolved in the last 30 days.`,
+          suggestion: "Consider creating an auto-resolution rule for this severity level.",
+          rationale: `${recentCount} similar exceptions have been resolved in the last 30 days.`,
+        });
+      }
+
+      if (exception.confidence.toNumber() < 0.7) {
+        hints.push({
+          type: "threshold_adjustment",
+          priority: "high",
+          suggestion: "Review confidence threshold for this match type.",
+          rationale: "Low confidence matches may indicate need for threshold tuning.",
         });
       }
 
@@ -352,16 +255,14 @@ router.get(
 router.get(
   "/runs/:runId/delta",
   requirePermission(Permission.JOBS_READ),
-  validateRequest(runDeltaSchema),
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
       const runId = req.params.runId as string;
-      const previousRunId = (req.query.previousRunId as string) || undefined;
+      const previousRunId = req.query.previousRunId as string | undefined;
 
       const run = await prisma.reconResult.findFirst({
         where: { id: runId, tenantId },
-        include: { reconJob: true },
       });
 
       if (!run) {
@@ -374,7 +275,6 @@ router.get(
 
       if (storedDelta) {
         logInfo("Stored run delta retrieved", { tenantId, runId });
-
         return res.json({ data: storedDelta });
       }
 
@@ -417,8 +317,6 @@ router.get(
 
       const sourceDelta = run.sourceCount - previousRun.sourceCount;
       const targetDelta = run.targetCount - previousRun.targetCount;
-      const matchedDelta = run.matchedCount - previousRun.matchedCount;
-      const exceptionDelta = (run.conflictCount || 0) - (previousRun.conflictCount || 0);
 
       const delta = await prisma.runDelta.create({
         data: {
@@ -438,7 +336,7 @@ router.get(
               current: run.targetCount,
               delta: targetDelta,
             },
-          } as unknown as Record<string, unknown>,
+          } as Record<string, unknown>,
           sourceDataChanged: sourceDelta !== 0,
           targetDataChanged: targetDelta !== 0,
           totalDelta:
@@ -448,16 +346,12 @@ router.get(
             (previousRun.matchedCount +
               previousRun.unmatchedSourceCount +
               previousRun.unmatchedTargetCount),
-          matchedDelta,
+          matchedDelta: run.matchedCount - previousRun.matchedCount,
           unmatchedDelta:
             run.unmatchedSourceCount +
             run.unmatchedTargetCount -
             (previousRun.unmatchedSourceCount + previousRun.unmatchedTargetCount),
-          exceptionDelta,
-          criticalDelta: 0,
-          highDelta: 0,
-          mediumDelta: 0,
-          lowDelta: 0,
+          exceptionDelta: (run.conflictCount || 0) - (previousRun.conflictCount || 0),
           newExceptionPatterns: [] as unknown as Record<string, unknown>,
           resolvedPatterns: [] as unknown as Record<string, unknown>,
           configDriftDetected: false,
@@ -469,18 +363,19 @@ router.get(
         },
       });
 
-      logInfo("Run delta analysis generated and stored", {
+      logInfo("Run delta analysis generated", {
         tenantId,
         runId,
         previousRunId: resolvedPreviousRunId,
       });
 
-      res.json({ data: delta });
+      return res.json({ data: delta });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to generate run delta", 500, {
         userId: req.userId,
         runId: req.params.runId,
       });
+      return;
     }
   }
 );
@@ -492,12 +387,11 @@ router.get(
 router.get(
   "/jobs/:jobId/delta/trend",
   requirePermission(Permission.JOBS_READ),
-  validateRequest(runTrendSchema),
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
       const jobId = req.params.jobId as string;
-      const runs = (req.query.runs as unknown as number) || 5;
+      const runs = parseInt(req.query.runs as string) || 5;
 
       const job = await prisma.reconJob.findFirst({
         where: { id: jobId, tenantId },
@@ -520,10 +414,8 @@ router.get(
             trendSummary: {
               overallTrend: "stable",
               exceptionTrend: 0,
-              qualityTrend: 0,
               volatility: 0,
               avgExceptionRate: 0,
-              projectedExceptions: 0,
             },
             history: [],
             message: "Not enough run history for trend analysis",
@@ -544,7 +436,6 @@ router.get(
       const variance =
         exceptionDeltas.reduce((sum, val) => sum + Math.pow(val - avgExceptionRate, 2), 0) /
         exceptionDeltas.length;
-      const volatility = Math.sqrt(variance);
 
       logInfo("Run trend analysis retrieved", {
         tenantId,
@@ -553,14 +444,13 @@ router.get(
         overallTrend,
       });
 
-      res.json({
+      return res.json({
         data: {
           jobId,
           trendSummary: {
             overallTrend,
             exceptionTrend: avgExceptionRate,
-            qualityTrend: 0,
-            volatility,
+            volatility: Math.sqrt(variance),
             avgExceptionRate,
             projectedExceptions: exceptionDeltas[0] || 0,
           },
@@ -572,6 +462,7 @@ router.get(
         userId: req.userId,
         jobId: req.params.jobId,
       });
+      return;
     }
   }
 );
@@ -597,11 +488,6 @@ router.post(
 
       const exception = await prisma.reconciliationMatch.findFirst({
         where: { id: exceptionId, tenantId },
-        include: {
-          archetypeClassifications: {
-            include: { archetype: true },
-          },
-        },
       });
 
       if (!exception) {
@@ -612,14 +498,13 @@ router.post(
         data: {
           tenantId,
           exceptionId,
-          archetypeId: exception.archetypeClassifications[0]?.archetypeId,
           resolution: resolution || "unknown",
           resolutionReason: reason || "",
           operatorNotes: notes || "",
           adjudicatorId: userId,
           adjudicatorType: "operator",
           adjudicationType: override ? "override" : "standard",
-          annotations: exception.metadata as unknown as Record<string, unknown> | undefined,
+          annotations: exception.metadata as Record<string, unknown> | undefined,
         },
       });
 
@@ -630,12 +515,13 @@ router.post(
         recordId: adjudication.id,
       });
 
-      res.json({ data: adjudication });
+      return res.json({ data: adjudication });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to record adjudication", 500, {
         userId: req.userId,
         exceptionId: req.params.exceptionId,
       });
+      return;
     }
   }
 );

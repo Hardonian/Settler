@@ -1,0 +1,33 @@
+src/routes/exception-intelligence.ts(83,42): error TS2352: Conversion of type 'ParsedQs' to type '{ limit: number; includeResolved: boolean; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'ParsedQs' is missing the following properties from type '{ limit: number; includeResolved: boolean; }': limit, includeResolved
+src/routes/exception-intelligence.ts(180,24): error TS2353: Object literal may only specify known properties, and 'reconJob' does not exist in type 'ReconciliationRunInclude<DefaultArgs>'.
+src/routes/exception-intelligence.ts(191,46): error TS2339: Property 'archetypeClassifications' does not exist on type '{ status: string; runId: string; id: string; tenantId: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; sourceTransactionId: string; targetTransactionId: string | null; ... 11 more ...; severity: string; }'.
+src/routes/exception-intelligence.ts(229,52): error TS2532: Object is possibly 'undefined'.
+src/routes/exception-intelligence.ts(229,102): error TS2532: Object is possibly 'undefined'.
+src/routes/exception-intelligence.ts(234,30): error TS2339: Property 'run' does not exist on type '{ status: string; runId: string; id: string; tenantId: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; sourceTransactionId: string; targetTransactionId: string | null; ... 11 more ...; severity: string; }'.
+src/routes/exception-intelligence.ts(279,24): error TS2353: Object literal may only specify known properties, and 'reconJob' does not exist in type 'ReconciliationRunInclude<DefaultArgs>'.
+src/routes/exception-intelligence.ts(290,46): error TS2339: Property 'archetypeClassifications' does not exist on type '{ status: string; runId: string; id: string; tenantId: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; sourceTransactionId: string; targetTransactionId: string | null; ... 11 more ...; severity: string; }'.
+src/routes/exception-intelligence.ts(308,31): error TS2339: Property 'archetypeClassifications' does not exist on type '{ status: string; runId: string; id: string; tenantId: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; sourceTransactionId: string; targetTransactionId: string | null; ... 11 more ...; severity: string; }'.
+src/routes/exception-intelligence.ts(308,61): error TS7006: Parameter 'c' implicitly has an 'any' type.
+src/routes/exception-intelligence.ts(356,3): error TS7030: Not all code paths return a value.
+src/routes/exception-intelligence.ts(430,11): error TS2322: Type 'Record<string, unknown>' is not assignable to type 'JsonNull | InputJsonValue | undefined'.
+  Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 20 more.
+src/routes/exception-intelligence.ts(461,11): error TS2322: Type 'Record<string, unknown>' is not assignable to type 'JsonNull | InputJsonValue | undefined'.
+  Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 20 more.
+src/routes/exception-intelligence.ts(462,11): error TS2322: Type 'Record<string, unknown>' is not assignable to type 'JsonNull | InputJsonValue | undefined'.
+  Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 20 more.
+src/routes/exception-intelligence.ts(464,11): error TS2322: Type 'Record<string, unknown>' is not assignable to type 'JsonNull | InputJsonValue | undefined'.
+  Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 20 more.
+src/routes/exception-intelligence.ts(496,3): error TS7030: Not all code paths return a value.
+src/routes/exception-intelligence.ts(538,11): error TS2532: Object is possibly 'undefined'.
+src/routes/exception-intelligence.ts(538,37): error TS2532: Object is possibly 'undefined'.
+src/routes/exception-intelligence.ts(540,18): error TS2532: Object is possibly 'undefined'.
+src/routes/exception-intelligence.ts(540,44): error TS2532: Object is possibly 'undefined'.
+src/routes/exception-intelligence.ts(622,11): error TS2322: Type 'Record<string, unknown> | undefined' is not assignable to type 'JsonNull | InputJsonValue | undefined'.
+  Type 'Record<string, unknown>' is not assignable to type 'JsonNull | InputJsonValue | undefined'.
+    Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 20 more.
+src/services/intelligence/adjudication-memory.ts(243,9): error TS2322: Type 'Record<string, unknown>' is not assignable to type 'JsonNull | InputJsonValue | undefined'.
+  Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 20 more.
+src/services/intelligence/adjudication-memory.ts(247,9): error TS2322: Type 'Record<string, unknown> | undefined' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
+  Type 'Record<string, unknown>' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
+    Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 20 more.
