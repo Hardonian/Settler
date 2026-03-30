@@ -111,8 +111,12 @@ export async function getRunsList(tenantId: string, limit: number = 20): Promise
       policy: run.reconStrategy || "default",
       manual: run.templateId === null,
       matched_records: contract.summary.matched,
+      unmatched_records: contract.summary.unmatched,
+      conflicts: contract.summary.conflicts,
       confidence:
         contract.summary.total > 0 ? contract.summary.matched / contract.summary.total : 1,
+      summary_state: contract.summaryState,
+      unresolved_exceptions: contract.summary.unresolved,
     } as RunListItem;
   });
 }

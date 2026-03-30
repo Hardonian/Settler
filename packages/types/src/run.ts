@@ -148,7 +148,11 @@ export interface RunListItem {
   policy: string;
   manual?: boolean;
   matched_records?: number;
+  unmatched_records?: number;
+  conflicts?: number;
   confidence?: number;
+  summary_state?: RunSummaryState;
+  unresolved_exceptions?: number;
 }
 
 /**
