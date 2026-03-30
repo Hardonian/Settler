@@ -54,8 +54,8 @@ const ReconciliationPanel: React.FC<ReconciliationPanelProps> = ({
 
           <div className="h-3 w-full bg-neutral-200/20 dark:bg-white/5 rounded-full overflow-hidden shadow-inner border border-white/5">
             <div
-              className="h-full bg-gradient-to-r from-teal-600 to-teal-400 rounded-full transition-all duration-1000 ease-out will-change-transform"
-              style={{ width: `${matchedPercentage}%` } as React.CSSProperties}
+              className="h-full bg-gradient-to-r from-teal-600 to-teal-400 rounded-full transition-all duration-1000 ease-out will-change-transform w-[var(--p-width)]"
+              style={{ "--p-width": `${matchedPercentage}%` } as React.CSSProperties}
             />
           </div>
 
@@ -85,8 +85,8 @@ const ReconciliationPanel: React.FC<ReconciliationPanelProps> = ({
 
           <div className="h-3 w-full bg-neutral-200/20 dark:bg-white/5 rounded-full overflow-hidden shadow-inner border border-white/5">
             <div
-              className="h-full bg-gradient-to-r from-blue-600 to-blue-400 rounded-full transition-all duration-1000 ease-out will-change-transform"
-              style={{ width: `${unmatchedPercentage}%` } as React.CSSProperties}
+              className="h-full bg-gradient-to-r from-blue-600 to-blue-400 rounded-full transition-all duration-1000 ease-out will-change-transform w-[var(--p-width)]"
+              style={{ "--p-width": `${unmatchedPercentage}%` } as React.CSSProperties}
             />
           </div>
 
