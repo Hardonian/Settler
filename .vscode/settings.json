@@ -17,6 +17,7 @@
     "exceljs",
     "exceptioned",
     "fkey",
+    "hashtext",
     "HMAC",
     "idempotently",
     "ingestions",
@@ -64,6 +65,7 @@
     "triaging",
     "typname",
     "uuidv",
+    "xact",
     "Xero"
   ]
 }
