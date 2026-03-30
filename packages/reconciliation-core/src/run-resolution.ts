@@ -34,8 +34,10 @@ export type ResolvedReconciliationRunForTenants =
       kind: "recon_job";
       tenantId: string;
       detail: CanonicalReconciliationRunDetail;
-      jobRecord: any; // Using any for now to facilitate faster data transfer, but ideally should be typed matches
+      jobRecord: any;
       latestResultRecord: ReconResultRecordLike | null;
+      previousResultRecord: ReconResultRecordLike | null;
+      persistedResultCount: number;
     }
   | {
       kind: "ingestion_run";
@@ -62,21 +64,32 @@ export async function resolveReconciliationRunForTenants(
   const [job, ingestionRun] = await Promise.all([
     prisma.reconJob.findFirst({
       where: { id: runId, tenantId: { in: tenantIds }, deletedAt: null },
-      select: {
-        id: true,
-        tenantId: true,
-        name: true,
-        status: true,
-        createdAt: true,
-        updatedAt: true,
-        sourceAdapter: true,
-        targetAdapter: true,
-        reconStrategy: true,
-        templateId: true,
-        validationRules: true,
-        sourceConfigEncrypted: true,
-        targetConfigEncrypted: true,
-        metadata: true,
+      include: {
+        results: {
+          orderBy: { startedAt: "desc" },
+          take: 2,
+          select: {
+            id: true,
+            reconJobId: true,
+            status: true,
+            startedAt: true,
+            completedAt: true,
+            sourceCount: true,
+            targetCount: true,
+            matchedCount: true,
+            unmatchedSourceCount: true,
+            unmatchedTargetCount: true,
+            conflictCount: true,
+            errorMessage: true,
+            inputHash: true,
+            snapshotId: true,
+            summary: true,
+            metadata: true,
+          },
+        },
+        _count: {
+          select: { results: true },
+        },
       },
     }),
     prisma.reconciliationRun.findFirst({
@@ -120,55 +133,36 @@ export async function resolveReconciliationRunForTenants(
   }
 
   if (job) {
-    const latestResult = await prisma.reconResult.findFirst({
-      where: { reconJobId: job.id, tenantId: job.tenantId },
-      orderBy: { startedAt: "desc" },
-      select: {
-        id: true,
-        reconJobId: true,
-        status: true,
-        startedAt: true,
-        completedAt: true,
-        sourceCount: true,
-        targetCount: true,
-        matchedCount: true,
-        unmatchedSourceCount: true,
-        unmatchedTargetCount: true,
-        conflictCount: true,
-        errorMessage: true,
-        inputHash: true,
-        snapshotId: true,
-        summary: true,
-        metadata: true,
-      },
+    const mapToLike = (row: any): ReconResultRecordLike => ({
+      id: row.id,
+      recon_job_id: row.reconJobId,
+      status: row.status,
+      started_at: row.startedAt?.toISOString() ?? null,
+      completed_at: row.completedAt?.toISOString() ?? null,
+      source_count: row.sourceCount,
+      target_count: row.targetCount,
+      matched_count: row.matchedCount,
+      unmatched_source_count: row.unmatchedSourceCount,
+      unmatched_target_count: row.unmatchedTargetCount,
+      conflict_count: row.conflictCount,
+      error_message: row.errorMessage,
+      input_hash: row.inputHash,
+      snapshot_id: row.snapshotId,
+      summary: row.summary as Record<string, unknown> | null,
+      metadata: (row.metadata as Record<string, unknown> | null) ?? null,
     });
 
-    const latest: ReconResultRecordLike | null = latestResult
-      ? {
-          id: latestResult.id,
-          recon_job_id: latestResult.reconJobId,
-          status: latestResult.status,
-          started_at: latestResult.startedAt?.toISOString() ?? null,
-          completed_at: latestResult.completedAt?.toISOString() ?? null,
-          source_count: latestResult.sourceCount,
-          target_count: latestResult.targetCount,
-          matched_count: latestResult.matchedCount,
-          unmatched_source_count: latestResult.unmatchedSourceCount,
-          unmatched_target_count: latestResult.unmatchedTargetCount,
-          conflict_count: latestResult.conflictCount,
-          error_message: latestResult.errorMessage,
-          input_hash: latestResult.inputHash,
-          snapshot_id: latestResult.snapshotId,
-          summary: latestResult.summary as Record<string, unknown> | null,
-          metadata: (latestResult.metadata as Record<string, unknown> | null) ?? null,
-        }
-      : null;
+    const results = job.results || [];
+    const latest = results[0] ? mapToLike(results[0]) : null;
+    const previous = results[1] ? mapToLike(results[1]) : null;
+    const persistedResultCount = job._count?.results ?? 0;
 
     return {
       kind: "recon_job",
       tenantId: job.tenantId,
       jobRecord: job,
       latestResultRecord: latest,
+      previousResultRecord: previous,
       detail: mapReconJobRowToCanonicalDetail({
         job: {
           id: job.id,
