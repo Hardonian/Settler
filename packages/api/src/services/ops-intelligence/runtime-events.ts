@@ -275,14 +275,3 @@ export async function onReconciliationRunCompletedHook(
     });
   }
 }
-
-    await prisma.$disconnect();
-  } catch (error) {
-    logError("Run delta computation hook failed", {
-      tenantId,
-      jobId,
-      runId,
-      error,
-    });
-  }
-}

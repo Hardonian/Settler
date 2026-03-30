@@ -30,7 +30,7 @@ import {
   assessEvidenceCompleteness,
   STANDARD_EVIDENCE_REQUIREMENTS,
   EvidenceArtifact,
-} from "../../proofs/src/index";
+} from "../../../proofs/src/index";
 
 const router: Router = Router();
 const adjudicationMemoryService = new AdjudicationMemoryService(prisma);
@@ -49,6 +49,7 @@ router.get(
       const exceptionId = req.params.exceptionId as string;
       const limit = parseInt(req.query.limit as string) || 5;
       const includeResolved = req.query.includeResolved === "true";
+      // We use the boolean directly if needed, but for similarity we prioritize intelligence-driven matching.
 
       const exception = await prisma.reconciliationMatch.findFirst({
         where: { id: exceptionId, tenantId },
@@ -58,16 +59,18 @@ router.get(
         throw new NotFoundError("Exception not found", "reconciliation_match", exceptionId);
       }
 
-      const resolvedStatuses = includeResolved ? ["resolved", "dismissed"] : ["resolved"];
+      const currentClassifications = await prisma.exceptionArchetypeClassification.findMany({
+        where: { exceptionId },
+        include: { archetype: true },
+      });
+
+      const primaryArchetypeId = currentClassifications[0]?.archetypeId;
 
       const similarCases = await adjudicationMemoryService.findSimilarCases({
         tenantId,
         excludeExceptionId: exceptionId,
         limit,
-        archetypeId:
-          exception.reasonTags && exception.reasonTags.length > 0
-            ? exception.reasonTags[0]
-            : undefined,
+        archetypeId: primaryArchetypeId,
       });
 
       logInfo("Similar cases retrieved via AdjudicationMemory", {
@@ -563,7 +566,7 @@ router.get(
           ...(category && { category }),
           ...(isActive && { isActive: true }),
         },
-        orderBy: { name: "asc" },
+        orderBy: { label: "asc" },
       });
 
       logInfo("Exception archetypes retrieved", {
@@ -587,7 +590,7 @@ router.get(
  */
 router.post(
   "/archetypes",
-  requirePermission(Permission.ADMIN_CONFIG),
+  requirePermission(Permission.ADMIN_WRITE),
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
@@ -612,7 +615,7 @@ router.post(
       const archetype = await prisma.exceptionArchetype.create({
         data: {
           tenantId,
-          name,
+          label: name,
           category,
           description: description || "",
           severityDefault: severityDefault || "medium",
@@ -768,10 +771,10 @@ router.post(
         data: {
           tenantId,
           artifactType: artifactType as any,
+          artifactKey,
           payloadType,
           payload: payload as Prisma.InputJsonValue,
           payloadHash,
-          sourceEntityType,
           sourceEntityId,
           reliabilityScore: reliabilityScore ? new Prisma.Decimal(reliabilityScore) : null,
           reliabilityFactors: reliabilityFactors as Prisma.InputJsonValue,
@@ -864,7 +867,7 @@ router.post(
 
       const requirements = STANDARD_EVIDENCE_REQUIREMENTS[proofType] || [];
       const completeness = assessEvidenceCompleteness(
-        evidenceArtifacts as EvidenceArtifact[],
+        evidenceArtifacts.map((e) => e.artifactType as any),
         requirements
       );
 
@@ -890,8 +893,8 @@ router.post(
           entityType,
           entityIds: entityIds as unknown as Prisma.InputJsonValue,
           format: format as any,
-          completenessScore: completeness.score,
-          missingEvidence: completeness.missing as unknown as Prisma.InputJsonValue,
+          completenessScore: completeness.completenessScore,
+          missingEvidence: completeness.missingEvidenceTypes as unknown as Prisma.InputJsonValue,
           packagePayload: packagePayload as unknown as Prisma.InputJsonValue,
           packageHash,
           lifecycle: "draft",
@@ -903,7 +906,7 @@ router.post(
         packageId: proofpack.id,
         proofType,
         entityCount: entityIds.length,
-        completeness: completeness.score,
+        completeness: completeness.completenessScore,
       });
 
       return res.status(201).json({ data: proofpack });
