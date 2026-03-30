@@ -151,6 +151,14 @@ export class ExportLifecycleService {
     private readonly exportQueue: ExportJobQueue = new ExportJobQueue()
   ) {}
 
+  /**
+   * Cancel a queued job directly by ID before processing starts.
+   * Returns true if successfully canceled.
+   */
+  async cancelQueuedJob(input: { tenantId: string; jobId: string }): Promise<boolean> {
+    return this.exportQueue.cancelJob(input.jobId, input.tenantId);
+  }
+
   async requestExport(input: RequestExportInput): Promise<RequestExportResult> {
     const jobType = selectJobType(input.type, input.format);
     const enqueuedJob = await this.exportQueue.enqueue({

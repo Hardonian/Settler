@@ -789,16 +789,17 @@ export default function ExceptionDetailPage() {
           </div>
           <div className="xl:col-span-1">
             <EvidenceTrustCard
-              completeness={exception.proofSummary?.items[0]?.completenessScore ?? 0}
-              reliability={
+              exceptionId={exception.id}
+              completenessScore={exception.proofSummary?.items[0]?.completenessScore ?? 0}
+              reliabilityScore={
                 (exception.evidenceSummary?.items.reduce(
                   (acc, item) => acc + (item.reliabilityScore ?? 0),
                   0
                 ) ?? 0) / (exception.evidenceSummary?.items.length || 1)
               }
-              gapCount={exception.proofSummary?.items[0]?.missingEvidence.length ?? 0}
-              onInspectProof={() => setIsProvenanceModalOpen(true)}
-              isLoading={isLoading}
+              evidenceCount={exception.evidenceSummary?.items.length ?? 0}
+              missingEvidence={exception.proofSummary?.items[0]?.missingEvidence ?? []}
+              isActionable={exception.proofSummary?.items[0]?.status === "finalized"}
             />
           </div>
         </div>

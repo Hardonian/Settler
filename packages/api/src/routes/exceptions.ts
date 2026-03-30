@@ -20,7 +20,8 @@ import { AuthRequest } from "../middleware/auth";
 import { enforceFreezeState } from "../middleware/governance";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
-import { prisma, Prisma } from "../infrastructure/db/prisma";
+import { Prisma } from "@prisma/client";
+import { prisma } from "../infrastructure/db/prisma";
 import { ProvenanceService } from "../services/recon-core/provenance-service";
 import { ExceptionReviewService } from "../application/services/ExceptionReviewService";
 
@@ -42,6 +43,55 @@ type ExceptionForMapping = Prisma.ReconciliationMatchGetPayload<{
         date: true;
       };
     };
+  };
+}>;
+
+type MemoryForMapping = Prisma.ExceptionAdjudicationMemoryGetPayload<{
+  select: {
+    id: true;
+    resolution: true;
+    resolutionReason: true;
+    adjudicationType: true;
+    adjudicatorId: true;
+    adjudicatorType: true;
+    outcome: true;
+    confidence: true;
+    sourceTrustScore: true;
+    operatorNotes: true;
+    systemNotes: true;
+    evidenceIds: true;
+    createdAt: true;
+    completedAt: true;
+    parentMemoryId: true;
+  };
+}>;
+
+type EvidenceArtifactForMapping = Prisma.EvidenceArtifactGetPayload<{
+  select: {
+    id: true;
+    artifactType: true;
+    artifactKey: true;
+    capturedAt: true;
+    capturedBy: true;
+    degraded: true;
+    degradedReasons: true;
+    attested: true;
+    reliabilityScore: true;
+  };
+}>;
+
+type ProofPackageForMapping = Prisma.ProofPackageGetPayload<{
+  select: {
+    id: true;
+    packageType: true;
+    packageKey: true;
+    status: true;
+    completenessScore: true;
+    missingEvidence: true;
+    completenessFlags: true;
+    evidenceIds: true;
+    createdAt: true;
+    finalizedAt: true;
   };
 }>;
 
@@ -517,14 +567,14 @@ router.get(
         throw new NotFoundError("Exception not found", "exception", id);
       }
 
-      const metadata = exception.metadata;
+      const metadata = exception.metadata as Prisma.JsonObject;
 
       const adjudicationHistory =
         memories.length > 0
           ? memories
               .slice()
               .reverse()
-              .map((memory: any) => ({
+              .map((memory: MemoryForMapping) => ({
                 actorId: memory.adjudicatorId,
                 action:
                   memory.outcome === "reopened"
@@ -541,7 +591,7 @@ router.get(
                 timestamp:
                   memory.completedAt?.toISOString?.() ?? memory.createdAt.toISOString?.() ?? null,
               }))
-          : (metadata as any)?.adjudicationHistory || [];
+          : (metadata?.adjudicationHistory as any[]) || [];
 
       res.json({
         data: {
@@ -549,7 +599,7 @@ router.get(
           run: exception.run,
           sourceTransaction: exception.sourceTransaction,
           adjudicationHistory,
-          adjudicationMemories: memories.map((memory: any) => ({
+          adjudicationMemories: memories.map((memory: MemoryForMapping) => ({
             id: memory.id,
             resolution: memory.resolution,
             resolutionReason: memory.resolutionReason,
@@ -567,7 +617,7 @@ router.get(
             completedAt: memory.completedAt?.toISOString?.() ?? null,
             parentMemoryId: memory.parentMemoryId,
           })),
-          decisionMemory: memories.map((memory: any) => ({
+          decisionMemory: memories.map((memory: MemoryForMapping) => ({
             id: memory.id,
             resolution: memory.resolution,
             resolutionReason: memory.resolutionReason,
@@ -590,7 +640,7 @@ router.get(
             degraded: evidenceArtifacts.filter((item: any) => item.degraded).length,
             attested: evidenceArtifacts.filter((item: any) => item.attested).length,
             latestCapturedAt: evidenceArtifacts[0]?.capturedAt?.toISOString?.() ?? null,
-            items: evidenceArtifacts.map((item: any) => ({
+            items: evidenceArtifacts.map((item: EvidenceArtifactForMapping) => ({
               id: item.id,
               artifactType: item.artifactType,
               artifactKey: item.artifactKey,
@@ -607,7 +657,7 @@ router.get(
             total: proofPackages.length,
             finalized: proofPackages.filter((item: any) => item.status === "finalized").length,
             latestCreatedAt: proofPackages[0]?.createdAt?.toISOString?.() ?? null,
-            items: proofPackages.map((item: any) => ({
+            items: proofPackages.map((item: ProofPackageForMapping) => ({
               id: item.id,
               packageType: item.packageType,
               packageKey: item.packageKey,
