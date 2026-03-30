@@ -20,8 +20,7 @@ import { AuthRequest } from "../middleware/auth";
 import { enforceFreezeState } from "../middleware/governance";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
-import { Prisma } from "@prisma/client";
-import { prisma } from "../infrastructure/db/prisma";
+import { prisma, Prisma } from "../infrastructure/db/prisma";
 import { ProvenanceService } from "../services/recon-core/provenance-service";
 import { ExceptionReviewService } from "../application/services/ExceptionReviewService";
 
@@ -114,15 +113,7 @@ const listExceptionsSchema = z.object({
     endDate: z.string().datetime().optional(),
     search: z.string().max(255).optional(),
     sortBy: z
-      .enum([
-        "createdAt",
-        "severity",
-        "status",
-        "confidence",
-        "recurrence",
-        "lineage",
-        "proofCompleteness",
-      ])
+      .enum(["createdAt", "severity", "status", "confidence"])
       .optional()
       .default("createdAt"),
     sortOrder: z.enum(["asc", "desc"]).optional().default("desc"),
@@ -222,7 +213,7 @@ function appendAdjudicationHistory(
 }
 
 function mapExceptionToResponse(e: ExceptionForMapping) {
-  let status: "open" | "in_progress" | "resolved" | "dismissed" = (e.status as any) || "open";
+  let status: "open" | "in_progress" | "resolved" | "dismissed" = e.status || "open";
   if (!e.status && e.reviewed) {
     status = e.matchReason?.toLowerCase().includes("ignored") ? "dismissed" : "resolved";
   }
@@ -440,9 +431,8 @@ router.get(
       let avgResolutionMs: number | null = null;
       if (resolvedExceptions.length > 0) {
         const totalMs = resolvedExceptions.reduce(
-          (sum: number, e: { reviewedAt: Date | null; createdAt: Date }) => {
-            if (!e.reviewedAt) return sum;
-            return sum + (e.reviewedAt.getTime() - e.createdAt.getTime());
+          (sum: number, e: { reviewedAt: Date; createdAt: Date }) => {
+            return sum + (e.reviewedAt!.getTime() - e.createdAt.getTime());
           },
           0
         );
@@ -479,210 +469,34 @@ router.get(
       const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
       const tenantId = req.tenantId!;
 
-      const [exception, memories, evidenceArtifacts, proofPackages, provenance] = await Promise.all(
-        [
-          prisma.reconciliationMatch.findFirst({
-            where: {
-              id,
-              tenantId,
-              matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] },
-            },
-            include: {
-              run: {
-                select: {
-                  id: true,
-                  status: true,
-                  startedAt: true,
-                  completedAt: true,
-                },
-              },
-              sourceTransaction: true,
-            },
-          }),
-          prisma.exceptionAdjudicationMemory.findMany({
-            where: { tenantId, exceptionId: id },
-            orderBy: { createdAt: "desc" },
+      const exception = await prisma.reconciliationMatch.findFirst({
+        where: {
+          id,
+          tenantId,
+          matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] },
+        },
+        include: {
+          run: {
             select: {
               id: true,
-              resolution: true,
-              resolutionReason: true,
-              adjudicationType: true,
-              adjudicatorId: true,
-              adjudicatorType: true,
-              outcome: true,
-              confidence: true,
-              sourceTrustScore: true,
-              operatorNotes: true,
-              systemNotes: true,
-              evidenceIds: true,
-              createdAt: true,
-              completedAt: true,
-              parentMemoryId: true,
-            },
-          }),
-          prisma.evidenceArtifact.findMany({
-            where: { tenantId, exceptionId: id },
-            orderBy: { capturedAt: "desc" },
-            select: {
-              id: true,
-              artifactType: true,
-              artifactKey: true,
-              capturedAt: true,
-              capturedBy: true,
-              degraded: true,
-              degradedReasons: true,
-              attested: true,
-              reliabilityScore: true,
-            },
-          }),
-          prisma.proofPackage.findMany({
-            where: {
-              tenantId,
-              packageKey: {
-                startsWith: `exception:${id}:`,
-              },
-            },
-            orderBy: { createdAt: "desc" },
-            select: {
-              id: true,
-              packageType: true,
-              packageKey: true,
               status: true,
-              completenessScore: true,
-              missingEvidence: true,
-              completenessFlags: true,
-              evidenceIds: true,
-              createdAt: true,
-              finalizedAt: true,
+              startedAt: true,
+              completedAt: true,
             },
-          }),
-          prisma.reconciliationProvenance.findMany({
-            where: { tenantId, matchId: id },
-            orderBy: { sequence: "asc" },
-            select: {
-              id: true,
-              sequence: true,
-              eventType: true,
-              actorType: true,
-              actorUserId: true,
-              details: true,
-              createdAt: true,
-            },
-          }),
-        ]
-      );
+          },
+          sourceTransaction: true,
+        },
+      });
 
       if (!exception) {
         throw new NotFoundError("Exception not found", "exception", id);
       }
-
-      const metadata = exception.metadata as Prisma.JsonObject;
-
-      const adjudicationHistory =
-        memories.length > 0
-          ? memories
-              .slice()
-              .reverse()
-              .map((memory: MemoryForMapping) => ({
-                actorId: memory.adjudicatorId,
-                action:
-                  memory.outcome === "reopened"
-                    ? "reopened"
-                    : memory.resolution === "ignored"
-                      ? "ignored"
-                      : "resolved",
-                details: {
-                  resolution: memory.resolution,
-                  resolutionReason: memory.resolutionReason,
-                  notes: memory.operatorNotes,
-                  memoryId: memory.id,
-                },
-                timestamp:
-                  memory.completedAt?.toISOString?.() ?? memory.createdAt.toISOString?.() ?? null,
-              }))
-          : (metadata?.adjudicationHistory as any[]) || [];
 
       res.json({
         data: {
           ...mapExceptionToResponse(exception as any),
           run: exception.run,
           sourceTransaction: exception.sourceTransaction,
-          adjudicationHistory,
-          adjudicationMemories: memories.map((memory: MemoryForMapping) => ({
-            id: memory.id,
-            resolution: memory.resolution,
-            resolutionReason: memory.resolutionReason,
-            adjudicationType: memory.adjudicationType,
-            adjudicatorId: memory.adjudicatorId,
-            adjudicatorType: memory.adjudicatorType,
-            outcome: memory.outcome,
-            confidence: memory.confidence != null ? Number(memory.confidence) : null,
-            sourceTrustScore:
-              memory.sourceTrustScore != null ? Number(memory.sourceTrustScore) : null,
-            operatorNotes: memory.operatorNotes,
-            systemNotes: memory.systemNotes,
-            evidenceIds: Array.isArray(memory.evidenceIds) ? memory.evidenceIds : [],
-            createdAt: memory.createdAt.toISOString(),
-            completedAt: memory.completedAt?.toISOString?.() ?? null,
-            parentMemoryId: memory.parentMemoryId,
-          })),
-          decisionMemory: memories.map((memory: MemoryForMapping) => ({
-            id: memory.id,
-            resolution: memory.resolution,
-            resolutionReason: memory.resolutionReason,
-            adjudicationType: memory.adjudicationType,
-            adjudicatorId: memory.adjudicatorId,
-            adjudicatorType: memory.adjudicatorType,
-            outcome: memory.outcome,
-            confidence: memory.confidence != null ? Number(memory.confidence) : null,
-            sourceTrustScore:
-              memory.sourceTrustScore != null ? Number(memory.sourceTrustScore) : null,
-            operatorNotes: memory.operatorNotes,
-            systemNotes: memory.systemNotes,
-            evidenceIds: Array.isArray(memory.evidenceIds) ? memory.evidenceIds : [],
-            createdAt: memory.createdAt.toISOString(),
-            completedAt: memory.completedAt?.toISOString?.() ?? null,
-            parentMemoryId: memory.parentMemoryId,
-          })),
-          evidenceSummary: {
-            total: evidenceArtifacts.length,
-            degraded: evidenceArtifacts.filter((item: any) => item.degraded).length,
-            attested: evidenceArtifacts.filter((item: any) => item.attested).length,
-            latestCapturedAt: evidenceArtifacts[0]?.capturedAt?.toISOString?.() ?? null,
-            items: evidenceArtifacts.map((item: EvidenceArtifactForMapping) => ({
-              id: item.id,
-              artifactType: item.artifactType,
-              artifactKey: item.artifactKey,
-              capturedAt: item.capturedAt?.toISOString?.() ?? null,
-              capturedBy: item.capturedBy,
-              degraded: Boolean(item.degraded),
-              degradedReasons: Array.isArray(item.degradedReasons) ? item.degradedReasons : [],
-              attested: Boolean(item.attested),
-              reliabilityScore:
-                item.reliabilityScore != null ? Number(item.reliabilityScore) : null,
-            })),
-          },
-          proofSummary: {
-            total: proofPackages.length,
-            finalized: proofPackages.filter((item: any) => item.status === "finalized").length,
-            latestCreatedAt: proofPackages[0]?.createdAt?.toISOString?.() ?? null,
-            items: proofPackages.map((item: ProofPackageForMapping) => ({
-              id: item.id,
-              packageType: item.packageType,
-              packageKey: item.packageKey,
-              status: item.status,
-              completenessScore:
-                item.completenessScore != null ? Number(item.completenessScore) : 0,
-              missingEvidence: Array.isArray(item.missingEvidence) ? item.missingEvidence : [],
-              completenessFlags: Array.isArray(item.completenessFlags)
-                ? item.completenessFlags
-                : [],
-              evidenceIds: Array.isArray(item.evidenceIds) ? item.evidenceIds : [],
-              createdAt: item.createdAt?.toISOString?.() ?? null,
-              finalizedAt: item.finalizedAt?.toISOString?.() ?? null,
-            })),
-          },
-          provenance,
         },
       });
     } catch (error: unknown) {
@@ -782,16 +596,50 @@ router.post(
       const userId = req.userId!;
       const tenantId = req.tenantId!;
 
-      await exceptionReviewService.assignException({
-        tenantId,
-        userId,
-        exceptionId: id,
-        assignedTo,
-        notes,
+      const existing = await validateExceptionAccess(id, tenantId);
+
+      if (existing.status === "resolved" || existing.status === "dismissed") {
+        throw new ConflictError("Cannot assign a resolved exception", {
+          code: "EXCEPTION_ALREADY_RESOLVED",
+          currentStatus: existing.status,
+        });
+      }
+
+      const newStatus = existing.status === "open" ? "in_progress" : existing.status;
+      const updateResult = await prisma.reconciliationMatch.updateMany({
+        where: { id, tenantId, matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] } },
+        data: {
+          assignedTo,
+          status: newStatus,
+          metadata: appendAdjudicationHistory(existing.metadata, {
+            actorId: userId,
+            action: "assign",
+            details: { assignedTo, previousAssignee: existing.assignedTo, notes: notes || null },
+          }) as Prisma.JsonObject,
+        },
       });
 
+      if (updateResult.count !== 1) {
+        throw new NotFoundError("Exception not found", "exception", id);
+      }
+
+      await prisma.auditLog.create({
+        data: {
+          tenantId,
+          userId,
+          action: "exception_assigned",
+          resourceType: "reconciliation_match",
+          resourceId: id,
+          metadata: { assignedTo, previousAssignee: existing.assignedTo, notes },
+        },
+      });
+
+      trackEventAsync(userId, "ExceptionAssigned", { exceptionId: id, assignedTo });
+
+      logInfo("Exception assigned", { tenantId, exceptionId: id, assignedTo, assignedBy: userId });
+
       return res.json({
-        data: { id, assignedTo },
+        data: { id, assignedTo, status: newStatus },
         message: "Exception assigned successfully",
       });
     } catch (error: unknown) {
@@ -819,17 +667,87 @@ router.put(
       const userId = req.userId!;
       const tenantId = req.tenantId!;
 
-      await exceptionReviewService.updateExceptionStatus({
+      const existing = await validateExceptionAccess(id, tenantId);
+
+      const validTransitions: Record<string, string[]> = {
+        open: ["in_progress", "resolved", "dismissed"],
+        in_progress: ["open", "resolved", "dismissed"],
+        resolved: ["open"],
+        dismissed: ["open"],
+      };
+
+      const allowed = validTransitions[existing.status] || [];
+      if (!allowed.includes(status)) {
+        throw new ConflictError(`Cannot transition from '${existing.status}' to '${status}'`, {
+          code: "INVALID_STATE_TRANSITION",
+          currentStatus: existing.status,
+          requestedStatus: status,
+          allowedTransitions: allowed,
+        });
+      }
+
+      const updateResult = await prisma.reconciliationMatch.updateMany({
+        where: { id, tenantId, matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] } },
+        data: {
+          status,
+          reviewed: status === "resolved" || status === "dismissed",
+          reviewedBy: status === "resolved" || status === "dismissed" ? userId : undefined,
+          reviewedAt: status === "resolved" || status === "dismissed" ? new Date() : undefined,
+          resolutionReason: resolutionReason || undefined,
+          notes: notes || undefined,
+          metadata: appendAdjudicationHistory(existing.metadata, {
+            actorId: userId,
+            action: "status_change",
+            details: {
+              fromStatus: existing.status,
+              toStatus: status,
+              notes: notes || null,
+              resolutionReason: resolutionReason || null,
+            },
+          }) as Prisma.JsonObject,
+        },
+      });
+
+      if (updateResult.count !== 1) {
+        throw new NotFoundError("Exception not found", "exception", id);
+      }
+
+      await provenanceService.recordStatusTransition({
         tenantId,
-        userId,
+        runId: existing.runId,
+        fromStatus: existing.status,
+        toStatus: status,
+        actorType: "human",
+        actorUserId: userId,
+        reason: notes || null,
+      });
+
+      await prisma.auditLog.create({
+        data: {
+          tenantId,
+          userId,
+          action: "exception_status_changed",
+          resourceType: "reconciliation_match",
+          resourceId: id,
+          metadata: {
+            fromStatus: existing.status,
+            toStatus: status,
+            notes,
+            resolutionReason,
+          },
+        },
+      });
+
+      logInfo("Exception status updated", {
+        tenantId,
         exceptionId: id,
-        status,
-        notes,
-        resolutionReason,
+        fromStatus: existing.status,
+        toStatus: status,
+        updatedBy: userId,
       });
 
       return res.json({
-        data: { id, status },
+        data: { id, status, previousStatus: existing.status },
         message: `Exception status changed to ${status}`,
       });
     } catch (error: unknown) {
@@ -857,12 +775,25 @@ router.post(
       const userId = req.userId!;
       const tenantId = req.tenantId!;
 
-      await exceptionReviewService.addExceptionNote({
-        tenantId,
-        userId,
-        exceptionId: id,
-        notes,
+      const existing = await validateExceptionAccess(id, tenantId);
+
+      const updateResult = await prisma.reconciliationMatch.updateMany({
+        where: { id, tenantId, matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] } },
+        data: {
+          notes,
+          metadata: appendAdjudicationHistory(existing.metadata, {
+            actorId: userId,
+            action: "note_added",
+            details: { notes },
+          }) as Prisma.JsonObject,
+        },
       });
+
+      if (updateResult.count !== 1) {
+        throw new NotFoundError("Exception not found", "exception", id);
+      }
+
+      logInfo("Exception note added", { tenantId, exceptionId: id, addedBy: userId });
 
       return res.json({
         data: { id, notes },
@@ -999,16 +930,37 @@ router.post(
       const userId = req.userId!;
       const tenantId = req.tenantId!;
 
-      const assignedCount = await exceptionReviewService.bulkAssignExceptions({
+      const result = await prisma.reconciliationMatch.updateMany({
+        where: {
+          id: { in: exceptionIds },
+          tenantId,
+          matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] },
+          status: { notIn: ["resolved", "dismissed"] },
+        },
+        data: { assignedTo },
+      });
+
+      await prisma.auditLog.create({
+        data: {
+          tenantId,
+          userId,
+          action: "exceptions_bulk_assigned",
+          resourceType: "reconciliation_match",
+          resourceId: null,
+          metadata: { assignedTo, exceptionCount: result.count },
+        },
+      });
+
+      logInfo("Exceptions bulk assigned", {
         tenantId,
-        userId,
-        exceptionIds,
+        count: result.count,
         assignedTo,
+        assignedBy: userId,
       });
 
       return res.json({
-        data: { assigned: assignedCount },
-        message: `Assigned ${assignedCount} exceptions`,
+        data: { assigned: result.count },
+        message: `Assigned ${result.count} exceptions`,
       });
     } catch (error: unknown) {
       return handleRouteError(res, error, "Failed to bulk assign exceptions", 500, {
@@ -1033,17 +985,42 @@ router.post(
       const userId = req.userId!;
       const tenantId = req.tenantId!;
 
-      const updatedCount = await exceptionReviewService.bulkUpdateExceptionStatus({
+      const result = await prisma.reconciliationMatch.updateMany({
+        where: {
+          id: { in: exceptionIds },
+          tenantId,
+          matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] },
+        },
+        data: {
+          status,
+          reviewed: status === "resolved" || status === "dismissed",
+          reviewedBy: status === "resolved" || status === "dismissed" ? userId : undefined,
+          reviewedAt: status === "resolved" || status === "dismissed" ? new Date() : undefined,
+          notes: notes || undefined,
+        },
+      });
+
+      await prisma.auditLog.create({
+        data: {
+          tenantId,
+          userId,
+          action: "exceptions_bulk_status_changed",
+          resourceType: "reconciliation_match",
+          resourceId: null,
+          metadata: { newStatus: status, exceptionCount: result.count, notes },
+        },
+      });
+
+      logInfo("Exceptions bulk status updated", {
         tenantId,
-        userId,
-        exceptionIds,
+        count: result.count,
         status,
-        notes,
+        updatedBy: userId,
       });
 
       return res.json({
-        data: { updated: updatedCount },
-        message: `Updated ${updatedCount} exceptions to ${status}`,
+        data: { updated: result.count },
+        message: `Updated ${result.count} exceptions to ${status}`,
       });
     } catch (error: unknown) {
       return handleRouteError(res, error, "Failed to bulk update exception status", 500, {
