@@ -58,7 +58,7 @@ export default function ReconcilePage() {
       const original = sourceWrap?.original;
 
       const dateStr = original?.timestamp
-        ? new Date(original.timestamp).toISOString().split("T")[0]
+        ? new Date(original.timestamp).toISOString().split("T")[0] || "Unknown"
         : "Unknown";
 
       return {
