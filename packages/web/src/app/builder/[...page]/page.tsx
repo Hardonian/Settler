@@ -96,7 +96,6 @@ export default async function BuilderCatchAllPage({ params }: PageProps) {
 
     // Render the Builder.io content
     const { BuilderComponent } = await import("@builder.io/react");
-    // @ts-expect-error BuilderComponent SDK types often clash with React 18/19 JSX types
     return <BuilderComponent content={content} model={builderModels.page} apiKey={apiKey} />;
   } catch {
     notFound();

@@ -88,11 +88,13 @@ if (mode !== "off") {
       finalOutcome = "failed-findings";
     }
   } else if (backendUnavailable(combinedOutput)) {
+    findings = null;
     backend = { available: false, reason: "backend-unavailable" };
     completeness = "degraded";
     degradedReasons.push("pnpm-audit-backend-unavailable");
     finalOutcome = mode === "strict" ? "failed-backend-unavailable" : "warn-backend-unavailable";
   } else {
+    findings = null;
     backend = { available: false, reason: "audit-command-failed" };
     completeness = "degraded";
     degradedReasons.push("pnpm-audit-command-failed");

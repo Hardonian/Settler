@@ -1085,7 +1085,7 @@ export class ExceptionReviewService {
           assignedTo: input.assignedTo,
         });
         count += 1;
-      } catch (e) {
+      } catch {
         // Continue to next one
       }
     }
@@ -1110,7 +1110,7 @@ export class ExceptionReviewService {
           notes: input.notes,
         });
         count += 1;
-      } catch (e) {
+      } catch {
         // Continue to next one
       }
     }
