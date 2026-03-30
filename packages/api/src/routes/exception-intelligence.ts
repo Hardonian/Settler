@@ -25,13 +25,16 @@ import { NotFoundError } from "../utils/typed-errors";
 import { logInfo } from "../utils/logger";
 import { AdjudicationMemoryService } from "../services/intelligence/adjudication-memory";
 import { RunDeltaService } from "../services/intelligence/run-delta";
-import { EvidenceArtifactService, ProofPackageService } from "../../proofs/src/index";
+import {
+  computePayloadHash,
+  assessEvidenceCompleteness,
+  STANDARD_EVIDENCE_REQUIREMENTS,
+  EvidenceArtifact,
+} from "../../proofs/src/index";
 
 const router: Router = Router();
 const adjudicationMemoryService = new AdjudicationMemoryService(prisma);
 const runDeltaService = new RunDeltaService(prisma);
-const evidenceService = new EvidenceArtifactService();
-const proofpackService = new ProofPackageService();
 
 /**
  * GET /api/exceptions/:exceptionId/similar
