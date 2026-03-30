@@ -485,7 +485,12 @@ router.get(
 
       res.json({
         data: {
+<<<<<<< HEAD
           ...mapExceptionToResponse(exception as any),
+=======
+          ...mapExceptionToResponse(exception),
+          run: exception.run,
+>>>>>>> 8ea2d9995 (feat: initialize billing and reconciliation database schema and exception handling utilities)
           sourceTransaction: exception.sourceTransaction,
           targetTransaction: null,
           institutionalMemory: adjudicationMemories,
