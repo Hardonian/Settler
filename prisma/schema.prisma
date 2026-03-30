@@ -1350,7 +1350,8 @@ model NormalizedTransaction {
   ingestion         Ingestion @relation(fields: [ingestionId], references: [id], onDelete: Cascade)
   rawRecord         RawRecord? @relation(fields: [rawRecordId], references: [id], onDelete: SetNull)
   source            IngestionSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
-  reconciliationMatches ReconciliationMatch[]
+  sourceMatches         ReconciliationMatch[] @relation("SourceMatches")
+  targetMatches         ReconciliationMatch[] @relation("TargetMatches")
 
   @@index([ingestionId])
   @@index([rawRecordId])
@@ -1422,7 +1423,8 @@ model ReconciliationMatch {
   updatedAt         DateTime  @updatedAt
 
   run               ReconciliationRun @relation(fields: [runId], references: [id], onDelete: Cascade)
-  sourceTransaction NormalizedTransaction @relation(fields: [sourceTransactionId], references: [id], onDelete: Cascade)
+  sourceTransaction NormalizedTransaction @relation("SourceMatches", fields: [sourceTransactionId], references: [id], onDelete: Cascade)
+  targetTransaction NormalizedTransaction? @relation("TargetMatches", fields: [targetTransactionId], references: [id], onDelete: SetNull)
   provenance        ReconciliationProvenance[]
   adjudicationMemories ExceptionAdjudicationMemory[]
   archetypeClassifications ExceptionArchetypeClassification[]

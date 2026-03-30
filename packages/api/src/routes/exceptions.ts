@@ -32,8 +32,16 @@ import { logInfo } from "../utils/logger";
 
 type ExceptionForMapping = Prisma.ReconciliationMatchGetPayload<{
   include: {
-    run: { select: { id: true } };
-    sourceTransaction: {
+    run: {
+      select: {
+        id: true;
+        status: true;
+        startedAt: true;
+        completedAt: true;
+      };
+    };
+    sourceTransaction: true;
+    targetTransaction: {
       select: {
         id: true;
         category: true;
@@ -43,6 +51,7 @@ type ExceptionForMapping = Prisma.ReconciliationMatchGetPayload<{
         date: true;
       };
     };
+    adjudicationMemories: true;
   };
 }>;
 
@@ -278,8 +287,16 @@ router.get(
         prisma.reconciliationMatch.findMany({
           where,
           include: {
-            run: { select: { id: true } },
-            sourceTransaction: {
+            run: {
+              select: {
+                id: true,
+                status: true,
+                startedAt: true,
+                completedAt: true,
+              },
+            },
+            sourceTransaction: true,
+            targetTransaction: {
               select: {
                 id: true,
                 category: true,
@@ -289,6 +306,7 @@ router.get(
                 date: true,
               },
             },
+            adjudicationMemories: true,
           },
           orderBy: orderByMap[sortBy] || { createdAt: "desc" },
           take: limit,
