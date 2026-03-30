@@ -47,6 +47,11 @@ export interface RecordExportFailureInput {
   errorMessage: string;
 }
 
+export interface CancelExportJobInput {
+  tenantId: string;
+  jobId: string;
+}
+
 export interface RecordExportSuccessInput {
   tenantId: string;
   jobId: string;
@@ -297,6 +302,10 @@ export class ExportLifecycleService {
         },
       });
     });
+  }
+
+  async cancelQueuedJob(input: CancelExportJobInput): Promise<boolean> {
+    return this.exportQueue.cancelJob(input.jobId, input.tenantId);
   }
 
   async recordJobSuccess(input: RecordExportSuccessInput): Promise<void> {

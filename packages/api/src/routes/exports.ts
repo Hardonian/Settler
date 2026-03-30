@@ -20,14 +20,14 @@ import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
 import { enforceFreezeState } from "../middleware/governance";
 import { prisma } from "../infrastructure/db/prisma";
-import { ExportJobQueue } from "../jobs/queue/ExportJobQueue";
+import { ExportLifecycleService } from "../application/services/ExportLifecycleService";
 import { handleRouteError } from "../utils/error-handler";
 import { NotFoundError, ConflictError } from "../utils/typed-errors";
 import { logInfo } from "../utils/logger";
 import { trackEventAsync } from "../utils/event-tracker";
 
 const router: Router = Router();
-const exportQueue = new ExportJobQueue();
+const exportLifecycleService = new ExportLifecycleService(prisma);
 
 // ─── Validation Schemas ──────────────────────────────────────────────────────
 
@@ -78,70 +78,34 @@ router.post(
       const userId = req.userId!;
       const { runId, format, type, idempotencyKey, options } = req.body;
 
-      // Check idempotency - if key provided, check for existing export
-      if (idempotencyKey) {
-        const existing = await prisma.export.findFirst({
-          where: {
-            tenantId,
-            metadata: { path: ["idempotencyKey"], equals: idempotencyKey },
-          },
-          select: { id: true, status: true, createdAt: true },
-        });
-
-        if (existing) {
-          logInfo("Returning existing export for idempotency key", {
-            tenantId,
-            idempotencyKey,
-            exportId: existing.id,
-          });
-
-          return res.status(200).json({
-            data: {
-              exportId: existing.id,
-              status: existing.status,
-              idempotent: true,
-            },
-            message: "Export already exists for this idempotency key",
-          });
-        }
-      }
-
-      // Enqueue the export job
-      const jobType =
-        type === "reconciliation"
-          ? "reconciliation-export"
-          : format === "csv"
-            ? "csv-export"
-            : format === "pdf"
-              ? "pdf-report"
-              : "export";
-
-      const enqueuedJob = await exportQueue.enqueue({
+      const exportRequest = await exportLifecycleService.requestExport({
         tenantId,
         userId,
-        type: jobType,
+        type,
         runId,
         format,
         idempotencyKey,
-        options: { ...options, exportType: type },
+        options,
       });
 
-      // Create the Export record
-      const exportRecord = await prisma.export.create({
-        data: {
+      if (!exportRequest.createdNew) {
+        logInfo("Returning canonical export for duplicate request", {
           tenantId,
-          userId,
-          type,
-          format,
-          reconciliationRunId: runId || null,
-          status: "pending",
-          metadata: {
-            idempotencyKey: idempotencyKey || null,
-            jobId: enqueuedJob.id,
-            options,
-          } as any,
-        },
-      });
+          idempotencyKey,
+          exportId: exportRequest.exportId,
+          jobId: exportRequest.jobId,
+        });
+
+        return res.status(200).json({
+          data: {
+            exportId: exportRequest.exportId,
+            jobId: exportRequest.jobId,
+            status: exportRequest.status,
+            idempotent: true,
+          },
+          message: "Export already exists for this idempotency key",
+        });
+      }
 
       // Audit log
       await prisma.auditLog.create({
@@ -150,34 +114,34 @@ router.post(
           userId,
           action: "export_created",
           resourceType: "export",
-          resourceId: exportRecord.id,
-          metadata: { format, type, runId, jobId: enqueuedJob.id } as any,
+          resourceId: exportRequest.exportId,
+          metadata: { format, type, runId, jobId: exportRequest.jobId } as any,
         },
       });
 
       trackEventAsync(userId, "ExportCreated", {
-        exportId: exportRecord.id,
+        exportId: exportRequest.exportId,
         format,
         type,
-        jobId: enqueuedJob.id,
+        jobId: exportRequest.jobId,
       });
 
       logInfo("Export created", {
         tenantId,
-        exportId: exportRecord.id,
+        exportId: exportRequest.exportId,
         format,
         type,
-        jobId: enqueuedJob.id,
+        jobId: exportRequest.jobId,
       });
 
       return res.status(201).json({
         data: {
-          exportId: exportRecord.id,
-          jobId: enqueuedJob.id,
+          exportId: exportRequest.exportId,
+          jobId: exportRequest.jobId,
           format,
           type,
-          status: "pending",
-          createdAt: exportRecord.createdAt.toISOString(),
+          status: exportRequest.status,
+          createdAt: exportRequest.createdAt,
         },
         message: "Export job created",
       });
@@ -394,7 +358,17 @@ router.post(
       // Cancel via the job queue
       const metadata = exportRecord.metadata as any;
       if (metadata?.jobId) {
-        await exportQueue.cancelJob(metadata.jobId, tenantId);
+        const canceled = await exportLifecycleService.cancelQueuedJob({
+          tenantId,
+          jobId: metadata.jobId,
+        });
+        if (!canceled) {
+          throw new ConflictError("Export job is already running and can no longer be cancelled", {
+            code: "EXPORT_NOT_CANCELLABLE",
+            currentStatus: exportRecord.status,
+            jobId: metadata.jobId,
+          });
+        }
       }
 
       // Update export record

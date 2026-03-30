@@ -17,6 +17,9 @@ import { config } from "../../config";
 import { logInfo, logError, logWarn } from "../../utils/logger";
 import { v4 as uuidv4 } from "uuid";
 import { EventEmitter } from "events";
+import { ExportJobExecutionResult, ExportJobPayload } from "../export/export-job-contract";
+import { ExportLifecycleService } from "../../application/services/ExportLifecycleService";
+import { prisma } from "../../infrastructure/db/prisma";
 
 export interface WorkerConfig {
   pollIntervalMs: number;
@@ -36,16 +39,6 @@ export interface WorkerStats {
   lastProcessedAt: Date | null;
   currentJobs: string[];
   isHealthy: boolean;
-}
-
-export interface ExportJobPayload {
-  type: "export" | "reconciliation-export" | "csv-export" | "pdf-report";
-  runId?: string;
-  jobId?: string;
-  format?: "csv" | "json" | "pdf" | "xlsx";
-  options?: Record<string, unknown>;
-  tenantId: string;
-  userId: string;
 }
 
 export interface ProcessedJob {
@@ -78,11 +71,17 @@ export class ExportJobWorker extends EventEmitter {
   private heartbeatTimer: NodeJS.Timeout | null = null;
   private activeJobs: Map<string, ProcessedJob> = new Map();
   private stats: WorkerStats;
+  private exportLifecycleService: ExportLifecycleService;
 
-  constructor(workerId?: string, config?: Partial<WorkerConfig>) {
+  constructor(
+    workerId?: string,
+    config?: Partial<WorkerConfig>,
+    exportLifecycleService: ExportLifecycleService = new ExportLifecycleService(prisma)
+  ) {
     super();
     this.workerId = workerId || `export-worker-${uuidv4()}`;
     this.config = { ...DEFAULT_WORKER_CONFIG, ...config };
+    this.exportLifecycleService = exportLifecycleService;
 
     // Create dedicated connection pool for worker using global config
     this.pool = new Pool({
@@ -352,8 +351,20 @@ export class ExportJobWorker extends EventEmitter {
     });
 
     try {
+      await this.exportLifecycleService.markJobProcessing({
+        tenantId: job.tenant_id,
+        jobId: job.id,
+        workerId: this.workerId,
+      });
+
       // Process based on job type
       const result = await this.executeJob(job);
+
+      await this.exportLifecycleService.recordJobSuccess({
+        tenantId: job.tenant_id,
+        jobId: job.id,
+        result,
+      });
 
       // Mark job as succeeded
       await this.completeJob(job.id, "succeeded", result);
@@ -380,9 +391,23 @@ export class ExportJobWorker extends EventEmitter {
 
       // Check if we should retry
       if (job.attempts < job.max_attempts) {
-        await this.retryJob(job, errorMessage);
+        const retryAt = await this.retryJob(job, errorMessage);
+        await this.exportLifecycleService.recordJobRetryScheduled({
+          tenantId: job.tenant_id,
+          jobId: job.id,
+          errorMessage,
+          retryScheduledAt: retryAt,
+          attempt: job.attempts,
+          maxAttempts: job.max_attempts,
+        });
         this.stats.jobsRetried++;
       } else {
+        await this.exportLifecycleService.recordJobFailure({
+          tenantId: job.tenant_id,
+          jobId: job.id,
+          errorMessage,
+        });
+
         // Max retries exceeded - mark as failed
         await this.completeJob(job.id, "failed", { error: errorMessage });
         this.stats.jobsFailed++;
@@ -398,7 +423,7 @@ export class ExportJobWorker extends EventEmitter {
   /**
    * Execute the job based on its type
    */
-  private async executeJob(job: ProcessedJob): Promise<Record<string, unknown>> {
+  private async executeJob(job: ProcessedJob): Promise<ExportJobExecutionResult> {
     const { type, payload } = job;
 
     switch (type) {
@@ -414,7 +439,14 @@ export class ExportJobWorker extends EventEmitter {
 
       default:
         logWarn("Unknown job type", { jobId: job.id, type });
-        return { success: true, message: "No handler for job type" };
+        return {
+          success: true,
+          runId: payload.runId ?? job.id,
+          format: payload.format ?? "json",
+          exportedAt: new Date().toISOString(),
+          rowCount: 0,
+          metadata: { message: "No handler for job type" },
+        };
     }
   }
 
@@ -432,7 +464,7 @@ export class ExportJobWorker extends EventEmitter {
   /**
    * Handle reconciliation export job
    */
-  private async handleExportJob(payload: ExportJobPayload): Promise<Record<string, unknown>> {
+  private async handleExportJob(payload: ExportJobPayload): Promise<ExportJobExecutionResult> {
     const { runId, tenantId, format = "json" } = payload;
 
     if (!runId) {
@@ -482,25 +514,6 @@ export class ExportJobWorker extends EventEmitter {
       const exportedAt = new Date().toISOString();
       const rowCount = matches.length;
 
-      // Update the Export record in database with results
-      await this.pool.query(
-        `UPDATE exports SET
-          status = 'completed',
-          row_count = $1,
-          file_size_bytes = $2,
-          completed_at = NOW(),
-          metadata = metadata || $3::jsonb,
-          updated_at = NOW()
-         WHERE reconciliation_run_id = $4 AND tenant_id = $5 AND status = 'pending'`,
-        [
-          rowCount,
-          JSON.stringify({ matched: matchedRows.length, exceptions: exceptionRows.length }).length,
-          JSON.stringify({ exportedAt, format, runStatus: run.status }),
-          runId,
-          tenantId,
-        ]
-      );
-
       logInfo("Export job completed", {
         workerId: this.workerId,
         runId,
@@ -515,9 +528,17 @@ export class ExportJobWorker extends EventEmitter {
         runId,
         format,
         exportedAt,
-        matchedCount: matchedRows.length,
-        exceptionCount: exceptionRows.length,
-        totalRows: rowCount,
+        rowCount,
+        fileSizeBytes: JSON.stringify({
+          matched: matchedRows.length,
+          exceptions: exceptionRows.length,
+        }).length,
+        metadata: {
+          runStatus: run.status,
+          matchedCount: matchedRows.length,
+          exceptionCount: exceptionRows.length,
+          totalRows: rowCount,
+        },
       };
     } finally {
       client.release();
@@ -527,7 +548,7 @@ export class ExportJobWorker extends EventEmitter {
   /**
    * Handle CSV export job
    */
-  private async handleCSVExportJob(payload: ExportJobPayload): Promise<Record<string, unknown>> {
+  private async handleCSVExportJob(payload: ExportJobPayload): Promise<ExportJobExecutionResult> {
     const { runId, tenantId } = payload;
 
     if (!runId) {
@@ -557,29 +578,15 @@ export class ExportJobWorker extends EventEmitter {
       const rowCount = matchesResult.rows.length;
       const exportedAt = new Date().toISOString();
 
-      // Update the Export record
-      await this.pool.query(
-        `UPDATE exports SET
-          status = 'completed',
-          row_count = $1,
-          completed_at = NOW(),
-          metadata = metadata || $2::jsonb,
-          updated_at = NOW()
-         WHERE reconciliation_run_id = $3 AND tenant_id = $4 AND status = 'pending'`,
-        [
-          rowCount,
-          JSON.stringify({ exportedAt, format: "csv" }),
-          runId,
-          tenantId,
-        ]
-      );
-
       return {
         success: true,
         runId,
         format: "csv",
         exportedAt,
         rowCount,
+        metadata: {
+          format: "csv",
+        },
       };
     } finally {
       client.release();
@@ -589,7 +596,7 @@ export class ExportJobWorker extends EventEmitter {
   /**
    * Handle PDF report job
    */
-  private async handlePDFReportJob(payload: ExportJobPayload): Promise<Record<string, unknown>> {
+  private async handlePDFReportJob(payload: ExportJobPayload): Promise<ExportJobExecutionResult> {
     const { runId, tenantId } = payload;
 
     if (!runId) {
@@ -623,34 +630,16 @@ export class ExportJobWorker extends EventEmitter {
       const rowCount = matchesCount.rows[0]?.count || 0;
       const exportedAt = new Date().toISOString();
 
-      // Update the Export record
-      await this.pool.query(
-        `UPDATE exports SET
-          status = 'completed',
-          row_count = $1,
-          completed_at = NOW(),
-          metadata = metadata || $2::jsonb,
-          updated_at = NOW()
-         WHERE reconciliation_run_id = $3 AND tenant_id = $4 AND status = 'pending'`,
-        [
-          rowCount,
-          JSON.stringify({
-            exportedAt,
-            format: "pdf",
-            runStatus: runResult.rows[0]?.status,
-          }),
-          runId,
-          tenantId,
-        ]
-      );
-
       return {
         success: true,
         runId,
         format: "pdf",
         exportedAt,
         rowCount,
-        runStatus: runResult.rows[0]?.status || "unknown",
+        metadata: {
+          format: "pdf",
+          runStatus: runResult.rows[0]?.status || "unknown",
+        },
       };
     } finally {
       client.release();
@@ -695,7 +684,7 @@ export class ExportJobWorker extends EventEmitter {
   /**
    * Retry a failed job with backoff
    */
-  private async retryJob(job: ProcessedJob, errorMessage: string): Promise<void> {
+  private async retryJob(job: ProcessedJob, errorMessage: string): Promise<Date> {
     const client = await this.pool.connect();
 
     try {
@@ -726,6 +715,8 @@ export class ExportJobWorker extends EventEmitter {
         attempt: job.attempts + 1,
         backoffMs,
       });
+
+      return runAt;
     } finally {
       client.release();
     }
