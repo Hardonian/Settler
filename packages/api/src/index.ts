@@ -12,6 +12,7 @@ import { openApiRouter } from "./routes/openapi";
 import { authRouter } from "./routes/auth";
 import { apiKeysRouter } from "./routes/api-keys";
 import { exceptionsRouter } from "./routes/exceptions";
+import { exceptionDetailsRouter } from "./routes/exception-details";
 import { exceptionIntelligenceRouter } from "./routes/exception-intelligence";
 import { testModeRouter } from "./routes/test-mode";
 import { dashboardsRouter } from "./routes/dashboards";
@@ -290,6 +291,7 @@ function configureProtectedRouter(router: Router, options: ProtectedRouterOption
   // Shared protected routes
   router.use(apiKeysRouter);
   router.use(exceptionsRouter);
+  router.use(exceptionDetailsRouter);
   router.use(exceptionIntelligenceRouter);
   router.use(testModeRouter);
   router.use(dashboardsRouter);
