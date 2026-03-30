@@ -167,7 +167,7 @@ export function Memories({ exceptionId }: { exceptionId: string }) {
     queryKey: ["exception-memories", exceptionId],
     queryFn: async () => {
       const result = await safeFetch<{ data: any[] }>(`/api/exceptions/${exceptionId}/memories`);
-      if (!result.success) throw new Error(result.error?.message);
+      if (!result.success || !result.data) throw new Error(result.error?.message || "Data missing");
       return result.data.data;
     },
   });
@@ -244,7 +244,7 @@ export function Evidence({ exceptionId }: { exceptionId: string }) {
     queryKey: ["exception-evidence", exceptionId],
     queryFn: async () => {
       const result = await safeFetch<{ data: any[] }>(`/api/exceptions/${exceptionId}/evidence`);
-      if (!result.success) throw new Error(result.error?.message);
+      if (!result.success || !result.data) throw new Error(result.error?.message || "Data missing");
       return result.data.data;
     },
   });
@@ -307,7 +307,7 @@ export function Proofs({ exceptionId }: { exceptionId: string }) {
     queryKey: ["exception-proofs", exceptionId],
     queryFn: async () => {
       const result = await safeFetch<{ data: any[] }>(`/api/exceptions/${exceptionId}/proofs`);
-      if (!result.success) throw new Error(result.error?.message);
+      if (!result.success || !result.data) throw new Error(result.error?.message || "Data missing");
       return result.data.data;
     },
   });
@@ -349,7 +349,7 @@ export function Provenance({ exceptionId }: { exceptionId: string }) {
     queryKey: ["exception-provenance", exceptionId],
     queryFn: async () => {
       const result = await safeFetch<{ data: any[] }>(`/api/exceptions/${exceptionId}/provenance`);
-      if (!result.success) throw new Error(result.error?.message);
+      if (!result.success || !result.data) throw new Error(result.error?.message || "Data missing");
       return result.data.data;
     },
   });

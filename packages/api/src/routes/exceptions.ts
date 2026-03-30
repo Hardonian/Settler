@@ -46,55 +46,6 @@ type ExceptionForMapping = Prisma.ReconciliationMatchGetPayload<{
   };
 }>;
 
-type MemoryForMapping = Prisma.ExceptionAdjudicationMemoryGetPayload<{
-  select: {
-    id: true;
-    resolution: true;
-    resolutionReason: true;
-    adjudicationType: true;
-    adjudicatorId: true;
-    adjudicatorType: true;
-    outcome: true;
-    confidence: true;
-    sourceTrustScore: true;
-    operatorNotes: true;
-    systemNotes: true;
-    evidenceIds: true;
-    createdAt: true;
-    completedAt: true;
-    parentMemoryId: true;
-  };
-}>;
-
-type EvidenceArtifactForMapping = Prisma.EvidenceArtifactGetPayload<{
-  select: {
-    id: true;
-    artifactType: true;
-    artifactKey: true;
-    capturedAt: true;
-    capturedBy: true;
-    degraded: true;
-    degradedReasons: true;
-    attested: true;
-    reliabilityScore: true;
-  };
-}>;
-
-type ProofPackageForMapping = Prisma.ProofPackageGetPayload<{
-  select: {
-    id: true;
-    packageType: true;
-    packageKey: true;
-    status: true;
-    completenessScore: true;
-    missingEvidence: true;
-    completenessFlags: true;
-    evidenceIds: true;
-    createdAt: true;
-    finalizedAt: true;
-  };
-}>;
-
 const router: Router = Router();
 const provenanceService = new ProvenanceService(prisma);
 const exceptionReviewService = new ExceptionReviewService(prisma, provenanceService);

@@ -147,6 +147,21 @@ type ReconJobSqlRow = {
   validation_rules: unknown;
   source_config_encrypted: string;
   target_config_encrypted: string;
+  latest_result_id: string | null;
+  latest_result_status: string | null;
+  latest_result_started_at: Date | null;
+  latest_result_completed_at: Date | null;
+  latest_result_source_count: number | null;
+  latest_result_target_count: number | null;
+  latest_result_matched_count: number | null;
+  latest_result_unmatched_source_count: number | null;
+  latest_result_unmatched_target_count: number | null;
+  latest_result_conflict_count: number | null;
+  latest_result_error_message: string | null;
+  latest_result_input_hash: string | null;
+  latest_result_snapshot_id: string | null;
+  latest_result_summary: unknown;
+  latest_result_metadata: unknown;
 };
 
 async function fetchReconJobsPage(
@@ -158,23 +173,60 @@ async function fetchReconJobsPage(
   if (!cursor) {
     const rows = await prisma.$queryRaw`
       SELECT
-        id,
-        tenant_id,
-        name,
-        status,
-        created_at,
-        updated_at,
-        source_adapter,
-        target_adapter,
-        recon_strategy,
-        template_id,
-        validation_rules,
-        source_config_encrypted,
-        target_config_encrypted
-      FROM recon_jobs
-      WHERE tenant_id = ${tenantId}::uuid
-        AND deleted_at IS NULL
-      ORDER BY created_at DESC, id::text DESC
+        j.id,
+        j.tenant_id,
+        j.name,
+        j.status,
+        j.created_at,
+        j.updated_at,
+        j.source_adapter,
+        j.target_adapter,
+        j.recon_strategy,
+        j.template_id,
+        j.validation_rules,
+        j.source_config_encrypted,
+        j.target_config_encrypted,
+        lr.id as latest_result_id,
+        lr.status as latest_result_status,
+        lr.started_at as latest_result_started_at,
+        lr.completed_at as latest_result_completed_at,
+        lr.source_count as latest_result_source_count,
+        lr.target_count as latest_result_target_count,
+        lr.matched_count as latest_result_matched_count,
+        lr.unmatched_source_count as latest_result_unmatched_source_count,
+        lr.unmatched_target_count as latest_result_unmatched_target_count,
+        lr.conflict_count as latest_result_conflict_count,
+        lr.error_message as latest_result_error_message,
+        lr.input_hash as latest_result_input_hash,
+        lr.snapshot_id as latest_result_snapshot_id,
+        lr.summary as latest_result_summary,
+        lr.metadata as latest_result_metadata
+      FROM recon_jobs j
+      LEFT JOIN LATERAL (
+        SELECT
+          id,
+          status,
+          started_at,
+          completed_at,
+          source_count,
+          target_count,
+          matched_count,
+          unmatched_source_count,
+          unmatched_target_count,
+          conflict_count,
+          error_message,
+          input_hash,
+          snapshot_id,
+          summary,
+          metadata
+        FROM recon_results r
+        WHERE r.recon_job_id = j.id
+        ORDER BY r.started_at DESC
+        LIMIT 1
+      ) lr ON true
+      WHERE j.tenant_id = ${tenantId}::uuid
+        AND j.deleted_at IS NULL
+      ORDER BY j.created_at DESC, j.id::text DESC
       LIMIT ${take}
     `;
     return rows as ReconJobSqlRow[];
@@ -183,27 +235,64 @@ async function fetchReconJobsPage(
   const t = new Date(cursor.t);
   const rows = await prisma.$queryRaw`
     SELECT
-      id,
-      tenant_id,
-      name,
-      status,
-      created_at,
-      updated_at,
-      source_adapter,
-      target_adapter,
-      recon_strategy,
-      template_id,
-      validation_rules,
-      source_config_encrypted,
-      target_config_encrypted
-    FROM recon_jobs
-    WHERE tenant_id = ${tenantId}::uuid
-      AND deleted_at IS NULL
+      j.id,
+      j.tenant_id,
+      j.name,
+      j.status,
+      j.created_at,
+      j.updated_at,
+      j.source_adapter,
+      j.target_adapter,
+      j.recon_strategy,
+      j.template_id,
+      j.validation_rules,
+      j.source_config_encrypted,
+      j.target_config_encrypted,
+      lr.id as latest_result_id,
+      lr.status as latest_result_status,
+      lr.started_at as latest_result_started_at,
+      lr.completed_at as latest_result_completed_at,
+      lr.source_count as latest_result_source_count,
+      lr.target_count as latest_result_target_count,
+      lr.matched_count as latest_result_matched_count,
+      lr.unmatched_source_count as latest_result_unmatched_source_count,
+      lr.unmatched_target_count as latest_result_unmatched_target_count,
+      lr.conflict_count as latest_result_conflict_count,
+      lr.error_message as latest_result_error_message,
+      lr.input_hash as latest_result_input_hash,
+      lr.snapshot_id as latest_result_snapshot_id,
+      lr.summary as latest_result_summary,
+      lr.metadata as latest_result_metadata
+    FROM recon_jobs j
+    LEFT JOIN LATERAL (
+      SELECT
+        id,
+        status,
+        started_at,
+        completed_at,
+        source_count,
+        target_count,
+        matched_count,
+        unmatched_source_count,
+        unmatched_target_count,
+        conflict_count,
+        error_message,
+        input_hash,
+        snapshot_id,
+        summary,
+        metadata
+      FROM recon_results r
+      WHERE r.recon_job_id = j.id
+      ORDER BY r.started_at DESC
+      LIMIT 1
+    ) lr ON true
+    WHERE j.tenant_id = ${tenantId}::uuid
+      AND j.deleted_at IS NULL
       AND (
-        created_at < ${t}
-        OR (created_at = ${t} AND id::text < ${cursor.id})
+        j.created_at < ${t}
+        OR (j.created_at = ${t} AND j.id::text < ${cursor.id})
       )
-    ORDER BY created_at DESC, id::text DESC
+    ORDER BY j.created_at DESC, j.id::text DESC
     LIMIT ${take}
   `;
   return rows as ReconJobSqlRow[];
@@ -225,8 +314,11 @@ export type ReconJobListRow = {
   targetConfigEncrypted: string;
 };
 
-function mapReconJobSqlRow(row: ReconJobSqlRow): ReconJobListRow {
-  return {
+function mapReconJobSqlRow(row: ReconJobSqlRow): {
+  job: ReconJobListRow;
+  latestResult: ReconResultRecordLike | null;
+} {
+  const job = {
     id: row.id,
     tenantId: row.tenant_id,
     name: row.name,
@@ -241,6 +333,29 @@ function mapReconJobSqlRow(row: ReconJobSqlRow): ReconJobListRow {
     sourceConfigEncrypted: row.source_config_encrypted,
     targetConfigEncrypted: row.target_config_encrypted,
   };
+
+  const latestResult = row.latest_result_id
+    ? {
+        id: row.latest_result_id,
+        recon_job_id: row.id,
+        status: row.latest_result_status,
+        started_at: row.latest_result_started_at?.toISOString() ?? null,
+        completed_at: row.latest_result_completed_at?.toISOString() ?? null,
+        source_count: row.latest_result_source_count,
+        target_count: row.latest_result_target_count,
+        matched_count: row.latest_result_matched_count,
+        unmatched_source_count: row.latest_result_unmatched_source_count,
+        unmatched_target_count: row.latest_result_unmatched_target_count,
+        conflict_count: row.latest_result_conflict_count,
+        error_message: row.latest_result_error_message,
+        input_hash: row.latest_result_input_hash,
+        snapshot_id: row.latest_result_snapshot_id,
+        summary: row.latest_result_summary as Record<string, unknown> | null,
+        metadata: (row.latest_result_metadata as Record<string, unknown> | null) ?? null,
+      }
+    : null;
+
+  return { job, latestResult };
 }
 
 function mapIngestionRow(row: IngestionRunRow) {
@@ -290,61 +405,15 @@ export async function fetchMergedReconciliationRunsPage(input: {
       : fetchIngestionRunsPage(prisma, tenantId, ingCursor ?? null, take),
   ]);
 
-  const jobs = jobSqlRows.map(mapReconJobSqlRow);
-  const jobIds = jobs.map((j: ReconJobListRow) => j.id);
-  const latestResults =
-    jobIds.length === 0
-      ? []
-      : await prisma.reconResult.findMany({
-          where: { tenantId, reconJobId: { in: jobIds } },
-          orderBy: { startedAt: "desc" },
-          select: {
-            id: true,
-            reconJobId: true,
-            status: true,
-            startedAt: true,
-            completedAt: true,
-            sourceCount: true,
-            targetCount: true,
-            matchedCount: true,
-            unmatchedSourceCount: true,
-            unmatchedTargetCount: true,
-            conflictCount: true,
-            errorMessage: true,
-            inputHash: true,
-            snapshotId: true,
-            summary: true,
-            metadata: true,
-          },
-        });
+  const jobsAndResults = jobSqlRows.map(mapReconJobSqlRow);
 
-  const latestByJob = new Map<string, ReconResultRecordLike>();
-  for (const r of latestResults) {
-    if (latestByJob.has(r.reconJobId)) continue;
-    latestByJob.set(r.reconJobId, {
-      id: r.id,
-      recon_job_id: r.reconJobId,
-      status: r.status,
-      started_at: r.startedAt?.toISOString() ?? null,
-      completed_at: r.completedAt?.toISOString() ?? null,
-      source_count: r.sourceCount,
-      target_count: r.targetCount,
-      matched_count: r.matchedCount,
-      unmatched_source_count: r.unmatchedSourceCount,
-      unmatched_target_count: r.unmatchedTargetCount,
-      conflict_count: r.conflictCount,
-      error_message: r.errorMessage,
-      input_hash: r.inputHash,
-      snapshot_id: r.snapshotId,
-      summary: r.summary as Record<string, unknown> | null,
-      metadata: (r.metadata as Record<string, unknown> | null) ?? null,
-    });
-  }
-
-  const jobCandidates: MergeCandidate<ReconJobListRow>[] = jobs.map((j: ReconJobListRow) => ({
+  const jobCandidates: MergeCandidate<{
+    job: ReconJobListRow;
+    latestResult: ReconResultRecordLike | null;
+  }>[] = jobsAndResults.map((j) => ({
     row: j,
-    sortTimeMs: j.createdAt.getTime(),
-    id: j.id,
+    sortTimeMs: j.job.createdAt.getTime(),
+    id: j.job.id,
   }));
 
   const ingestionCandidates: MergeCandidate<ReturnType<typeof mapIngestionRow>>[] =
@@ -361,11 +430,8 @@ export async function fetchMergedReconciliationRunsPage(input: {
     limit,
     jobCandidates,
     ingestionCandidates,
-    mapJob: (j: ReconJobListRow) =>
-      mapReconJobRowToCanonicalListItem({
-        job: j,
-        latestResult: latestByJob.get(j.id) ?? null,
-      }),
+    mapJob: (j: { job: ReconJobListRow; latestResult: ReconResultRecordLike | null }) =>
+      mapReconJobRowToCanonicalListItem(j),
     mapIngestion: (r) => mapIngestionReconciliationRunToCanonicalListItem(r),
     prev: cursorState,
   });
