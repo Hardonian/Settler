@@ -9,11 +9,8 @@
  */
 
 import crypto from "node:crypto";
-import type {
-  EvidenceArtifact,
   EvidenceArtifactType,
   ProofCompletenessModel,
-  EvidenceGap,
 } from "../evidence/index.js";
 
 export type ProofPackageType =
