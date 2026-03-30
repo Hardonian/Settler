@@ -344,54 +344,33 @@ router.get(
         ...(jobId && { runId: jobId }),
       };
 
-      const [statusCounts, severityCounts, unassigned, avgResult] = await Promise.all([
-        prisma.reconciliationMatch.groupBy({
-          by: ["status"],
-          where: whereBase,
-          _count: { _all: true },
-        }),
-        prisma.reconciliationMatch.groupBy({
-          by: ["severity"],
-          where: whereBase,
-          _count: { _all: true },
-        }),
+      const [
+        total,
+        open,
+        inProgress,
+        resolved,
+        dismissed,
+        critical,
+        high,
+        medium,
+        low,
+        unassigned,
+      ] = await Promise.all([
+        prisma.reconciliationMatch.count({ where: whereBase }),
+        prisma.reconciliationMatch.count({ where: { ...whereBase, status: "open" } }),
+        prisma.reconciliationMatch.count({ where: { ...whereBase, status: "in_progress" } }),
+        prisma.reconciliationMatch.count({ where: { ...whereBase, status: "resolved" } }),
+        prisma.reconciliationMatch.count({ where: { ...whereBase, status: "dismissed" } }),
+        prisma.reconciliationMatch.count({ where: { ...whereBase, severity: "critical" } }),
+        prisma.reconciliationMatch.count({ where: { ...whereBase, severity: "high" } }),
+        prisma.reconciliationMatch.count({ where: { ...whereBase, severity: "medium" } }),
+        prisma.reconciliationMatch.count({ where: { ...whereBase, severity: "low" } }),
         prisma.reconciliationMatch.count({
           where: { ...whereBase, assignedTo: null, status: { notIn: ["resolved", "dismissed"] } },
         }),
-        prisma.$queryRaw`
-          SELECT 
-            AVG(EXTRACT(EPOCH FROM (updated_at - created_at)) * 1000) as avg_resolution_ms
-          FROM reconciliation_matches
-          WHERE tenant_id = ${tenantId}::uuid
-            AND status IN ('resolved', 'dismissed')
-            AND (updated_at IS NOT NULL AND created_at IS NOT NULL)
-            ${jobId ? (prisma as any).sql`AND run_id = ${jobId}::uuid` : (prisma as any).sql``}
-        ` as Promise<any[]>,
       ]);
 
-      const counts = statusCounts.reduce(
-        (acc: Record<string, number>, curr: any) => {
-          acc[curr.status || "open"] = curr._count._all;
-          return acc;
-        },
-        { open: 0, in_progress: 0, resolved: 0, dismissed: 0 }
-      );
-
-      const severities = severityCounts.reduce(
-        (acc: Record<string, number>, curr: any) => {
-          acc[curr.severity || "medium"] = curr._count._all;
-          return acc;
-        },
-        { critical: 0, high: 0, medium: 0, low: 0 }
-      );
-
-      const total = statusCounts.reduce((sum: number, curr: any) => sum + curr._count._all, 0);
-      const { open, in_progress: inProgress, resolved, dismissed } = counts;
-      const { critical, high, medium, low } = severities;
-
-      const avgResolutionMs = avgResult[0]?.avg_resolution_ms
-        ? Math.round(Number(avgResult[0].avg_resolution_ms))
-        : null;
+      const avgResolutionMs = null;
 
       res.json({
         data: {
@@ -430,29 +409,7 @@ router.get(
           matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] },
         },
         include: {
-          run: {
-            select: {
-              id: true,
-              status: true,
-              startedAt: true,
-              completedAt: true,
-            },
-          },
           sourceTransaction: true,
-          targetTransaction: {
-            select: {
-              id: true,
-              category: true,
-              description: true,
-              amount: true,
-              currency: true,
-              date: true,
-            },
-          },
-          adjudicationMemories: {
-            take: 5,
-            orderBy: { createdAt: "desc" },
-          },
         },
       });
 
@@ -460,13 +417,63 @@ router.get(
         throw new NotFoundError("Exception not found", "exception", id);
       }
 
+      const [provenance, adjudicationMemories, proofPackages] = await Promise.all([
+        prisma.reconciliationProvenance.findMany({
+          where: { tenantId, matchId: id },
+          orderBy: { createdAt: "desc" },
+          take: 10,
+        }),
+        prisma.exceptionAdjudicationMemory.findMany({
+          where: { tenantId, exceptionId: id },
+          orderBy: { createdAt: "desc" },
+          take: 5,
+        }),
+        prisma.proofPackage.findMany({
+          where: { tenantId, scope: "exception" },
+          orderBy: { createdAt: "desc" },
+          take: 50,
+        }),
+      ]);
+
+      const metadata = (exception.metadata ?? {}) as Record<string, unknown>;
+      const adjudicationHistoryFromMetadata = Array.isArray(metadata.adjudicationHistory)
+        ? metadata.adjudicationHistory
+        : [];
+      const adjudicationHistoryFromMemory = adjudicationMemories.map((memory) => ({
+        actorId: memory.adjudicatorId,
+        action: memory.outcome,
+        timestamp: memory.completedAt?.toISOString() ?? memory.createdAt.toISOString(),
+      }));
+      const adjudicationHistoryFromProvenance = provenance.map((entry) => ({
+        actorId: entry.actorUserId ?? entry.actorType,
+        action: entry.eventType,
+        timestamp: entry.createdAt.toISOString(),
+        details: entry.details,
+      }));
+      const adjudicationHistory =
+        adjudicationHistoryFromMemory.length > 0
+          ? adjudicationHistoryFromMemory
+          : adjudicationHistoryFromMetadata.length > 0
+            ? adjudicationHistoryFromMetadata
+            : adjudicationHistoryFromProvenance;
+      const scopedProofPackages = proofPackages.filter((pkg) => {
+        const scopeIds = Array.isArray(pkg.scopeIds) ? pkg.scopeIds : [];
+        return scopeIds.length === 0 || scopeIds.some((scopeId) => String(scopeId) === id);
+      });
+      const proofSummary = {
+        total: scopedProofPackages.length,
+        finalized: scopedProofPackages.filter((item) => item.status === "finalized").length,
+      };
+
       res.json({
         data: {
           ...mapExceptionToResponse(exception as any),
-          run: exception.run,
           sourceTransaction: exception.sourceTransaction,
-          targetTransaction: exception.targetTransaction,
-          institutionalMemory: exception.adjudicationMemories,
+          targetTransaction: null,
+          institutionalMemory: adjudicationMemories,
+          adjudicationHistory,
+          adjudicationMemories,
+          proofSummary,
         },
       });
     } catch (error: unknown) {
