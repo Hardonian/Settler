@@ -857,37 +857,16 @@ router.post(
       const userId = req.userId!;
       const tenantId = req.tenantId!;
 
-      const result = await prisma.reconciliationMatch.updateMany({
-        where: {
-          id: { in: exceptionIds },
-          tenantId,
-          matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] },
-          status: { notIn: ["resolved", "dismissed"] },
-        },
-        data: { assignedTo },
-      });
-
-      await prisma.auditLog.create({
-        data: {
-          tenantId,
-          userId,
-          action: "exceptions_bulk_assigned",
-          resourceType: "reconciliation_match",
-          resourceId: null,
-          metadata: { assignedTo, exceptionCount: result.count },
-        },
-      });
-
-      logInfo("Exceptions bulk assigned", {
+      const assignedCount = await exceptionReviewService.bulkAssignExceptions({
         tenantId,
-        count: result.count,
+        userId,
+        exceptionIds,
         assignedTo,
-        assignedBy: userId,
       });
 
       return res.json({
-        data: { assigned: result.count },
-        message: `Assigned ${result.count} exceptions`,
+        data: { assigned: assignedCount },
+        message: `Assigned ${assignedCount} exceptions to ${assignedTo} successfully`,
       });
     } catch (error: unknown) {
       return handleRouteError(res, error, "Failed to bulk assign exceptions", 500, {

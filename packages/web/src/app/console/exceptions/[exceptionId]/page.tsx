@@ -7,13 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { safeFetch } from "@/lib/safe-fetch";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import {
-  ExceptionDetailClient,
-  SeverityBadge,
-  StatusBadge,
-  CollapsibleJson,
-  ProvenanceRow,
-} from "./components";
+import { ExceptionDetailClient, SeverityBadge, StatusBadge } from "./components";
 import { Memories, Evidence, Proofs, Provenance } from "./components";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
