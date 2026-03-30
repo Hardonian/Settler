@@ -28,7 +28,7 @@ router.get(
   requirePermission(Permission.REPORTS_READ),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { id } = req.params;
+      const id = typeof req.params["id"] === "string" ? req.params["id"] : "";
       const tenantId = req.tenantId!;
       await validateExceptionAccess(id, tenantId);
 
@@ -65,7 +65,7 @@ router.get(
   requirePermission(Permission.REPORTS_READ),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { id } = req.params;
+      const id = typeof req.params["id"] === "string" ? req.params["id"] : "";
       const tenantId = req.tenantId!;
       await validateExceptionAccess(id, tenantId);
 
@@ -96,7 +96,7 @@ router.get(
   requirePermission(Permission.REPORTS_READ),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { id } = req.params;
+      const id = typeof req.params["id"] === "string" ? req.params["id"] : "";
       const tenantId = req.tenantId!;
       await validateExceptionAccess(id, tenantId);
 
@@ -133,7 +133,7 @@ router.get(
   requirePermission(Permission.REPORTS_READ),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { id } = req.params;
+      const id = typeof req.params["id"] === "string" ? req.params["id"] : "";
       const tenantId = req.tenantId!;
       await validateExceptionAccess(id, tenantId);
 

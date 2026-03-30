@@ -214,7 +214,7 @@ function appendAdjudicationHistory(
 }
 
 function mapExceptionToResponse(e: ExceptionForMapping) {
-  let status: "open" | "in_progress" | "resolved" | "dismissed" = e.status || "open";
+  let status: "open" | "in_progress" | "resolved" | "dismissed" = (e.status as any) || "open";
   if (!e.status && e.reviewed) {
     status = e.matchReason?.toLowerCase().includes("ignored") ? "dismissed" : "resolved";
   }
