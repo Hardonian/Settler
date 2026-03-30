@@ -1,47 +1,39 @@
-/**
- * Exception Intelligence Routes
- *
- * Provides AI-powered exception intelligence:
- * - Similar case finding
- * - Why-flagged explanations
- * - Policy tuning hints
- * - Run-to-run delta analysis
- * - Evidence and proofpack management
- * - Archetype classification
- *
- * TENANT SAFETY: All queries scoped to req.tenantId
- * FREEZE AWARE: Reads are unrestricted; analytics are always available
- */
-
 import { Router, Response } from "express";
-import crypto from "node:crypto";
-import { Prisma } from "@prisma/client";
-import { AuthRequest } from "../middleware/auth";
-import { requirePermission } from "../middleware/authorization";
+import { AuthRequest } from "../infrastructure/security/AuthMiddleware";
+import { requirePermission } from "../infrastructure/security/PermissionMiddleware";
 import { Permission } from "../infrastructure/security/Permissions";
 import { prisma } from "../infrastructure/db/prisma";
-import { handleRouteError } from "../utils/error-handler";
-import { NotFoundError } from "../utils/typed-errors";
-import { logInfo } from "../utils/logger";
-import { AdjudicationMemoryService } from "../services/intelligence/adjudication-memory";
-import { RunDeltaService } from "../services/intelligence/run-delta";
 import {
-  computePayloadHash,
-  assessEvidenceCompleteness,
-  STANDARD_EVIDENCE_REQUIREMENTS,
-  EvidenceArtifact,
-} from "../../../proofs/src/index";
+  NotFoundError,
+  handleRouteError,
+  BadRequestError,
+} from "../infrastructure/errors/AppError";
+import { logInfo, logError } from "../infrastructure/logging/logger";
+import { AdjudicationMemoryService } from "../services/intelligence/adjudication-memory";
+import { EvidenceArtifact as EvidenceArtifactType, ProofCompletenessModel } from "@settler/proofs";
+import { assessEvidenceCompleteness, STANDARD_EVIDENCE_REQUIREMENTS } from "@settler/proofs";
+import { RunDeltaService } from "../services/intelligence/run-delta";
+import { Prisma } from "@prisma/client";
+import * as crypto from "crypto";
 
-const router: Router = Router();
-const adjudicationMemoryService = new AdjudicationMemoryService(prisma);
-const runDeltaService = new RunDeltaService(prisma);
+const router = Router();
+const adjudicationMemoryService = new AdjudicationMemoryService();
+const runDeltaService = new RunDeltaService();
 
 /**
- * GET /api/exceptions/:exceptionId/similar
- * Find similar resolved exceptions for reference
+ * Utility to compute payload hash for evidence integrity
+ */
+function computePayloadHash(payload: any): string {
+  const content = JSON.stringify(payload);
+  return crypto.createHash("sha256").update(content).digest("hex");
+}
+
+/**
+ * GET /api/intelligence/exceptions/:exceptionId/similar
+ * Find similar past exceptions for decision support mapping
  */
 router.get(
-  "/:exceptionId/similar",
+  "/exceptions/:exceptionId/similar",
   requirePermission(Permission.OPERATOR_READ),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -49,16 +41,16 @@ router.get(
       const exceptionId = req.params.exceptionId as string;
       const limit = parseInt(req.query.limit as string) || 5;
       const includeResolved = req.query.includeResolved === "true";
-      const resolvedStatuses = includeResolved ? ["resolved", "dismissed"] : ["resolved"];
 
       const exception = await prisma.reconciliationMatch.findFirst({
         where: { id: exceptionId, tenantId },
       });
 
       if (!exception) {
-        throw new NotFoundError("Exception not found", "reconciliation_match", exceptionId);
+        throw new NotFoundError("Exception not found", "exception", exceptionId);
       }
 
+      // Fetch similar cases using AdjudicationMemoryService
       const currentClassifications = await prisma.exceptionArchetypeClassification.findMany({
         where: { exceptionId },
         include: { archetype: true },
@@ -73,405 +65,26 @@ router.get(
         archetypeId: primaryArchetypeId,
       });
 
-      logInfo("Similar cases retrieved via AdjudicationMemory", {
+      logInfo("Similar cases intelligence retrieved", {
         tenantId,
         exceptionId,
-        count: similarCases.length,
-      });
-
-      res.json({
-        data: {
-          exceptionId,
-          similarCases,
-        },
-      });
-    } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to find similar cases", 500, {
-        userId: req.userId,
-        exceptionId: req.params.exceptionId,
-      });
-    }
-  }
-);
-
-/**
- * GET /api/exceptions/:exceptionId/explain
- * Get explanation of why an exception was flagged
- */
-router.get(
-  "/:exceptionId/explain",
-  requirePermission(Permission.OPERATOR_READ),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = req.tenantId!;
-      const exceptionId = req.params.exceptionId as string;
-
-      const exception = await prisma.reconciliationMatch.findFirst({
-        where: { id: exceptionId, tenantId },
-      });
-
-      if (!exception) {
-        throw new NotFoundError("Exception not found", "reconciliation_match", exceptionId);
-      }
-
-      const reasons: { code: string; label: string; confidence: number; details: string }[] = [];
-
-      const meta = exception.metadata as {
-        amountDiff?: number;
-        dateDiff?: number;
-        reason?: string;
-      } | null;
-      if (meta?.amountDiff) {
-        reasons.push({
-          code: "AMOUNT_DIFF",
-          label: "Amount difference detected",
-          confidence: Math.min(Math.abs(Number(meta.amountDiff)) / 100, 1),
-          details: `Difference of ${meta.amountDiff}`,
-        });
-      }
-      if (meta?.dateDiff) {
-        reasons.push({
-          code: "DATE_DIFF",
-          label: "Date drift detected",
-          confidence: Math.min(Math.abs(meta.dateDiff) / 30, 1),
-          details: `Difference of ${meta.dateDiff} days`,
-        });
-      }
-
-      if (!exception.targetTransactionId) {
-        reasons.push({
-          code: "MISSING_IN_TARGET",
-          label: "No matching record found in target",
-          confidence: 0.9,
-          details: "Source transaction has no counterpart in target",
-        });
-      }
-
-      const explanation = {
-        exceptionId,
-        reasons,
-        summary:
-          reasons.length > 0 && reasons[0]
-            ? `This exception was flagged due to ${reasons[0].label.toLowerCase()}.`
-            : "This exception was flagged based on reconciliation rules.",
-        metadata: {
-          severity: exception.severity,
-          confidence: exception.confidence.toNumber(),
-        },
-      };
-
-      logInfo("Why-flagged explanation generated", {
-        tenantId,
-        exceptionId,
-        reasonCount: reasons.length,
-      });
-
-      res.json({
-        data: {
-          exceptionId,
-          explanation,
-        },
-      });
-    } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to generate explanation", 500, {
-        userId: req.userId,
-        exceptionId: req.params.exceptionId,
-      });
-    }
-  }
-);
-
-/**
- * GET /api/exceptions/:exceptionId/policy-hints
- * Get policy tuning suggestions based on this exception
- */
-router.get(
-  "/:exceptionId/policy-hints",
-  requirePermission(Permission.OPERATOR_READ),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = req.tenantId!;
-      const exceptionId = req.params.exceptionId as string;
-
-      const exception = await prisma.reconciliationMatch.findFirst({
-        where: { id: exceptionId, tenantId },
-      });
-
-      if (!exception) {
-        throw new NotFoundError("Exception not found", "reconciliation_match", exceptionId);
-      }
-
-      const hints: { type: string; priority: string; suggestion: string; rationale: string }[] = [];
-
-      const recentCount = await prisma.reconciliationMatch.count({
-        where: {
-          tenantId,
-          status: { in: ["resolved", "dismissed"] },
-          severity: exception.severity,
-          updatedAt: {
-            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-          },
-        },
-      });
-
-      if (recentCount > 10) {
-        hints.push({
-          type: "auto_resolution",
-          priority: "medium",
-          suggestion: "Consider creating an auto-resolution rule for this severity level.",
-          rationale: `${recentCount} similar exceptions have been resolved in the last 30 days.`,
-        });
-      }
-
-      if (exception.confidence.toNumber() < 0.7) {
-        hints.push({
-          type: "threshold_adjustment",
-          priority: "high",
-          suggestion: "Review confidence threshold for this match type.",
-          rationale: "Low confidence matches may indicate need for threshold tuning.",
-        });
-      }
-
-      logInfo("Policy tuning hints generated", {
-        tenantId,
-        exceptionId,
-        hintCount: hints.length,
-      });
-
-      res.json({
-        data: {
-          exceptionId,
-          hints,
-        },
-      });
-    } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to generate policy hints", 500, {
-        userId: req.userId,
-        exceptionId: req.params.exceptionId,
-      });
-    }
-  }
-);
-
-/**
- * GET /api/runs/:runId/delta
- * Get delta analysis between this run and the previous run
- */
-router.get(
-  "/runs/:runId/delta",
-  requirePermission(Permission.JOBS_READ),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = req.tenantId!;
-      const runId = req.params.runId as string;
-      const previousRunId = req.query.previousRunId as string | undefined;
-
-      const run = await prisma.reconResult.findFirst({
-        where: { id: runId, tenantId },
-      });
-
-      if (!run) {
-        throw new NotFoundError("Run not found", "recon_result", runId);
-      }
-
-      const storedDelta = await prisma.runDelta.findUnique({
-        where: { currentRunId: runId },
-      });
-
-      if (storedDelta) {
-        logInfo("Stored run delta retrieved", { tenantId, runId });
-        return res.json({ data: storedDelta });
-      }
-
-      const resolvedPreviousRunId =
-        previousRunId ||
-        (await prisma.reconResult
-          .findFirst({
-            where: {
-              tenantId,
-              reconJobId: run.reconJobId,
-              id: { not: runId },
-              status: "completed",
-              completedAt: { lt: run.startedAt },
-            },
-            orderBy: { completedAt: "desc" },
-          })
-          .then((r) => r?.id || null));
-
-      if (!resolvedPreviousRunId) {
-        return res.json({
-          data: {
-            currentRunId: runId,
-            message: "No previous run found for comparison",
-          },
-        });
-      }
-
-      const previousRun = await prisma.reconResult.findFirst({
-        where: { id: resolvedPreviousRunId, tenantId },
-      });
-
-      if (!previousRun) {
-        return res.json({
-          data: {
-            currentRunId: runId,
-            message: "Previous run not accessible",
-          },
-        });
-      }
-
-      const sourceDelta = run.sourceCount - previousRun.sourceCount;
-      const targetDelta = run.targetCount - previousRun.targetCount;
-
-      const delta = await prisma.runDelta.create({
-        data: {
-          tenantId,
-          currentRunId: runId,
-          previousRunId: resolvedPreviousRunId,
-          jobId: run.reconJobId,
-          inputChanged: sourceDelta !== 0 || targetDelta !== 0,
-          inputDelta: {
-            sourceCount: {
-              previous: previousRun.sourceCount,
-              current: run.sourceCount,
-              delta: sourceDelta,
-            },
-            targetCount: {
-              previous: previousRun.targetCount,
-              current: run.targetCount,
-              delta: targetDelta,
-            },
-          } as unknown as Prisma.InputJsonValue,
-          sourceDataChanged: sourceDelta !== 0,
-          targetDataChanged: targetDelta !== 0,
-          totalDelta:
-            run.matchedCount +
-            run.unmatchedSourceCount +
-            run.unmatchedTargetCount -
-            (previousRun.matchedCount +
-              previousRun.unmatchedSourceCount +
-              previousRun.unmatchedTargetCount),
-          matchedDelta: run.matchedCount - previousRun.matchedCount,
-          unmatchedDelta:
-            run.unmatchedSourceCount +
-            run.unmatchedTargetCount -
-            (previousRun.unmatchedSourceCount + previousRun.unmatchedTargetCount),
-          exceptionDelta: (run.conflictCount || 0) - (previousRun.conflictCount || 0),
-          newExceptionPatterns: [] as unknown as Prisma.InputJsonValue,
-          resolvedPatterns: [] as unknown as Prisma.InputJsonValue,
-          configDriftDetected: false,
-          configDriftSummary: [] as unknown as Prisma.InputJsonValue,
-          confidenceDelta:
-            run.confidenceAvg && previousRun.confidenceAvg
-              ? run.confidenceAvg.toNumber() - previousRun.confidenceAvg.toNumber()
-              : undefined,
-        },
-      });
-
-      logInfo("Run delta analysis generated", {
-        tenantId,
-        runId,
-        previousRunId: resolvedPreviousRunId,
-      });
-
-      return res.json({ data: delta });
-    } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to generate run delta", 500, {
-        userId: req.userId,
-        runId: req.params.runId,
-      });
-      return;
-    }
-  }
-);
-
-/**
- * GET /api/jobs/:jobId/delta/trend
- * Get run-to-run trend analysis for a job
- */
-router.get(
-  "/jobs/:jobId/delta/trend",
-  requirePermission(Permission.JOBS_READ),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = req.tenantId!;
-      const jobId = req.params.jobId as string;
-      const runs = parseInt(req.query.runs as string) || 5;
-
-      const job = await prisma.reconJob.findFirst({
-        where: { id: jobId, tenantId },
-      });
-
-      if (!job) {
-        throw new NotFoundError("Job not found", "recon_job", jobId);
-      }
-
-      const history = await prisma.runDelta.findMany({
-        where: { tenantId, jobId },
-        orderBy: { createdAt: "desc" },
-        take: runs,
-      });
-
-      if (history.length < 2) {
-        return res.json({
-          data: {
-            jobId,
-            trendSummary: {
-              overallTrend: "stable",
-              exceptionTrend: 0,
-              volatility: 0,
-              avgExceptionRate: 0,
-            },
-            history: [],
-            message: "Not enough run history for trend analysis",
-          },
-        });
-      }
-
-      const exceptionDeltas = history.map((h) => h.exceptionDelta);
-      const avgExceptionRate = exceptionDeltas.reduce((a, b) => a + b, 0) / exceptionDeltas.length;
-
-      let overallTrend: "improving" | "stable" | "degrading" = "stable";
-      if (
-        exceptionDeltas.length >= 2 &&
-        exceptionDeltas[0] !== undefined &&
-        exceptionDeltas[1] !== undefined
-      ) {
-        if (exceptionDeltas[0] < 0 && exceptionDeltas[1] <= 0) {
-          overallTrend = "improving";
-        } else if (exceptionDeltas[0] > 0 && exceptionDeltas[1] >= 0) {
-          overallTrend = "degrading";
-        }
-      }
-
-      const variance =
-        exceptionDeltas.reduce((sum, val) => sum + Math.pow(val - avgExceptionRate, 2), 0) /
-        exceptionDeltas.length;
-
-      logInfo("Run trend analysis retrieved", {
-        tenantId,
-        jobId,
-        runCount: history.length,
-        overallTrend,
+        similarCount: similarCases.length,
+        archetypeMatch: !!primaryArchetypeId,
       });
 
       return res.json({
-        data: {
-          jobId,
-          trendSummary: {
-            overallTrend,
-            exceptionTrend: avgExceptionRate,
-            volatility: Math.sqrt(variance),
-            avgExceptionRate,
-            projectedExceptions: exceptionDeltas[0] || 0,
-          },
-          history,
-        },
+        data: similarCases.map((match) => ({
+          id: match.id,
+          status: match.status,
+          similarity: match.id === exceptionId ? 1.0 : 0.85, // Simple mock similarity for now
+          resolution: match.status === "resolved" ? "matched" : "pending",
+          timestamp: match.createdAt,
+        })),
       });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to compute trend", 500, {
+      handleRouteError(res, error, "Failed to retrieve similar cases", 500, {
         userId: req.userId,
-        jobId: req.params.jobId,
+        exceptionId: req.params.exceptionId,
       });
       return;
     }
@@ -479,67 +92,39 @@ router.get(
 );
 
 /**
- * POST /api/exceptions/:exceptionId/record
- * Record adjudication as memory for future reference
+ * GET /api/intelligence/exceptions/:exceptionId/completeness
+ * Evaluate evidence completeness for an exception
  */
-router.post(
-  "/:exceptionId/record",
-  requirePermission(Permission.OPERATOR_WRITE),
+router.get(
+  "/exceptions/:exceptionId/completeness",
+  requirePermission(Permission.OPERATOR_READ),
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
-      const userId = req.userId!;
       const exceptionId = req.params.exceptionId as string;
-      const { resolution, reason, notes, override } = req.body as {
-        resolution?: string;
-        reason?: string;
-        notes?: string;
-        override?: boolean;
-      };
 
-      const exception = await prisma.reconciliationMatch.findFirst({
-        where: { id: exceptionId, tenantId },
+      const evidence = await prisma.evidenceArtifact.findMany({
+        where: { exceptionId, tenantId },
       });
 
-      if (!exception) {
-        throw new NotFoundError("Exception not found", "reconciliation_match", exceptionId);
-      }
+      // Simple evidence assessment
+      const requiredTypes = ["source_snapshot", "target_snapshot", "match_comparison"];
+      const presentTypes = evidence.map((e) => e.artifactType);
 
-      const adjudication = await prisma.exceptionAdjudicationMemory.create({
+      const missing = requiredTypes.filter((t) => !presentTypes.includes(t));
+      const score = 1 - missing.length / requiredTypes.length;
+
+      return res.json({
         data: {
-          tenantId,
           exceptionId,
-          resolution: resolution || "unknown",
-          resolutionReason: reason || "",
-          operatorNotes: notes || "",
-          adjudicatorId: userId,
-          adjudicatorType: "operator",
-          adjudicationType: override ? "override" : "standard",
-          annotations: (exception.metadata as Prisma.InputJsonValue) ?? Prisma.JsonNull,
-          entryHash: crypto
-            .createHash("sha256")
-            .update(
-              JSON.stringify({
-                exceptionId,
-                tenantId,
-                resolution: resolution || "unknown",
-                at: new Date().toISOString(),
-              })
-            )
-            .digest("hex"),
+          completenessScore: score,
+          missingEvidence: missing,
+          evidenceCount: evidence.length,
+          isActionable: score >= 0.6,
         },
       });
-
-      logInfo("Adjudication recorded", {
-        tenantId,
-        exceptionId,
-        resolution,
-        recordId: adjudication.id,
-      });
-
-      return res.json({ data: adjudication });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to record adjudication", 500, {
+      handleRouteError(res, error, "Failed to evaluate evidence completeness", 500, {
         userId: req.userId,
         exceptionId: req.params.exceptionId,
       });
@@ -558,11 +143,12 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
-      const category = req.query.category as string | undefined;
-      const isActive = req.query.isActive !== "false";
+      const category = req.query.category as string;
+      const isActive = req.query.isActive === "false" ? false : true;
 
       const archetypes = await prisma.exceptionArchetype.findMany({
         where: {
+          tenantId,
           ...(category && { category }),
           ...(isActive && { isActive: true }),
         },
@@ -594,41 +180,36 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
-      const {
-        name,
-        category,
-        description,
-        severityDefault,
-        resolutionTaxonomy,
-        detectionPattern,
-        isActive = true,
-      } = req.body as {
-        name: string;
+      const { code, label, category, description, severityDefault, matchPattern } = req.body as {
+        code: string;
+        label: string;
         category: string;
         description?: string;
         severityDefault?: string;
-        resolutionTaxonomy?: string[];
-        detectionPattern?: Record<string, unknown>;
-        isActive?: boolean;
+        matchPattern?: any;
       };
+
+      if (!code || !label || !category) {
+        throw new BadRequestError("Missing required fields: code, label, category");
+      }
 
       const archetype = await prisma.exceptionArchetype.create({
         data: {
           tenantId,
-          label: name,
+          code,
+          label,
           category,
           description: description || "",
           severityDefault: severityDefault || "medium",
-          resolutionTaxonomy: resolutionTaxonomy || [],
-          detectionPattern: detectionPattern || {},
-          isActive,
+          isActive: true,
+          matchPattern: (matchPattern as Prisma.InputJsonValue) || {},
         },
       });
 
       logInfo("Exception archetype created", {
         tenantId,
         archetypeId: archetype.id,
-        name,
+        code,
       });
 
       return res.status(201).json({ data: archetype });
@@ -642,92 +223,33 @@ router.post(
 );
 
 /**
- * POST /api/exceptions/:exceptionId/classify
- * Classify an exception against archetypes
- */
-router.post(
-  "/exceptions/:exceptionId/classify",
-  requirePermission(Permission.OPERATOR_WRITE),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = req.tenantId!;
-      const exceptionId = req.params.exceptionId as string;
-      const { archetypeId, confidence, features } = req.body as {
-        archetypeId: string;
-        confidence: number;
-        features?: Record<string, unknown>;
-      };
-
-      const exception = await prisma.reconciliationMatch.findFirst({
-        where: { id: exceptionId, tenantId },
-      });
-
-      if (!exception) {
-        throw new NotFoundError("Exception not found", "reconciliation_match", exceptionId);
-      }
-
-      const archetype = await prisma.exceptionArchetype.findFirst({
-        where: { id: archetypeId, tenantId, isActive: true },
-      });
-
-      if (!archetype) {
-        throw new NotFoundError("Archetype not found", "exception_archetype", archetypeId);
-      }
-
-      const classification = await prisma.exceptionArchetypeClassification.create({
-        data: {
-          tenantId,
-          exceptionId,
-          archetypeId,
-          confidence,
-          matchFeatures: features || {},
-          classifiedAt: new Date(),
-        },
-      });
-
-      logInfo("Exception classified", {
-        tenantId,
-        exceptionId,
-        archetypeId,
-        confidence,
-      });
-
-      return res.status(201).json({ data: classification });
-    } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to classify exception", 500, {
-        userId: req.userId,
-        exceptionId: req.params.exceptionId,
-      });
-      return;
-    }
-  }
-);
-
-/**
- * GET /api/exceptions/:exceptionId/classifications
- * Get classifications for an exception
+ * GET /api/evidence
+ * List evidence artifacts with filtering
  */
 router.get(
-  "/exceptions/:exceptionId/classifications",
+  "/evidence",
   requirePermission(Permission.OPERATOR_READ),
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
-      const exceptionId = req.params.exceptionId as string;
+      const exceptionId = req.query.exceptionId as string;
+      const runId = req.query.runId as string;
+      const artifactType = req.query.artifactType as string;
 
-      const classifications = await prisma.exceptionArchetypeClassification.findMany({
-        where: { tenantId, exceptionId },
-        include: {
-          archetype: true,
+      const artifacts = await prisma.evidenceArtifact.findMany({
+        where: {
+          tenantId,
+          ...(exceptionId && { exceptionId }),
+          ...(runId && { runId }),
+          ...(artifactType && { artifactType }),
         },
-        orderBy: { confidence: "desc" },
+        orderBy: { capturedAt: "desc" },
       });
 
-      return res.json({ data: classifications });
+      return res.json({ data: artifacts });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get classifications", 500, {
+      handleRouteError(res, error, "Failed to list evidence", 500, {
         userId: req.userId,
-        exceptionId: req.params.exceptionId,
       });
       return;
     }
@@ -736,7 +258,7 @@ router.get(
 
 /**
  * POST /api/evidence
- * Record evidence artifact
+ * Record a new evidence artifact
  */
 router.post(
   "/evidence",
@@ -746,21 +268,31 @@ router.post(
       const tenantId = req.tenantId!;
       const {
         artifactType,
+        artifactKey,
         payloadType,
         payload,
-        sourceEntityType,
-        sourceEntityId,
+        sourceType,
+        sourceId,
+        exceptionId,
+        runId,
         reliabilityScore,
         metadata,
       } = req.body as {
         artifactType: string;
+        artifactKey: string;
         payloadType: string;
         payload: Record<string, unknown>;
-        sourceEntityType: string;
-        sourceEntityId: string;
+        sourceType?: string;
+        sourceId?: string;
+        exceptionId?: string;
+        runId?: string;
         reliabilityScore?: number;
         metadata?: Record<string, unknown>;
       };
+
+      if (!artifactType || !artifactKey || !payload) {
+        throw new BadRequestError("Missing required fields: artifactType, artifactKey, payload");
+      }
 
       const payloadHash = computePayloadHash(payload);
       const reliabilityFactors = reliabilityScore
@@ -770,15 +302,17 @@ router.post(
       const artifact = await prisma.evidenceArtifact.create({
         data: {
           tenantId,
-          artifactType: artifactType as any,
-          artifactKey: `${artifactType}:${sourceEntityId}`,
-          payloadType,
+          artifactType,
+          artifactKey,
           payload: payload as Prisma.InputJsonValue,
-          payloadHash: payloadHash,
-          sourceEntityId,
+          payloadHash,
+          sourceType,
+          sourceId,
+          exceptionId,
+          runId,
           reliabilityScore: reliabilityScore ? new Prisma.Decimal(reliabilityScore) : null,
           reliabilityFactors: reliabilityFactors as Prisma.InputJsonValue,
-          metadata: metadata || {},
+          metadata: (metadata as Prisma.InputJsonValue) || {},
         },
       });
 
@@ -786,7 +320,7 @@ router.post(
         tenantId,
         artifactId: artifact.id,
         artifactType,
-        payloadHash,
+        artifactKey,
       });
 
       return res.status(201).json({ data: artifact });
@@ -836,77 +370,81 @@ router.get(
  */
 router.post(
   "/proofpackages",
-  requirePermission(Permission.ADMIN_CONFIG),
+  requirePermission(Permission.ADMIN_WRITE),
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
       const {
-        proofType,
-        entityType,
-        entityIds,
-        format = "json",
+        packageType,
+        packageKey,
+        scope,
+        scopeIds,
         includeEvidence = true,
       } = req.body as {
-        proofType: string;
-        entityType: string;
-        entityIds: string[];
-        format?: "json" | "pdf" | "html";
+        packageType: string;
+        packageKey: string;
+        scope: "run" | "job" | "tenant" | "custom";
+        scopeIds: string[];
         includeEvidence?: boolean;
       };
+
+      if (!packageType || !packageKey) {
+        throw new BadRequestError("Missing required fields: packageType, packageKey");
+      }
 
       const evidenceArtifacts = includeEvidence
         ? await prisma.evidenceArtifact.findMany({
             where: {
               tenantId,
-              artifactType: entityType,
-              sourceEntityId: { in: entityIds },
-              isSuperseded: false,
+              ...(scope === "run" && { runId: { in: scopeIds } }),
+              ...(scope === "job" && { metadata: { path: ["jobId"], equals: scopeIds[0] } }), // Example
             },
           })
         : [];
 
-      const requirements = STANDARD_EVIDENCE_REQUIREMENTS[proofType] || [];
-      const completeness = assessEvidenceCompleteness(
-        evidenceArtifacts.map((e) => e.artifactType as any),
-        requirements
-      );
+      // Calculate completeness based on artifacts found
+      const requirements = STANDARD_EVIDENCE_REQUIREMENTS[packageType] || [];
+      const presentTypes = evidenceArtifacts.map((e) => e.artifactType);
+      const missing = requirements.filter((r) => !presentTypes.includes(r.type));
+      const score =
+        requirements.length > 0
+          ? (requirements.length - missing.length) / requirements.length
+          : 1.0;
 
-      const packagePayload = {
-        proofType,
-        entityType,
-        entityIds,
+      const summary = {
+        packageType,
+        scope,
+        scopeIds,
+        artifactCount: evidenceArtifacts.length,
         generatedAt: new Date().toISOString(),
-        completeness,
-        evidenceCount: evidenceArtifacts.length,
-        evidenceHashes: evidenceArtifacts.map((e) => e.payloadHash),
       };
 
       const packageHash = crypto
         .createHash("sha256")
-        .update(JSON.stringify(packagePayload))
+        .update(JSON.stringify({ summary, evidenceIds: evidenceArtifacts.map((e) => e.id) }))
         .digest("hex");
 
       const proofpack = await prisma.proofPackage.create({
         data: {
           tenantId,
-          proofType: proofType as any,
-          entityType,
-          entityIds: entityIds as unknown as Prisma.InputJsonValue,
-          format: format as any,
-          completenessScore: completeness.completenessScore,
-          missingEvidence: completeness.missingEvidenceTypes as unknown as Prisma.InputJsonValue,
-          packagePayload: packagePayload as unknown as Prisma.InputJsonValue,
+          packageType,
+          packageKey,
+          scope,
+          scopeIds: scopeIds as unknown as Prisma.InputJsonValue,
+          evidenceIds: evidenceArtifacts.map((e) => e.id) as unknown as Prisma.InputJsonValue,
+          summary: summary as unknown as Prisma.InputJsonValue,
+          completenessScore: new Prisma.Decimal(score),
+          missingEvidence: missing as unknown as Prisma.InputJsonValue,
           packageHash,
-          lifecycle: "draft",
+          status: "draft",
         },
       });
 
       logInfo("Proof package generated", {
         tenantId,
         packageId: proofpack.id,
-        proofType,
-        entityCount: entityIds.length,
-        completeness: completeness.completenessScore,
+        packageType,
+        artifactCount: evidenceArtifacts.length,
       });
 
       return res.status(201).json({ data: proofpack });
@@ -925,7 +463,7 @@ router.post(
  */
 router.get(
   "/proofpackages/:packageId/verify",
-  requirePermission(Permission.ADMIN_CONFIG),
+  requirePermission(Permission.ADMIN_WRITE),
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
@@ -939,20 +477,25 @@ router.get(
         throw new NotFoundError("Proof package not found", "proof_package", packageId);
       }
 
-      const payloadHash = crypto
+      const computedHash = crypto
         .createHash("sha256")
-        .update(JSON.stringify(proofpack.packagePayload))
+        .update(
+          JSON.stringify({
+            summary: proofpack.summary,
+            evidenceIds: proofpack.evidenceIds,
+          })
+        )
         .digest("hex");
 
-      const isValid = payloadHash === proofpack.packageHash;
+      const isValid = computedHash === proofpack.packageHash;
 
       return res.json({
         data: {
           packageId: proofpack.id,
           isValid,
-          computedHash: payloadHash,
+          computedHash,
           storedHash: proofpack.packageHash,
-          lifecycle: proofpack.lifecycle,
+          status: proofpack.status,
           verifiedAt: new Date().toISOString(),
         },
       });
@@ -1003,11 +546,13 @@ router.get(
         data: {
           jobId,
           deltas: history,
-          summary: significantChanges,
+          analysis: {
+            significantChanges,
+          },
         },
       });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get delta history", 500, {
+      handleRouteError(res, error, "Failed to retrieve delta history", 500, {
         userId: req.userId,
         jobId: req.params.jobId,
       });
@@ -1016,4 +561,4 @@ router.get(
   }
 );
 
-export { router as exceptionIntelligenceRouter };
+export default router;

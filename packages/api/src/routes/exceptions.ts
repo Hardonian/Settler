@@ -36,6 +36,7 @@ const exceptionReviewService = new ExceptionReviewService(prisma, provenanceServ
 // Keep the bridge scoped to this route so exception workflow truth can ship without global `any`.
 const exceptionMatchModel = prisma.reconciliationMatch as any;
 const exceptionProvenanceModel = prisma.reconciliationProvenance as any;
+const CANONICAL_EXCEPTION_MATCH_TYPES = ["unmatched", "conflict"] as const;
 
 // ─── Validation Schemas ──────────────────────────────────────────────────────
 
@@ -183,13 +184,9 @@ function mapExceptionToResponse(e: any) {
   };
 }
 
-async function validateExceptionAccess(
-  id: string,
-  tenantId: string,
-  matchType: string = "unmatched"
-) {
+async function validateExceptionAccess(id: string, tenantId: string) {
   const exception = await exceptionMatchModel.findFirst({
-    where: { id, tenantId, matchType },
+    where: { id, tenantId, matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] } },
     select: { id: true, metadata: true, runId: true, status: true, assignedTo: true },
   });
 
@@ -229,7 +226,7 @@ router.get(
 
       const where: any = {
         tenantId,
-        matchType: "unmatched",
+        matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] },
         ...(jobId && { runId: jobId }),
         ...(status && { status }),
         ...(severity && { severity }),
@@ -318,7 +315,7 @@ router.get(
 
       const whereBase: any = {
         tenantId,
-        matchType: "unmatched",
+        matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] },
         ...(jobId && { runId: jobId }),
       };
 
@@ -397,7 +394,7 @@ router.get(
         where: {
           id,
           tenantId,
-          matchType: "unmatched",
+          matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] },
         },
         include: {
           run: {
@@ -521,6 +518,24 @@ router.get(
           run: exception.run,
           sourceTransaction: exception.sourceTransaction,
           adjudicationHistory,
+          adjudicationMemories: memories.map((memory: any) => ({
+            id: memory.id,
+            resolution: memory.resolution,
+            resolutionReason: memory.resolutionReason,
+            adjudicationType: memory.adjudicationType,
+            adjudicatorId: memory.adjudicatorId,
+            adjudicatorType: memory.adjudicatorType,
+            outcome: memory.outcome,
+            confidence: memory.confidence != null ? Number(memory.confidence) : null,
+            sourceTrustScore:
+              memory.sourceTrustScore != null ? Number(memory.sourceTrustScore) : null,
+            operatorNotes: memory.operatorNotes,
+            systemNotes: memory.systemNotes,
+            evidenceIds: Array.isArray(memory.evidenceIds) ? memory.evidenceIds : [],
+            createdAt: memory.createdAt.toISOString(),
+            completedAt: memory.completedAt?.toISOString?.() ?? null,
+            parentMemoryId: memory.parentMemoryId,
+          })),
           decisionMemory: memories.map((memory: any) => ({
             id: memory.id,
             resolution: memory.resolution,
@@ -544,11 +559,38 @@ router.get(
             degraded: evidenceArtifacts.filter((item: any) => item.degraded).length,
             attested: evidenceArtifacts.filter((item: any) => item.attested).length,
             latestCapturedAt: evidenceArtifacts[0]?.capturedAt?.toISOString?.() ?? null,
+            items: evidenceArtifacts.map((item: any) => ({
+              id: item.id,
+              artifactType: item.artifactType,
+              artifactKey: item.artifactKey,
+              capturedAt: item.capturedAt?.toISOString?.() ?? null,
+              capturedBy: item.capturedBy,
+              degraded: Boolean(item.degraded),
+              degradedReasons: Array.isArray(item.degradedReasons) ? item.degradedReasons : [],
+              attested: Boolean(item.attested),
+              reliabilityScore:
+                item.reliabilityScore != null ? Number(item.reliabilityScore) : null,
+            })),
           },
           proofSummary: {
             total: proofPackages.length,
             finalized: proofPackages.filter((item: any) => item.status === "finalized").length,
             latestCreatedAt: proofPackages[0]?.createdAt?.toISOString?.() ?? null,
+            items: proofPackages.map((item: any) => ({
+              id: item.id,
+              packageType: item.packageType,
+              packageKey: item.packageKey,
+              status: item.status,
+              completenessScore:
+                item.completenessScore != null ? Number(item.completenessScore) : 0,
+              missingEvidence: Array.isArray(item.missingEvidence) ? item.missingEvidence : [],
+              completenessFlags: Array.isArray(item.completenessFlags)
+                ? item.completenessFlags
+                : [],
+              evidenceIds: Array.isArray(item.evidenceIds) ? item.evidenceIds : [],
+              createdAt: item.createdAt?.toISOString?.() ?? null,
+              finalizedAt: item.finalizedAt?.toISOString?.() ?? null,
+            })),
           },
           provenance,
         },
@@ -661,7 +703,7 @@ router.post(
 
       const newStatus = existing.status === "open" ? "in_progress" : existing.status;
       const updateResult = await exceptionMatchModel.updateMany({
-        where: { id, tenantId, matchType: "unmatched" },
+        where: { id, tenantId, matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] } },
         data: {
           assignedTo,
           status: newStatus,
@@ -741,7 +783,7 @@ router.put(
       }
 
       const updateResult = await exceptionMatchModel.updateMany({
-        where: { id, tenantId, matchType: "unmatched" },
+        where: { id, tenantId, matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] } },
         data: {
           status,
           reviewed: status === "resolved" || status === "dismissed",
@@ -832,7 +874,7 @@ router.post(
       const existing = await validateExceptionAccess(id, tenantId);
 
       const updateResult = await exceptionMatchModel.updateMany({
-        where: { id, tenantId, matchType: "unmatched" },
+        where: { id, tenantId, matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] } },
         data: {
           notes,
           metadata: appendAdjudicationHistory(existing.metadata, {
