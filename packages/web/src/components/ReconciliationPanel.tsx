@@ -2,7 +2,23 @@
 
 import React from "react";
 
-const ReconciliationPanel: React.FC = () => {
+interface ReconciliationPanelProps {
+  matchedCount: number;
+  unmatchedCount: number;
+  totalVolume: number;
+  confidenceThreshold?: number;
+}
+
+const ReconciliationPanel: React.FC<ReconciliationPanelProps> = ({
+  matchedCount,
+  unmatchedCount,
+  totalVolume,
+  confidenceThreshold = 0.92,
+}) => {
+  const matchedPercentage = totalVolume > 0 ? Math.round((matchedCount / totalVolume) * 100) : 0;
+  const unmatchedPercentage =
+    totalVolume > 0 ? Math.round((unmatchedCount / totalVolume) * 100) : 0;
+
   return (
     <div className="rounded-xl border border-border bg-card p-6 shadow-sm overflow-hidden animate-slide-up">
       <div className="flex items-center justify-between mb-6">
@@ -16,26 +32,34 @@ const ReconciliationPanel: React.FC = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted">Matched Transactions</span>
-            <span className="font-mono text-teal-500">1,284</span>
+            <span className="font-mono text-teal-500">{matchedCount.toLocaleString()}</span>
           </div>
           <div className="h-2 w-full bg-neutral-20 rounded-full overflow-hidden">
-            <div className="h-full bg-teal-500 rounded-full w-[85%]" />
+            <div
+              className="h-full bg-teal-500 rounded-full transition-all duration-1000 ease-out"
+              style={{ width: `${matchedPercentage}%` }}
+            />
           </div>
           <p className="text-xs text-muted leading-relaxed">
-            Automatic reconciliation successful for 85% of total volume based on current confidence threshold (0.92).
+            Automatic reconciliation successful for {matchedPercentage}% of total volume based on
+            current confidence threshold ({confidenceThreshold}).
           </p>
         </div>
 
         <div className="space-y-4">
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted">Unmatched (Manual Review)</span>
-            <span className="font-mono text-blue-400">216</span>
+            <span className="font-mono text-blue-400">{unmatchedCount.toLocaleString()}</span>
           </div>
           <div className="h-2 w-full bg-neutral-20 rounded-full overflow-hidden">
-            <div className="h-full bg-blue-400 rounded-full w-[15%]" />
+            <div
+              className="h-full bg-blue-400 rounded-full transition-all duration-1000 ease-out"
+              style={{ width: `${unmatchedPercentage}%` }}
+            />
           </div>
           <p className="text-xs text-muted leading-relaxed">
-            Requires intervention. Common causes: fuzzy amount matching, timestamp drift, or vendor mismatch.
+            Requires intervention. Common causes: fuzzy amount matching, timestamp drift, or vendor
+            mismatch.
           </p>
         </div>
       </div>
