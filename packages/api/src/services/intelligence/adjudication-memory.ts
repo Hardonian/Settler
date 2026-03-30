@@ -238,15 +238,13 @@ export class AdjudicationMemoryService {
         escalationReason: input.escalationReason,
 
         evidenceIds: input.evidenceIds ?? [],
-        sourceTrustScore: input.sourceTrustScore
-          ? new PrismaClient().$types.extensions.result.Decimal
-          : undefined,
+        sourceTrustScore: input.sourceTrustScore,
 
         annotations: input.annotations ?? {},
         operatorNotes: input.operatorNotes,
         systemNotes: input.systemNotes,
 
-        suggestedPolicyChange: input.suggestedPolicyChange,
+        suggestedPolicyChange: input.suggestedPolicyChange ?? undefined,
 
         entryHash,
       },
@@ -453,7 +451,7 @@ export class AdjudicationMemoryService {
     });
 
     // Compute overall confidence
-    const confidence =
+    const overallConfidence =
       primaryReasons.length > 0
         ? primaryReasons.reduce((sum, r) => sum + r.weight, 0) / primaryReasons.length
         : 0.5;
@@ -461,7 +459,7 @@ export class AdjudicationMemoryService {
     return {
       primaryReasons,
       secondaryReasons,
-      confidence: Math.round(confidence * 10000) / 10000,
+      confidence: Math.round(overallConfidence * 10000) / 10000,
       suggestedArchetypes,
       similarCaseCount,
     };
