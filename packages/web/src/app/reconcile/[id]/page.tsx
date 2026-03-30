@@ -68,7 +68,6 @@ export default async function MatchDetailPage({ params }: PageProps) {
     <AppPageLayout
       title={`Reconciliation Detail: ${id.substring(0, 8)}`}
       description="Inspect source and destination match parity to verify intent."
-      breadcrumb={[{ label: "Reconcile", href: "/reconcile" }, { label: id.substring(0, 8) }]}
     >
       <MatchDetailView
         sourceId={id}
