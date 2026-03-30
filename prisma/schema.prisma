@@ -1424,6 +1424,7 @@ model ReconciliationMatch {
   run               ReconciliationRun @relation(fields: [runId], references: [id], onDelete: Cascade)
   sourceTransaction NormalizedTransaction @relation(fields: [sourceTransactionId], references: [id], onDelete: Cascade)
   provenance        ReconciliationProvenance[]
+  adjudicationMemories ExceptionAdjudicationMemory[]
   archetypeClassifications ExceptionArchetypeClassification[]
 
   @@index([runId])
