@@ -35,6 +35,23 @@ export { Modal } from "./modal";
 export type { ModalProps } from "./modal";
 
 export {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "./dialog";
+export type {
+  DialogProps,
+  DialogContentProps,
+  DialogHeaderProps,
+  DialogTitleProps,
+  DialogDescriptionProps,
+  DialogFooterProps,
+} from "./dialog";
+
+export {
   Table,
   TableHeader,
   TableBody,

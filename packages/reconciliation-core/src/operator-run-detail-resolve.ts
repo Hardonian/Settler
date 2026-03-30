@@ -183,33 +183,15 @@ export async function resolveOperatorRunDetailForTenants(
   }
 
   try {
-    const job = await prisma.reconJob.findFirst({
-      where: { id: runId, tenantId: resolved.tenantId, deletedAt: null },
-      select: {
-        id: true,
-        tenantId: true,
-        name: true,
-        status: true,
-        createdAt: true,
-        templateId: true,
-        sourceAdapter: true,
-        targetAdapter: true,
-        sourceConfigEncrypted: true,
-        targetConfigEncrypted: true,
-        validationRules: true,
-        reconStrategy: true,
-      },
-    });
+    const job = resolved.jobRecord;
+    const latestResult = resolved.latestResultRecord;
 
-    if (!job) {
-      return { kind: "not_found" };
-    }
-
-    const [recentResults, persistedResultCount] = await Promise.all([
+    const [recentResults, persistedResultCount, audits, exceptionCountResult, runDeltaRecord] = await Promise.all([
+      // Fetch the previous result for comparison (skip the first one since we have it)
       prisma.reconResult.findMany({
-        where: { reconJobId: runId, tenantId: job.tenantId },
+        where: { reconJobId: runId, tenantId: job.tenantId, id: { not: latestResult?.id } },
         orderBy: { startedAt: "desc" },
-        take: 2,
+        take: 1,
         select: {
           id: true,
           reconJobId: true,
@@ -232,29 +214,68 @@ export async function resolveOperatorRunDetailForTenants(
       prisma.reconResult.count({
         where: { reconJobId: runId, tenantId: job.tenantId },
       }),
+      prisma.reconAudit.findMany({
+        where: { reconJobId: runId, tenantId: job.tenantId },
+        orderBy: { createdAt: "desc" },
+        take: 50,
+        select: {
+          id: true,
+          auditType: true,
+          action: true,
+          metadata: true,
+          createdAt: true,
+        },
+      }),
+      countReconciliationExceptionsForScope({
+        prisma,
+        tenantId: job.tenantId,
+        runId,
+        runKind: "recon_job",
+      }),
+      prisma.runDelta.findFirst({
+        where: { currentRunId: runId, tenantId: job.tenantId },
+      }),
     ]);
 
-    const latestResult = recentResults[0] ?? null;
-    const previousResult = recentResults[1] ?? null;
-
-    const latestRecord = latestResult ? toReconResultRecordLike(latestResult) : null;
+    const previousResult = recentResults[0] ?? null;
+    const latestRecord = latestResult;
     const previousRecord = previousResult ? toReconResultRecordLike(previousResult) : null;
 
     const snapshotId = latestRecord?.snapshot_id ?? null;
 
-    const snapshotRecord = snapshotId
-      ? await prisma.runSnapshot.findFirst({
-          where: { id: snapshotId, tenantId: job.tenantId },
-          select: {
-            id: true,
-            inputHash: true,
-            adapterConfigHashes: true,
-            jobConfig: true,
-            ruleVersions: true,
-            createdAt: true,
-          },
-        })
-      : null;
+    const [snapshotRecord, deterministicRows] = await Promise.all([
+      snapshotId
+        ? prisma.runSnapshot.findFirst({
+            where: { id: snapshotId, tenantId: job.tenantId },
+            select: {
+              id: true,
+              inputHash: true,
+              adapterConfigHashes: true,
+              jobConfig: true,
+              ruleVersions: true,
+              createdAt: true,
+            },
+          })
+        : Promise.resolve(null),
+      latestRecord?.id
+        ? (prisma.$queryRaw`
+          SELECT
+            stable_match_id,
+            left_record_id,
+            right_record_id,
+            confidence_score,
+            rule_id,
+            rule_version,
+            match_rationale,
+            matched_at
+          FROM deterministic_match_results
+          WHERE run_result_id = ${latestRecord.id}::uuid
+            AND tenant_id = ${job.tenantId}::uuid
+          ORDER BY matched_at DESC
+          LIMIT 250
+        `.catch(() => []) as Promise<DeterministicMatchRowLike[]>)
+        : Promise.resolve([]),
+    ]);
 
     const snapshotLike: SnapshotRecordLike | null = snapshotRecord
       ? {
@@ -267,20 +288,7 @@ export async function resolveOperatorRunDetailForTenants(
         }
       : null;
 
-    const audits = await prisma.reconAudit.findMany({
-      where: { reconJobId: runId, tenantId: job.tenantId },
-      orderBy: { createdAt: "desc" },
-      take: 50,
-      select: {
-        id: true,
-        auditType: true,
-        action: true,
-        metadata: true,
-        createdAt: true,
-      },
-    });
-
-    const auditRows: ReconAuditRow[] = audits.map(
+    const auditRows: ReconAuditRow[] = (audits as any).map(
       (a: {
         id: string;
         auditType: string;
@@ -295,17 +303,6 @@ export async function resolveOperatorRunDetailForTenants(
         created_at: a.createdAt.toISOString(),
       })
     );
-
-    const exceptionCountResult = await countReconciliationExceptionsForScope({
-      prisma,
-      tenantId: job.tenantId,
-      runId,
-      runKind: "recon_job",
-    });
-
-    const runDeltaRecord = await prisma.runDelta.findFirst({
-      where: { currentRunId: runId, tenantId: job.tenantId },
-    });
 
     const exceptionCounts =
       exceptionCountResult.kind === "ok"
@@ -325,30 +322,6 @@ export async function resolveOperatorRunDetailForTenants(
             ignored: 0,
             unresolved: 0,
           };
-
-    let deterministicRows: DeterministicMatchRowLike[] = [];
-    if (latestResult?.id) {
-      try {
-        deterministicRows = (await prisma.$queryRaw`
-          SELECT
-            stable_match_id,
-            left_record_id,
-            right_record_id,
-            confidence_score,
-            rule_id,
-            rule_version,
-            match_rationale,
-            matched_at
-          FROM deterministic_match_results
-          WHERE run_result_id = ${latestResult.id}::uuid
-            AND tenant_id = ${job.tenantId}::uuid
-          ORDER BY matched_at DESC
-          LIMIT 250
-        `) as DeterministicMatchRowLike[];
-      } catch {
-        deterministicRows = [];
-      }
-    }
 
     const jobLike = toReconJobRecordLike(job);
 

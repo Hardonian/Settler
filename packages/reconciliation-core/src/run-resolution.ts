@@ -34,11 +34,14 @@ export type ResolvedReconciliationRunForTenants =
       kind: "recon_job";
       tenantId: string;
       detail: CanonicalReconciliationRunDetail;
+      jobRecord: any; // Using any for now to facilitate faster data transfer, but ideally should be typed matches
+      latestResultRecord: ReconResultRecordLike | null;
     }
   | {
       kind: "ingestion_run";
       tenantId: string;
       detail: CanonicalReconciliationRunDetail;
+      ingestionRunRecord: any;
     }
   | { kind: "ambiguous_uuid_collision"; jobId: string; ingestionRunId: string }
   | { kind: "not_found" };
@@ -164,6 +167,8 @@ export async function resolveReconciliationRunForTenants(
     return {
       kind: "recon_job",
       tenantId: job.tenantId,
+      jobRecord: job,
+      latestResultRecord: latest,
       detail: mapReconJobRowToCanonicalDetail({
         job: {
           id: job.id,
@@ -190,6 +195,7 @@ export async function resolveReconciliationRunForTenants(
     return {
       kind: "ingestion_run",
       tenantId: ingestionRun.tenantId,
+      ingestionRunRecord: ingestionRun,
       detail: mapIngestionReconciliationRunToCanonicalDetail(ingestionRun),
     };
   }

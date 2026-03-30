@@ -319,24 +319,41 @@ router.get(
         ...(jobId && { runId: jobId }),
       };
 
-      const [total, open, inProgress, resolved, dismissed] = await Promise.all([
-        exceptionMatchModel.count({ where: whereBase }),
-        exceptionMatchModel.count({ where: { ...whereBase, status: "open" } }),
-        exceptionMatchModel.count({ where: { ...whereBase, status: "in_progress" } }),
-        exceptionMatchModel.count({ where: { ...whereBase, status: "resolved" } }),
-        exceptionMatchModel.count({ where: { ...whereBase, status: "dismissed" } }),
+      const [statusCounts, severityCounts, unassigned] = await Promise.all([
+        exceptionMatchModel.groupBy({
+          by: ["status"],
+          where: whereBase,
+          _count: { _all: true },
+        }),
+        exceptionMatchModel.groupBy({
+          by: ["severity"],
+          where: whereBase,
+          _count: { _all: true },
+        }),
+        exceptionMatchModel.count({
+          where: { ...whereBase, assignedTo: null, status: { notIn: ["resolved", "dismissed"] } },
+        }),
       ]);
 
-      const [critical, high, medium, low] = await Promise.all([
-        exceptionMatchModel.count({ where: { ...whereBase, severity: "critical" } }),
-        exceptionMatchModel.count({ where: { ...whereBase, severity: "high" } }),
-        exceptionMatchModel.count({ where: { ...whereBase, severity: "medium" } }),
-        exceptionMatchModel.count({ where: { ...whereBase, severity: "low" } }),
-      ]);
+      const counts = statusCounts.reduce(
+        (acc: Record<string, number>, curr: any) => {
+          acc[curr.status || "open"] = curr._count._all;
+          return acc;
+        },
+        { open: 0, in_progress: 0, resolved: 0, dismissed: 0 }
+      );
 
-      const unassigned = await exceptionMatchModel.count({
-        where: { ...whereBase, assignedTo: null, status: { notIn: ["resolved", "dismissed"] } },
-      });
+      const severities = severityCounts.reduce(
+        (acc: Record<string, number>, curr: any) => {
+          acc[curr.severity || "medium"] = curr._count._all;
+          return acc;
+        },
+        { critical: 0, high: 0, medium: 0, low: 0 }
+      );
+
+      const total = statusCounts.reduce((sum: number, curr: any) => sum + curr._count._all, 0);
+      const { open, in_progress: inProgress, resolved, dismissed } = counts;
+      const { critical, high, medium, low } = severities;
 
       const resolvedExceptions = await exceptionMatchModel.findMany({
         where: {
@@ -390,31 +407,25 @@ router.get(
       const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
       const tenantId = req.tenantId!;
 
-      const exception = await exceptionMatchModel.findFirst({
-        where: {
-          id,
-          tenantId,
-          matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] },
-        },
-        include: {
-          run: {
-            select: {
-              id: true,
-              status: true,
-              startedAt: true,
-              completedAt: true,
-            },
+      const [exception, memories, evidenceArtifacts, proofPackages, provenance] = await Promise.all([
+        exceptionMatchModel.findFirst({
+          where: {
+            id,
+            tenantId,
+            matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] },
           },
-          sourceTransaction: true,
-        },
-      });
-
-      if (!exception) {
-        throw new NotFoundError("Exception not found", "exception", id);
-      }
-
-      const metadata = exception.metadata as any;
-      const [memories, evidenceArtifacts, proofPackages] = await Promise.all([
+          include: {
+            run: {
+              select: {
+                id: true,
+                status: true,
+                startedAt: true,
+                completedAt: true,
+              },
+            },
+            sourceTransaction: true,
+          },
+        }),
         (prisma as any).exceptionAdjudicationMemory?.findMany?.({
           where: { tenantId, exceptionId: id },
           orderBy: { createdAt: "desc" },
@@ -472,7 +483,26 @@ router.get(
             finalizedAt: true,
           },
         }) ?? Promise.resolve([]),
+        exceptionProvenanceModel.findMany({
+          where: { tenantId, matchId: id },
+          orderBy: { sequence: "asc" },
+          select: {
+            id: true,
+            sequence: true,
+            eventType: true,
+            actorType: true,
+            actorUserId: true,
+            details: true,
+            createdAt: true,
+          },
+        }),
       ]);
+
+      if (!exception) {
+        throw new NotFoundError("Exception not found", "exception", id);
+      }
+
+      const metadata = (exception as any).metadata as any;
 
       const adjudicationHistory =
         memories.length > 0
@@ -497,20 +527,6 @@ router.get(
                   memory.completedAt?.toISOString?.() ?? memory.createdAt.toISOString?.() ?? null,
               }))
           : metadata?.adjudicationHistory || [];
-
-      const provenance = await exceptionProvenanceModel.findMany({
-        where: { tenantId, matchId: id },
-        orderBy: { sequence: "asc" },
-        select: {
-          id: true,
-          sequence: true,
-          eventType: true,
-          actorType: true,
-          actorUserId: true,
-          details: true,
-          createdAt: true,
-        },
-      });
 
       res.json({
         data: {
