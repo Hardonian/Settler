@@ -20,7 +20,8 @@ import { AuthRequest } from "../middleware/auth";
 import { enforceFreezeState } from "../middleware/governance";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
-import { prisma, Prisma } from "../infrastructure/db/prisma";
+import { prisma } from "../infrastructure/db/prisma";
+import { Prisma } from "@prisma/client";
 import { ProvenanceService } from "../services/recon-core/provenance-service";
 import { ExceptionReviewService } from "../application/services/ExceptionReviewService";
 
@@ -430,12 +431,10 @@ router.get(
 
       let avgResolutionMs: number | null = null;
       if (resolvedExceptions.length > 0) {
-        const totalMs = resolvedExceptions.reduce(
-          (sum: number, e: { reviewedAt: Date; createdAt: Date }) => {
-            return sum + (e.reviewedAt!.getTime() - e.createdAt.getTime());
-          },
-          0
-        );
+        const totalMs = resolvedExceptions.reduce((sum, e) => {
+          if (!e.reviewedAt) return sum;
+          return sum + (e.reviewedAt.getTime() - e.createdAt.getTime());
+        }, 0);
         avgResolutionMs = Math.round(totalMs / resolvedExceptions.length);
       }
 
