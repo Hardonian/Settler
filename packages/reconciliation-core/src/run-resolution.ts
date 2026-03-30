@@ -163,6 +163,7 @@ export async function resolveReconciliationRunForTenants(
       jobRecord: job,
       latestResultRecord: latest,
       previousResultRecord: previous,
+      persistedResultCount: persistedResultCount,
       detail: mapReconJobRowToCanonicalDetail({
         job: {
           id: job.id,
