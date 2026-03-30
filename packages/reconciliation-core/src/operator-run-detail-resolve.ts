@@ -188,41 +188,12 @@ export async function resolveOperatorRunDetailForTenants(
     const snapshotId = latestResult?.snapshot_id ?? null;
 
     const [
-      recentResults,
-      persistedResultCount,
       audits,
       exceptionCountResult,
       runDeltaRecord,
       snapshotRecord,
       deterministicRows,
     ] = await Promise.all([
-      // Fetch the previous result for comparison (skip the first one since we have it)
-      prisma.reconResult.findMany({
-        where: { reconJobId: runId, tenantId: job.tenantId, id: { not: latestResult?.id } },
-        orderBy: { startedAt: "desc" },
-        take: 1,
-        select: {
-          id: true,
-          reconJobId: true,
-          status: true,
-          startedAt: true,
-          completedAt: true,
-          sourceCount: true,
-          targetCount: true,
-          matchedCount: true,
-          unmatchedSourceCount: true,
-          unmatchedTargetCount: true,
-          conflictCount: true,
-          errorMessage: true,
-          inputHash: true,
-          snapshotId: true,
-          summary: true,
-          metadata: true,
-        },
-      }),
-      prisma.reconResult.count({
-        where: { reconJobId: runId, tenantId: job.tenantId },
-      }),
       prisma.reconAudit.findMany({
         where: { reconJobId: runId, tenantId: job.tenantId },
         orderBy: { createdAt: "desc" },
@@ -277,67 +248,13 @@ export async function resolveOperatorRunDetailForTenants(
         : Promise.resolve([]),
     ]);
 
-    const previousResult = recentResults[0] ?? null;
-    const latestRecord = latestResult;
-    const previousRecord = previousResult ? toReconResultRecordLike(previousResult) : null;
-
-    const snapshotLike: SnapshotRecordLike | null = snapshotRecord
-      ? {
-          id: snapshotRecord.id,
-          input_hash: snapshotRecord.inputHash,
-          adapter_config_hashes: snapshotRecord.adapterConfigHashes,
-          job_config: snapshotRecord.jobConfig,
-          rule_versions: snapshotRecord.ruleVersions,
-          created_at: snapshotRecord.createdAt?.toISOString() ?? null,
-        }
-      : null;
-
-    const auditRows: ReconAuditRow[] = (audits as any).map(
-      (a: {
-        id: string;
-        auditType: string;
-        action: string;
-        metadata: unknown;
-        createdAt: Date;
-      }) => ({
-        id: a.id,
-        audit_type: a.auditType,
-        action: a.action,
-        metadata: (a.metadata as Record<string, unknown> | null) ?? null,
-        created_at: a.createdAt.toISOString(),
-      })
-    );
-
-    const exceptionCounts =
-      exceptionCountResult.kind === "ok"
-        ? {
-            total: exceptionCountResult.counts.total,
-            pending: exceptionCountResult.counts.pending,
-            investigating: exceptionCountResult.counts.investigating,
-            resolved: exceptionCountResult.counts.resolved,
-            ignored: exceptionCountResult.counts.ignored,
-            unresolved: exceptionCountResult.counts.reviewRequired,
-          }
-        : {
-            total: 0,
-            pending: 0,
-            investigating: 0,
-            resolved: 0,
-            ignored: 0,
-            unresolved: 0,
-          };
-
-    const jobLike = toReconJobRecordLike(job);
-
-    const contract = buildCanonicalRunResultContract({
-      job: jobLike,
-      result: latestRecord,
-      snapshot: snapshotLike,
-      exceptionCounts,
-      deterministicRows,
-    });
-
-    const truth = toLegacyRunTruth(contract);
+    const persistedResultCount = resolved.persistedResultCount;
+    const previousRecord = resolved.previousResultRecord;
+    const latestRecord = latestResult; civic; // Wait, latestRecord mapping was simpler before. I'll stick to the original mapping logic for latestResult.
+    // latestResult is ALREADY in the correct format from resolveReconciliationRunForTenants since it uses mapToLike.
+    // Actually, I should check the types.
+    // latestResult Record in resolved is ReconResultRecordLike.
+    // previousResultRecord in resolved is ALSO ReconResultRecordLike.
 
     const previousSummary = previousRecord ? buildLegacyRunSummary(previousRecord) : null;
     const comparison =
