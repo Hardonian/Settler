@@ -5,7 +5,11 @@ import { NotFoundError } from "../../utils/typed-errors";
 
 export type ExceptionResolution = "matched" | "manual" | "ignored" | "duplicate";
 export type ExceptionStatus = "open" | "in_progress" | "resolved" | "dismissed";
-export type ExceptionReviewOutcome = "resolved" | "re_adjudicated" | "already_resolved";
+export type ExceptionReviewOutcome =
+  | "resolved"
+  | "re_adjudicated"
+  | "already_resolved"
+  | "workflow_step";
 
 export interface ResolveExceptionInput {
   tenantId: string;
@@ -81,7 +85,7 @@ interface AdjudicationMetadataEntry {
   reason: string;
   resolutionReason: string;
   previousState: "pending_review" | "reviewed";
-  resultingState: "reviewed";
+  resultingState: "reviewed" | "pending_review";
   previousResolution: ExceptionResolution | null;
   previousStatus: string;
   previousReason: string | null;
@@ -776,5 +780,340 @@ export class ExceptionReviewService {
       reviewedBy: input.userId,
       notes: input.notes?.trim() || null,
     };
+  }
+
+  async assignException(input: {
+    tenantId: string;
+    userId: string;
+    exceptionId: string;
+    assignedTo: string;
+    notes?: string;
+  }): Promise<void> {
+    await this.prisma.$transaction(async (tx) => {
+      const existing = (await (tx.reconciliationMatch as any).findFirst({
+        where: { id: input.exceptionId, tenantId: input.tenantId },
+        select: { id: true, runId: true, metadata: true, status: true, assignedTo: true },
+      })) as any;
+
+      if (!existing) {
+        throw new NotFoundError("Exception not found", "exception", input.exceptionId);
+      }
+
+      const occurredAt = new Date();
+      const resolution = "assigned";
+
+      const memory = await (tx as any).exceptionAdjudicationMemory.create({
+        data: {
+          tenantId: input.tenantId,
+          exceptionId: existing.id,
+          resolution,
+          resolutionReason: `Assigned to ${input.assignedTo}`,
+          resolutionCode: "WORKFLOW_ASSIGNMENT",
+          adjudicatorId: input.userId,
+          adjudicatorType: "operator",
+          adjudicationType: "workflow",
+          startedAt: occurredAt,
+          completedAt: occurredAt,
+          durationMs: BigInt(0),
+          outcome: "updated",
+          confidence: 1.0,
+          reversibility: "reversible",
+          evidenceIds: [],
+          sourceTrustScore: 1.0,
+          operatorNotes: input.notes?.trim() || null,
+          systemNotes: `Exception assigned through consolidated workbench. Previous: ${existing.assignedTo || "unassigned"}.`,
+          entryHash: buildHash({
+            exceptionId: existing.id,
+            action: "assign",
+            assignedTo: input.assignedTo,
+            occurredAt: occurredAt.toISOString(),
+          }),
+        },
+      });
+
+      const updatedMetadata = buildAdjudicationMetadata(existing.metadata, {
+        actorId: input.userId,
+        resolution: resolution as any,
+        notes: input.notes?.trim() || null,
+        reason: `Assigned to ${input.assignedTo}`,
+        resolutionReason: `Assigned to ${input.assignedTo}`,
+        previousState: existing.reviewed ? "reviewed" : "pending_review",
+        resultingState: existing.reviewed ? "reviewed" : "pending_review",
+        previousResolution: extractResolutionFromMetadata(existing.metadata),
+        previousStatus: existing.status,
+        previousReason: null,
+        outcome: "workflow_step" as any,
+        occurredAt: occurredAt.toISOString(),
+        status: existing.status as any,
+        memoryId: memory.id,
+      });
+
+      await (tx.reconciliationMatch as any).update({
+        where: { id: existing.id },
+        data: {
+          assignedTo: input.assignedTo,
+          metadata: updatedMetadata,
+        },
+      });
+
+      await tx.auditLog.create({
+        data: {
+          tenantId: input.tenantId,
+          userId: input.userId,
+          action: "exception_assigned",
+          resourceType: "reconciliation_match",
+          resourceId: existing.id,
+          metadata: {
+            assignedTo: input.assignedTo,
+            previousAssignedTo: existing.assignedTo,
+            notes: input.notes,
+            memoryId: memory.id,
+          } as Prisma.InputJsonValue,
+          actorId: input.userId,
+          actorType: "user",
+        },
+      });
+    });
+  }
+
+  async updateExceptionStatus(input: {
+    tenantId: string;
+    userId: string;
+    exceptionId: string;
+    status: ExceptionStatus;
+    notes?: string;
+    resolutionReason?: string;
+  }): Promise<void> {
+    await this.prisma.$transaction(async (tx) => {
+      const existing = (await (tx.reconciliationMatch as any).findFirst({
+        where: { id: input.exceptionId, tenantId: input.tenantId },
+        select: { id: true, runId: true, metadata: true, status: true, reviewed: true },
+      })) as any;
+
+      if (!existing) {
+        throw new NotFoundError("Exception not found", "exception", input.exceptionId);
+      }
+
+      const occurredAt = new Date();
+      const resolution = "status_transition";
+
+      const memory = await (tx as any).exceptionAdjudicationMemory.create({
+        data: {
+          tenantId: input.tenantId,
+          exceptionId: existing.id,
+          resolution,
+          resolutionReason: input.resolutionReason || `Transitioned to ${input.status}`,
+          resolutionCode: "WORKFLOW_STATUS_CHANGE",
+          adjudicatorId: input.userId,
+          adjudicatorType: "operator",
+          adjudicationType: "workflow",
+          startedAt: occurredAt,
+          completedAt: occurredAt,
+          outcome: "updated",
+          confidence: 1.0,
+          evidenceIds: [],
+          sourceTrustScore: 1.0,
+          operatorNotes: input.notes?.trim() || null,
+          systemNotes: `Status changed from ${existing.status} to ${input.status}.`,
+          entryHash: buildHash({
+            exceptionId: existing.id,
+            action: "status_change",
+            from: existing.status,
+            to: input.status,
+            occurredAt: occurredAt.toISOString(),
+          }),
+        },
+      });
+
+      const updatedMetadata = buildAdjudicationMetadata(existing.metadata, {
+        actorId: input.userId,
+        resolution: resolution as any,
+        notes: input.notes?.trim() || null,
+        reason: `Status: ${input.status}`,
+        resolutionReason: input.resolutionReason || `Transitioned to ${input.status}`,
+        previousState: existing.reviewed ? "reviewed" : "pending_review",
+        resultingState:
+          input.status === "resolved" || input.status === "dismissed"
+            ? "reviewed"
+            : existing.reviewed
+              ? "reviewed"
+              : "pending_review",
+        previousResolution: extractResolutionFromMetadata(existing.metadata),
+        previousStatus: existing.status,
+        previousReason: null,
+        outcome: "workflow_step" as any,
+        occurredAt: occurredAt.toISOString(),
+        status: input.status as any,
+        memoryId: memory.id,
+      });
+
+      await (tx.reconciliationMatch as any).update({
+        where: { id: existing.id },
+        data: {
+          status: input.status,
+          reviewed: input.status === "resolved" || input.status === "dismissed",
+          reviewedBy:
+            input.status === "resolved" || input.status === "dismissed" ? input.userId : undefined,
+          reviewedAt:
+            input.status === "resolved" || input.status === "dismissed" ? occurredAt : undefined,
+          notes: input.notes || undefined,
+          resolutionReason: input.resolutionReason || undefined,
+          metadata: updatedMetadata,
+        },
+      });
+
+      await tx.auditLog.create({
+        data: {
+          tenantId: input.tenantId,
+          userId: input.userId,
+          action: "exception_status_changed",
+          resourceType: "reconciliation_match",
+          resourceId: existing.id,
+          metadata: {
+            fromStatus: existing.status,
+            toStatus: input.status,
+            notes: input.notes,
+            memoryId: memory.id,
+          } as Prisma.InputJsonValue,
+          actorId: input.userId,
+          actorType: "user",
+        },
+      });
+    });
+  }
+
+  async addExceptionNote(input: {
+    tenantId: string;
+    userId: string;
+    exceptionId: string;
+    notes: string;
+  }): Promise<void> {
+    await this.prisma.$transaction(async (tx) => {
+      const existing = (await (tx.reconciliationMatch as any).findFirst({
+        where: { id: input.exceptionId, tenantId: input.tenantId },
+        select: { id: true, runId: true, metadata: true, status: true, notes: true },
+      })) as any;
+
+      if (!existing) {
+        throw new NotFoundError("Exception not found", "exception", input.exceptionId);
+      }
+
+      const occurredAt = new Date();
+      const resolution = "operator_note";
+
+      const memory = await (tx as any).exceptionAdjudicationMemory.create({
+        data: {
+          tenantId: input.tenantId,
+          exceptionId: existing.id,
+          resolution,
+          resolutionReason: "Note added by operator",
+          resolutionCode: "WORKFLOW_NOTE",
+          adjudicatorId: input.userId,
+          adjudicatorType: "operator",
+          adjudicationType: "workflow",
+          startedAt: occurredAt,
+          completedAt: occurredAt,
+          outcome: "updated",
+          confidence: 1.0,
+          evidenceIds: [],
+          sourceTrustScore: 1.0,
+          operatorNotes: input.notes.trim(),
+          systemNotes: "Operator added a textual annotation.",
+          entryHash: buildHash({
+            exceptionId: existing.id,
+            action: "add_note",
+            notes: input.notes,
+            occurredAt: occurredAt.toISOString(),
+          }),
+        },
+      });
+
+      const updatedMetadata = buildAdjudicationMetadata(existing.metadata, {
+        actorId: input.userId,
+        resolution: resolution as any,
+        notes: input.notes.trim(),
+        reason: "Annotation added",
+        resolutionReason: "Note added",
+        previousState: "pending_review", // Placeholder
+        resultingState: "pending_review",
+        previousResolution: null,
+        previousStatus: existing.status,
+        previousReason: null,
+        outcome: "workflow_step" as any,
+        occurredAt: occurredAt.toISOString(),
+        status: existing.status as any,
+        memoryId: memory.id,
+      });
+
+      await (tx.reconciliationMatch as any).update({
+        where: { id: existing.id },
+        data: {
+          notes: input.notes,
+          metadata: updatedMetadata,
+        },
+      });
+
+      await tx.auditLog.create({
+        data: {
+          tenantId: input.tenantId,
+          userId: input.userId,
+          action: "exception_note_added",
+          resourceType: "reconciliation_match",
+          resourceId: existing.id,
+          metadata: { memoryId: memory.id } as Prisma.InputJsonValue,
+          actorId: input.userId,
+          actorType: "user",
+          reason: input.notes.slice(0, 100),
+        },
+      });
+    });
+  }
+
+  async bulkAssignExceptions(input: {
+    tenantId: string;
+    userId: string;
+    exceptionIds: string[];
+    assignedTo: string;
+  }): Promise<number> {
+    let count = 0;
+    for (const id of input.exceptionIds) {
+      try {
+        await this.assignException({
+          tenantId: input.tenantId,
+          userId: input.userId,
+          exceptionId: id,
+          assignedTo: input.assignedTo,
+        });
+        count += 1;
+      } catch (e) {
+        // Continue to next one
+      }
+    }
+    return count;
+  }
+
+  async bulkUpdateExceptionStatus(input: {
+    tenantId: string;
+    userId: string;
+    exceptionIds: string[];
+    status: ExceptionStatus;
+    notes?: string;
+  }): Promise<number> {
+    let count = 0;
+    for (const id of input.exceptionIds) {
+      try {
+        await this.updateExceptionStatus({
+          tenantId: input.tenantId,
+          userId: input.userId,
+          exceptionId: id,
+          status: input.status,
+          notes: input.notes,
+        });
+        count += 1;
+      } catch (e) {
+        // Continue to next one
+      }
+    }
+    return count;
   }
 }

@@ -1,6 +1,4 @@
-"use client";
-
-import { useState } from "react";
+import { Suspense } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -455,13 +453,7 @@ function ActionBar({
   );
 }
 
-// ─── Main page ─────────────────────────────────────────────────────────────────
-
-export default function ExceptionDetailPage() {
-  const params = useParams();
-  const exceptionId =
-    params && typeof params.exceptionId === "string" ? params.exceptionId : undefined;
-
+function ExceptionDetailClient({ exceptionId }: { exceptionId: string }) {
   const queryClient = useQueryClient();
   const { isFrozen, governanceState } = useGovernanceState();
   const [isProvenanceModalOpen, setIsProvenanceModalOpen] = useState(false);
@@ -474,7 +466,7 @@ export default function ExceptionDetailPage() {
     isFetching,
   } = useQuery<ExceptionDetail, Error>({
     queryKey: ["exception", exceptionId],
-    queryFn: () => fetchExceptionDetail(exceptionId!),
+    queryFn: () => fetchExceptionDetail(exceptionId),
     enabled: !!exceptionId,
     staleTime: 20 * 1000,
     refetchInterval: (query) => {
@@ -492,21 +484,6 @@ export default function ExceptionDetailPage() {
     void queryClient.invalidateQueries({ queryKey: ["exception", exceptionId] });
     void refetch();
   };
-
-  if (!exceptionId) {
-    return (
-      <div className="p-6">
-        <EmptyState
-          title="Invalid exception URL"
-          description="No exception ID was found in this URL."
-          action={{
-            label: "Go to Exceptions List",
-            onClick: () => (window.location.href = "/console/exceptions"),
-          }}
-        />
-      </div>
-    );
-  }
 
   if (isLoading) {
     return (
@@ -560,6 +537,54 @@ export default function ExceptionDetailPage() {
   }
 
   return (
+    <>
+      <ActionBar
+        exception={exception}
+        isFrozen={isFrozen}
+        freezeReason={governanceState?.freeze_reason ?? undefined}
+        onActionComplete={handleActionComplete}
+      />
+      <ProvenanceModal
+        isOpen={isProvenanceModalOpen}
+        onClose={() => setIsProvenanceModalOpen(false)}
+        exceptionId={exception.id}
+        provenanceNodes={
+          exception.evidenceSummary?.items.map((item) => ({
+            id: item.id,
+            type: item.artifactType,
+            source: item.capturedBy,
+            timestamp: item.capturedAt,
+            reliability: item.reliabilityScore ?? 0.5,
+            hash: "sha256:8f3b...2e9a", // Simulation since backend doesn't yet return full node hash
+          })) || []
+        }
+      />
+    </>
+  );
+}
+
+// ─── Main page ─────────────────────────────────────────────────────────────────
+
+export default async function ExceptionDetailPage({ params }: { params: { exceptionId: string } }) {
+  const exceptionId = params.exceptionId;
+  const exception = await fetchExceptionDetail(exceptionId);
+
+  if (!exceptionId) {
+    return (
+      <div className="p-6">
+        <EmptyState
+          title="Invalid exception URL"
+          description="No exception ID was found in this URL."
+          action={{
+            label: "Go to Exceptions List",
+            onClick: () => (window.location.href = "/console/exceptions"),
+          }}
+        />
+      </div>
+    );
+  }
+
+  return (
     <div className="p-6 space-y-6">
       {/* ── Header ── */}
       <div className="flex items-start justify-between gap-4">
@@ -597,8 +622,8 @@ export default function ExceptionDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Button variant="outline" size="sm" onClick={() => void refetch()} disabled={isFetching}>
-            <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? "animate-spin" : ""}`} />
+          <Button variant="outline" size="sm" onClick={() => {}} disabled={true}>
+            <RefreshCw className={`w-4 h-4 mr-2`} />
             Refresh
           </Button>
         </div>
@@ -643,6 +668,20 @@ export default function ExceptionDetailPage() {
         </CardContent>
       </Card>
 
+      <Suspense fallback={<Skeleton className="h-64" />}>
+        {/* @ts-expect-error Server Component */}
+        <ProvenanceData exceptionId={exceptionId} />
+      </Suspense>
+
+      <ExceptionDetailClient exceptionId={exceptionId} />
+    </div>
+  );
+}
+
+async function ProvenanceData({ exceptionId }: { exceptionId: string }) {
+  const exception = await fetchExceptionDetail(exceptionId);
+  return (
+    <>
       {/* ── Provenance / lineage ── */}
       <Card>
         <CardHeader>
@@ -805,21 +844,6 @@ export default function ExceptionDetailPage() {
         </div>
       )}
 
-      <ProvenanceModal
-        isOpen={isProvenanceModalOpen}
-        onClose={() => setIsProvenanceModalOpen(false)}
-        exceptionId={exception.id}
-        provenanceNodes={
-          exception.evidenceSummary?.items.map((item) => ({
-            id: item.id,
-            type: item.artifactType,
-            source: item.capturedBy,
-            timestamp: item.capturedAt,
-            reliability: item.reliabilityScore ?? 0.5,
-            hash: "sha256:8f3b...2e9a", // Simulation since backend doesn't yet return full node hash
-          })) || []
-        }
-      />
       {/* ── Evidence and proof artifacts ── */}
       {(exception.evidenceSummary?.items?.length || exception.proofSummary?.items?.length) && (
         <Card>
@@ -1042,21 +1066,6 @@ export default function ExceptionDetailPage() {
         </Card>
       )}
 
-      {/* ── Operator action bar ── */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Operator Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ActionBar
-            exception={exception}
-            isFrozen={isFrozen}
-            freezeReason={governanceState?.freeze_reason ?? undefined}
-            onActionComplete={handleActionComplete}
-          />
-        </CardContent>
-      </Card>
-
       {/* ── Decision record ── */}
       {(exception.resolution || exception.resolvedAt || exception.ignoredAt) && (
         <Card>
@@ -1141,6 +1150,6 @@ export default function ExceptionDetailPage() {
           </CardContent>
         </Card>
       )}
-    </div>
+    </>
   );
 }
