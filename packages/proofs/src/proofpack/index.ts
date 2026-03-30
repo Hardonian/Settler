@@ -9,6 +9,8 @@
  */
 
 import crypto from "node:crypto";
+import type {
+  EvidenceArtifact,
   EvidenceArtifactType,
   ProofCompletenessModel,
 } from "../evidence/index.js";

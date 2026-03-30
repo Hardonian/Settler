@@ -12,7 +12,6 @@
  */
 
 import crypto from "node:crypto";
-import type { Prisma } from "@prisma/client";
 
 export type EvidenceArtifactType =
   | "source_snapshot"
