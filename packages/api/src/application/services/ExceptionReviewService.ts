@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { ProvenanceService } from "../../services/recon-core/provenance-service";
 import { NotFoundError } from "../../utils/typed-errors";
@@ -57,6 +58,12 @@ export interface BulkResolveExceptionsResult {
 interface ExceptionReviewRecord {
   id: string;
   runId: string;
+  sourceTransactionId: string;
+  targetTransactionId: string | null;
+  confidence: Prisma.Decimal | number | string;
+  amountDiff: Prisma.Decimal | number | string | null;
+  dateDiff: number | null;
+  matchType: string;
   metadata: Prisma.JsonValue;
   reviewed: boolean;
   status: string;
@@ -206,11 +213,45 @@ function sanitizeTraceUuid(value?: string): string | null {
     return null;
   }
 
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-    value
-  )
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
     ? value
     : null;
+}
+
+function buildHash(payload: unknown): string {
+  return crypto.createHash("sha256").update(JSON.stringify(payload)).digest("hex");
+}
+
+function computeCompleteness(input: {
+  resolution: ExceptionResolution;
+  notes: string | null;
+  hasTarget: boolean;
+  evidenceCount: number;
+}) {
+  const missingEvidence: string[] = [];
+  const completenessFlags: string[] = [];
+
+  if (!input.notes) {
+    missingEvidence.push("operator_note");
+  }
+  if (!input.hasTarget && input.resolution !== "ignored") {
+    missingEvidence.push("target_transaction");
+    completenessFlags.push("manual_resolution_without_counterpart");
+  }
+  if (input.evidenceCount < 2) {
+    completenessFlags.push("limited_evidence_capture");
+  }
+
+  const score = Math.max(
+    0,
+    Math.min(1, 1 - missingEvidence.length * 0.2 - (input.evidenceCount < 2 ? 0.1 : 0))
+  );
+
+  return {
+    score: Math.round(score * 10000) / 10000,
+    missingEvidence,
+    completenessFlags,
+  };
 }
 
 function mapResolutionToDecision(
@@ -309,6 +350,12 @@ export class ExceptionReviewService {
         select: {
           id: true,
           runId: true,
+          sourceTransactionId: true,
+          targetTransactionId: true,
+          confidence: true,
+          amountDiff: true,
+          dateDiff: true,
+          matchType: true,
           metadata: true,
           reviewed: true,
           status: true,
@@ -356,7 +403,8 @@ export class ExceptionReviewService {
       duplicateRequestCount: input.exceptionIds.length - uniqueExceptionIds.length,
       resolvedCount: results.filter((result) => result.outcome === "resolved").length,
       reAdjudicatedCount: results.filter((result) => result.outcome === "re_adjudicated").length,
-      alreadyResolvedCount: results.filter((result) => result.outcome === "already_resolved").length,
+      alreadyResolvedCount: results.filter((result) => result.outcome === "already_resolved")
+        .length,
       notFoundCount,
       results,
     };
@@ -368,6 +416,9 @@ export class ExceptionReviewService {
     input: ResolveExceptionInput
   ): Promise<ResolveExceptionResult> {
     const exceptionMatchModel = tx.reconciliationMatch as any;
+    const adjudicationMemoryModel = (tx as any).exceptionAdjudicationMemory;
+    const evidenceArtifactModel = (tx as any).evidenceArtifact;
+    const proofPackageModel = (tx as any).proofPackage;
     const normalizedReason = normalizeNotes(input.resolution, input.notes);
     const normalizedResolutionReason = normalizeResolutionReason(
       input.resolution,
@@ -405,6 +456,213 @@ export class ExceptionReviewService {
     const reviewedAt = new Date();
     const status = statusForResolution(input.resolution);
 
+    const [sourceTransaction, targetTransaction] = await Promise.all([
+      tx.normalizedTransaction.findFirst({
+        where: {
+          id: existing.sourceTransactionId,
+          tenantId: input.tenantId,
+        },
+        select: {
+          id: true,
+          amount: true,
+          currency: true,
+          date: true,
+          description: true,
+          externalId: true,
+        },
+      }),
+      existing.targetTransactionId
+        ? tx.normalizedTransaction.findFirst({
+            where: {
+              id: existing.targetTransactionId,
+              tenantId: input.tenantId,
+            },
+            select: {
+              id: true,
+              amount: true,
+              currency: true,
+              date: true,
+              description: true,
+              externalId: true,
+            },
+          })
+        : Promise.resolve(null),
+    ]);
+
+    const decisionPayload = {
+      exceptionId: existing.id,
+      runId: existing.runId,
+      outcome,
+      resolution: input.resolution,
+      resolutionReason: normalizedResolutionReason,
+      notes: input.notes?.trim() || null,
+      previousStatus: existing.status,
+      nextStatus: status,
+      sourceTransaction: sourceTransaction
+        ? {
+            id: sourceTransaction.id,
+            amount: Number(sourceTransaction.amount),
+            currency: sourceTransaction.currency,
+            date: sourceTransaction.date.toISOString(),
+            description: sourceTransaction.description,
+            externalId: sourceTransaction.externalId,
+          }
+        : null,
+      targetTransaction: targetTransaction
+        ? {
+            id: targetTransaction.id,
+            amount: Number(targetTransaction.amount),
+            currency: targetTransaction.currency,
+            date: targetTransaction.date.toISOString(),
+            description: targetTransaction.description,
+            externalId: targetTransaction.externalId,
+          }
+        : null,
+      amountDiff: existing.amountDiff != null ? Number(existing.amountDiff) : null,
+      dateDiff: existing.dateDiff,
+      confidenceScore: Number(existing.confidence),
+    };
+
+    const decisionArtifact = await evidenceArtifactModel.create({
+      data: {
+        tenantId: input.tenantId,
+        artifactType: "operator_annotation",
+        artifactKey: `exception:${existing.id}:decision:${reviewedAt.toISOString()}`,
+        payload: decisionPayload as Prisma.InputJsonValue,
+        payloadHash: buildHash(decisionPayload),
+        payloadSizeBytes: JSON.stringify(decisionPayload).length,
+        sourceType: "exception_review_service",
+        sourceId: existing.id,
+        capturedBy: "operator",
+        capturedByUserId: input.userId,
+        runId: existing.runId,
+        exceptionId: existing.id,
+        reliabilityScore: 0.95,
+        reliabilityFactors: ["operator_authenticated", "tenant_scoped", "persisted_snapshot"],
+        degraded: false,
+      },
+    });
+
+    const comparisonPayload = {
+      exceptionId: existing.id,
+      runId: existing.runId,
+      sourceTransactionId: existing.sourceTransactionId,
+      targetTransactionId: existing.targetTransactionId,
+      matchType: existing.matchType,
+      matchReason: existing.matchReason,
+      amountDiff: existing.amountDiff != null ? Number(existing.amountDiff) : null,
+      dateDiff: existing.dateDiff,
+    };
+
+    const comparisonArtifact = await evidenceArtifactModel.create({
+      data: {
+        tenantId: input.tenantId,
+        artifactType: "match_comparison",
+        artifactKey: `exception:${existing.id}:comparison:${reviewedAt.toISOString()}`,
+        payload: comparisonPayload as Prisma.InputJsonValue,
+        payloadHash: buildHash(comparisonPayload),
+        payloadSizeBytes: JSON.stringify(comparisonPayload).length,
+        sourceType: "reconciliation_match",
+        sourceId: existing.id,
+        capturedBy: "system",
+        runId: existing.runId,
+        exceptionId: existing.id,
+        reliabilityScore: 0.85,
+        reliabilityFactors: ["canonical_match_record"],
+        degraded: false,
+      },
+    });
+
+    const evidenceIds = [decisionArtifact.id, comparisonArtifact.id];
+    const sourceTrustScore =
+      targetTransaction || input.resolution === "ignored"
+        ? 0.9
+        : existing.matchType === "conflict"
+          ? 0.75
+          : 0.6;
+
+    const memory = await adjudicationMemoryModel.create({
+      data: {
+        tenantId: input.tenantId,
+        exceptionId: existing.id,
+        resolution: input.resolution,
+        resolutionReason: normalizedResolutionReason,
+        resolutionCode: normalizedResolutionReason,
+        adjudicatorId: input.userId,
+        adjudicatorType: "operator",
+        adjudicationType: outcome === "re_adjudicated" ? "re_adjudication" : "initial",
+        startedAt: reviewedAt,
+        completedAt: reviewedAt,
+        durationMs: BigInt(0),
+        outcome,
+        confidence: Number(existing.confidence),
+        reversibility: input.resolution === "ignored" ? "reversible" : "pending_reversal",
+        evidenceIds,
+        sourceTrustScore,
+        annotations: {
+          matchType: existing.matchType,
+          previousStatus: existing.status,
+          traceId: sanitizeTraceUuid(input.traceId) ?? undefined,
+          requestId: input.requestId,
+        } as Prisma.InputJsonValue,
+        operatorNotes: input.notes?.trim() || null,
+        systemNotes: "Decision recorded by ExceptionReviewService.",
+        entryHash: buildHash({
+          exceptionId: existing.id,
+          resolution: input.resolution,
+          reviewedAt: reviewedAt.toISOString(),
+          userId: input.userId,
+        }),
+      },
+    });
+
+    const completeness = computeCompleteness({
+      resolution: input.resolution,
+      notes: input.notes?.trim() || null,
+      hasTarget: Boolean(targetTransaction),
+      evidenceCount: evidenceIds.length,
+    });
+
+    const proofPayload = {
+      exceptionId: existing.id,
+      runId: existing.runId,
+      memoryId: memory.id,
+      outcome,
+      resolution: input.resolution,
+      resolutionReason: normalizedResolutionReason,
+      evidenceIds,
+      sourceTrustScore,
+    };
+
+    const proofPackage = await proofPackageModel.create({
+      data: {
+        tenantId: input.tenantId,
+        packageType: "exception_resolution",
+        packageKey: `exception:${existing.id}:memory:${memory.id}`,
+        evidenceIds,
+        summary: proofPayload as Prisma.InputJsonValue,
+        narrative: input.notes?.trim() || normalizedReason,
+        completenessScore: completeness.score,
+        missingEvidence: completeness.missingEvidence,
+        completenessFlags: completeness.completenessFlags,
+        packageHash: buildHash({
+          proofPayload,
+          completeness,
+        }),
+        scope: "exception",
+        scopeIds: [existing.id, existing.runId],
+        periodStart: existing.reviewedAt ?? reviewedAt,
+        periodEnd: reviewedAt,
+        status: completeness.score >= 0.75 ? "finalized" : "draft",
+        finalizedAt: completeness.score >= 0.75 ? reviewedAt : null,
+        metadata: {
+          exceptionId: existing.id,
+          memoryId: memory.id,
+          outcome,
+        } as Prisma.InputJsonValue,
+      },
+    });
+
     const metadata = buildAdjudicationMetadata(existing.metadata, {
       actorId: input.userId,
       resolution: input.resolution,
@@ -421,6 +679,9 @@ export class ExceptionReviewService {
       traceId: sanitizeTraceUuid(input.traceId) ?? undefined,
       requestId: input.requestId,
       status,
+      memoryId: memory.id,
+      evidenceIds,
+      proofPackageId: proofPackage.id,
     });
 
     await exceptionMatchModel.update({
@@ -478,6 +739,9 @@ export class ExceptionReviewService {
           previousStatus: existing.status,
           previousReason: existing.matchReason,
           runId: existing.runId,
+          memoryId: memory.id,
+          proofPackageId: proofPackage.id,
+          evidenceIds,
         } as Prisma.InputJsonValue,
         traceId: sanitizeTraceUuid(input.traceId),
         requestId: input.requestId ?? null,

@@ -354,9 +354,12 @@ router.get(
 
       let avgResolutionMs: number | null = null;
       if (resolvedExceptions.length > 0) {
-        const totalMs = resolvedExceptions.reduce((sum: number, e: { reviewedAt: Date; createdAt: Date }) => {
-          return sum + (e.reviewedAt!.getTime() - e.createdAt.getTime());
-        }, 0);
+        const totalMs = resolvedExceptions.reduce(
+          (sum: number, e: { reviewedAt: Date; createdAt: Date }) => {
+            return sum + (e.reviewedAt!.getTime() - e.createdAt.getTime());
+          },
+          0
+        );
         avgResolutionMs = Math.round(totalMs / resolvedExceptions.length);
       }
 
@@ -414,7 +417,89 @@ router.get(
       }
 
       const metadata = exception.metadata as any;
-      const adjudicationHistory = metadata?.adjudicationHistory || [];
+      const [memories, evidenceArtifacts, proofPackages] = await Promise.all([
+        (prisma as any).exceptionAdjudicationMemory?.findMany?.({
+          where: { tenantId, exceptionId: id },
+          orderBy: { createdAt: "desc" },
+          select: {
+            id: true,
+            resolution: true,
+            resolutionReason: true,
+            adjudicationType: true,
+            adjudicatorId: true,
+            adjudicatorType: true,
+            outcome: true,
+            confidence: true,
+            sourceTrustScore: true,
+            operatorNotes: true,
+            systemNotes: true,
+            evidenceIds: true,
+            createdAt: true,
+            completedAt: true,
+            parentMemoryId: true,
+          },
+        }) ?? Promise.resolve([]),
+        (prisma as any).evidenceArtifact?.findMany?.({
+          where: { tenantId, exceptionId: id },
+          orderBy: { capturedAt: "desc" },
+          select: {
+            id: true,
+            artifactType: true,
+            artifactKey: true,
+            capturedAt: true,
+            capturedBy: true,
+            degraded: true,
+            degradedReasons: true,
+            attested: true,
+            reliabilityScore: true,
+          },
+        }) ?? Promise.resolve([]),
+        (prisma as any).proofPackage?.findMany?.({
+          where: {
+            tenantId,
+            packageKey: {
+              startsWith: `exception:${id}:`,
+            },
+          },
+          orderBy: { createdAt: "desc" },
+          select: {
+            id: true,
+            packageType: true,
+            packageKey: true,
+            status: true,
+            completenessScore: true,
+            missingEvidence: true,
+            completenessFlags: true,
+            evidenceIds: true,
+            createdAt: true,
+            finalizedAt: true,
+          },
+        }) ?? Promise.resolve([]),
+      ]);
+
+      const adjudicationHistory =
+        memories.length > 0
+          ? memories
+              .slice()
+              .reverse()
+              .map((memory: any) => ({
+                actorId: memory.adjudicatorId,
+                action:
+                  memory.outcome === "reopened"
+                    ? "reopened"
+                    : memory.resolution === "ignored"
+                      ? "ignored"
+                      : "resolved",
+                details: {
+                  resolution: memory.resolution,
+                  resolutionReason: memory.resolutionReason,
+                  notes: memory.operatorNotes,
+                  memoryId: memory.id,
+                },
+                timestamp:
+                  memory.completedAt?.toISOString?.() ?? memory.createdAt.toISOString?.() ?? null,
+              }))
+          : metadata?.adjudicationHistory || [];
 
       const provenance = await exceptionProvenanceModel.findMany({
         where: { tenantId, matchId: id },
@@ -436,6 +521,35 @@ router.get(
           run: exception.run,
           sourceTransaction: exception.sourceTransaction,
           adjudicationHistory,
+          decisionMemory: memories.map((memory: any) => ({
+            id: memory.id,
+            resolution: memory.resolution,
+            resolutionReason: memory.resolutionReason,
+            adjudicationType: memory.adjudicationType,
+            adjudicatorId: memory.adjudicatorId,
+            adjudicatorType: memory.adjudicatorType,
+            outcome: memory.outcome,
+            confidence: memory.confidence != null ? Number(memory.confidence) : null,
+            sourceTrustScore:
+              memory.sourceTrustScore != null ? Number(memory.sourceTrustScore) : null,
+            operatorNotes: memory.operatorNotes,
+            systemNotes: memory.systemNotes,
+            evidenceIds: Array.isArray(memory.evidenceIds) ? memory.evidenceIds : [],
+            createdAt: memory.createdAt.toISOString(),
+            completedAt: memory.completedAt?.toISOString?.() ?? null,
+            parentMemoryId: memory.parentMemoryId,
+          })),
+          evidenceSummary: {
+            total: evidenceArtifacts.length,
+            degraded: evidenceArtifacts.filter((item: any) => item.degraded).length,
+            attested: evidenceArtifacts.filter((item: any) => item.attested).length,
+            latestCapturedAt: evidenceArtifacts[0]?.capturedAt?.toISOString?.() ?? null,
+          },
+          proofSummary: {
+            total: proofPackages.length,
+            finalized: proofPackages.filter((item: any) => item.status === "finalized").length,
+            latestCreatedAt: proofPackages[0]?.createdAt?.toISOString?.() ?? null,
+          },
           provenance,
         },
       });
