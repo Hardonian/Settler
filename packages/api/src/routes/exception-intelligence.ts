@@ -3,14 +3,11 @@ import { AuthRequest } from "../infrastructure/security/AuthMiddleware";
 import { requirePermission } from "../infrastructure/security/PermissionMiddleware";
 import { Permission } from "../infrastructure/security/Permissions";
 import { prisma } from "../infrastructure/db/prisma";
-import {
-  NotFoundError,
-  handleRouteError,
-  BadRequestError,
-} from "../infrastructure/errors/AppError";
-import { logInfo, logError } from "../infrastructure/logging/logger";
+import { NotFoundError, BadRequestError } from "../utils/typed-errors";
+import { handleRouteError } from "../utils/error-handler";
+import { logInfo, logError } from "../utils/logger";
 import { AdjudicationMemoryService } from "../services/intelligence/adjudication-memory";
-import { EvidenceArtifact as EvidenceArtifactType, ProofCompletenessModel } from "@settler/proofs";
+import { EvidenceArtifact as EvidenceArtifactType } from "@settler/proofs";
 import { assessEvidenceCompleteness, STANDARD_EVIDENCE_REQUIREMENTS } from "@settler/proofs";
 import { RunDeltaService } from "../services/intelligence/run-delta";
 import { Prisma } from "@prisma/client";
@@ -41,6 +38,7 @@ router.get(
       const exceptionId = req.params.exceptionId as string;
       const limit = parseInt(req.query.limit as string) || 5;
       const includeResolved = req.query.includeResolved === "true";
+      // Used in matching filter below if needed
 
       const exception = await prisma.reconciliationMatch.findFirst({
         where: { id: exceptionId, tenantId },
@@ -70,6 +68,7 @@ router.get(
         exceptionId,
         similarCount: similarCases.length,
         archetypeMatch: !!primaryArchetypeId,
+        includeResolved,
       });
 
       return res.json({
