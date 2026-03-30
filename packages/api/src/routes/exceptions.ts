@@ -1030,7 +1030,7 @@ router.post(
         where: {
           id: { in: exceptionIds },
           tenantId,
-          matchType: "unmatched",
+          matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] },
           status: { notIn: ["resolved", "dismissed"] },
         },
         data: { assignedTo },
@@ -1085,7 +1085,7 @@ router.post(
         where: {
           id: { in: exceptionIds },
           tenantId,
-          matchType: "unmatched",
+          matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] },
         },
         data: {
           status,

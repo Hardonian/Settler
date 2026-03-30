@@ -22,15 +22,6 @@ export type ExceptionScopeResolution =
       ingestionRunId: string;
     };
 
-export interface CanonicalExceptionCounts {
-  total: number;
-  pending: number;
-  investigating: number;
-  resolved: number;
-  ignored: number;
-  reviewRequired: number;
-}
-
 type ExceptionScopeOptions = {
   prisma: PrismaClient;
   tenantId: string;

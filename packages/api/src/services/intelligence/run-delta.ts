@@ -144,7 +144,7 @@ export class RunDeltaService {
       data: {
         tenantId: input.tenantId,
         currentRunId: input.currentRunId,
-        previousRunId: input.previousRunId,
+        previousRunId: input.previousRunId || undefined,
         jobId: input.jobId,
         inputChanged,
         inputDelta: JSON.stringify({
@@ -264,10 +264,10 @@ export class RunDeltaService {
     let configDriftEvents = 0;
 
     for (const delta of deltas) {
-      const newPatterns = JSON.parse(delta.newExceptionPatterns as string) as string[];
+      const newPatterns = (delta.newExceptionPatterns as string[]) || [];
       newPatterns.forEach((p) => allNewPatterns.add(p));
 
-      const resolvedPatterns = JSON.parse(delta.resolvedPatterns as string) as string[];
+      const resolvedPatterns = (delta.resolvedPatterns as string[]) || [];
       resolvedPatterns.forEach((p) => allResolvedPatterns.add(p));
 
       if (delta.configDriftDetected) configDriftEvents++;
@@ -414,17 +414,17 @@ export class RunDeltaService {
 
     const archetypes = await this.prisma.exceptionArchetype.findMany({
       where: { id: { in: archetypeIds } },
-      select: { id: true, name: true },
+      select: { id: true, label: true },
     });
 
-    const archetypeMap = new Map(archetypes.map((a) => [a.id, a.name]));
+    const archetypeMap = new Map(archetypes.map((a) => [a.id, a.label]));
 
     return matches
       .filter((m) => m.archetypeId !== null && archetypeMap.has(m.archetypeId))
       .map((m) => ({
         archetypeId: m.archetypeId as string,
         archetypeName: archetypeMap.get(m.archetypeId as string) ?? "Unknown",
-        exceptionCount: m._count.id,
+        exceptionCount: Number(m._count.id),
       }));
   }
 
@@ -602,12 +602,10 @@ export class RunDeltaService {
     return current.confidenceAvg.toNumber() - previous.confidenceAvg.toNumber();
   }
 
-  private async enrichDeltaWithPatterns(
-    delta: Prisma.RunDeltaGetPayload<object>
-  ): Promise<RunDeltaResult> {
-    const newPatterns = JSON.parse(delta.newExceptionPatterns as string) as string[];
-    const resolvedPatterns = JSON.parse(delta.resolvedPatterns as string) as string[];
-    const configDrift = JSON.parse(delta.configDriftSummary as string) as ConfigDrift[];
+  private async enrichDeltaWithPatterns(delta: any): Promise<RunDeltaResult> {
+    const newPatterns = (delta.newExceptionPatterns as string[]) || [];
+    const resolvedPatterns = (delta.resolvedPatterns as string[]) || [];
+    const configDrift = (delta.configDriftSummary as any[]) || [];
 
     return {
       id: delta.id,
@@ -639,7 +637,7 @@ export class RunDeltaService {
   }
 
   private mapToResult(
-    delta: Prisma.RunDeltaGetPayload<object>,
+    delta: any,
     enrich: {
       currentSnapshot: RunSnapshotData | null;
       previousSnapshot: RunSnapshotData | null;

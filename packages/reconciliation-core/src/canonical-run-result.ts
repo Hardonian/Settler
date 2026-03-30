@@ -31,7 +31,7 @@ export interface CanonicalExceptionCounts {
   investigating: number;
   resolved: number;
   ignored: number;
-  unresolved: number;
+  reviewRequired: number;
 }
 
 export interface CanonicalRunProvenance {
