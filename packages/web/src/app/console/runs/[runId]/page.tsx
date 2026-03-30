@@ -304,7 +304,108 @@ export default function RunPage() {
                 Evaluated at {new Date(run.resultContext.latestResultStartedAt).toLocaleString()}.
               </p>
             )}
-            {run.resultContext.comparison && (
+            {run.runDelta && (
+              <div className="rounded-md border border-border dark:border-border p-3 space-y-4 bg-muted/5 dark:bg-card/30">
+                <div className="flex items-center justify-between">
+                  <p className="font-semibold text-foreground dark:text-white flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-blue-500" />
+                    Audit Narrative
+                  </p>
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] uppercase tracking-wider font-bold h-5 bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800"
+                  >
+                    Intelligence Active
+                  </Badge>
+                </div>
+
+                <div className="space-y-3 text-sm">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground uppercase tracking-tight">
+                        Reconciliation Drift
+                      </p>
+                      <p className="text-foreground">
+                        Matches:{" "}
+                        <span
+                          className={`font-medium ${run.runDelta.matchedDelta >= 0 ? "text-green-600" : "text-amber-600"}`}
+                        >
+                          {formatSignedDelta(run.runDelta.matchedDelta)}
+                        </span>{" "}
+                        • Exceptions:{" "}
+                        <span
+                          className={`font-medium ${run.runDelta.exceptionDelta <= 0 ? "text-green-600" : "text-red-600"}`}
+                        >
+                          {formatSignedDelta(run.runDelta.exceptionDelta)}
+                        </span>
+                      </p>
+                    </div>
+                    {run.runDelta.confidenceDelta !== null && (
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground uppercase tracking-tight">
+                          Confidence Shift
+                        </p>
+                        <p
+                          className={`font-medium ${run.runDelta.confidenceDelta >= 0 ? "text-green-600" : "text-amber-600"}`}
+                        >
+                          {formatSignedDelta(Math.round(run.runDelta.confidenceDelta * 100))}% vs
+                          baseline
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {run.runDelta.configDriftDetected && (
+                    <div className="flex items-start gap-2 p-2.5 rounded bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 text-amber-800 dark:text-amber-200 text-xs shadow-sm">
+                      <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                      <div>
+                        <p className="font-semibold mb-0.5">Configuration Drift Detected</p>
+                        <p className="opacity-90">
+                          Underlying reconciliation rules or adapter settings have changed since the
+                          previous run, which may explain variance in outcomes.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {(run.runDelta.newExceptionPatterns.length > 0 ||
+                    run.runDelta.resolvedPatterns.length > 0) && (
+                    <div className="pt-3 border-t border-border/50 space-y-2">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-tight mb-2">
+                        Pattern Evolution
+                      </p>
+                      {run.runDelta.newExceptionPatterns.map((pattern) => (
+                        <div key={pattern} className="flex items-center gap-2 text-xs">
+                          <Badge
+                            variant="secondary"
+                            className="bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 h-4 px-1 text-[10px] border-red-200 dark:border-red-800"
+                          >
+                            NEW
+                          </Badge>
+                          <span className="text-muted-foreground italic">
+                            "{pattern}" pattern emerging in this cycle
+                          </span>
+                        </div>
+                      ))}
+                      {run.runDelta.resolvedPatterns.map((pattern) => (
+                        <div key={pattern} className="flex items-center gap-2 text-xs">
+                          <Badge
+                            variant="secondary"
+                            className="bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 h-4 px-1 text-[10px] border-green-200 dark:border-green-800"
+                          >
+                            RESOLVED
+                          </Badge>
+                          <span className="text-muted-foreground italic">
+                            "{pattern}" pattern successfully mitigated
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            {!run.runDelta && run.resultContext.comparison && (
               <div className="rounded-md border border-border dark:border-border p-3">
                 <p className="font-medium text-foreground dark:text-white">
                   Compared to prior result
