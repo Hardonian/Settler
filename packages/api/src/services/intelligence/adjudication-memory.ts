@@ -468,7 +468,7 @@ export class AdjudicationMemoryService {
   /**
    * Generate policy tuning hints based on adjudication patterns
    */
-  async generatePolicyTuningHints(tenantId: string, jobId?: string): Promise<PolicyTuningHint[]> {
+  async generatePolicyTuningHints(tenantId: string, _jobId?: string): Promise<PolicyTuningHint[]> {
     const { prisma } = this;
 
     const hints: PolicyTuningHint[] = [];
@@ -512,7 +512,7 @@ export class AdjudicationMemoryService {
       byArchetype.set(item.archetypeId, existing);
     }
 
-    for (const [archetypeId, resolutions] of byArchetype) {
+    for (const [_archetypeId, resolutions] of byArchetype) {
       const ignored = resolutions["ignored"] ?? 0;
       const resolved = resolutions["resolved"] ?? 0;
       const total = ignored + resolved;

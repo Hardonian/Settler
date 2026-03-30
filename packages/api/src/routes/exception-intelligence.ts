@@ -12,6 +12,7 @@
  */
 
 import { Router, Response } from "express";
+import crypto from "node:crypto";
 import { Prisma } from "@prisma/client";
 import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
@@ -509,6 +510,17 @@ router.post(
           adjudicatorType: "operator",
           adjudicationType: override ? "override" : "standard",
           annotations: (exception.metadata as Prisma.InputJsonValue) ?? Prisma.JsonNull,
+          entryHash: crypto
+            .createHash("sha256")
+            .update(
+              JSON.stringify({
+                exceptionId,
+                tenantId,
+                resolution: resolution || "unknown",
+                at: new Date().toISOString(),
+              })
+            )
+            .digest("hex"),
         },
       });
 
