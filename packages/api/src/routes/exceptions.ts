@@ -344,7 +344,7 @@ router.get(
         ...(jobId && { runId: jobId }),
       };
 
-      const [statusCounts, severityCounts, unassigned] = await Promise.all([
+      const [statusCounts, severityCounts, unassigned, avgResult] = await Promise.all([
         prisma.reconciliationMatch.groupBy({
           by: ["status"],
           where: whereBase,
@@ -358,6 +358,15 @@ router.get(
         prisma.reconciliationMatch.count({
           where: { ...whereBase, assignedTo: null, status: { notIn: ["resolved", "dismissed"] } },
         }),
+        prisma.$queryRaw`
+          SELECT 
+            AVG(EXTRACT(EPOCH FROM (updated_at - created_at)) * 1000) as avg_resolution_ms
+          FROM reconciliation_matches
+          WHERE tenant_id = ${tenantId}::uuid
+            AND status IN ('resolved', 'dismissed')
+            AND (updated_at IS NOT NULL AND created_at IS NOT NULL)
+            ${jobId ? (prisma as any).sql`AND run_id = ${jobId}::uuid` : (prisma as any).sql``}
+        ` as Promise<any[]>,
       ]);
 
       const counts = statusCounts.reduce(
@@ -380,25 +389,9 @@ router.get(
       const { open, in_progress: inProgress, resolved, dismissed } = counts;
       const { critical, high, medium, low } = severities;
 
-      const resolvedExceptions = await prisma.reconciliationMatch.findMany({
-        where: {
-          ...whereBase,
-          status: { in: ["resolved", "dismissed"] },
-          reviewedAt: { not: null },
-        },
-        select: { createdAt: true, reviewedAt: true },
-        take: 1000,
-        orderBy: { reviewedAt: "desc" },
-      });
-
-      let avgResolutionMs: number | null = null;
-      if (resolvedExceptions.length > 0) {
-        const totalMs = resolvedExceptions.reduce((sum, e) => {
-          if (!e.reviewedAt) return sum;
-          return sum + (e.reviewedAt.getTime() - e.createdAt.getTime());
-        }, 0);
-        avgResolutionMs = Math.round(totalMs / resolvedExceptions.length);
-      }
+      const avgResolutionMs = avgResult[0]?.avg_resolution_ms
+        ? Math.round(Number(avgResult[0].avg_resolution_ms))
+        : null;
 
       res.json({
         data: {
@@ -446,6 +439,20 @@ router.get(
             },
           },
           sourceTransaction: true,
+          targetTransaction: {
+            select: {
+              id: true,
+              category: true,
+              description: true,
+              amount: true,
+              currency: true,
+              date: true,
+            },
+          },
+          adjudicationMemories: {
+            take: 5,
+            orderBy: { createdAt: "desc" },
+          },
         },
       });
 
@@ -458,6 +465,8 @@ router.get(
           ...mapExceptionToResponse(exception as any),
           run: exception.run,
           sourceTransaction: exception.sourceTransaction,
+          targetTransaction: exception.targetTransaction,
+          institutionalMemory: exception.adjudicationMemories,
         },
       });
     } catch (error: unknown) {
