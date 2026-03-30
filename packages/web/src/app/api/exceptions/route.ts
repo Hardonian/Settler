@@ -15,13 +15,8 @@ import {
 import { withSecurity } from "@/lib/middleware/api-security";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
-import {
-  buildExceptionDescription,
-  buildExceptionReasonTags,
-  buildExceptionStatusDetail,
-  getExceptionWorkflowState,
-} from "@/lib/exceptions/presentation";
 import { z } from "zod";
+import { listReconciliationWorkbenchExceptions } from "@/lib/server/exceptions/reconciliation-workbench";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -29,6 +24,7 @@ export const runtime = "nodejs";
 // Query parameters schema
 const queryParamsSchema = z.object({
   runId: z.string().uuid().optional(),
+  runKind: z.enum(["recon_job", "ingestion_run"]).optional(),
   status: z.enum(["pending", "investigating", "resolved", "ignored"]).optional(),
   severity: z.enum(["low", "medium", "high", "critical"]).optional(),
   type: z.string().optional(),
@@ -38,59 +34,6 @@ const queryParamsSchema = z.object({
 });
 
 type QueryParams = z.infer<typeof queryParamsSchema>;
-
-function withWorkflowStatusFilter(
-  baseWhere: Record<string, unknown>,
-  status?: QueryParams["status"]
-): Record<string, unknown> {
-  if (!status) {
-    return baseWhere;
-  }
-
-  switch (status) {
-    case "pending":
-      return { ...baseWhere, acknowledged: false };
-    case "resolved":
-      return {
-        ...baseWhere,
-        acknowledged: true,
-        metadata: {
-          path: ["resolution", "status"],
-          equals: "resolved",
-        },
-      };
-    case "ignored":
-      return {
-        ...baseWhere,
-        acknowledged: true,
-        metadata: {
-          path: ["resolution", "status"],
-          equals: "ignored",
-        },
-      };
-    case "investigating":
-      return {
-        ...baseWhere,
-        acknowledged: true,
-        NOT: [
-          {
-            metadata: {
-              path: ["resolution", "status"],
-              equals: "resolved",
-            },
-          },
-          {
-            metadata: {
-              path: ["resolution", "status"],
-              equals: "ignored",
-            },
-          },
-        ],
-      };
-    default:
-      return baseWhere;
-  }
-}
 
 /**
  * GET /api/exceptions - List exceptions for the current workspace
@@ -110,6 +53,8 @@ export const GET = withSecurity(
         const tenantId = resolveTenantForMutation(tenantIds, requestedTenantId);
         const rawParams: QueryParams = {
           runId: searchParams.get("runId") || undefined,
+          runKind:
+            (searchParams.get("runKind") as "recon_job" | "ingestion_run" | null) || undefined,
           status: (searchParams.get("status") as QueryParams["status"]) || undefined,
           severity: (searchParams.get("severity") as QueryParams["severity"]) || undefined,
           type: searchParams.get("type") || undefined,
@@ -120,108 +65,50 @@ export const GET = withSecurity(
 
         const params = queryParamsSchema.parse(rawParams);
 
-        // Build where clause - workspace scoped
-        let whereClause: Record<string, unknown> = { tenantId };
-
-        if (params.severity) {
-          whereClause.severity = params.severity;
-        }
-
-        if (params.type) {
-          whereClause.driftType = params.type;
-        }
-
-        if (params.runId) {
-          whereClause.reconJobId = params.runId;
-        }
-
-        whereClause = withWorkflowStatusFilter(whereClause, params.status);
-
-        // Search in fieldPath, expectedValue, actualValue
-        if (params.search) {
-          (whereClause as { OR?: unknown }).OR = [
-            { fieldPath: { contains: params.search, mode: "insensitive" } },
-            { driftType: { contains: params.search, mode: "insensitive" } },
-          ];
-        }
-
         const limit = Math.min(parseInt(params.limit, 10), 100);
         const offset = parseInt(params.offset, 10);
 
-        // Fetch exceptions (using DriftEvent as exception model)
-        const [exceptions, total] = await Promise.all([
-          prisma.driftEvent.findMany({
-            where: whereClause,
-            orderBy: { createdAt: "desc" },
-            take: limit,
-            skip: offset,
-            select: {
-              id: true,
-              tenantId: true,
-              driftType: true,
-              severity: true,
-              acknowledged: true,
-              acknowledgedBy: true,
-              acknowledgedAt: true,
-              createdAt: true,
-              reconJobId: true,
-              fieldPath: true,
-              expectedValue: true,
-              actualValue: true,
-              metadata: true,
-            },
-          }),
-          prisma.driftEvent.count({ where: whereClause }),
-        ]);
-
-        // Transform to frontend format
-        const items = exceptions.map((ex: any) => {
-          const metadata = (ex.metadata as Record<string, unknown>) || {};
-          const status = getExceptionWorkflowState({
-            acknowledged: ex.acknowledged,
-            metadata,
-          });
-
-          return {
-            id: ex.id,
-            type: ex.driftType || "unknown",
-            status: status as "pending" | "investigating" | "resolved" | "ignored",
-            severity: (ex.severity || "low") as "low" | "medium" | "high" | "critical",
-            detectedAt: ex.createdAt,
-            description: buildExceptionDescription({
-              driftType: ex.driftType,
-              fieldPath: ex.fieldPath,
-              expectedValue: ex.expectedValue,
-              actualValue: ex.actualValue,
-            }),
-            statusDetail: buildExceptionStatusDetail({
-              driftType: ex.driftType,
-              fieldPath: ex.fieldPath,
-              expectedValue: ex.expectedValue,
-              actualValue: ex.actualValue,
-              metadata,
-              createdAt: ex.createdAt,
-              acknowledged: ex.acknowledged,
-              acknowledgedBy: ex.acknowledgedBy,
-              acknowledgedAt: ex.acknowledgedAt,
-            }),
-            reasonTags: buildExceptionReasonTags({
-              driftType: ex.driftType,
-              fieldPath: ex.fieldPath,
-              metadata,
-            }),
-            amount: (ex.metadata as Record<string, unknown>)?.amount as number | undefined,
-            currency: (ex.metadata as Record<string, unknown>)?.currency as string | undefined,
-            sourceTransactionId: (ex.metadata as Record<string, unknown>)?.sourceTransactionId as
-              | string
-              | undefined,
-            targetTransactionId: (ex.metadata as Record<string, unknown>)?.targetTransactionId as
-              | string
-              | undefined,
-            runId: ex.reconJobId || undefined,
-            fieldPath: ex.fieldPath || undefined,
-          };
+        const result = await listReconciliationWorkbenchExceptions(prisma, {
+          tenantId,
+          runId: params.runId,
+          runKind: params.runKind ?? null,
+          status: params.status,
+          severity: params.severity,
+          type: params.type,
+          search: params.search,
+          limit,
+          offset,
         });
+
+        if (result.kind === "not_found") {
+          return NextResponse.json(
+            {
+              items: [],
+              total: 0,
+              error: "Run not found",
+              trace_id: traceId,
+            },
+            { status: 404 }
+          );
+        }
+
+        if (result.kind === "ambiguous_uuid_collision") {
+          return NextResponse.json(
+            {
+              items: [],
+              total: 0,
+              error: "Ambiguous run identifier",
+              code: "RUN_ID_COLLISION",
+              recon_job_id: result.jobId,
+              ingestion_run_id: result.ingestionRunId,
+              trace_id: traceId,
+            },
+            { status: 409 }
+          );
+        }
+
+        const items = result.data.items;
+        const total = result.data.total;
 
         return NextResponse.json({
           items,
