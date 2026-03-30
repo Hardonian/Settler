@@ -56,7 +56,7 @@ const listExportsSchema = z.object({
     status: z.enum(["pending", "processing", "completed", "failed"]).optional(),
     type: z.string().optional(),
     limit: z.string().regex(/^\d+$/).transform(Number).optional().default("20"),
-    offset: z.string().regex(/^\d+$/).transform(Number).optional().default("0"),
+    cursor: z.string().optional(),
   }),
 });
 
@@ -164,7 +164,7 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
-      const { status, type, limit, offset } = listExportsSchema.parse({
+      const { status, type, limit, cursor } = listExportsSchema.parse({
         query: req.query,
       }).query;
 
@@ -174,38 +174,38 @@ router.get(
         ...(type && { type }),
       };
 
-      const [exports, total] = await Promise.all([
-        prisma.export.findMany({
-          where,
-          orderBy: { createdAt: "desc" },
-          take: limit,
-          skip: offset,
-          select: {
-            id: true,
-            type: true,
-            format: true,
-            status: true,
-            reconciliationRunId: true,
-            fileSizeBytes: true,
-            rowCount: true,
-            errorMessage: true,
-            signedUrlExpiresAt: true,
-            createdAt: true,
-            updatedAt: true,
-            expiresAt: true,
-          },
-        }),
-        prisma.export.count({ where }),
-      ]);
+      const exports = await prisma.export.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        take: limit + 1,
+        cursor: cursor ? { id: cursor } : undefined,
+        select: {
+          id: true,
+          type: true,
+          format: true,
+          status: true,
+          reconciliationRunId: true,
+          fileSizeBytes: true,
+          rowCount: true,
+          errorMessage: true,
+          signedUrlExpiresAt: true,
+          createdAt: true,
+          updatedAt: true,
+          expiresAt: true,
+        },
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (exports.length > limit) {
+        const nextItem = exports.pop();
+        nextCursor = nextItem!.id;
+      }
 
       res.json({
         data: exports,
         pagination: {
-          limit,
-          offset,
-          total,
-          totalPages: Math.ceil(total / limit),
-          hasMore: offset + limit < total,
+          nextCursor,
+          hasMore: !!nextCursor,
         },
       });
     } catch (error: unknown) {
