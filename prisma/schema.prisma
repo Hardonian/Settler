@@ -1953,30 +1953,30 @@ model PolicyOutcomeLedger {
   id                String    @id @default(uuid())
   tenantId          String    @db.Uuid
   
-  # Accumulated policy fingerprints
+  // Accumulated policy fingerprints
   policyFingerprint String
   
-  # Resolution outcomes tied to this policy
+  // Resolution outcomes tied to this policy
   totalAdjudications Int      @default(0)
-  resolutionBreakdown Json    @default("{}") # { "matched": 10, "ignored": 5, "manual": 3 }
+  resolutionBreakdown Json    @default("{}") // { "matched": 10, "ignored": 5, "manual": 3 }
   avgConfidenceScore   Decimal  @db.Decimal(5, 4) @default(0)
   
-  # Pattern analysis
-  exceptionArchetypes Json    @default("[]") # Archetypes seen with this policy
-  commonResolutions   Json    @default("[]") # Most frequent resolutions
-  suggestedTuning    Json?   # Policy tuning hints based on outcomes
+  // Pattern analysis
+  exceptionArchetypes Json    @default("[]") // Archetypes seen with this policy
+  commonResolutions   Json    @default("[]") // Most frequent resolutions
+  suggestedTuning    Json?   // Policy tuning hints based on outcomes
   
-  # Trust signals
-  trustScore         Decimal  @db.Decimal(5, 4) @default(0.5) # 0-1, starts at neutral
-  trustSignals       Json    @default("[]") # Factors affecting trust
+  // Trust signals
+  trustScore         Decimal  @db.Decimal(5, 4) @default(0.5) // 0-1, starts at neutral
+  trustSignals       Json    @default("[]") // Factors affecting trust
   
-  # Temporal tracking
+  // Temporal tracking
   firstSeenAt        DateTime @default(now())
   lastSeenAt         DateTime @default(now())
-  observationWindow  Int      @default(30) # Days of observations
+  observationWindow  Int      @default(30) // Days of observations
   
-  # Accuracy tracking
-  reversalRate       Decimal  @db.Decimal(5, 4) @default(0) # How often resolutions get overturned
+  // Accuracy tracking
+  reversalRate       Decimal  @db.Decimal(5, 4) @default(0) // How often resolutions get overturned
   accuracyScore      Decimal?  @db.Decimal(5, 4)
   
   metadata           Json      @default("{}")
@@ -2117,19 +2117,19 @@ model ApprovalRequest {
   approverId        String?   @db.Uuid
   approverRole      String?   // Role-based approval (e.g., "supervisor", "finance_admin")
   
-  # Target of approval
+  // Target of approval
   requestType       String    // "policy_change", "export", "exception_override", "rule_modification"
   reconciliationRunId String? @db.Uuid
   reconJobId        String?   @db.Uuid
   reconResultId     String?   @db.Uuid
   proposalId        String?   @db.Uuid
   
-  # Request details
+  // Request details
   requestDetails    Json      @default("{}")
   comments          String?   @db.Text
   justification     String?   @db.Text
   
-  # Status and timing
+  // Status and timing
   status            String    @default("pending") // pending, approved, rejected, cancelled, expired
   requestedAt       DateTime  @default(now())
   approvedAt        DateTime?
@@ -2137,16 +2137,16 @@ model ApprovalRequest {
   cancelledAt       DateTime?
   expiresAt         DateTime?
   
-  # Outcome
+  // Outcome
   outcome          String?   // approved, rejected, superseded, auto_approved, auto_rejected
   outcomeReason   String?  @db.Text
   
-  # Multi-step approvals
+  // Multi-step approvals
   approvalStep     Int      @default(1)
   requiredSteps    Int      @default(1)
   approvalChain    Json     @default("[]") // History of approval steps
   
-  # Separation of duties
+  // Separation of duties
   separationViolation Boolean @default(false) // True if requester tried to self-approve
   
   metadata          Json      @default("{}")
@@ -2170,21 +2170,21 @@ model Approver {
   userId              String    @db.Uuid
   role                String    // e.g., "supervisor", "finance_admin", "compliance_officer"
   
-  # Approval scope
+  // Approval scope
   approvalScope        Json      @default("{}") // { "requestTypes": ["export", "policy_change"], "maxAmount": 10000 }
   approvalThreshold    Int?      // For multi-step: number of approvers needed
   
-  # Capabilities
+  // Capabilities
   canApproveFinal     Boolean   @default(false)
   canEscalate         Boolean   @default(true)
   canDelegate         Boolean   @default(false)
   maxDelegationDepth  Int       @default(0)
   
-  # Status
+  // Status
   isActive            Boolean   @default(true)
   autoApproveEnabled  Boolean   @default(false) // Auto-approve under certain conditions
   
-  # Notifications
+  // Notifications
   notifyOnRequest     Boolean   @default(true)
   notifyOnExpiration  Boolean   @default(true)
   
@@ -2207,16 +2207,16 @@ model ApprovalDelegation {
   delegateId        String    @db.Uuid // Person delegated to
   role              String    // Role being delegated
   
-  # Delegation scope
+  // Delegation scope
   scope             Json      @default("{}") // Limitations on delegation
   requestTypes      Json      @default("[]") // Which request types can be delegated
   
-  # Timing
+  // Timing
   validFrom         DateTime  @default(now())
   validUntil        DateTime?
   isActive          Boolean   @default(true)
   
-  # Constraints
+  // Constraints
   maxDelegations    Int       @default(1) // How many times this can be used
   usedCount         Int       @default(0)
   

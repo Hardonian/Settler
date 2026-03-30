@@ -309,7 +309,7 @@ export default function IntelligencePage() {
                         run.status === "completed"
                           ? "success"
                           : run.status === "failed"
-                            ? "error"
+                            ? "destructive"
                             : run.status === "running"
                               ? "info"
                               : "outline"

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import AppPageLayout from "@/components/AppPageLayout";
 import { getSourceTransactions, getTargetTransactions } from "@/app/demo/lib/data/loader";
 import { matchTransactions, DEFAULT_RULES } from "@/lib/reconciliation/match-engine";
-import MatchDetailView from "./MatchDetailView"; // Extracted client component for interactivity
+import MatchDetailView from "./MatchDetailView";
 import { prisma } from "@/shared/db/prismaClient";
 
 interface PageProps {
