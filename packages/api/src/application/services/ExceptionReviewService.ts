@@ -326,6 +326,18 @@ function buildAdjudicationMetadata(
     serializedEntry.requestId = entry.requestId;
   }
 
+  if (entry.memoryId) {
+    serializedEntry.memoryId = entry.memoryId;
+  }
+
+  if (entry.proofPackageId) {
+    serializedEntry.proofPackageId = entry.proofPackageId;
+  }
+
+  if (entry.evidenceIds && entry.evidenceIds.length > 0) {
+    serializedEntry.evidenceIds = entry.evidenceIds;
+  }
+
   history.push(serializedEntry);
 
   return {

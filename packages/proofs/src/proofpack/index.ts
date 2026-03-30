@@ -14,7 +14,7 @@ import type {
   EvidenceArtifactType,
   ProofCompletenessModel,
   EvidenceGap,
-} from "./evidence";
+} from "../evidence/index.js";
 
 export type ProofPackageType =
   | "run_summary"
