@@ -20,7 +20,7 @@ import { AuthRequest } from "../middleware/auth";
 import { enforceFreezeState } from "../middleware/governance";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
-import { prisma } from "../infrastructure/db/prisma";
+import { prisma, Prisma } from "../infrastructure/db/prisma";
 import { ProvenanceService } from "../services/recon-core/provenance-service";
 import { ExceptionReviewService } from "../application/services/ExceptionReviewService";
 
@@ -32,10 +32,7 @@ import { logInfo } from "../utils/logger";
 const router: Router = Router();
 const provenanceService = new ProvenanceService(prisma);
 const exceptionReviewService = new ExceptionReviewService(prisma, provenanceService);
-// Prisma client generation is currently behind the canonical schema in this environment.
-// Keep the bridge scoped to this route so exception workflow truth can ship without global `any`.
-const exceptionMatchModel = prisma.reconciliationMatch as any;
-const exceptionProvenanceModel = prisma.reconciliationProvenance as any;
+
 const CANONICAL_EXCEPTION_MATCH_TYPES = ["unmatched", "conflict"] as const;
 
 // ─── Validation Schemas ──────────────────────────────────────────────────────
@@ -285,7 +282,7 @@ router.get(
       });
 
       res.json({
-        data: (exceptions as any[]).map(mapExceptionToResponse),
+        data: exceptions.map(mapExceptionToResponse),
         pagination: {
           limit,
           offset,
@@ -407,96 +404,98 @@ router.get(
       const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
       const tenantId = req.tenantId!;
 
-      const [exception, memories, evidenceArtifacts, proofPackages, provenance] = await Promise.all([
-        exceptionMatchModel.findFirst({
-          where: {
-            id,
-            tenantId,
-            matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] },
-          },
-          include: {
-            run: {
-              select: {
-                id: true,
-                status: true,
-                startedAt: true,
-                completedAt: true,
+      const [exception, memories, evidenceArtifacts, proofPackages, provenance] = await Promise.all(
+        [
+          exceptionMatchModel.findFirst({
+            where: {
+              id,
+              tenantId,
+              matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] },
+            },
+            include: {
+              run: {
+                select: {
+                  id: true,
+                  status: true,
+                  startedAt: true,
+                  completedAt: true,
+                },
+              },
+              sourceTransaction: true,
+            },
+          }),
+          prisma.exceptionAdjudicationMemory.findMany({
+            where: { tenantId, exceptionId: id },
+            orderBy: { createdAt: "desc" },
+            select: {
+              id: true,
+              resolution: true,
+              resolutionReason: true,
+              adjudicationType: true,
+              adjudicatorId: true,
+              adjudicatorType: true,
+              outcome: true,
+              confidence: true,
+              sourceTrustScore: true,
+              operatorNotes: true,
+              systemNotes: true,
+              evidenceIds: true,
+              createdAt: true,
+              completedAt: true,
+              parentMemoryId: true,
+            },
+          }),
+          prisma.evidenceArtifact.findMany({
+            where: { tenantId, exceptionId: id },
+            orderBy: { capturedAt: "desc" },
+            select: {
+              id: true,
+              artifactType: true,
+              artifactKey: true,
+              capturedAt: true,
+              capturedBy: true,
+              degraded: true,
+              degradedReasons: true,
+              attested: true,
+              reliabilityScore: true,
+            },
+          }),
+          prisma.proofPackage.findMany({
+            where: {
+              tenantId,
+              packageKey: {
+                startsWith: `exception:${id}:`,
               },
             },
-            sourceTransaction: true,
-          },
-        }),
-        (prisma as any).exceptionAdjudicationMemory?.findMany?.({
-          where: { tenantId, exceptionId: id },
-          orderBy: { createdAt: "desc" },
-          select: {
-            id: true,
-            resolution: true,
-            resolutionReason: true,
-            adjudicationType: true,
-            adjudicatorId: true,
-            adjudicatorType: true,
-            outcome: true,
-            confidence: true,
-            sourceTrustScore: true,
-            operatorNotes: true,
-            systemNotes: true,
-            evidenceIds: true,
-            createdAt: true,
-            completedAt: true,
-            parentMemoryId: true,
-          },
-        }) ?? Promise.resolve([]),
-        (prisma as any).evidenceArtifact?.findMany?.({
-          where: { tenantId, exceptionId: id },
-          orderBy: { capturedAt: "desc" },
-          select: {
-            id: true,
-            artifactType: true,
-            artifactKey: true,
-            capturedAt: true,
-            capturedBy: true,
-            degraded: true,
-            degradedReasons: true,
-            attested: true,
-            reliabilityScore: true,
-          },
-        }) ?? Promise.resolve([]),
-        (prisma as any).proofPackage?.findMany?.({
-          where: {
-            tenantId,
-            packageKey: {
-              startsWith: `exception:${id}:`,
+            orderBy: { createdAt: "desc" },
+            select: {
+              id: true,
+              packageType: true,
+              packageKey: true,
+              status: true,
+              completenessScore: true,
+              missingEvidence: true,
+              completenessFlags: true,
+              evidenceIds: true,
+              createdAt: true,
+              finalizedAt: true,
             },
-          },
-          orderBy: { createdAt: "desc" },
-          select: {
-            id: true,
-            packageType: true,
-            packageKey: true,
-            status: true,
-            completenessScore: true,
-            missingEvidence: true,
-            completenessFlags: true,
-            evidenceIds: true,
-            createdAt: true,
-            finalizedAt: true,
-          },
-        }) ?? Promise.resolve([]),
-        exceptionProvenanceModel.findMany({
-          where: { tenantId, matchId: id },
-          orderBy: { sequence: "asc" },
-          select: {
-            id: true,
-            sequence: true,
-            eventType: true,
-            actorType: true,
-            actorUserId: true,
-            details: true,
-            createdAt: true,
-          },
-        }),
-      ]);
+          }) ?? Promise.resolve([]),
+          prisma.reconciliationProvenance.findMany({
+            where: { tenantId, matchId: id },
+            orderBy: { sequence: "asc" },
+            select: {
+              id: true,
+              sequence: true,
+              eventType: true,
+              actorType: true,
+              actorUserId: true,
+              details: true,
+              createdAt: true,
+            },
+          }),
+        ]
+      );
 
       if (!exception) {
         throw new NotFoundError("Exception not found", "exception", id);
@@ -727,7 +726,7 @@ router.post(
             actorId: userId,
             action: "assign",
             details: { assignedTo, previousAssignee: existing.assignedTo, notes: notes || null },
-          }) as any,
+          }) as Prisma.JsonObject,
         },
       });
 
@@ -816,7 +815,7 @@ router.put(
               notes: notes || null,
               resolutionReason: resolutionReason || null,
             },
-          }) as any,
+          }) as Prisma.JsonObject,
         },
       });
 
@@ -897,7 +896,7 @@ router.post(
             actorId: userId,
             action: "note_added",
             details: { notes },
-          }) as any,
+          }) as Prisma.JsonObject,
         },
       });
 
