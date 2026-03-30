@@ -114,7 +114,15 @@ const listExceptionsSchema = z.object({
     endDate: z.string().datetime().optional(),
     search: z.string().max(255).optional(),
     sortBy: z
-      .enum(["createdAt", "severity", "status", "confidence"])
+      .enum([
+        "createdAt",
+        "severity",
+        "status",
+        "confidence",
+        "recurrence",
+        "lineage",
+        "proofCompleteness",
+      ])
       .optional()
       .default("createdAt"),
     sortOrder: z.enum(["asc", "desc"]).optional().default("desc"),
