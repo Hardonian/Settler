@@ -187,49 +187,44 @@ export async function resolveOperatorRunDetailForTenants(
     const latestResult = resolved.latestResultRecord;
     const snapshotId = latestResult?.snapshot_id ?? null;
 
-    const [
-      audits,
-      exceptionCountResult,
-      runDeltaRecord,
-      snapshotRecord,
-      deterministicRows,
-    ] = await Promise.all([
-      prisma.reconAudit.findMany({
-        where: { reconJobId: runId, tenantId: job.tenantId },
-        orderBy: { createdAt: "desc" },
-        take: 50,
-        select: {
-          id: true,
-          auditType: true,
-          action: true,
-          metadata: true,
-          createdAt: true,
-        },
-      }),
-      countReconciliationExceptionsForScope({
-        prisma,
-        tenantId: job.tenantId,
-        runId,
-        runKind: "recon_job",
-      }),
-      prisma.runDelta.findFirst({
-        where: { currentRunId: runId, tenantId: job.tenantId },
-      }),
-      snapshotId
-        ? prisma.runSnapshot.findFirst({
-            where: { id: snapshotId, tenantId: job.tenantId },
-            select: {
-              id: true,
-              inputHash: true,
-              adapterConfigHashes: true,
-              jobConfig: true,
-              ruleVersions: true,
-              createdAt: true,
-            },
-          })
-        : Promise.resolve(null),
-      latestResult?.id
-        ? (prisma.$queryRaw`
+    const [audits, exceptionCountResult, runDeltaRecord, snapshotRecord, deterministicRows] =
+      await Promise.all([
+        prisma.reconAudit.findMany({
+          where: { reconJobId: runId, tenantId: job.tenantId },
+          orderBy: { createdAt: "desc" },
+          take: 50,
+          select: {
+            id: true,
+            auditType: true,
+            action: true,
+            metadata: true,
+            createdAt: true,
+          },
+        }),
+        countReconciliationExceptionsForScope({
+          prisma,
+          tenantId: job.tenantId,
+          runId,
+          runKind: "recon_job",
+        }),
+        prisma.runDelta.findFirst({
+          where: { currentRunId: runId, tenantId: job.tenantId },
+        }),
+        snapshotId
+          ? prisma.runSnapshot.findFirst({
+              where: { id: snapshotId, tenantId: job.tenantId },
+              select: {
+                id: true,
+                inputHash: true,
+                adapterConfigHashes: true,
+                jobConfig: true,
+                ruleVersions: true,
+                createdAt: true,
+              },
+            })
+          : Promise.resolve(null),
+        latestResult?.id
+          ? (prisma.$queryRaw`
           SELECT
             stable_match_id,
             left_record_id,
@@ -245,16 +240,70 @@ export async function resolveOperatorRunDetailForTenants(
           ORDER BY matched_at DESC
           LIMIT 250
         `.catch(() => []) as Promise<DeterministicMatchRowLike[]>)
-        : Promise.resolve([]),
-    ]);
+          : Promise.resolve([]),
+      ]);
 
     const persistedResultCount = resolved.persistedResultCount;
     const previousRecord = resolved.previousResultRecord;
-    const latestRecord = latestResult; civic; // Wait, latestRecord mapping was simpler before. I'll stick to the original mapping logic for latestResult.
-    // latestResult is ALREADY in the correct format from resolveReconciliationRunForTenants since it uses mapToLike.
-    // Actually, I should check the types.
-    // latestResult Record in resolved is ReconResultRecordLike.
-    // previousResultRecord in resolved is ALSO ReconResultRecordLike.
+    const latestRecord = latestResult;
+
+    const snapshotLike: SnapshotRecordLike | null = snapshotRecord
+      ? {
+          id: snapshotRecord.id,
+          input_hash: snapshotRecord.inputHash,
+          adapter_config_hashes: snapshotRecord.adapterConfigHashes,
+          job_config: snapshotRecord.jobConfig,
+          rule_versions: snapshotRecord.ruleVersions,
+          created_at: snapshotRecord.createdAt?.toISOString() ?? null,
+        }
+      : null;
+
+    const auditRows: ReconAuditRow[] = (audits as any).map(
+      (a: {
+        id: string;
+        auditType: string;
+        action: string;
+        metadata: unknown;
+        createdAt: Date;
+      }) => ({
+        id: a.id,
+        audit_type: a.auditType,
+        action: a.action,
+        metadata: (a.metadata as Record<string, unknown> | null) ?? null,
+        created_at: a.createdAt.toISOString(),
+      })
+    );
+
+    const exceptionCounts =
+      exceptionCountResult.kind === "ok"
+        ? {
+            total: exceptionCountResult.counts.total,
+            pending: exceptionCountResult.counts.pending,
+            investigating: exceptionCountResult.counts.investigating,
+            resolved: exceptionCountResult.counts.resolved,
+            ignored: exceptionCountResult.counts.ignored,
+            unresolved: exceptionCountResult.counts.reviewRequired,
+          }
+        : {
+            total: 0,
+            pending: 0,
+            investigating: 0,
+            resolved: 0,
+            ignored: 0,
+            unresolved: 0,
+          };
+
+    const jobLike = toReconJobRecordLike(job);
+
+    const contract = buildCanonicalRunResultContract({
+      job: jobLike,
+      result: latestRecord,
+      snapshot: snapshotLike,
+      exceptionCounts,
+      deterministicRows,
+    });
+
+    const truth = toLegacyRunTruth(contract);
 
     const previousSummary = previousRecord ? buildLegacyRunSummary(previousRecord) : null;
     const comparison =
