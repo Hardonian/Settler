@@ -3,6 +3,8 @@ import express from "express";
 import { exportsRouter } from "../exports";
 import { AuthRequest } from "../../middleware/auth";
 
+var mockExportQueue: { enqueue: jest.Mock; cancelJob: jest.Mock };
+
 jest.mock("../../infrastructure/db/prisma", () => ({
   prisma: {
     $transaction: jest.fn(),
@@ -23,20 +25,14 @@ jest.mock("../../infrastructure/db/prisma", () => ({
 const { prisma: mockedPrisma } = require("../../infrastructure/db/prisma");
 
 jest.mock("../../jobs/queue/ExportJobQueue", () => ({
-  __mockExportQueue: {
+  __mockExportQueue: (mockExportQueue = {
     enqueue: jest.fn(),
     cancelJob: jest.fn(),
-  },
-  ExportJobQueue: jest.fn().mockImplementation(() => ({
-    enqueue: jest.fn(),
-    cancelJob: jest.fn(),
-  })),
+  }),
+  ExportJobQueue: jest.fn().mockImplementation(() => mockExportQueue),
 }));
-const {
-  __mockExportQueue: mockExportQueue,
-  ExportJobQueue,
-} = require("../../jobs/queue/ExportJobQueue");
-(ExportJobQueue as jest.Mock).mockImplementation(() => mockExportQueue);
+const { __mockExportQueue: sharedExportQueueMock } = require("../../jobs/queue/ExportJobQueue");
+mockExportQueue = sharedExportQueueMock;
 
 jest.mock("../../middleware/governance", () => ({
   enforceFreezeState: jest.fn(() => jest.fn((_req: any, _res: any, next: any) => next())),
