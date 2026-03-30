@@ -144,7 +144,7 @@ export class RunDeltaService {
       data: {
         tenantId: input.tenantId,
         currentRunId: input.currentRunId,
-        previousRunId: input.previousRunId || undefined,
+        previousRunId: input.previousRunId,
         jobId: input.jobId,
         inputChanged,
         inputDelta: JSON.stringify({

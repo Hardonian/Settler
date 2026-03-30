@@ -74,6 +74,22 @@ describe("exceptions routes", () => {
   let app: express.Express;
 
   beforeEach(() => {
+    mockedPrisma.$transaction.mockReset();
+    mockedPrisma.reconciliationMatch.findMany.mockReset();
+    mockedPrisma.reconciliationMatch.count.mockReset();
+    mockedPrisma.reconciliationMatch.findFirst.mockReset();
+    mockedPrisma.reconciliationMatch.update.mockReset();
+    mockedPrisma.reconciliationMatch.updateMany.mockReset();
+    mockedPrisma.normalizedTransaction.findFirst.mockReset();
+    mockedPrisma.exceptionAdjudicationMemory.findMany.mockReset();
+    mockedPrisma.exceptionAdjudicationMemory.create.mockReset();
+    mockedPrisma.evidenceArtifact.findMany.mockReset();
+    mockedPrisma.evidenceArtifact.create.mockReset();
+    mockedPrisma.proofPackage.findMany.mockReset();
+    mockedPrisma.proofPackage.create.mockReset();
+    mockedPrisma.auditLog.create.mockReset();
+    mockedPrisma.reconciliationProvenance.findMany.mockReset();
+
     app = express();
     app.use(express.json());
     app.use((req, _res, next) => {
@@ -85,7 +101,6 @@ describe("exceptions routes", () => {
     });
     app.use("/api", exceptionsRouter);
 
-    jest.clearAllMocks();
     mockedPrisma.$transaction.mockImplementation(
       async (callback: (tx: typeof mockedPrisma) => unknown) => callback(mockedPrisma)
     );

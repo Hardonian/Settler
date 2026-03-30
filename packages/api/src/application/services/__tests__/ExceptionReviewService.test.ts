@@ -38,7 +38,15 @@ describe("ExceptionReviewService", () => {
   let service: ExceptionReviewService;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    reconciliationMatch.findFirst.mockReset();
+    reconciliationMatch.update.mockReset();
+    normalizedTransaction.findFirst.mockReset();
+    exceptionAdjudicationMemory.create.mockReset();
+    evidenceArtifact.create.mockReset();
+    proofPackage.create.mockReset();
+    auditLog.create.mockReset();
+    prisma.$transaction.mockReset();
+    provenanceService.recordReviewDecisionInTransaction.mockReset();
     prisma.$transaction.mockImplementation(async (callback: (transaction: typeof tx) => unknown) =>
       callback(tx)
     );

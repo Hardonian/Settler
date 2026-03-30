@@ -1,21 +1,20 @@
 import { Router, Response } from "express";
-import { AuthRequest } from "../infrastructure/security/AuthMiddleware";
-import { requirePermission } from "../infrastructure/security/PermissionMiddleware";
+import { AuthRequest } from "../middleware/auth";
+import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
 import { prisma } from "../infrastructure/db/prisma";
-import { NotFoundError, BadRequestError } from "../utils/typed-errors";
+import { NotFoundError, ValidationError as BadRequestError } from "../utils/typed-errors";
 import { handleRouteError } from "../utils/error-handler";
-import { logInfo, logError } from "../utils/logger";
+import { logInfo } from "../utils/logger";
 import { AdjudicationMemoryService } from "../services/intelligence/adjudication-memory";
-import { EvidenceArtifact as EvidenceArtifactType } from "@settler/proofs";
 import { assessEvidenceCompleteness, STANDARD_EVIDENCE_REQUIREMENTS } from "@settler/proofs";
 import { RunDeltaService } from "../services/intelligence/run-delta";
 import { Prisma } from "@prisma/client";
 import * as crypto from "crypto";
 
 const router = Router();
-const adjudicationMemoryService = new AdjudicationMemoryService();
-const runDeltaService = new RunDeltaService();
+const adjudicationMemoryService = new AdjudicationMemoryService(prisma);
+const runDeltaService = new RunDeltaService(prisma);
 
 /**
  * Utility to compute payload hash for evidence integrity
@@ -72,11 +71,17 @@ router.get(
 
       return res.json({
         data: similarCases.map((match) => ({
-          id: match.id,
-          status: match.status,
-          similarity: match.id === exceptionId ? 1.0 : 0.85, // Simple mock similarity for now
-          resolution: match.status === "resolved" ? "matched" : "pending",
-          timestamp: match.createdAt,
+          id: match.exceptionId,
+          status: match.resolution,
+          similarity: match.similarityScore,
+          resolution: match.resolution,
+          resolutionReason: match.resolutionReason,
+          confidence: match.confidence,
+          archetype: match.archetypeCode,
+          links: [
+            { rel: "details", href: `/api/exceptions/${match.exceptionId}` },
+            { rel: "status", href: `/api/exceptions/${match.exceptionId}/status` },
+          ],
         })),
       });
     } catch (error: unknown) {
@@ -267,7 +272,6 @@ router.post(
       const {
         artifactType,
         artifactKey,
-        payloadType,
         payload,
         sourceType,
         sourceId,
@@ -278,7 +282,6 @@ router.post(
       } = req.body as {
         artifactType: string;
         artifactKey: string;
-        payloadType: string;
         payload: Record<string, unknown>;
         sourceType?: string;
         sourceId?: string;
