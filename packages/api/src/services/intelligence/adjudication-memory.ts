@@ -581,9 +581,6 @@ export class AdjudicationMemoryService {
     if (input.adjudicationType === "auto_resolved") {
       return "pending_reversal"; // Automated resolutions should be verifiable
     }
-    if (input.confidence && input.confidence > 0.9) {
-      return "irreversible"; // High confidence, low reversal probability
-    }
     return "reversible";
   }
 }
