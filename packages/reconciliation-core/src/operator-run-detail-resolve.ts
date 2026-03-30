@@ -303,6 +303,10 @@ export async function resolveOperatorRunDetailForTenants(
       runKind: "recon_job",
     });
 
+    const runDeltaRecord = await prisma.runDelta.findFirst({
+      where: { currentRunId: runId, tenantId: job.tenantId },
+    });
+
     const exceptionCounts =
       exceptionCountResult.kind === "ok"
         ? {
@@ -429,6 +433,20 @@ export async function resolveOperatorRunDetailForTenants(
       rowRationaleCodes,
       rowResultsPreview: contract.rowResults.slice(0, 100),
       stages: toStageRows(auditRows),
+      runDelta: runDeltaRecord
+        ? {
+            inputChanged: runDeltaRecord.inputChanged,
+            matchedDelta: runDeltaRecord.matchedDelta,
+            unmatchedDelta: runDeltaRecord.unmatchedDelta,
+            exceptionDelta: runDeltaRecord.exceptionDelta,
+            configDriftDetected: runDeltaRecord.configDriftDetected,
+            newExceptionPatterns: (runDeltaRecord.newExceptionPatterns as string[]) || [],
+            resolvedPatterns: (runDeltaRecord.resolvedPatterns as string[]) || [],
+            confidenceDelta: runDeltaRecord.confidenceDelta
+              ? Number(runDeltaRecord.confidenceDelta)
+              : null,
+          }
+        : null,
     });
 
     return { kind: "ok", detail: detailJson };
