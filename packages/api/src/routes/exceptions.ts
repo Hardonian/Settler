@@ -263,7 +263,7 @@ router.get(
       };
 
       const [exceptions, total] = await Promise.all([
-        exceptionMatchModel.findMany({
+        prisma.reconciliationMatch.findMany({
           where,
           include: {
             run: { select: { id: true } },
@@ -282,7 +282,7 @@ router.get(
           take: limit,
           skip: offset,
         }),
-        exceptionMatchModel.count({ where }),
+        prisma.reconciliationMatch.count({ where }),
       ]);
 
       logInfo("Exceptions listed", {
