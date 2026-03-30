@@ -1,4 +1,5 @@
 import { Router, Response } from "express";
+import * as crypto from "crypto";
 import { AuthRequest } from "../../middleware/auth";
 import { requirePermission } from "../../middleware/authorization";
 import { Permission } from "../../infrastructure/security/Permissions";
@@ -39,6 +40,16 @@ router.get(
         }),
       ]);
 
+      // ETag generation and checking
+      const etag = crypto
+        .createHash("sha1")
+        .update(JSON.stringify({ stats, settings }))
+        .digest("hex");
+      if (req.headers["if-none-match"] === etag) {
+        return res.status(304).send();
+      }
+
+      res.setHeader("ETag", etag);
       res.json({ stats, settings });
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch infrastructure stats" });

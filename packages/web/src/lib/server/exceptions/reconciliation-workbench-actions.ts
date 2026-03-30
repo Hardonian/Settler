@@ -136,7 +136,7 @@ export async function applyReconciliationWorkbenchAction(
   prisma: PrismaClient,
   input: ReconciliationWorkbenchActionInput
 ): Promise<ReconciliationWorkbenchActionResult> {
-  return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+  return prisma.$transaction(async (tx: PrismaClient) => {
     const exception = await tx.reconciliationMatch.findFirst({
       where: {
         tenantId: input.tenantId,

@@ -215,7 +215,7 @@ export default function RunPage() {
               <div className="w-full bg-muted rounded-full h-2">
                 <div
                   className="bg-blue-600 h-2 rounded-full transition-all"
-                  style={{ width: `${run.progress}%` }}
+                  style={{ "--p-width": `${run.progress}%` } as React.CSSProperties}
                 />
               </div>
             </div>
