@@ -53,12 +53,13 @@ function CapabilityBadge({
   status: string;
   degradedReasons?: string[];
 }) {
-  const variant = status === "available" ? "success" : status === "degraded" ? "warning" : "error";
+  const variant =
+    status === "available" ? "success" : status === "degraded" ? "warning" : "destructive";
   const label =
     status === "available" ? "Operational" : status === "degraded" ? "Degraded" : "Unavailable";
   return (
     <div className="flex items-center gap-2">
-      <Badge variant={variant as "success" | "warning" | "error"}>{label}</Badge>
+      <Badge variant={variant}>{label}</Badge>
       {degradedReasons && degradedReasons.length > 0 && (
         <span className="text-xs text-muted-foreground" title={degradedReasons.join(", ")}>
           {degradedReasons.length} issue{degradedReasons.length > 1 ? "s" : ""}
