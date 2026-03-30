@@ -1,5 +1,6 @@
 import type { PrismaClient } from "@prisma/client";
 import { resolveReconciliationRunForTenant } from "./run-resolution.js";
+import type { CanonicalExceptionCounts } from "./canonical-run-result.js";
 
 export const EXCEPTION_MATCH_TYPES = ["unmatched", "conflict"] as const;
 

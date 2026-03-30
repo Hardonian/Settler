@@ -6,7 +6,7 @@
  */
 
 import { PrismaClient, Prisma } from "@prisma/client";
-import { logInfo, logWarn, logError } from "../../utils/logger";
+import { logInfo, logWarn, logError } from "../../../infrastructure/logging/logger";
 
 export interface RunDeltaInput {
   tenantId: string;
@@ -84,7 +84,7 @@ interface ReconResultData {
   unmatchedSourceCount: number;
   unmatchedTargetCount: number;
   conflictCount: number;
-  confidenceAvg: Prisma.Decimal | null;
+  confidenceAvg: Prisma.Decimal | null | undefined;
 }
 
 interface ExceptionArchetypeForDelta {
@@ -135,8 +135,8 @@ export class RunDeltaService {
     const resolvedPatterns = this.identifyResolvedPatterns(currentExceptions, previousExceptions);
 
     const confidenceDelta = this.computeDecimalDelta(
-      currentResult?.confidenceAvg,
-      previousResult?.confidenceAvg
+      currentResult?.confidenceAvg as Prisma.Decimal | null,
+      previousResult?.confidenceAvg as Prisma.Decimal | null
     );
     const qualityScoreDelta = this.computeQualityDelta(currentResult, previousResult);
 
@@ -329,6 +329,7 @@ export class RunDeltaService {
         select: {
           id: true,
           sourceCount: true,
+          targetCount: true,
           matchedCount: true,
           unmatchedSourceCount: true,
           unmatchedTargetCount: true,
@@ -341,6 +342,7 @@ export class RunDeltaService {
         select: {
           id: true,
           sourceCount: true,
+          targetCount: true,
           matchedCount: true,
           unmatchedSourceCount: true,
           unmatchedTargetCount: true,
@@ -377,11 +379,12 @@ export class RunDeltaService {
   }
 
   private async getRunResult(runId: string): Promise<ReconResultData | null> {
-    return this.prisma.reconResult.findUnique({
+    const result = await this.prisma.reconResult.findUnique({
       where: { id: runId },
       select: {
         id: true,
         sourceCount: true,
+        targetCount: true,
         matchedCount: true,
         unmatchedSourceCount: true,
         unmatchedTargetCount: true,
@@ -389,43 +392,47 @@ export class RunDeltaService {
         confidenceAvg: true,
       },
     });
+    return result as ReconResultData | null;
   }
 
   private async getExceptionBreakdown(
     tenantId: string,
     runId: string
   ): Promise<ExceptionArchetypeForDelta[]> {
-    const matches = await this.prisma.reconciliationMatch.groupBy({
-      by: ["archetypeId"],
+    const classifications = await this.prisma.exceptionArchetypeClassification.findMany({
       where: {
         tenantId,
-        reconResultId: runId,
-        archetypeId: { not: null },
-        status: { in: ["open", "in_progress"] },
+        exception: {
+          runId,
+          status: { in: ["open", "in_progress"] },
+        },
       },
-      _count: { id: true },
+      include: {
+        archetype: true,
+      },
     });
 
-    const archetypeIds = matches
-      .filter((m) => m.archetypeId !== null)
-      .map((m) => m.archetypeId as string);
+    const breakdown = new Map<string, { id: string; label: string; count: number }>();
 
-    if (archetypeIds.length === 0) return [];
+    for (const c of classifications) {
+      if (!c.archetype) continue;
+      const existing = breakdown.get(c.archetypeId);
+      if (existing) {
+        existing.count++;
+      } else {
+        breakdown.set(c.archetypeId, {
+          id: c.archetypeId,
+          label: c.archetype.label,
+          count: 1,
+        });
+      }
+    }
 
-    const archetypes = await this.prisma.exceptionArchetype.findMany({
-      where: { id: { in: archetypeIds } },
-      select: { id: true, label: true },
-    });
-
-    const archetypeMap = new Map(archetypes.map((a) => [a.id, a.label]));
-
-    return matches
-      .filter((m) => m.archetypeId !== null && archetypeMap.has(m.archetypeId))
-      .map((m) => ({
-        archetypeId: m.archetypeId as string,
-        archetypeName: archetypeMap.get(m.archetypeId as string) ?? "Unknown",
-        exceptionCount: Number(m._count.id),
-      }));
+    return Array.from(breakdown.values()).map((b) => ({
+      archetypeId: b.id,
+      archetypeName: b.label,
+      exceptionCount: b.count,
+    }));
   }
 
   private detectInputChange(
