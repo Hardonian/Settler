@@ -6,6 +6,7 @@
  */
 
 import { PrismaClient, Prisma } from "@prisma/client";
+import { logError } from "../../utils/logger";
 
 export interface RunDeltaInput {
   tenantId: string;

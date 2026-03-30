@@ -406,7 +406,7 @@ router.post(
       // Calculate completeness based on artifacts found
       const requirements = STANDARD_EVIDENCE_REQUIREMENTS[packageType] || [];
       const presentTypes = evidenceArtifacts.map((e) => e.artifactType);
-      const missing = requirements.filter((r) => !presentTypes.includes(r.type));
+      const missing = (requirements as any[]).filter((r) => !presentTypes.includes(r.type));
       const score =
         requirements.length > 0
           ? (requirements.length - missing.length) / requirements.length
