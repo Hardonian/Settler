@@ -16,14 +16,30 @@ router.get(
   requirePermission(Permission.OPERATOR_READ),
   async (req: AuthRequest, res: Response) => {
     try {
-      const stats = await dbManager.executeConstrainedQuery(
-        `SELECT * FROM public.vw_connection_pool_stats`
-      );
-      const settings = await dbManager.executeConstrainedQuery(
-        `SELECT * FROM public.operator_infrastructure_settings WHERE id = 'global'`
-      );
+      const [stats, settings] = await Promise.all([
+        // PERF: Cache the expensive stats query for 2s to batch requests
+        cache.get("infra:pool_stats").then(async (cachedStats) => {
+          if (cachedStats) return cachedStats;
+          const freshStats = await dbManager.executeConstrainedQuery(
+            `SELECT * FROM public.vw_connection_pool_stats`
+          );
+          await cache.set("infra:pool_stats", freshStats, 2);
+          return freshStats;
+        }),
 
-      res.json({ stats, settings: settings[0] });
+        // PERF: Cache settings for 60s as they are semi-static
+        cache.get("infra:settings").then(async (cachedSettings) => {
+          if (cachedSettings) return cachedSettings;
+          const freshSettings = await dbManager.executeConstrainedQuery(
+            `SELECT * FROM public.operator_infrastructure_settings WHERE id = 'global'`
+          );
+          const settings = freshSettings[0];
+          await cache.set("infra:settings", settings, 60);
+          return settings;
+        }),
+      ]);
+
+      res.json({ stats, settings });
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch infrastructure stats" });
     }

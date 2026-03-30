@@ -148,6 +148,10 @@ function pushTag(target: string[], value: string | null | undefined) {
   }
 }
 
+function isString(value: unknown): value is string {
+  return typeof value === "string";
+}
+
 function resolveExceptionType(args: {
   topArchetypeCode?: string | null;
   matchType: string;
@@ -306,7 +310,10 @@ async function loadTopArchetypes(
     },
   });
 
-  const archetypeMap = new Map(
+  const archetypeMap = new Map<
+    string,
+    { id: string; code: string; label: string; category: string | null }
+  >(
     archetypes.map((item: { id: string; code: string; label: string; category: string | null }) => [
       item.id,
       item,
@@ -542,7 +549,7 @@ export async function listReconciliationWorkbenchExceptions(
     }
   }
 
-  const items = rows.map((row) =>
+  const items = rows.map((row: (typeof rows)[number]) =>
     mapListItem({
       id: row.id,
       runId: row.runId,
@@ -775,7 +782,7 @@ export async function getReconciliationWorkbenchExceptionDetail(
       user: "system",
       details: row.matchReason ?? undefined,
     },
-    ...provenance.map((entry) => ({
+    ...provenance.map((entry: (typeof provenance)[number]) => ({
       timestamp: entry.createdAt.toISOString(),
       action: entry.eventType.replace(/_/g, " "),
       user: entry.actorUserId ?? entry.actorType,
@@ -789,7 +796,7 @@ export async function getReconciliationWorkbenchExceptionDetail(
     ...memories
       .slice()
       .reverse()
-      .map((memory) => ({
+      .map((memory: (typeof memories)[number]) => ({
         timestamp: memory.completedAt?.toISOString() ?? memory.createdAt.toISOString(),
         action:
           memory.outcome === "reopened"
@@ -864,7 +871,7 @@ export async function getReconciliationWorkbenchExceptionDetail(
     operatorNotes: latestMemory?.operatorNotes ?? row.notes ?? null,
     sourceTrustScore: latestMemory?.sourceTrustScore ? Number(latestMemory.sourceTrustScore) : null,
     topArchetype,
-    adjudicationMemories: memories.map((memory) => ({
+    adjudicationMemories: memories.map((memory: (typeof memories)[number]) => ({
       id: memory.id,
       resolution: memory.resolution,
       resolutionReason: memory.resolutionReason,
@@ -876,19 +883,21 @@ export async function getReconciliationWorkbenchExceptionDetail(
       sourceTrustScore: memory.sourceTrustScore != null ? Number(memory.sourceTrustScore) : null,
       operatorNotes: memory.operatorNotes,
       systemNotes: memory.systemNotes,
-      evidenceIds: Array.isArray(memory.evidenceIds)
-        ? memory.evidenceIds.filter((value): value is string => typeof value === "string")
-        : [],
+      evidenceIds: Array.isArray(memory.evidenceIds) ? memory.evidenceIds.filter(isString) : [],
       createdAt: memory.createdAt.toISOString(),
       completedAt: memory.completedAt?.toISOString() ?? null,
       parentMemoryId: memory.parentMemoryId,
     })),
     evidenceSummary: {
       total: evidenceArtifacts.length,
-      degraded: evidenceArtifacts.filter((item) => item.degraded).length,
-      attested: evidenceArtifacts.filter((item) => item.attested).length,
+      degraded: evidenceArtifacts.filter(
+        (item: (typeof evidenceArtifacts)[number]) => item.degraded
+      ).length,
+      attested: evidenceArtifacts.filter(
+        (item: (typeof evidenceArtifacts)[number]) => item.attested
+      ).length,
       latestCapturedAt: evidenceArtifacts[0]?.capturedAt.toISOString() ?? null,
-      items: evidenceArtifacts.map((item) => ({
+      items: evidenceArtifacts.map((item: (typeof evidenceArtifacts)[number]) => ({
         id: item.id,
         artifactType: item.artifactType,
         artifactKey: item.artifactKey,
@@ -896,7 +905,7 @@ export async function getReconciliationWorkbenchExceptionDetail(
         capturedBy: item.capturedBy,
         degraded: item.degraded,
         degradedReasons: Array.isArray(item.degradedReasons)
-          ? item.degradedReasons.filter((value): value is string => typeof value === "string")
+          ? item.degradedReasons.filter(isString)
           : [],
         attested: item.attested,
         reliabilityScore: item.reliabilityScore != null ? Number(item.reliabilityScore) : null,
@@ -904,23 +913,23 @@ export async function getReconciliationWorkbenchExceptionDetail(
     },
     proofSummary: {
       total: proofPackages.length,
-      finalized: proofPackages.filter((item) => item.status === "finalized").length,
+      finalized: proofPackages.filter(
+        (item: (typeof proofPackages)[number]) => item.status === "finalized"
+      ).length,
       latestCreatedAt: proofPackages[0]?.createdAt.toISOString() ?? null,
-      items: proofPackages.map((item) => ({
+      items: proofPackages.map((item: (typeof proofPackages)[number]) => ({
         id: item.id,
         packageType: item.packageType,
         packageKey: item.packageKey,
         status: item.status,
         completenessScore: Number(item.completenessScore),
         missingEvidence: Array.isArray(item.missingEvidence)
-          ? item.missingEvidence.filter((value): value is string => typeof value === "string")
+          ? item.missingEvidence.filter(isString)
           : [],
         completenessFlags: Array.isArray(item.completenessFlags)
-          ? item.completenessFlags.filter((value): value is string => typeof value === "string")
+          ? item.completenessFlags.filter(isString)
           : [],
-        evidenceIds: Array.isArray(item.evidenceIds)
-          ? item.evidenceIds.filter((value): value is string => typeof value === "string")
-          : [],
+        evidenceIds: Array.isArray(item.evidenceIds) ? item.evidenceIds.filter(isString) : [],
         createdAt: item.createdAt.toISOString(),
         finalizedAt: item.finalizedAt?.toISOString() ?? null,
       })),
