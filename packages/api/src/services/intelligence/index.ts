@@ -10,6 +10,7 @@ export { ProductEvolutionAI } from "./product-evolution";
 export { PatternExtractor } from "./pattern-extractor";
 export { PredictiveRouter } from "./predictive-router";
 export { AdjudicationMemoryService } from "./adjudication-memory";
+export { RunDeltaService } from "./run-delta";
 
 export type { ExtractedPattern } from "./pattern-extractor";
 export type { RoutingDecision } from "./predictive-router";
@@ -21,3 +22,4 @@ export type {
   AdjudicationMemoryInput,
   AdjudicationMemoryRecord,
 } from "./adjudication-memory";
+export type { RunDeltaInput, RunDeltaResult, ConfigDrift, RunComparisonMetrics } from "./run-delta";
