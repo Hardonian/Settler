@@ -259,7 +259,7 @@ export class ExportJobWorker extends EventEmitter {
         id: string;
         tenant_id: string;
         type: string;
-        payload: string;
+        payload: ExportJobPayload | string;
         status: string;
         attempts: number;
         max_attempts: number;
@@ -290,7 +290,7 @@ export class ExportJobWorker extends EventEmitter {
             updated_at = NOW()
         FROM claimed c
         WHERE j.id = c.id
-        RETURNING c.id, c.tenant_id, c.type, c.payload, c.status, c.attempts, c.max_attempts`,
+        RETURNING j.id, j.tenant_id, j.type, j.payload, j.status, j.attempts, j.max_attempts`,
         [limit, this.workerId]
       );
 
@@ -298,7 +298,7 @@ export class ExportJobWorker extends EventEmitter {
         id: row.id,
         tenant_id: row.tenant_id,
         type: row.type,
-        payload: JSON.parse(row.payload) as ExportJobPayload,
+        payload: this.parseJobPayload(row.payload),
         status: row.status,
         attempts: row.attempts,
         max_attempts: row.max_attempts,
@@ -419,6 +419,17 @@ export class ExportJobWorker extends EventEmitter {
   }
 
   /**
+   * Normalize DB payloads that may arrive as JSON text or parsed JSON.
+   */
+  private parseJobPayload(payload: ExportJobPayload | string): ExportJobPayload {
+    if (typeof payload === "string") {
+      return JSON.parse(payload) as ExportJobPayload;
+    }
+
+    return payload;
+  }
+
+  /**
    * Handle reconciliation export job
    */
   private async handleExportJob(payload: ExportJobPayload): Promise<Record<string, unknown>> {
@@ -511,7 +522,6 @@ export class ExportJobWorker extends EventEmitter {
     } finally {
       client.release();
     }
-    };
   }
 
   /**
@@ -545,6 +555,7 @@ export class ExportJobWorker extends EventEmitter {
       );
 
       const rowCount = matchesResult.rows.length;
+      const exportedAt = new Date().toISOString();
 
       // Update the Export record
       await this.pool.query(
@@ -557,7 +568,7 @@ export class ExportJobWorker extends EventEmitter {
          WHERE reconciliation_run_id = $3 AND tenant_id = $4 AND status = 'pending'`,
         [
           rowCount,
-          JSON.stringify({ exportedAt: new Date().toISOString(), format: "csv" }),
+          JSON.stringify({ exportedAt, format: "csv" }),
           runId,
           tenantId,
         ]
@@ -567,13 +578,12 @@ export class ExportJobWorker extends EventEmitter {
         success: true,
         runId,
         format: "csv",
-        exportedAt: new Date().toISOString(),
+        exportedAt,
         rowCount,
       };
     } finally {
       client.release();
     }
-    };
   }
 
   /**
@@ -611,6 +621,7 @@ export class ExportJobWorker extends EventEmitter {
       );
 
       const rowCount = matchesCount.rows[0]?.count || 0;
+      const exportedAt = new Date().toISOString();
 
       // Update the Export record
       await this.pool.query(
@@ -623,7 +634,11 @@ export class ExportJobWorker extends EventEmitter {
          WHERE reconciliation_run_id = $3 AND tenant_id = $4 AND status = 'pending'`,
         [
           rowCount,
-          JSON.stringify({ exportedAt: new Date().toISOString(), format: "pdf", runStatus: runResult.rows[0]?.status }),
+          JSON.stringify({
+            exportedAt,
+            format: "pdf",
+            runStatus: runResult.rows[0]?.status,
+          }),
           runId,
           tenantId,
         ]
@@ -633,14 +648,13 @@ export class ExportJobWorker extends EventEmitter {
         success: true,
         runId,
         format: "pdf",
-        exportedAt: new Date().toISOString(),
+        exportedAt,
         rowCount,
         runStatus: runResult.rows[0]?.status || "unknown",
       };
     } finally {
       client.release();
     }
-    };
   }
 
   /**

@@ -345,7 +345,7 @@ router.get(
       }
 
       // Return the signed URL for client-side redirect/download
-      res.json({
+      return res.json({
         data: {
           downloadUrl: exportRecord.signedUrl,
           expiresAt: exportRecord.signedUrlExpiresAt?.toISOString() || null,
@@ -354,7 +354,7 @@ router.get(
         },
       });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get export download", 500, {
+      return handleRouteError(res, error, "Failed to get export download", 500, {
         userId: req.userId,
       });
     }
