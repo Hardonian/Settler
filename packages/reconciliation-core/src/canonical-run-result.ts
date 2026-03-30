@@ -1038,6 +1038,9 @@ export function buildCanonicalRunResultContract(input: {
     unresolved:
       asNumber(input.exceptionCounts?.unresolved) ||
       asNumber(input.exceptionCounts?.pending) + asNumber(input.exceptionCounts?.investigating),
+    reviewRequired:
+      asNumber(input.exceptionCounts?.reviewRequired) ||
+      asNumber(input.exceptionCounts?.pending) + asNumber(input.exceptionCounts?.investigating),
   };
 
   const rowResults = buildRowResults({

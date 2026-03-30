@@ -243,6 +243,7 @@ export async function countReconciliationExceptionsForScope({
           investigating: 0,
           resolved: 0,
           ignored: 0,
+          unresolved: 0,
           reviewRequired: 0,
         },
       };
@@ -275,6 +276,7 @@ export async function countReconciliationExceptionsForScope({
       investigating,
       resolved,
       ignored,
+      unresolved: total - ignored,
       reviewRequired: pending + investigating,
     },
   };

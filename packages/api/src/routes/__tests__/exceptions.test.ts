@@ -13,6 +13,21 @@ jest.mock("../../infrastructure/db/prisma", () => ({
       update: jest.fn(),
       updateMany: jest.fn(),
     },
+    normalizedTransaction: {
+      findFirst: jest.fn(),
+    },
+    exceptionAdjudicationMemory: {
+      findMany: jest.fn(),
+      create: jest.fn(),
+    },
+    evidenceArtifact: {
+      findMany: jest.fn(),
+      create: jest.fn(),
+    },
+    proofPackage: {
+      findMany: jest.fn(),
+      create: jest.fn(),
+    },
     auditLog: {
       create: jest.fn(),
     },
@@ -71,9 +86,22 @@ describe("exceptions routes", () => {
     app.use("/api", exceptionsRouter);
 
     jest.clearAllMocks();
-    mockedPrisma.$transaction.mockImplementation(async (callback: (tx: typeof mockedPrisma) => unknown) =>
-      callback(mockedPrisma)
+    mockedPrisma.$transaction.mockImplementation(
+      async (callback: (tx: typeof mockedPrisma) => unknown) => callback(mockedPrisma)
     );
+    mockedPrisma.normalizedTransaction.findFirst.mockResolvedValue({
+      id: "txn-src-1",
+      amount: 100,
+      currency: "USD",
+      date: new Date("2026-03-17T09:00:00Z"),
+      description: "Source transaction",
+      externalId: "ext-src-1",
+    });
+    mockedPrisma.evidenceArtifact.create
+      .mockResolvedValueOnce({ id: "evidence-1" })
+      .mockResolvedValueOnce({ id: "evidence-2" });
+    mockedPrisma.exceptionAdjudicationMemory.create.mockResolvedValue({ id: "memory-1" });
+    mockedPrisma.proofPackage.create.mockResolvedValue({ id: "proof-1" });
   });
 
   it("lists exceptions with tenant-scoped status filtering", async () => {
@@ -84,6 +112,8 @@ describe("exceptions routes", () => {
         runId: "run-1",
         status: "dismissed",
         matchType: "unmatched",
+        sourceTransactionId: "src-1",
+        targetTransactionId: null,
         confidence: 0.5,
         reviewed: true,
         reviewedAt: new Date("2026-03-17T10:00:00Z"),
@@ -123,6 +153,8 @@ describe("exceptions routes", () => {
       runId: "run-1",
       status: "open",
       matchType: "unmatched",
+      sourceTransactionId: "src-1",
+      targetTransactionId: null,
       confidence: 0.5,
       reviewed: false,
       reviewedAt: null,
@@ -139,10 +171,60 @@ describe("exceptions routes", () => {
       createdAt: new Date("2026-03-17T09:00:00Z"),
       updatedAt: new Date("2026-03-17T10:00:00Z"),
       run: { id: "run-1", status: "completed", startedAt: new Date(), completedAt: new Date() },
-      sourceTransaction: { id: "src-1", category: "amount_mismatch", description: "Amount mismatch" },
+      sourceTransaction: {
+        id: "src-1",
+        category: "amount_mismatch",
+        description: "Amount mismatch",
+      },
     });
     mockedPrisma.reconciliationProvenance.findMany.mockResolvedValueOnce([
       { id: "prov-1", sequence: 1, eventType: "review_decision", createdAt: new Date() },
+    ]);
+    mockedPrisma.exceptionAdjudicationMemory.findMany.mockResolvedValueOnce([
+      {
+        id: "memory-1",
+        resolution: "manual",
+        resolutionReason: "resolved_in_workbench",
+        adjudicationType: "initial",
+        adjudicatorId: "user-1",
+        adjudicatorType: "operator",
+        outcome: "resolved",
+        confidence: 0.95,
+        sourceTrustScore: 0.9,
+        operatorNotes: "Reviewed",
+        systemNotes: "Persisted in canonical memory",
+        evidenceIds: ["evidence-1", "evidence-2"],
+        createdAt: new Date("2026-03-17T10:00:00Z"),
+        completedAt: new Date("2026-03-17T10:00:00Z"),
+        parentMemoryId: null,
+      },
+    ]);
+    mockedPrisma.evidenceArtifact.findMany.mockResolvedValueOnce([
+      {
+        id: "evidence-1",
+        artifactType: "operator_annotation",
+        artifactKey: "exception:evidence-1",
+        capturedAt: new Date("2026-03-17T10:00:00Z"),
+        capturedBy: "operator",
+        degraded: false,
+        degradedReasons: [],
+        attested: true,
+        reliabilityScore: 0.95,
+      },
+    ]);
+    mockedPrisma.proofPackage.findMany.mockResolvedValueOnce([
+      {
+        id: "proof-1",
+        packageType: "exception_resolution",
+        packageKey: "exception:proof-1",
+        status: "finalized",
+        completenessScore: 0.9,
+        missingEvidence: [],
+        completenessFlags: [],
+        evidenceIds: ["evidence-1"],
+        createdAt: new Date("2026-03-17T10:00:00Z"),
+        finalizedAt: new Date("2026-03-17T10:01:00Z"),
+      },
     ]);
 
     const res = await request(app).get("/api/exceptions/exc-1");
@@ -151,7 +233,9 @@ describe("exceptions routes", () => {
     expect(res.body.data).toMatchObject({
       id: "exc-1",
       status: "open",
-      adjudicationHistory: [{ actorId: "user-1", action: "note_added" }],
+      adjudicationHistory: [expect.objectContaining({ actorId: "user-1", action: "resolved" })],
+      adjudicationMemories: [expect.objectContaining({ id: "memory-1" })],
+      proofSummary: expect.objectContaining({ total: 1, finalized: 1 }),
     });
     expect(mockedPrisma.reconciliationProvenance.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -165,6 +249,12 @@ describe("exceptions routes", () => {
       id: "exc-1",
       runId: "run-1",
       tenantId: "tenant-123",
+      sourceTransactionId: "src-1",
+      targetTransactionId: null,
+      confidence: 0.95,
+      amountDiff: null,
+      dateDiff: null,
+      matchType: "unmatched",
       status: "open",
       metadata: {},
       reviewed: false,
@@ -188,6 +278,8 @@ describe("exceptions routes", () => {
       resolutionReason: "matched",
       outcome: "resolved",
     });
+    expect(mockedPrisma.exceptionAdjudicationMemory.create).toHaveBeenCalled();
+    expect(mockedPrisma.proofPackage.create).toHaveBeenCalled();
   });
 
   it("treats identical repeat resolutions as idempotent no-ops", async () => {
@@ -195,6 +287,12 @@ describe("exceptions routes", () => {
       id: "exc-1",
       runId: "run-1",
       tenantId: "tenant-123",
+      sourceTransactionId: "src-1",
+      targetTransactionId: null,
+      confidence: 0.95,
+      amountDiff: null,
+      dateDiff: null,
+      matchType: "unmatched",
       status: "resolved",
       metadata: {
         latestAdjudication: {
@@ -226,6 +324,12 @@ describe("exceptions routes", () => {
         id: "00000000-0000-4000-8000-000000000001",
         runId: "run-1",
         tenantId: "tenant-123",
+        sourceTransactionId: "src-1",
+        targetTransactionId: null,
+        confidence: 0.95,
+        amountDiff: null,
+        dateDiff: null,
+        matchType: "unmatched",
         status: "dismissed",
         metadata: {
           latestAdjudication: {
@@ -243,6 +347,12 @@ describe("exceptions routes", () => {
         id: "00000000-0000-4000-8000-000000000002",
         runId: "run-2",
         tenantId: "tenant-123",
+        sourceTransactionId: "src-2",
+        targetTransactionId: null,
+        confidence: 0.95,
+        amountDiff: null,
+        dateDiff: null,
+        matchType: "unmatched",
         status: "open",
         metadata: {},
         reviewed: false,

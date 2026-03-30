@@ -5,11 +5,27 @@ describe("ExceptionReviewService", () => {
     findFirst: jest.fn(),
     update: jest.fn(),
   };
+  const normalizedTransaction = {
+    findFirst: jest.fn(),
+  };
+  const exceptionAdjudicationMemory = {
+    create: jest.fn(),
+  };
+  const evidenceArtifact = {
+    create: jest.fn(),
+  };
+  const proofPackage = {
+    create: jest.fn(),
+  };
   const auditLog = {
     create: jest.fn(),
   };
   const tx = {
     reconciliationMatch,
+    normalizedTransaction,
+    exceptionAdjudicationMemory,
+    evidenceArtifact,
+    proofPackage,
     auditLog,
   };
   const prisma = {
@@ -27,6 +43,19 @@ describe("ExceptionReviewService", () => {
       callback(tx)
     );
     reconciliationMatch.update.mockResolvedValue(undefined);
+    normalizedTransaction.findFirst.mockResolvedValue({
+      id: "txn-source-1",
+      amount: 100,
+      currency: "USD",
+      date: new Date("2026-03-20T11:59:00Z"),
+      description: "Source transaction",
+      externalId: "ext-src-1",
+    });
+    evidenceArtifact.create
+      .mockResolvedValueOnce({ id: "evidence-1" })
+      .mockResolvedValueOnce({ id: "evidence-2" });
+    exceptionAdjudicationMemory.create.mockResolvedValue({ id: "memory-1" });
+    proofPackage.create.mockResolvedValue({ id: "proof-1" });
     auditLog.create.mockResolvedValue(undefined);
     provenanceService.recordReviewDecisionInTransaction.mockResolvedValue(undefined);
     service = new ExceptionReviewService(prisma as any, provenanceService as any);
@@ -36,6 +65,12 @@ describe("ExceptionReviewService", () => {
     reconciliationMatch.findFirst.mockResolvedValueOnce({
       id: "00000000-0000-4000-8000-000000000099",
       runId: "00000000-0000-4000-8000-000000000042",
+      sourceTransactionId: "00000000-0000-4000-8000-000000000043",
+      targetTransactionId: null,
+      confidence: 0.98,
+      amountDiff: null,
+      dateDiff: null,
+      matchType: "unmatched",
       metadata: {},
       status: "open",
       reviewed: false,
@@ -60,6 +95,26 @@ describe("ExceptionReviewService", () => {
 
     expect(result.outcome).toBe("resolved");
     expect(result.status).toBe("resolved");
+    expect(evidenceArtifact.create).toHaveBeenCalledTimes(2);
+    expect(exceptionAdjudicationMemory.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          exceptionId: "00000000-0000-4000-8000-000000000099",
+          resolution: "manual",
+          resolutionReason: "manual",
+          evidenceIds: ["evidence-1", "evidence-2"],
+        }),
+      })
+    );
+    expect(proofPackage.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          packageType: "exception_resolution",
+          packageKey: "exception:00000000-0000-4000-8000-000000000099:memory:memory-1",
+          evidenceIds: ["evidence-1", "evidence-2"],
+        }),
+      })
+    );
     expect(reconciliationMatch.update).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { id: "00000000-0000-4000-8000-000000000099" },
@@ -74,6 +129,9 @@ describe("ExceptionReviewService", () => {
               requestId: "req-123",
               traceId: "00000000-0000-4000-8000-000000000003",
               status: "resolved",
+              memoryId: "memory-1",
+              proofPackageId: "proof-1",
+              evidenceIds: ["evidence-1", "evidence-2"],
             }),
           }),
         }),
@@ -103,6 +161,12 @@ describe("ExceptionReviewService", () => {
     reconciliationMatch.findFirst.mockResolvedValueOnce({
       id: "00000000-0000-4000-8000-000000000099",
       runId: "00000000-0000-4000-8000-000000000042",
+      sourceTransactionId: "00000000-0000-4000-8000-000000000043",
+      targetTransactionId: null,
+      confidence: 0.98,
+      amountDiff: null,
+      dateDiff: null,
+      matchType: "unmatched",
       metadata: {
         latestAdjudication: {
           resolution: "ignored",
@@ -128,6 +192,8 @@ describe("ExceptionReviewService", () => {
     expect(reconciliationMatch.update).not.toHaveBeenCalled();
     expect(provenanceService.recordReviewDecisionInTransaction).not.toHaveBeenCalled();
     expect(auditLog.create).not.toHaveBeenCalled();
+    expect(exceptionAdjudicationMemory.create).not.toHaveBeenCalled();
+    expect(proofPackage.create).not.toHaveBeenCalled();
   });
 
   it("deduplicates bulk requests and reports missing exceptions explicitly", async () => {
@@ -135,6 +201,12 @@ describe("ExceptionReviewService", () => {
       .mockResolvedValueOnce({
         id: "00000000-0000-4000-8000-000000000099",
         runId: "00000000-0000-4000-8000-000000000042",
+        sourceTransactionId: "00000000-0000-4000-8000-000000000043",
+        targetTransactionId: null,
+        confidence: 0.98,
+        amountDiff: null,
+        dateDiff: null,
+        matchType: "unmatched",
         metadata: {},
         status: "open",
         reviewed: false,
