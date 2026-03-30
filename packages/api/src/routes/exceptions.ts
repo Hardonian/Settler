@@ -198,7 +198,7 @@ function mapExceptionToResponse(e: ExceptionForMapping) {
 }
 
 async function validateExceptionAccess(id: string, tenantId: string) {
-  const exception = await exceptionMatchModel.findFirst({
+  const exception = await prisma.reconciliationMatch.findFirst({
     where: { id, tenantId, matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] } },
     select: { id: true, metadata: true, runId: true, status: true, assignedTo: true },
   });
@@ -326,24 +326,24 @@ router.get(
       const tenantId = req.tenantId!;
       const { jobId } = req.query as { jobId?: string };
 
-      const whereBase: any = {
+      const whereBase: Prisma.ReconciliationMatchWhereInput = {
         tenantId,
         matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] },
         ...(jobId && { runId: jobId }),
       };
 
       const [statusCounts, severityCounts, unassigned] = await Promise.all([
-        exceptionMatchModel.groupBy({
+        prisma.reconciliationMatch.groupBy({
           by: ["status"],
           where: whereBase,
           _count: { _all: true },
         }),
-        exceptionMatchModel.groupBy({
+        prisma.reconciliationMatch.groupBy({
           by: ["severity"],
           where: whereBase,
           _count: { _all: true },
         }),
-        exceptionMatchModel.count({
+        prisma.reconciliationMatch.count({
           where: { ...whereBase, assignedTo: null, status: { notIn: ["resolved", "dismissed"] } },
         }),
       ]);
@@ -368,7 +368,7 @@ router.get(
       const { open, in_progress: inProgress, resolved, dismissed } = counts;
       const { critical, high, medium, low } = severities;
 
-      const resolvedExceptions = await exceptionMatchModel.findMany({
+      const resolvedExceptions = await prisma.reconciliationMatch.findMany({
         where: {
           ...whereBase,
           status: { in: ["resolved", "dismissed"] },
@@ -422,7 +422,7 @@ router.get(
 
       const [exception, memories, evidenceArtifacts, proofPackages, provenance] = await Promise.all(
         [
-          exceptionMatchModel.findFirst({
+          prisma.reconciliationMatch.findFirst({
             where: {
               id,
               tenantId,
@@ -496,7 +496,7 @@ router.get(
               createdAt: true,
               finalizedAt: true,
             },
-          }) ?? Promise.resolve([]),
+          }),
           prisma.reconciliationProvenance.findMany({
             where: { tenantId, matchId: id },
             orderBy: { sequence: "asc" },
@@ -517,7 +517,7 @@ router.get(
         throw new NotFoundError("Exception not found", "exception", id);
       }
 
-      const metadata = (exception as any).metadata as any;
+      const metadata = exception.metadata;
 
       const adjudicationHistory =
         memories.length > 0
@@ -541,11 +541,11 @@ router.get(
                 timestamp:
                   memory.completedAt?.toISOString?.() ?? memory.createdAt.toISOString?.() ?? null,
               }))
-          : metadata?.adjudicationHistory || [];
+          : (metadata as any)?.adjudicationHistory || [];
 
       res.json({
         data: {
-          ...mapExceptionToResponse(exception),
+          ...mapExceptionToResponse(exception as any),
           run: exception.run,
           sourceTransaction: exception.sourceTransaction,
           adjudicationHistory,
@@ -733,7 +733,7 @@ router.post(
       }
 
       const newStatus = existing.status === "open" ? "in_progress" : existing.status;
-      const updateResult = await exceptionMatchModel.updateMany({
+      const updateResult = await prisma.reconciliationMatch.updateMany({
         where: { id, tenantId, matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] } },
         data: {
           assignedTo,
@@ -813,7 +813,7 @@ router.put(
         });
       }
 
-      const updateResult = await exceptionMatchModel.updateMany({
+      const updateResult = await prisma.reconciliationMatch.updateMany({
         where: { id, tenantId, matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] } },
         data: {
           status,
@@ -904,7 +904,7 @@ router.post(
 
       const existing = await validateExceptionAccess(id, tenantId);
 
-      const updateResult = await exceptionMatchModel.updateMany({
+      const updateResult = await prisma.reconciliationMatch.updateMany({
         where: { id, tenantId, matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] } },
         data: {
           notes,
@@ -1057,7 +1057,7 @@ router.post(
       const userId = req.userId!;
       const tenantId = req.tenantId!;
 
-      const result = await exceptionMatchModel.updateMany({
+      const result = await prisma.reconciliationMatch.updateMany({
         where: {
           id: { in: exceptionIds },
           tenantId,
@@ -1112,7 +1112,7 @@ router.post(
       const userId = req.userId!;
       const tenantId = req.tenantId!;
 
-      const result = await exceptionMatchModel.updateMany({
+      const result = await prisma.reconciliationMatch.updateMany({
         where: {
           id: { in: exceptionIds },
           tenantId,
