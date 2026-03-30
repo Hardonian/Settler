@@ -158,8 +158,13 @@ function main(): void {
     ...discoverRpcAndInternal(),
   ]);
 
-  const outputPath = path.join(repoRoot, "artifacts", "security", "route-registry.json");
-  mkdirSync(path.dirname(outputPath), { recursive: true });
+  const outputPaths = [
+    path.join(repoRoot, "artifacts", "security", "route-registry.json"),
+    path.join(repoRoot, "security", "route-registry.json"),
+  ];
+  for (const outputPath of outputPaths) {
+    mkdirSync(path.dirname(outputPath), { recursive: true });
+  }
 
   const payload = {
     generatedAt: new Date().toISOString(),
@@ -167,8 +172,12 @@ function main(): void {
     routes,
   };
 
-  writeFileSync(outputPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
-  console.log(`Generated ${routes.length} routes -> ${path.relative(repoRoot, outputPath)}`);
+  for (const outputPath of outputPaths) {
+    writeFileSync(outputPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+  }
+  console.log(
+    `Generated ${routes.length} routes -> ${outputPaths.map((item) => path.relative(repoRoot, item)).join(", ")}`
+  );
 }
 
 main();

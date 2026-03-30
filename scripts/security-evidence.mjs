@@ -21,6 +21,21 @@ function maybeCopy(fromRel, toName, required = true) {
   return { relPath: toRel, source: fromRel, present: true, required };
 }
 
+function maybeCopyAny(fromCandidates, toName, required = true) {
+  for (const candidate of fromCandidates) {
+    const copied = maybeCopy(candidate, toName, false);
+    if (copied.present) {
+      return { ...copied, required };
+    }
+  }
+  return {
+    relPath: path.join("security", "evidence", toName),
+    source: fromCandidates.join(" | "),
+    present: false,
+    required,
+  };
+}
+
 function runMetadata() {
   let sha = "unknown";
   try {
@@ -43,7 +58,10 @@ function safeRead(rel) {
 }
 
 const artifacts = [
-  maybeCopy("security/route-registry.json", "route-registry.json"),
+  maybeCopyAny(
+    ["security/route-registry.json", "artifacts/security/route-registry.json"],
+    "route-registry.json"
+  ),
   maybeCopy("artifacts/security/tenant-coverage-latest.json", "tenant-coverage.json"),
   maybeCopy("artifacts/security/cross-tenant-results-latest.json", "cross-tenant-results.json"),
   maybeCopy("artifacts/security/header-probe-latest.json", "header-probe.json"),

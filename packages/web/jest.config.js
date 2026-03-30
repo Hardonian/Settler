@@ -12,6 +12,10 @@ const customJestConfig = {
   testEnvironment: "jest-environment-jsdom",
   moduleNameMapper: {
     "^@settler/reconciliation-core$": "<rootDir>/../reconciliation-core/src/index.ts",
+    "^@settler/reconciliation-core/dist$": "<rootDir>/../reconciliation-core/src/index.ts",
+    "^@settler/reconciliation-core/dist/(.*)$": "<rootDir>/../reconciliation-core/src/$1",
+    "^(?:\\.\\./)+reconciliation-core/dist$": "<rootDir>/../reconciliation-core/src/index.ts",
+    "^(?:\\.\\./)+reconciliation-core/dist/(.*)$": "<rootDir>/../reconciliation-core/src/$1",
     "^@/(.*)$": "<rootDir>/src/$1",
     // Strip .js extensions from relative imports so ts-jest can resolve .ts sources
     // in workspace packages (e.g. @settler/reconciliation-core uses ESM-style .js refs)

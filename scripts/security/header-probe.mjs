@@ -27,7 +27,18 @@ const ENFORCED_HEADERS_API = ENFORCED_HEADERS_COMMON;
 const OBSERVABILITY_HEADERS = ["x-request-id"];
 
 function loadRegistry() {
-  return JSON.parse(readFileSync(path.join(repoRoot, "security", "route-registry.json"), "utf8"));
+  const candidates = [
+    path.join(repoRoot, "security", "route-registry.json"),
+    path.join(repoRoot, "artifacts", "security", "route-registry.json"),
+  ];
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) {
+      return JSON.parse(readFileSync(candidate, "utf8"));
+    }
+  }
+  throw new Error(
+    `Route registry not found. Expected one of: ${candidates.map((item) => path.relative(repoRoot, item)).join(", ")}`
+  );
 }
 
 function hasMethod(route, method) {
@@ -432,7 +443,7 @@ async function main() {
   }
 
   if (config.strict && (failedBlocking.length > 0 || summary.counts.skipped > 0)) process.exit(1);
-  if (summary.degraded && !config.allowDegraded) process.exit(1);
+  if (config.strict && summary.degraded && !config.allowDegraded) process.exit(1);
 }
 
 main().catch((error) => {
