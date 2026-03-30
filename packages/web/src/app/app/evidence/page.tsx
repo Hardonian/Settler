@@ -32,14 +32,14 @@ const relatedLinks = [
     description: "Browse and inspect reconciliation runs",
   },
   {
-    href: "/app/proofs",
+    href: "/console/proof-explorer",
     label: "Truth Explorer",
     description: "Verify deterministic proof artifacts",
   },
   {
-    href: "/app/settings",
-    label: "Tenant Controls",
-    description: "Review isolation and access settings",
+    href: "/console/exceptions",
+    label: "Exception Queue",
+    description: "Review and adjudicate reconciliation exceptions",
   },
 ];
 
