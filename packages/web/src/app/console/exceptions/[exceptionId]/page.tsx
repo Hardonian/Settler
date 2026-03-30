@@ -30,6 +30,8 @@ import {
   ExceptionDetailRunContext,
   type ExceptionDetailProvenanceRun,
 } from "@/components/console/ExceptionDetailRunContext";
+import { EvidenceTrustCard } from "@/components/proof/EvidenceTrustCard";
+import { ProvenanceModal } from "@/components/proof/ProvenanceModal";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -462,6 +464,7 @@ export default function ExceptionDetailPage() {
 
   const queryClient = useQueryClient();
   const { isFrozen, governanceState } = useGovernanceState();
+  const [isProvenanceModalOpen, setIsProvenanceModalOpen] = useState(false);
 
   const {
     data: exception,
@@ -751,52 +754,64 @@ export default function ExceptionDetailPage() {
 
       {/* ── Evidence and proof readiness ── */}
       {(exception.evidenceSummary || exception.proofSummary) && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Evidence &amp; Proof Readiness</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <div className="rounded-lg border border-border bg-muted/20 p-4">
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Evidence artifacts
-                </p>
-                <p className="mt-2 text-2xl font-bold">{exception.evidenceSummary?.total ?? 0}</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {exception.evidenceSummary?.attested ?? 0} attested,{" "}
-                  {exception.evidenceSummary?.degraded ?? 0} degraded
-                </p>
-              </div>
-              <div className="rounded-lg border border-border bg-muted/20 p-4">
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Proof packages
-                </p>
-                <p className="mt-2 text-2xl font-bold">{exception.proofSummary?.total ?? 0}</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {exception.proofSummary?.finalized ?? 0} finalized
-                </p>
-              </div>
-              <div className="rounded-lg border border-border bg-muted/20 p-4">
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Latest evidence
-                </p>
-                <p className="mt-2 text-sm font-medium">
-                  {exception.evidenceSummary?.latestCapturedAt
-                    ? new Date(exception.evidenceSummary.latestCapturedAt).toLocaleString()
-                    : "Not captured yet"}
-                </p>
-              </div>
-              <div className="rounded-lg border border-border bg-muted/20 p-4">
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Latest proof package
-                </p>
-                <p className="mt-2 text-sm font-medium">
-                  {exception.proofSummary?.latestCreatedAt
-                    ? new Date(exception.proofSummary.latestCreatedAt).toLocaleString()
-                    : "Not generated yet"}
-                </p>
-              </div>
-            </div>
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          <div className="xl:col-span-2">
+            <Card className="h-full">
+              <CardHeader>
+                <CardTitle className="text-base">Evidence & Proof Readiness</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-lg border border-border bg-muted/20 p-4">
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                      Evidence artifacts
+                    </p>
+                    <p className="mt-2 text-2xl font-bold">{exception.evidenceSummary?.total ?? 0}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {exception.evidenceSummary?.attested ?? 0} attested,{" "}
+                      {exception.evidenceSummary?.degraded ?? 0} degraded
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-border bg-muted/20 p-4">
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                      Proof packages
+                    </p>
+                    <p className="mt-2 text-2xl font-bold">{exception.proofSummary?.total ?? 0}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {exception.proofSummary?.finalized ?? 0} finalized
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="xl:col-span-1">
+            <EvidenceTrustCard
+              completeness={exception.proofSummary?.items[0]?.completenessScore ?? 0}
+              reliability={exception.evidenceSummary?.items.reduce((acc, item) => acc + (item.reliabilityScore ?? 0), 0) ?? 0 / (exception.evidenceSummary?.items.length || 1)}
+              gapCount={exception.proofSummary?.items[0]?.missingEvidence.length ?? 0}
+              onInspectProof={() => setIsProvenanceModalOpen(true)}
+              isLoading={isLoading}
+            />
+          </div>
+        </div>
+      )}
+
+      <ProvenanceModal
+        isOpen={isProvenanceModalOpen}
+        onClose={() => setIsProvenanceModalOpen(false)}
+        exceptionId={exception.id}
+        provenanceNodes={
+          exception.evidenceSummary?.items.map((item) => ({
+            id: item.id,
+            type: item.artifactType,
+            source: item.capturedBy,
+            timestamp: item.capturedAt,
+            reliability: item.reliabilityScore ?? 0.5,
+            hash: "sha256:8f3b...2e9a", // Simulation since backend doesn't yet return full node hash
+          })) || []
+        }
+      />
 
             {exception.evidenceSummary?.items?.length ? (
               <div className="space-y-2">
