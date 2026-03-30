@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { toast } from "@/components/ui/toast";
 
 export interface WorkbenchStats {
   open_exceptions: number;

@@ -60,26 +60,17 @@ router.get(
 
       const resolvedStatuses = includeResolved ? ["resolved", "dismissed"] : ["resolved"];
 
-      const similarMatches = await prisma.reconciliationMatch.findMany({
-        where: {
-          tenantId,
-          status: { in: resolvedStatuses },
-          id: { not: exceptionId },
-        },
-        take: limit,
-        orderBy: { confidence: "desc" },
+      const similarCases = await adjudicationMemoryService.findSimilarCases({
+        tenantId,
+        excludeExceptionId: exceptionId,
+        limit,
+        archetypeId:
+          exception.reasonTags && exception.reasonTags.length > 0
+            ? exception.reasonTags[0]
+            : undefined,
       });
 
-      const similarCases = similarMatches.map((match) => ({
-        id: match.id,
-        status: match.status,
-        resolution: match.resolutionReason,
-        confidence: match.confidence.toNumber(),
-        severity: match.severity,
-        adjudicatedAt: match.reviewedAt,
-      }));
-
-      logInfo("Similar cases retrieved", {
+      logInfo("Similar cases retrieved via AdjudicationMemory", {
         tenantId,
         exceptionId,
         count: similarCases.length,
@@ -768,7 +759,7 @@ router.post(
         metadata?: Record<string, unknown>;
       };
 
-      const payloadHash = evidenceService.computePayloadHash(payload);
+      const payloadHash = computePayloadHash(payload);
       const reliabilityFactors = reliabilityScore
         ? [{ factor: "operator_assigned", weight: 0.5, value: reliabilityScore }]
         : [];
@@ -871,8 +862,11 @@ router.post(
           })
         : [];
 
-      const requirements = evidenceService.getStandardRequirements(proofType as any);
-      const completeness = evidenceService.assessCompleteness(evidenceArtifacts, requirements);
+      const requirements = STANDARD_EVIDENCE_REQUIREMENTS[proofType] || [];
+      const completeness = assessEvidenceCompleteness(
+        evidenceArtifacts as EvidenceArtifact[],
+        requirements
+      );
 
       const packagePayload = {
         proofType,
