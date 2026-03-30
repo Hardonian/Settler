@@ -185,8 +185,17 @@ export async function resolveOperatorRunDetailForTenants(
   try {
     const job = resolved.jobRecord;
     const latestResult = resolved.latestResultRecord;
+    const snapshotId = latestResult?.snapshot_id ?? null;
 
-    const [recentResults, persistedResultCount, audits, exceptionCountResult, runDeltaRecord] = await Promise.all([
+    const [
+      recentResults,
+      persistedResultCount,
+      audits,
+      exceptionCountResult,
+      runDeltaRecord,
+      snapshotRecord,
+      deterministicRows,
+    ] = await Promise.all([
       // Fetch the previous result for comparison (skip the first one since we have it)
       prisma.reconResult.findMany({
         where: { reconJobId: runId, tenantId: job.tenantId, id: { not: latestResult?.id } },
@@ -235,15 +244,6 @@ export async function resolveOperatorRunDetailForTenants(
       prisma.runDelta.findFirst({
         where: { currentRunId: runId, tenantId: job.tenantId },
       }),
-    ]);
-
-    const previousResult = recentResults[0] ?? null;
-    const latestRecord = latestResult;
-    const previousRecord = previousResult ? toReconResultRecordLike(previousResult) : null;
-
-    const snapshotId = latestRecord?.snapshot_id ?? null;
-
-    const [snapshotRecord, deterministicRows] = await Promise.all([
       snapshotId
         ? prisma.runSnapshot.findFirst({
             where: { id: snapshotId, tenantId: job.tenantId },
@@ -257,7 +257,7 @@ export async function resolveOperatorRunDetailForTenants(
             },
           })
         : Promise.resolve(null),
-      latestRecord?.id
+      latestResult?.id
         ? (prisma.$queryRaw`
           SELECT
             stable_match_id,
@@ -269,13 +269,17 @@ export async function resolveOperatorRunDetailForTenants(
             match_rationale,
             matched_at
           FROM deterministic_match_results
-          WHERE run_result_id = ${latestRecord.id}::uuid
+          WHERE run_result_id = ${latestResult.id}::uuid
             AND tenant_id = ${job.tenantId}::uuid
           ORDER BY matched_at DESC
           LIMIT 250
         `.catch(() => []) as Promise<DeterministicMatchRowLike[]>)
         : Promise.resolve([]),
     ]);
+
+    const previousResult = recentResults[0] ?? null;
+    const latestRecord = latestResult;
+    const previousRecord = previousResult ? toReconResultRecordLike(previousResult) : null;
 
     const snapshotLike: SnapshotRecordLike | null = snapshotRecord
       ? {
