@@ -16,6 +16,8 @@ import {
   Layers,
 } from "lucide-react";
 import ControlPlaneOverview from "@/components/ControlPlaneOverview";
+import { performHealthCheck } from "@/lib/monitoring/health-check";
+import { runAllAlertChecks } from "@/lib/monitoring/alerts";
 
 const workflows = [
   {
@@ -47,25 +49,19 @@ const workflows = [
 export default async function AppPage() {
   const stats = await getDashboardStats();
 
-  // Fetch real health status from the console health endpoint
+  // Fetch real health status directly from monitoring libs
   let healthData: any;
   try {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/console/health`, {
-      cache: "no-store",
-      next: { revalidate: 0 },
-    });
-    if (res.ok) {
-      healthData = await res.json();
-    }
-  } catch {
-    // Health endpoint unavailable — fall through to unknown state
-  }
+    const health = await performHealthCheck();
+    const alerts = await runAllAlertChecks();
 
-  if (!healthData) {
+    healthData = {
+      health,
+      alerts: alerts.filter((a: any) => !a.resolved),
+      timestamp: new Date().toISOString(),
+    };
+  } catch {
+    // Health check logic failed — fall through to unknown state
     healthData = {
       status: "unknown",
       checks: {
