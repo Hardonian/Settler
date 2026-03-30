@@ -1898,7 +1898,7 @@ model RunDelta {
   id                String    @id @default(uuid())
   tenantId          String    @db.Uuid
   currentRunId      String    @db.Uuid
-  previousRunId     String    @db.Uuid
+  previousRunId     String?   @db.Uuid
   
   // Run context
   jobId             String    @db.Uuid

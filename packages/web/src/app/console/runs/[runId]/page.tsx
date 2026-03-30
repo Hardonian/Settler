@@ -182,8 +182,8 @@ export default function RunPage() {
             <CardDescription>
               This run is stored in <code className="text-xs">reconciliation_runs</code>, not{" "}
               <code className="text-xs">recon_jobs</code>. Counts and lifecycle here reflect that
-              row; snapshot-backed job config and drift-event scoping may differ from recon job
-              runs.
+              row; snapshot-backed job config and canonical exception scope may differ from recon
+              job runs.
             </CardDescription>
           </CardHeader>
           {run.exceptionWorkflowNote ? (

@@ -40,6 +40,7 @@
     "postgrest",
     "prerender",
     "proofpack",
+    "proofpackages",
     "proofpacks",
     "psql",
     "pytest",

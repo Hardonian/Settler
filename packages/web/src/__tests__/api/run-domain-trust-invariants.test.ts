@@ -19,6 +19,8 @@ const reconResultCountMock = jest.fn();
 const runSnapshotFindFirstMock = jest.fn();
 const reconAuditFindManyMock = jest.fn();
 const reconciliationRunFindFirstMock = jest.fn();
+const reconciliationRunFindManyMock = jest.fn();
+const reconciliationMatchCountMock = jest.fn();
 const prismaQueryRawMock = jest.fn();
 
 jest.mock("@/lib/middleware/api-security", () => ({
@@ -52,7 +54,11 @@ jest.mock("@/shared/db/prismaClient", () => ({
     $queryRaw: (...args: unknown[]) => prismaQueryRawMock(...args),
     reconciliationRun: {
       count: jest.fn(async () => 0),
+      findMany: (...args: unknown[]) => reconciliationRunFindManyMock(...args),
       findFirst: (...args: unknown[]) => reconciliationRunFindFirstMock(...args),
+    },
+    reconciliationMatch: {
+      count: (...args: unknown[]) => reconciliationMatchCountMock(...args),
     },
     reconJob: {
       findFirst: (...args: unknown[]) => reconJobFindFirstMock(...args),
@@ -138,6 +144,8 @@ describe("run domain trust invariants", () => {
     runSnapshotFindFirstMock.mockReset();
     reconAuditFindManyMock.mockReset();
     reconciliationRunFindFirstMock.mockReset();
+    reconciliationRunFindManyMock.mockReset();
+    reconciliationMatchCountMock.mockReset();
     prismaQueryRawMock.mockReset();
   });
 
@@ -255,17 +263,13 @@ describe("run domain trust invariants", () => {
       createdAt: new Date("2026-01-01T00:09:00.000Z"),
     });
     reconAuditFindManyMock.mockResolvedValue([]);
-    prismaQueryRawMock
-      .mockResolvedValueOnce([
-        {
-          total: 0,
-          pending: 0,
-          investigating: 0,
-          resolved: 0,
-          ignored: 0,
-        },
-      ])
-      .mockResolvedValue([]);
+    reconciliationRunFindManyMock.mockResolvedValue([{ id: "ing-1" }]);
+    reconciliationMatchCountMock
+      .mockResolvedValueOnce(0)
+      .mockResolvedValueOnce(0)
+      .mockResolvedValueOnce(0)
+      .mockResolvedValueOnce(0)
+      .mockResolvedValueOnce(0);
 
     resolveTenantMembershipScopeMock.mockResolvedValue({
       supabase: { from: jest.fn() },
