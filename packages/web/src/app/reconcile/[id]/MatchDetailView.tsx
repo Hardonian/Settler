@@ -3,7 +3,6 @@
 import React, { useState, useTransition } from "react";
 import { acceptMatch, modifyMatch, overrideMatch } from "../actions";
 import { useRouter } from "next/navigation";
-import CodeBlock from "@/components/CodeBlock"; // or write inline JSON
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -64,7 +63,7 @@ export default function MatchDetailView({
           <div className="flex flex-col">
             <h3 className="text-sm font-semibold text-foreground">Previously Adjudicated</h3>
             <p className="text-xs text-muted">
-              Resolved as: <span className={\`uppercase font-mono px-2 py-0.5 rounded-md text-[10px] space-x-2 \${statusColor}\`}>{displayStatus}</span> 
+              Resolved as: <span className={`uppercase font-mono px-2 py-0.5 rounded-md text-[10px] space-x-2 ${statusColor}`}>{displayStatus}</span> 
               {" | "} By {reviewState.reviewedBy || "System Operator"} on {new Date(reviewState.createdAt).toLocaleString()}
             </p>
             {reviewState.notes && <p className="text-xs mt-2 italic border-l-2 border-border pl-2 text-muted">{reviewState.notes}</p>}
@@ -108,7 +107,7 @@ export default function MatchDetailView({
             <CardDescription>
               {matchResult?.matchType === "unmatched" 
                 ? "Match Engine determined No Safe Confirmed Match available."
-                : \`Confidence: \${(matchResult?.confidence * 100).toFixed(1)}% | Diff: \${matchResult?.amountDiff ? "$" + matchResult.amountDiff.toFixed(2) : "$0.00"}\`
+                : `Confidence: ${(matchResult?.confidence * 100).toFixed(1)}% | Diff: ${matchResult?.amountDiff ? "$" + matchResult.amountDiff.toFixed(2) : "$0.00"}`
               }
             </CardDescription>
           </CardHeader>
@@ -162,7 +161,7 @@ export default function MatchDetailView({
                     <div 
                       key={target.id}
                       onClick={() => setSelectedTarget(target.id)}
-                      className={\`p-4 border rounded-md cursor-pointer transition-colors \${selectedTarget === target.id ? "border-teal-500 bg-teal-500/5 ring-1 ring-teal-500" : "border-border hover:bg-neutral-10"}\`}
+                      className={`p-4 border rounded-md cursor-pointer transition-colors ${selectedTarget === target.id ? "border-teal-500 bg-teal-500/5 ring-1 ring-teal-500" : "border-border hover:bg-neutral-10"}`}
                     >
                       <div className="flex justify-between font-mono text-sm mb-1">
                         <span className="text-foreground">{target.id.split('-')[0]}...</span>

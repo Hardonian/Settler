@@ -25,7 +25,7 @@ export async function acceptMatch(sourceTransactionId: string, targetTransaction
     });
 
     revalidatePath("/reconcile");
-    revalidatePath(\`/reconcile/\${sourceTransactionId}\`);
+    revalidatePath(`/reconcile/${sourceTransactionId}`);
     return { success: true, matchId: match.id };
   } catch (error) {
     console.error("Failed to accept match", error);
@@ -48,13 +48,13 @@ export async function modifyMatch(sourceTransactionId: string, newTargetTransact
         reviewed: true,
         status: "resolved",
         resolutionReason: "modified",
-        notes: \`Operator modified match destination. \${notes}\`,
+        notes: `Operator modified match destination. ${notes}`,
         reviewedAt: new Date(),
       }
     });
 
     revalidatePath("/reconcile");
-    revalidatePath(\`/reconcile/\${sourceTransactionId}\`);
+    revalidatePath(`/reconcile/${sourceTransactionId}`);
     return { success: true, matchId: match.id };
   } catch (error) {
     console.error("Failed to modify match", error);
@@ -77,13 +77,13 @@ export async function overrideMatch(sourceTransactionId: string, overrideReason:
         reviewed: true,
         status: "dismissed",
         resolutionReason: "override",
-        notes: \`Operator override: \${overrideReason}\`,
+        notes: `Operator override: ${overrideReason}`,
         reviewedAt: new Date(),
       }
     });
 
     revalidatePath("/reconcile");
-    revalidatePath(\`/reconcile/\${sourceTransactionId}\`);
+    revalidatePath(`/reconcile/${sourceTransactionId}`);
     return { success: true, matchId: match.id };
   } catch (error) {
     console.error("Failed to override match", error);

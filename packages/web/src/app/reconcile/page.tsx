@@ -83,7 +83,7 @@ export default async function ReconcilePage() {
         id: result.sourceTransactionId,
         date: dateStr,
         vendor: sourceWrap?.description || "Unknown",
-        amount: sourceWrap ? \`$\${sourceWrap.amount.toFixed(2)}\` : "$0.00",
+        amount: sourceWrap ? `$${sourceWrap.amount.toFixed(2)}` : "$0.00",
         status: statusLabel,
         source: original?.source || "unknown",
       };
