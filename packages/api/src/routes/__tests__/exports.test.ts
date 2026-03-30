@@ -6,6 +6,7 @@ import { AuthRequest } from "../../middleware/auth";
 jest.mock("../../infrastructure/db/prisma", () => ({
   prisma: {
     $transaction: jest.fn(),
+    $queryRaw: jest.fn(),
     export: {
       findFirst: jest.fn(),
       findMany: jest.fn(),
@@ -76,6 +77,7 @@ describe("exports routes", () => {
     mockedPrisma.$transaction.mockImplementation(
       async (callback: (tx: typeof mockedPrisma) => unknown) => callback(mockedPrisma)
     );
+    mockedPrisma.$queryRaw.mockResolvedValue(undefined);
   });
 
   it("returns a truthful 409 when an export is not ready for download", async () => {

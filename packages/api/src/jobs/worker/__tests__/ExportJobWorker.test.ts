@@ -39,6 +39,15 @@ jest.mock("../../../infrastructure/db/prisma", () => ({
   prisma: {},
 }));
 
+jest.mock("../../../application/services/ExportLifecycleService", () => ({
+  ExportLifecycleService: jest.fn().mockImplementation(() => ({
+    markJobProcessing: jest.fn(),
+    recordJobSuccess: jest.fn(),
+    recordJobRetryScheduled: jest.fn(),
+    recordJobFailure: jest.fn(),
+  })),
+}));
+
 import { ExportJobWorker, ProcessedJob } from "../ExportJobWorker";
 
 describe("ExportJobWorker", () => {
