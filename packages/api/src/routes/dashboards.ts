@@ -13,6 +13,7 @@ import { Permission } from "../infrastructure/security/Permissions";
 import { query } from "../db";
 import { handleRouteError } from "../utils/error-handler";
 import { logInfo, logWarn } from "../utils/logger";
+import { withCache } from "../utils/cache";
 
 const router: Router = Router();
 
@@ -42,17 +43,21 @@ router.get(
         : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       const end = endDate ? new Date(endDate) : new Date();
 
-      const [signupFunnel, timeToFirstValue, activationByChannel] = await Promise.all([
-        // Signup funnel - filtered by tenant_id for multi-tenant isolation
-        query<{
-          signup_started: string;
-          signup_completed: string;
-          email_verified: string;
-          api_key_created: string;
-          job_created: string;
-          reconciliation_success: string;
-        }>(
-          `SELECT
+      const [signupFunnel, timeToFirstValue, activationByChannel] = await withCache(
+        `dashboard:activation:${tenantId}:${start.toISOString()}:${end.toISOString()}`,
+        300000,
+        () =>
+          Promise.all([
+            // Signup funnel - filtered by tenant_id for multi-tenant isolation
+            query<{
+              signup_started: string;
+              signup_completed: string;
+              email_verified: string;
+              api_key_created: string;
+              job_created: string;
+              reconciliation_success: string;
+            }>(
+              `SELECT
              COUNT(*) FILTER (WHERE event_name = 'SignupStarted') as signup_started,
              COUNT(*) FILTER (WHERE event_name = 'SignupCompleted') as signup_completed,
              COUNT(*) FILTER (WHERE event_name = 'EmailVerified') as email_verified,
@@ -61,17 +66,17 @@ router.get(
              COUNT(*) FILTER (WHERE event_name = 'ReconciliationSuccess') as reconciliation_success
            FROM events
            WHERE tenant_id = $1 AND timestamp >= $2 AND timestamp <= $3`,
-          [tenantId, start, end]
-        ),
+              [tenantId, start, end]
+            ),
 
-        // Time to first value - filtered by tenant_id
-        query<{
-          median_hours: number;
-          p25_hours: number;
-          p75_hours: number;
-          p95_hours: number;
-        }>(
-          `WITH user_events AS (
+            // Time to first value - filtered by tenant_id
+            query<{
+              median_hours: number;
+              p25_hours: number;
+              p75_hours: number;
+              p95_hours: number;
+            }>(
+              `WITH user_events AS (
              SELECT
                user_id,
                MIN(timestamp) FILTER (WHERE event_name = 'SignupCompleted') as signup_time,
@@ -87,17 +92,17 @@ router.get(
              PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY EXTRACT(EPOCH FROM (first_success_time - signup_time)) / 3600) as p75_hours,
              PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY EXTRACT(EPOCH FROM (first_success_time - signup_time)) / 3600) as p95_hours
            FROM user_events`,
-          [tenantId, start, end]
-        ),
+              [tenantId, start, end]
+            ),
 
-        // Activation rate by channel - filtered by tenant_id
-        query<{
-          channel: string;
-          signups: string;
-          activated: string;
-          activation_rate: number;
-        }>(
-          `SELECT
+            // Activation rate by channel - filtered by tenant_id
+            query<{
+              channel: string;
+              signups: string;
+              activated: string;
+              activation_rate: number;
+            }>(
+              `SELECT
              COALESCE(properties->>'source', 'unknown') as channel,
              COUNT(*) FILTER (WHERE event_name = 'SignupCompleted') as signups,
              COUNT(*) FILTER (WHERE event_name = 'JobCreated') as activated,
@@ -109,9 +114,10 @@ router.get(
            FROM events
            WHERE tenant_id = $1 AND timestamp >= $2 AND timestamp <= $3
            GROUP BY channel`,
-          [tenantId, start, end]
-        ),
-      ]);
+              [tenantId, start, end]
+            ),
+          ])
+      );
 
       res.json({
         data: {
@@ -171,14 +177,18 @@ router.get(
         : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       const end = endDate ? new Date(endDate) : new Date();
 
-      const [reconciliationVolume, accuracyTrends, errorRate, exceptionRate] = await Promise.all([
-        // Reconciliation volume - filtered by tenant_id
-        query<{
-          date: Date;
-          count: string;
-          adapter_combination: string;
-        }>(
-          `SELECT
+      const [reconciliationVolume, accuracyTrends, errorRate, exceptionRate] = await withCache(
+        `dashboard:usage:${tenantId}:${start.toISOString()}:${end.toISOString()}`,
+        300000,
+        () =>
+          Promise.all([
+            // Reconciliation volume - filtered by tenant_id
+            query<{
+              date: Date;
+              count: string;
+              adapter_combination: string;
+            }>(
+              `SELECT
              DATE(timestamp) as date,
              COUNT(*) as count,
              properties->>'sourceAdapter' || '-' || properties->>'targetAdapter' as adapter_combination
@@ -188,16 +198,16 @@ router.get(
              AND timestamp >= $2 AND timestamp <= $3
            GROUP BY date, adapter_combination
            ORDER BY date`,
-          [tenantId, start, end]
-        ),
+              [tenantId, start, end]
+            ),
 
-        // Accuracy trends - filtered by tenant_id
-        query<{
-          date: Date;
-          avg_accuracy: number;
-          job_type: string;
-        }>(
-          `SELECT
+            // Accuracy trends - filtered by tenant_id
+            query<{
+              date: Date;
+              avg_accuracy: number;
+              job_type: string;
+            }>(
+              `SELECT
              DATE(timestamp) as date,
              AVG((properties->>'accuracy')::float) as avg_accuracy,
              properties->>'sourceAdapter' || '-' || properties->>'targetAdapter' as job_type
@@ -207,16 +217,16 @@ router.get(
              AND timestamp >= $2 AND timestamp <= $3
            GROUP BY date, job_type
            ORDER BY date`,
-          [tenantId, start, end]
-        ),
+              [tenantId, start, end]
+            ),
 
-        // Error rate - filtered by tenant_id
-        query<{
-          error_type: string;
-          count: string;
-          percentage: number;
-        }>(
-          `SELECT
+            // Error rate - filtered by tenant_id
+            query<{
+              error_type: string;
+              count: string;
+              percentage: number;
+            }>(
+              `SELECT
              properties->>'errorType' as error_type,
              COUNT(*) as count,
              COUNT(*)::float / (SELECT COUNT(*) FROM events WHERE tenant_id = $1 AND event_name IN ('ReconciliationSuccess', 'ReconciliationError') AND timestamp >= $2 AND timestamp <= $3) * 100 as percentage
@@ -225,16 +235,16 @@ router.get(
              AND event_name = 'ReconciliationError'
              AND timestamp >= $2 AND timestamp <= $3
            GROUP BY error_type`,
-          [tenantId, start, end]
-        ),
+              [tenantId, start, end]
+            ),
 
-        // Exception rate - filtered by tenant_id
-        query<{
-          reason: string;
-          count: string;
-          percentage: number;
-        }>(
-          `SELECT
+            // Exception rate - filtered by tenant_id
+            query<{
+              reason: string;
+              count: string;
+              percentage: number;
+            }>(
+              `SELECT
              reason,
              COUNT(*) as count,
              COUNT(*)::float / (SELECT COUNT(*) FROM exceptions e JOIN jobs j ON e.job_id = j.id WHERE j.tenant_id = $1 AND e.created_at >= $2 AND e.created_at <= $3) * 100 as percentage
@@ -242,9 +252,10 @@ router.get(
            JOIN jobs j ON e.job_id = j.id
            WHERE j.tenant_id = $1 AND e.created_at >= $2 AND e.created_at <= $3
            GROUP BY reason`,
-          [tenantId, start, end]
-        ),
-      ]);
+              [tenantId, start, end]
+            ),
+          ])
+      );
 
       res.json({
         data: {
@@ -342,14 +353,18 @@ router.get(
         : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       const end = endDate ? new Date(endDate) : new Date();
 
-      const [ticketVolume, resolutionTime] = await Promise.all([
-        // Support ticket volume - filtered by tenant_id
-        query<{
-          date: Date;
-          category: string;
-          count: string;
-        }>(
-          `SELECT
+      const [ticketVolume, resolutionTime] = await withCache(
+        `dashboard:support:${tenantId}:${start.toISOString()}:${end.toISOString()}`,
+        300000,
+        () =>
+          Promise.all([
+            // Support ticket volume - filtered by tenant_id
+            query<{
+              date: Date;
+              category: string;
+              count: string;
+            }>(
+              `SELECT
              DATE(timestamp) as date,
              properties->>'category' as category,
              COUNT(*) as count
@@ -359,15 +374,15 @@ router.get(
              AND timestamp >= $2 AND timestamp <= $3
            GROUP BY date, category
            ORDER BY date`,
-          [tenantId, start, end]
-        ),
+              [tenantId, start, end]
+            ),
 
-        // Exception resolution time - filtered by tenant_id
-        query<{
-          median_hours: number;
-          p95_hours: number;
-        }>(
-          `SELECT
+            // Exception resolution time - filtered by tenant_id
+            query<{
+              median_hours: number;
+              p95_hours: number;
+            }>(
+              `SELECT
              PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY EXTRACT(EPOCH FROM (resolved_at - created_at)) / 3600) as median_hours,
              PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY EXTRACT(EPOCH FROM (resolved_at - created_at)) / 3600) as p95_hours
            FROM exceptions e
@@ -375,9 +390,10 @@ router.get(
            WHERE j.tenant_id = $1
              AND e.status = 'resolved'
              AND e.resolved_at >= $2 AND e.resolved_at <= $3`,
-          [tenantId, start, end]
-        ),
-      ]);
+              [tenantId, start, end]
+            ),
+          ])
+      );
 
       res.json({
         data: {
