@@ -12,9 +12,7 @@
  */
 
 import { Router, Response } from "express";
-import { z } from "zod";
 import { Prisma } from "@prisma/client";
-import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
@@ -146,7 +144,7 @@ router.get(
         exceptionId,
         reasons,
         summary:
-          reasons.length > 0
+          reasons.length > 0 && reasons[0]
             ? `This exception was flagged due to ${reasons[0].label.toLowerCase()}.`
             : "This exception was flagged based on reconciliation rules.",
         metadata: {
@@ -336,7 +334,7 @@ router.get(
               current: run.targetCount,
               delta: targetDelta,
             },
-          } as Record<string, unknown>,
+          } as unknown as Prisma.InputJsonValue,
           sourceDataChanged: sourceDelta !== 0,
           targetDataChanged: targetDelta !== 0,
           totalDelta:
@@ -352,10 +350,10 @@ router.get(
             run.unmatchedTargetCount -
             (previousRun.unmatchedSourceCount + previousRun.unmatchedTargetCount),
           exceptionDelta: (run.conflictCount || 0) - (previousRun.conflictCount || 0),
-          newExceptionPatterns: [] as unknown as Record<string, unknown>,
-          resolvedPatterns: [] as unknown as Record<string, unknown>,
+          newExceptionPatterns: [] as unknown as Prisma.InputJsonValue,
+          resolvedPatterns: [] as unknown as Prisma.InputJsonValue,
           configDriftDetected: false,
-          configDriftSummary: [] as unknown as Record<string, unknown>,
+          configDriftSummary: [] as unknown as Prisma.InputJsonValue,
           confidenceDelta:
             run.confidenceAvg && previousRun.confidenceAvg
               ? run.confidenceAvg.toNumber() - previousRun.confidenceAvg.toNumber()
@@ -427,10 +425,16 @@ router.get(
       const avgExceptionRate = exceptionDeltas.reduce((a, b) => a + b, 0) / exceptionDeltas.length;
 
       let overallTrend: "improving" | "stable" | "degrading" = "stable";
-      if (exceptionDeltas[0] < 0 && exceptionDeltas[1] <= 0) {
-        overallTrend = "improving";
-      } else if (exceptionDeltas[0] > 0 && exceptionDeltas[1] >= 0) {
-        overallTrend = "degrading";
+      if (
+        exceptionDeltas.length >= 2 &&
+        exceptionDeltas[0] !== undefined &&
+        exceptionDeltas[1] !== undefined
+      ) {
+        if (exceptionDeltas[0] < 0 && exceptionDeltas[1] <= 0) {
+          overallTrend = "improving";
+        } else if (exceptionDeltas[0] > 0 && exceptionDeltas[1] >= 0) {
+          overallTrend = "degrading";
+        }
       }
 
       const variance =
@@ -504,7 +508,7 @@ router.post(
           adjudicatorId: userId,
           adjudicatorType: "operator",
           adjudicationType: override ? "override" : "standard",
-          annotations: exception.metadata as Record<string, unknown> | undefined,
+          annotations: (exception.metadata as Prisma.InputJsonValue) ?? Prisma.JsonNull,
         },
       });
 

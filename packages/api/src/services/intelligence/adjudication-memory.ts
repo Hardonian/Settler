@@ -12,7 +12,7 @@
  */
 
 import crypto from "node:crypto";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 
 export type ResolutionType = "matched" | "manual" | "ignored" | "duplicate" | "escalated";
 export type AdjudicationType = "initial" | "re_adjudication" | "escalated_review" | "auto_resolved";
@@ -240,11 +240,11 @@ export class AdjudicationMemoryService {
         evidenceIds: input.evidenceIds ?? [],
         sourceTrustScore: input.sourceTrustScore,
 
-        annotations: (input.annotations ?? {}) as Record<string, unknown>,
+        annotations: (input.annotations ?? {}) as Prisma.InputJsonValue,
         operatorNotes: input.operatorNotes,
         systemNotes: input.systemNotes,
 
-        suggestedPolicyChange: input.suggestedPolicyChange as Record<string, unknown> | undefined,
+        suggestedPolicyChange: input.suggestedPolicyChange as Prisma.InputJsonValue | undefined,
 
         entryHash,
       },
