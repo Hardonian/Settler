@@ -12,7 +12,6 @@ import {
   toLegacyRunTruth,
   type DeterministicMatchRowLike,
   type ReconJobRecordLike,
-  type ReconResultRecordLike,
   type SnapshotRecordLike,
 } from "./canonical-run-result.js";
 import {
@@ -37,44 +36,6 @@ export type OperatorRunDetailResolution =
   | { kind: "ambiguous_uuid_collision"; jobId: string; ingestionRunId: string }
   | { kind: "not_found" }
   | { kind: "recon_enrichment_failed"; message: string };
-
-function toReconResultRecordLike(row: {
-  id: string;
-  reconJobId: string;
-  status: string;
-  startedAt: Date;
-  completedAt: Date | null;
-  sourceCount: number;
-  targetCount: number;
-  matchedCount: number;
-  unmatchedSourceCount: number;
-  unmatchedTargetCount: number;
-  conflictCount: number;
-  errorMessage: string | null;
-  inputHash: string | null;
-  snapshotId: string | null;
-  summary: unknown;
-  metadata: unknown;
-}): ReconResultRecordLike {
-  return {
-    id: row.id,
-    recon_job_id: row.reconJobId,
-    status: row.status,
-    started_at: row.startedAt.toISOString(),
-    completed_at: row.completedAt?.toISOString() ?? null,
-    source_count: row.sourceCount,
-    target_count: row.targetCount,
-    matched_count: row.matchedCount,
-    unmatched_source_count: row.unmatchedSourceCount,
-    unmatched_target_count: row.unmatchedTargetCount,
-    conflict_count: row.conflictCount,
-    error_message: row.errorMessage,
-    input_hash: row.inputHash,
-    snapshot_id: row.snapshotId,
-    summary: row.summary as Record<string, unknown> | null,
-    metadata: (row.metadata as Record<string, unknown> | null) ?? null,
-  };
-}
 
 function toReconJobRecordLike(job: {
   id: string;
