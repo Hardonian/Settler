@@ -6,7 +6,7 @@
  */
 
 import { PrismaClient, Prisma } from "@prisma/client";
-import { logInfo, logWarn, logError } from "../../../infrastructure/logging/logger";
+import { logInfo, logWarn, logError } from "../../utils/logger";
 
 export interface RunDeltaInput {
   tenantId: string;
@@ -135,8 +135,8 @@ export class RunDeltaService {
     const resolvedPatterns = this.identifyResolvedPatterns(currentExceptions, previousExceptions);
 
     const confidenceDelta = this.computeDecimalDelta(
-      currentResult?.confidenceAvg as Prisma.Decimal | null,
-      previousResult?.confidenceAvg as Prisma.Decimal | null
+      (currentResult?.confidenceAvg ?? null) as Prisma.Decimal | null,
+      (previousResult?.confidenceAvg ?? null) as Prisma.Decimal | null
     );
     const qualityScoreDelta = this.computeQualityDelta(currentResult, previousResult);
 

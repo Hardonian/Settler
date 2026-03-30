@@ -38,7 +38,6 @@ router.get(
       const exceptionId = req.params.exceptionId as string;
       const limit = parseInt(req.query.limit as string) || 5;
       const includeResolved = req.query.includeResolved === "true";
-      // Used in matching filter below if needed
 
       const exception = await prisma.reconciliationMatch.findFirst({
         where: { id: exceptionId, tenantId },
