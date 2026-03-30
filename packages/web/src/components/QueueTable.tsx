@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 
 export interface QueueItem {
   id: string;
@@ -74,9 +75,12 @@ const QueueTable: React.FC<QueueTableProps> = ({ items }) => {
                   </span>
                 </td>
                 <td className="px-6 py-4 text-sm">
-                  <button className="text-teal-500 hover:text-teal-400 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Link 
+                    href={`/reconcile/${row.id}`}
+                    className="text-teal-500 hover:text-teal-400 font-medium opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
                     Process
-                  </button>
+                  </Link>
                 </td>
               </tr>
             ))}
