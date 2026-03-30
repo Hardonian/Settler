@@ -131,6 +131,7 @@ export default function RunPage() {
 
   const StatusIcon = getStatusIcon(run.status);
   const isIngestionRun = run.runKind === "ingestion_run";
+  const exceptionHrefBase = `/console/exceptions?runId=${run.id}&runKind=${run.runKind}`;
 
   return (
     <div className="p-6 space-y-6">
@@ -181,7 +182,8 @@ export default function RunPage() {
             <CardDescription>
               This run is stored in <code className="text-xs">reconciliation_runs</code>, not{" "}
               <code className="text-xs">recon_jobs</code>. Counts and lifecycle here reflect that
-              row; snapshot-backed job config and drift-event scoping may differ from recon job runs.
+              row; snapshot-backed job config and drift-event scoping may differ from recon job
+              runs.
             </CardDescription>
           </CardHeader>
           {run.exceptionWorkflowNote ? (
@@ -375,17 +377,17 @@ export default function RunPage() {
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Link href={`/console/exceptions?runId=${run.id}`}>
+              <Link href={exceptionHrefBase}>
                 <Button variant="outline" size="sm">
                   Open All Run Exceptions
                 </Button>
               </Link>
-              <Link href={`/console/exceptions?runId=${run.id}&status=pending`}>
+              <Link href={`${exceptionHrefBase}&status=pending`}>
                 <Button variant="outline" size="sm">
                   Open Pending
                 </Button>
               </Link>
-              <Link href={`/console/exceptions?runId=${run.id}&status=investigating`}>
+              <Link href={`${exceptionHrefBase}&status=investigating`}>
                 <Button variant="outline" size="sm">
                   Open Investigating
                 </Button>
@@ -419,7 +421,7 @@ export default function RunPage() {
                 </Button>
               </Link>
               {run.summary && run.summary.unmatched > 0 && (
-                <Link href={`/console/exceptions?runId=${run.id}`}>
+                <Link href={exceptionHrefBase}>
                   <Button
                     variant="outline"
                     className="w-full h-20 flex flex-col items-start justify-center border-orange-200 dark:border-orange-800"
@@ -438,7 +440,7 @@ export default function RunPage() {
                 </Link>
               )}
               {run.summary && run.summary.conflicts > 0 && (
-                <Link href={`/console/exceptions?runId=${run.id}&type=conflicts`}>
+                <Link href={`${exceptionHrefBase}&type=conflicts`}>
                   <Button
                     variant="outline"
                     className="w-full h-20 flex flex-col items-start justify-center border-red-200 dark:border-red-800"

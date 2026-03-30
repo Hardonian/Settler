@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
 import { safeFetch } from "@/lib/safe-fetch";
 import {
   RefreshCw,
@@ -82,6 +83,57 @@ interface ExceptionDetail {
     user: string;
     details?: string;
   }[];
+  adjudicationMemories?: {
+    id: string;
+    resolution: string;
+    resolutionReason: string | null;
+    adjudicationType: string;
+    adjudicatorId: string;
+    adjudicatorType: string;
+    outcome: string | null;
+    confidence: number | null;
+    sourceTrustScore: number | null;
+    operatorNotes: string | null;
+    systemNotes: string | null;
+    evidenceIds: string[];
+    createdAt: string;
+    completedAt: string | null;
+    parentMemoryId: string | null;
+  }[];
+  evidenceSummary?: {
+    total: number;
+    degraded: number;
+    attested: number;
+    latestCapturedAt: string | null;
+    items: {
+      id: string;
+      artifactType: string;
+      artifactKey: string;
+      capturedAt: string;
+      capturedBy: string;
+      degraded: boolean;
+      degradedReasons: string[];
+      attested: boolean;
+      reliabilityScore: number | null;
+    }[];
+  };
+  proofSummary?: {
+    total: number;
+    finalized: number;
+    latestCreatedAt: string | null;
+    items: {
+      id: string;
+      packageType: string;
+      packageKey: string;
+      status: string;
+      completenessScore: number;
+      missingEvidence: string[];
+      completenessFlags: string[];
+      evidenceIds: string[];
+      createdAt: string;
+      finalizedAt: string | null;
+    }[];
+  };
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -267,11 +319,16 @@ type ExceptionAction = "resolve" | "ignore" | "reopen";
 
 async function performExceptionAction(
   exceptionId: string,
-  action: ExceptionAction
+  action: ExceptionAction,
+  notes?: string
 ): Promise<{ success: boolean; message?: string }> {
   const result = await safeFetch<{ success: boolean; message?: string }>(
     `/api/exceptions/${exceptionId}?action=${action}`,
-    { method: "POST" }
+    {
+      method: "POST",
+      body: JSON.stringify(notes?.trim() ? { notes: notes.trim() } : {}),
+      headers: { "Content-Type": "application/json" },
+    }
   );
 
   if (!result.success) {
@@ -299,17 +356,21 @@ function ActionBar({
 }) {
   const [pending, setPending] = useState<ExceptionAction | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [decisionNotes, setDecisionNotes] = useState("");
 
   const execute = async (action: ExceptionAction) => {
     setPending(action);
     setActionError(null);
 
-    const result = await performExceptionAction(exception.id, action);
+    const result = await performExceptionAction(exception.id, action, decisionNotes);
     setPending(null);
 
     if (!result.success) {
       setActionError(result.message || `Failed to ${action} exception`);
     } else {
+      if (action !== "reopen") {
+        setDecisionNotes("");
+      }
       onActionComplete();
     }
   };
@@ -326,30 +387,50 @@ function ActionBar({
       )}
 
       {isActive && (
-        <div className="flex flex-wrap gap-3">
-          <FreezeBlockedButton
-            onClick={() => void execute("resolve")}
-            className="bg-green-600 hover:bg-green-700 disabled:opacity-50"
-            isFrozen={isFrozen}
-            freezeReason={freezeReason}
-            frozenMessage="Exception resolution blocked by tenant freeze"
-            disabled={pending !== null}
-          >
-            <CheckCircle2 className="mr-2 w-4 h-4" />
-            {pending === "resolve" ? "Marking resolved…" : "Mark Resolved"}
-          </FreezeBlockedButton>
+        <div className="space-y-3">
+          <div className="space-y-2">
+            <label htmlFor="exception-decision-notes" className="text-sm font-medium">
+              Decision notes
+            </label>
+            <Textarea
+              id="exception-decision-notes"
+              value={decisionNotes}
+              onChange={(event) => setDecisionNotes(event.target.value)}
+              placeholder="Capture the evidence, rationale, or follow-up context that should persist with this decision."
+              rows={4}
+              disabled={pending !== null}
+            />
+            <p className="text-xs text-muted-foreground">
+              These notes are written into the immutable adjudication memory and supporting proof
+              package for this exception.
+            </p>
+          </div>
 
-          <FreezeBlockedButton
-            onClick={() => void execute("ignore")}
-            className="bg-slate-600 hover:bg-muted disabled:opacity-50"
-            isFrozen={isFrozen}
-            freezeReason={freezeReason}
-            frozenMessage="Ignoring exceptions is blocked by tenant freeze"
-            disabled={pending !== null}
-          >
-            <XCircle className="mr-2 w-4 h-4" />
-            {pending === "ignore" ? "Ignoring…" : "Ignore Exception"}
-          </FreezeBlockedButton>
+          <div className="flex flex-wrap gap-3">
+            <FreezeBlockedButton
+              onClick={() => void execute("resolve")}
+              className="bg-green-600 hover:bg-green-700 disabled:opacity-50"
+              isFrozen={isFrozen}
+              freezeReason={freezeReason}
+              frozenMessage="Exception resolution blocked by tenant freeze"
+              disabled={pending !== null}
+            >
+              <CheckCircle2 className="mr-2 w-4 h-4" />
+              {pending === "resolve" ? "Marking resolved…" : "Mark Resolved"}
+            </FreezeBlockedButton>
+
+            <FreezeBlockedButton
+              onClick={() => void execute("ignore")}
+              className="bg-slate-600 hover:bg-muted disabled:opacity-50"
+              isFrozen={isFrozen}
+              freezeReason={freezeReason}
+              frozenMessage="Ignoring exceptions is blocked by tenant freeze"
+              disabled={pending !== null}
+            >
+              <XCircle className="mr-2 w-4 h-4" />
+              {pending === "ignore" ? "Ignoring…" : "Ignore Exception"}
+            </FreezeBlockedButton>
+          </div>
         </div>
       )}
 
@@ -564,8 +645,8 @@ export default function ExceptionDetailPage() {
         <CardHeader>
           <CardTitle className="text-base">Provenance &amp; Origin</CardTitle>
           <p className="text-xs text-muted-foreground font-normal mt-1 max-w-3xl">
-            This page is for drift exceptions (resolve, ignore, reopen). Match adjudication for
-            reconciliation pairs is handled under Jobs, not here.
+            Canonical reconciliation exception context for operator review, evidence capture, and
+            durable adjudication memory.
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -602,43 +683,43 @@ export default function ExceptionDetailPage() {
               <>
                 <ExceptionDetailRunContext run={runContext} />
                 <div className="space-y-0 border-t border-border pt-2">
-                <ProvenanceRow label="Source adapter" value={sourceAdapter} />
-                <ProvenanceRow label="Target adapter" value={targetAdapter} />
-                <ProvenanceRow label="Source transaction" value={srcTxn} mono />
-                <ProvenanceRow label="Target transaction" value={tgtTxn} mono />
-                <ProvenanceRow
-                  label="Field path"
-                  value={prov?.fieldPath ?? exception.fieldPath ?? null}
-                  mono
-                />
-                <ProvenanceRow label="Rule ID" value={prov?.ruleId ?? null} mono />
-                <ProvenanceRow label="Detector ID" value={prov?.detectorId ?? null} mono />
-                <ProvenanceRow label="Ingestion ID" value={prov?.ingestionId ?? null} mono />
-                <ProvenanceRow label="Match reason" value={prov?.matchReason ?? null} />
-                <ProvenanceRow
-                  label="Confidence"
-                  value={
-                    prov?.confidenceScore !== null && prov?.confidenceScore !== undefined
-                      ? `${(prov.confidenceScore * 100).toFixed(1)}%`
-                      : exception.confidenceScore !== undefined
-                        ? `${Math.round(exception.confidenceScore * 100)}%`
-                        : null
-                  }
-                />
-                {prov?.rationale_codes && prov.rationale_codes.length > 0 && (
-                  <div className="flex items-start gap-2 py-1.5 border-b border-border last:border-0">
-                    <span className="text-xs text-muted-foreground w-44 shrink-0">
-                      Rationale codes
-                    </span>
-                    <div className="flex flex-wrap gap-1">
-                      {prov.rationale_codes.map((code) => (
-                        <Badge key={code} variant="outline" className="font-mono text-xs">
-                          {code}
-                        </Badge>
-                      ))}
+                  <ProvenanceRow label="Source adapter" value={sourceAdapter} />
+                  <ProvenanceRow label="Target adapter" value={targetAdapter} />
+                  <ProvenanceRow label="Source transaction" value={srcTxn} mono />
+                  <ProvenanceRow label="Target transaction" value={tgtTxn} mono />
+                  <ProvenanceRow
+                    label="Field path"
+                    value={prov?.fieldPath ?? exception.fieldPath ?? null}
+                    mono
+                  />
+                  <ProvenanceRow label="Rule ID" value={prov?.ruleId ?? null} mono />
+                  <ProvenanceRow label="Detector ID" value={prov?.detectorId ?? null} mono />
+                  <ProvenanceRow label="Ingestion ID" value={prov?.ingestionId ?? null} mono />
+                  <ProvenanceRow label="Match reason" value={prov?.matchReason ?? null} />
+                  <ProvenanceRow
+                    label="Confidence"
+                    value={
+                      prov?.confidenceScore !== null && prov?.confidenceScore !== undefined
+                        ? `${(prov.confidenceScore * 100).toFixed(1)}%`
+                        : exception.confidenceScore !== undefined
+                          ? `${Math.round(exception.confidenceScore * 100)}%`
+                          : null
+                    }
+                  />
+                  {prov?.rationale_codes && prov.rationale_codes.length > 0 && (
+                    <div className="flex items-start gap-2 py-1.5 border-b border-border last:border-0">
+                      <span className="text-xs text-muted-foreground w-44 shrink-0">
+                        Rationale codes
+                      </span>
+                      <div className="flex flex-wrap gap-1">
+                        {prov.rationale_codes.map((code) => (
+                          <Badge key={code} variant="outline" className="font-mono text-xs">
+                            {code}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
                 </div>
               </>
             );
@@ -662,6 +743,219 @@ export default function ExceptionDetailPage() {
                 >
                   {tag}
                 </Badge>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* ── Evidence and proof readiness ── */}
+      {(exception.evidenceSummary || exception.proofSummary) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Evidence &amp; Proof Readiness</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <div className="rounded-lg border border-border bg-muted/20 p-4">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Evidence artifacts
+                </p>
+                <p className="mt-2 text-2xl font-bold">{exception.evidenceSummary?.total ?? 0}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {exception.evidenceSummary?.attested ?? 0} attested,{" "}
+                  {exception.evidenceSummary?.degraded ?? 0} degraded
+                </p>
+              </div>
+              <div className="rounded-lg border border-border bg-muted/20 p-4">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Proof packages
+                </p>
+                <p className="mt-2 text-2xl font-bold">{exception.proofSummary?.total ?? 0}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {exception.proofSummary?.finalized ?? 0} finalized
+                </p>
+              </div>
+              <div className="rounded-lg border border-border bg-muted/20 p-4">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Latest evidence
+                </p>
+                <p className="mt-2 text-sm font-medium">
+                  {exception.evidenceSummary?.latestCapturedAt
+                    ? new Date(exception.evidenceSummary.latestCapturedAt).toLocaleString()
+                    : "Not captured yet"}
+                </p>
+              </div>
+              <div className="rounded-lg border border-border bg-muted/20 p-4">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Latest proof package
+                </p>
+                <p className="mt-2 text-sm font-medium">
+                  {exception.proofSummary?.latestCreatedAt
+                    ? new Date(exception.proofSummary.latestCreatedAt).toLocaleString()
+                    : "Not generated yet"}
+                </p>
+              </div>
+            </div>
+
+            {exception.evidenceSummary?.items?.length ? (
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Captured evidence</p>
+                <div className="space-y-2">
+                  {exception.evidenceSummary.items.map((artifact) => (
+                    <div
+                      key={artifact.id}
+                      className="rounded-lg border border-border bg-muted/10 p-3"
+                    >
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge variant="outline" className="font-mono text-xs">
+                          {artifact.artifactType}
+                        </Badge>
+                        {artifact.attested ? <Badge className="text-xs">Attested</Badge> : null}
+                        {artifact.degraded ? (
+                          <Badge variant="warning" size="sm">
+                            Degraded
+                          </Badge>
+                        ) : null}
+                        {artifact.reliabilityScore != null ? (
+                          <Badge variant="outline" className="text-xs">
+                            Reliability {(artifact.reliabilityScore * 100).toFixed(0)}%
+                          </Badge>
+                        ) : null}
+                      </div>
+                      <p className="mt-2 font-mono text-xs break-all">{artifact.artifactKey}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Captured {new Date(artifact.capturedAt).toLocaleString()} by{" "}
+                        {artifact.capturedBy}
+                      </p>
+                      {artifact.degradedReasons.length > 0 ? (
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {artifact.degradedReasons.map((reason) => (
+                            <Badge key={`${artifact.id}-${reason}`} variant="outline" size="sm">
+                              {reason}
+                            </Badge>
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {exception.proofSummary?.items?.length ? (
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Proof packages</p>
+                <div className="space-y-2">
+                  {exception.proofSummary.items.map((proof) => (
+                    <div key={proof.id} className="rounded-lg border border-border bg-muted/10 p-3">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge variant="outline" className="font-mono text-xs">
+                          {proof.packageType}
+                        </Badge>
+                        <Badge
+                          className={
+                            proof.status === "finalized"
+                              ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                              : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"
+                          }
+                        >
+                          {proof.status}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs">
+                          Completeness {(proof.completenessScore * 100).toFixed(0)}%
+                        </Badge>
+                      </div>
+                      <p className="mt-2 font-mono text-xs break-all">{proof.packageKey}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Created {new Date(proof.createdAt).toLocaleString()}
+                        {proof.finalizedAt
+                          ? ` • Finalized ${new Date(proof.finalizedAt).toLocaleString()}`
+                          : ""}
+                      </p>
+                      {proof.missingEvidence.length > 0 ? (
+                        <div className="mt-2">
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Missing evidence
+                          </p>
+                          <div className="mt-1 flex flex-wrap gap-1">
+                            {proof.missingEvidence.map((item) => (
+                              <Badge key={`${proof.id}-${item}`} variant="outline" size="sm">
+                                {item}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+                      {proof.completenessFlags.length > 0 ? (
+                        <div className="mt-2">
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Completeness flags
+                          </p>
+                          <div className="mt-1 flex flex-wrap gap-1">
+                            {proof.completenessFlags.map((flag) => (
+                              <Badge key={`${proof.id}-${flag}`} variant="outline" size="sm">
+                                {flag}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* ── Adjudication memory ── */}
+      {exception.adjudicationMemories && exception.adjudicationMemories.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Adjudication Memory</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {exception.adjudicationMemories.map((memory) => (
+                <div key={memory.id} className="rounded-lg border border-border bg-muted/10 p-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant="outline" className="font-mono text-xs">
+                      {memory.resolution}
+                    </Badge>
+                    {memory.outcome ? (
+                      <Badge className="bg-muted/40 text-foreground dark:bg-background dark:text-muted-foreground">
+                        {memory.outcome}
+                      </Badge>
+                    ) : null}
+                    <Badge variant="outline" className="text-xs">
+                      {memory.adjudicationType}
+                    </Badge>
+                    {memory.sourceTrustScore != null ? (
+                      <Badge variant="outline" className="text-xs">
+                        Source trust {(memory.sourceTrustScore * 100).toFixed(0)}%
+                      </Badge>
+                    ) : null}
+                  </div>
+                  <p className="mt-2 text-sm">
+                    {memory.resolutionReason ?? "No structured resolution reason recorded."}
+                  </p>
+                  {memory.operatorNotes ? (
+                    <p className="mt-2 text-sm text-muted-foreground">{memory.operatorNotes}</p>
+                  ) : null}
+                  {memory.systemNotes ? (
+                    <p className="mt-2 text-xs text-muted-foreground">{memory.systemNotes}</p>
+                  ) : null}
+                  <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                    <span>Actor: {memory.adjudicatorId}</span>
+                    <span>
+                      Recorded {new Date(memory.completedAt ?? memory.createdAt).toLocaleString()}
+                    </span>
+                    <span>Evidence refs: {memory.evidenceIds.length}</span>
+                    {memory.parentMemoryId ? <span>Reopened from prior decision</span> : null}
+                  </div>
+                </div>
               ))}
             </div>
           </CardContent>

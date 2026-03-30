@@ -49,7 +49,7 @@ router.get(
       const exceptionId = req.params.exceptionId as string;
       const limit = parseInt(req.query.limit as string) || 5;
       const includeResolved = req.query.includeResolved === "true";
-      // We use the boolean directly if needed, but for similarity we prioritize intelligence-driven matching.
+      const resolvedStatuses = includeResolved ? ["resolved", "dismissed"] : ["resolved"];
 
       const exception = await prisma.reconciliationMatch.findFirst({
         where: { id: exceptionId, tenantId },
@@ -771,10 +771,10 @@ router.post(
         data: {
           tenantId,
           artifactType: artifactType as any,
-          artifactKey,
+          artifactKey: `${artifactType}:${sourceEntityId}`,
           payloadType,
           payload: payload as Prisma.InputJsonValue,
-          payloadHash,
+          payloadHash: payloadHash,
           sourceEntityId,
           reliabilityScore: reliabilityScore ? new Prisma.Decimal(reliabilityScore) : null,
           reliabilityFactors: reliabilityFactors as Prisma.InputJsonValue,
@@ -858,7 +858,7 @@ router.post(
         ? await prisma.evidenceArtifact.findMany({
             where: {
               tenantId,
-              sourceEntityType: entityType,
+              artifactType: entityType,
               sourceEntityId: { in: entityIds },
               isSuperseded: false,
             },

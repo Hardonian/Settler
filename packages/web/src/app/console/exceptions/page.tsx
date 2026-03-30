@@ -109,9 +109,7 @@ function buildColumns(_runId: string | null): DataTableColumn<Exception>[] {
       cell: (row) => (
         <div>
           <p className="line-clamp-2">{row.description}</p>
-          {row.statusDetail && (
-            <p className="mt-1 text-[11px] opacity-70">{row.statusDetail}</p>
-          )}
+          {row.statusDetail && <p className="mt-1 text-[11px] opacity-70">{row.statusDetail}</p>}
         </div>
       ),
     },
@@ -133,9 +131,7 @@ function buildColumns(_runId: string | null): DataTableColumn<Exception>[] {
       header: "Amount",
       cellClassName: "font-mono text-xs",
       cell: (row) =>
-        row.amount != null && row.currency
-          ? `${row.currency} ${row.amount.toLocaleString()}`
-          : "—",
+        row.amount != null && row.currency ? `${row.currency} ${row.amount.toLocaleString()}` : "—",
     },
     {
       key: "run",
@@ -170,6 +166,7 @@ function buildColumns(_runId: string | null): DataTableColumn<Exception>[] {
 export default function ExceptionsPage() {
   const searchParams = useSearchParams();
   const runId = searchParams.get("runId");
+  const runKind = searchParams.get("runKind");
   const typeFilter = searchParams.get("type");
 
   const [exceptions, setExceptions] = useState<Exception[]>([]);
@@ -198,7 +195,12 @@ export default function ExceptionsPage() {
     Object.entries(filters).forEach(([key, value]) => {
       if (value) queryParams.append(key, value as string);
     });
-    if (runId) queryParams.set("runId", runId);
+    if (runId) {
+      queryParams.set("runId", runId);
+    }
+    if (runKind) {
+      queryParams.set("runKind", runKind);
+    }
 
     const result = await safeFetch<{
       items?: Exception[];
@@ -215,7 +217,7 @@ export default function ExceptionsPage() {
       setExceptions([]);
     }
     setLoading(false);
-  }, [filters, runId]);
+  }, [filters, runId, runKind]);
 
   useEffect(() => {
     void loadExceptions();
@@ -266,10 +268,7 @@ export default function ExceptionsPage() {
         <ConsolePageHeader
           title="Exceptions"
           description="Operator decision queue for unresolved reconciliation outcomes."
-          breadcrumbs={[
-            { label: "Console", href: "/console" },
-            { label: "Exceptions" },
-          ]}
+          breadcrumbs={[{ label: "Console", href: "/console" }, { label: "Exceptions" }]}
         />
         <EmptyState
           icon={AlertTriangle}
@@ -339,7 +338,10 @@ export default function ExceptionsPage() {
         <CardContent className="py-5">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="space-y-1.5">
-              <label htmlFor="status-filter" className="block text-xs font-medium text-muted-foreground">
+              <label
+                htmlFor="status-filter"
+                className="block text-xs font-medium text-muted-foreground"
+              >
                 Status
               </label>
               <select
@@ -358,7 +360,10 @@ export default function ExceptionsPage() {
               </select>
             </div>
             <div className="space-y-1.5">
-              <label htmlFor="severity-filter" className="block text-xs font-medium text-muted-foreground">
+              <label
+                htmlFor="severity-filter"
+                className="block text-xs font-medium text-muted-foreground"
+              >
                 Severity
               </label>
               <select
@@ -377,7 +382,10 @@ export default function ExceptionsPage() {
               </select>
             </div>
             <div className="space-y-1.5">
-              <label htmlFor="type-filter" className="block text-xs font-medium text-muted-foreground">
+              <label
+                htmlFor="type-filter"
+                className="block text-xs font-medium text-muted-foreground"
+              >
                 Type
               </label>
               <select
@@ -397,7 +405,10 @@ export default function ExceptionsPage() {
               </select>
             </div>
             <div className="space-y-1.5">
-              <label htmlFor="search-filter" className="block text-xs font-medium text-muted-foreground">
+              <label
+                htmlFor="search-filter"
+                className="block text-xs font-medium text-muted-foreground"
+              >
                 Search
               </label>
               <div className="relative">
