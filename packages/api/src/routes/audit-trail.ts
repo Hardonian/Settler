@@ -90,7 +90,7 @@ router.get(
         [...values, limit, offset]
       );
 
-      const total = auditLogs.length > 0 ? parseInt(auditLogs[0].total_count) : 0;
+      const total = parseInt(auditLogs[0]?.total_count ?? "0");
 
       res.json({
         data: auditLogs.map((log) => ({
