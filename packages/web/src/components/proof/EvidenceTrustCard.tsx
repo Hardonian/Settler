@@ -26,8 +26,6 @@ export function EvidenceTrustCard({
 }: EvidenceTrustCardProps) {
   const scorePercentage = Math.round(completenessScore * 100);
   const isHealthy = completenessScore >= 0.8;
-  const isWarning = completenessScore > 0.4 && completenessScore < 0.8;
-  const isCritical = completenessScore <= 0.4;
 
   return (
     <Card className="panel glass border-l-4 border-l-primary/40 overflow-hidden group hover:shadow-xl transition-all duration-300">
@@ -131,8 +129,12 @@ export function EvidenceTrustCard({
 
         {/* Audit Footer */}
         <div className="pt-4 border-t border-border/40 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest border border-border/50 px-2 py-1 rounded-md bg-muted/40">
-            <RefreshCw className="h-3 w-3" /> {Math.round(reliabilityScore * 100)}% RELIABILITY
+          <div className="flex items-center gap-2">
+            <Tooltip content="Weighted reliability based on source freshness and provenance depth.">
+              <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/40 text-[10px] font-bold text-muted-foreground uppercase tracking-widest border border-border/50">
+                <RefreshCw className="h-3 w-3" /> {Math.round(reliabilityScore * 100)}% RELIABILITY
+              </div>
+            </Tooltip>
           </div>
           <button className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary/80 transition-colors group/btn">
             Inspect Proof{" "}
