@@ -6,7 +6,6 @@
  */
 
 import { PrismaClient, Prisma } from "@prisma/client";
-import { logInfo, logWarn, logError } from "../../utils/logger";
 
 export interface RunDeltaInput {
   tenantId: string;
@@ -489,8 +488,8 @@ export class RunDeltaService {
 
   private assessDriftSignificance(
     field: string,
-    current: unknown,
-    previous: unknown
+    _current: unknown,
+    _previous: unknown
   ): "low" | "medium" | "high" {
     const highSignificanceFields = [
       "reconStrategy",

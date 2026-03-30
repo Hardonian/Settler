@@ -7,7 +7,7 @@ import { NotFoundError, ValidationError as BadRequestError } from "../utils/type
 import { handleRouteError } from "../utils/error-handler";
 import { logInfo } from "../utils/logger";
 import { AdjudicationMemoryService } from "../services/intelligence/adjudication-memory";
-import { assessEvidenceCompleteness, STANDARD_EVIDENCE_REQUIREMENTS } from "@settler/proofs";
+import { STANDARD_EVIDENCE_REQUIREMENTS } from "@settler/proofs";
 import { RunDeltaService } from "../services/intelligence/run-delta";
 import { Prisma } from "@prisma/client";
 import * as crypto from "crypto";
