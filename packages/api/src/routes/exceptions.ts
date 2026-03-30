@@ -214,7 +214,7 @@ function appendAdjudicationHistory(
 }
 
 function mapExceptionToResponse(e: ExceptionForMapping) {
-  let status: "open" | "in_progress" | "resolved" | "dismissed" = e.status || "open";
+  let status: "open" | "in_progress" | "resolved" | "dismissed" = (e.status as any) || "open";
   if (!e.status && e.reviewed) {
     status = e.matchReason?.toLowerCase().includes("ignored") ? "dismissed" : "resolved";
   }
@@ -432,8 +432,9 @@ router.get(
       let avgResolutionMs: number | null = null;
       if (resolvedExceptions.length > 0) {
         const totalMs = resolvedExceptions.reduce(
-          (sum: number, e: { reviewedAt: Date; createdAt: Date }) => {
-            return sum + (e.reviewedAt!.getTime() - e.createdAt.getTime());
+          (sum: number, e: { reviewedAt: Date | null; createdAt: Date }) => {
+            if (!e.reviewedAt) return sum;
+            return sum + (e.reviewedAt.getTime() - e.createdAt.getTime());
           },
           0
         );
