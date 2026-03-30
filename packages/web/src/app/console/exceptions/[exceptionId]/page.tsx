@@ -766,7 +766,9 @@ export default function ExceptionDetailPage() {
                     <p className="text-xs uppercase tracking-wide text-muted-foreground">
                       Evidence artifacts
                     </p>
-                    <p className="mt-2 text-2xl font-bold">{exception.evidenceSummary?.total ?? 0}</p>
+                    <p className="mt-2 text-2xl font-bold">
+                      {exception.evidenceSummary?.total ?? 0}
+                    </p>
                     <p className="mt-1 text-xs text-muted-foreground">
                       {exception.evidenceSummary?.attested ?? 0} attested,{" "}
                       {exception.evidenceSummary?.degraded ?? 0} degraded
@@ -788,7 +790,12 @@ export default function ExceptionDetailPage() {
           <div className="xl:col-span-1">
             <EvidenceTrustCard
               completeness={exception.proofSummary?.items[0]?.completenessScore ?? 0}
-              reliability={exception.evidenceSummary?.items.reduce((acc, item) => acc + (item.reliabilityScore ?? 0), 0) ?? 0 / (exception.evidenceSummary?.items.length || 1)}
+              reliability={
+                (exception.evidenceSummary?.items.reduce(
+                  (acc, item) => acc + (item.reliabilityScore ?? 0),
+                  0
+                ) ?? 0) / (exception.evidenceSummary?.items.length || 1)
+              }
               gapCount={exception.proofSummary?.items[0]?.missingEvidence.length ?? 0}
               onInspectProof={() => setIsProvenanceModalOpen(true)}
               isLoading={isLoading}
@@ -812,7 +819,13 @@ export default function ExceptionDetailPage() {
           })) || []
         }
       />
-
+      {/* ── Evidence and proof artifacts ── */}
+      {(exception.evidenceSummary?.items?.length || exception.proofSummary?.items?.length) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Evidence &amp; Proof Artifacts</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
             {exception.evidenceSummary?.items?.length ? (
               <div className="space-y-2">
                 <p className="text-sm font-medium">Captured evidence</p>
