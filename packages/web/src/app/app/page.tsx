@@ -150,20 +150,36 @@ export default async function AppPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-background shadow-none border-border/60">
+            <Card
+              className={`shadow-none ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "bg-amber-50/50 dark:bg-amber-950/20 border-amber-200/60 dark:border-amber-800/40" : "bg-background border-border/60"}`}
+            >
               <CardHeader className="pb-2">
-                <CardDescription className="text-[10px] uppercase font-bold tracking-wider">
-                  Drift Events
+                <CardDescription
+                  className={`text-[10px] uppercase font-bold tracking-wider ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-700 dark:text-amber-400" : ""}`}
+                >
+                  Pending Exceptions
                 </CardDescription>
-                <CardTitle className="text-2xl font-mono">
-                  {stats?.metrics?.drift_events_detected ?? 0}
+                <CardTitle
+                  className={`text-2xl font-mono ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-700 dark:text-amber-400" : ""}`}
+                >
+                  {stats?.metrics?.pending_exceptions ?? 0}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                  <Zap className="w-3 h-3" />
-                  Detected since restart
-                </div>
+                {(stats?.metrics?.pending_exceptions ?? 0) > 0 ? (
+                  <Link
+                    href="/console/exceptions"
+                    className="text-[10px] text-amber-700 dark:text-amber-400 font-semibold hover:underline flex items-center gap-1"
+                  >
+                    <AlertCircle className="w-3 h-3" />
+                    Triage now →
+                  </Link>
+                ) : (
+                  <div className="text-[10px] text-muted-foreground flex items-center gap-1">
+                    <Zap className="w-3 h-3" />
+                    All exceptions resolved
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -192,7 +208,7 @@ export default async function AppPage() {
                   {stats.recent.map((run: any) => (
                     <Link
                       key={run.id}
-                      href={`/app/runs/${run.id}`}
+                      href={`/console/runs/${run.id}`}
                       className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group"
                     >
                       <div className="flex gap-4 items-center min-w-0">

@@ -10,6 +10,7 @@ import {
   Filter,
   Database,
   Clock,
+  AlertTriangle,
   ExternalLink,
 } from "lucide-react";
 import Link from "next/link";
@@ -39,14 +40,18 @@ export default async function AppRunsPage() {
 
   const avgConfDisplay =
     stats?.avgConfidence != null
-      ? `${(stats.avgConfidence * 100).toFixed(2)}%`
+      ? `${(stats.avgConfidence * 100).toFixed(1)}%`
       : runs.length > 0
-        ? `${Math.round(
-            (runs.reduce((s, r) => s + (r.confidence ?? 1), 0) / runs.length) * 100
-          )}%`
+        ? `${Math.round((runs.reduce((s, r) => s + (r.confidence ?? 1), 0) / runs.length) * 100)}%`
         : "—";
 
   const totalRunsDisplay = stats ? stats.totalRuns.toLocaleString() : runs.length.toLocaleString();
+
+  // Compute exception urgency from the list data
+  const totalUnresolved = runs.reduce((s, r) => s + (r.unresolved_exceptions ?? 0), 0);
+  const reviewNeededRuns = runs.filter(
+    (r) => r.summary_state === "review_needed" || (r.unresolved_exceptions ?? 0) > 0
+  ).length;
 
   return (
     <div className="space-y-8 pb-12">
@@ -57,14 +62,16 @@ export default async function AppRunsPage() {
           </p>
           <h1 className="text-4xl font-bold tracking-tight text-foreground">Reconciliation Runs</h1>
           <p className="mt-4 text-base text-muted-foreground leading-relaxed">
-            A comprehensive history of all reconciliation jobs executed within your tenant. Each run
-            includes a deterministic proof capsule and full lineage tracking for audit readiness.
+            Comprehensive execution history for this tenant. Each run includes deterministic proof
+            lineage and exception tracking for audit readiness.
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" size="lg" className="h-12 font-bold gap-2">
-            <Filter className="h-4 w-4" />
-            Filter Results
+          <Button variant="outline" size="lg" className="h-12 font-bold gap-2" asChild>
+            <Link href="/console/runs">
+              <Filter className="h-4 w-4" />
+              Advanced Filters
+            </Link>
           </Button>
           <Button
             variant="default"
@@ -81,7 +88,7 @@ export default async function AppRunsPage() {
       </div>
 
       {/* Stats cards — real data, no hard-coded values */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="border-border/40 bg-card/50">
           <CardHeader className="pb-2">
             <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
@@ -92,7 +99,7 @@ export default async function AppRunsPage() {
           <CardContent>
             <span className="text-2xl font-bold font-mono">{totalRunsDisplay}</span>
             <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-widest">
-              Reconciliation Jobs
+              Reconciliation Executions
             </p>
           </CardContent>
         </Card>
@@ -104,7 +111,9 @@ export default async function AppRunsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <span className="text-2xl font-bold font-mono text-success">{avgConfDisplay}</span>
+            <span className="text-2xl font-bold font-mono text-green-600 dark:text-green-400">
+              {avgConfDisplay}
+            </span>
             <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-widest">
               Across All Policies
             </p>
@@ -122,6 +131,39 @@ export default async function AppRunsPage() {
             <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-widest">
               Records Reconciled
             </p>
+          </CardContent>
+        </Card>
+        <Card
+          className={`border-border/40 ${totalUnresolved > 0 ? "bg-amber-50/50 dark:bg-amber-950/20 border-amber-200/60 dark:border-amber-900/60" : "bg-card/50"}`}
+        >
+          <CardHeader className="pb-2">
+            <CardTitle
+              className={`text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2 ${totalUnresolved > 0 ? "text-amber-700 dark:text-amber-400" : "text-muted-foreground"}`}
+            >
+              <AlertTriangle className="h-3.5 w-3.5" />
+              Needs Attention
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <span
+              className={`text-2xl font-bold font-mono ${totalUnresolved > 0 ? "text-amber-700 dark:text-amber-400" : "text-muted-foreground"}`}
+            >
+              {totalUnresolved > 0 ? totalUnresolved.toLocaleString() : "—"}
+            </span>
+            <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-widest">
+              {totalUnresolved > 0
+                ? `${reviewNeededRuns} run${reviewNeededRuns === 1 ? "" : "s"} with exceptions`
+                : "No unresolved exceptions"}
+            </p>
+            {totalUnresolved > 0 && (
+              <Link
+                href="/console/exceptions"
+                className="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-amber-700 dark:text-amber-400 hover:underline"
+              >
+                Open Exceptions
+                <ExternalLink className="w-3 h-3" />
+              </Link>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -145,12 +187,12 @@ export default async function AppRunsPage() {
             to prove mathematical correctness without exposing raw transaction data.
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
-            <Button className="font-semibold gap-2 shadow-sm">
-              Configure Evidence Protocols
+            <Button className="font-semibold gap-2 shadow-sm" asChild>
+              <Link href="/console/proof-explorer">Explore Proof Graph</Link>
             </Button>
             <Button variant="outline" className="font-semibold gap-2" asChild>
-              <Link href="/app/proofs">
-                Explore Proof Graph
+              <Link href="/app/evidence">
+                Evidence Query
                 <ExternalLink size={13} />
               </Link>
             </Button>

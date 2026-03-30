@@ -194,37 +194,39 @@ export async function getDashboardStats() {
   if (!tenantId) return null;
 
   try {
-    const [totalJobs, totalUnmatchedRuns, driftEvents, recentActivity] = await Promise.all([
-      prisma.reconJob.count({ where: { tenantId, deletedAt: null } }),
-      // Count runs with unmatched records (status completed with unmatched or error)
-      prisma.reconResult.count({
-        where: {
-          tenantId,
-          status: { in: ["completed", "completed_mismatch"] },
-          OR: [{ unmatchedSourceCount: { gt: 0 } }, { unmatchedTargetCount: { gt: 0 } }],
-        },
-      }),
-      prisma.driftEvent.count({ where: { tenantId } }),
-      prisma.reconJob.findMany({
-        where: { tenantId, deletedAt: null },
-        orderBy: { createdAt: "desc" },
-        take: 5,
-        select: {
-          id: true,
-          status: true,
-          createdAt: true,
-          name: true,
-          metadata: true,
-          results: {
-            orderBy: { startedAt: "desc" },
-            take: 1,
-            select: {
-              status: true,
+    const [totalJobs, totalUnmatchedRuns, driftEvents, pendingExceptions, recentActivity] =
+      await Promise.all([
+        prisma.reconJob.count({ where: { tenantId, deletedAt: null } }),
+        // Count runs with unmatched records (status completed with unmatched or error)
+        prisma.reconResult.count({
+          where: {
+            tenantId,
+            status: { in: ["completed", "completed_mismatch"] },
+            OR: [{ unmatchedSourceCount: { gt: 0 } }, { unmatchedTargetCount: { gt: 0 } }],
+          },
+        }),
+        prisma.driftEvent.count({ where: { tenantId } }),
+        prisma.driftEvent.count({ where: { tenantId, acknowledged: false } }),
+        prisma.reconJob.findMany({
+          where: { tenantId, deletedAt: null },
+          orderBy: { createdAt: "desc" },
+          take: 5,
+          select: {
+            id: true,
+            status: true,
+            createdAt: true,
+            name: true,
+            metadata: true,
+            results: {
+              orderBy: { startedAt: "desc" },
+              take: 1,
+              select: {
+                status: true,
+              },
             },
           },
-        },
-      }),
-    ]);
+        }),
+      ]);
 
     return {
       metrics: {
@@ -232,6 +234,7 @@ export async function getDashboardStats() {
         // Canonical terminology: unmatched runs = runs with unmatched records
         unmatched_runs: totalUnmatchedRuns,
         drift_events_detected: driftEvents,
+        pending_exceptions: pendingExceptions,
         integrity_score:
           totalJobs > 0 ? Math.round(((totalJobs - totalUnmatchedRuns) / totalJobs) * 100) : 100,
       },
