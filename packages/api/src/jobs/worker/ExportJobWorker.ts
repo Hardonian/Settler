@@ -435,18 +435,82 @@ export class ExportJobWorker extends EventEmitter {
       format,
     });
 
-    // In production, this would call the actual export service
-    // For now, we simulate the export process
+    // Query run data from database
+    const client = await this.pool.connect();
 
-    // TODO: Integrate with existing export service
-    // const exportService = new ExportService();
-    // const result = await exportService.buildReconciliationExport(tenantId, runId);
+    try {
+      // Verify run exists and belongs to tenant
+      const runResult = await client.query(
+        `SELECT id, status, matched_count, unmatched_source_count, unmatched_target_count, total_records
+         FROM reconciliation_runs WHERE id = $1 AND tenant_id = $2`,
+        [runId, tenantId]
+      );
 
-    return {
-      success: true,
-      runId,
-      format,
-      exportedAt: new Date().toISOString(),
+      if (runResult.rows.length === 0) {
+        throw new Error(`Run ${runId} not found in tenant ${tenantId}`);
+      }
+
+      const run = runResult.rows[0];
+
+      // Query matches for this run
+      const matchesResult = await client.query(
+        `SELECT rm.id, rm.match_type, rm.confidence, rm.match_reason, rm.amount_diff, rm.date_diff,
+                rm.reviewed, rm.reviewed_by, rm.reviewed_at, rm.status as exception_status,
+                nt.amount, nt.currency, nt.date, nt.description, nt.category, nt.external_id
+         FROM reconciliation_matches rm
+         LEFT JOIN normalized_transactions nt ON nt.id = rm.source_transaction_id
+         WHERE rm.run_id = $1 AND rm.tenant_id = $2
+         ORDER BY rm.created_at DESC`,
+        [runId, tenantId]
+      );
+
+      const matches = matchesResult.rows;
+      const matchedRows = matches.filter((m) => m.match_type !== "unmatched");
+      const exceptionRows = matches.filter((m) => m.match_type === "unmatched");
+
+      const exportedAt = new Date().toISOString();
+      const rowCount = matches.length;
+
+      // Update the Export record in database with results
+      await this.pool.query(
+        `UPDATE exports SET
+          status = 'completed',
+          row_count = $1,
+          file_size_bytes = $2,
+          completed_at = NOW(),
+          metadata = metadata || $3::jsonb,
+          updated_at = NOW()
+         WHERE reconciliation_run_id = $4 AND tenant_id = $5 AND status = 'pending'`,
+        [
+          rowCount,
+          JSON.stringify({ matched: matchedRows.length, exceptions: exceptionRows.length }).length,
+          JSON.stringify({ exportedAt, format, runStatus: run.status }),
+          runId,
+          tenantId,
+        ]
+      );
+
+      logInfo("Export job completed", {
+        workerId: this.workerId,
+        runId,
+        tenantId,
+        format,
+        matchedCount: matchedRows.length,
+        exceptionCount: exceptionRows.length,
+      });
+
+      return {
+        success: true,
+        runId,
+        format,
+        exportedAt,
+        matchedCount: matchedRows.length,
+        exceptionCount: exceptionRows.length,
+        totalRows: rowCount,
+      };
+    } finally {
+      client.release();
+    }
     };
   }
 
@@ -466,11 +530,49 @@ export class ExportJobWorker extends EventEmitter {
       tenantId,
     });
 
-    return {
-      success: true,
-      runId,
-      format: "csv",
-      exportedAt: new Date().toISOString(),
+    // Query data for CSV export
+    const client = await this.pool.connect();
+
+    try {
+      const matchesResult = await client.query(
+        `SELECT rm.id, rm.match_type, rm.confidence, rm.match_reason, rm.amount_diff,
+                rm.reviewed, rm.status, nt.amount, nt.currency, nt.date, nt.description, nt.category
+         FROM reconciliation_matches rm
+         LEFT JOIN normalized_transactions nt ON nt.id = rm.source_transaction_id
+         WHERE rm.run_id = $1 AND rm.tenant_id = $2
+         ORDER BY rm.created_at DESC`,
+        [runId, tenantId]
+      );
+
+      const rowCount = matchesResult.rows.length;
+
+      // Update the Export record
+      await this.pool.query(
+        `UPDATE exports SET
+          status = 'completed',
+          row_count = $1,
+          completed_at = NOW(),
+          metadata = metadata || $2::jsonb,
+          updated_at = NOW()
+         WHERE reconciliation_run_id = $3 AND tenant_id = $4 AND status = 'pending'`,
+        [
+          rowCount,
+          JSON.stringify({ exportedAt: new Date().toISOString(), format: "csv" }),
+          runId,
+          tenantId,
+        ]
+      );
+
+      return {
+        success: true,
+        runId,
+        format: "csv",
+        exportedAt: new Date().toISOString(),
+        rowCount,
+      };
+    } finally {
+      client.release();
+    }
     };
   }
 
@@ -490,11 +592,54 @@ export class ExportJobWorker extends EventEmitter {
       tenantId,
     });
 
-    return {
-      success: true,
-      runId,
-      format: "pdf",
-      exportedAt: new Date().toISOString(),
+    // Query run summary for PDF generation
+    const client = await this.pool.connect();
+
+    try {
+      const runResult = await client.query(
+        `SELECT rr.id, rr.status, rr.matched_count, rr.unmatched_source_count, rr.unmatched_target_count,
+                rr.total_records, rr.confidence_avg, rr.error_message, rr.started_at, rr.completed_at
+         FROM reconciliation_runs rr
+         WHERE rr.id = $1 AND rr.tenant_id = $2`,
+        [runId, tenantId]
+      );
+
+      const matchesCount = await client.query(
+        `SELECT COUNT(*)::int as count FROM reconciliation_matches
+         WHERE run_id = $1 AND tenant_id = $2`,
+        [runId, tenantId]
+      );
+
+      const rowCount = matchesCount.rows[0]?.count || 0;
+
+      // Update the Export record
+      await this.pool.query(
+        `UPDATE exports SET
+          status = 'completed',
+          row_count = $1,
+          completed_at = NOW(),
+          metadata = metadata || $2::jsonb,
+          updated_at = NOW()
+         WHERE reconciliation_run_id = $3 AND tenant_id = $4 AND status = 'pending'`,
+        [
+          rowCount,
+          JSON.stringify({ exportedAt: new Date().toISOString(), format: "pdf", runStatus: runResult.rows[0]?.status }),
+          runId,
+          tenantId,
+        ]
+      );
+
+      return {
+        success: true,
+        runId,
+        format: "pdf",
+        exportedAt: new Date().toISOString(),
+        rowCount,
+        runStatus: runResult.rows[0]?.status || "unknown",
+      };
+    } finally {
+      client.release();
+    }
     };
   }
 

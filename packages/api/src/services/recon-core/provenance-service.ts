@@ -49,8 +49,11 @@ function buildEntryHash(input: ProvenanceRecordInput & { sequence: number }): st
 export class ProvenanceService {
   constructor(private readonly prisma: PrismaClient) {}
 
-  private async nextSequence(tx: Prisma.TransactionClient, runId: string): Promise<number> {
-    const latest = await tx.reconciliationProvenance.findFirst({
+  private async nextSequence(
+    client: Prisma.TransactionClient | PrismaClient,
+    runId: string
+  ): Promise<number> {
+    const latest = await client.reconciliationProvenance.findFirst({
       where: { runId },
       select: { sequence: true },
       orderBy: { sequence: "desc" },
@@ -58,49 +61,63 @@ export class ProvenanceService {
     return (latest?.sequence ?? 0) + 1;
   }
 
-  async recordEvent(input: ProvenanceRecordInput): Promise<void> {
-    await this.prisma.$transaction(async (tx) => {
-      const run = await tx.reconciliationRun.findFirst({
-        where: {
-          id: input.runId,
-          tenantId: input.tenantId,
-        },
+  private async recordEventWithClient(
+    client: Prisma.TransactionClient | PrismaClient,
+    input: ProvenanceRecordInput
+  ): Promise<void> {
+    const run = await client.reconciliationRun.findFirst({
+      where: {
+        id: input.runId,
+        tenantId: input.tenantId,
+      },
+      select: { id: true },
+    });
+
+    if (!run) {
+      throw new Error(`Cannot record provenance: run ${input.runId} not found in tenant scope`);
+    }
+
+    if (input.matchId) {
+      const match = await client.reconciliationMatch.findFirst({
+        where: { id: input.matchId, runId: input.runId, tenantId: input.tenantId },
         select: { id: true },
       });
-
-      if (!run) {
-        throw new Error(`Cannot record provenance: run ${input.runId} not found in tenant scope`);
+      if (!match) {
+        throw new Error(
+          `Cannot record provenance: match ${input.matchId} not found for run ${input.runId}`
+        );
       }
+    }
 
-      if (input.matchId) {
-        const match = await tx.reconciliationMatch.findFirst({
-          where: { id: input.matchId, runId: input.runId, tenantId: input.tenantId },
-          select: { id: true },
-        });
-        if (!match) {
-          throw new Error(
-            `Cannot record provenance: match ${input.matchId} not found for run ${input.runId}`
-          );
-        }
-      }
+    const sequence = await this.nextSequence(client, input.runId);
+    const entryHash = buildEntryHash({ ...input, sequence });
 
-      const sequence = await this.nextSequence(tx, input.runId);
-      const entryHash = buildEntryHash({ ...input, sequence });
-
-      await tx.reconciliationProvenance.create({
-        data: {
-          tenantId: input.tenantId,
-          runId: input.runId,
-          matchId: input.matchId,
-          sequence,
-          eventType: input.eventType,
-          actorType: input.actorType,
-          actorUserId: input.actorUserId,
-          details: toJsonValue(input.details),
-          entryHash,
-        },
-      });
+    await client.reconciliationProvenance.create({
+      data: {
+        tenantId: input.tenantId,
+        runId: input.runId,
+        matchId: input.matchId,
+        sequence,
+        eventType: input.eventType,
+        actorType: input.actorType,
+        actorUserId: input.actorUserId,
+        details: toJsonValue(input.details),
+        entryHash,
+      },
     });
+  }
+
+  async recordEvent(input: ProvenanceRecordInput): Promise<void> {
+    await this.prisma.$transaction(async (tx) => {
+      await this.recordEventWithClient(tx, input);
+    });
+  }
+
+  async recordEventInTransaction(
+    tx: Prisma.TransactionClient,
+    input: ProvenanceRecordInput
+  ): Promise<void> {
+    await this.recordEventWithClient(tx, input);
   }
 
   async recordMatch(runId: string, tenantId: string, match: DeterministicMatch): Promise<void> {
@@ -131,6 +148,28 @@ export class ProvenanceService {
     reason?: string;
   }): Promise<void> {
     await this.recordEvent({
+      tenantId: input.tenantId,
+      runId: input.runId,
+      matchId: input.matchId,
+      eventType: "review_decision",
+      actorType: "human",
+      actorUserId: input.actorUserId,
+      details: { decision: input.decision, reason: input.reason ?? null },
+    });
+  }
+
+  async recordReviewDecisionInTransaction(
+    tx: Prisma.TransactionClient,
+    input: {
+      tenantId: string;
+      runId: string;
+      matchId: string;
+      decision: "approved" | "rejected" | "override";
+      actorUserId?: string;
+      reason?: string;
+    }
+  ): Promise<void> {
+    await this.recordEventInTransaction(tx, {
       tenantId: input.tenantId,
       runId: input.runId,
       matchId: input.matchId,

@@ -1411,6 +1411,12 @@ model ReconciliationMatch {
   reviewed          Boolean   @default(false)
   reviewedBy        String?   @db.Uuid
   reviewedAt        DateTime?
+  // Enterprise exception workflow fields
+  status            String    @default("open") // open, in_progress, resolved, dismissed
+  assignedTo        String?   @db.Uuid // Operator assigned to resolve this exception
+  resolutionReason  String?   @db.VarChar(100) // Structured reason for resolution
+  notes             String?   @db.Text // Operator notes during adjudication
+  severity          String    @default("medium") // low, medium, high, critical
   metadata          Json      @default("{}")
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
@@ -1426,6 +1432,8 @@ model ReconciliationMatch {
   @@index([matchType])
   @@index([confidence])
   @@index([reviewed])
+  @@index([tenantId, status, assignedTo])
+  @@index([tenantId, status, severity])
   @@map("reconciliation_matches")
 }
 

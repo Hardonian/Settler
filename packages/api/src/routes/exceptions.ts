@@ -1,15 +1,16 @@
 /**
- * Exception Queue Routes
- * UX-008: Exception queue UI for reviewing and resolving unmatched transactions
+ * Exception Queue Routes (Enterprise-Grade)
  *
- * STATUS MAPPING:
- * - "open": Not yet reviewed (reviewed = false)
- * - "in_progress": Currently being reviewed (not currently tracked - would require status field)
- * - "resolved": Reviewed and resolved (reviewed = true, with matchReason)
- * - "dismissed": Reviewed and dismissed (not currently tracked - would require status field)
+ * Provides enterprise exception management with:
+ * - Status workflow: open → in_progress → resolved|dismissed
+ * - Operator assignment and ownership tracking
+ * - Structured resolution reasons
+ * - Operator notes and annotations
+ * - Severity-based prioritization
+ * - Audit trail via provenance service
  *
- * NULL SAFETY:
- * All response fields have fallback values to prevent undefined in client code.
+ * TENANT SAFETY: All queries scoped to req.tenantId
+ * FREEZE AWARE: Mutations are freeze-gated; reads are unrestricted
  */
 
 import { Router, Response } from "express";
@@ -21,22 +22,38 @@ import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
 import { prisma } from "../infrastructure/db/prisma";
 import { ProvenanceService } from "../services/recon-core/provenance-service";
+import { ExceptionReviewService } from "../application/services/ExceptionReviewService";
 
 import { handleRouteError } from "../utils/error-handler";
-import { NotFoundError } from "../utils/typed-errors";
+import { NotFoundError, ConflictError } from "../utils/typed-errors";
 import { trackEventAsync } from "../utils/event-tracker";
 import { logInfo } from "../utils/logger";
 
 const router: Router = Router();
 const provenanceService = new ProvenanceService(prisma);
+const exceptionReviewService = new ExceptionReviewService(prisma, provenanceService);
+// Prisma client generation is currently behind the canonical schema in this environment.
+// Keep the bridge scoped to this route so exception workflow truth can ship without global `any`.
+const exceptionMatchModel = prisma.reconciliationMatch as any;
+const exceptionProvenanceModel = prisma.reconciliationProvenance as any;
+
+// ─── Validation Schemas ──────────────────────────────────────────────────────
 
 const listExceptionsSchema = z.object({
   query: z.object({
     jobId: z.string().uuid().optional(),
-    resolution_status: z.enum(["open", "in_progress", "resolved", "dismissed"]).optional(),
+    status: z.enum(["open", "in_progress", "resolved", "dismissed"]).optional(),
+    severity: z.enum(["low", "medium", "high", "critical"]).optional(),
+    assignedTo: z.string().uuid().optional(),
     category: z.string().optional(),
     startDate: z.string().datetime().optional(),
     endDate: z.string().datetime().optional(),
+    search: z.string().max(255).optional(),
+    sortBy: z
+      .enum(["createdAt", "severity", "status", "confidence"])
+      .optional()
+      .default("createdAt"),
+    sortOrder: z.enum(["asc", "desc"]).optional().default("desc"),
     limit: z.string().regex(/^\d+$/).transform(Number).optional().default("50"),
     offset: z.string().regex(/^\d+$/).transform(Number).optional().default("0"),
   }),
@@ -47,22 +64,71 @@ const resolveExceptionSchema = z.object({
     id: z.string().uuid(),
   }),
   body: z.object({
-    resolution: z.enum(["matched", "manual", "ignored"]),
+    resolution: z.enum(["matched", "manual", "ignored", "duplicate"]),
+    resolutionReason: z.string().max(100).optional(),
+    notes: z.string().max(2000).optional(),
+  }),
+});
+
+const assignExceptionSchema = z.object({
+  params: z.object({
+    id: z.string().uuid(),
+  }),
+  body: z.object({
+    assignedTo: z.string().uuid(),
     notes: z.string().max(1000).optional(),
+  }),
+});
+
+const updateStatusSchema = z.object({
+  params: z.object({
+    id: z.string().uuid(),
+  }),
+  body: z.object({
+    status: z.enum(["in_progress", "resolved", "dismissed"]),
+    notes: z.string().max(2000).optional(),
+    resolutionReason: z.string().max(100).optional(),
+  }),
+});
+
+const addNoteSchema = z.object({
+  params: z.object({
+    id: z.string().uuid(),
+  }),
+  body: z.object({
+    notes: z.string().min(1).max(2000),
   }),
 });
 
 const bulkResolveSchema = z.object({
   body: z.object({
     exceptionIds: z.array(z.string().uuid()).min(1).max(100),
-    resolution: z.enum(["matched", "manual", "ignored"]),
+    resolution: z.enum(["matched", "manual", "ignored", "duplicate"]),
+    resolutionReason: z.string().max(100).optional(),
     notes: z.string().max(1000).optional(),
   }),
 });
 
+const bulkAssignSchema = z.object({
+  body: z.object({
+    exceptionIds: z.array(z.string().uuid()).min(1).max(100),
+    assignedTo: z.string().uuid(),
+  }),
+});
+
+const bulkStatusSchema = z.object({
+  body: z.object({
+    exceptionIds: z.array(z.string().uuid()).min(1).max(100),
+    status: z.enum(["open", "in_progress", "resolved", "dismissed"]),
+    notes: z.string().max(1000).optional(),
+  }),
+});
+
+// ─── Helper Functions ─────────────────────────────────────────────────────────
+
 function appendAdjudicationHistory(
   metadata: unknown,
-  entry: { actorId: string; resolution: string; notes: string | null }
+  entry: { actorId: string; action: string; details: Record<string, unknown> }
 ): Record<string, unknown> {
   const base =
     metadata && typeof metadata === "object" && !Array.isArray(metadata)
@@ -73,17 +139,73 @@ function appendAdjudicationHistory(
     : [];
   current.push({
     actorId: entry.actorId,
-    resolution: entry.resolution,
-    notes: entry.notes,
+    action: entry.action,
+    details: entry.details,
     timestamp: new Date().toISOString(),
   });
   return {
     ...base,
-    adjudicationHistory: current.slice(-50),
+    adjudicationHistory: current.slice(-100),
   };
 }
 
-// List exceptions (unmatched transactions)
+function mapExceptionToResponse(e: any) {
+  let status: "open" | "in_progress" | "resolved" | "dismissed" = e.status || "open";
+  if (!e.status && e.reviewed) {
+    status = e.matchReason?.toLowerCase().includes("ignored") ? "dismissed" : "resolved";
+  }
+
+  return {
+    id: e.id,
+    runId: e.runId,
+    jobId: e.runId,
+    executionId: e.runId,
+    sourceTransactionId: e.sourceTransactionId,
+    targetTransactionId: e.targetTransactionId || null,
+    matchType: e.matchType,
+    confidence: Number(e.confidence),
+    severity: e.severity || "medium",
+    category: e.sourceTransaction?.category || "uncategorized",
+    description: e.sourceTransaction?.description || null,
+    amount: e.sourceTransaction?.amount || null,
+    currency: e.sourceTransaction?.currency || "USD",
+    status,
+    assignedTo: e.assignedTo || null,
+    resolutionReason: e.resolutionReason || null,
+    notes: e.notes || null,
+    matchReason: e.matchReason || null,
+    amountDiff: e.amountDiff ? Number(e.amountDiff) : null,
+    dateDiff: e.dateDiff || null,
+    resolvedAt: e.reviewedAt ? e.reviewedAt.toISOString() : null,
+    resolvedBy: e.reviewedBy || null,
+    createdAt: e.createdAt.toISOString(),
+    updatedAt: e.updatedAt.toISOString(),
+  };
+}
+
+async function validateExceptionAccess(
+  id: string,
+  tenantId: string,
+  matchType: string = "unmatched"
+) {
+  const exception = await exceptionMatchModel.findFirst({
+    where: { id, tenantId, matchType },
+    select: { id: true, metadata: true, runId: true, status: true, assignedTo: true },
+  });
+
+  if (!exception) {
+    throw new NotFoundError("Exception not found", "exception", id);
+  }
+
+  return exception;
+}
+
+// ─── Routes ───────────────────────────────────────────────────────────────────
+
+/**
+ * GET /api/exceptions
+ * List exceptions with full filtering, sorting, and pagination
+ */
 router.get(
   "/exceptions",
   requirePermission(Permission.REPORTS_READ),
@@ -91,79 +213,79 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
-      const { jobId, startDate, endDate, limit, offset } = listExceptionsSchema.parse({
-        query: req.query,
-      }).query;
+      const {
+        jobId,
+        status,
+        severity,
+        assignedTo,
+        startDate,
+        endDate,
+        search,
+        sortBy,
+        sortOrder,
+        limit,
+        offset,
+      } = listExceptionsSchema.parse({ query: req.query }).query;
 
       const where: any = {
         tenantId,
         matchType: "unmatched",
-        run: {
-          is: jobId ? { reconJobId: jobId } : {},
-        },
+        ...(jobId && { runId: jobId }),
+        ...(status && { status }),
+        ...(severity && { severity }),
+        ...(assignedTo && { assignedTo }),
         ...(startDate && { createdAt: { gte: new Date(startDate) } }),
         ...(endDate && { createdAt: { lte: new Date(endDate) } }),
-        // TODO: Map resolution_status to the new model
       };
 
-      const exceptions = await prisma.reconciliationMatch.findMany({
-        where,
-        include: {
-          run: {
-            select: {
-              id: true,
+      if (search) {
+        where.OR = [
+          { notes: { contains: search, mode: "insensitive" } },
+          { matchReason: { contains: search, mode: "insensitive" } },
+        ];
+      }
+
+      const orderByMap: Record<string, any> = {
+        createdAt: { createdAt: sortOrder },
+        severity: { severity: sortOrder },
+        status: { status: sortOrder },
+        confidence: { confidence: sortOrder },
+      };
+
+      const [exceptions, total] = await Promise.all([
+        exceptionMatchModel.findMany({
+          where,
+          include: {
+            run: { select: { id: true } },
+            sourceTransaction: {
+              select: {
+                id: true,
+                category: true,
+                description: true,
+                amount: true,
+                currency: true,
+                date: true,
+              },
             },
           },
-          sourceTransaction: true,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        take: limit,
-        skip: offset,
-      });
-
-      const total = await prisma.reconciliationMatch.count({ where });
+          orderBy: orderByMap[sortBy] || { createdAt: "desc" },
+          take: limit,
+          skip: offset,
+        }),
+        exceptionMatchModel.count({ where }),
+      ]);
 
       logInfo("Exceptions listed", {
         tenantId,
         jobId,
+        status,
+        severity,
+        assignedTo,
         count: exceptions.length,
         total,
         limit,
         offset,
       });
-
-      // Map exception to API response with proper status and null safety
-      const mapExceptionToResponse = (e: any) => {
-        // Status mapping: Currently only supports open/resolved
-        // in_progress and dismissed would require additional schema fields
-        let status: "open" | "in_progress" | "resolved" | "dismissed" = "open";
-        if (e.reviewed) {
-          // Check if there's a dismissal indicator (currently uses matchReason)
-          // "ignored" resolution = dismissed, others = resolved
-          if (e.matchReason?.toLowerCase().includes("ignored")) {
-            status = "dismissed";
-          } else {
-            status = "resolved";
-          }
-        }
-
-        return {
-          id: e.id,
-          // Null safety: Provide fallback for missing relations
-          jobId: e.run?.id || null,
-          executionId: e.run?.id || null,
-          category: e.sourceTransaction?.category || "uncategorized",
-          severity: "error",
-          description: e.sourceTransaction?.description || null,
-          status,
-          resolvedAt: e.reviewedAt ? e.reviewedAt.toISOString() : null,
-          resolvedBy: e.reviewedBy || null,
-          notes: e.matchReason || null,
-          createdAt: e.createdAt.toISOString(),
-        };
-      };
 
       res.json({
         data: (exceptions as any[]).map(mapExceptionToResponse),
@@ -172,6 +294,7 @@ router.get(
           offset,
           total,
           totalPages: Math.ceil(total / limit),
+          hasMore: offset + limit < total,
         },
       });
     } catch (error: unknown) {
@@ -180,7 +303,11 @@ router.get(
   }
 );
 
-// Get exception statistics — must be defined BEFORE /:id to avoid shadowing
+/**
+ * GET /api/exceptions/stats
+ * Exception statistics with proper status breakdown
+ * Must be defined BEFORE /:id to avoid shadowing
+ */
 router.get(
   "/exceptions/stats",
   requirePermission(Permission.REPORTS_READ),
@@ -189,52 +316,57 @@ router.get(
       const tenantId = req.tenantId!;
       const { jobId } = req.query as { jobId?: string };
 
-      const where: any = {
+      const whereBase: any = {
         tenantId,
         matchType: "unmatched",
-        run: {
-          is: jobId ? { reconJobId: jobId } : {},
-        },
+        ...(jobId && { runId: jobId }),
       };
 
-      const total = await prisma.reconciliationMatch.count({ where });
-      const open = await prisma.reconciliationMatch.count({
-        where: { ...where, reviewed: false },
-      });
-      const resolved = await prisma.reconciliationMatch.count({
-        where: { ...where, reviewed: true },
+      const [total, open, inProgress, resolved, dismissed] = await Promise.all([
+        exceptionMatchModel.count({ where: whereBase }),
+        exceptionMatchModel.count({ where: { ...whereBase, status: "open" } }),
+        exceptionMatchModel.count({ where: { ...whereBase, status: "in_progress" } }),
+        exceptionMatchModel.count({ where: { ...whereBase, status: "resolved" } }),
+        exceptionMatchModel.count({ where: { ...whereBase, status: "dismissed" } }),
+      ]);
+
+      const [critical, high, medium, low] = await Promise.all([
+        exceptionMatchModel.count({ where: { ...whereBase, severity: "critical" } }),
+        exceptionMatchModel.count({ where: { ...whereBase, severity: "high" } }),
+        exceptionMatchModel.count({ where: { ...whereBase, severity: "medium" } }),
+        exceptionMatchModel.count({ where: { ...whereBase, severity: "low" } }),
+      ]);
+
+      const unassigned = await exceptionMatchModel.count({
+        where: { ...whereBase, assignedTo: null, status: { notIn: ["resolved", "dismissed"] } },
       });
 
-      // TRUTHFUL STATE: Return available stats and mark unavailable fields
-      // Note: inProgress and dismissed require additional tracking fields in the schema
-      const byCategory: Record<string, number> = {};
+      const resolvedExceptions = await exceptionMatchModel.findMany({
+        where: {
+          ...whereBase,
+          status: { in: ["resolved", "dismissed"] },
+          reviewedAt: { not: null },
+        },
+        select: { createdAt: true, reviewedAt: true },
+        take: 1000,
+        orderBy: { reviewedAt: "desc" },
+      });
 
-      // Category breakdown would require grouping by a category field
-      // Marked as unavailable until schema supports it
-      const categoryAvailable = false;
+      let avgResolutionMs: number | null = null;
+      if (resolvedExceptions.length > 0) {
+        const totalMs = resolvedExceptions.reduce((sum: number, e: { reviewedAt: Date; createdAt: Date }) => {
+          return sum + (e.reviewedAt!.getTime() - e.createdAt.getTime());
+        }, 0);
+        avgResolutionMs = Math.round(totalMs / resolvedExceptions.length);
+      }
 
       res.json({
         data: {
           total,
-          open,
-          inProgress: null, // Not tracked - requires additional state
-          resolved,
-          dismissed: null, // Not tracked - requires additional state
-          byCategory,
-        },
-        _meta: {
-          categoryBreakdown: {
-            available: categoryAvailable,
-            message: "Category breakdown requires match category field",
-          },
-          inProgress: {
-            available: false,
-            message: "In-progress state not currently tracked",
-          },
-          dismissed: {
-            available: false,
-            message: "Dismissed state not currently tracked",
-          },
+          byStatus: { open, inProgress, resolved, dismissed },
+          bySeverity: { critical, high, medium, low },
+          unassigned,
+          avgResolutionMs,
         },
       });
     } catch (error: unknown) {
@@ -245,7 +377,10 @@ router.get(
   }
 );
 
-// Get exception details
+/**
+ * GET /api/exceptions/:id
+ * Get exception details with full workflow state
+ */
 router.get(
   "/exceptions/:id",
   requirePermission(Permission.REPORTS_READ),
@@ -255,14 +390,21 @@ router.get(
       const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
       const tenantId = req.tenantId!;
 
-      const exception = await prisma.reconciliationMatch.findFirst({
+      const exception = await exceptionMatchModel.findFirst({
         where: {
           id,
           tenantId,
           matchType: "unmatched",
         },
         include: {
-          run: true,
+          run: {
+            select: {
+              id: true,
+              status: true,
+              startedAt: true,
+              completedAt: true,
+            },
+          },
           sourceTransaction: true,
         },
       });
@@ -271,26 +413,30 @@ router.get(
         throw new NotFoundError("Exception not found", "exception", id);
       }
 
-      // Map exception to response with proper status and null safety (same as list endpoint)
-      const status: "open" | "in_progress" | "resolved" | "dismissed" = exception.reviewed
-        ? exception.matchReason?.toLowerCase().includes("ignored")
-          ? "dismissed"
-          : "resolved"
-        : "open";
+      const metadata = exception.metadata as any;
+      const adjudicationHistory = metadata?.adjudicationHistory || [];
+
+      const provenance = await exceptionProvenanceModel.findMany({
+        where: { tenantId, matchId: id },
+        orderBy: { sequence: "asc" },
+        select: {
+          id: true,
+          sequence: true,
+          eventType: true,
+          actorType: true,
+          actorUserId: true,
+          details: true,
+          createdAt: true,
+        },
+      });
 
       res.json({
         data: {
-          id: exception.id,
-          jobId: (exception as any).run?.id || null,
-          executionId: (exception as any).run?.id || null,
-          category: (exception as any).sourceTransaction?.category || "uncategorized",
-          severity: "error",
-          description: (exception as any).sourceTransaction?.description || null,
-          status,
-          resolvedAt: exception.reviewedAt ? exception.reviewedAt.toISOString() : null,
-          resolvedBy: exception.reviewedBy || null,
-          notes: exception.matchReason || null,
-          createdAt: exception.createdAt.toISOString(),
+          ...mapExceptionToResponse(exception),
+          run: exception.run,
+          sourceTransaction: exception.sourceTransaction,
+          adjudicationHistory,
+          provenance,
         },
       });
     } catch (error: unknown) {
@@ -299,7 +445,10 @@ router.get(
   }
 );
 
-// Resolve exception
+/**
+ * POST /api/exceptions/:id/resolve
+ * Resolve an exception with structured resolution reason and audit trail
+ */
 router.post(
   "/exceptions/:id/resolve",
   requirePermission(Permission.REPORTS_EXPORT),
@@ -307,97 +456,60 @@ router.post(
   validateRequest(resolveExceptionSchema),
   async (req: AuthRequest, res: Response) => {
     try {
-      const idParam2 = req.params["id"];
-      const id = Array.isArray(idParam2) ? (idParam2[0] ?? "") : (idParam2 ?? "");
-      const { resolution, notes } = req.body;
+      const idParam = req.params["id"];
+      const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
+      const { resolution, resolutionReason, notes } = req.body;
       const userId = req.userId!;
-
-      // TRUTHFUL STATE: Map resolution types to actual behavior
-      // - "ignored": Mark as reviewed but dismissed (not a match)
-      // - "matched": Mark as reviewed and matched (automatic match found)
-      // - "manual": Mark as reviewed and manually resolved by user
-      const existing = await prisma.reconciliationMatch.findFirst({
-        where: {
-          id,
-          tenantId: req.tenantId,
-          matchType: "unmatched",
-        },
-        select: { id: true, metadata: true, runId: true },
-      });
-
-      if (!existing) {
-        return res.status(404).json({
-          error: "NOT_FOUND",
-          message: "Exception not found",
-        });
-      }
-
-      const reviewedAt = new Date();
-      const updateResult = await prisma.reconciliationMatch.updateMany({
-        where: { id, tenantId: req.tenantId, matchType: "unmatched" },
-        data: {
-          reviewed: true,
-          reviewedBy: userId,
-          reviewedAt,
-          matchReason: notes || `${resolution} resolution`,
-          metadata: appendAdjudicationHistory(existing.metadata, {
-            actorId: userId,
-            resolution,
-            notes: notes || null,
-          }) as any,
-        },
-      });
-
-      if (updateResult.count !== 1) {
-        return res.status(404).json({
-          error: "NOT_FOUND",
-          message: "Exception not found",
-        });
-      }
-
-      await provenanceService.recordReviewDecision({
-        tenantId: req.tenantId!,
-        runId: existing.runId,
-        matchId: id,
-        decision:
-          resolution === "ignored"
-            ? "rejected"
-            : resolution === "matched"
-              ? "approved"
-              : "override",
-        actorUserId: userId,
-        reason: notes || `${resolution} resolution`,
-      });
-
-      await prisma.auditLog.create({
-        data: {
-          tenantId: req.tenantId,
-          userId,
-          action: "exception_resolved",
-          resourceType: "reconciliation_match",
-          resourceId: id,
-          metadata: {
-            resolution,
-            notes: notes || null,
-          } as any,
-        },
-      });
-
-      trackEventAsync(userId, "ExceptionResolved", {
+      const tenantId = req.tenantId!;
+      const result = await exceptionReviewService.resolveException({
+        tenantId,
+        userId,
         exceptionId: id,
         resolution,
+        resolutionReason,
+        notes,
+        traceId: req.traceId,
+        requestId: req.requestId,
+        ipAddress: req.ip,
+        userAgent:
+          typeof req.headers["user-agent"] === "string" ? req.headers["user-agent"] : undefined,
       });
+
+      if (result.outcome !== "already_resolved") {
+        trackEventAsync(userId, "ExceptionResolved", {
+          exceptionId: id,
+          resolution,
+          resolutionReason: result.resolutionReason,
+          outcome: result.outcome,
+        });
+      }
 
       logInfo("Exception resolved", {
-        tenantId: req.tenantId,
+        tenantId,
         exceptionId: id,
         resolution,
+        resolutionReason: result.resolutionReason,
+        outcome: result.outcome,
         resolvedBy: userId,
+        traceId: req.traceId,
+        requestId: req.requestId,
       });
 
       return res.json({
-        message: "Exception resolved successfully",
-        resolution,
+        data: {
+          id,
+          status: result.status,
+          resolvedAt: result.reviewedAt,
+          resolution: result.resolution,
+          resolutionReason: result.resolutionReason,
+          outcome: result.outcome,
+        },
+        message:
+          result.outcome === "already_resolved"
+            ? "Exception already resolved"
+            : result.outcome === "re_adjudicated"
+              ? "Exception review updated successfully"
+              : `Exception ${result.status} successfully`,
       });
     } catch (error: unknown) {
       return handleRouteError(res, error, "Failed to resolve exception", 500, {
@@ -407,7 +519,238 @@ router.post(
   }
 );
 
-// Bulk resolve exceptions
+/**
+ * POST /api/exceptions/:id/assign
+ * Assign an exception to an operator
+ */
+router.post(
+  "/exceptions/:id/assign",
+  requirePermission(Permission.REPORTS_EXPORT),
+  enforceFreezeState(),
+  validateRequest(assignExceptionSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const idParam = req.params["id"];
+      const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
+      const { assignedTo, notes } = req.body;
+      const userId = req.userId!;
+      const tenantId = req.tenantId!;
+
+      const existing = await validateExceptionAccess(id, tenantId);
+
+      if (existing.status === "resolved" || existing.status === "dismissed") {
+        throw new ConflictError("Cannot assign a resolved exception", {
+          code: "EXCEPTION_ALREADY_RESOLVED",
+          currentStatus: existing.status,
+        });
+      }
+
+      const newStatus = existing.status === "open" ? "in_progress" : existing.status;
+      const updateResult = await exceptionMatchModel.updateMany({
+        where: { id, tenantId, matchType: "unmatched" },
+        data: {
+          assignedTo,
+          status: newStatus,
+          metadata: appendAdjudicationHistory(existing.metadata, {
+            actorId: userId,
+            action: "assign",
+            details: { assignedTo, previousAssignee: existing.assignedTo, notes: notes || null },
+          }) as any,
+        },
+      });
+
+      if (updateResult.count !== 1) {
+        throw new NotFoundError("Exception not found", "exception", id);
+      }
+
+      await prisma.auditLog.create({
+        data: {
+          tenantId,
+          userId,
+          action: "exception_assigned",
+          resourceType: "reconciliation_match",
+          resourceId: id,
+          metadata: { assignedTo, previousAssignee: existing.assignedTo, notes } as any,
+        },
+      });
+
+      trackEventAsync(userId, "ExceptionAssigned", { exceptionId: id, assignedTo });
+
+      logInfo("Exception assigned", { tenantId, exceptionId: id, assignedTo, assignedBy: userId });
+
+      return res.json({
+        data: { id, assignedTo, status: newStatus },
+        message: "Exception assigned successfully",
+      });
+    } catch (error: unknown) {
+      return handleRouteError(res, error, "Failed to assign exception", 500, {
+        userId: req.userId,
+      });
+    }
+  }
+);
+
+/**
+ * PUT /api/exceptions/:id/status
+ * Update exception status with validation of state transitions
+ */
+router.put(
+  "/exceptions/:id/status",
+  requirePermission(Permission.REPORTS_EXPORT),
+  enforceFreezeState(),
+  validateRequest(updateStatusSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const idParam = req.params["id"];
+      const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
+      const { status, notes, resolutionReason } = req.body;
+      const userId = req.userId!;
+      const tenantId = req.tenantId!;
+
+      const existing = await validateExceptionAccess(id, tenantId);
+
+      const validTransitions: Record<string, string[]> = {
+        open: ["in_progress", "resolved", "dismissed"],
+        in_progress: ["open", "resolved", "dismissed"],
+        resolved: ["open"],
+        dismissed: ["open"],
+      };
+
+      const allowed = validTransitions[existing.status] || [];
+      if (!allowed.includes(status)) {
+        throw new ConflictError(`Cannot transition from '${existing.status}' to '${status}'`, {
+          code: "INVALID_STATE_TRANSITION",
+          currentStatus: existing.status,
+          requestedStatus: status,
+          allowedTransitions: allowed,
+        });
+      }
+
+      const updateResult = await exceptionMatchModel.updateMany({
+        where: { id, tenantId, matchType: "unmatched" },
+        data: {
+          status,
+          reviewed: status === "resolved" || status === "dismissed",
+          reviewedBy: status === "resolved" || status === "dismissed" ? userId : undefined,
+          reviewedAt: status === "resolved" || status === "dismissed" ? new Date() : undefined,
+          resolutionReason: resolutionReason || undefined,
+          notes: notes || undefined,
+          metadata: appendAdjudicationHistory(existing.metadata, {
+            actorId: userId,
+            action: "status_change",
+            details: {
+              fromStatus: existing.status,
+              toStatus: status,
+              notes: notes || null,
+              resolutionReason: resolutionReason || null,
+            },
+          }) as any,
+        },
+      });
+
+      if (updateResult.count !== 1) {
+        throw new NotFoundError("Exception not found", "exception", id);
+      }
+
+      await provenanceService.recordStatusTransition({
+        tenantId,
+        runId: existing.runId,
+        fromStatus: existing.status,
+        toStatus: status,
+        actorType: "human",
+        actorUserId: userId,
+        reason: notes || null,
+      });
+
+      await prisma.auditLog.create({
+        data: {
+          tenantId,
+          userId,
+          action: "exception_status_changed",
+          resourceType: "reconciliation_match",
+          resourceId: id,
+          metadata: {
+            fromStatus: existing.status,
+            toStatus: status,
+            notes,
+            resolutionReason,
+          } as any,
+        },
+      });
+
+      logInfo("Exception status updated", {
+        tenantId,
+        exceptionId: id,
+        fromStatus: existing.status,
+        toStatus: status,
+        updatedBy: userId,
+      });
+
+      return res.json({
+        data: { id, status, previousStatus: existing.status },
+        message: `Exception status changed to ${status}`,
+      });
+    } catch (error: unknown) {
+      return handleRouteError(res, error, "Failed to update exception status", 500, {
+        userId: req.userId,
+      });
+    }
+  }
+);
+
+/**
+ * POST /api/exceptions/:id/notes
+ * Add an operator note to an exception
+ */
+router.post(
+  "/exceptions/:id/notes",
+  requirePermission(Permission.REPORTS_EXPORT),
+  enforceFreezeState(),
+  validateRequest(addNoteSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const idParam = req.params["id"];
+      const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
+      const { notes } = req.body;
+      const userId = req.userId!;
+      const tenantId = req.tenantId!;
+
+      const existing = await validateExceptionAccess(id, tenantId);
+
+      const updateResult = await exceptionMatchModel.updateMany({
+        where: { id, tenantId, matchType: "unmatched" },
+        data: {
+          notes,
+          metadata: appendAdjudicationHistory(existing.metadata, {
+            actorId: userId,
+            action: "note_added",
+            details: { notes },
+          }) as any,
+        },
+      });
+
+      if (updateResult.count !== 1) {
+        throw new NotFoundError("Exception not found", "exception", id);
+      }
+
+      logInfo("Exception note added", { tenantId, exceptionId: id, addedBy: userId });
+
+      return res.json({
+        data: { id, notes },
+        message: "Note added successfully",
+      });
+    } catch (error: unknown) {
+      return handleRouteError(res, error, "Failed to add note", 500, {
+        userId: req.userId,
+      });
+    }
+  }
+);
+
+/**
+ * POST /api/exceptions/bulk-resolve
+ * Bulk resolve exceptions with audit trail
+ */
 router.post(
   "/exceptions/bulk-resolve",
   requirePermission(Permission.REPORTS_EXPORT),
@@ -415,93 +758,212 @@ router.post(
   validateRequest(bulkResolveSchema),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { exceptionIds, resolution, notes } = req.body;
+      const { exceptionIds, resolution, resolutionReason, notes } = req.body;
       const userId = req.userId!;
-
-      // TRUTHFUL STATE: Handle all resolution types properly
-      const existing = await prisma.reconciliationMatch.findMany({
-        where: {
-          id: { in: exceptionIds },
-          tenantId: req.tenantId,
-          matchType: "unmatched",
-        },
-        select: { id: true, metadata: true, runId: true },
+      const tenantId = req.tenantId!;
+      const result = await exceptionReviewService.resolveExceptions({
+        tenantId,
+        userId,
+        exceptionIds,
+        resolution,
+        resolutionReason,
+        notes,
+        traceId: req.traceId,
+        requestId: req.requestId,
+        ipAddress: req.ip,
+        userAgent:
+          typeof req.headers["user-agent"] === "string" ? req.headers["user-agent"] : undefined,
       });
 
-      let count = 0;
-      for (const exception of existing) {
-        const reviewedAt = new Date();
-        const updated = await prisma.reconciliationMatch.updateMany({
-          where: { id: exception.id, tenantId: req.tenantId, matchType: "unmatched" },
-          data: {
-            reviewed: true,
-            reviewedBy: userId,
-            reviewedAt,
-            matchReason: notes || `${resolution} resolution`,
-            metadata: appendAdjudicationHistory(exception.metadata, {
-              actorId: userId,
-              resolution,
-              notes: notes || null,
-            }) as any,
-          },
-        });
-
-        if (updated.count !== 1) {
+      for (const entry of result.results) {
+        if (entry.outcome === "already_resolved") {
           continue;
         }
 
-        await provenanceService.recordReviewDecision({
-          tenantId: req.tenantId!,
-          runId: exception.runId,
-          matchId: exception.id,
-          decision:
-            resolution === "ignored"
-              ? "rejected"
-              : resolution === "matched"
-                ? "approved"
-                : "override",
-          actorUserId: userId,
-          reason: notes || `${resolution} resolution`,
-        });
-
-        await prisma.auditLog.create({
-          data: {
-            tenantId: req.tenantId,
-            userId,
-            action: "exception_resolved",
-            resourceType: "reconciliation_match",
-            resourceId: exception.id,
-            metadata: {
-              resolution,
-              notes: notes || null,
-              bulk: true,
-            } as any,
-          },
-        });
-        count += 1;
-      }
-
-      for (const exceptionId of exceptionIds) {
         trackEventAsync(userId, "ExceptionResolved", {
-          exceptionId,
-          resolution,
+          exceptionId: entry.exceptionId,
+          resolution: entry.resolution,
+          resolutionReason: entry.resolutionReason,
+          outcome: entry.outcome,
           bulk: true,
         });
       }
 
-      logInfo("Exceptions bulk resolved", {
-        tenantId: req.tenantId,
-        count,
-        resolution,
-        resolvedBy: userId,
+      const resolved = result.resolvedCount + result.reAdjudicatedCount;
+      const skipped =
+        result.alreadyResolvedCount + result.notFoundCount + result.duplicateRequestCount;
+
+      await prisma.auditLog.create({
+        data: {
+          tenantId,
+          userId,
+          action: "exceptions_bulk_resolved",
+          resourceType: "reconciliation_match",
+          resourceId: null,
+          metadata: {
+            resolution,
+            resolutionReason: result.results[0]?.resolutionReason ?? resolutionReason ?? resolution,
+            resolved,
+            reAdjudicated: result.reAdjudicatedCount,
+            alreadyResolved: result.alreadyResolvedCount,
+            notFound: result.notFoundCount,
+            duplicateRequestCount: result.duplicateRequestCount,
+            requestedCount: result.requestedCount,
+            uniqueExceptionCount: result.uniqueExceptionCount,
+          } as any,
+          traceId: req.traceId ?? null,
+          requestId: req.requestId ?? null,
+          actorType: "user",
+          actorId: userId,
+          reason: result.results[0]?.resolutionReason ?? resolutionReason ?? resolution,
+        },
       });
 
-      res.json({
-        message: `Resolved ${count} exceptions successfully`,
-        count,
+      logInfo("Exceptions bulk resolved", {
+        tenantId,
+        resolved,
+        reAdjudicated: result.reAdjudicatedCount,
+        alreadyResolved: result.alreadyResolvedCount,
+        notFound: result.notFoundCount,
+        duplicateRequestCount: result.duplicateRequestCount,
+        resolution,
+        resolutionReason,
+        resolvedBy: userId,
+        traceId: req.traceId,
+        requestId: req.requestId,
+      });
+
+      return res.json({
+        data: {
+          resolved,
+          reAdjudicated: result.reAdjudicatedCount,
+          alreadyResolved: result.alreadyResolvedCount,
+          notFound: result.notFoundCount,
+          duplicateRequestCount: result.duplicateRequestCount,
+          skipped,
+        },
+        message:
+          resolved > 0
+            ? `Resolved ${resolved} exceptions`
+            : "No exception state changes were required",
       });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to bulk resolve exceptions", 500, {
+      return handleRouteError(res, error, "Failed to bulk resolve exceptions", 500, {
+        userId: req.userId,
+      });
+    }
+  }
+);
+
+/**
+ * POST /api/exceptions/bulk-assign
+ * Bulk assign exceptions to an operator
+ */
+router.post(
+  "/exceptions/bulk-assign",
+  requirePermission(Permission.REPORTS_EXPORT),
+  enforceFreezeState(),
+  validateRequest(bulkAssignSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const { exceptionIds, assignedTo } = req.body;
+      const userId = req.userId!;
+      const tenantId = req.tenantId!;
+
+      const result = await exceptionMatchModel.updateMany({
+        where: {
+          id: { in: exceptionIds },
+          tenantId,
+          matchType: "unmatched",
+          status: { notIn: ["resolved", "dismissed"] },
+        },
+        data: { assignedTo },
+      });
+
+      await prisma.auditLog.create({
+        data: {
+          tenantId,
+          userId,
+          action: "exceptions_bulk_assigned",
+          resourceType: "reconciliation_match",
+          resourceId: null,
+          metadata: { assignedTo, exceptionCount: result.count } as any,
+        },
+      });
+
+      logInfo("Exceptions bulk assigned", {
+        tenantId,
+        count: result.count,
+        assignedTo,
+        assignedBy: userId,
+      });
+
+      return res.json({
+        data: { assigned: result.count },
+        message: `Assigned ${result.count} exceptions`,
+      });
+    } catch (error: unknown) {
+      return handleRouteError(res, error, "Failed to bulk assign exceptions", 500, {
+        userId: req.userId,
+      });
+    }
+  }
+);
+
+/**
+ * POST /api/exceptions/bulk-status
+ * Bulk update exception status
+ */
+router.post(
+  "/exceptions/bulk-status",
+  requirePermission(Permission.REPORTS_EXPORT),
+  enforceFreezeState(),
+  validateRequest(bulkStatusSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const { exceptionIds, status, notes } = req.body;
+      const userId = req.userId!;
+      const tenantId = req.tenantId!;
+
+      const result = await exceptionMatchModel.updateMany({
+        where: {
+          id: { in: exceptionIds },
+          tenantId,
+          matchType: "unmatched",
+        },
+        data: {
+          status,
+          reviewed: status === "resolved" || status === "dismissed",
+          reviewedBy: status === "resolved" || status === "dismissed" ? userId : undefined,
+          reviewedAt: status === "resolved" || status === "dismissed" ? new Date() : undefined,
+          notes: notes || undefined,
+        },
+      });
+
+      await prisma.auditLog.create({
+        data: {
+          tenantId,
+          userId,
+          action: "exceptions_bulk_status_changed",
+          resourceType: "reconciliation_match",
+          resourceId: null,
+          metadata: { newStatus: status, exceptionCount: result.count, notes } as any,
+        },
+      });
+
+      logInfo("Exceptions bulk status updated", {
+        tenantId,
+        count: result.count,
+        status,
+        updatedBy: userId,
+      });
+
+      return res.json({
+        data: { updated: result.count },
+        message: `Updated ${result.count} exceptions to ${status}`,
+      });
+    } catch (error: unknown) {
+      return handleRouteError(res, error, "Failed to bulk update exception status", 500, {
         userId: req.userId,
       });
     }

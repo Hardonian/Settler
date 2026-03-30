@@ -54,11 +54,24 @@ export default async function AppPage() {
   try {
     const health = await performHealthCheck();
     const alerts = await runAllAlertChecks();
+    
+    // Transform checks array to object for component compatibility
+    const checksObj: Record<string, any> = {};
+    health.checks.forEach((c: any) => {
+      checksObj[c.service] = {
+        status: c.status,
+        latency: c.latency,
+        error: c.error,
+        details: c.details,
+        timestamp: health.timestamp,
+      };
+    });
 
     healthData = {
-      health,
+      status: health.overall,
+      checks: checksObj,
       alerts: alerts.filter((a: any) => !a.resolved),
-      timestamp: new Date().toISOString(),
+      timestamp: health.timestamp,
     };
   } catch {
     // Health check logic failed — fall through to unknown state
@@ -75,9 +88,9 @@ export default async function AppPage() {
   return (
     <div className="space-y-8 pb-8">
       {/* Hero Header */}
-      <section className="relative overflow-hidden rounded-2xl border border-primary/10 bg-gradient-to-br from-primary/5 via-background to-background p-8 shadow-sm">
+      <section className="relative overflow-hidden rounded-2xl border border-primary/10 bg-gradient-to-br from-primary/5 via-background to-background p-8 shadow-sm glass">
         <div className="relative z-10">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary/70">
+          <p className="section-eyebrow text-primary/70">
             Control Plane
           </p>
           <h1 className="mt-3 text-4xl font-bold tracking-tight text-foreground">
@@ -88,7 +101,7 @@ export default async function AppPage() {
             investigate drift events, and trigger deterministic replays across isolated tenants.
           </p>
         </div>
-        <div className="absolute -right-12 -top-12 opacity-[0.03] pointer-events-none">
+        <div className="absolute -right-12 -top-12 opacity-[0.03] pointer-events-none noise-overlay">
           <Activity size={320} className="text-primary" />
         </div>
       </section>
@@ -97,12 +110,12 @@ export default async function AppPage() {
         {/* Real Metrics Grid */}
         <div className="lg:col-span-2 space-y-6">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <Card className="bg-background shadow-none border-border/60">
+            <Card className="panel bg-background/50 backdrop-blur-sm">
               <CardHeader className="pb-2">
-                <CardDescription className="text-[10px] uppercase font-bold tracking-wider">
+                <CardDescription className="label-muted">
                   Integrity Score
                 </CardDescription>
-                <CardTitle className="text-2xl font-mono">
+                <CardTitle className="metric-value font-mono text-2xl">
                   {stats?.metrics?.integrity_score ?? 100}%
                 </CardTitle>
               </CardHeader>
@@ -114,12 +127,12 @@ export default async function AppPage() {
                 />
               </CardContent>
             </Card>
-            <Card className="bg-background shadow-none border-border/60">
+            <Card className="panel bg-background/50 backdrop-blur-sm">
               <CardHeader className="pb-2">
-                <CardDescription className="text-[10px] uppercase font-bold tracking-wider">
+                <CardDescription className="label-muted">
                   Total Runs
                 </CardDescription>
-                <CardTitle className="text-2xl font-mono">
+                <CardTitle className="metric-value font-mono text-2xl">
                   {stats?.metrics?.total_runs ?? 0}
                 </CardTitle>
               </CardHeader>
@@ -130,12 +143,12 @@ export default async function AppPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-background shadow-none border-border/60">
+            <Card className="panel bg-background/50 backdrop-blur-sm">
               <CardHeader className="pb-2">
-                <CardDescription className="text-[10px] uppercase font-bold tracking-wider text-destructive/80">
+                <CardDescription className="label-muted text-destructive/80">
                   Mismatches
                 </CardDescription>
-                <CardTitle className="text-2xl font-mono text-destructive">
+                <CardTitle className="metric-value font-mono text-2xl text-destructive">
                   {stats?.metrics?.unmatched_runs ?? 0}
                 </CardTitle>
               </CardHeader>
@@ -147,16 +160,16 @@ export default async function AppPage() {
               </CardContent>
             </Card>
             <Card
-              className={`shadow-none ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "bg-amber-50/50 dark:bg-amber-950/20 border-amber-200/60 dark:border-amber-800/40" : "bg-background border-border/60"}`}
+              className={`panel backdrop-blur-sm ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "bg-amber-50/50 dark:bg-amber-950/20 border-amber-200/60 dark:border-amber-800/40" : "bg-background/50"}`}
             >
               <CardHeader className="pb-2">
                 <CardDescription
-                  className={`text-[10px] uppercase font-bold tracking-wider ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-700 dark:text-amber-400" : ""}`}
+                  className={`label-muted ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-700 dark:text-amber-400" : ""}`}
                 >
                   Pending Exceptions
                 </CardDescription>
                 <CardTitle
-                  className={`text-2xl font-mono ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-700 dark:text-amber-400" : ""}`}
+                  className={`metric-value font-mono text-2xl ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-700 dark:text-amber-400" : ""}`}
                 >
                   {stats?.metrics?.pending_exceptions ?? 0}
                 </CardTitle>
@@ -180,7 +193,7 @@ export default async function AppPage() {
             </Card>
           </div>
 
-          <Card className="border-border/60 shadow-sm">
+          <Card className="panel shadow-sm">
             <CardHeader className="pb-3 border-b border-border/40">
               <div className="flex items-center justify-between">
                 <div>
@@ -188,11 +201,11 @@ export default async function AppPage() {
                     <History className="w-4 h-4 text-primary" />
                     Recent Activity
                   </CardTitle>
-                  <CardDescription>Latest reconciliation results and state changes</CardDescription>
+                  <CardDescription className="text-xs">Latest reconciliation results and state changes</CardDescription>
                 </div>
                 <Link
                   href="/app/runs"
-                  className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
+                  className="text-xs font-semibold text-primary hover:underline hover:translate-x-0.5 transition-transform flex items-center gap-1 focus-visible:ring-2 ring-primary ring-offset-2 rounded-sm"
                 >
                   View all <ArrowRight className="w-3 h-3" />
                 </Link>
@@ -205,11 +218,11 @@ export default async function AppPage() {
                     <Link
                       key={run.id}
                       href={`/console/runs/${run.id}`}
-                      className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group"
+                      className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors animate-fade-in group focus-visible:bg-muted/50 outline-none"
                     >
                       <div className="flex gap-4 items-center min-w-0">
                         <div
-                          className={`w-2 h-2 rounded-full ${run.status.includes("completed") && !run.status.includes("mismatch") ? "bg-green-500" : run.status.includes("mismatch") || run.status === "failed" ? "bg-destructive" : "bg-primary"}`}
+                          className={`w-2.5 h-2.5 rounded-full ${run.status.includes("completed") && !run.status.includes("mismatch") ? "bg-success" : run.status.includes("mismatch") || run.status === "failed" ? "bg-destructive" : "bg-primary"}`}
                         />
                         <div className="truncate">
                           <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors truncate">
@@ -247,7 +260,7 @@ export default async function AppPage() {
 
         {/* Sidebar Status & Workflows */}
         <div className="space-y-6">
-          <Card className="border-border/60 shadow-sm">
+          <Card className="panel shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-bold flex items-center gap-2">
                 <Server className="w-4 h-4 text-primary" />
@@ -260,7 +273,7 @@ export default async function AppPage() {
           </Card>
 
           <section>
-            <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground/70 mb-4 px-1">
+            <h2 className="section-eyebrow mb-4 px-1">
               Critical Workflows
             </h2>
             <div className="grid gap-3">
@@ -268,7 +281,7 @@ export default async function AppPage() {
                 <Link
                   key={workflow.name}
                   href={workflow.href}
-                  className="group relative flex items-center gap-4 rounded-xl border border-border/60 bg-card p-4 transition-all hover:border-primary/40 hover:shadow-md active:scale-[0.98]"
+                  className="group relative flex items-center gap-4 rounded-xl border border-border/60 bg-card p-4 transition-all hover:border-primary/40 hover:shadow-md active:scale-[0.98] focus-visible:ring-2 ring-primary ring-offset-2"
                 >
                   <div className="rounded-lg bg-primary/5 p-2 group-hover:bg-primary/10 transition-colors">
                     <workflow.icon className="h-5 w-5 text-primary" />

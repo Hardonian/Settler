@@ -156,11 +156,14 @@ if (config.features.enableRequestTimeout) {
 app.use((req: Request, res: Response, next: NextFunction) => {
   const authReq = req as AuthRequest;
   const traceId = (req.headers["x-trace-id"] as string) || uuidv4();
+  const requestId = (req.headers["x-request-id"] as string) || uuidv4();
   const executionId = (req.headers["x-execution-id"] as string) || uuidv4();
   authReq.traceId = traceId;
+  authReq.requestId = requestId;
   authReq.executionId = executionId;
   authReq.tenantId = authReq.tenantId || (req.headers["x-tenant-id"] as string | undefined);
   res.setHeader("X-Trace-Id", traceId);
+  res.setHeader("X-Request-Id", requestId);
   res.setHeader("X-Execution-Id", executionId);
   if (authReq.tenantId) {
     res.setHeader("X-Tenant-Id", authReq.tenantId);

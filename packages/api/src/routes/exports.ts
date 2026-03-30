@@ -1,106 +1,434 @@
 /**
- * Export Routes
- * 
- * Provides data export in various formats:
- * - CSV
- * - Excel (XLSX)
- * - PDF reports
- * - JSON
+ * Export Routes (Enterprise-Grade)
+ *
+ * Provides async data export with:
+ * - Background job queue integration via ExportJobQueue
+ * - Idempotent export creation
+ * - Export status polling
+ * - Signed URL download with expiration
+ * - Tenant-safe export isolation
+ *
+ * TENANT SAFETY: All queries scoped to tenantId
+ * IDEMPOTENCY: Export creation supports idempotency keys
  */
 
-import { Router, Response } from 'express';
-import { authMiddleware, AuthRequest } from '../middleware/auth';
-import { logInfo, logError } from '../utils/logger';
+import { Router, Response } from "express";
+import { z } from "zod";
+import { validateRequest } from "../middleware/validation";
+import { AuthRequest } from "../middleware/auth";
+import { requirePermission } from "../middleware/authorization";
+import { Permission } from "../infrastructure/security/Permissions";
+import { enforceFreezeState } from "../middleware/governance";
+import { prisma } from "../infrastructure/db/prisma";
+import { ExportJobQueue } from "../jobs/queue/ExportJobQueue";
+import { handleRouteError } from "../utils/error-handler";
+import { NotFoundError, ConflictError } from "../utils/typed-errors";
+import { logInfo } from "../utils/logger";
+import { trackEventAsync } from "../utils/event-tracker";
 
 const router: Router = Router();
+const exportQueue = new ExportJobQueue();
 
-/**
- * Export reconciliation data
- * POST /api/v1/exports
- */
-router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
-  try {
-    const { jobId, format = 'csv' } = req.body;
+// ─── Validation Schemas ──────────────────────────────────────────────────────
 
-    if (!jobId) {
-      return res.status(400).json({
-        error: 'Bad Request',
-        message: 'jobId is required',
-      });
-    }
-
-    const supportedFormats = ['csv', 'xlsx', 'pdf', 'json'];
-    if (!supportedFormats.includes(format)) {
-      return res.status(400).json({
-        error: 'Bad Request',
-        message: `Unsupported format. Supported formats: ${supportedFormats.join(', ')}`,
-      });
-    }
-
-    // In production, this would:
-    // 1. Fetch reconciliation data
-    // 2. Format according to requested type
-    // 3. Generate file
-    // 4. Return download URL or stream
-
-    const exportId = `export_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-    logInfo('Export requested', {
-      exportId,
-      jobId,
-      format,
-      tenantId: (req as any).tenantId || (req as any).userId,
-    });
-
-    // Set appropriate content type
-    const contentTypeMap: Record<string, string> = {
-      csv: 'text/csv',
-      xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      pdf: 'application/pdf',
-      json: 'application/json',
-    };
-    const contentType = contentTypeMap[format] || 'application/octet-stream';
-
-    res.setHeader('Content-Type', contentType || 'application/octet-stream');
-    res.setHeader('Content-Disposition', `attachment; filename="reconciliation_${jobId}.${format}"`);
-
-    // In production, stream actual file
-    return res.json({
-      exportId,
-      jobId,
-      format,
-      downloadUrl: `/api/v1/exports/${exportId}/download`,
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours
-    });
-  } catch (error) {
-    logError('Export failed', error);
-    return res.status(500).json({
-      error: 'Internal Server Error',
-      message: 'Failed to create export',
-    });
-  }
+const createExportSchema = z.object({
+  body: z.object({
+    runId: z.string().uuid().optional(),
+    format: z.enum(["csv", "json", "xlsx", "pdf"]).default("json"),
+    type: z.enum(["reconciliation", "exceptions", "audit", "evidence"]).default("reconciliation"),
+    idempotencyKey: z.string().max(255).optional(),
+    options: z
+      .object({
+        includeMatched: z.boolean().optional().default(true),
+        includeUnmatched: z.boolean().optional().default(true),
+        includeExceptions: z.boolean().optional().default(true),
+        startDate: z.string().datetime().optional(),
+        endDate: z.string().datetime().optional(),
+        fields: z.array(z.string()).optional(),
+      })
+      .optional()
+      .default({}),
+  }),
 });
 
-/**
- * Download export file
- * GET /api/v1/exports/:exportId/download
- */
-router.get('/:exportId/download', authMiddleware, async (req: AuthRequest, res: Response) => {
-  try {
-    const { exportId } = req.params;
-
-    // In production, fetch file from storage and stream
-    return res.status(200).json({
-      message: 'Export file would be streamed here',
-      exportId,
-    });
-  } catch (error) {
-    logError('Export download failed', error);
-    return res.status(500).json({
-      error: 'Internal Server Error',
-      message: 'Failed to download export',
-    });
-  }
+const listExportsSchema = z.object({
+  query: z.object({
+    status: z.enum(["pending", "processing", "completed", "failed"]).optional(),
+    type: z.string().optional(),
+    limit: z.string().regex(/^\d+$/).transform(Number).optional().default("20"),
+    offset: z.string().regex(/^\d+$/).transform(Number).optional().default("0"),
+  }),
 });
+
+// ─── Routes ───────────────────────────────────────────────────────────────────
+
+/**
+ * POST /api/exports
+ * Create a new export job
+ * Supports idempotency via idempotencyKey header or body
+ */
+router.post(
+  "/exports",
+  requirePermission(Permission.REPORTS_EXPORT),
+  enforceFreezeState(),
+  validateRequest(createExportSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = req.tenantId!;
+      const userId = req.userId!;
+      const { runId, format, type, idempotencyKey, options } = req.body;
+
+      // Check idempotency - if key provided, check for existing export
+      if (idempotencyKey) {
+        const existing = await prisma.export.findFirst({
+          where: {
+            tenantId,
+            metadata: { path: ["idempotencyKey"], equals: idempotencyKey },
+          },
+          select: { id: true, status: true, createdAt: true },
+        });
+
+        if (existing) {
+          logInfo("Returning existing export for idempotency key", {
+            tenantId,
+            idempotencyKey,
+            exportId: existing.id,
+          });
+
+          return res.status(200).json({
+            data: {
+              exportId: existing.id,
+              status: existing.status,
+              idempotent: true,
+            },
+            message: "Export already exists for this idempotency key",
+          });
+        }
+      }
+
+      // Enqueue the export job
+      const jobType =
+        type === "reconciliation"
+          ? "reconciliation-export"
+          : format === "csv"
+            ? "csv-export"
+            : format === "pdf"
+              ? "pdf-report"
+              : "export";
+
+      const enqueuedJob = await exportQueue.enqueue({
+        tenantId,
+        userId,
+        type: jobType,
+        runId,
+        format,
+        idempotencyKey,
+        options: { ...options, exportType: type },
+      });
+
+      // Create the Export record
+      const exportRecord = await prisma.export.create({
+        data: {
+          tenantId,
+          userId,
+          type,
+          format,
+          reconciliationRunId: runId || null,
+          status: "pending",
+          metadata: {
+            idempotencyKey: idempotencyKey || null,
+            jobId: enqueuedJob.id,
+            options,
+          } as any,
+        },
+      });
+
+      // Audit log
+      await prisma.auditLog.create({
+        data: {
+          tenantId,
+          userId,
+          action: "export_created",
+          resourceType: "export",
+          resourceId: exportRecord.id,
+          metadata: { format, type, runId, jobId: enqueuedJob.id } as any,
+        },
+      });
+
+      trackEventAsync(userId, "ExportCreated", {
+        exportId: exportRecord.id,
+        format,
+        type,
+        jobId: enqueuedJob.id,
+      });
+
+      logInfo("Export created", {
+        tenantId,
+        exportId: exportRecord.id,
+        format,
+        type,
+        jobId: enqueuedJob.id,
+      });
+
+      return res.status(201).json({
+        data: {
+          exportId: exportRecord.id,
+          jobId: enqueuedJob.id,
+          format,
+          type,
+          status: "pending",
+          createdAt: exportRecord.createdAt.toISOString(),
+        },
+        message: "Export job created",
+      });
+    } catch (error: unknown) {
+      return handleRouteError(res, error, "Failed to create export", 500, {
+        userId: req.userId,
+      });
+    }
+  }
+);
+
+/**
+ * GET /api/exports
+ * List exports for the current tenant
+ */
+router.get(
+  "/exports",
+  requirePermission(Permission.REPORTS_READ),
+  validateRequest(listExportsSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = req.tenantId!;
+      const { status, type, limit, offset } = listExportsSchema.parse({
+        query: req.query,
+      }).query;
+
+      const where: any = {
+        tenantId,
+        ...(status && { status }),
+        ...(type && { type }),
+      };
+
+      const [exports, total] = await Promise.all([
+        prisma.export.findMany({
+          where,
+          orderBy: { createdAt: "desc" },
+          take: limit,
+          skip: offset,
+          select: {
+            id: true,
+            type: true,
+            format: true,
+            status: true,
+            reconciliationRunId: true,
+            fileSizeBytes: true,
+            rowCount: true,
+            errorMessage: true,
+            signedUrlExpiresAt: true,
+            createdAt: true,
+            updatedAt: true,
+            expiresAt: true,
+          },
+        }),
+        prisma.export.count({ where }),
+      ]);
+
+      res.json({
+        data: exports,
+        pagination: {
+          limit,
+          offset,
+          total,
+          totalPages: Math.ceil(total / limit),
+          hasMore: offset + limit < total,
+        },
+      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to list exports", 500, { userId: req.userId });
+    }
+  }
+);
+
+/**
+ * GET /api/exports/:id
+ * Get export details and status
+ */
+router.get(
+  "/exports/:id",
+  requirePermission(Permission.REPORTS_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const idParam = req.params["id"];
+      const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
+      const tenantId = req.tenantId!;
+
+      const exportRecord = await prisma.export.findFirst({
+        where: { id, tenantId },
+      });
+
+      if (!exportRecord) {
+        throw new NotFoundError("Export not found", "export", id);
+      }
+
+      // Determine if download is available
+      const isDownloadReady = exportRecord.status === "completed" && exportRecord.signedUrl;
+      const isExpired = exportRecord.signedUrlExpiresAt
+        ? new Date() > exportRecord.signedUrlExpiresAt
+        : false;
+
+      res.json({
+        data: {
+          id: exportRecord.id,
+          type: exportRecord.type,
+          format: exportRecord.format,
+          status: exportRecord.status,
+          runId: exportRecord.reconciliationRunId,
+          fileSizeBytes: exportRecord.fileSizeBytes,
+          rowCount: exportRecord.rowCount,
+          errorMessage: exportRecord.errorMessage,
+          downloadAvailable: isDownloadReady && !isExpired,
+          downloadExpiresAt: exportRecord.signedUrlExpiresAt?.toISOString() || null,
+          expiresAt: exportRecord.expiresAt?.toISOString() || null,
+          createdAt: exportRecord.createdAt.toISOString(),
+          updatedAt: exportRecord.updatedAt.toISOString(),
+        },
+      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to get export", 500, { userId: req.userId });
+    }
+  }
+);
+
+/**
+ * GET /api/exports/:id/download
+ * Download an export file via signed URL
+ */
+router.get(
+  "/exports/:id/download",
+  requirePermission(Permission.REPORTS_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const idParam = req.params["id"];
+      const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
+      const tenantId = req.tenantId!;
+
+      const exportRecord = await prisma.export.findFirst({
+        where: { id, tenantId },
+      });
+
+      if (!exportRecord) {
+        throw new NotFoundError("Export not found", "export", id);
+      }
+
+      if (exportRecord.status !== "completed") {
+        return res.status(409).json({
+          error: "EXPORT_NOT_READY",
+          message: `Export is ${exportRecord.status}, not ready for download`,
+          status: exportRecord.status,
+        });
+      }
+
+      if (!exportRecord.signedUrl) {
+        return res.status(410).json({
+          error: "EXPORT_EXPIRED",
+          message: "Export file has expired or is no longer available",
+        });
+      }
+
+      if (exportRecord.signedUrlExpiresAt && new Date() > exportRecord.signedUrlExpiresAt) {
+        return res.status(410).json({
+          error: "EXPORT_EXPIRED",
+          message: "Download link has expired",
+          expiresAt: exportRecord.signedUrlExpiresAt.toISOString(),
+        });
+      }
+
+      // Return the signed URL for client-side redirect/download
+      res.json({
+        data: {
+          downloadUrl: exportRecord.signedUrl,
+          expiresAt: exportRecord.signedUrlExpiresAt?.toISOString() || null,
+          fileSizeBytes: exportRecord.fileSizeBytes,
+          format: exportRecord.format,
+        },
+      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to get export download", 500, {
+        userId: req.userId,
+      });
+    }
+  }
+);
+
+/**
+ * POST /api/exports/:id/cancel
+ * Cancel a pending export
+ */
+router.post(
+  "/exports/:id/cancel",
+  requirePermission(Permission.REPORTS_EXPORT),
+  enforceFreezeState(),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const idParam = req.params["id"];
+      const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
+      const tenantId = req.tenantId!;
+      const userId = req.userId!;
+
+      const exportRecord = await prisma.export.findFirst({
+        where: { id, tenantId },
+      });
+
+      if (!exportRecord) {
+        throw new NotFoundError("Export not found", "export", id);
+      }
+
+      if (exportRecord.status !== "pending") {
+        throw new ConflictError("Can only cancel pending exports", {
+          code: "EXPORT_NOT_PENDING",
+          currentStatus: exportRecord.status,
+        });
+      }
+
+      // Cancel via the job queue
+      const metadata = exportRecord.metadata as any;
+      if (metadata?.jobId) {
+        await exportQueue.cancelJob(metadata.jobId, tenantId);
+      }
+
+      // Update export record
+      await prisma.export.update({
+        where: { id },
+        data: {
+          status: "failed",
+          errorMessage: "Cancelled by user",
+          metadata: {
+            ...metadata,
+            cancelledBy: userId,
+            cancelledAt: new Date().toISOString(),
+          } as any,
+        },
+      });
+
+      await prisma.auditLog.create({
+        data: {
+          tenantId,
+          userId,
+          action: "export_cancelled",
+          resourceType: "export",
+          resourceId: id,
+        },
+      });
+
+      res.json({
+        data: { id, status: "failed", errorMessage: "Cancelled by user" },
+        message: "Export cancelled",
+      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to cancel export", 500, { userId: req.userId });
+    }
+  }
+);
 
 export { router as exportsRouter };
