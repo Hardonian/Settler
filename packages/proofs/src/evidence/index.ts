@@ -1,9 +1,9 @@
 /**
  * Evidence Service
- * 
+ *
  * Structured evidence capture, provenance tracking, and reliability scoring
  * for reconciliation audit trails and compliance.
- * 
+ *
  * Core principles:
  * - Every piece of evidence has a hash for integrity verification
  * - Evidence can be degraded (incomplete/unavailable) but must be labeled as such
@@ -21,7 +21,8 @@ export type EvidenceArtifactType =
   | "operator_annotation"
   | "system_analysis"
   | "run_summary"
-  | "provenance_chain";
+  | "provenance_chain"
+  | "exception_resolution";
 
 export interface EvidencePayload {
   type: EvidenceArtifactType;
@@ -118,10 +119,10 @@ export function computePayloadHash(payload: unknown): string {
  */
 export function computeReliabilityScore(factors: EvidenceReliabilityFactor[]): number {
   if (factors.length === 0) return 0.5; // Neutral default
-  
+
   const totalWeight = factors.reduce((sum, f) => sum + f.weight, 0);
   if (totalWeight === 0) return 0.5;
-  
+
   const weightedSum = factors.reduce((sum, f) => sum + f.weight * f.value, 0);
   return Math.round((weightedSum / totalWeight) * 10000) / 10000;
 }
@@ -135,17 +136,17 @@ export function sourceSnapshotReliabilityFactors(
   adapterVersion?: string
 ): EvidenceReliabilityFactor[] {
   const factors: EvidenceReliabilityFactor[] = [];
-  
+
   // Freshness factor: decays over time
   const freshnessHours = captureAge / (1000 * 60 * 60);
-  const freshnessScore = Math.max(0, 1 - (freshnessHours / 168)); // Decays over 1 week
+  const freshnessScore = Math.max(0, 1 - freshnessHours / 168); // Decays over 1 week
   factors.push({
     factor: "data_freshness",
     weight: 0.3,
     value: freshnessScore,
     notes: `Captured ${freshnessHours.toFixed(1)} hours ago`,
   });
-  
+
   // Completeness factor
   factors.push({
     factor: "data_completeness",
@@ -153,7 +154,7 @@ export function sourceSnapshotReliabilityFactors(
     value: dataCompleteness,
     notes: `${(dataCompleteness * 100).toFixed(0)}% of fields populated`,
   });
-  
+
   // Adapter version factor
   if (adapterVersion) {
     factors.push({
@@ -163,7 +164,7 @@ export function sourceSnapshotReliabilityFactors(
       notes: `Adapter version: ${adapterVersion}`,
     });
   }
-  
+
   // Hash integrity factor
   factors.push({
     factor: "hash_verified",
@@ -171,7 +172,7 @@ export function sourceSnapshotReliabilityFactors(
     value: 1.0,
     notes: "Hash computed successfully",
   });
-  
+
   return factors;
 }
 
@@ -263,15 +264,16 @@ export function assessEvidenceCompleteness(
 ): ProofCompletenessModel {
   const requiredSet = new Set(requiredTypes);
   const presentSet = new Set(presentTypes);
-  
-  const missingTypes = requiredTypes.filter(t => !presentSet.has(t));
-  const completenessScore = requiredTypes.length === 0
-    ? 1.0
-    : (presentTypes.filter(t => requiredSet.has(t)).length / requiredTypes.length;
-  
+
+  const missingTypes = requiredTypes.filter((t) => !presentSet.has(t));
+  const completenessScore =
+    requiredTypes.length === 0
+      ? 1.0
+      : presentTypes.filter((t) => requiredSet.has(t)).length / requiredTypes.length;
+
   const completenessFlags: string[] = [];
   const gapAnalysis: EvidenceGap[] = [];
-  
+
   // Check for critical gaps
   for (const missing of missingTypes) {
     if (missing === "run_summary") {
@@ -291,7 +293,7 @@ export function assessEvidenceCompleteness(
       });
     }
   }
-  
+
   return {
     completenessScore: Math.round(completenessScore * 10000) / 10000,
     requiredEvidenceTypes: requiredTypes,
@@ -316,9 +318,9 @@ export function exportEvidenceForAudit(
 ): Record<string, unknown> {
   const filteredArtifacts = options.includeDegraded
     ? artifacts
-    : artifacts.filter(a => !a.degraded);
-  
-  const evidenceSummary = filteredArtifacts.map(a => ({
+    : artifacts.filter((a) => !a.degraded);
+
+  const evidenceSummary = filteredArtifacts.map((a) => ({
     id: a.id,
     artifactType: a.artifactType,
     artifactKey: a.artifactKey,
@@ -331,7 +333,7 @@ export function exportEvidenceForAudit(
     attested: a.attested,
     ...(options.includePayloads ? { payload: a.payload } : {}),
   }));
-  
+
   return {
     version: "1.0",
     exportedAt: options.exportedAt ?? new Date().toISOString(),
